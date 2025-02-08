@@ -55,7 +55,6 @@ class AutoDJFeature : public LibraryFeature {
     void onRightClick(const QPoint& globalPos) override;
     // Temporary, until WCrateTableView can be written.
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
-    void slotShowInPreparationWindow();
 
   private:
     TrackCollection* const m_pTrackCollection;

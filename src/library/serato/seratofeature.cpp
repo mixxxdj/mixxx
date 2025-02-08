@@ -1005,7 +1005,7 @@ void SeratoFeature::activate() {
     emit featureIsLoading(this, true);
 
     emit enableCoverArtDisplay(true);
-    emit switchToView("SERATOHOME");
+    emit switchToView("SERATOHOME", "Library");
     emit disableSearch();
 }
 

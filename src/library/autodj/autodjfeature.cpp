@@ -99,12 +99,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &AutoDJFeature::slotCrateChanged);
 
     // Create context-menu items for enabling/disabling the auto-DJ
-    m_pShowTrackModelInPreparationWindowAction =
-            make_parented<QAction>(tr("Show in Preparation Window"), this);
-    connect(m_pShowTrackModelInPreparationWindowAction,
-            &QAction::triggered,
-            this,
-            &AutoDJFeature::slotShowInPreparationWindow);
     m_pEnableAutoDJAction = make_parented<QAction>(tr("Enable Auto DJ"), this);
     connect(m_pEnableAutoDJAction.get(),
             &QAction::triggered,
@@ -203,7 +197,22 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit switchToView(kViewName);
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+        // auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        if (static_cast<bool>(ControlObject::getControl(
+                    "[Skin]", "show_preparation_window")
+                            ->get())) {
+            qDebug() << "[AutoDJFeature] -> activate() -> PreparationWindow";
+            emit switchToView(kViewName, "PreparationWindow");
+        } else {
+            qDebug() << "[AutoDJFeature] -> activate() -> Library";
+            emit switchToView(kViewName, "Library");
+        }
+    } else {
+        qDebug() << "[AutoDJFeature] -> activate() -> Library";
+        emit switchToView(kViewName, "Library");
+    }
+
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }

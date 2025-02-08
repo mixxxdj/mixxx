@@ -122,9 +122,10 @@ class Library: public QObject {
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotShowTrackModelInPreparationWindow(QAbstractItemModel* model);
-    void slotSwitchToView(const QString& view);
+    void slotSwitchToView(const QString& view, const QString& target);
     // void slotSwitchToViewInPreparationWindow(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
+    void slotSendTargetWindow(const QString& target);
 #ifdef __STEM__
     void slotLoadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
@@ -146,7 +147,8 @@ class Library: public QObject {
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
-    void switchToView(const QString& view);
+    void sendTargetWindow(const QString& target);
+    void switchToView(const QString& view, const QString& target);
     // void switchToViewInPreparationWindow(const QString& view);
     void loadTrack(TrackPointer pTrack);
 #ifdef __STEM__

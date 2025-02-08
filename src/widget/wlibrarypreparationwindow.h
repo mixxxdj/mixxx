@@ -63,9 +63,10 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     // view is the specified view, or if the name does not specify any
     // registered view.
     // void switchToViewInPreparationWindow(const QString& name);
-    void switchToView(const QString& name);
+    void switchToView(const QString& name, const QString& target);
     void slotSelectTrackInActiveTrackView(const TrackId& trackId);
     void pasteFromSidebarInPreparationWindow();
+    // void sendTargetWindow(const QString& target);
 
     // void search(const QString&);
 
@@ -78,4 +79,5 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     QMap<QString, QWidget*> m_viewMap;
     double m_trackTableBackgroundColorOpacity;
     bool m_bShowButtonText;
+    // QString m_targetWindow;
 };

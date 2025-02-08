@@ -417,6 +417,10 @@ void Library::bindLibraryWidget(
             &Library::switchToView,
             m_pLibraryWidget,
             &WLibrary::switchToView);
+    //    connect(this,
+    //            &Library::sendTargetWindow,
+    //            m_pLibraryWidget,
+    //            &WLibrary::sendTargetWindow);
     connect(this,
             &Library::saveModelState,
             pTrackTableView,
@@ -510,6 +514,10 @@ void Library::bindLibraryPreparationWindowWidget(
             m_pLibraryPreparationWindowWidget,
             &WLibraryPreparationWindow::switchToView);
     connect(this,
+            &Library::sendTargetWindow,
+            pLibraryPreparationWindowTrackTableView,
+            &WLibraryPreparationWindowTrackTableView::sendTargetWindow);
+    connect(this,
             &Library::saveModelState,
             pLibraryPreparationWindowTrackTableView,
             &WLibraryPreparationWindowTrackTableView::slotSaveCurrentViewState);
@@ -589,6 +597,10 @@ void Library::addFeature(LibraryFeature* feature) {
             this,
             &Library::slotSwitchToView);
     connect(feature,
+            &LibraryFeature::sendTargetWindow,
+            this,
+            &Library::slotSendTargetWindow);
+    connect(feature,
             &LibraryFeature::loadTrack,
             this,
             &Library::slotLoadTrack);
@@ -642,7 +654,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
         return;
     }
     emit showTrackModel(model);
-    emit switchToView(m_sTrackViewName);
+    emit switchToView(m_sTrackViewName, "Library");
     emit restoreSearch(trackModel->currentSearch());
 }
 
@@ -652,15 +664,22 @@ void Library::slotShowTrackModelInPreparationWindow(QAbstractItemModel* model) {
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
+    // emit showTrackModelInPreparationWindow(model);
+    emit sendTargetWindow("PreparationWindow");
     emit showTrackModelInPreparationWindow(model);
     // emit switchToViewInPreparationWindow(m_sTrackViewName);
-    emit switchToView(m_sTrackViewName);
+    emit switchToView(m_sTrackViewName, "PreparationWindow");
     emit restoreSearch(trackModel->currentSearch());
 }
 
-void Library::slotSwitchToView(const QString& view) {
+void Library::slotSendTargetWindow(const QString& target) {
     // qDebug() << "Library::slotSwitchToView" << view;
-    emit switchToView(view);
+    emit sendTargetWindow(target);
+}
+
+void Library::slotSwitchToView(const QString& view, const QString& target) {
+    // qDebug() << "Library::slotSwitchToView" << view;
+    emit switchToView(view, target);
 }
 
 // void Library::switchToViewInPreparationWindow(const QString& view) {
@@ -875,6 +894,8 @@ void Library::searchTracksInCollection(const QString& query) {
         return;
     }
     m_pMixxxLibraryFeature->searchAndActivate(query);
+    emit switchToView(m_sTrackViewName, "Library");
+    m_pSidebarModel->activateDefaultSelection();
 }
 
 #ifdef __ENGINEPRIME__

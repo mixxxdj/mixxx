@@ -67,7 +67,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     //         const QString& extraFilter,
     //         QString targetWindow);
     const QString currentSearch() const override;
-    const QString currentSearchInPreparationWindow();
+    const QString currentTargetWindow();
 
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
@@ -180,8 +180,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackPos2Row m_trackPosToRow;
     QString m_currentSearch;
     QString m_currentSearchFilter;
-    QString m_currentSearchInPreparationWindow;
-    QString m_currentSearchFilterInPreparationWindow;
+    QString m_currentTargetWindow;
 
     QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;

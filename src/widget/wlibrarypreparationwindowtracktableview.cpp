@@ -92,6 +92,14 @@ WLibraryPreparationWindowTrackTableView::~WLibraryPreparationWindowTrackTableVie
     }
 }
 
+void WLibraryPreparationWindowTrackTableView::sendTargetWindow(const QString& target) {
+    m_targetWindow = target;
+    // qDebug() << "[WLibraryPreparationWindowTrackTableView] ->
+    // sendTargetWindow toggled -> target: " << target; qDebug() <<
+    // "[WLibraryPreparationWindowTrackTableView] -> sendTargetWindow toggled ->
+    // m_targetWindow: " << m_targetWindow;
+}
+
 void WLibraryPreparationWindowTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
@@ -173,145 +181,158 @@ void WLibraryPreparationWindowTrackTableView::pasteFromSidebar() {
 // slot
 void WLibraryPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
         QAbstractItemModel* model, bool restoreState) {
-    qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] -> loadTrackModel()" << model;
+    qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] "
+                "loadTrackModelInPreparationWindow -> loadTrackModel() "
+             << model;
+    qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] "
+                "loadTrackModelInPreparationWindow -> m_targetWindow "
+             << m_targetWindow;
 
-    VERIFY_OR_DEBUG_ASSERT(model) {
+    if (m_targetWindow != "PreparationWindow") {
         return;
-    }
-    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model);
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
-        return;
-    }
-
-    // If the model has not changed there's no need to exchange the headers
-    // which would cause a small GUI freeze
-    if (getTrackModel() == pTrackModel) {
-        // Re-sort the table even if the track model is the same. This triggers
-        // a select() if the table is dirty.
-        doSortByColumn(horizontalHeader()->sortIndicatorSection(),
-                horizontalHeader()->sortIndicatorOrder());
-
-        if (restoreState) {
-            restoreCurrentViewState();
+    } else {
+        VERIFY_OR_DEBUG_ASSERT(model) {
+            return;
         }
-        return;
-    }
-
-    setVisible(false);
-
-    // Save the previous track model's header state
-    WTrackTableViewHeader* oldHeader =
-            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (oldHeader) {
-        oldHeader->saveHeaderState();
-    }
-    auto* header = new WTrackTableViewHeader(Qt::Horizontal, this);
-    auto* tempHeader = new QHeaderView(Qt::Horizontal, this);
-
-    setSortingEnabled(false);
-    setHorizontalHeader(tempHeader);
-
-    setModel(model);
-    setHorizontalHeader(header);
-    header->setSectionsMovable(true);
-    header->setSectionsClickable(true);
-    header->setHighlightSections(false);
-    header->setSortIndicatorShown(m_sorting);
-    header->setDefaultAlignment(Qt::AlignLeft);
-
-    // Initialize all column-specific things
-    for (int i = 0; i < model->columnCount(); ++i) {
-        // Setup delegates according to what the model tells us
-        QAbstractItemDelegate* delegate =
-                pTrackModel->delegateForColumn(i, this);
-        // We need to delete the old delegates, since the docs say the view will
-        // not take ownership of them.
-        QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
-        // If delegate is NULL, it will unset the delegate for the column
-        setItemDelegateForColumn(i, delegate);
-        delete old_delegate;
-
-        // Show or hide the column based on whether it should be shown or not.
-        if (pTrackModel->isColumnInternal(i)) {
-            // qDebug() << "Hiding column" << i;
-            horizontalHeader()->hideSection(i);
+        TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model);
+        VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
+            return;
         }
-        if (pTrackModel->isColumnHiddenByDefault(i) &&
-                !header->hasPersistedHeaderState()) {
-            // qDebug() << "Hiding column" << i;
-            horizontalHeader()->hideSection(i);
+
+        // If the model has not changed there's no need to exchange the headers
+        // which would cause a small GUI freeze
+        if (getTrackModel() == pTrackModel) {
+            // Re-sort the table even if the track model is the same. This triggers
+            // a select() if the table is dirty.
+            doSortByColumn(horizontalHeader()->sortIndicatorSection(),
+                    horizontalHeader()->sortIndicatorOrder());
+
+            if (restoreState) {
+                restoreCurrentViewState();
+            }
+            return;
         }
-    }
 
-    if (m_sorting) {
-        connect(horizontalHeader(),
-                &QHeaderView::sortIndicatorChanged,
-                this,
-                &WLibraryPreparationWindowTrackTableView::slotSortingChanged,
-                Qt::AutoConnection);
+        setVisible(false);
 
-        Qt::SortOrder sortOrder;
-        TrackModel::SortColumnId sortColumn =
-                pTrackModel->sortColumnIdFromColumnIndex(
-                        horizontalHeader()->sortIndicatorSection());
-        if (sortColumn != TrackModel::SortColumnId::Invalid) {
-            // Sort by the saved sort section and order.
-            sortOrder = horizontalHeader()->sortIndicatorOrder();
-        } else {
-            // No saved order is present. Use the TrackModel's default sort order.
-            sortColumn = pTrackModel->sortColumnIdFromColumnIndex(pTrackModel->defaultSortColumn());
-            sortOrder = pTrackModel->defaultSortOrder();
+        // Save the previous track model's header state
+        WTrackTableViewHeader* oldHeader =
+                qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+        if (oldHeader) {
+            oldHeader->saveHeaderState();
+        }
+        auto* header = new WTrackTableViewHeader(Qt::Horizontal, this);
+        auto* tempHeader = new QHeaderView(Qt::Horizontal, this);
 
-            if (sortColumn == TrackModel::SortColumnId::Invalid) {
-                // If the TrackModel has an invalid or internal column as its default
-                // sort, find the first valid sort column and sort by that.
-                const int columnCount = model->columnCount(); // just to avoid an endless while loop
-                for (int sortColumnIndex = 0; sortColumnIndex < columnCount; sortColumnIndex++) {
-                    sortColumn = pTrackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
-                    if (sortColumn != TrackModel::SortColumnId::Invalid) {
-                        break;
-                    }
-                }
+        setSortingEnabled(false);
+        setHorizontalHeader(tempHeader);
+
+        setModel(model);
+        setHorizontalHeader(header);
+        header->setSectionsMovable(true);
+        header->setSectionsClickable(true);
+        header->setHighlightSections(false);
+        header->setSortIndicatorShown(m_sorting);
+        header->setDefaultAlignment(Qt::AlignLeft);
+
+        // Initialize all column-specific things
+        for (int i = 0; i < model->columnCount(); ++i) {
+            // Setup delegates according to what the model tells us
+            QAbstractItemDelegate* delegate =
+                    pTrackModel->delegateForColumn(i, this);
+            // We need to delete the old delegates, since the docs say the view will
+            // not take ownership of them.
+            QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
+            // If delegate is NULL, it will unset the delegate for the column
+            setItemDelegateForColumn(i, delegate);
+            delete old_delegate;
+
+            // Show or hide the column based on whether it should be shown or not.
+            if (pTrackModel->isColumnInternal(i)) {
+                // qDebug() << "Hiding column" << i;
+                horizontalHeader()->hideSection(i);
+            }
+            if (pTrackModel->isColumnHiddenByDefault(i) &&
+                    !header->hasPersistedHeaderState()) {
+                // qDebug() << "Hiding column" << i;
+                horizontalHeader()->hideSection(i);
             }
         }
 
-        m_pSortColumn->set(static_cast<double>(sortColumn));
-        m_pSortOrder->set(sortOrder);
-        applySorting();
-    }
+        if (m_sorting) {
+            connect(horizontalHeader(),
+                    &QHeaderView::sortIndicatorChanged,
+                    this,
+                    &WLibraryPreparationWindowTrackTableView::slotSortingChanged,
+                    Qt::AutoConnection);
 
-    // Set up drag and drop behavior according to whether or not the track
-    // model says it supports it.
+            Qt::SortOrder sortOrder;
+            TrackModel::SortColumnId sortColumn =
+                    pTrackModel->sortColumnIdFromColumnIndex(
+                            horizontalHeader()->sortIndicatorSection());
+            if (sortColumn != TrackModel::SortColumnId::Invalid) {
+                // Sort by the saved sort section and order.
+                sortOrder = horizontalHeader()->sortIndicatorOrder();
+            } else {
+                // No saved order is present. Use the TrackModel's default sort order.
+                sortColumn = pTrackModel->sortColumnIdFromColumnIndex(
+                        pTrackModel->defaultSortColumn());
+                sortOrder = pTrackModel->defaultSortOrder();
 
-    // Defaults
-    setAcceptDrops(true);
-    // setDragDropMode(QAbstractItemView::DragOnly);
-    setDragDropMode(QAbstractItemView::DragDrop);
+                if (sortColumn == TrackModel::SortColumnId::Invalid) {
+                    // If the TrackModel has an invalid or internal column as its default
+                    // sort, find the first valid sort column and sort by that.
+                    const int columnCount =
+                            model->columnCount(); // just to avoid an endless
+                                                  // while loop
+                    for (int sortColumnIndex = 0; sortColumnIndex < columnCount;
+                            sortColumnIndex++) {
+                        sortColumn = pTrackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
+                        if (sortColumn != TrackModel::SortColumnId::Invalid) {
+                            break;
+                        }
+                    }
+                }
+            }
 
-    // Always enable drag for now (until we have a model that doesn't support
-    // this.)
-    setDragEnabled(true);
+            m_pSortColumn->set(static_cast<double>(sortColumn));
+            m_pSortOrder->set(sortOrder);
+            applySorting();
+        }
 
-    if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-        setDragDropMode(QAbstractItemView::DragDrop);
-        setDropIndicatorShown(true);
+        // Set up drag and drop behavior according to whether or not the track
+        // model says it supports it.
+
+        // Defaults
         setAcceptDrops(true);
-        viewport()->setAcceptDrops(true);
+        // setDragDropMode(QAbstractItemView::DragOnly);
+        setDragDropMode(QAbstractItemView::DragDrop);
+
+        // Always enable drag for now (until we have a model that doesn't support
+        // this.)
+        setDragEnabled(true);
+
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+            setDragDropMode(QAbstractItemView::DragDrop);
+            setDropIndicatorShown(true);
+            setAcceptDrops(true);
+            viewport()->setAcceptDrops(true);
+        }
+
+        // Possible giant fuckup alert - It looks like Qt has something like these
+        // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
+        // the flags(...) function that we're already using in LibraryTableModel. I
+        // haven't been able to get it to stop us from using a model as a drag
+        // target though, so my hacks above may not be completely unjustified.
+
+        setVisible(true);
+
+        // trigger restoring scrollBar position, selection etc.
+        if (restoreState) {
+            restoreCurrentViewState();
+        }
+        initTrackMenu();
     }
-
-    // Possible giant fuckup alert - It looks like Qt has something like these
-    // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
-    // the flags(...) function that we're already using in LibraryTableModel. I
-    // haven't been able to get it to stop us from using a model as a drag
-    // target though, so my hacks above may not be completely unjustified.
-
-    setVisible(true);
-
-    // trigger restoring scrollBar position, selection etc.
-    if (restoreState) {
-        restoreCurrentViewState();
-    }
-    initTrackMenu();
 }
 
 void WLibraryPreparationWindowTrackTableView::initTrackMenu() {
@@ -527,35 +548,46 @@ QString WLibraryPreparationWindowTrackTableView::columnNameOfIndex(const QModelI
 }
 
 void WLibraryPreparationWindowTrackTableView::onSearch(const QString& text) {
-    TrackModel* pTrackModel = getTrackModel();
-    if (!pTrackModel) {
-        return;
-    }
+    // qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] -> loadTrackModel() " << model;
+    qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] -> onSearch -> "
+                "m_targetWindow "
+             << m_targetWindow;
 
-    saveCurrentViewState();
-    bool queryIsLessSpecific = SearchQueryParser::queryIsLessSpecific(
-            pTrackModel->currentSearch(), text);
-    QList<TrackId> selectedTracks = getSelectedTrackIds();
-    TrackId prevTrack = getCurrentTrackId();
-    saveCurrentIndex();
-    pTrackModel->search(text);
-    if (queryIsLessSpecific) {
-        // If the user removed query terms, we try to select the same
-        // tracks as before
-        setCurrentTrackId(prevTrack, m_prevColumn);
-        setSelectedTracks(selectedTracks);
+    if (m_targetWindow != "PreparationWindow") {
+        return;
     } else {
-        // The user created a more specific search query, try to restore a
-        // previous state
-        if (!restoreCurrentViewState()) {
-            // We found no saved state for this query, try to select the
-            // tracks last active, if they are part of the result set
-            if (!setCurrentTrackId(prevTrack, m_prevColumn)) {
-                // if the last focused track is not present try to focus the
-                // respective index and scroll there
-                restoreCurrentIndex();
-            }
+        qDebug() << "[WPREPARATIONWINDOWTRACKTABLEVIEW] -> onSearch -> "
+                    "PreparationWindow -> m_targetWindow "
+                 << m_targetWindow;
+        TrackModel* pTrackModel = getTrackModel();
+        if (!pTrackModel) {
+            return;
+        }
+        saveCurrentViewState();
+        bool queryIsLessSpecific = SearchQueryParser::queryIsLessSpecific(
+                pTrackModel->currentSearch(), text);
+        QList<TrackId> selectedTracks = getSelectedTrackIds();
+        TrackId prevTrack = getCurrentTrackId();
+        saveCurrentIndex();
+        pTrackModel->search(text);
+        if (queryIsLessSpecific) {
+            // If the user removed query terms, we try to select the same
+            // tracks as before
+            setCurrentTrackId(prevTrack, m_prevColumn);
             setSelectedTracks(selectedTracks);
+        } else {
+            // The user created a more specific search query, try to restore a
+            // previous state
+            if (!restoreCurrentViewState()) {
+                // We found no saved state for this query, try to select the
+                // tracks last active, if they are part of the result set
+                if (!setCurrentTrackId(prevTrack, m_prevColumn)) {
+                    // if the last focused track is not present try to focus the
+                    // respective index and scroll there
+                    restoreCurrentIndex();
+                }
+                setSelectedTracks(selectedTracks);
+            }
         }
     }
 }
@@ -1755,7 +1787,9 @@ QString WLibraryPreparationWindowTrackTableView::getModelStateKey() const {
         return {};
     }
     bool noSearch = pTrackModel->currentSearch().trimmed().isEmpty();
+    //    if (pTrackModel->currentTargetWindow() == "PreparationWindow") {
     return pTrackModel->modelKey(noSearch);
+    //    }
 }
 
 void WLibraryPreparationWindowTrackTableView::keyNotationChanged() {

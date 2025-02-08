@@ -193,7 +193,7 @@ void MixxxLibraryFeature::activate() {
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
     emit saveModelState();
-    emit switchToView(itemName);
+    emit switchToView(itemName, "Library");
     if (m_pMissingView && itemName == kMissingTitle) {
         emit restoreSearch(m_pMissingView->currentSearch());
     } else if (m_pHiddenView && itemName == kHiddenTitle) {

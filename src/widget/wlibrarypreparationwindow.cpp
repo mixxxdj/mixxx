@@ -53,35 +53,53 @@ bool WLibraryPreparationWindow::registerView(const QString& name, QWidget* pView
     return true;
 }
 
-// void WLibraryPreparationWindow::switchToViewInPreparationWindow(const QString& name) {
-void WLibraryPreparationWindow::switchToView(const QString& name) {
-    // const QString name = "Auto DJ";
-    const auto lock = lockMutex(&m_mutex);
-    // qDebug() << "WLibraryPreparationWindow::switchToView" << name;
+// void WLibraryPreparationWindow::sendTargetWindow(const QString& target) {
+//     m_targetWindow = target;
+//     qDebug() << "[WLibraryPreparationWindow] -> sendTargetWindow toggled ->
+//     target: " << target; qDebug() << "[WLibraryPreparationWindow] ->
+//     sendTargetWindow toggled -> m_targetWindow: " << m_targetWindow;
+// }
 
-    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
-            currentWidget());
-    qDebug() << "switchToViewInPreparationWindow toggled -> pOldLibrartView" << pOldLibrartView;
-    QWidget* pWidget = m_viewMap.value(name, nullptr);
-    // QWidget* pWidget = m_viewMap.value("Auto DJ", nullptr);
-    qDebug() << "switchToViewInPreparationWindow toggled -> pWidget" << pWidget;
-    if (pWidget != nullptr) {
-        LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
-        if (pLibraryView == nullptr) {
-            qDebug() << "WARNING: Attempted to switch to view" << name
-                     << "with WLibraryPreparationWindow "
-                     << "which does not implement the LibraryView interface. "
-                     << "Ignoring.";
-            return;
-        }
-        if (currentWidget() != pWidget) {
-            if (pOldLibrartView) {
-                pOldLibrartView->saveCurrentViewState();
+// void WLibraryPreparationWindow::switchToViewInPreparationWindow(const QString& name) {
+void WLibraryPreparationWindow::switchToView(const QString& name, const QString& target) {
+    qDebug() << "[WLibraryPreparationWindow] -> "
+                "switchToViewInPreparationWindow toggled -> target: "
+             << target;
+    if (target != "PreparationWindow") {
+        return;
+    } else {
+        // const QString name = "Auto DJ";
+        const auto lock = lockMutex(&m_mutex);
+        // qDebug() << "WLibraryPreparationWindow::switchToView" << name;
+
+        LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
+                currentWidget());
+        qDebug() << "[WLibraryPreparationWindow] ->  "
+                    "switchToViewInPreparationWindow toggled -> pOldLibrartView"
+                 << pOldLibrartView;
+        QWidget* pWidget = m_viewMap.value(name, nullptr);
+        // QWidget* pWidget = m_viewMap.value("Auto DJ", nullptr);
+        qDebug() << "[WLibraryPreparationWindow] -> "
+                    "switchToViewInPreparationWindow toggled -> pWidget"
+                 << pWidget;
+        if (pWidget != nullptr) {
+            LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
+            if (pLibraryView == nullptr) {
+                qDebug() << "WARNING: Attempted to switch to view" << name
+                         << "with WLibraryPreparationWindow "
+                         << "which does not implement the LibraryView interface. "
+                         << "Ignoring.";
+                return;
             }
-            // qDebug() << "WLibraryPreparationWindow::setCurrentWidget" << name;
-            setCurrentWidget(pWidget);
-            pLibraryView->onShow();
-            pLibraryView->restoreCurrentViewState();
+            if (currentWidget() != pWidget) {
+                if (pOldLibrartView) {
+                    pOldLibrartView->saveCurrentViewState();
+                }
+                // qDebug() << "WLibraryPreparationWindow::setCurrentWidget" << name;
+                setCurrentWidget(pWidget);
+                pLibraryView->onShow();
+                pLibraryView->restoreCurrentViewState();
+            }
         }
     }
 }
@@ -136,9 +154,16 @@ void WLibraryPreparationWindow::pasteFromSidebarInPreparationWindow() {
 
 WLibraryPreparationWindowTrackTableView*
 WLibraryPreparationWindow::getCurrentTrackTableViewInPreparationWindow() const {
+    //    qDebug() << "[WLibraryPreparationWindow] ->
+    //    switchToViewInPreparationWindow toggled -> m_targetWindow: " <<
+    //    m_targetWindow;
+    WLibraryPreparationWindowTrackTableView* pTracksView;
+    //    if (m_targetWindow != "PreparationWindow") {
+    //        pTracksView = nullptr ;
+    //        return pTracksView;
+    //    } else {
     QWidget* pCurrent = currentWidget();
-    WLibraryPreparationWindowTrackTableView* pTracksView =
-            qobject_cast<WLibraryPreparationWindowTrackTableView*>(pCurrent);
+    pTracksView = qobject_cast<WLibraryPreparationWindowTrackTableView*>(pCurrent);
     if (sDebug) {
         qDebug() << "WLibraryPreparationWindow pCurrent " << pCurrent;
         qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
@@ -149,12 +174,15 @@ WLibraryPreparationWindow::getCurrentTrackTableViewInPreparationWindow() const {
         // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
         pTracksView = pCurrent->findChild<WLibraryPreparationWindowTrackTableView*>();
         if (sDebug) {
-            qDebug() << "WLibraryPreparationWindow pCurrent->findChild pTracksView " << pTracksView;
+            qDebug() << "WLibraryPreparationWindow pCurrent->findChild "
+                        "pTracksView "
+                     << pTracksView;
             qDebug() << "WLibraryPreparationWindow pTracksView " << pTracksView;
         }
     }
 
     return pTracksView; // might still be nullptr
+                        //    }
 }
 
 bool WLibraryPreparationWindow::isTrackInCurrentView(const TrackId& trackId) {

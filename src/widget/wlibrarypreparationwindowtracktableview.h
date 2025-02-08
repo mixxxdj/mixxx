@@ -131,6 +131,7 @@ class WLibraryPreparationWindowTrackTableView : public WLibraryPreparationWindow
     void slotrestoreCurrentIndex() {
         restoreCurrentIndex();
     }
+    void sendTargetWindow(const QString& target);
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
@@ -195,4 +196,6 @@ class WLibraryPreparationWindowTrackTableView : public WLibraryPreparationWindow
     ControlProxy* m_pKeyNotation;
     ControlProxy* m_pSortColumn;
     ControlProxy* m_pSortOrder;
+
+    QString m_targetWindow;
 };
