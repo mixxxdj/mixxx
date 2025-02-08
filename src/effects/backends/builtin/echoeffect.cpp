@@ -118,12 +118,12 @@ void EchoEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
-float averageSampleEnergy(SINT delayBufferSize, mixxx::SampleBuffer const& delay_buffer) {
+float averageSampleEnergy(mixxx::SampleBuffer const& delay_buffer) {
     float differenceSum = 0.0f;
-    for (SINT i = 0; i < delayBufferSize; i = i + 1) {
-        differenceSum += fabsf(delay_buffer[i]);
+    for (const CSAMPLE sample : delay_buffer.span()) {
+        differenceSum += std::abs(sample);
     }
-    return differenceSum / delayBufferSize;
+    return differenceSum / delay_buffer.size();
 }
 
 void EchoEffect::processChannel(
@@ -255,8 +255,7 @@ void EchoEffect::processChannel(
         pGroupState->prev_send = 0;
         const SINT delayBufferSize = pGroupState->delay_buf.size();
         // Calculate if the delayline-buffer is approx. zero/empty.
-        const float avgSampleEnergy = averageSampleEnergy(
-                delayBufferSize, pGroupState->delay_buf);
+        const float avgSampleEnergy = averageSampleEnergy(pGroupState->delay_buf);
         // If echo tail fully faded
         if (avgSampleEnergy < (0.00001f / delayBufferSize)) {
             m_isReadyForDisable = true;
