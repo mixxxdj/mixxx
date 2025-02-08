@@ -81,6 +81,9 @@ float averageSampleDifferenceEnergy(const SINT samplesPerBuffer,
         const CSAMPLE* buffer_in,
         const CSAMPLE* buffer_out,
         const SINT tailCheckLength) {
+    if (tailCheckLength == 0) {
+        return 0;
+    }
     float differenceSum = 0.0f;
     for (SINT i = samplesPerBuffer - tailCheckLength;
             i < samplesPerBuffer;
