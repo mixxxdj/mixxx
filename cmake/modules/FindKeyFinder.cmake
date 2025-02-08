@@ -93,11 +93,11 @@ if(KeyFinder_FOUND)
     )
     is_static_library(KeyFinder_IS_STATIC KeyFinder::KeyFinder)
     if(KeyFinder_IS_STATIC)
-      find_package(FFTW REQUIRED)
+      find_package(FFTW3 REQUIRED)
       set_property(
         TARGET KeyFinder::KeyFinder
         APPEND
-        PROPERTY INTERFACE_LINK_LIBRARIES FFTW::FFTW
+        PROPERTY INTERFACE_LINK_LIBRARIES FFTW3::fftw3
       )
     endif()
   endif()

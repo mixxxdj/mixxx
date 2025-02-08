@@ -29,7 +29,11 @@
 Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
 #elif defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+Q_IMPORT_PLUGIN(QModernWindowsStylePlugin)
+#else
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#endif
 #elif defined(Q_OS_IOS)
 Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
@@ -46,10 +50,12 @@ Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
 #endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
+Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
 Q_IMPORT_PLUGIN(QSvgPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
+
 #endif // QT_STATIC
 
 namespace {

@@ -80,15 +80,19 @@ DlgPrefController::DlgPrefController(
           m_pOutputTableModel(nullptr),
           m_pOutputProxyModel(nullptr),
           m_GuiInitialized(false),
-          m_bDirty(false) {
+          m_bDirty(false),
+          m_inputMappingsTabIndex(-1),
+          m_outputMappingsTabIndex(-1),
+          m_settingsTabIndex(-1),
+          m_screensTabIndex(-1) {
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
     createLinkColor();
 
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
-    initTableView(m_ui.m_pInputMappingTableView);
-    initTableView(m_ui.m_pOutputMappingTableView);
+    initTableView(m_ui.midiInputMappingTableView);
+    initTableView(m_ui.midiOutputMappingTableView);
 
     std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
     slotShowMapping(pMapping);
@@ -191,6 +195,10 @@ DlgPrefController::DlgPrefController(
     }
 
     m_ui.groupBoxWarning->hide();
+    m_ui.labelWarning->setTextFormat(Qt::RichText);
+    m_ui.labelWarning->setTextInteractionFlags(Qt::TextBrowserInteraction |
+            Qt::LinksAccessibleByMouse | Qt::TextSelectableByMouse);
+    m_ui.labelWarning->setOpenExternalLinks(true);
     m_ui.labelWarning->setText(tr(
             "<font color='#BB0000'><b>If you use this mapping your controller "
             "may not work correctly. "
@@ -205,6 +213,7 @@ DlgPrefController::DlgPrefController(
             "href='https://mixxx.org/wiki/doku.php/"
             "controller_engine_versions'>Controller Engine Versions</a>.")
                                        .arg("2", "1"));
+
     QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
     m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
 
@@ -242,7 +251,7 @@ DlgPrefController::DlgPrefController(
 #endif
 
     // Open script file links
-    connect(m_ui.labelLoadedMappingScriptFileLinks,
+    connect(m_ui.labelMappingScriptFileLinks,
             &QLabel::linkActivated,
             [](const QString& path) {
                 mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(path));
@@ -296,6 +305,19 @@ DlgPrefController::DlgPrefController(
             &QPushButton::clicked,
             this,
             &DlgPrefController::slotOutputControlSearch);
+
+    // Store the index of the input and output mappings tabs
+    m_inputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.inputMappingsTab);
+    m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
+    m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
+    m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
+
+#ifndef MIXXX_USE_QML
+    // Remove the screens tab
+    m_ui.controllerTabs->removeTab(m_screensTabIndex);
+    // Just to be save
+    m_screensTabIndex = -1;
+#endif
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -429,38 +451,6 @@ QString DlgPrefController::mappingShortName(
     return mappingName;
 }
 
-QString DlgPrefController::mappingName(
-        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
-    if (pMapping) {
-        QString name = pMapping->name();
-        if (name.length() > 0) {
-            return name;
-        }
-    }
-    return tr("No Name");
-}
-
-QString DlgPrefController::mappingDescription(
-        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
-    if (pMapping) {
-        QString description = pMapping->description();
-        if (description.length() > 0) {
-            return description;
-        }
-    }
-    return tr("No Description");
-}
-
-QString DlgPrefController::mappingAuthor(
-        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
-    if (pMapping) {
-        QString author = pMapping->author();
-        if (author.length() > 0) {
-            return author;
-        }
-    }
-    return tr("No Author");
-}
 
 QString DlgPrefController::mappingSupportLinks(
         const std::shared_ptr<LegacyControllerMapping> pMapping) const {
@@ -587,10 +577,8 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     QString newMappingFilePath = mappingFilePathFromIndex(index);
     if (index == -1) {
         m_ui.chkEnabledDevice->setEnabled(false);
-        m_ui.groupBoxSettings->setVisible(false);
     } else {
         m_ui.comboBoxMapping->setCurrentIndex(index);
-        m_ui.chkEnabledDevice->setEnabled(true);
     }
     m_ui.comboBoxMapping->blockSignals(false);
     if (newMappingFilePath != currentMappingFilePath) {
@@ -640,6 +628,10 @@ void DlgPrefController::slotUpdate() {
     // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
     // from setting a false-postive 'dirty' flag when updating the fresh GUI.
     m_GuiInitialized = true;
+}
+
+void DlgPrefController::slotHide() {
+    slotUpdate();
 }
 
 void DlgPrefController::slotResetToDefaults() {
@@ -738,7 +730,8 @@ QString DlgPrefController::mappingFilePathFromIndex(int index) const {
 
 void DlgPrefController::slotMappingSelected(int chosenIndex) {
     QString mappingFilePath = mappingFilePathFromIndex(chosenIndex);
-    if (mappingFilePath.isEmpty()) { // User picked "No Mapping" item
+    if (mappingFilePath.isEmpty()) {
+        // User picked "No Mapping" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
         if (m_ui.chkEnabledDevice->isChecked()) {
@@ -749,8 +742,6 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             enableWizardAndIOTabs(false);
         }
 
-        m_ui.groupBoxSettings->setVisible(false);
-        m_ui.groupBoxScreens->setVisible(false);
     } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
 
@@ -796,6 +787,35 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     } else {
         slotShowMapping(pMapping);
     }
+
+    // These tabs are only usable for MIDI controllers
+    bool showMidiTabs = m_pController->getDataRepresentationProtocol() ==
+                    DataRepresentationProtocol::MIDI &&
+            !mappingFilePath.isEmpty();
+    m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, showMidiTabs);
+    m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, showMidiTabs);
+
+    // Hide the entire QTabWidget if all tabs are removed
+    m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
+}
+
+unsigned int DlgPrefController::getNumberOfVisibleTabs() {
+    unsigned int visibleTabsCount = 0;
+    for (int tabIdx = 0; tabIdx < m_ui.controllerTabs->count(); ++tabIdx) {
+        if (m_ui.controllerTabs->isTabVisible(tabIdx)) {
+            ++visibleTabsCount;
+        }
+    }
+    return visibleTabsCount;
+}
+
+int DlgPrefController::getIndexOfFirstVisibleTab() {
+    for (int tabIdx = 0; tabIdx < m_ui.controllerTabs->count(); ++tabIdx) {
+        if (m_ui.controllerTabs->isTabVisible(tabIdx)) {
+            return tabIdx;
+        }
+    }
+    return -1;
 }
 
 bool DlgPrefController::saveMapping() {
@@ -842,6 +862,14 @@ bool DlgPrefController::saveMapping() {
                 tr("Save As"), QMessageBox::AcceptRole);
         QPushButton* pOverwrite = overwriteMsgBox.addButton(
                 tr("Overwrite"), QMessageBox::AcceptRole);
+        // QMessageBox handles Esc or pressing the X window button only if there
+        // is a button with either RejectRole or NoRole, so let's add one.
+        // https://doc.qt.io/qt-6/qmessagebox.html#escapeButton
+        QPushButton* pCancel = overwriteMsgBox.addButton(QMessageBox::Cancel);
+        // Hide Cancel since we don't really need it (we have the X button),
+        // furthermore it'll likely be auto-positioned in between Save and Overwrite
+        // which is not optimal (rules for order depend on OS).
+        pCancel->hide();
         overwriteMsgBox.setDefaultButton(pSaveAsNew);
         overwriteMsgBox.exec();
 
@@ -850,7 +878,8 @@ bool DlgPrefController::saveMapping() {
             if (overwriteCheckBox.checkState() == Qt::Checked) {
                 m_pOverwriteMappings.insert(m_pMapping->filePath(), true);
             }
-        } else if (overwriteMsgBox.close()) {
+        } else if (overwriteMsgBox.clickedButton() != pSaveAsNew) {
+            // Dialog was closed without clicking one of our buttons
             return false;
         }
     }
@@ -958,10 +987,10 @@ void DlgPrefController::initTableView(QTableView* pTable) {
 void DlgPrefController::slotShowPreviewScreens(
         const ControllerScriptEngineLegacy* scriptEngine) {
     QLayoutItem* pItem;
-    VERIFY_OR_DEBUG_ASSERT(m_ui.groupBoxScreens->layout()) {
+    VERIFY_OR_DEBUG_ASSERT(m_ui.screensTab->layout()) {
         return;
     }
-    while ((pItem = m_ui.groupBoxScreens->layout()->takeAt(0)) != nullptr) {
+    while ((pItem = m_ui.screensTab->layout()->takeAt(0)) != nullptr) {
         delete pItem->widget();
         delete pItem;
     }
@@ -970,8 +999,6 @@ void DlgPrefController::slotShowPreviewScreens(
         return;
     }
 
-    m_ui.groupBoxScreens->setVisible(
-            scriptEngine != nullptr && !m_pMapping->getInfoScreens().empty());
     if (!scriptEngine) {
         return;
     }
@@ -980,8 +1007,8 @@ void DlgPrefController::slotShowPreviewScreens(
 
     for (const LegacyControllerMapping::ScreenInfo& screen : std::as_const(screens)) {
         ControllerScreenPreview* pPreviewScreen =
-                new ControllerScreenPreview(m_ui.groupBoxScreens, screen);
-        m_ui.groupBoxScreens->layout()->addWidget(pPreviewScreen);
+                new ControllerScreenPreview(m_ui.screensTab, screen);
+        m_ui.screensTab->layout()->addWidget(pPreviewScreen);
 
         connect(scriptEngine,
                 &ControllerScriptEngineLegacy::previewRenderedScreen,
@@ -992,11 +1019,34 @@ void DlgPrefController::slotShowPreviewScreens(
 #endif
 
 void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_ui.labelLoadedMapping->setText(mappingName(pMapping));
-    m_ui.labelLoadedMappingDescription->setText(mappingDescription(pMapping));
-    m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(pMapping));
-    m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(pMapping));
-    m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
+    QString name, description, author, supportLinks, scriptFileLinks;
+
+    if (pMapping) {
+        name = pMapping->name();
+        description = pMapping->description();
+        author = pMapping->author();
+        supportLinks = mappingSupportLinks(pMapping);
+        scriptFileLinks = mappingFileLinks(pMapping);
+    }
+
+    m_ui.labelMappingNameValue->setText(name);
+    m_ui.labelMappingDescriptionValue->setText(description);
+    m_ui.labelMappingAuthorValue->setText(author);
+    m_ui.labelMappingSupportLinks->setText(supportLinks);
+    m_ui.labelMappingScriptFileLinks->setText(scriptFileLinks);
+
+    // Hide or show labels based on the presence of text
+    m_ui.labelMappingName->setVisible(!name.isEmpty());
+    m_ui.labelMappingNameValue->setVisible(!name.isEmpty());
+    m_ui.labelMappingDescription->setVisible(!description.isEmpty());
+    m_ui.labelMappingDescriptionValue->setVisible(!description.isEmpty());
+    m_ui.labelMappingAuthor->setVisible(!author.isEmpty());
+    m_ui.labelMappingAuthorValue->setVisible(!author.isEmpty());
+    m_ui.labelMappingSupport->setVisible(!supportLinks.isEmpty());
+    m_ui.labelMappingScriptFiles->setVisible(!scriptFileLinks.isEmpty());
+    // We do not hide the support links label and
+    // the script files label if they are empty,
+    // because without them the layout would be collapse.
 
     if (pMapping) {
         pMapping->loadSettings(m_pConfig, m_pController->getName());
@@ -1004,13 +1054,13 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         auto* pLayout = pMapping->getSettingsLayout();
 
         QLayoutItem* pItem;
-        while ((pItem = m_ui.groupBoxSettings->layout()->takeAt(0)) != nullptr) {
+        while ((pItem = m_ui.settingsTab->layout()->takeAt(0)) != nullptr) {
             delete pItem->widget();
             delete pItem;
         }
 
         if (pLayout != nullptr && !settings.isEmpty()) {
-            m_ui.groupBoxSettings->layout()->addWidget(pLayout->build(m_ui.groupBoxSettings));
+            m_ui.settingsTab->layout()->addWidget(pLayout->build(m_ui.settingsTab));
 
             for (const auto& setting : std::as_const(settings)) {
                 connect(setting.get(),
@@ -1019,14 +1069,11 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
                         [this] { setDirty(true); });
             }
         }
-
-        if (settings.isEmpty()) {
-            m_ui.groupBoxSettings->setVisible(false);
-        } else {
-            m_ui.groupBoxSettings->setVisible(true);
-            setScrollSafeGuardForAllInputWidgets(m_ui.groupBoxSettings);
-        }
     }
+
+    // Show or hide the settings tab based on the presence of settings
+    m_ui.controllerTabs->setTabVisible(
+            m_settingsTabIndex, pMapping && !pMapping->getSettings().isEmpty());
 
     // If there is still settings that may be saved and no new mapping selected
     // (e.g restored default), we keep the the dirty mapping live so it can be
@@ -1034,41 +1081,42 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     // discarded
     if (pMapping || (m_pMapping && !m_pMapping->hasDirtySettings())) {
         // We mutate this mapping so keep a reference to it while we are using it.
-        // TODO(rryan): Clone it? Technically a waste since nothing else uses this
+        // TODO: Clone it? Technically a waste since nothing else uses this
         // copy but if someone did they might not expect it to change.
         m_pMapping = pMapping;
     }
 
 #ifdef MIXXX_USE_QML
-    if (pMapping &&
-            CmdlineArgs::Instance()
-                    .getControllerPreviewScreens() &&
-            pMapping &&
-            !pMapping->getInfoScreens().isEmpty()) {
-        slotShowPreviewScreens(m_pController->getScriptEngine().get());
-    } else
-#endif
-    {
-        m_ui.groupBoxScreens->setVisible(false);
+    // Add the screens tab if there are screens
+    if (pMapping && CmdlineArgs::Instance().getControllerPreviewScreens()) {
+        auto screens = pMapping->getInfoScreens();
+        bool hasScreens = !screens.isEmpty();
+        m_ui.controllerTabs->setTabVisible(m_screensTabIndex, hasScreens);
+        if (hasScreens) {
+            slotShowPreviewScreens(m_pController->getScriptEngine().get());
+        }
+    } else {
+        m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
     }
+#endif
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this,
                     m_pControlPickerMenu,
-                    m_ui.m_pInputMappingTableView);
+                    m_ui.midiInputMappingTableView);
     pInputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pInputProxyModel =
             new ControllerMappingTableProxyModel(pInputModel);
-    m_ui.m_pInputMappingTableView->setModel(pInputProxyModel);
+    m_ui.midiInputMappingTableView->setModel(pInputProxyModel);
 
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
-            i, m_ui.m_pInputMappingTableView);
+                i, m_ui.midiInputMappingTableView);
         if (pDelegate) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
-            m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+            m_ui.midiInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
     }
 
@@ -1084,19 +1132,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this,
                     m_pControlPickerMenu,
-                    m_ui.m_pOutputMappingTableView);
+                    m_ui.midiOutputMappingTableView);
     pOutputModel->setMapping(pMapping);
 
     ControllerMappingTableProxyModel* pOutputProxyModel =
             new ControllerMappingTableProxyModel(pOutputModel);
-    m_ui.m_pOutputMappingTableView->setModel(pOutputProxyModel);
+    m_ui.midiOutputMappingTableView->setModel(pOutputProxyModel);
 
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
-            i, m_ui.m_pOutputMappingTableView);
+                i, m_ui.midiOutputMappingTableView);
         if (pDelegate) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
-            m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+            m_ui.midiOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
     }
 
@@ -1107,6 +1155,15 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_pOutputTableModel = pOutputModel;
     // Trigger search when the model was recreated after hitting Apply
     slotOutputControlSearch();
+
+    // Hide the entire QTabWidget if all tabs are removed
+    m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
+
+    // Set the first visible tab as the current tab
+    int firstVisibleTabIndex = getIndexOfFirstVisibleTab();
+    if (firstVisibleTabIndex >= 0) {
+        m_ui.controllerTabs->setCurrentIndex(firstVisibleTabIndex);
+    }
 }
 
 void DlgPrefController::slotInputControlSearch() {
@@ -1132,16 +1189,17 @@ void DlgPrefController::addInputMapping() {
         QModelIndex right = m_pInputProxyModel->mapFromSource(
             m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1,
                                        m_pInputTableModel->columnCount() - 1));
-        m_ui.m_pInputMappingTableView->selectionModel()->select(
-            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-        m_ui.m_pInputMappingTableView->scrollTo(left);
+        m_ui.midiInputMappingTableView->selectionModel()->select(
+                QItemSelection(left, right),
+                QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.midiInputMappingTableView->scrollTo(left);
     }
 }
 
 void DlgPrefController::removeInputMappings() {
     if (m_pInputProxyModel) {
         QItemSelection selection = m_pInputProxyModel->mapSelectionToSource(
-            m_ui.m_pInputMappingTableView->selectionModel()->selection());
+                m_ui.midiInputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pInputTableModel) {
             m_pInputTableModel->removeMappings(selectedIndices);
@@ -1170,16 +1228,17 @@ void DlgPrefController::addOutputMapping() {
         QModelIndex right = m_pOutputProxyModel->mapFromSource(
             m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1,
                                        m_pOutputTableModel->columnCount() - 1));
-        m_ui.m_pOutputMappingTableView->selectionModel()->select(
-            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
-        m_ui.m_pOutputMappingTableView->scrollTo(left);
+        m_ui.midiOutputMappingTableView->selectionModel()->select(
+                QItemSelection(left, right),
+                QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.midiOutputMappingTableView->scrollTo(left);
     }
 }
 
 void DlgPrefController::removeOutputMappings() {
     if (m_pOutputProxyModel) {
         QItemSelection selection = m_pOutputProxyModel->mapSelectionToSource(
-            m_ui.m_pOutputMappingTableView->selectionModel()->selection());
+                m_ui.midiOutputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pOutputTableModel) {
             m_pOutputTableModel->removeMappings(selectedIndices);

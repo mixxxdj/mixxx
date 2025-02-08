@@ -99,6 +99,12 @@ TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
             Capability::Unhide |
             Capability::RemoveFromDisk |
             Capability::EditMetadata |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed |
+            Capability::Analyze |
             Capability::Properties;
 }
 
