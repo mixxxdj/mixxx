@@ -1,9 +1,7 @@
 #include "track/beats.h"
 
 #include <cmath>
-#include <cstddef>
 #include <iterator>
-#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -26,7 +24,6 @@ constexpr double kEpsilon = 0.01;
 } // namespace
 
 namespace mixxx {
-using std::transform;
 
 mixxx::audio::FrameDiff_t Beats::ConstIterator::beatLengthFrames() const {
     if (m_it == m_beats->m_markers.cend()) {

@@ -331,12 +331,14 @@ void BpmControl::slotTranslateBeatsHalf(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats) {
-        const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
-        if (translatedBeats) {
-            pTrack->trySetBeats(*translatedBeats);
-        }
+    if (!pBeats) {
+        return;
     }
+    const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
+    if (!translatedBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*translatedBeats);
 }
 
 void BpmControl::slotTranslateBeatsMove(double v) {
