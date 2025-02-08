@@ -93,6 +93,7 @@ WLibraryPreparationWindowTrackTableView::~WLibraryPreparationWindowTrackTableVie
 }
 
 void WLibraryPreparationWindowTrackTableView::sendTargetWindow(const QString& target) {
+    m_targetWindow = "";
     m_targetWindow = target;
     // qDebug() << "[WLibraryPreparationWindowTrackTableView] ->
     // sendTargetWindow toggled -> target: " << target; qDebug() <<
