@@ -191,6 +191,7 @@ void WLibraryPreparationWindowTrackTableView::loadTrackModelInPreparationWindow(
     if (m_targetWindow != "PreparationWindow") {
         return;
     } else {
+        m_targetWindow = "";
         VERIFY_OR_DEBUG_ASSERT(model) {
             return;
         }
