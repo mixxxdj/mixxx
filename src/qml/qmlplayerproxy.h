@@ -20,21 +20,19 @@ namespace qml {
 class QmlPlayerProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool isLoaded READ isLoaded NOTIFY trackChanged)
-    Q_PROPERTY(QString artist READ getArtist WRITE setArtist NOTIFY artistChanged)
-    Q_PROPERTY(QString title READ getTitle WRITE setTitle NOTIFY titleChanged)
-    Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
-    Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
-                    NOTIFY albumArtistChanged)
+    Q_PROPERTY(QString artist READ getArtist NOTIFY artistChanged)
+    Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString album READ getAlbum NOTIFY albumChanged)
+    Q_PROPERTY(QString albumArtist READ getAlbumArtist NOTIFY albumArtistChanged)
     Q_PROPERTY(QString genre READ getGenre STORED false NOTIFY genreChanged)
-    Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
-    Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
-    Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
-    Q_PROPERTY(QString trackNumber READ getTrackNumber WRITE setTrackNumber
-                    NOTIFY trackNumberChanged)
-    Q_PROPERTY(QString trackTotal READ getTrackTotal WRITE setTrackTotal NOTIFY trackTotalChanged)
-    Q_PROPERTY(QString comment READ getComment WRITE setComment NOTIFY commentChanged)
-    Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyTextChanged)
-    Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(QString composer READ getComposer NOTIFY composerChanged)
+    Q_PROPERTY(QString grouping READ getGrouping NOTIFY groupingChanged)
+    Q_PROPERTY(QString year READ getYear NOTIFY yearChanged)
+    Q_PROPERTY(QString trackNumber READ getTrackNumber NOTIFY trackNumberChanged)
+    Q_PROPERTY(QString trackTotal READ getTrackTotal NOTIFY trackTotalChanged)
+    Q_PROPERTY(QString comment READ getComment NOTIFY commentChanged)
+    Q_PROPERTY(QString keyText READ getKeyText NOTIFY keyTextChanged)
+    Q_PROPERTY(QColor color READ getColor NOTIFY colorChanged)
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
     QML_NAMED_ELEMENT(Player)
@@ -103,19 +101,6 @@ class QmlPlayerProxy : public QObject {
 #ifdef __STEM__
     void slotStemsChanged();
 #endif
-
-    void setArtist(const QString& artist);
-    void setTitle(const QString& title);
-    void setAlbum(const QString& album);
-    void setAlbumArtist(const QString& albumArtist);
-    void setComposer(const QString& composer);
-    void setGrouping(const QString& grouping);
-    void setYear(const QString& year);
-    void setTrackNumber(const QString& trackNumber);
-    void setTrackTotal(const QString& trackTotal);
-    void setComment(const QString& comment);
-    void setKeyText(const QString& keyText);
-    void setColor(const QColor& color);
 
   signals:
     void trackLoading();

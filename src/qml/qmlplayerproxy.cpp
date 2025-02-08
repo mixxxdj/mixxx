@@ -15,15 +15,6 @@
         return pTrack->GETTER();                     \
     }
 
-#define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
-    PROPERTY_IMPL_GETTER(TYPE, NAME, GETTER)         \
-    void QmlPlayerProxy::SETTER(const TYPE& value) { \
-        const TrackPointer pTrack = m_pCurrentTrack; \
-        if (pTrack != nullptr) {                     \
-            pTrack->SETTER(value);                   \
-        }                                            \
-    }
-
 namespace mixxx {
 namespace qml {
 
@@ -339,18 +330,18 @@ bool QmlPlayerProxy::isLoaded() const {
     return m_pCurrentTrack != nullptr;
 }
 
-PROPERTY_IMPL(QString, artist, getArtist, setArtist)
-PROPERTY_IMPL(QString, title, getTitle, setTitle)
-PROPERTY_IMPL(QString, album, getAlbum, setAlbum)
-PROPERTY_IMPL(QString, albumArtist, getAlbumArtist, setAlbumArtist)
+PROPERTY_IMPL_GETTER(QString, artist, getArtist)
+PROPERTY_IMPL_GETTER(QString, title, getTitle)
+PROPERTY_IMPL_GETTER(QString, album, getAlbum)
+PROPERTY_IMPL_GETTER(QString, albumArtist, getAlbumArtist)
 PROPERTY_IMPL_GETTER(QString, genre, getGenre)
-PROPERTY_IMPL(QString, composer, getComposer, setComposer)
-PROPERTY_IMPL(QString, grouping, getGrouping, setGrouping)
-PROPERTY_IMPL(QString, year, getYear, setYear)
-PROPERTY_IMPL(QString, trackNumber, getTrackNumber, setTrackNumber)
-PROPERTY_IMPL(QString, trackTotal, getTrackTotal, setTrackTotal)
-PROPERTY_IMPL(QString, comment, getComment, setComment)
-PROPERTY_IMPL(QString, keyText, getKeyText, setKeyText)
+PROPERTY_IMPL_GETTER(QString, composer, getComposer)
+PROPERTY_IMPL_GETTER(QString, grouping, getGrouping)
+PROPERTY_IMPL_GETTER(QString, year, getYear)
+PROPERTY_IMPL_GETTER(QString, trackNumber, getTrackNumber)
+PROPERTY_IMPL_GETTER(QString, trackTotal, getTrackTotal)
+PROPERTY_IMPL_GETTER(QString, comment, getComment)
+PROPERTY_IMPL_GETTER(QString, keyText, getKeyText)
 
 QColor QmlPlayerProxy::getColor() const {
     const TrackPointer pTrack = m_pCurrentTrack;
@@ -358,14 +349,6 @@ QColor QmlPlayerProxy::getColor() const {
         return QColor();
     }
     return RgbColor::toQColor(pTrack->getColor());
-}
-
-void QmlPlayerProxy::setColor(const QColor& value) {
-    const TrackPointer pTrack = m_pTrackPlayer->getLoadedTrack();
-    if (pTrack != nullptr) {
-        std::optional<RgbColor> color = RgbColor::fromQColor(value);
-        pTrack->setColor(color);
-    }
 }
 
 QUrl QmlPlayerProxy::getCoverArtUrl() const {
