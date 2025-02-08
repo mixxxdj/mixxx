@@ -78,5 +78,3 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
     bool m_isReadyForDisable = false;
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);
 };
-
-float averageSampleEnergy(SINT delayBufferSize, mixxx::SampleBuffer const& delay_buffer);
