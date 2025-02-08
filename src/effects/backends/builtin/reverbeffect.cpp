@@ -85,7 +85,7 @@ float averageSampleDifferenceEnergy(const SINT samplesPerBuffer,
     for (SINT i = samplesPerBuffer - tailCheckLength;
             i < samplesPerBuffer;
             ++i) {
-        differenceSum += fabsf(buffer_out[i] - buffer_in[i]);
+        differenceSum += std::abs(buffer_out[i] - buffer_in[i]);
     }
     // Calculate average of the differences
     const float averageDifference = differenceSum / tailCheckLength;
