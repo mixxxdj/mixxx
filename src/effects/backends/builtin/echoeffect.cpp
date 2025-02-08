@@ -120,13 +120,10 @@ void EchoEffect::loadEngineEffectParameters(
 
 float averageSampleEnergy(SINT delayBufferSize, mixxx::SampleBuffer const& delay_buffer) {
     float differenceSum = 0.0f;
-    for (SINT i = 0; i < delayBufferSize;
-            i = i + 16) { // We don't need to consider *all* samples,
-                          // assuming 44.1kHz sample-rate this sums every
-                          // ~1/3ms
+    for (SINT i = 0; i < delayBufferSize; i = i + 1) {
         differenceSum += fabsf(delay_buffer[i]);
     }
-    return differenceSum;
+    return differenceSum / delayBufferSize;
 }
 
 void EchoEffect::processChannel(
@@ -256,11 +253,12 @@ void EchoEffect::processChannel(
     pGroupState->prev_send = send_current;
     if (enableState == EffectEnableState::Disabling) {
         pGroupState->prev_send = 0;
+        const SINT delayBufferSize = pGroupState->delay_buf.size();
         // Calculate if the delayline-buffer is approx. zero/empty.
         const float avgSampleEnergy = averageSampleEnergy(
-                pGroupState->delay_buf.size(), pGroupState->delay_buf);
+                delayBufferSize, pGroupState->delay_buf);
         // If echo tail fully faded
-        if (avgSampleEnergy < 0.00001f) {
+        if (avgSampleEnergy < (0.00001f / delayBufferSize)) {
             m_isReadyForDisable = true;
             pGroupState->delay_buf.clear();
         }
