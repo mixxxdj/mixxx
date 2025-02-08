@@ -458,9 +458,12 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
         // 1 means the stream is stopped. 0 means active, negative means error
-        if (err < 0) {
+        // (PaUtil_ValidateStreamPointer() failing, when passing a nullptr or
+        // wrong pointer type)
+        VERIFY_OR_DEBUG_ASSERT(err >= 0) {
             qWarning() << "PortAudio: Pa_IsStreamStopped returned error:"
                        << Pa_GetErrorText(err) << m_deviceId;
+            return SoundDeviceStatus::Error;
         }
         if (err == 1) {
             qWarning() << "PortAudio: Stream already stopped";
