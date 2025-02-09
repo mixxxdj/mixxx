@@ -6,6 +6,7 @@
 #include <QString>
 #include <QUrl>
 
+#include "controllers/scripting/javascriptplayerproxy.h"
 #include "mixer/basetrackplayer.h"
 #include "qml/qmlbeatsmodel.h"
 #include "qml/qmlcuesmodel.h"
@@ -17,7 +18,7 @@
 namespace mixxx {
 namespace qml {
 
-class QmlPlayerProxy : public QObject {
+class QmlPlayerProxy : public JavascriptPlayerProxy {
     Q_OBJECT
     Q_PROPERTY(bool isLoaded READ isLoaded NOTIFY trackChanged)
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist NOTIFY artistChanged)
@@ -56,28 +57,11 @@ class QmlPlayerProxy : public QObject {
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
-    bool isLoaded() const;
-    QString getTrack() const;
-    QString getTitle() const;
-    QString getArtist() const;
-    QString getAlbum() const;
-    QString getAlbumArtist() const;
-    QString getGenre() const;
-    QString getComposer() const;
-    QString getGrouping() const;
-    QString getYear() const;
-    QString getTrackNumber() const;
-    QString getTrackTotal() const;
     QString getComment() const;
     QString getKeyText() const;
     QColor getColor() const;
     QUrl getCoverArtUrl() const;
     QUrl getTrackLocationUrl() const;
-
-    int getWaveformLength() const;
-    QString getWaveformTexture() const;
-    int getWaveformTextureSize() const;
-    int getWaveformTextureStride() const;
 
     /// Needed for interacting with the raw track player object.
     BaseTrackPlayer* internalTrackPlayer() const {
@@ -94,10 +78,6 @@ class QmlPlayerProxy : public QObject {
 #endif
 
   public slots:
-    void slotTrackLoaded(TrackPointer pTrack);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotTrackChanged();
-    void slotWaveformChanged();
     void slotBeatsChanged();
     void slotHotcuesChanged();
 #ifdef __STEM__
@@ -118,22 +98,8 @@ class QmlPlayerProxy : public QObject {
     void setColor(const QColor& color);
 
   signals:
-    void trackLoading();
-    void trackLoaded();
-    void trackUnloaded();
-    void trackChanged();
     void cloneFromGroup(const QString& group);
 
-    void albumChanged();
-    void titleChanged();
-    void artistChanged();
-    void albumArtistChanged();
-    void genreChanged();
-    void composerChanged();
-    void groupingChanged();
-    void yearChanged();
-    void trackNumberChanged();
-    void trackTotalChanged();
     void commentChanged();
     void keyTextChanged();
     void colorChanged();
@@ -143,19 +109,12 @@ class QmlPlayerProxy : public QObject {
 #ifdef __STEM__
     void stemsChanged();
 #endif
-
     void loadTrackFromLocationRequested(const QString& trackLocation, bool play);
 
-    void waveformLengthChanged();
-    void waveformTextureChanged();
-    void waveformTextureSizeChanged();
-    void waveformTextureStrideChanged();
-
   private:
-    std::vector<WaveformFilteredData> m_waveformData;
-    QImage m_waveformTexture;
-    QPointer<BaseTrackPlayer> m_pTrackPlayer;
-    TrackPointer m_pCurrentTrack;
+    void subclassesSlotTrackLoaded() override;
+    void subclassesSlotTrackChanged() override;
+
     QmlBeatsModel* m_pBeatsModel;
     QmlCuesModel* m_pHotcuesModel;
 #ifdef __STEM__
