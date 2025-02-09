@@ -98,14 +98,14 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
 std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
     if (!m_pMapping) {
         return nullptr;
     }
-    return m_pMapping->clone();
+    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {
