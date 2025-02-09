@@ -154,24 +154,7 @@ void WBaseWidget::updateTooltip() {
 
 template<>
 QString toDebugString(const QSizePolicy::Policy& policy) {
-    switch (policy) {
-    case QSizePolicy::Fixed:
-        return QStringLiteral("Fixed");
-    case QSizePolicy::Minimum:
-        return QStringLiteral("Minimum");
-    case QSizePolicy::Maximum:
-        return QStringLiteral("Maximum");
-    case QSizePolicy::Preferred:
-        return QStringLiteral("Preferred");
-    case QSizePolicy::Expanding:
-        return QStringLiteral("Expanding");
-    case QSizePolicy::MinimumExpanding:
-        return QStringLiteral("MinimumExpanding");
-    case QSizePolicy::Ignored:
-        return QStringLiteral("Ignored");
-    default:
-        return QVariant::fromValue(policy).toString();
-    }
+    return QVariant::fromValue(policy).toString();
 }
 
 void WBaseWidget::fillDebugTooltip(QStringList* debug) {
