@@ -1,3 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+declare interface QtSlot<F extends Function> {
+    connect(callback: F): undefined
+}
 
 /** ScriptConnectionJSProxy */
 
@@ -32,9 +36,37 @@ declare interface ScriptConnection {
 }
 
 
+/** JavascriptPlayerProxy */
+declare interface Player {
+    artist: string
+    title: string
+    album: string
+    albumArtist: string
+    genre: string
+    composer: string
+    grouping: string
+    year: string
+    trackNumber: string
+    trackTotal: string
+
+    trackChanged: QtSlot<() => undefined>
+    artistChanged: QtSlot<(newArtist: string) => undefined>
+    titleChanged: QtSlot<(newTitle: string) => undefined>
+    albumChanged: QtSlot<(newAlbum: string) => undefined>
+    albumArtistChanged: QtSlot<(newAlbumArtist: string) => undefined>
+    genreChanged: QtSlot<(newGenre: string) => undefined>
+    composerChanged: QtSlot<(newComposer: string) => undefined>
+    groupingChanged: QtSlot<(newGrouping: string) => undefined>
+    yearChanged: QtSlot<(newYear: string) => undefined>
+    trackNumberChanged: QtSlot<(newTrackNumber: string) => undefined>
+    trackTotalChanged: QtSlot<(newTrackTotal: string) => undefined>
+}
+
 /** ControllerScriptInterfaceLegacy */
 
 declare namespace engine {
+    function getPlayer(deck: string): Player
+
     type SettingValue = string | number | boolean;
     /**
      * Gets the value of a controller setting

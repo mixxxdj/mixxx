@@ -136,6 +136,13 @@ QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
     }
 }
 
+QObject* ControllerScriptInterfaceLegacy::getPlayer(const QString& deck) {
+#ifndef MIXXX_USE_QML
+    return nullptr;
+#endif
+    return m_pScriptEngineLegacy->getPlayer(deck);
+}
+
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {

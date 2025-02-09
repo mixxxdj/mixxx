@@ -36,6 +36,11 @@ void ControllerScriptEngineBase::registerTrackCollectionManager(
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
 }
 
+void ControllerScriptEngineBase::registerPlayerManager(
+        std::shared_ptr<PlayerManager> pPlayerManager) {
+    ControllerScriptEngineBase::s_pPlayerManager = pPlayerManager;
+}
+
 void ControllerScriptEngineBase::handleQMLErrors(const QList<QQmlError>& qmlErrors) {
     for (const QQmlError& error : std::as_const(qmlErrors)) {
         showQMLExceptionDialog(error, m_bErrorsAreFatal);
@@ -193,6 +198,21 @@ void ControllerScriptEngineBase::showQMLExceptionDialog(
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, errorText, bFatalError);
     }
+}
+
+QObject* ControllerScriptEngineBase::getPlayer(const QString& deck) {
+    if (!s_pPlayerManager) {
+        qWarning() << "PlayerManagerProxy failed to find player for group" << deck;
+        return nullptr;
+    }
+
+    // Don't set a parent here, so that the QML engine deletes the object when
+    // the corresponding JS object is garbage collected.
+    JavascriptPlayerProxy* pPlayerProxy = new JavascriptPlayerProxy(
+            s_pPlayerManager->getPlayer(deck), nullptr);
+    QJSEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+
+    return pPlayerProxy;
 }
 #endif
 

@@ -515,6 +515,7 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
+    ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
 
     // Currently, it is required to enforce QQuickWindow RHI backend to use
     // OpenGL on all platforms to allow offscreen rendering to function as
@@ -636,6 +637,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 #endif
 
     // Stop all pending library operations
