@@ -16,6 +16,16 @@ class WSliderComposed : public WWidget  {
     explicit WSliderComposed(QWidget* parent = nullptr);
     ~WSliderComposed() override;
 
+    // The highlight property is used to restyle the widget with CSS.
+    // The declaration #MySlider[highlight="1"] { } will define the style
+    // for the highlighted state. Note: The background property does not
+    // support color schemes for images, a workaround is to set the background
+    // image via <BackPath> and <BackPathHighlighted> from the skin.
+    Q_PROPERTY(int highlight READ getHighlight WRITE setHighlight NOTIFY highlightChanged)
+
+    int getHighlight() const;
+    void setHighlight(int highlight);
+
     void setup(const QDomNode& node, const SkinContext& context);
     void setSliderPixmap(
             const PixmapSource& sourceSlider,
@@ -32,6 +42,9 @@ class WSliderComposed : public WWidget  {
     // that's done in setup() where we have a SkinContext, i.e. variable support.
     bool tryParseHorizontal(const QDomNode& node) const;
     void inputActivity();
+
+  signals:
+    void highlightChanged(int highlight);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -51,6 +64,7 @@ class WSliderComposed : public WWidget  {
     double calculateHandleLength();
     void unsetPixmaps();
 
+    int m_highlight;
     // Length of handle in pixels
     double m_dHandleLength;
     // Length of the slider in pixels.
