@@ -331,7 +331,6 @@ SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
             AudioPathType::Headphones,
             AudioPathType::Booth};
 
-    SoundDevicePointer pNewLocalTimeSyncRef = nullptr;
     for (const auto& pDevice : devices) {
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             continue;
@@ -344,15 +343,11 @@ SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
                         return out.getType() == type;
                     });
             if (it != outputs.end()) {
-                pNewLocalTimeSyncRef = pDevice;
-                break;
+                return pDevice;
             }
         }
-        if (pNewLocalTimeSyncRef) {
-            break;
-        }
     }
-    return pNewLocalTimeSyncRef;
+    return nullptr;
 }
 
 SoundDeviceStatus SoundManager::setupDevices() {
