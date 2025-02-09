@@ -332,14 +332,14 @@ SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
             AudioPathType::Booth};
 
     SoundDevicePointer pNewLocalTimeSyncRef = nullptr;
-    for (const auto& pDevice : std::as_const(devices)) {
+    for (const auto& pDevice : devices) {
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             continue;
         }
         QList<AudioOutput> outputs = deviceOutputs[pDevice];
         for (const auto& type : priorityOrder) {
-            auto it = std::find_if(outputs.begin(),
-                    outputs.end(),
+            const auto it = std::find_if(outputs.cbegin(),
+                    outputs.cend(),
                     [type](const AudioOutput& out) {
                         return out.getType() == type;
                     });
