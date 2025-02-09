@@ -1635,6 +1635,8 @@ add_library(
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/controllers/scripting/javascriptplayerproxy.cpp
+  src/controllers/scripting/javascriptplayerproxy.h
 )
 set(MIXXX_COMMON_PRECOMPILED_HEADER src/util/assert.h)
 set(

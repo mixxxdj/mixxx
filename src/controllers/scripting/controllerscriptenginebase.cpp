@@ -30,6 +30,11 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 }
 
+void ControllerScriptEngineBase::registerPlayerManager(
+        std::shared_ptr<PlayerManager> pPlayerManager) {
+    ControllerScriptEngineBase::s_pPlayerManager = pPlayerManager;
+}
+
 #ifdef MIXXX_USE_QML
 void ControllerScriptEngineBase::registerTrackCollectionManager(
         std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
@@ -114,6 +119,24 @@ void ControllerScriptEngineBase::reload() {
         shutdown();
     }
     initialize();
+}
+
+QObject* ControllerScriptEngineBase::getPlayer(const QString& group) {
+    VERIFY_OR_DEBUG_ASSERT(s_pPlayerManager != nullptr) {
+        qCritical() << "Uninitialized PlayerManager";
+        return nullptr;
+    }
+    auto* const player = s_pPlayerManager->getPlayer(group);
+    if (!player) {
+        qWarning() << "PlayerManagerProxy failed to find player for group" << group;
+        return nullptr;
+    }
+
+    // Don't set a parent here, so that the QML engine deletes the object when
+    // the corresponding JS object is garbage collected.
+    JavascriptPlayerProxy* pPlayerProxy = new JavascriptPlayerProxy(player, nullptr);
+    QJSEngine::setObjectOwnership(pPlayerProxy, QJSEngine::JavaScriptOwnership);
+    return pPlayerProxy;
 }
 
 bool ControllerScriptEngineBase::executeFunction(
