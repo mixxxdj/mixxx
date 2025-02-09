@@ -174,7 +174,7 @@ QString toDebugString(const QSizePolicy::Policy& policy) {
     case QSizePolicy::Ignored:
         return QStringLiteral("Ignored");
     default:
-        return QString::number(static_cast<int>(policy));
+        return QVariant::fromValue(policy).toString();
     }
 }
 
