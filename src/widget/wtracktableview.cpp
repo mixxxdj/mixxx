@@ -508,9 +508,20 @@ void WTrackTableView::slotShowHideTrackMenu(bool show) {
         return;
     }
     if (show) {
+        // Show at current index if it's valid, else at cursor position
+        QPoint evPos;
+        auto currIdx = currentIndex();
+        if (currIdx.isValid()) {
+            evPos = mapToGlobal(visualRect(currIdx).center());
+            // The viewport start below the header, but mapToGlobal() apparently
+            // uses the rect() as reference. Add header height to y and we're good.
+            evPos += QPoint(0, horizontalHeader()->height());
+        } else {
+            evPos = QCursor::pos();
+        }
         QContextMenuEvent event(QContextMenuEvent::Mouse,
-                mapFromGlobal(QCursor::pos()),
-                QCursor::pos());
+                mapFromGlobal(evPos),
+                evPos);
         contextMenuEvent(&event);
     } else {
         m_pTrackMenu->close();
