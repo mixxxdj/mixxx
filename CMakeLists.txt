@@ -1201,6 +1201,7 @@ add_library(
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
+  src/library/autodj/dlgautodjpreparationwindow.cpp
   src/library/autodj/dlgautodj.ui
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
