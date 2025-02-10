@@ -322,6 +322,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     slotTranslateBeatsMove(1);
 }
 
+// slotTranslateBeatsHalf works only with constant BPM tracks
 void BpmControl::slotTranslateBeatsHalf(double v) {
     if (v <= 0) {
         return;

@@ -635,7 +635,7 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
 }
 
 std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
-    if (!m_markers.empty()) {
+    if (!hasConstantTempo()) {
         return std::nullopt;
     }
     const mixxx::audio::FrameDiff_t lastOffsetFrames =
