@@ -118,7 +118,7 @@ void EchoEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
-float averageSampleEnergy(mixxx::SampleBuffer const& delay_buffer) {
+float averageSampleEnergy(std::span<const CSAMPLE> delay_buffer) {
     float differenceSum = 0.0f;
     for (const CSAMPLE sample : delay_buffer.span()) {
         differenceSum += std::abs(sample);
