@@ -582,12 +582,12 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
   for (var i = 1; i <= 8; i++) {
     this.padSelectButtons[i] = new components.Button({
       midi: [0x90 + midiChannel, 0x0F + (i - 1)],
-      input: function(channel, control, value, status, group) {
-        var deck = parseInt(deckData.currentDeck.charAt(8)) - 1;
+      input: function(_channel, control, _value, _status, _group) {
+        var deck = script.deckFromGroup(deckData.currentDeck);
         if (control === 0x11) {
-          DJCi500.slicerActive[deck] = true;
+          DJCi500.slicerActive[deck - 1] = true;
         } else {
-          DJCi500.slicerActive[deck] = false;
+          DJCi500.slicerActive[deck - 1] = false;
         }
       },
     });
