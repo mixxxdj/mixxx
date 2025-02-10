@@ -1549,6 +1549,7 @@ add_library(
   src/widget/wmainmenubar.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
+  src/widget/wnumberduration.cpp
   src/widget/wnumberpos.cpp
   src/widget/wnumberrate.cpp
   src/widget/woverview.cpp
