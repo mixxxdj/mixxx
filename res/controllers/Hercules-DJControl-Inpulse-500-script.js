@@ -1353,7 +1353,7 @@ DJCi500.updateDeckStatus = function(group) {
 
   // Update the vinyl button
   var vinylState = false;
-  var deckIndex = parseInt(group.charAt(8)) - 1;
+  var deckIndex = script.deckFromGroup(deckData.currentDeck) - 1;
   var channel = ((group === "[Channel1]") || (group === "[Channel3]")) ? 1 : 2;
   if (channel === 1) {
     vinylState = DJCi500.deckA.vinylButtonState[deckIndex];
