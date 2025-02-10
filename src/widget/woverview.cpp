@@ -111,6 +111,9 @@ WOverview::WOverview(
             &WaveformWidgetFactory::overallVisualGainChanged,
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
+    // Also listen to ReplayGain changes to scale the waveform
+    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -730,15 +733,16 @@ void WOverview::drawAxis(QPainter* pPainter) {
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
     if (!m_waveformSourceImage.isNull()) {
-        PainterScope painterScope(pPainter);
         WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
         float diffGain;
         bool normalize = pWidgetFactory->isOverviewNormalized();
         if (normalize && m_pixmapDone && m_waveformPeak > 1) {
             diffGain = 255 - m_waveformPeak - 1;
         } else {
+            DEBUG_ASSERT(m_pCurrentTrack);
             const auto visualGain = static_cast<float>(
-                    pWidgetFactory->getVisualGain(WaveformWidgetFactory::All));
+                    pWidgetFactory->getVisualGain(WaveformWidgetFactory::All) *
+                    m_pCurrentTrack->getReplayGain().getRatio());
             diffGain = 255.0f - (255.0f / visualGain);
         }
 
