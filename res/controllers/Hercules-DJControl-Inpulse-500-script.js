@@ -1272,7 +1272,8 @@ DJCi500.tempoLEDs = function () {
 
     //Do beat alignement only if the tracks are already on Tempo
     // and only if they are playing
-    if ( (engine.getValue(deckA, "play_latched")) && (engine.getValue(deckB, "play_latched")) ){
+    if (engine.getValue(deckA, "play_latched") && engine.getValue(deckB, "play_latched")){
+
 
       var beat1 = engine.getValue(deckA, "beat_distance");
       var beat2 = engine.getValue(deckB, "beat_distance");
