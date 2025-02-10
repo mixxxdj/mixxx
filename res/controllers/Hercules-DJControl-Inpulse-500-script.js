@@ -371,8 +371,8 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
     unshift: function () {
       this.input = function(channel, _control, value, status, group) {
         if (value === 0x7F) {
-          var deck = parseInt(deckData.currentDeck.charAt(8)) - 1;
-          var new_status = !deckData.vinylButtonState[deck];
+          var deck = script.deckFromGroup(deckData.currentDeck);
+          var new_status = !deckData.vinylButtonState[deck - 1];
           deckData.jogWheel.vinylMode = new_status;
           deckData.jogWheelShift.vinylMode = new_status;
           deckData.vinylButtonState[deck] = new_status;
