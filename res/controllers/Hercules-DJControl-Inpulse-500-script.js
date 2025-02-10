@@ -466,7 +466,7 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
       }
     },
     inputTouch: function(channel, control, value, status, group) {
-      var deck = parseInt(deckData.currentDeck.charAt(8));
+      var deck = script.deckFromGroup(deckData.currentDeck);
       if ((value === 0x7F) && deckData.vinylButtonState[deck - 1]) {
         engine.scratchEnable(deck,
           this.wheelResolution,
