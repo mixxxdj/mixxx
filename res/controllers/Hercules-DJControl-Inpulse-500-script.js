@@ -1204,7 +1204,7 @@ DJCi500.tempoLEDs = function () {
   var deckA = DJCi500.deckA.currentDeck;
   var deckB = DJCi500.deckB.currentDeck;
 
-  //Tempo:
+  // Tempo:
   var tempo1 = engine.getValue(deckA, "bpm");
   var tempo2 = engine.getValue(deckB, "bpm");
   var diff = tempo1 - tempo2;
