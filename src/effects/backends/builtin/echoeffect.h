@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QMap>
-#include <span>
 
 #include "effects/backends/effectprocessor.h"
 #include "engine/engine.h"

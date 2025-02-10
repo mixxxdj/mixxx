@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/echoeffect.h"
 
+#include <span>
+
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
