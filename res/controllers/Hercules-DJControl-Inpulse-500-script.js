@@ -116,7 +116,7 @@ const pairColorsOff = [0x12, 0x12, 0x02, 0x02, 0x4C, 0x4C, 0x40, 0x40];
 ///////////////////////////////////////////////////////////////
 //                          SLICER                           //
 ///////////////////////////////////////////////////////////////
-DJCi500.selectedSlicerDomain = [8, 8, 8, 8]; //length of the Slicer domain
+DJCi500.selectedSlicerDomain = [8, 8, 8, 8]; // Length of the Slicer domain
 //PioneerDDJSX.slicerDomains = [8, 16, 32, 64];
 
 // slicer storage:
