@@ -2,9 +2,11 @@
 
 #include <QMetaEnum>
 
+#include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
+#include "mixer/playermanager.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
@@ -361,8 +363,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     midVisualGain->setValue(1.0);
     highVisualGain->setValue(1.0);
 
-    // Default zoom level is 3 in WaveformWidgetFactory.
-    defaultZoomComboBox->setCurrentIndex(3 + 1);
+    defaultZoomComboBox->setCurrentIndex(
+            static_cast<int>(WaveformWidgetRenderer::s_waveformDefaultZoom) - 1);
 
     synchronizeZoomCheckBox->setChecked(true);
 
@@ -488,6 +490,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
 
     useAccelerationCheckBox->blockSignals(false);
 }
+
 void DlgPrefWaveform::updateWaveformOption(bool useWaveform,
         WaveformWidgetBackend backend,
         allshader::WaveformRendererSignalBase::Options currentOptions) {
@@ -559,6 +562,22 @@ void DlgPrefWaveform::slotSetWaveformOverviewType() {
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
     WaveformWidgetFactory::instance()->setDefaultZoom(index + 1);
+    QStringList groups;
+    for (unsigned int i = 1; i <= PlayerManager::numDecks(); i++) {
+        groups.append(QStringLiteral("[Channel%1]").arg(i));
+    }
+    for (unsigned int i = 1; i <= PlayerManager::numSamplers(); i++) {
+        groups.append(QStringLiteral("[Sampler%1]").arg(i));
+    }
+    for (unsigned int i = 1; i <= PlayerManager::numPreviewDecks(); i++) {
+        groups.append(QStringLiteral("[PreviewDeck%1]").arg(i));
+    }
+    for (const QString& group : std::as_const(groups)) {
+        ControlObject* pControl = ControlObject::getControl(
+                group, QStringLiteral("waveform_zoom"));
+        DEBUG_ASSERT(pControl);
+        pControl->setDefaultValue(index + 1);
+    }
 }
 
 void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
