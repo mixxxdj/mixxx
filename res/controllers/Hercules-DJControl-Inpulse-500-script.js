@@ -104,7 +104,6 @@ DJCi500.PadColorMapper = new ColorMapper({
 });
 
 // Constants
-
 DJCi500.EFFECT_ONLY_MODE = 1;
 DJCi500.FILTER_AND_EFFECT_MODE = 2;
 
