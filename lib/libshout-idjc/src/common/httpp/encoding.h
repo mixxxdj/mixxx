@@ -3,7 +3,7 @@
 ** http transfer encoding library
 ** See RFC2616 section 3.6 for more details.
 **
-** Copyright (C) 2015 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
+** Copyright (C) 2015-2019 by Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
 **
 ** This library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU Library General Public
@@ -63,6 +63,11 @@ int               httpp_encoding_release(httpp_encoding_t *self);
  * if cb is NULL this will read from the internal buffer.
  */
 ssize_t           httpp_encoding_read(httpp_encoding_t *self, void *buf, size_t len, ssize_t (*cb)(void*, void*, size_t), void *userdata);
+
+/* Check if EOF is reached.
+ * If cb is not NULL this also considers backend state.
+ */
+int               httpp_encoding_eof(httpp_encoding_t *self, int (*cb)(void*), void *userdata);
 
 /* Read any meta data that is in buffer.
  * After a call to this function the meta data is released from the
