@@ -13,6 +13,7 @@
 #include "util/parented_ptr.h"
 
 class DlgAutoDJ;
+class DlgAutoDJPreparationWindow;
 class Library;
 class PlayerManagerInterface;
 class TrackCollection;
@@ -40,7 +41,11 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard) override;
+            KeyboardEventFilter* keyboard) override;
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
+            KeyboardEventFilter* keyboard) override;
+
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
@@ -65,6 +70,7 @@ class AutoDJFeature : public LibraryFeature {
     AutoDJProcessor* m_pAutoDJProcessor;
     parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
+    DlgAutoDJPreparationWindow* m_pAutoDJPreparationWindowView;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
@@ -96,6 +102,8 @@ class AutoDJFeature : public LibraryFeature {
     void slotEnableAutoDJ();
     void slotDisableAutoDJ();
     void slotClearQueue();
+
+    void slotShowInPreparationWindow();
 
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(CrateId crateId);

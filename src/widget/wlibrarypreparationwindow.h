@@ -63,7 +63,7 @@ class WLibraryPreparationWindow : public QStackedWidget, public WBaseWidget {
     // view is the specified view, or if the name does not specify any
     // registered view.
     // void switchToViewInPreparationWindow(const QString& name);
-    void switchToView(const QString& name, const QString& target);
+    void switchToViewInPreparationWindow(const QString& name, const QString& target);
     void slotSelectTrackInActiveTrackView(const TrackId& trackId);
     void pasteFromSidebarInPreparationWindow();
     // void sendTargetWindow(const QString& target);

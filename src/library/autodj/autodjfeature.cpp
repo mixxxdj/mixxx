@@ -6,6 +6,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
+#include "library/autodj/dlgautodjpreparationwindow.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -56,6 +57,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
+          m_pAutoDJPreparationWindowView(nullptr),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig) {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
@@ -99,6 +101,12 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &AutoDJFeature::slotCrateChanged);
 
     // Create context-menu items for enabling/disabling the auto-DJ
+    m_pShowTrackModelInPreparationWindowAction =
+            make_parented<QAction>(tr("Show in Preparation Window"), this);
+    connect(m_pShowTrackModelInPreparationWindowAction,
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotShowInPreparationWindow);
     m_pEnableAutoDJAction = make_parented<QAction>(tr("Enable Auto DJ"), this);
     connect(m_pEnableAutoDJAction.get(),
             &QAction::triggered,
@@ -186,6 +194,48 @@ void AutoDJFeature::bindLibraryWidget(
     m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
 }
 
+void AutoDJFeature::bindLibraryPreparationWindowWidget(
+        WLibraryPreparationWindow* libraryPreparationWindowWidget,
+        KeyboardEventFilter* keyboard) {
+    m_pAutoDJPreparationWindowView = new DlgAutoDJPreparationWindow(
+            libraryPreparationWindowWidget,
+            m_pConfig,
+            m_pLibrary,
+            m_pAutoDJProcessor,
+            keyboard);
+    libraryPreparationWindowWidget->registerView(kViewName, m_pAutoDJView);
+    connect(m_pAutoDJPreparationWindowView,
+            &DlgAutoDJPreparationWindow::loadTrack,
+            this,
+            &AutoDJFeature::loadTrack);
+    connect(m_pAutoDJPreparationWindowView,
+            &DlgAutoDJPreparationWindow::loadTrackToPlayer,
+            this,
+            &LibraryFeature::loadTrackToPlayer);
+
+    connect(m_pAutoDJPreparationWindowView,
+            &DlgAutoDJPreparationWindow::trackSelected,
+            this,
+            &AutoDJFeature::trackSelected);
+
+    // Be informed when the user wants to add another random track.
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::randomTrackRequested,
+            this,
+            &AutoDJFeature::slotRandomQueue);
+    connect(m_pAutoDJPreparationWindowView,
+            &DlgAutoDJPreparationWindow::addRandomTrackButton,
+            this,
+            &AutoDJFeature::slotAddRandomTrack);
+
+    // Update shortcuts displayed in the context menu
+    QKeySequence toggleAutoDJShortcut = QKeySequence(
+            keyboard->getKeyboardConfig()->getValueString(ConfigKey("[AutoDJ]", "enabled")),
+            QKeySequence::PortableText);
+    m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+    m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+}
+
 void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // store the sidebar widget pointer for later use in onRightClickChild
     m_pSidebarWidget = pSidebarWidget;
@@ -195,23 +245,47 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
 
-void AutoDJFeature::activate() {
-    //qDebug() << "AutoDJFeature::activate()";
+void AutoDJFeature::slotShowInPreparationWindow() {
+    // CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+    qDebug() << "   AutoDJFeature::slotShowInPreparationWindow()";
+
     if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
-        // auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
-        if (static_cast<bool>(ControlObject::getControl(
-                    "[Skin]", "show_preparation_window")
-                            ->get())) {
-            qDebug() << "[AutoDJFeature] -> activate() -> PreparationWindow";
-            emit switchToView(kViewName, "PreparationWindow");
-        } else {
-            qDebug() << "[AutoDJFeature] -> activate() -> Library";
-            emit switchToView(kViewName, "Library");
-        }
-    } else {
-        qDebug() << "[AutoDJFeature] -> activate() -> Library";
-        emit switchToView(kViewName, "Library");
+        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        proxy->set(1);
     }
+
+    //    emit switchToView(kViewName, "PreparationWindow");
+    //    emit disableSearch();
+    //    emit enableCoverArtDisplay(true);
+
+    //// emit saveModelState();
+    // emit sendTargetWindow("PreparationWindow");
+    // m_crateTableModel.selectCrate(crateId, "PreparationWindow");
+    //  emit showTrackModel(&m_crateTableModel);
+    // emit showTrackModelInPreparationWindow(&m_crateTableModel);
+    //  emit enableCoverArtDisplay(true);
+}
+
+void AutoDJFeature::activate() {
+    // qDebug() << "AutoDJFeature::activate()";
+    //     if (ControlObject::exists(ConfigKey("[Skin]",
+    //     "show_preparation_window"))) {
+    //         // auto proxy = std::make_unique<PollingControlProxy>("[Skin]",
+    //         "show_preparation_window"); if
+    //         (static_cast<bool>(ControlObject::getControl(
+    //                     "[Skin]", "show_preparation_window")
+    //                             ->get())) {
+    //             qDebug() << "[AutoDJFeature] -> activate() ->
+    //             PreparationWindow"; emit switchToView(kViewName,
+    //             "PreparationWindow");
+    //         } else {
+    //             qDebug() << "[AutoDJFeature] -> activate() -> Library";
+    //             emit switchToView(kViewName, "Library");
+    //         }
+    //     } else {
+    //         qDebug() << "[AutoDJFeature] -> activate() -> Library";
+    emit switchToView(kViewName, "Library");
+    //    }
 
     emit disableSearch();
     emit enableCoverArtDisplay(true);

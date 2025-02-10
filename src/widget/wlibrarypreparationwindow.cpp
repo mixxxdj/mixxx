@@ -61,7 +61,8 @@ bool WLibraryPreparationWindow::registerView(const QString& name, QWidget* pView
 // }
 
 // void WLibraryPreparationWindow::switchToViewInPreparationWindow(const QString& name) {
-void WLibraryPreparationWindow::switchToView(const QString& name, const QString& target) {
+void WLibraryPreparationWindow::switchToViewInPreparationWindow(
+        const QString& name, const QString& target) {
     qDebug() << "[WLibraryPreparationWindow] -> "
                 "switchToViewInPreparationWindow toggled -> target: "
              << target;
@@ -78,7 +79,7 @@ void WLibraryPreparationWindow::switchToView(const QString& name, const QString&
                     "switchToViewInPreparationWindow toggled -> pOldLibrartView"
                  << pOldLibrartView;
         QWidget* pWidget = m_viewMap.value(name, nullptr);
-        // QWidget* pWidget = m_viewMap.value("Auto DJ", nullptr);
+        //        QWidget* pWidget = m_viewMap.value("Auto DJ", nullptr);
         qDebug() << "[WLibraryPreparationWindow] -> "
                     "switchToViewInPreparationWindow toggled -> pWidget"
                  << pWidget;

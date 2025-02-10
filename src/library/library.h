@@ -149,7 +149,7 @@ class Library: public QObject {
     void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
     void sendTargetWindow(const QString& target);
     void switchToView(const QString& view, const QString& target);
-    // void switchToViewInPreparationWindow(const QString& view);
+    // void switchToViewInPreparationWindow(const QString& view, const QString& target);
     void loadTrack(TrackPointer pTrack);
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
