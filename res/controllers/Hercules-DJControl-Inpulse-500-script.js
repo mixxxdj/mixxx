@@ -277,18 +277,11 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
     midi: [0x90 + midiChannel, 0x04],
     input: function(_channel, _control, value, _status, _group) {
       if (value === 0x7F) {
-        deckData.forEachComponent(function(component) {
-          if (component.unshift) {
-            component.shift();
-          }
-        });
+        deckData.shift();
       } else {
-        deckData.forEachComponent(function(component) {
-          if (component.unshift) {
-            component.unshift();
-          }
-        });
+        deckData.unshift();
       }
+
     },
   });
 
