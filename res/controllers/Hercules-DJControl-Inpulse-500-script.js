@@ -488,7 +488,7 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
     rpm: 33 + 1/3,
     group: "[Channel"+midiChannel+"]",
     inputWheel: function(_channel, _control, value, _status, group) {
-      var deck = parseInt(deckData.currentDeck.charAt(8));
+      var deck = script.deckFromGroup(deckData.currentDeck);
       value = this.inValueScale(value) * 4;
       if (engine.isScratching(deck)) {
         engine.scratchTick(deck, value);
