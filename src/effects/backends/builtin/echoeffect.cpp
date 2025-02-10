@@ -255,7 +255,7 @@ void EchoEffect::processChannel(
         pGroupState->prev_send = 0;
         const SINT delayBufferSize = pGroupState->delay_buf.size();
         // Calculate if the delayline-buffer is approx. zero/empty.
-        const float avgSampleEnergy = averageSampleEnergy(pGroupState->delay_buf);
+        const float avgSampleEnergy = averageSampleEnergy(pGroupState->delay_buf.span().first(engineParameters.sampleRate()));
         // If echo tail fully faded
         if (avgSampleEnergy < (0.00001f / delayBufferSize)) {
             m_isReadyForDisable = true;
