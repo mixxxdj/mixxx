@@ -266,8 +266,8 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
   this.vinylButtonState = [DJCi500.initialVinylMode, DJCi500.initialVinylMode, DJCi500.initialVinylMode, DJCi500.initialVinylMode];
 
   // Pitch ranges and status
-  this.pitchRanges = [0.08, 0.10, 0.15, 0.16, 0.24, 0.50, 0.90]; //select pitch range
-  this.pitchRangeId = 0; //id of the array, one for each deck
+  this.pitchRanges = [0.08, 0.10, 0.15, 0.16, 0.24, 0.50, 0.90]; // Select pitch range
+  this.pitchRangeId = 0; // id of the array, one for each deck
 
   // Effect section components
   this.effectEnabled = false;
