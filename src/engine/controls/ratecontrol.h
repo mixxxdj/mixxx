@@ -76,6 +76,7 @@ public:
   // PositionScratchController can correctly interpret the sample position delta.
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
+  void notifySeek(mixxx::audio::FramePos position) override;
 
 public slots:
   void slotRateRangeChanged(double);
