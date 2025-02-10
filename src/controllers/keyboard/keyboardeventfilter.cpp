@@ -40,6 +40,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #endif
 
         if (shouldSkipHeldKey(keyId)) {
+            qWarning() << "     .";
+            qWarning() << "     kbd filter: shouldSkipHeldKey" << keyId << ", return";
+            qWarning() << "     .";
             return true;
         }
 
@@ -76,6 +79,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             return result;
 #ifndef __APPLE__
         } else {
+            qWarning() << "     .";
+            qWarning() << "     kbd filter: key seq empty, return";
+            qWarning() << "     .";
             // getKeySeq() returns empty string if the press was a modifier only
             if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
                 // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
@@ -153,6 +159,9 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
             e->key() == Qt::Key_AltGr) {
         // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
         // avoid returning "khmer vowel sign ie (U+17C0)"
+        qWarning() << "     .";
+        qWarning() << "     kbd getKeySeq: mod only, return";
+        qWarning() << "     .";
         return {};
     }
 
@@ -180,9 +189,9 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
     if (CmdlineArgs::Instance().getDeveloper()) {
         if (e->type() == QEvent::KeyPress) {
-            qDebug() << "keyboard press: " << k.toString();
+            qDebug() << "kbd filter press: " << k.toString();
         } else if (e->type() == QEvent::KeyRelease) {
-            qDebug() << "keyboard release: " << k.toString();
+            qDebug() << "kbd filter release" << k.toString();
         }
     }
 
