@@ -1429,9 +1429,6 @@ void WTrackMenu::slotTranslateBeatsHalf() {
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(!m_deckGroup.isEmpty()) {
-        return;
-    }
     const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     if (!pBeats) {
         return;

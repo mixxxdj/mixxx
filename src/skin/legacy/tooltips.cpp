@@ -443,7 +443,7 @@ void Tooltips::addStandardTooltips() {
             tr("When tapped, moves the beatgrid right by a small amount.");
     const QString moveHalfBeat =
             tr("Adjust beatgrid by exactly one half beat. "
-               "Usable only on\ntracks with constant tempo");
+               "Usable only on\ntracks with constant tempo.");
 
     add("beats_translate_earlier")
             << beatsTranslateEarlierTitle
