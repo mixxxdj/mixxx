@@ -1487,10 +1487,6 @@ DJCi500.slicerButtonFunc = function(channel, control, value, status, group) {
               var bpm_file = engine.getValue(group, "file_bpm"),
                 playposition = engine.getValue(group, "playposition"),
                 duration = engine.getValue(group, "duration");
-              /*
-              if (Math.floor((playposition * duration) * (bpm_file / 60.0)) > endLoop) {
-                engine.setValue(group, "beatjump", -8);
-              }*/
               engine.setValue(group, "reloop_toggle", true);},
               true);
           }
