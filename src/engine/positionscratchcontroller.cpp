@@ -187,7 +187,7 @@ void PositionScratchController::process(double currentSamplePos,
                 bool reverse = triggerPos < targetPos;
                 double loopLength = reverse ? -1 * (targetPos - triggerPos)
                                             : triggerPos - targetPos;
-                if (wrappedAround > 2) {
+                if (wrappedAround > 1) {
                     sampleDelta = (wrappedAround - 1) * loopLength;
                 }
                 sampleDelta +=
