@@ -1,6 +1,7 @@
 #include "library/itunes/itunesplaylistmodel.h"
 
 #include "library/baseexternalplaylistmodel.h"
+#include "library/itunes/itunesschema.h"
 #include "moc_itunesplaylistmodel.cpp"
 
 ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
@@ -9,8 +10,8 @@ ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
         : BaseExternalPlaylistModel(parent,
                   pTrackCollectionManager,
                   "mixxx.db.model.itunes_playlist",
-                  "itunes_playlists",
-                  "itunes_playlist_tracks",
+                  ITUNES_PLAYLISTS_TABLE,
+                  ITUNES_PLAYLIST_TRACKS_TABLE,
                   trackSource) {
 }
 
