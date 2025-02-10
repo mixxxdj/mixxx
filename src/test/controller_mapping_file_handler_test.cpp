@@ -57,9 +57,6 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
             (override));
     MOCK_METHOD(void, addModule, (const QFileInfo& dirinfo, bool builtin), (override));
 
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        throw std::runtime_error("not implemented");
-    }
     bool saveMapping(const QString&) const override {
         throw std::runtime_error("not implemented");
     }

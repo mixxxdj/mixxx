@@ -919,18 +919,17 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
                     close();
                 });
         pParentMenu->addMenu(pStemMenu);
-    } else {
+    } else
 #else
     Q_UNUSED(pTrack)
     Q_UNUSED(primaryDeck)
 #endif
+    {
         QAction* pAction = new QAction(label, this);
         pAction->setEnabled(enabled);
         pParentMenu->addAction(pAction);
         connect(pAction, &QAction::triggered, this, [this, group] { loadSelectionToGroup(group); });
-#ifdef __STEM__
     }
-#endif
 }
 
 void WTrackMenu::updateMenus() {
