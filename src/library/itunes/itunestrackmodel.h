@@ -1,17 +1,20 @@
 #pragma once
 
 #include <QObject>
+#include <QSharedPointer>
+#include <QString>
 
-#include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
+#include "library/basetrackcache.h"
+#include "library/trackcollectionmanager.h"
 
-class ITunesPlaylistModel : public BaseExternalPlaylistModel {
+class ITunesTrackModel : public BaseExternalTrackModel {
     Q_OBJECT
   public:
-    ITunesPlaylistModel(QObject* parent,
+    ITunesTrackModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
             QSharedPointer<BaseTrackCache> trackSource);
 
   protected:
-    void initSortColumnMapping() override;
     QString resolveLocation(const QString& nativeLocation) const override;
 };
