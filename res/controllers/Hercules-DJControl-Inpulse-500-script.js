@@ -1212,10 +1212,15 @@ DJCi500.tempoLEDs = function () {
   //Check double tempo:
   var doubleTempo = 0;
   if (diff > 0){
-    if ((tempo1 / tempo2) > 1.5){doubleTempo = 1; diff = tempo1/2 - tempo2;}
-  }
-  else{
-    if ((tempo2 / tempo1) > 1.5){doubleTempo = 1; diff = tempo1 - tempo2/2;}
+    if ((tempo1 / tempo2) > 1.5) {
+      doubleTempo = 1;
+      diff = tempo1 / 2 - tempo2;
+    }
+  } else {
+    if ((tempo2 / tempo1) > 1.5) {
+      doubleTempo = 1;
+      diff = tempo1 - tempo2 / 2;
+    }
   }
 
   if (diff < -0.25)
