@@ -1516,7 +1516,7 @@ DJCi500.slicerButtonFunc = function(channel, control, value, status, group) {
 //this below is connected to beat_active
 DJCi500.slicerBeatActive = function(value, group, control) {
   // This slicer implementation will work for constant beatgrids only!
-  var deck = parseInt(group.charAt(8)) - 1;
+  var deck = script.deckFromGroup(deckData.currentDeck) - 1;
   var channel = deck % 2;
 
   print("***** SLICER ACTIVE VALUE: " + DJCi500.slicerActive[deck]);
