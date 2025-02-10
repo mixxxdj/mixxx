@@ -384,8 +384,9 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
     shift: function () {
       this.input = function (channel, control, value, status, group) {
         if (value === 0x7F){
-          var deck = parseInt(deckData.currentDeck.charAt(8)) - 1;
-          deckData.slowPauseSetState[deck] = !deckData.slowPauseSetState[deck];
+          var deck = script.deckFromGroup(deckData.currentDeck);
+          deckData.slowPauseSetState[deck - 1] = !deckData.slowPauseSetState[deck - 1];
+
         }
       };
     }
