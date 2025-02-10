@@ -249,7 +249,7 @@ def get_global_names(mixxx_path):
             elif ext == ".ui":
                 fpath = os.path.join(root, fname)
                 with open(fpath, mode="r", encoding="utf-8") as f:
-                objectnames.update(set(RE_UI_OBJNAME.findall(f.read())))
+                    objectnames.update(set(RE_UI_OBJNAME.findall(f.read())))
     return classnames, objectnames
 
 
