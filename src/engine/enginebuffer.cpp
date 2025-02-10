@@ -377,9 +377,10 @@ void EngineBuffer::setBeatLoop(mixxx::audio::FramePos startPosition, bool enable
 }
 
 void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
-        mixxx::audio::FramePos endPositon,
+        mixxx::audio::FramePos endPosition,
         bool enabled) {
-    m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
+    qWarning() << "     > EngineBuffer::setLoop" << startPosition << endPosition << enabled;
+    m_pLoopingControl->setLoop(startPosition, endPosition, enabled);
 }
 
 void EngineBuffer::setEngineMixer(EngineMixer* pEngineMixer) {
