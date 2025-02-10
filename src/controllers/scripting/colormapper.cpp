@@ -70,7 +70,7 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     }
 
     DEBUG_ASSERT(m_availableColors.isEmpty());
-    DEBUG_ASSERT(!"Unreachable: No matching color found");
+    DEBUG_ASSERT_UNREACHABLE(!"Unreachable: No matching color found");
     return desiredColor;
 }
 

@@ -2498,7 +2498,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 break;
             default:
                 // can't happen. Nothing else is returned by parseButtonState();
-                DEBUG_ASSERT(false);
+                DEBUG_ASSERT_UNREACHABLE(false);
                 break;
             }
 
