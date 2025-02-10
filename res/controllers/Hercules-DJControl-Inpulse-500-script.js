@@ -1194,7 +1194,7 @@ DJCi500.moveLibrary = function(channel, control, value, status, group) {
 }
 
 DJCi500.spinback_button = function(channel, control, value, status, group) {
-  var deck = parseInt(group.substring(8,9)); // work out which deck we are using
+    var deck = script.deckFromGroup(group);      
   engine.spinback(deck, value > 0, 2.5); // use default starting rate of -10 but decrease speed more quickly
 }
 
