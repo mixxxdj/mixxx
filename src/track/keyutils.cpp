@@ -27,7 +27,7 @@ const QRegularExpression s_openKeyRegex(QStringLiteral(
 // Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
 // or "I", "L", "M", "D", "P", "C" for the advanced modes
 const QRegularExpression s_lancelotKeyRegex(
-        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPCabilmdpc])\\s*$)\\z"));
+        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"), QRegularExpression::CaseInsensitiveOption);
 constexpr std::string_view s_lancelotMajorModes = "BILMbilm";
 
 // a-g followed by any number of sharps or flats, optionally followed by
