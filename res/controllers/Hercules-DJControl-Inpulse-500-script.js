@@ -1443,7 +1443,7 @@ DJCi500.updateEffectStatus = function(midiChannel, channel) {
 ///////////////////////////////////////////////////////////////
 DJCi500.slicerButtonFunc = function(channel, control, value, status, group) {
   var index = control - 0x20,
-    deck = parseInt(group.charAt(8)) - 1,
+    deck = script.deckFromGroup(deckData.currentDeck) - 1,
     domain = DJCi500.selectedSlicerDomain[deck],
     beatsToJump = 0,
     passedTime = engine.getValue(group, "beat_distance"),
