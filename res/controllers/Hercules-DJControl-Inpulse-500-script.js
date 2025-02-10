@@ -311,7 +311,7 @@ DJCi500.Deck = function (deckNumbers, midiChannel) {
       this.input = function (channel, control, value, status, group) {
         if (value === 0x7F) {
           if (engine.getValue(deckData.currentDeck, "play_latched")) {      //play_indicator play_latched
-            var deck = parseInt(deckData.currentDeck.charAt(8));
+            var deck = script.deckFromGroup(deckData.currentDeck);
             if (deckData.slowPauseSetState[deck - 1]) {
               engine.brake(deck,
                 1,//((status & 0xF0) !=== 0x80 && value > 0),
