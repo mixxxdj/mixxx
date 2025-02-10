@@ -123,7 +123,6 @@ DJCi500.selectedSlicerDomain = [8, 8, 8, 8]; //length of the Slicer domain
 DJCi500.slicerBeatsPassed = [0, 0, 0, 0];
 DJCi500.slicerPreviousBeatsPassed = [0, 0, 0, 0];
 DJCi500.slicerTimer = [false, false, false, false];
-//DJCi500.slicerJumping = [0, 0, 0, 0];
 DJCi500.slicerActive = [false, false, false, false];
 DJCi500.slicerAlreadyJumped = [false, false, false, false];
 DJCi500.slicerButton = [-1, -1, -1, -1];
