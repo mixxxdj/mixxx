@@ -1,5 +1,7 @@
 #include "encoder/encoderfdkaac.h"
 
+#include <qglobal.h>
+
 #ifdef __APPLE__
 #include <QCoreApplication>
 #endif
@@ -439,9 +441,14 @@ void EncoderFdkAac::processFIFO() {
     }
 }
 
-void EncoderFdkAac::updateMetaData(
-        const QString& artist, const QString& title, const QString& album) {
-    (void)artist, (void)title, (void)album;
+void EncoderFdkAac::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds timecode) {
+    Q_UNUSED(artist);
+    Q_UNUSED(title);
+    Q_UNUSED(album);
+    Q_UNUSED(timecode);
 }
 
 void EncoderFdkAac::flush() {
