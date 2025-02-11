@@ -196,11 +196,14 @@ class CueControl : public EngineControl {
             UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    void process(const double dRate,
-            mixxx::audio::FramePos currentPosition,
-            const std::size_t bufferSize) override;
-
     void notifySeek(mixxx::audio::FramePos position) override;
+
+    // nextTrigger returns the sample at which the engine will be triggered to
+    // take a jump. THis is only used for active saved jumps
+    virtual mixxx::audio::FramePos nextTrigger(bool reverse,
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos* pTargetPosition,
+            mixxx::audio::FrameDiff_t requested_frame);
 
     void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
@@ -374,9 +377,6 @@ class CueControl : public EngineControl {
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
     QAtomicPointer<HotcueControl> m_pCurrentSavedJumpControl;
-
-    mixxx::audio::FramePos m_lastProcessedPosition;
-    mixxx::audio::FramePos m_jumpCueSeekRequest;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

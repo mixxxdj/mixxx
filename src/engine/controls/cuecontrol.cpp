@@ -137,10 +137,16 @@ CueControl::~CueControl() {
     qDeleteAll(m_hotcueControls);
 }
 
-void CueControl::process(const double rate,
+mixxx::audio::FramePos CueControl::nextTrigger(bool reverse,
         mixxx::audio::FramePos currentPosition,
-        const std::size_t bufferSize) {
-    Q_UNUSED(bufferSize);
+        mixxx::audio::FramePos* pTargetPosition,
+        mixxx::audio::FrameDiff_t requested_frame) {
+    VERIFY_OR_DEBUG_ASSERT(pTargetPosition) {
+        return mixxx::audio::kInvalidFramePos;
+    }
+    *pTargetPosition = mixxx::audio::kInvalidFramePos;
+    mixxx::audio::FramePos triggerPosition = mixxx::audio::kInvalidFramePos;
+    HotcueControl* pNextJump = nullptr;
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         if (!pControl->getCue() ||
                 pControl->getStatus() != HotcueControl::Status::Active ||
@@ -148,45 +154,38 @@ void CueControl::process(const double rate,
                 !pControl->getEndPosition().isValid()) {
             continue;
         }
-        if (rate >= 0
-                // Saved jumps store the position to jump from as their end position
-                && pControl->getEndPosition() > m_lastProcessedPosition &&
-                pControl->getEndPosition() <= currentPosition) {
-            jumpTo(currentPosition, pControl->getEndPosition(), pControl->getPosition());
-        } else if (rate < 0
-                // Saved jumps store the position to jump from as their end position
-                && pControl->getPosition() < m_lastProcessedPosition &&
-                pControl->getPosition() >= currentPosition) {
-            jumpTo(currentPosition, pControl->getPosition(), pControl->getEndPosition());
-        } else {
-            continue;
-        }
-        if (pControl->getPosition() < pControl->getEndPosition()) {
-            // If the saved jump is backward, we make the cue idle so it
-            // prevent creating a fake loop
-            pControl->setStatus(HotcueControl::Status::Set);
+
+        if (!reverse
+                // Saved jumps store the position to jump from as their end
+                // position
+                && pControl->getEndPosition() > currentPosition &&
+                (pControl->getEndPosition() < triggerPosition ||
+                        !triggerPosition.isValid())) {
+            triggerPosition = pControl->getEndPosition();
+            *pTargetPosition = pControl->getPosition();
+            pNextJump = pControl;
+        } else if (reverse
+                // Saved jumps store the position to jump from as their end
+                // position, but here we want to take the jump backward
+                && pControl->getPosition() < currentPosition &&
+                (pControl->getPosition() > triggerPosition ||
+                        !triggerPosition.isValid())) {
+            triggerPosition = pControl->getPosition();
+            *pTargetPosition = pControl->getEndPosition();
         }
     }
-    m_lastProcessedPosition = currentPosition;
-}
 
-void CueControl::jumpTo(mixxx::audio::FramePos currentPosition,
-        mixxx::audio::FramePos source,
-        mixxx::audio::FramePos target) {
-    auto delta = source - currentPosition;
-    m_jumpCueSeekRequest = target + delta;
-    seekAbs(m_jumpCueSeekRequest);
+    if (pNextJump != nullptr &&
+            pNextJump->getPosition() < pNextJump->getEndPosition() &&
+            currentPosition + requested_frame > pNextJump->getEndPosition()) {
+        // If the saved jump is backward, we reset the Active status after the jump
+        // to prevent jumping again like a loop
+        pNextJump->setStatus(HotcueControl::Status::Set);
+    }
+    return triggerPosition;
 }
 
 void CueControl::notifySeek(mixxx::audio::FramePos position) {
-    m_lastProcessedPosition = position;
-
-    qDebug() << m_jumpCueSeekRequest << position;
-    if (m_jumpCueSeekRequest == position) {
-        m_jumpCueSeekRequest = mixxx::audio::FramePos();
-        return;
-    }
-
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         if (!pControl->getCue() ||
                 pControl->getStatus() != HotcueControl::Status::Active ||
@@ -580,7 +579,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         return;
     }
     m_pLoadedTrack = pNewTrack;
-    trackBeatsUpdated(pNewTrack->getBeats());
 
     connect(m_pLoadedTrack.get(),
             &Track::analyzed,

@@ -9,6 +9,7 @@
 #include "util/types.h"
 
 class LoopingControl;
+class CueControl;
 class RateControl;
 
 /// ReadAheadManager is a tool for keeping track of the engine's current position
@@ -24,7 +25,8 @@ class ReadAheadManager {
   public:
     ReadAheadManager(); // Only for testing: ReadAheadManagerMock
     ReadAheadManager(CachingReader* reader,
-                              LoopingControl* pLoopingControl);
+            LoopingControl* pLoopingControl,
+            CueControl* pCueControl);
     virtual ~ReadAheadManager();
 
     /// Call this method to fill buffer with requested_samples out of the
@@ -124,6 +126,7 @@ class ReadAheadManager {
                          double virtualPlaypositionEndNonInclusive);
 
     LoopingControl* m_pLoopingControl;
+    CueControl* m_pCueControl;
     RateControl* m_pRateControl;
     std::list<ReadLogEntry> m_readAheadLog;
     double m_currentPosition; // In absolute samples
