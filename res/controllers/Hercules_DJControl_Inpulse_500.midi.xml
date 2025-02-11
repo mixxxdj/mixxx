@@ -2445,7 +2445,7 @@
 					<script-binding />
 				</options>
 			</control>
-            
+
 			<!--Pad MODE 6  Beatloop rolls: 0x50 to 0x57-->
 			<control>
 				<group>[Channel2]</group>
