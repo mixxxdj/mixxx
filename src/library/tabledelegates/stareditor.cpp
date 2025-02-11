@@ -23,13 +23,14 @@ StarEditor::StarEditor(QWidget* parent,
         QTableView* pTableView,
         const QModelIndex& index,
         const QStyleOptionViewItem& option,
-        const QColor& focusBorderColor)
+        bool isKeyboardEditMode)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
           m_styleOption(option),
-          m_focusBorderColor(focusBorderColor),
-          m_starCount(StarRating::kMinStarCount) {
+          m_starCount(StarRating::kMinStarCount),
+          m_starCountToSave(StarRating::kInvalidStarCount),
+          m_isKeyboardEditMode(isKeyboardEditMode) {
     DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
     installEventFilter(this);
@@ -40,9 +41,13 @@ QSize StarEditor::sizeHint() const {
 }
 
 void StarEditor::paintEvent(QPaintEvent*) {
-    // If a StarEditor is open, by definition the mouse is hovering over us.
-    m_styleOption.state |= QStyle::State_MouseOver;
     m_styleOption.rect = rect();
+
+    if (underMouse()) {
+        m_styleOption.state |= QStyle::State_MouseOver;
+    } else {
+        m_styleOption.state &= ~QStyle::State_MouseOver;
+    }
 
     QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
     if (selectionModel) {
@@ -68,9 +73,10 @@ void StarEditor::paintEvent(QPaintEvent*) {
     painter.setClipRect(m_styleOption.rect);
 
     // Draw standard item with the table view's style
-    QStyle* style = m_pTableView->style();
+    QStyle* style = this->style();
     if (style) {
-        style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
+        // Overwrite the background and stars rendered by the StarDelegate
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &m_styleOption, &painter, this);
     }
 
     // Set the palette appropriately based on whether the row is selected or
@@ -83,31 +89,132 @@ void StarEditor::paintEvent(QPaintEvent*) {
         cg = QPalette::Inactive;
     }
 
+    painter.save();
     if (m_styleOption.state & QStyle::State_Selected) {
         painter.setBrush(m_styleOption.palette.color(cg, QPalette::HighlightedText));
     } else {
         painter.setBrush(m_styleOption.palette.color(cg, QPalette::Text));
     }
-
     m_starRating.paint(&painter, m_styleOption.rect);
-
-    // Draw a border if the color cell is selected
-    if (m_styleOption.state & QStyle::State_HasFocus) {
-        TableItemDelegate::drawBorder(&painter, m_focusBorderColor, m_styleOption.rect);
-    }
+    painter.restore();
 }
 
 bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
     switch (event->type()) {
+    case QEvent::KeyPress: {
+        VERIFY_OR_DEBUG_ASSERT(m_isKeyboardEditMode) {
+            // Persistent editors (i.e. those opened using openPersistentEditor)
+            // should not receive keyboard events via their eventFilter, so we
+            // shouldn't normally arrive here - but if we do, just forward the events.
+            return false;
+        }
+
+        // Change rating when certain keys are pressed
+        // while we are in edit mode.
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        int newRating = m_starRating.starCount();
+        switch (ke->key()) {
+        case Qt::Key_Up:
+        case Qt::Key_Down:
+        case Qt::Key_PageUp:
+        case Qt::Key_PageDown: {
+            // Allow handling of certain keyboard navigation events.
+            // This logic attempts to match the behavior for text editor cells.
+            return false;
+        }
+        case Qt::Key_Home:
+        case Qt::Key_End: {
+            // Only forward Home and End if the Ctrl key is pressed.
+            // This matches the behavior of normal text editor cells.
+            if (ke->modifiers() & Qt::ControlModifier) {
+                return false;
+            }
+            return true;
+        }
+        case Qt::Key_0: {
+            newRating = 0;
+            break;
+        }
+        case Qt::Key_1: {
+            newRating = 1;
+            break;
+        }
+        case Qt::Key_2: {
+            newRating = 2;
+            break;
+        }
+        case Qt::Key_3: {
+            newRating = 3;
+            break;
+        }
+        case Qt::Key_4: {
+            newRating = 4;
+            break;
+        }
+        case Qt::Key_5: {
+            newRating = 5;
+            break;
+        }
+        case Qt::Key_6: {
+            newRating = 6;
+            break;
+        }
+        case Qt::Key_7: {
+            newRating = 7;
+            break;
+        }
+        case Qt::Key_8: {
+            newRating = 8;
+            break;
+        }
+        case Qt::Key_9: {
+            newRating = 9;
+            break;
+        }
+        case Qt::Key_Right:
+        case Qt::Key_Plus: {
+            newRating++;
+            break;
+        }
+        case Qt::Key_Left:
+        case Qt::Key_Minus: {
+            newRating--;
+            break;
+        }
+        }
+        newRating = math_clamp(newRating, StarRating::kMinStarCount, m_starRating.maxStarCount());
+        if (newRating != m_starRating.starCount()) {
+            // Apply star rating if it changed
+            m_starRating.setStarCount(newRating);
+            m_starCount = newRating;
+            update();
+        }
+        // Prevent other keys from being handled as global keyboard shortcuts.
+        // This matches the behavior of the other edit controls.
+        return true;
+    }
     case QEvent::Leave:
     case QEvent::ContextMenu: {
         // Note: it seems with Qt5 we do not reliably get a Leave event when
         // invoking the track menu via right click, so reset the rating now.
         // The event is forwarded to parent QTableView.
+        m_starCountToSave = StarRating::kInvalidStarCount;
         resetRating();
         break;
     }
+    case QEvent::MouseButtonPress: {
+        // Workaround: The MouseButtonPress can cause a focus change that might
+        // cause a database reload, which then overwrites m_starRating before
+        // the MouseButtonRelease event has a chance to commit the new value
+        // to the model.
+        m_starCountToSave = m_starRating.starCount();
+        break;
+    }
     case QEvent::MouseButtonRelease: {
+        if (m_starCountToSave != StarRating::kInvalidStarCount) {
+            m_starRating.setStarCount(m_starCountToSave);
+            m_starCountToSave = StarRating::kInvalidStarCount;
+        }
         emit editingFinished();
         break;
     }

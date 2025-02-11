@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QAbstractItemView>
+
 #include "library/tabledelegates/tableitemdelegate.h"
 
 class StarDelegate : public TableItemDelegate {
@@ -31,9 +33,27 @@ class StarDelegate : public TableItemDelegate {
 
   private slots:
     void commitAndCloseEditor();
+    void closingEditor(QWidget* widget, QAbstractItemDelegate::EndEditHint hint);
     void cellEntered(const QModelIndex& index);
+    void cursorNotOverAnyCell();
+    void editRequested(const QModelIndex& index,
+            QAbstractItemView::EditTrigger trigger,
+            QEvent* event);
+    void restorePersistentRatingEditorNow();
 
   private:
+    void openPersistentRatingEditor(const QModelIndex& index);
+    void closeCurrentPersistentRatingEditor(bool rememberForRestore);
+    void restorePersistentRatingEditor(const QModelIndex& index);
+
+    enum PersistentEditorState {
+        PersistentEditor_NotOpen,
+        PersistentEditor_Opening,
+        PersistentEditor_Open,
+        PersistentEditor_ShouldRestore,
+        PersistentEditor_InDeferredRestore
+    };
+
     QPersistentModelIndex m_currentEditedCellIndex;
-    bool m_isOneCellInEditMode;
+    PersistentEditorState m_persistentEditorState;
 };
