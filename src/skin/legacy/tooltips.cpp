@@ -534,8 +534,13 @@ void Tooltips::addStandardTooltips() {
     // Currently used for samplers
     add("play_start")
             << tr("Play/Pause")
-            << QString("%1: %2").arg(leftClick, tr("Starts playing from the beginning of the track."))
-            << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
+            << QString("%1: %2").arg(leftClick,
+                       tr("Starts playing from the beginning of the track."))
+            << QString("%1: %2").arg(rightClick,
+                       tr("Jumps to the beginning of the track and stops."))
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
@@ -552,7 +557,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
             << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
-            << QString("%1: %2").arg(rightClick, cueSet);
+            << QString("%1: %2").arg(rightClick, cueSet)
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
 
     // Currently used for minimal decks
     add("play_cue_default")
@@ -561,7 +569,10 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
             << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
             << cueHint
-            << quantizeSnap;
+            << quantizeSnap
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
@@ -703,8 +714,10 @@ void Tooltips::addStandardTooltips() {
                   << tr("Drag this button onto another Hotcue button to move it "
                         "there (change its index). If the other hotcue is set, "
                         "the two are swapped.")
+                  << tr("Drag this button onto a Play button while previewing "
+                        "to continue playback after release.")
                   << tr("Dragging with Shift key pressed will not start previewing "
-                        "the hotcue");
+                        "the hotcue.");
 
     // Status displays and toggle buttons
     add("toggle_recording")
