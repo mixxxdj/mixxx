@@ -3342,7 +3342,6 @@ if(QML)
   )
   target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
-  target_compile_definitions(mixxx-qml-lib PRIVATE __RENDERGRAPH_IS_SCENEGRAPH)
   target_sources(
     mixxx-qml-lib
     PRIVATE

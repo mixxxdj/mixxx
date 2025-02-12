@@ -12,8 +12,7 @@ class allshader::WaveformRendererHSV final
         : public allshader::WaveformRendererSignalBase,
           public rendergraph::GeometryNode {
   public:
-    explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget,
-            const IVisualGainProvider* visualGainProvider = nullptr);
+    explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;

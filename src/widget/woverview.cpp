@@ -108,7 +108,7 @@ WOverview::WOverview(
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overallVisualGainChanged,
+            &WaveformWidgetFactory::visualGainChanged,
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
     // Also listen to ReplayGain changes to scale the waveform

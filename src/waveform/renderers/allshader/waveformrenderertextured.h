@@ -17,11 +17,10 @@ class QOpenGLShaderProgram;
 
 namespace allshader {
 class WaveformRendererTextured;
-}
+} // namespace allshader
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured final : public QObject,
-                                                  public allshader::WaveformRendererSignalBase,
+class allshader::WaveformRendererTextured final : public allshader::WaveformRendererSignalBase,
                                                   public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
@@ -30,8 +29,7 @@ class allshader::WaveformRendererTextured final : public QObject,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
             WaveformRendererSignalBase::Options options =
-                    WaveformRendererSignalBase::Option::None,
-            const IVisualGainProvider* visualGainProvider = nullptr);
+                    WaveformRendererSignalBase::Option::None);
     ~WaveformRendererTextured() override;
 
     // override ::WaveformRendererSignalBase

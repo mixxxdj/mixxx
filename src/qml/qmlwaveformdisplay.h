@@ -5,7 +5,6 @@
 #include <QQuickWindow>
 #include <QSGNode>
 #include <QSGSimpleRectNode>
-#include <QtQml>
 
 #include "qml/qmlplayerproxy.h"
 #include "qml/qmlwaveformrenderer.h"
@@ -72,7 +71,7 @@ class QmlWaveformDisplay : public QQuickItem, ISyncTimeProvider, public Waveform
         return m_syncIntervalTimeMicros;
     }
 
-    virtual void componentComplete() override;
+    void componentComplete() override;
 
     QQmlListProperty<QmlWaveformRendererFactory> renderers();
 

@@ -99,8 +99,7 @@ class QmlWaveformRendererPreroll
 };
 
 class QmlWaveformRendererRGB
-        : public QmlWaveformRendererFactory,
-          public IVisualGainProvider {
+        : public QmlWaveformRendererFactory {
     Q_OBJECT
     Q_PROPERTY(QColor axesColor READ axesColor WRITE setAxesColor NOTIFY axesColorChanged REQUIRED)
     Q_PROPERTY(QColor lowColor READ lowColor WRITE setLowColor NOTIFY lowColorChanged REQUIRED)
@@ -180,8 +179,6 @@ class QmlWaveformRendererRGB
     }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
-
-    double getVisualGain(FilterIndex index) const override;
 
   signals:
     void axesColorChanged(const QColor&);
@@ -417,10 +414,10 @@ class QmlWaveformMark : public QObject {
 
 class QmlWaveformUntilMark : public QObject {
     Q_OBJECT
-    Q_PROPERTY(bool showTime READ showTime WRITE setShowTime)
-    Q_PROPERTY(bool showBeats READ showBeats WRITE setShowBeats)
-    Q_PROPERTY(HAlignment align READ align WRITE setAlign)
-    Q_PROPERTY(int textSize READ textSize WRITE setTextSize)
+    Q_PROPERTY(bool showTime READ showTime WRITE setShowTime NOTIFY showTimeChanged)
+    Q_PROPERTY(bool showBeats READ showBeats WRITE setShowBeats NOTIFY showBeatsChanged)
+    Q_PROPERTY(HAlignment align READ align WRITE setAlign NOTIFY alignChanged)
+    Q_PROPERTY(int textSize READ textSize WRITE setTextSize NOTIFY textSizeChanged)
 
     QML_NAMED_ELEMENT(WaveformUntilMark)
   public:
@@ -459,6 +456,11 @@ class QmlWaveformUntilMark : public QObject {
     void setTextHeightLimit(float textHeightLimit) {
         m_textHeightLimit = textHeightLimit;
     }
+  signals:
+    void showTimeChanged(bool);
+    void showBeatsChanged(bool);
+    void alignChanged(Qt::Alignment);
+    void textSizeChanged(int);
 
   private:
     bool m_showTime;
@@ -489,8 +491,7 @@ class QmlWaveformRendererMarkRange
 };
 
 class QmlWaveformRendererStem
-        : public QmlWaveformRendererFactory,
-          public IVisualGainProvider {
+        : public QmlWaveformRendererFactory {
     Q_OBJECT
     Q_PROPERTY(double gainAll READ gainAll WRITE setGainAll NOTIFY gainAllChanged REQUIRED)
     QML_NAMED_ELEMENT(WaveformRendererStem)
@@ -514,8 +515,6 @@ class QmlWaveformRendererStem
     }
 #endif
 
-    double getVisualGain(FilterIndex index) const override;
-
   signals:
     void gainAllChanged(double);
 
@@ -529,8 +528,10 @@ class QmlWaveformRendererMark
         : public QmlWaveformRendererFactory {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<QmlWaveformMark> marks READ marks)
-    Q_PROPERTY(QColor playMarkerColor READ playMarkerColor WRITE setPlayMarkerColor)
-    Q_PROPERTY(QColor playMarkerBackground READ playMarkerBackground WRITE setPlayMarkerBackground)
+    Q_PROPERTY(QColor playMarkerColor READ playMarkerColor WRITE
+                    setPlayMarkerColor NOTIFY playMarkerColorChanged)
+    Q_PROPERTY(QColor playMarkerBackground READ playMarkerBackground WRITE
+                    setPlayMarkerBackground NOTIFY playMarkerBackgroundChanged)
     Q_PROPERTY(QmlWaveformMark* defaultMark READ defaultMark WRITE setDefaultMark)
     Q_PROPERTY(QmlWaveformUntilMark* untilMark READ untilMark FINAL)
     Q_CLASSINFO("DefaultProperty", "marks")
@@ -569,6 +570,9 @@ class QmlWaveformRendererMark
     QQmlListProperty<QmlWaveformMark> marks() {
         return {this, &m_marks};
     }
+  signals:
+    void playMarkerColorChanged(const QColor&);
+    void playMarkerBackgroundChanged(const QColor&);
 
   private:
     QColor m_playMarkerColor;

@@ -19,6 +19,7 @@
 #include "qml/qmlplayerproxy.h"
 #include "rendergraph/context.h"
 #include "rendergraph/node.h"
+#include "util/assert.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 
@@ -107,9 +108,9 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
         m_pTopNode = new rendergraph::Node;
 
         m_rendererStack.clear();
-        for (auto* pQmlRenderer : m_waveformRenderers) {
+        for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
             auto renderer = pQmlRenderer->create(this);
-            if (!renderer.renderer) {
+            VERIFY_OR_DEBUG_ASSERT(renderer.renderer) {
                 continue;
             }
             addRenderer(renderer.renderer);
@@ -143,24 +144,15 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 boundingRect().height(),
                 window()->devicePixelRatio());
         bgNode->setRect(boundingRect());
-
-        auto rect = QRectF(boundingRect().x() +
-                        boundingRect().width() * m_playMarkerPosition - 1.0,
-                boundingRect().y(),
-                2.0,
-                boundingRect().height());
-    }
-
-    if (m_waveformRenderMark != nullptr) {
-        m_waveformRenderMark->update();
-    }
-    if (m_waveformRenderMarkRange != nullptr) {
-        m_waveformRenderMarkRange->update();
     }
 
     onPreRender(this);
-    bgNode->markDirty(QSGNode::DirtyForceUpdate);
 
+    for (auto* pRenderer : m_rendererStack) {
+        pRenderer->update();
+    }
+
+    bgNode->markDirty(QSGNode::DirtyForceUpdate);
     return bgNode;
 }
 

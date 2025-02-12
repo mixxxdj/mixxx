@@ -680,9 +680,11 @@ void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
     }
-    if (!m_overviewNormalized && index == FilterIndex::AllChannel) {
-        emit overallVisualGainChanged();
-    }
+    emit visualGainChanged(
+            m_visualGain[FilterIndex::AllChannel],
+            m_visualGain[FilterIndex::Low],
+            m_visualGain[FilterIndex::Mid],
+            m_visualGain[FilterIndex::High]);
 }
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
@@ -1321,6 +1323,7 @@ void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
         m_config->set(ConfigKey("[Waveform]", "UntilMarkShowBeats"),
                 ConfigValue(m_untilMarkShowBeats));
     }
+    emit untilMarkShowBeatsChanged(value);
 }
 
 void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
@@ -1329,6 +1332,7 @@ void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
         m_config->set(ConfigKey("[Waveform]", "UntilMarkShowTime"),
                 ConfigValue(m_untilMarkShowTime));
     }
+    emit untilMarkShowTimeChanged(value);
 }
 
 void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
@@ -1337,6 +1341,7 @@ void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
         m_config->setValue(ConfigKey("[Waveform]", "UntilMarkAlign"),
                 toUntilMarkAlignIndex(m_untilMarkAlign));
     }
+    emit untilMarkAlignChanged(align);
 }
 
 void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
@@ -1345,6 +1350,7 @@ void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
         m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
                 m_untilMarkTextPointSize);
     }
+    emit untilMarkTextPointSizeChanged(value);
 }
 
 void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
@@ -1353,6 +1359,7 @@ void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
         m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
                 toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit));
     }
+    emit untilMarkTextHeightLimitChanged(value);
 }
 
 // static

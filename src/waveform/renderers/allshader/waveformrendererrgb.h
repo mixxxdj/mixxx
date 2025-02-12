@@ -15,16 +15,10 @@ class allshader::WaveformRendererRGB final
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
-            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None,
-            const IVisualGainProvider* visualGainProvider = nullptr);
+            WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
-
-    void setup(const QColor& axesColor,
-            const QColor& lowColor,
-            const QColor& midColor,
-            const QColor& highColor);
 
     bool supportsSlip() const override {
         return true;
@@ -32,6 +26,12 @@ class allshader::WaveformRendererRGB final
 
     // Virtuals for rendergraph::Node
     void preprocess() override;
+
+  public slots:
+    void setAxesColor(const QColor& axesColor);
+    void setLowColor(const QColor& lowColor);
+    void setMidColor(const QColor& midColor);
+    void setHighColor(const QColor& highColor);
 
   private:
     bool m_isSlipRenderer;

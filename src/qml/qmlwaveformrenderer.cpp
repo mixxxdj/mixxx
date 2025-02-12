@@ -28,22 +28,6 @@ QmlWaveformRendererPreroll::QmlWaveformRendererPreroll() {
 QmlWaveformRendererRGB::QmlWaveformRendererRGB() {
 }
 
-double QmlWaveformRendererRGB::getVisualGain(FilterIndex index) const {
-    switch (index) {
-    case AllChannel:
-        return m_gainAll;
-    case Low:
-        return m_gainLow;
-    case Mid:
-        return m_gainMid;
-    case High:
-        return m_gainHigh;
-    case FilterCount:
-        break;
-    }
-    return 1.0;
-}
-
 QmlWaveformRendererBeat::QmlWaveformRendererBeat() {
 }
 
@@ -51,19 +35,6 @@ QmlWaveformRendererMarkRange::QmlWaveformRendererMarkRange() {
 }
 
 QmlWaveformRendererStem::QmlWaveformRendererStem() {
-}
-
-double QmlWaveformRendererStem::getVisualGain(FilterIndex index) const {
-    switch (index) {
-    case AllChannel:
-        return m_gainAll;
-    case Low:
-    case Mid:
-    case High:
-    case FilterCount:
-        break;
-    }
-    return 1.0;
 }
 
 QmlWaveformRendererMark::QmlWaveformRendererMark()
@@ -74,7 +45,17 @@ QmlWaveformRendererMark::QmlWaveformRendererMark()
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererEndOfTrack::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRendererEndOfTrack(waveformWidget);
-    renderer->setup(m_color, m_endOfTrackWarningTime);
+
+    renderer->setColor(m_color);
+    renderer->setEndOfTrackWarningTime(m_endOfTrackWarningTime);
+    connect(this,
+            &QmlWaveformRendererEndOfTrack::colorChanged,
+            renderer,
+            &WaveformRendererEndOfTrack::setColor);
+    connect(this,
+            &QmlWaveformRendererEndOfTrack::endOfTrackWarningTimeChanged,
+            renderer,
+            &WaveformRendererEndOfTrack::setEndOfTrackWarningTime);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
@@ -82,18 +63,59 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererPreroll::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRendererPreroll(
             waveformWidget, m_position);
-    renderer->setup(m_color);
+    renderer->setColor(m_color);
+    connect(this,
+            &QmlWaveformRendererPreroll::colorChanged,
+            renderer,
+            &WaveformRendererPreroll::setColor);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB::create(
         WaveformWidgetRenderer* waveformWidget) const {
-    auto* renderer = new WaveformRendererRGB(waveformWidget, m_position, m_options, this);
-    renderer->setup(
-            m_axesColor,
-            m_lowColor,
-            m_midColor,
-            m_highColor);
+    auto* renderer = new WaveformRendererRGB(waveformWidget, m_position, m_options);
+
+    renderer->setAxesColor(m_axesColor);
+    renderer->setLowColor(m_lowColor);
+    renderer->setMidColor(m_midColor);
+    renderer->setHighColor(m_highColor);
+    connect(this,
+            &QmlWaveformRendererRGB::axesColorChanged,
+            renderer,
+            &WaveformRendererRGB::setAxesColor);
+    connect(this,
+            &QmlWaveformRendererRGB::lowColorChanged,
+            renderer,
+            &WaveformRendererRGB::setLowColor);
+    connect(this,
+            &QmlWaveformRendererRGB::midColorChanged,
+            renderer,
+            &WaveformRendererRGB::setMidColor);
+    connect(this,
+            &QmlWaveformRendererRGB::highColorChanged,
+            renderer,
+            &WaveformRendererRGB::setHighColor);
+
+    renderer->setAllChannelVisualGain(m_gainAll);
+    renderer->setLowVisualGain(m_gainLow);
+    renderer->setMidVisualGain(m_gainMid);
+    renderer->setHighVisualGain(m_gainHigh);
+    connect(this,
+            &QmlWaveformRendererRGB::gainAllChanged,
+            renderer,
+            &WaveformRendererRGB::setAllChannelVisualGain);
+    connect(this,
+            &QmlWaveformRendererRGB::gainLowChanged,
+            renderer,
+            &WaveformRendererRGB::setLowVisualGain);
+    connect(this,
+            &QmlWaveformRendererRGB::gainMidChanged,
+            renderer,
+            &WaveformRendererRGB::setMidVisualGain);
+    connect(this,
+            &QmlWaveformRendererRGB::gainHighChanged,
+            renderer,
+            &WaveformRendererRGB::setHighVisualGain);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
@@ -101,7 +123,8 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRenderBeat(
             waveformWidget, m_position);
-    renderer->setup(m_color);
+    renderer->setColor(m_color);
+    connect(this, &QmlWaveformRendererBeat::colorChanged, renderer, &WaveformRenderBeat::setColor);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 
@@ -131,7 +154,13 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMarkRange::create(
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererStem::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto* renderer = new WaveformRendererStem(
-            waveformWidget, m_position, this);
+            waveformWidget, m_position);
+
+    renderer->setAllChannelVisualGain(m_gainAll);
+    connect(this,
+            &QmlWaveformRendererStem::gainAllChanged,
+            renderer,
+            &WaveformRendererStem::setAllChannelVisualGain);
     return QmlWaveformRendererFactory::Renderer{renderer, renderer};
 }
 #endif
@@ -143,14 +172,42 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
     }
     auto* renderer = new WaveformRenderMark(waveformWidget,
             ::WaveformRendererAbstract::Play);
-    renderer->setup(
-            m_playMarkerColor,
-            m_playMarkerBackground,
-            m_untilMark->showTime(),
-            m_untilMark->showBeats(),
-            static_cast<Qt::Alignment>(m_untilMark->align()),
-            m_untilMark->textSize(),
-            m_untilMark->textHeightLimit());
+
+    renderer->setFgPlayColor(m_playMarkerColor);
+    renderer->setBgPlayColor(m_playMarkerBackground);
+
+    renderer->setUntilMarkShowBeats(m_untilMark->showTime());
+    renderer->setUntilMarkShowTime(m_untilMark->showBeats());
+    renderer->setUntilMarkAlign(static_cast<Qt::Alignment>(m_untilMark->align()));
+    renderer->setUntilMarkTextSize(m_untilMark->textSize());
+    renderer->setUntilMarkTextHeightLimit(m_untilMark->textHeightLimit());
+
+    connect(m_untilMark.get(),
+            &QmlWaveformUntilMark::showTimeChanged,
+            renderer,
+            &WaveformRenderMark::setUntilMarkShowTime);
+    connect(m_untilMark.get(),
+            &QmlWaveformUntilMark::showBeatsChanged,
+            renderer,
+            &WaveformRenderMark::setUntilMarkShowBeats);
+    connect(m_untilMark.get(),
+            &QmlWaveformUntilMark::alignChanged,
+            renderer,
+            &WaveformRenderMark::setUntilMarkAlign);
+    connect(m_untilMark.get(),
+            &QmlWaveformUntilMark::textSizeChanged,
+            renderer,
+            &WaveformRenderMark::setUntilMarkTextSize);
+
+    connect(this,
+            &QmlWaveformRendererMark::playMarkerColorChanged,
+            renderer,
+            &WaveformRenderMark::setFgPlayColor);
+    connect(this,
+            &QmlWaveformRendererMark::playMarkerBackgroundChanged,
+            renderer,
+            &WaveformRenderMark::setBgPlayColor);
+
     int priority = 0;
     for (auto* pMark : m_marks) {
         renderer->addMark(WaveformMarkPointer(new WaveformMark(

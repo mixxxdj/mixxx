@@ -13,9 +13,8 @@ namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
         WaveformWidgetRenderer* waveformWidget,
-        bool bRgbStacked,
-        const IVisualGainProvider* visualGainProvider)
-        : WaveformRendererSignalBase(waveformWidget, visualGainProvider),
+        bool bRgbStacked)
+        : WaveformRendererSignalBase(waveformWidget),
           m_bRgbStacked(bRgbStacked) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);

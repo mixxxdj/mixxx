@@ -9,7 +9,6 @@
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
-#include "waveform/ivisualgainprovider.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
@@ -106,7 +105,6 @@ class WaveformWidgetHolder {
 //########################################
 
 class WaveformWidgetFactory : public QObject,
-                              public IVisualGainProvider,
                               public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
@@ -226,7 +224,13 @@ class WaveformWidgetFactory : public QObject,
     void swapVuMeters();
 
     void overviewNormalizeChanged();
-    void overallVisualGainChanged();
+    void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
+
+    void untilMarkShowBeatsChanged(bool value);
+    void untilMarkShowTimeChanged(bool value);
+    void untilMarkAlignChanged(Qt::Alignment align);
+    void untilMarkTextPointSizeChanged(int value);
+    void untilMarkTextHeightLimitChanged(float value);
 
   public slots:
     void slotSkinLoaded();
