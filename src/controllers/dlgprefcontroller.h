@@ -146,4 +146,5 @@ class DlgPrefController : public DlgPreferencePage {
     int m_outputMappingsTabIndex; // Index of the output mappings tab
     int m_settingsTabIndex;       // Index of the settings tab
     int m_screensTabIndex;        // Index of the screens tab
+    QHash<QString, bool> m_settingsCollapsedStates;
 };

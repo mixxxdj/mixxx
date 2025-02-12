@@ -29,6 +29,7 @@
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/string.h"
+#include "widget/wcollapsiblegroupbox.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");
@@ -761,6 +762,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         if (m_pControllerManager->getConfiguredMappingFileForDevice(
                     m_pController->getName()) != mappingFilePath) {
             setDirty(true);
+            m_settingsCollapsedStates.clear();
         } else if (m_pMapping && m_pMapping->isDirty()) {
             // We have pending changes, don't reload the mapping from file!
             // This is called by show()/slotUpdate() after MIDI learning ended
@@ -1068,7 +1070,35 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         }
 
         if (pLayout != nullptr && !settings.isEmpty()) {
-            m_ui.settingsTab->layout()->addWidget(pLayout->build(m_ui.settingsTab));
+            QWidget* pSettingsWidget = pLayout->build(m_ui.settingsTab);
+            m_ui.settingsTab->layout()->addWidget(pSettingsWidget);
+            // Add an expanding spacer so that when we collapse all groups
+            // all are pushed to the top.
+            m_ui.settingsTab->layout()->addItem(new QSpacerItem(
+                    1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+            // Set all groupboxes checkable so we get the collapse/expand
+            // functionality. We want to make only the top-level groupboxes
+            // collapsible, so find direct children only. QString() is required
+            // to pass second arg Qt::FindChildOption. This is fine since our
+            // groupboxes don't have ObjectNames.
+            const QList<WCollapsibleGroupBox*> boxes =
+                    pSettingsWidget->findChildren<WCollapsibleGroupBox*>(
+                            QString(), Qt::FindDirectChildrenOnly);
+            for (auto pBox : boxes) {
+                const QString title = pBox->title();
+                pBox->setCheckable(true);
+                if (m_settingsCollapsedStates.contains(title)) {
+                    pBox->setChecked(m_settingsCollapsedStates.value(title));
+                }
+
+                connect(pBox,
+                        &WCollapsibleGroupBox::toggled,
+                        this,
+                        [this, title](bool checked) {
+                            m_settingsCollapsedStates.insert(title, checked);
+                        });
+            }
 
             for (const auto& setting : std::as_const(settings)) {
                 connect(setting.get(),
