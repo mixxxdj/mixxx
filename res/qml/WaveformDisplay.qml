@@ -195,9 +195,8 @@ Item {
                     wheelControl.parameter = 0.5;
 
                 mouseStatus = WaveformDisplay.MouseStatus.Scratching;
+                scratchPositionControl.value = 0;
                 scratchPositionEnableControl.value = 1;
-                // TODO: Calculate position properly
-                scratchPositionControl.value = -mouse.x * zoomControl.value * 50;
             } else {
                 if (mouseStatus == WaveformDisplay.MouseStatus.Scratching)
                     scratchPositionEnableControl.value = 0;
@@ -207,9 +206,9 @@ Item {
             }
         }
         onPositionChanged: {
+            const diff = mouse.x - mouseAnchor.x;
             switch (mouseStatus) {
                 case WaveformDisplay.MouseStatus.Bending: {
-                    const diff = mouse.x - mouseAnchor.x;
                     // Start at the middle of [0.0, 1.0], and emit values based on how far
                     // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
                     // this is tuned to 127.
@@ -220,7 +219,7 @@ Item {
                 };
                 case WaveformDisplay.MouseStatus.Scratching:
                 // TODO: Calculate position properly
-                    scratchPositionControl.value = -mouse.x * zoomControl.value * 50;
+                    scratchPositionControl.value = -diff * zoomControl.value * 200;
                     break;
             }
         }
@@ -231,6 +230,7 @@ Item {
                     break;
                 case WaveformDisplay.MouseStatus.Scratching:
                     scratchPositionEnableControl.value = 0;
+                    scratchPositionControl.value = 0;
                     break;
             }
             mouseStatus = WaveformDisplay.MouseStatus.Normal;
