@@ -1,9 +1,12 @@
 #pragma once
 
-#include "widget/wlabel.h"
-#include "control/controlproxy.h"
+#include <qboxlayout.h>
 
-class WKey : public WLabel  {
+#include "control/controlproxy.h"
+#include "widget/wlabel.h"
+#include "widget/wwidgetgroup.h"
+
+class WKey : public WWidgetGroup {
     Q_OBJECT
   public:
     explicit WKey(const QString& group, QWidget* pParent = nullptr);
@@ -22,4 +25,5 @@ class WKey : public WLabel  {
     bool m_displayKey;
     ControlProxy m_keyNotation;
     ControlProxy m_engineKeyDistance;
+    WLabel m_keyLabel;
 };
