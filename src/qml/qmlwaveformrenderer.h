@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QQmlEngine>
 
-#include "rendergraph/node.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -35,31 +34,13 @@ class QmlWaveformRendererFactory : public QObject {
 class QmlWaveformRendererEndOfTrack
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged REQUIRED)
-    Q_PROPERTY(int endOfTrackWarningTime READ endOfTrackWarningTime WRITE
-                    setEndOfTrackWarningTime NOTIFY endOfTrackWarningTimeChanged
-                            REQUIRED)
+    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged REQUIRED)
+    Q_PROPERTY(int endOfTrackWarningTime MEMBER m_endOfTrackWarningTime NOTIFY
+                    endOfTrackWarningTimeChanged REQUIRED)
     QML_NAMED_ELEMENT(WaveformRendererEndOfTrack)
 
   public:
     QmlWaveformRendererEndOfTrack();
-
-    const QColor& color() const {
-        return m_color;
-    }
-    void setColor(QColor color) {
-        m_color = color;
-        emit colorChanged(m_color);
-    }
-
-    int endOfTrackWarningTime() const {
-        return m_endOfTrackWarningTime;
-    }
-
-    void setEndOfTrackWarningTime(int endOfTrackWarningTime) {
-        m_endOfTrackWarningTime = endOfTrackWarningTime;
-        emit endOfTrackWarningTimeChanged(m_endOfTrackWarningTime);
-    }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
 
@@ -75,19 +56,11 @@ class QmlWaveformRendererEndOfTrack
 class QmlWaveformRendererPreroll
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged REQUIRED)
+    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged REQUIRED)
     QML_NAMED_ELEMENT(WaveformRendererPreroll)
 
   public:
     QmlWaveformRendererPreroll();
-
-    const QColor& color() const {
-        return m_color;
-    }
-    void setColor(QColor color) {
-        m_color = color;
-        emit colorChanged(m_color);
-    }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
   signals:
@@ -101,82 +74,18 @@ class QmlWaveformRendererPreroll
 class QmlWaveformRendererRGB
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(QColor axesColor READ axesColor WRITE setAxesColor NOTIFY axesColorChanged REQUIRED)
-    Q_PROPERTY(QColor lowColor READ lowColor WRITE setLowColor NOTIFY lowColorChanged REQUIRED)
-    Q_PROPERTY(QColor midColor READ midColor WRITE setMidColor NOTIFY midColorChanged REQUIRED)
-    Q_PROPERTY(QColor highColor READ highColor WRITE setHighColor NOTIFY highColorChanged REQUIRED)
-    Q_PROPERTY(double gainAll READ gainAll WRITE setGainAll NOTIFY gainAllChanged REQUIRED)
-    Q_PROPERTY(double gainLow READ gainLow WRITE setGainLow NOTIFY gainLowChanged REQUIRED)
-    Q_PROPERTY(double gainMid READ gainMid WRITE setGainMid NOTIFY gainMidChanged REQUIRED)
-    Q_PROPERTY(double gainHigh READ gainHigh WRITE setGainHigh NOTIFY gainHighChanged REQUIRED)
+    Q_PROPERTY(QColor axesColor MEMBER m_axesColor NOTIFY axesColorChanged REQUIRED)
+    Q_PROPERTY(QColor lowColor MEMBER m_lowColor NOTIFY lowColorChanged REQUIRED)
+    Q_PROPERTY(QColor midColor MEMBER m_midColor NOTIFY midColorChanged REQUIRED)
+    Q_PROPERTY(QColor highColor MEMBER m_highColor NOTIFY highColorChanged REQUIRED)
+    Q_PROPERTY(double gainAll MEMBER m_gainAll NOTIFY gainAllChanged REQUIRED)
+    Q_PROPERTY(double gainLow MEMBER m_gainLow NOTIFY gainLowChanged REQUIRED)
+    Q_PROPERTY(double gainMid MEMBER m_gainMid NOTIFY gainMidChanged REQUIRED)
+    Q_PROPERTY(double gainHigh MEMBER m_gainHigh NOTIFY gainHighChanged REQUIRED)
     QML_NAMED_ELEMENT(WaveformRendererRGB)
 
   public:
     QmlWaveformRendererRGB();
-
-    const QColor& axesColor() const {
-        return m_axesColor;
-    }
-    void setAxesColor(QColor color) {
-        m_axesColor = color;
-        emit axesColorChanged(m_axesColor);
-    }
-
-    const QColor& lowColor() const {
-        return m_lowColor;
-    }
-    void setLowColor(QColor color) {
-        m_lowColor = color;
-        emit lowColorChanged(m_lowColor);
-    }
-
-    const QColor& midColor() const {
-        return m_lowColor;
-    }
-    void setMidColor(QColor color) {
-        m_midColor = color;
-        emit midColorChanged(m_lowColor);
-    }
-
-    const QColor& highColor() const {
-        return m_lowColor;
-    }
-    void setHighColor(QColor color) {
-        m_highColor = color;
-        emit highColorChanged(m_lowColor);
-    }
-
-    double gainAll() const {
-        return m_gainAll;
-    }
-    void setGainAll(double gain) {
-        m_gainAll = gain;
-        emit gainAllChanged(gain);
-    }
-
-    double gainLow() const {
-        return m_gainLow;
-    }
-    void setGainLow(double gain) {
-        m_gainLow = gain;
-        emit gainLowChanged(gain);
-    }
-
-    double gainMid() const {
-        return m_gainMid;
-    }
-    void setGainMid(double gain) {
-        m_gainMid = gain;
-        emit gainMidChanged(gain);
-    }
-
-    double gainHigh() const {
-        return m_gainHigh;
-    }
-    void setGainHigh(double gain) {
-        m_gainHigh = gain;
-        emit gainHighChanged(gain);
-    }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
 
@@ -209,19 +118,11 @@ class QmlWaveformRendererRGB
 class QmlWaveformRendererBeat
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged REQUIRED)
+    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged REQUIRED)
     QML_NAMED_ELEMENT(WaveformRendererBeat)
 
   public:
     QmlWaveformRendererBeat();
-
-    const QColor& color() const {
-        return m_color;
-    }
-    void setColor(QColor color) {
-        m_color = color;
-        emit colorChanged(m_color);
-    }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
   signals:
@@ -234,16 +135,17 @@ class QmlWaveformRendererBeat
 
 class QmlWaveformMarkRange : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QColor color READ color WRITE setColor)
-    Q_PROPERTY(QColor disabledColor READ disabledColor WRITE setDisabledColor)
-    Q_PROPERTY(double opacity READ opacity WRITE setOpacity)
-    Q_PROPERTY(double disabledOpacity READ disabledOpacity WRITE setDisabledOpacity)
-    Q_PROPERTY(QColor durationTextColor READ durationTextColor WRITE setDurationTextColor)
-    Q_PROPERTY(QString startControl READ startControl WRITE setStartControl)
-    Q_PROPERTY(QString endControl READ endControl WRITE setEndControl)
-    Q_PROPERTY(QString enabledControl READ enabledControl WRITE setEnabledControl)
-    Q_PROPERTY(QString visibilityControl READ visibilityControl WRITE setVisibilityControl)
-    Q_PROPERTY(QString durationTextLocation READ durationTextLocation WRITE setDurationTextLocation)
+    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
+    Q_PROPERTY(QColor disabledColor MEMBER m_disabledColor NOTIFY disabledColorChanged)
+    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged)
+    Q_PROPERTY(double disabledOpacity MEMBER m_disabledOpacity NOTIFY disabledOpacityChanged)
+    Q_PROPERTY(QColor durationTextColor MEMBER m_durationTextColor NOTIFY durationTextColorChanged)
+    Q_PROPERTY(QString startControl MEMBER m_startControl NOTIFY startControlChanged)
+    Q_PROPERTY(QString endControl MEMBER m_endControl NOTIFY endControlChanged)
+    Q_PROPERTY(QString enabledControl MEMBER m_enabledControl NOTIFY enabledControlChanged)
+    Q_PROPERTY(QString visibilityControl MEMBER m_visibilityControl NOTIFY visibilityControlChanged)
+    Q_PROPERTY(QString durationTextLocation MEMBER m_durationTextLocation NOTIFY
+                    durationTextLocationChanged)
     QML_NAMED_ELEMENT(WaveformMarkRange)
 
   public:
@@ -251,81 +153,62 @@ class QmlWaveformMarkRange : public QObject {
         return m_color;
     }
 
-    void setColor(const QColor& value) {
-        m_color = value;
-    }
 
     QColor disabledColor() const {
         return m_disabledColor;
     }
 
-    void setDisabledColor(const QColor& value) {
-        m_disabledColor = value;
-    }
 
     double opacity() const {
         return m_opacity;
     }
 
-    void setOpacity(double value) {
-        m_opacity = value;
-    }
 
     double disabledOpacity() const {
         return m_disabledOpacity;
     }
 
-    void setDisabledOpacity(double value) {
-        m_disabledOpacity = value;
-    }
 
     QColor durationTextColor() const {
         return m_durationTextColor;
     }
 
-    void setDurationTextColor(const QColor& value) {
-        m_durationTextColor = value;
-    }
 
     QString startControl() const {
         return m_startControl;
     }
 
-    void setStartControl(const QString& value) {
-        m_startControl = value;
-    }
 
     QString endControl() const {
         return m_endControl;
     }
 
-    void setEndControl(const QString& value) {
-        m_endControl = value;
-    }
 
     QString enabledControl() const {
         return m_enabledControl;
     }
 
-    void setEnabledControl(const QString& value) {
-        m_enabledControl = value;
-    }
 
     QString visibilityControl() const {
         return m_visibilityControl;
     }
 
-    void setVisibilityControl(const QString& value) {
-        m_visibilityControl = value;
-    }
 
     QString durationTextLocation() const {
         return m_durationTextLocation;
     }
 
-    void setDurationTextLocation(const QString& value) {
-        m_durationTextLocation = value;
-    }
+  signals:
+    void colorChanged(QColor color);
+    void disabledColorChanged(QColor disabledColor);
+    void opacityChanged(double opacity);
+    void disabledOpacityChanged(double disabledOpacity);
+    void durationTextColorChanged(QColor durationTextColor);
+    void startControlChanged(QString startControl);
+    void endControlChanged(QString endControl);
+    void enabledControlChanged(QString enabledControl);
+    void visibilityControlChanged(QString visibilityControl);
+    void durationTextLocationChanged(QString durationTextLocation);
 
   private:
     double m_opacity{0.5};
@@ -342,64 +225,50 @@ class QmlWaveformMarkRange : public QObject {
 
 class QmlWaveformMark : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString control READ control WRITE setControl)
-    Q_PROPERTY(QString visibilityControl READ visibilityControl WRITE setVisibilityControl)
-    Q_PROPERTY(QString color READ color WRITE setColor)
-    Q_PROPERTY(QString textColor READ textColor WRITE setTextColor)
-    Q_PROPERTY(QString align READ align WRITE setAlign)
-    Q_PROPERTY(QString text READ text WRITE setText)
-    Q_PROPERTY(QString pixmap READ pixmap WRITE setPixmap)
-    Q_PROPERTY(QString icon READ icon WRITE setIcon)
+    Q_PROPERTY(QString control MEMBER m_control NOTIFY controlChanged)
+    Q_PROPERTY(QString visibilityControl MEMBER m_visibilityControl NOTIFY visibilityControlChanged)
+    Q_PROPERTY(QString color MEMBER m_color NOTIFY colorChanged)
+    Q_PROPERTY(QString textColor MEMBER m_textColor NOTIFY textColorChanged)
+    Q_PROPERTY(QString align MEMBER m_align NOTIFY alignChanged)
+    Q_PROPERTY(QString text MEMBER m_text NOTIFY textChanged)
+    Q_PROPERTY(QString pixmap MEMBER m_pixmap NOTIFY pixmapChanged)
+    Q_PROPERTY(QString icon MEMBER m_icon NOTIFY iconChanged)
     QML_NAMED_ELEMENT(WaveformMark)
   public:
     QString control() const {
         return m_control;
     }
-    void setControl(const QString& value) {
-        m_control = value;
-    }
     QString visibilityControl() const {
         return m_visibilityControl;
-    }
-    void setVisibilityControl(const QString& value) {
-        m_visibilityControl = value;
     }
     QString color() const {
         return m_color;
     }
-    void setColor(const QString& value) {
-        m_color = value;
-    }
     QString textColor() const {
         return m_textColor;
-    }
-    void setTextColor(const QString& value) {
-        m_textColor = value;
     }
     QString align() const {
         return m_align;
     }
-    void setAlign(const QString& value) {
-        m_align = value;
-    }
     QString text() const {
         return m_text;
-    }
-    void setText(const QString& value) {
-        m_text = value;
     }
     QString pixmap() const {
         return m_pixmap;
     }
-    void setPixmap(const QString& value) {
-        m_pixmap = value;
-    }
     QString icon() const {
         return m_icon;
     }
-    void setIcon(const QString& value) {
-        m_icon = value;
-    }
+
+  signals:
+    void controlChanged(QString control);
+    void visibilityControlChanged(QString visibilityControl);
+    void colorChanged(QString color);
+    void textColorChanged(QString textColor);
+    void alignChanged(QString align);
+    void textChanged(QString text);
+    void pixmapChanged(QString pixmap);
+    void iconChanged(QString icon);
 
   private:
     QString m_control;
@@ -414,10 +283,10 @@ class QmlWaveformMark : public QObject {
 
 class QmlWaveformUntilMark : public QObject {
     Q_OBJECT
-    Q_PROPERTY(bool showTime READ showTime WRITE setShowTime NOTIFY showTimeChanged)
-    Q_PROPERTY(bool showBeats READ showBeats WRITE setShowBeats NOTIFY showBeatsChanged)
-    Q_PROPERTY(HAlignment align READ align WRITE setAlign NOTIFY alignChanged)
-    Q_PROPERTY(int textSize READ textSize WRITE setTextSize NOTIFY textSizeChanged)
+    Q_PROPERTY(bool showTime MEMBER m_showTime NOTIFY showTimeChanged)
+    Q_PROPERTY(bool showBeats MEMBER m_showBeats NOTIFY showBeatsChanged)
+    Q_PROPERTY(HAlignment align MEMBER m_align NOTIFY alignChanged)
+    Q_PROPERTY(int textSize MEMBER m_textSize NOTIFY textSizeChanged)
 
     QML_NAMED_ELEMENT(WaveformUntilMark)
   public:
@@ -429,33 +298,23 @@ class QmlWaveformUntilMark : public QObject {
     bool showTime() const {
         return m_showTime;
     }
-    void setShowTime(bool showTime) {
-        m_showTime = showTime;
-    }
+
     bool showBeats() const {
         return m_showBeats;
     }
-    void setShowBeats(bool showBeats) {
-        m_showBeats = showBeats;
-    }
+
     HAlignment align() const {
         return m_align;
     }
-    void setAlign(HAlignment align) {
-        m_align = align;
-    }
+
     int textSize() const {
         return m_textSize;
     }
-    void setTextSize(int textSize) {
-        m_textSize = textSize;
-    }
+
     float textHeightLimit() const {
         return m_textSize;
     }
-    void setTextHeightLimit(float textHeightLimit) {
-        m_textHeightLimit = textHeightLimit;
-    }
+
   signals:
     void showTimeChanged(bool);
     void showBeatsChanged(bool);
@@ -493,19 +352,11 @@ class QmlWaveformRendererMarkRange
 class QmlWaveformRendererStem
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(double gainAll READ gainAll WRITE setGainAll NOTIFY gainAllChanged REQUIRED)
+    Q_PROPERTY(double gainAll MEMBER m_gainAll NOTIFY gainAllChanged REQUIRED)
     QML_NAMED_ELEMENT(WaveformRendererStem)
 
   public:
     QmlWaveformRendererStem();
-
-    double gainAll() const {
-        return m_gainAll;
-    }
-    void setGainAll(double gain) {
-        m_gainAll = gain;
-        emit gainAllChanged(gain);
-    }
 
 #ifdef __STEM__
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
@@ -528,11 +379,10 @@ class QmlWaveformRendererMark
         : public QmlWaveformRendererFactory {
     Q_OBJECT
     Q_PROPERTY(QQmlListProperty<QmlWaveformMark> marks READ marks)
-    Q_PROPERTY(QColor playMarkerColor READ playMarkerColor WRITE
-                    setPlayMarkerColor NOTIFY playMarkerColorChanged)
-    Q_PROPERTY(QColor playMarkerBackground READ playMarkerBackground WRITE
-                    setPlayMarkerBackground NOTIFY playMarkerBackgroundChanged)
-    Q_PROPERTY(QmlWaveformMark* defaultMark READ defaultMark WRITE setDefaultMark)
+    Q_PROPERTY(QColor playMarkerColor MEMBER m_playMarkerColor NOTIFY playMarkerColorChanged)
+    Q_PROPERTY(QColor playMarkerBackground MEMBER m_playMarkerBackground NOTIFY
+                    playMarkerBackgroundChanged)
+    Q_PROPERTY(QmlWaveformMark* defaultMark MEMBER m_defaultMark NOTIFY defaultMarkChanged)
     Q_PROPERTY(QmlWaveformUntilMark* untilMark READ untilMark FINAL)
     Q_CLASSINFO("DefaultProperty", "marks")
     QML_NAMED_ELEMENT(WaveformRendererMark)
@@ -547,22 +397,13 @@ class QmlWaveformRendererMark
     QmlWaveformUntilMark* untilMark() const {
         return m_untilMark.get();
     }
-    void setDefaultMark(QmlWaveformMark* defaultMark) {
-        m_defaultMark = defaultMark;
-    }
 
     const QColor& playMarkerColor() const {
         return m_playMarkerColor;
     }
-    void setPlayMarkerColor(const QColor& playMarkerColor) {
-        m_playMarkerColor = playMarkerColor;
-    }
 
     const QColor& playMarkerBackground() const {
         return m_playMarkerBackground;
-    }
-    void setPlayMarkerBackground(const QColor& playMarkerBackground) {
-        m_playMarkerBackground = playMarkerBackground;
     }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
@@ -573,6 +414,7 @@ class QmlWaveformRendererMark
   signals:
     void playMarkerColorChanged(const QColor&);
     void playMarkerBackgroundChanged(const QColor&);
+    void defaultMarkChanged(const QmlWaveformMark*);
 
   private:
     QColor m_playMarkerColor;
