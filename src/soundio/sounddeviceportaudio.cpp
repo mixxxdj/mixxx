@@ -444,7 +444,7 @@ void SoundDevicePortAudio::makeStreamInactiveAndWait() {
         if (!m_finishedCV.wait_for(lock, std::chrono::seconds(1), [&] { return m_bFinished; })) {
             // The timeout should not be reached, because when the process
             // callback returns paAbort, the stream will finish as soon as possible.
-            // We have it as a last result in case inactivating the stream stalls.
+            // We have it as a last resort in case inactivating the stream stalls.
             qWarning() << "PortAudio: Timeout reached when waiting for PortAudio finish callback";
         }
     }
