@@ -7,7 +7,7 @@
 #include "widget/wtracktableview.h"
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
-        : QStyledItemDelegate(pTableView),
+        : DefaultDelegate(pTableView),
           m_pTableView(pTableView) {
     DEBUG_ASSERT(m_pTableView);
     auto* pTrackTableView = qobject_cast<WTrackTableView*>(m_pTableView);
@@ -36,45 +36,40 @@ void TableItemDelegate::paint(
     PainterScope painterScope(painter);
     painter->setClipRect(option.rect);
 
-    // Set the palette appropriately based on whether the row is selected or
-    // not. We also have to check if it is inactive or not and use the
-    // appropriate ColorGroup.
-    QPalette::ColorGroup cg = QPalette::Disabled;
-    if ((option.state & QStyle::State_Enabled) &&
-        (option.state & QStyle::State_Active)) {
-        cg = QPalette::Normal;
+    // Clone the const option so we can change palette colors.
+    QStyleOptionViewItem opt = option;
+    initStyleOption(&opt, index);
+
+    if (opt.state & QStyle::State_Selected) {
+        setHighlightedTextColor(opt, index);
     }
 
-    if (option.state & QStyle::State_Selected) {
-        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
+    QBrush brush;
+    if (opt.state & QStyle::State_Selected) {
+        brush = opt.palette.highlightedText();
     } else {
-        // This gets the custom 'missing' or played text color from BaseTrackTableModel
-        // depending on check state of the (hidden) 'missing' (fs_deleted)
-        // or 'played' columns.
-        // Note that we need to do this again in BPMDelegate which uses the
-        // style of the TableView.
-        auto customColorData = index.data(Qt::ForegroundRole);
-        if (customColorData.canConvert<QColor>()) {
-            QColor customColor = customColorData.value<QColor>();
-            // for the star rating polygons
-            painter->setBrush(customColor);
-            // for the 'location' text
-            painter->setPen(customColor);
-        } else {
-            painter->setBrush(option.palette.color(cg, QPalette::Text));
-        }
+        brush = opt.palette.text();
     }
+    // Brush color for the star rating polygons:
+    painter->setBrush(brush);
+    // Pen for the 'location' text
+    // Note: seems not to be required anymore (Qt 6.2.3)
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    painter->setPen(brush.color());
+#endif
 
     QStyle* style = m_pTableView->style();
     if (style) {
         style->drawControl(
                 QStyle::CE_ItemViewItem,
+                // Use the original option here to not screw up
+                // the Key and Preview delegates.
                 &option,
                 painter,
                 m_pTableView);
     }
 
-    paintItem(painter, option, index);
+    paintItem(painter, opt, index);
 }
 
 int TableItemDelegate::columnWidth(const QModelIndex &index) const {
@@ -124,5 +119,8 @@ void TableItemDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    QStyledItemDelegate::paint(painter, option, index);
+    // We don't want to call DefaultDelegate::paint() because that would again
+    // try to set the 'selected' color (which we already did in paint() above).
+    // Relevant only for derived classes that don't implement paintItem()
+    QStyledItemDelegate::paint(painter, option, index); // clazy:exclude=skipped-base-method
 }
