@@ -21,23 +21,23 @@ class WBaseWidget {
 
     virtual void Init();
 
-    QWidget* toQWidget() {
+    QWidget* toQWidget() const {
         return m_pWidget;
     }
 
     void appendBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.append(tooltip);
+        m_baseTooltip.append(tooltip.trimmed());
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void prependBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.prepend(tooltip);
+        m_baseTooltip.prepend(tooltip.trimmed());
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void setBaseTooltip(const QString& tooltip) {
-        m_baseTooltip = tooltip;
-        m_pWidget->setToolTip(tooltip);
+        m_baseTooltip = tooltip.trimmed();
+        m_pWidget->setToolTip(m_baseTooltip);
     }
 
     QString baseTooltip() const {
