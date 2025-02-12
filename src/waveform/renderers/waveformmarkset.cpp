@@ -82,7 +82,6 @@ void WaveformMarkSet::setDefault(const QString& group,
             signalColors));
     for (int i = 0; i < NUM_HOT_CUES; ++i) {
         if (m_hotCueMarks.value(i).isNull()) {
-            // qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
             WaveformMarkPointer pMark(new WaveformMark(
 
                     group,

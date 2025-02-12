@@ -25,8 +25,6 @@ class QmlApplication : public QObject {
 
   private:
     std::unique_ptr<CoreServices> m_pCoreServices;
-
-    // std::unique_ptr<::GuiTick> m_guiTick;
     std::unique_ptr<::VisualsManager> m_visualsManager;
 
     QString m_mainFilePath;

@@ -202,6 +202,9 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
             &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
             this,
             &WaveformRenderMark::setUntilMarkTextHeightLimit);
+
+    m_fgPlayColor = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
+    m_bgPlayColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
 }
 
 bool allshader::WaveformRenderMark::init() {
@@ -483,16 +486,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
 
     painter.setWorldMatrixEnabled(false);
 
-#ifdef __RENDERGRAPH_IS_OPENGL
-    const QColor fgColor{m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor()};
-    const QColor bgColor{m_waveformRenderer->getWaveformSignalColors()->getBgColor()};
-#else
-    const QColor& fgColor = m_fgPlayColor;
-    const QColor& bgColor = m_bgPlayColor;
-#endif
-
     // draw dim outlines to increase playpos/waveform contrast
-    painter.setPen(bgColor);
+    painter.setPen(m_bgPlayColor);
     painter.setOpacity(0.5);
     // lines next to playpos
     // Note: don't draw lines where they would overlap the triangles,
@@ -507,10 +502,10 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
         QPointF baseL = QPointF(lineX - 5.f, 0.f);
         QPointF baseR = QPointF(lineX + 5.f, 0.f);
         QPointF tip = QPointF(lineX, 5.f);
-        drawTriangle(&painter, bgColor, baseL, baseR, tip);
+        drawTriangle(&painter, m_bgPlayColor, baseL, baseR, tip);
     }
     // draw colored play position indicators
-    painter.setPen(fgColor);
+    painter.setPen(m_fgPlayColor);
     painter.setOpacity(1.0);
     // play position line
     painter.drawLine(QLineF(lineX, 0.f, lineX, imgHeight));
@@ -519,7 +514,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
         QPointF baseL = QPointF(lineX - 4.f, 0.f);
         QPointF baseR = QPointF(lineX + 4.f, 0.f);
         QPointF tip = QPointF(lineX, 4.f);
-        drawTriangle(&painter, fgColor, baseL, baseR, tip);
+        drawTriangle(&painter, m_fgPlayColor, baseL, baseR, tip);
     }
     painter.end();
 
