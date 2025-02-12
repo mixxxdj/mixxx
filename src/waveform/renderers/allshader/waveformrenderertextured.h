@@ -17,11 +17,10 @@ class QOpenGLShaderProgram;
 
 namespace allshader {
 class WaveformRendererTextured;
-}
+} // namespace allshader
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured final : public QObject,
-                                                  public allshader::WaveformRendererSignalBase,
+class allshader::WaveformRendererTextured final : public allshader::WaveformRendererSignalBase,
                                                   public rendergraph::OpenGLNode {
     Q_OBJECT
   public:

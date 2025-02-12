@@ -327,6 +327,54 @@ Item {
         }
 
         Row {
+            anchors.left: playButton.right
+            anchors.leftMargin: 10
+            anchors.bottom: playButton.bottom
+            anchors.topMargin: 5
+            spacing: -1
+
+            Skin.IntroOutroButton {
+                keyPrefix: "intro_start"
+                group: root.group
+
+                text: "Intro\nStart"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+
+            Skin.IntroOutroButton {
+                keyPrefix: "intro_end"
+                group: root.group
+
+                text: "Intro\nEnd"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+
+            Skin.IntroOutroButton {
+                keyPrefix: "outro_start"
+                group: root.group
+
+                text: "Outro\nStart"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+
+            Skin.IntroOutroButton {
+                keyPrefix: "outro_end"
+                group: root.group
+
+                text: "Outro\nEnd"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+        }
+
+        Row {
             anchors.left: cueButton.right
             anchors.top: parent.top
             anchors.leftMargin: 10

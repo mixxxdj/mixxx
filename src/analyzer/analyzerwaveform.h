@@ -172,8 +172,30 @@ class AnalyzerWaveform : public Analyzer {
     int m_currentSummaryStride;
     mixxx::audio::ChannelCount m_channelCount;
 
-    EngineFilterIIRBase* m_filter[FilterCount];
-    std::vector<float> m_buffers[FilterCount];
+    struct Filters {
+        std::unique_ptr<EngineFilterIIRBase> low;
+        std::unique_ptr<EngineFilterIIRBase> mid;
+        std::unique_ptr<EngineFilterIIRBase> high;
+    };
+
+    Filters m_filters;
+
+    struct Buffers {
+        std::vector<float> low;
+        std::vector<float> mid;
+        std::vector<float> high;
+
+        SINT size;
+
+        Buffers()
+                : low(),
+                  mid(),
+                  high(),
+                  size(0) {
+        }
+    };
+
+    Buffers m_buffers;
 
     PerformanceTimer m_timer;
 

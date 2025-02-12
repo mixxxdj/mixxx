@@ -2,6 +2,7 @@
 
 #include <QPainterPath>
 
+#include "moc_waveformrendermark.cpp"
 #include "rendergraph/context.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/geometrynode.h"
@@ -172,8 +173,38 @@ allshader::WaveformRenderMark::WaveformRenderMark(
     }
 }
 
-void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
+void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
     DEBUG_ASSERT(false);
+}
+
+void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    ::WaveformRenderMarkBase::setup(node, context);
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkShowBeatsChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkShowBeats);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkShowTimeChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkShowTime);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkAlignChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkAlign);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkTextPointSizeChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkTextSize);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkTextHeightLimit);
+
+    m_fgPlayColor = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
+    m_bgPlayColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
 }
 
 bool allshader::WaveformRenderMark::init() {
@@ -225,12 +256,12 @@ void allshader::WaveformRenderMark::update() {
     // from m_pMarkNodesParent and store each with their mark
     // (transferring ownership). Later in this function we move the
     // visible nodes back to m_pMarkNodesParent children.
-    while (auto pChild = m_pMarkNodesParent->firstChild()) {
+    while (auto* pChild = m_pMarkNodesParent->firstChild()) {
         auto pNode = m_pMarkNodesParent->detachChildNode(pChild);
         WaveformMarkNode* pWaveformMarkNode = static_cast<WaveformMarkNode*>(pNode.get());
         // Determine its WaveformMark
-        auto pMark = pWaveformMarkNode->m_pOwner;
-        auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
+        auto* pMark = pWaveformMarkNode->m_pOwner;
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         // Store the node with the WaveformMark
         pGraphics->attachNode(std::move(pNode));
     }
@@ -272,10 +303,11 @@ void allshader::WaveformRenderMark::update() {
             continue;
         }
 
-        auto pMarkGraphics = pMark->m_pGraphics.get();
-        auto pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
-        if (!pMarkGraphics) // is this even possible?
+        auto* pMarkGraphics = pMark->m_pGraphics.get();
+        auto* pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
+        if (!pMarkGraphics) { // is this even possible?
             continue;
+        }
 
         const float currentMarkPos = static_cast<float>(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
@@ -364,28 +396,17 @@ void allshader::WaveformRenderMark::update() {
                 {1.f, 1.f});
     }
 
-    if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
-            WaveformWidgetFactory::instance()->getUntilMarkShowTime()) {
+    if (m_untilMarkShowBeats || m_untilMarkShowTime) {
         updateUntilMark(playPosition, nextMarkPosition);
         updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
     }
 }
 
 void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
-    const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
-    const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
-    const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
-
-    const auto untilMarkTextPointSize =
-            WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
-    const auto untilMarkTextHeightLimit =
-            WaveformWidgetFactory::instance()
-                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
-                                                     // height
-    const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
+    const auto untilMarkMaxHeightForText = getMaxHeightForText(m_untilMarkTextHeightLimit);
 
     m_pDigitsRenderNode->updateTexture(m_waveformRenderer->getContext(),
-            untilMarkTextPointSize,
+            m_untilMarkTextSize,
             untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 
@@ -395,20 +416,20 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
     }
     const float ch = m_pDigitsRenderNode->height();
 
-    float y = untilMarkAlign == Qt::AlignTop ? 0.f
-            : untilMarkAlign == Qt::AlignBottom
+    float y = m_untilMarkAlign == Qt::AlignTop ? 0.f
+            : m_untilMarkAlign == Qt::AlignBottom
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    bool multiLine = untilMarkShowBeats && untilMarkShowTime &&
+    bool multiLine = m_untilMarkShowBeats && m_untilMarkShowTime &&
             ch * 2.f < untilMarkMaxHeightForText;
 
     if (multiLine) {
-        if (untilMarkAlign != Qt::AlignTop) {
+        if (m_untilMarkAlign != Qt::AlignTop) {
             y -= ch;
         }
     } else {
-        if (untilMarkAlign != Qt::AlignTop && untilMarkAlign != Qt::AlignBottom) {
+        if (m_untilMarkAlign != Qt::AlignTop && m_untilMarkAlign != Qt::AlignBottom) {
             // center
             y -= ch / 2.f;
         }
@@ -418,8 +439,8 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
             x,
             y,
             multiLine,
-            untilMarkShowBeats ? QString::number(m_beatsUntilMark) : QString{},
-            untilMarkShowTime ? timeSecToString(m_timeUntilMark) : QString{});
+            m_untilMarkShowBeats ? QString::number(m_beatsUntilMark) : QString{},
+            m_untilMarkShowTime ? timeSecToString(m_timeUntilMark) : QString{});
 }
 
 // Generate the texture used to draw the play position marker.
@@ -465,11 +486,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
 
     painter.setWorldMatrixEnabled(false);
 
-    const QColor fgColor{m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor()};
-    const QColor bgColor{m_waveformRenderer->getWaveformSignalColors()->getBgColor()};
-
     // draw dim outlines to increase playpos/waveform contrast
-    painter.setPen(bgColor);
+    painter.setPen(m_bgPlayColor);
     painter.setOpacity(0.5);
     // lines next to playpos
     // Note: don't draw lines where they would overlap the triangles,
@@ -484,10 +502,10 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
         QPointF baseL = QPointF(lineX - 5.f, 0.f);
         QPointF baseR = QPointF(lineX + 5.f, 0.f);
         QPointF tip = QPointF(lineX, 5.f);
-        drawTriangle(&painter, bgColor, baseL, baseR, tip);
+        drawTriangle(&painter, m_bgPlayColor, baseL, baseR, tip);
     }
     // draw colored play position indicators
-    painter.setPen(fgColor);
+    painter.setPen(m_fgPlayColor);
     painter.setOpacity(1.0);
     // play position line
     painter.drawLine(QLineF(lineX, 0.f, lineX, imgHeight));
@@ -496,7 +514,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
         QPointF baseL = QPointF(lineX - 4.f, 0.f);
         QPointF baseR = QPointF(lineX + 4.f, 0.f);
         QPointF tip = QPointF(lineX, 4.f);
-        drawTriangle(&painter, fgColor, baseL, baseR, tip);
+        drawTriangle(&painter, m_fgPlayColor, baseL, baseR, tip);
     }
     painter.end();
 
@@ -526,7 +544,7 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
                         pMark->generateImage(
                                 m_waveformRenderer->getDevicePixelRatio()));
     } else {
-        auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         pGraphics->updateTexture(m_waveformRenderer->getContext(),
                 pMark->generateImage(
                         m_waveformRenderer->getDevicePixelRatio()));

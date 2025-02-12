@@ -6,6 +6,9 @@
 #include "coreservices.h"
 #include "qmlautoreload.h"
 
+class GuiTick;
+class VisualsManager;
+
 namespace mixxx {
 namespace qml {
 
@@ -14,14 +17,15 @@ class QmlApplication : public QObject {
   public:
     QmlApplication(
             QApplication* app,
-            std::shared_ptr<CoreServices> pCoreServices);
+            const CmdlineArgs& args);
     ~QmlApplication() override;
 
   public slots:
     void loadQml(const QString& path);
 
   private:
-    std::shared_ptr<CoreServices> m_pCoreServices;
+    std::unique_ptr<CoreServices> m_pCoreServices;
+    std::unique_ptr<::VisualsManager> m_visualsManager;
 
     QString m_mainFilePath;
 
