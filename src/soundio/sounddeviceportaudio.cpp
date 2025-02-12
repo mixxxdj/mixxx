@@ -476,7 +476,7 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
             // stream has become inactive.
             err = Pa_StopStream(pStream);
             if (err != paNoError) {
-                qWarning() << "PortAudio: Stop stream error:"
+                qWarning() << "PortAudio: Error while attempting to stop stream:"
                            << Pa_GetErrorText(err) << m_deviceId;
             }
         }
