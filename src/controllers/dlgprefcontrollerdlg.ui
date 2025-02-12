@@ -109,7 +109,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="devInfoGroupLayout">
+     <layout class="QVBoxLayout" name="deviceInfoGroupLayout">
       <item>
        <widget class="WCollapsibleGroupBox" name="groupBoxDeviceInfo">
         <property name="sizePolicy">
@@ -539,14 +539,14 @@
    </item>
 
    <item row="2" column="1">
-    <widget class="QWidget" name="deviceInfoGroupLayoutWidget">
+    <widget class="QWidget" name="mappingInfoGroupLayoutWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="devInfoGroupLayout">
+     <layout class="QVBoxLayout" name="mappingInfoGroupLayout">
       <item>
        <widget class="WCollapsibleGroupBox" name="groupBoxMappingInfo">
         <property name="sizePolicy">
@@ -1150,6 +1150,8 @@
   <tabstop>chkEnabledDevice</tabstop>
   <tabstop>btnLearningWizard</tabstop>
   <tabstop>comboBoxMapping</tabstop>
+  <tabstop>groupBoxDeviceInfo</tabstop>
+  <tabstop>groupBoxMappingInfo</tabstop>
   <tabstop>controllerTabs</tabstop>
  </tabstops>
  <resources/>
