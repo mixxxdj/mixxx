@@ -32,6 +32,8 @@ class WaveformRendererAbstract {
 
     virtual void onResize() {}
     virtual void onSetTrack() {}
+    virtual void update() {
+    }
 
   protected:
     bool isDirty() const {

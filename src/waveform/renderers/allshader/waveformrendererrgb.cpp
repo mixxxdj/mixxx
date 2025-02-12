@@ -20,23 +20,27 @@ inline float math_pow2(float x) {
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options,
-        const IVisualGainProvider* visualGainProvider)
-        : WaveformRendererSignalBase(waveformWidget, visualGainProvider),
+        WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
 
-void WaveformRendererRGB::setup(const QColor& axesColor,
-        const QColor& lowColor,
-        const QColor& midColor,
-        const QColor& highColor) {
+void WaveformRendererRGB::setAxesColor(const QColor& axesColor) {
     getRgbF(axesColor, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
+}
 
+void WaveformRendererRGB::setLowColor(const QColor& lowColor) {
     getRgbF(lowColor, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+}
+
+void WaveformRendererRGB::setMidColor(const QColor& midColor) {
     getRgbF(midColor, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+}
+
+void WaveformRendererRGB::setHighColor(const QColor& highColor) {
     getRgbF(highColor, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 }
 

@@ -12,9 +12,8 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRendererSimple::WaveformRendererSimple(
-        WaveformWidgetRenderer* waveformWidget,
-        const IVisualGainProvider* visualGainProvider)
-        : WaveformRendererSignalBase(waveformWidget, visualGainProvider) {
+        WaveformWidgetRenderer* waveformWidget)
+        : WaveformRendererSignalBase(waveformWidget) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }

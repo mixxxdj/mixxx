@@ -20,6 +20,7 @@ class WaveformRenderMark;
 
 class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
                                       public rendergraph::Node {
+    Q_OBJECT
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
@@ -28,21 +29,36 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-    void setup(const QColor& fgPlayColor,
-            const QColor& bgPlayColor,
-            bool untilMarkShowBeats,
-            bool untilMarkShowTime,
-            Qt::Alignment untilMarkAlign,
-            int untilMarkTextSize,
-            float untilMarkTextHeightLimit);
-#endif
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     bool init() override;
 
-    void update();
+    void update() override;
 
     bool isSubtreeBlocked() const override;
+
+  public slots:
+    void setFgPlayColor(const QColor& fgPlayColor) {
+        m_fgPlayColor = fgPlayColor;
+    }
+    void setBgPlayColor(const QColor& bgPlayColor) {
+        m_bgPlayColor = bgPlayColor;
+    }
+    void setUntilMarkShowBeats(bool untilMarkShowBeats) {
+        m_untilMarkShowBeats = untilMarkShowBeats;
+    }
+    void setUntilMarkShowTime(bool untilMarkShowTime) {
+        m_untilMarkShowTime = untilMarkShowTime;
+    }
+    void setUntilMarkAlign(Qt::Alignment untilMarkAlign) {
+        m_untilMarkAlign = untilMarkAlign;
+    }
+    void setUntilMarkTextSize(int untilMarkTextSize) {
+        m_untilMarkTextSize = untilMarkTextSize;
+    }
+    void setUntilMarkTextHeightLimit(float untilMarkTextHeightLimit) {
+        m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
+    }
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
@@ -79,7 +95,6 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     DigitsRenderNode* m_pDigitsRenderNode{};
 
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
     QColor m_fgPlayColor;
     QColor m_bgPlayColor;
 
@@ -88,7 +103,6 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextSize;
     float m_untilMarkTextHeightLimit;
-#endif
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

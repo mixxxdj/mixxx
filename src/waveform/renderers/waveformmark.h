@@ -13,7 +13,7 @@ class QOpenGLTexture;
 
 namespace allshader {
 class WaveformRenderMark;
-}
+} // namespace allshader
 
 class WaveformMark {
   public:
@@ -35,12 +35,12 @@ class WaveformMark {
     WaveformMark(
             const QString& group,
             QString positionControl,
-            QString visibilityControl,
-            QString textColor,
-            QString markAlign,
-            QString text,
-            QString pixmapPath,
-            QString iconPath,
+            const QString& visibilityControl,
+            const QString& textColor,
+            const QString& markAlign,
+            const QString& text,
+            const QString& pixmapPath,
+            const QString& iconPath,
             QColor color,
             int priority,
             int hotCue = Cue::kNoHotCue,

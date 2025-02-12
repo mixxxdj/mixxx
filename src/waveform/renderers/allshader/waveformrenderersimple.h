@@ -12,8 +12,7 @@ class allshader::WaveformRendererSimple final
         : public allshader::WaveformRendererSignalBase,
           public rendergraph::GeometryNode {
   public:
-    explicit WaveformRendererSimple(WaveformWidgetRenderer* waveformWidget,
-            const IVisualGainProvider* visualGainProvider = nullptr);
+    explicit WaveformRendererSimple(WaveformWidgetRenderer* waveformWidget);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;

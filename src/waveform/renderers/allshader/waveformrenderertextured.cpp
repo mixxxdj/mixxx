@@ -31,9 +31,8 @@ WaveformRendererTextured::WaveformRendererTextured(
         WaveformWidgetRenderer* waveformWidget,
         ::WaveformWidgetType::Type t,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options,
-        const IVisualGainProvider* visualGainProvider)
-        : WaveformRendererSignalBase(waveformWidget, visualGainProvider),
+        WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),

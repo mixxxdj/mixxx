@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "moc_waveformrendererendoftrack.cpp"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"

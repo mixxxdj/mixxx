@@ -3,8 +3,8 @@
 namespace allshader {
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidget, const IVisualGainProvider* visualGainProvider)
-        : ::WaveformRendererSignalBase(waveformWidget, visualGainProvider) {
+        WaveformWidgetRenderer* waveformWidget)
+        : ::WaveformRendererSignalBase(waveformWidget) {
 }
 
 void WaveformRendererSignalBase::draw(QPainter*, QPaintEvent*) {

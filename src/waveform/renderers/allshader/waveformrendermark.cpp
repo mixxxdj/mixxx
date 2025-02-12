@@ -2,6 +2,7 @@
 
 #include <QPainterPath>
 
+#include "moc_waveformrendermark.cpp"
 #include "rendergraph/context.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/geometrynode.h"
@@ -172,28 +173,35 @@ allshader::WaveformRenderMark::WaveformRenderMark(
     }
 }
 
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-void allshader::WaveformRenderMark::setup(const QColor& fgPlayColor,
-        const QColor& bgPlayColor,
-        bool untilMarkShowBeats,
-        bool untilMarkShowTime,
-        Qt::Alignment untilMarkAlign,
-        int untilMarkTextSize,
-        float untilMarkTextHeightLimit) {
-    m_fgPlayColor = fgPlayColor;
-    m_bgPlayColor = bgPlayColor;
-    m_untilMarkShowBeats = untilMarkShowBeats;
-    m_untilMarkShowTime = untilMarkShowTime;
-    m_untilMarkAlign = untilMarkAlign;
-    m_untilMarkTextSize = untilMarkTextSize;
-    m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
-}
-#endif
-
 void allshader::WaveformRenderMark::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(painter);
     Q_UNUSED(event);
     DEBUG_ASSERT(false);
+}
+
+void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    ::WaveformRenderMarkBase::setup(node, context);
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkShowBeatsChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkShowBeats);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkShowTimeChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkShowTime);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkAlignChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkAlign);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkTextPointSizeChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkTextSize);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
+            this,
+            &WaveformRenderMark::setUntilMarkTextHeightLimit);
 }
 
 bool allshader::WaveformRenderMark::init() {
@@ -385,41 +393,17 @@ void allshader::WaveformRenderMark::update() {
                 {1.f, 1.f});
     }
 
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-    if (m_untilMarkShowBeats || m_untilMarkShowTime)
-#else
-    if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
-            WaveformWidgetFactory::instance()->getUntilMarkShowTime())
-#endif
-    {
+    if (m_untilMarkShowBeats || m_untilMarkShowTime) {
         updateUntilMark(playPosition, nextMarkPosition);
         updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
     }
 }
 
 void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
-#ifdef __RENDERGRAPH_IS_SCENEGRAPH
-    const bool untilMarkShowBeats = m_untilMarkShowBeats;
-    const bool untilMarkShowTime = m_untilMarkShowTime;
-    const auto untilMarkAlign = m_untilMarkAlign;
-    const auto untilMarkTextPointSize = m_untilMarkTextSize;
-    const auto untilMarkTextHeightLimit = m_untilMarkTextHeightLimit;
-#else
-    const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
-    const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
-    const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
-
-    const auto untilMarkTextPointSize =
-            WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
-    const auto untilMarkTextHeightLimit =
-            WaveformWidgetFactory::instance()
-                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
-                                                     // height
-#endif
-    const auto untilMarkMaxHeightForText = getMaxHeightForText(untilMarkTextHeightLimit);
+    const auto untilMarkMaxHeightForText = getMaxHeightForText(m_untilMarkTextHeightLimit);
 
     m_pDigitsRenderNode->updateTexture(m_waveformRenderer->getContext(),
-            untilMarkTextPointSize,
+            m_untilMarkTextSize,
             untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 
@@ -429,20 +413,20 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
     }
     const float ch = m_pDigitsRenderNode->height();
 
-    float y = untilMarkAlign == Qt::AlignTop ? 0.f
-            : untilMarkAlign == Qt::AlignBottom
+    float y = m_untilMarkAlign == Qt::AlignTop ? 0.f
+            : m_untilMarkAlign == Qt::AlignBottom
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    bool multiLine = untilMarkShowBeats && untilMarkShowTime &&
+    bool multiLine = m_untilMarkShowBeats && m_untilMarkShowTime &&
             ch * 2.f < untilMarkMaxHeightForText;
 
     if (multiLine) {
-        if (untilMarkAlign != Qt::AlignTop) {
+        if (m_untilMarkAlign != Qt::AlignTop) {
             y -= ch;
         }
     } else {
-        if (untilMarkAlign != Qt::AlignTop && untilMarkAlign != Qt::AlignBottom) {
+        if (m_untilMarkAlign != Qt::AlignTop && m_untilMarkAlign != Qt::AlignBottom) {
             // center
             y -= ch / 2.f;
         }
@@ -452,8 +436,8 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
             x,
             y,
             multiLine,
-            untilMarkShowBeats ? QString::number(m_beatsUntilMark) : QString{},
-            untilMarkShowTime ? timeSecToString(m_timeUntilMark) : QString{});
+            m_untilMarkShowBeats ? QString::number(m_beatsUntilMark) : QString{},
+            m_untilMarkShowTime ? timeSecToString(m_timeUntilMark) : QString{});
 }
 
 // Generate the texture used to draw the play position marker.

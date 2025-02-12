@@ -18,8 +18,10 @@ class WaveformRendererEndOfTrack;
 } // namespace allshader
 
 class allshader::WaveformRendererEndOfTrack final
-        : public ::WaveformRendererAbstract,
+        : public QObject,
+          public ::WaveformRendererAbstract,
           public rendergraph::GeometryNode {
+    Q_OBJECT
   public:
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidget);
@@ -29,15 +31,18 @@ class allshader::WaveformRendererEndOfTrack final
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
-    void setup(const QColor& color, int endOfTrackWarningTime) {
-        m_color = color;
-        m_remainingTimeTriggerSeconds = endOfTrackWarningTime;
-    }
-
     bool init() override;
 
     // Virtual for rendergraph::Node
     void preprocess() override;
+
+  public slots:
+    void setColor(const QColor& color) {
+        m_color = color;
+    }
+    void setEndOfTrackWarningTime(int endOfTrackWarningTime) {
+        m_remainingTimeTriggerSeconds = endOfTrackWarningTime;
+    }
 
   private:
     std::unique_ptr<ControlProxy> m_pEndOfTrackControl;

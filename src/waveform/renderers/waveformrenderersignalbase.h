@@ -2,31 +2,40 @@
 
 #include "skin/legacy/skincontext.h"
 #include "util/span.h"
-#include "waveform/ivisualgainprovider.h"
+#include "util/types.h"
 #include "waveform/waveform.h"
 #include "waveformrendererabstract.h"
 
 class ControlProxy;
 class WaveformSignalColors;
-class IVisualGainProvider;
 
-class WaveformRendererSignalBase : public WaveformRendererAbstract {
-public:
-  explicit WaveformRendererSignalBase(
-          WaveformWidgetRenderer* waveformWidgetRenderer,
-          const IVisualGainProvider* visualGainProvider = nullptr);
-  virtual ~WaveformRendererSignalBase();
+class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstract {
+    Q_OBJECT
+  public:
+    explicit WaveformRendererSignalBase(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
+    virtual ~WaveformRendererSignalBase();
 
-  virtual bool init();
-  virtual void setup(const QDomNode& node, const SkinContext& context);
+    virtual bool init();
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
-  virtual bool onInit() {
-      return true;
-  }
-    virtual void onSetup(const QDomNode &node) = 0;
+    virtual bool onInit() {
+        return true;
+    }
+    virtual void onSetup(const QDomNode& node) = 0;
 
-    void setVisualGainProvider(IVisualGainProvider* provider) {
-        m_visualGainProvider = provider;
+  public slots:
+    void setAllChannelVisualGain(double gain) {
+        m_allChannelVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
+    void setLowVisualGain(double gain) {
+        m_lowVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
+    void setMidVisualGain(double gain) {
+        m_midVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
+    void setHighVisualGain(double gain) {
+        m_highVisualGain = static_cast<CSAMPLE_GAIN>(gain);
     }
 
   protected:
@@ -50,7 +59,11 @@ public:
     Qt::Alignment m_alignment;
     Qt::Orientation m_orientation;
 
-    const WaveformSignalColors* m_pColors;
+    CSAMPLE_GAIN m_allChannelVisualGain;
+    CSAMPLE_GAIN m_lowVisualGain;
+    CSAMPLE_GAIN m_midVisualGain;
+    CSAMPLE_GAIN m_highVisualGain;
+
     float m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
     float m_signalColor_r, m_signalColor_g, m_signalColor_b;
     float m_lowColor_r, m_lowColor_g, m_lowColor_b;
@@ -62,6 +75,4 @@ public:
     float m_rgbLowFilteredColor_r, m_rgbLowFilteredColor_g, m_rgbLowFilteredColor_b;
     float m_rgbMidFilteredColor_r, m_rgbMidFilteredColor_g, m_rgbMidFilteredColor_b;
     float m_rgbHighFilteredColor_r, m_rgbHighFilteredColor_g, m_rgbHighFilteredColor_b;
-
-    const IVisualGainProvider* m_visualGainProvider;
 };
