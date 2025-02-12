@@ -28,6 +28,7 @@ struct WaveformData {
 };
 
 class Waveform {
+    Q_GADGET
   public:
     enum class SaveState {
         NotSaved = 0,
@@ -35,13 +36,20 @@ class Waveform {
         Saved
     };
 
+    enum class Sampling {
+        MAX,
+        RMS
+    };
+    Q_ENUM(Sampling);
+
     explicit Waveform(const QByteArray& pData = QByteArray());
     Waveform(
             int audioSampleRate,
             SINT frameLength,
             int desiredVisualSampleRate,
             int maxVisualSamples,
-            int stemCount);
+            int stemCount,
+            Sampling samplingMode);
 
     virtual ~Waveform();
 
@@ -73,6 +81,10 @@ class Waveform {
     void setDescription(const QString& description) {
         const auto locker = lockMutex(&m_mutex);
         m_description = description;
+    }
+
+    Sampling getSamplingMode() const {
+        return m_sampling;
     }
 
     QByteArray toByteArray() const;
@@ -180,6 +192,9 @@ class Waveform {
 
     // The number of stem contained in waveform samples. 0 if not a stem waveform
     int m_stemCount;
+
+    // The sampling mode used to calculate the waveform
+    Sampling m_sampling;
 
     mutable QMutex m_mutex;
 
