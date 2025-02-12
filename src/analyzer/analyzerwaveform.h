@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <cstddef>
 #include <limits>
 
 #include "analyzer/analyzer.h"

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QMatrix4x4>
-
 #include "track/track_decl.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformmark.h"

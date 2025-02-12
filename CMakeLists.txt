@@ -1762,7 +1762,6 @@ else()
   )
 endif()
 if(QOPENGL)
-  target_compile_definitions(mixxx-lib PRIVATE __RENDERGRAPH_IS_OPENGL)
   target_sources(
     mixxx-lib
     PRIVATE
