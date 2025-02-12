@@ -2,8 +2,6 @@
 
 #include <QDomElement>
 
-#include "controllers/legacycontrollersettingsfactory.h"
-
 class AbstractLegacyControllerSetting;
 
 /// @brief This class defines an interface that a controller setting type must
