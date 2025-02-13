@@ -8,9 +8,13 @@
 * Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
-* Numark NS6II: Add new controller mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
+* Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
+* Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
+* Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
+* Reloop Digital Jockey 2 IE: New mapping [#4614](https://github.com/mixxxdj/mixxx/pull/4614)
 * Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
   [#14249](https://github.com/mixxxdj/mixxx/pull/14249)
+* Traktor S4mk3: Smooth xfader curve for Const Power mode [#14305](https://github.com/mixxxdj/mixxx/pull/14305)
 * Traktor Kontrol S3: Use pitch absolute mode as described in the manual [#14123](https://github.com/mixxxdj/mixxx/pull/14123)
 
 ### Skins
@@ -49,6 +53,7 @@
 * Controller preference: Fix notify of pending changes when closing preferences [#14234](https://github.com/mixxxdj/mixxx/pull/14234)
   [#14220](https://github.com/mixxxdj/mixxx/issues/14220)
 * Controller preferences: Fix broken overwrite dialog ('Save as..' not working) [#14263](https://github.com/mixxxdj/mixxx/pull/14263)
+* Controller preferences: Don't break support link texts [#14079](https://github.com/mixxxdj/mixxx/pull/14079)
 * MIDI controller learning: Make control box search usable [#14260](https://github.com/mixxxdj/mixxx/pull/14260)
 * Hidden Tracks: Allow 'load to' via track context manu [#14077](https://github.com/mixxxdj/mixxx/pull/14077)
 * MIDI controller learning: don't reload mapping after learn [#14253](https://github.com/mixxxdj/mixxx/pull/14253)
@@ -62,6 +67,9 @@
 * Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
   [#14172](https://github.com/mixxxdj/mixxx/pull/14172)
   [#14289](https://github.com/mixxxdj/mixxx/pull/14289)
+* Fix sporadic deadlocks when closing Mixxx or changing sound devices
+  [#14208](https://github.com/mixxxdj/mixxx/pull/14208)
+  [#14055](https://github.com/mixxxdj/mixxx/issues/14055)
 
 ### Target support
 

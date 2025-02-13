@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-02-07" timestamp="1738958006">
+    <release version="2.5.1" type="development" date="2025-02-13" timestamp="1739430195">
       <description>
  <p>
   Controller Mappings
@@ -112,12 +112,28 @@
    #14057
   </li>
   <li>
-   Numark NS6II: Add new controller mapping
+   Numark NS6II: New mapping
    #11075
+  </li>
+  <li>
+   Numark Platinum FX: New mapping
+   #12872
+  </li>
+  <li>
+   Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls
+   #11307
+  </li>
+  <li>
+   Reloop Digital Jockey 2 IE: New mapping
+   #4614
   </li>
   <li>
    Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
    #14249
+  </li>
+  <li>
+   Traktor S4mk3: Smooth xfader curve for Const Power mode
+   #14305
   </li>
   <li>
    Traktor Kontrol S3: Use pitch absolute mode as described in the manual
@@ -208,6 +224,10 @@
    #14263
   </li>
   <li>
+   Controller preferences: Don't break support link texts
+   #14079
+  </li>
+  <li>
    MIDI controller learning: Make control box search usable
    #14260
   </li>
@@ -236,6 +256,11 @@
    Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
    #14172
    #14289
+  </li>
+  <li>
+   Fix sporadic deadlocks when closing Mixxx or changing sound devices
+   #14208
+   #14055
   </li>
  </ul>
  <p>
