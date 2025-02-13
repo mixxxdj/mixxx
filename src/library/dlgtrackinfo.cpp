@@ -308,6 +308,59 @@ void DlgTrackInfo::init() {
                 trackColorDialogSetColor(newColor);
                 m_trackRecord.setColor(newColor);
             });
+
+    tabWidget->installEventFilter(this);
+    txtTrackName->installEventFilter(this);
+    txtArtist->installEventFilter(this);
+    txtAlbum->installEventFilter(this);
+    txtAlbumArtist->installEventFilter(this);
+    txtComposer->installEventFilter(this);
+    txtGenre->installEventFilter(this);
+    txtGrouping->installEventFilter(this);
+    txtYear->installEventFilter(this);
+    txtKey->installEventFilter(this);
+    txtTrackNumber->installEventFilter(this);
+    txtDuration->installEventFilter(this);
+    txtBpm->installEventFilter(this);
+    txtDateAdded->installEventFilter(this);
+    txtDateLastPlayed->installEventFilter(this);
+    txtType->installEventFilter(this);
+    txtBpm->installEventFilter(this);
+    txtBitrate->installEventFilter(this);
+    txtSamplerate->installEventFilter(this);
+    txtReplayGain->installEventFilter(this);
+    txtLocation->installEventFilter(this);
+}
+
+bool DlgTrackInfo::eventFilter(QObject* pObj, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::KeyPress) {
+        auto* pKeyEvent = static_cast<QKeyEvent*>(pEvent);
+
+        const bool noModifiersPressed = !(pKeyEvent->modifiers() &
+                (Qt::ControlModifier | Qt::AltModifier |
+                        Qt::ShiftModifier | Qt::MetaModifier));
+
+        if (!noModifiersPressed) {
+            return false;
+        }
+
+        if (pObj == this || qobject_cast<QLabel*>(pObj) ||
+                qobject_cast<QLineEdit*>(pObj) ||
+                qobject_cast<QTabWidget*>(pObj))
+
+            if (pKeyEvent->key() == Qt::Key_Up) {
+                if (focusPreviousChild()) {
+                    pEvent->accept();
+                    return true;
+                }
+            } else if (pKeyEvent->key() == Qt::Key_Down) {
+                if (focusNextChild()) {
+                    pEvent->accept();
+                    return true;
+                }
+            }
+    }
+    return false;
 }
 
 void DlgTrackInfo::slotApply() {
