@@ -2579,6 +2579,16 @@
         </options>
       </control>
       <control>
+        <group>[Library]</group>
+        <key>GoToItem</key>
+        <description>GoToItem - contextual behaviour.</description>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
         <group>[Channel1]</group>
         <key>DJC4.deck[0].wheelTouch</key>
         <status>0x90</status>
