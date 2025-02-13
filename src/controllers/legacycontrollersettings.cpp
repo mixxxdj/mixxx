@@ -155,7 +155,8 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     // We want to format the checkbox label with html styles. This is not possible
     // so we attach a separate QLabel and, in order to get a clickable label like
     // with QCheckBox, we associate the label with the checkbox (buddy).
-    // When the label is clicked we toggle the checkbox in eventFilter().
+    // When the label is clicked we toggle the checkbox in the function
+    // eventFilter() of helper class ToggleCheckboxEventFilter.
     auto pLabelWidget = make_parented<QLabel>(pWidget);
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
@@ -187,6 +188,11 @@ bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
 
 bool LegacyControllerBooleanSetting::ToggleCheckboxEventFilter::eventFilter(
         QObject* pObj, QEvent* pEvent) {
+    // eventFilter was a method of LegacyControllerBooleanSetting, but this
+    // doesn't work, as LegacyControllerBooleanSetting is created from a
+    // different thread, and Qt cannot filter events for objects in a
+    // different thread.
+
     QLabel* pLabel = qobject_cast<QLabel*>(pObj);
     if (pLabel && pEvent->type() == QEvent::MouseButtonPress) {
         QCheckBox* pCheckBox = qobject_cast<QCheckBox*>(pLabel->buddy());
