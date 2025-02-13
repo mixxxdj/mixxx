@@ -194,7 +194,7 @@ class LegacyControllerBooleanSetting
         bool eventFilter(QObject* pObj, QEvent* pEvent) override;
     };
 
-    ToggleCheckboxEventFilter* m_pToggleCheckboxEventFilter;
+    parented_ptr<ToggleCheckboxEventFilter> m_pToggleCheckboxEventFilter;
     bool m_savedValue;
     bool m_defaultValue;
     bool m_editedValue;

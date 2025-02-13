@@ -115,7 +115,6 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
         : AbstractLegacyControllerSetting(element) {
-    m_pToggleCheckboxEventFilter = nullptr;
     m_defaultValue = parseValue(element.attribute("default"));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
@@ -162,9 +161,9 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     pLabelWidget->setText(label());
     pLabelWidget->setBuddy(pCheckBox);
     if (!m_pToggleCheckboxEventFilter) {
-        m_pToggleCheckboxEventFilter = new ToggleCheckboxEventFilter(pWidget);
+        m_pToggleCheckboxEventFilter = make_parented<ToggleCheckboxEventFilter>(pWidget);
     }
-    pLabelWidget->installEventFilter(m_pToggleCheckboxEventFilter);
+    pLabelWidget->installEventFilter(m_pToggleCheckboxEventFilter.get());
 
     QBoxLayout* pLayout = new QHBoxLayout();
 
