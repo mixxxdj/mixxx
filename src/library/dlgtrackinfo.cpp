@@ -360,6 +360,19 @@ bool DlgTrackInfo::eventFilter(QObject* pObj, QEvent* pEvent) {
                 }
             }
     }
+    if (pEvent->type() == QEvent::FocusIn) {
+        auto* pFocusEvent = static_cast<QFocusEvent*>(pEvent);
+
+        if (pFocusEvent->reason() == Qt::TabFocusReason ||
+                pFocusEvent->reason() == Qt::BacktabFocusReason ||
+                pFocusEvent->reason() == Qt::ShortcutFocusReason) {
+            auto* pLabel = qobject_cast<QLabel*>(pObj);
+            if (pLabel && !pLabel->hasSelectedText()) {
+                pLabel->setSelection(0, pLabel->text().size());
+                return false;
+            }
+        }
+    }
     return false;
 }
 
@@ -615,7 +628,7 @@ void DlgTrackInfo::focusField(const QString& property) {
     }
     auto it = m_propertyWidgets.constFind(property);
     if (it != m_propertyWidgets.constEnd()) {
-        it.value()->setFocus();
+        it.value()->setFocus(Qt::ShortcutFocusReason);
     }
 }
 
