@@ -107,7 +107,6 @@ DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
           m_pUserSettings(std::move(pUserSettings)),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(this)),
           m_starRatingModified(false),
           m_newRating(0),
           m_colorChanged(false),
@@ -256,14 +255,7 @@ void DlgTrackInfoMulti::init() {
             this,
             &DlgTrackInfoMulti::slotColorPicked);
 
-    // Insert the star rating widget
-    starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    starsLayout->setSpacing(0);
-    starsLayout->setContentsMargins(0, 0, 0, 0);
-    starsLayout->insertWidget(0, m_pWStarRating.get());
-    // This is necessary to pass on mouseMove events to WStarRating
-    m_pWStarRating->setMouseTracking(true);
-    connect(m_pWStarRating,
+    connect(starRating,
             &WStarRating::ratingChangeRequest,
             this,
             &DlgTrackInfoMulti::slotStarRatingChanged);
@@ -346,8 +338,8 @@ void DlgTrackInfoMulti::updateFromTracks() {
     replaceTrackRecords(trackRecords);
 
     // Collect star ratings and track colors
-    // If track value differs from the current value, add it to the list.
-    // If new and current are identical, keep only one.
+    // Check if all tracks have the same value for the rating (resp. color).
+    // If yes, show that value, if no, show a placeholder value instead.
     int commonRating = m_trackRecords.first().getRating();
     for (const auto& rec : std::as_const(m_trackRecords)) {
         if (commonRating != rec.getRating()) {
@@ -356,7 +348,7 @@ void DlgTrackInfoMulti::updateFromTracks() {
         }
     }
     // Update the star widget
-    m_pWStarRating->slotSetRating(commonRating);
+    starRating->slotSetRating(commonRating);
     m_starRatingModified = false;
 
     // Same procedure for the track color
@@ -1016,7 +1008,7 @@ void DlgTrackInfoMulti::trackColorDialogSetColorStyleButton(
 void DlgTrackInfoMulti::slotStarRatingChanged(int rating) {
     if (!m_pLoadedTracks.isEmpty() && mixxx::TrackRecord::isValidRating(rating)) {
         m_starRatingModified = true;
-        m_pWStarRating->slotSetRating(rating);
+        starRating->slotSetRating(rating);
         m_newRating = rating;
     }
 }
