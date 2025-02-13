@@ -219,7 +219,7 @@ void DlgPrefRecord::slotResetToDefaults() {
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 
     // Sets 'Enable File Annotation in CUE file' checkbox value
-    CheckBoxUseCueFileAnnotation->setChecked(false);
+    CheckBoxUseCueFileAnnotation->setChecked(kDefaultCueFileAnnotationEnabled);
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
