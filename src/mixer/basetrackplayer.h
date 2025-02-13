@@ -1,7 +1,11 @@
 #pragma once
 
+#include <gsl/pointers>
 #include <memory>
 
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
 #include "preferences/colorpalettesettings.h"
@@ -45,7 +49,14 @@ class BaseTrackPlayer : public BasePlayer {
     };
 
   public slots:
-    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
+#ifdef __STEM__
+    virtual void slotLoadTrack(TrackPointer pTrack,
+            mixxx::StemChannelSelection stemMask,
+            bool bPlay = false) = 0;
+#else
+    virtual void slotLoadTrack(TrackPointer pTrack,
+            bool bPlay = false) = 0;
+#endif
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
@@ -56,6 +67,9 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+#ifdef __STEM__
+    void selectedStems(mixxx::StemChannelSelection stemMask);
+#endif
     void playerEmpty();
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
@@ -93,7 +107,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay) final;
+#ifdef __STEM__
+    void slotLoadTrack(TrackPointer track,
+            mixxx::StemChannelSelection stemMask,
+            bool bPlay) final;
+#else
+    void slotLoadTrack(TrackPointer track,
+            bool bPlay) final;
+#endif
     void slotEjectTrack(double) final;
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
@@ -144,6 +165,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     EngineMixer* m_pEngineMixer;
     TrackPointer m_pLoadedTrack;
     TrackId m_pPrevFailedTrackId;
+    // non-owning reference. Owned by pMixingEngine.
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
@@ -165,6 +187,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
     std::unique_ptr<ControlEncoder> m_pTrackColorSelect;
+
+#ifdef __STEM__
+    // Stems color
+    std::vector<std::unique_ptr<ControlObject>> m_pStemColors;
+#endif
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;

@@ -17,6 +17,6 @@ sudo modprobe uhid
 #    `-DPRODUCT_ID=0x1234` to customize product ID
 #    `-DDEVICE_NAME="My Device"` to customize the device name
 cd build && gcc ../tools/dummy_hid_device.c -lhidapi-hidraw -o dummy_hid_device && sudo ./dummy_hid_device
-# Allow the created hidraw device to be accesssed by the user. You may also set the write udev rules. Finally, you can also run Mixxx as root, but that's not recommended.
+# Allow the created hidraw device to be accessed by the user. You may also set the write udev rules. Finally, you can also run Mixxx as root, but that's not recommended.
 sudo chown "$USER" "$(ls -1t /dev/hidraw* | head -n 1)"
 ```

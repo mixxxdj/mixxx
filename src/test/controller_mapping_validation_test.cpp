@@ -130,8 +130,7 @@ void deleteTrack(Track* pTrack) {
 #endif
 
 void LegacyControllerMappingValidationTest::SetUp() {
-    m_mappingPath = QDir::current();
-    m_mappingPath.cd("res/controllers");
+    m_mappingPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
     m_pEnumerator.reset(new MappingInfoEnumerator(QList<QString>{m_mappingPath.absolutePath()}));
 #ifdef MIXXX_USE_QML
     // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
@@ -146,7 +145,7 @@ void LegacyControllerMappingValidationTest::SetUp() {
             true);
     m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
     m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
-    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+    m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
     m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
             m_pSoundManager.get(),
             m_pEffectsManager.get(),
@@ -200,7 +199,7 @@ bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& m
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping("./res");
+    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
     controller.stopEngine();
     return result;
 }

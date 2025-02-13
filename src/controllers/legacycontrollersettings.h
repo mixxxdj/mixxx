@@ -1,10 +1,23 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
+#include <QColor>
+#include <QFileInfo>
 #include <QJSValue>
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
-#include "util/parented_ptr.h"
+
+namespace {
+template<class T>
+bool valid_range(T min, T max, T step) {
+    VERIFY_OR_DEBUG_ASSERT(step >= 0) {
+        return false;
+    }
+    return step > 0 && ((min <= 0 && min + step <= max) || (max >= 0 && max - step >= min));
+}
+} // namespace
 
 class QSpinBox;
 class QDoubleSpinBox;
@@ -113,9 +126,56 @@ class AbstractLegacyControllerSetting : public QObject {
     QString m_description;
 };
 
+/// @brief Base setting class generic
+/// @tparam T The type of value this setting type is holding
+template<class T>
+class LegacyControllerSettingMixin : public AbstractLegacyControllerSetting {
+  public:
+    bool isDefault() const override {
+        return m_savedValue == m_defaultValue;
+    }
+    bool isDirty() const override {
+        return m_savedValue != m_editedValue;
+    }
+
+    void save() override {
+        m_savedValue = m_editedValue;
+    }
+
+    void reset() override {
+        m_editedValue = m_defaultValue;
+        emit valueReset();
+    }
+
+  protected:
+    LegacyControllerSettingMixin(const QDomElement& element)
+            : AbstractLegacyControllerSetting(element) {
+    }
+    LegacyControllerSettingMixin(const QDomElement& element,
+            T defaultValue)
+            : AbstractLegacyControllerSetting(element),
+              m_savedValue(defaultValue),
+              m_defaultValue(defaultValue),
+              m_editedValue(defaultValue) {
+        reset();
+        save();
+    }
+    LegacyControllerSettingMixin(const QDomElement& element,
+            T currentValue,
+            T defaultValue)
+            : AbstractLegacyControllerSetting(element),
+              m_savedValue(currentValue),
+              m_defaultValue(defaultValue) {
+    }
+
+    T m_savedValue;
+    T m_defaultValue;
+    T m_editedValue;
+};
+
 class LegacyControllerBooleanSetting
         : public LegacyControllerSettingFactory<LegacyControllerBooleanSetting>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingMixin<bool> {
   public:
     LegacyControllerBooleanSetting(const QDomElement& element);
 
@@ -126,6 +186,8 @@ class LegacyControllerBooleanSetting
                     LegacyControllerSettingsLayoutContainer::HORIZONTAL)
             override;
 
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+
     QJSValue value() const override {
         return QJSValue(m_savedValue);
     }
@@ -134,25 +196,11 @@ class LegacyControllerBooleanSetting
         return m_savedValue ? "true" : "false";
     }
     void parse(const QString& in, bool* ok = nullptr) override {
-        if (ok != nullptr)
+        if (ok != nullptr) {
             *ok = true;
+        }
         m_savedValue = parseValue(in);
         m_editedValue = m_savedValue;
-    }
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
@@ -161,26 +209,14 @@ class LegacyControllerBooleanSetting
     static bool match(const QDomElement& element);
 
   protected:
-    LegacyControllerBooleanSetting(const QDomElement& element,
-            bool currentValue,
-            bool defaultValue)
-            : AbstractLegacyControllerSetting(element),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
-    }
-
     bool parseValue(const QString& in) {
         return QString::compare(in, "true", Qt::CaseInsensitive) == 0 || in == "1";
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
-    bool m_savedValue;
-    bool m_defaultValue;
-    bool m_editedValue;
-
-    friend class LegacyControllerMappingSettingsTest_booleanSettingEditing_Test;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, booleanSettingEditing);
 };
 
 template<class SettingType>
@@ -199,10 +235,17 @@ class LegacyControllerNumberSetting
                           ValueSerializer,
                           ValueDeserializer,
                           InputWidget>>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingMixin<SettingType> {
   public:
+    using LegacyControllerSettingMixin<SettingType>::m_savedValue;
+    using LegacyControllerSettingMixin<SettingType>::m_defaultValue;
+    using LegacyControllerSettingMixin<SettingType>::m_editedValue;
+    using LegacyControllerSettingMixin<SettingType>::save;
+    using LegacyControllerSettingMixin<SettingType>::reset;
+    using LegacyControllerSettingMixin<SettingType>::connect;
+    using LegacyControllerSettingMixin<SettingType>::changed;
     LegacyControllerNumberSetting(const QDomElement& element)
-            : AbstractLegacyControllerSetting(element) {
+            : LegacyControllerSettingMixin<SettingType>(element) {
         bool isOk = false;
         m_minValue = ValueDeserializer(element.attribute("min"), &isOk);
         if (!isOk) {
@@ -218,7 +261,13 @@ class LegacyControllerNumberSetting
         }
         m_defaultValue = ValueDeserializer(element.attribute("default"), &isOk);
         if (!isOk) {
-            m_defaultValue = 0;
+            if (0 > m_maxValue) {
+                m_defaultValue = m_maxValue;
+            } else if (0 < m_minValue) {
+                m_defaultValue = m_minValue;
+            } else {
+                m_defaultValue = 0;
+            }
         }
         reset();
         save();
@@ -238,22 +287,6 @@ class LegacyControllerNumberSetting
         m_editedValue = m_savedValue;
     }
 
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
-    }
-
     /// @brief Whether of not this setting definition and its current state are
     /// valid. Validity scope includes default/current/dirty value within range
     /// and a strictly positive step, strictly less than max..
@@ -263,7 +296,7 @@ class LegacyControllerNumberSetting
                 m_defaultValue >= m_minValue && m_savedValue >= m_minValue &&
                 m_editedValue >= m_minValue && m_defaultValue <= m_maxValue &&
                 m_savedValue <= m_maxValue && m_editedValue <= m_maxValue &&
-                m_stepValue > 0 && m_stepValue < m_maxValue;
+                valid_range(m_minValue, m_maxValue, m_stepValue);
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
@@ -278,27 +311,23 @@ class LegacyControllerNumberSetting
             SettingType minValue,
             SettingType maxValue,
             SettingType stepValue)
-            : AbstractLegacyControllerSetting(element),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue),
+            : LegacyControllerSettingMixin<SettingType>(element,
+                      currentValue,
+                      defaultValue),
               m_minValue(minValue),
               m_maxValue(maxValue),
               m_stepValue(stepValue) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
-    SettingType m_savedValue;
-    SettingType m_defaultValue;
     SettingType m_minValue;
     SettingType m_maxValue;
     SettingType m_stepValue;
 
-    SettingType m_editedValue;
-
-    friend class LegacyControllerMappingSettingsTest_integerSettingEditing_Test;
-    friend class LegacyControllerMappingSettingsTest_doubleSettingEditing_Test;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, integerSettingEditing);
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, doubleSettingEditing);
 };
 
 template<class T>
@@ -349,8 +378,14 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
 
 class LegacyControllerEnumSetting
         : public LegacyControllerSettingFactory<LegacyControllerEnumSetting>,
-          public AbstractLegacyControllerSetting {
+          public LegacyControllerSettingMixin<size_t> {
   public:
+    struct Item {
+        QString value;
+        QString label;
+        QColor color;
+    };
+
     LegacyControllerEnumSetting(const QDomElement& element);
 
     virtual ~LegacyControllerEnumSetting() = default;
@@ -359,29 +394,14 @@ class LegacyControllerEnumSetting
         return QJSValue(stringify());
     }
 
-    const QList<std::tuple<QString, QString>>& options() const {
+    const QList<Item>& options() const {
         return m_options;
     }
 
     QString stringify() const override {
-        return std::get<0>(m_options.value(static_cast<int>(m_savedValue)));
+        return m_options.value(static_cast<int>(m_savedValue)).value;
     }
     void parse(const QString& in, bool* ok) override;
-    bool isDefault() const override {
-        return m_savedValue == m_defaultValue;
-    }
-    bool isDirty() const override {
-        return m_savedValue != m_editedValue;
-    }
-
-    virtual void save() override {
-        m_savedValue = m_editedValue;
-    }
-
-    virtual void reset() override {
-        m_editedValue = m_defaultValue;
-        emit valueReset();
-    }
 
     /// @brief Whether or not this setting definition and its current state are
     /// valid. Validity scope includes a known default/current/dirty option.
@@ -400,27 +420,125 @@ class LegacyControllerEnumSetting
 
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
-            const QList<std::tuple<QString, QString>>& options,
+            const QList<Item>& options,
             size_t currentValue,
             size_t defaultValue)
-            : AbstractLegacyControllerSetting(element),
-              m_options(options),
-              m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
+            : LegacyControllerSettingMixin(element, currentValue, defaultValue),
+              m_options(options) {
     }
 
-    virtual QWidget* buildInputWidget(QWidget* parent) override;
+    QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     // We use a QList instead of QHash here because we want to keep the natural order
-    QList<std::tuple<QString, QString>> m_options;
-    size_t m_savedValue;
-    size_t m_defaultValue;
+    QList<Item> m_options;
 
-    size_t m_editedValue;
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
+};
 
-    friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
-    friend class ControllerS4MK3SettingTest_ensureLibrarySettingValueAndEnumEquals;
+class LegacyControllerColorSetting
+        : public LegacyControllerSettingFactory<LegacyControllerColorSetting>,
+          public LegacyControllerSettingMixin<QColor> {
+  public:
+    LegacyControllerColorSetting(const QDomElement& element);
+
+    ~LegacyControllerColorSetting() override;
+
+    QJSValue value() const override {
+        return QJSValue(stringify());
+    }
+
+    QString stringify() const override {
+        return m_savedValue.name(QColor::HexRgb);
+    }
+    void parse(const QString& in, bool* ok) override;
+
+    /// @brief Whether or not this setting definition and its current state are
+    /// valid. Validity scope includes a known default/current/dirty option.
+    /// @return true if valid
+    bool valid() const override {
+        return AbstractLegacyControllerSetting::valid() &&
+                m_defaultValue.isValid() &&
+                m_savedValue.isValid();
+    }
+
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+        return new LegacyControllerColorSetting(element);
+    }
+    static inline bool match(const QDomElement& element) {
+        return element.hasAttribute(QStringLiteral("type")) &&
+                QString::compare(element.attribute(QStringLiteral("type")),
+                        QStringLiteral("color"),
+                        Qt::CaseInsensitive) == 0;
+    }
+
+  protected:
+    LegacyControllerColorSetting(const QDomElement& element,
+            QColor currentValue,
+            QColor defaultValue)
+            : LegacyControllerSettingMixin(element,
+                      defaultValue,
+                      currentValue) {
+    }
+
+    QWidget* buildInputWidget(QWidget* parent) override;
+
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+};
+
+class LegacyControllerFileSetting
+        : public LegacyControllerSettingFactory<LegacyControllerFileSetting>,
+          public LegacyControllerSettingMixin<QFileInfo> {
+  public:
+    LegacyControllerFileSetting(const QDomElement& element);
+
+    virtual ~LegacyControllerFileSetting();
+
+    QJSValue value() const override {
+        return QJSValue(stringify());
+    }
+
+    QString stringify() const override {
+        return m_savedValue.absoluteFilePath();
+    }
+    void parse(const QString& in, bool* ok) override;
+
+    /// @brief Whether or not this setting definition and its current state are
+    /// valid. Validity scope includes a known default/current/dirty option.
+    /// @return true if valid
+    bool valid() const override {
+        return AbstractLegacyControllerSetting::valid() &&
+                (m_defaultValue == m_savedValue || m_savedValue.exists());
+    }
+
+    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
+        return new LegacyControllerFileSetting(element);
+    }
+    static bool match(const QDomElement& element) {
+        return element.hasAttribute(QStringLiteral("type")) &&
+                QString::compare(element.attribute(QStringLiteral("type")),
+                        QStringLiteral("file"),
+                        Qt::CaseInsensitive) == 0;
+    }
+
+  protected:
+    LegacyControllerFileSetting(const QDomElement& element,
+            const QFileInfo& currentValue,
+            const QFileInfo& defaultValue)
+            : LegacyControllerSettingMixin(element,
+                      defaultValue,
+                      currentValue) {
+    }
+
+    QWidget* buildInputWidget(QWidget* parent) override;
+
+  private:
+    QString m_fileFilter;
+
+    FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
+    FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
 };
 
 template<>

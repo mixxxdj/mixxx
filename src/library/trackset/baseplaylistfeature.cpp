@@ -4,6 +4,8 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QSqlTableModel>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -74,7 +76,6 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
-    m_pRenamePlaylistAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
@@ -632,7 +633,15 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     TrackPointerList tracks;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistTableModel->index(i, 0);
-        tracks.push_back(pPlaylistTableModel->getTrack(index));
+        auto pTrack = pPlaylistTableModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
+        tracks.push_back(pTrack);
+    }
+
+    if (tracks.isEmpty()) {
+        return;
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, tracks);
@@ -669,7 +678,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
+            const QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             QList<AnalyzerScheduledTrack> tracks;
             for (auto id : ids) {
                 tracks.append(id);
@@ -773,6 +782,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                     label = fetchPlaylistLabel(id);
                     pChild->setLabel(label);
                     decorateChild(pChild, id);
+                    markTreeItem(pChild);
                 }
             }
         } else {
@@ -781,6 +791,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
                 label = fetchPlaylistLabel(id);
                 pTreeItem->setLabel(label);
                 decorateChild(pTreeItem, id);
+                markTreeItem(pTreeItem);
             }
         }
     }

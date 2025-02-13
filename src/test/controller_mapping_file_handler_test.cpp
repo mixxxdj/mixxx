@@ -13,6 +13,7 @@
 
 using ::testing::_;
 using ::testing::FieldsAre;
+using namespace std::chrono_literals;
 
 class LegacyControllerMappingFileHandlerTest
         : public LegacyControllerMappingFileHandler,
@@ -20,7 +21,7 @@ class LegacyControllerMappingFileHandlerTest
   public:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         SETUP_LOG_CAPTURE();
     }
 
@@ -56,9 +57,6 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
             (override));
     MOCK_METHOD(void, addModule, (const QFileInfo& dirinfo, bool builtin), (override));
 
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        throw std::runtime_error("not implemented");
-    }
     bool saveMapping(const QString&) const override {
         throw std::runtime_error("not implemented");
     }

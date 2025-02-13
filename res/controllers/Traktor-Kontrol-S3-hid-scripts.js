@@ -64,7 +64,7 @@ TraktorS3.QuickEffectModeChannelColors = false;
 // * Hold shift to move the pitch slider without adjusting the rate
 // * Hold keylock and move the pitch slider to adjust musical pitch
 // * keylock will still toggle on, but on release, not press.
-TraktorS3.PitchSliderRelativeMode = true;
+TraktorS3.PitchSliderRelativeMode = false;
 
 // The Samplers can operate two ways.
 // With SamplerModePressAndHold = false, tapping a Sampler button will start the

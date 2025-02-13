@@ -97,7 +97,15 @@ Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
 TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
     return Capability::Purge |
             Capability::Unhide |
-            Capability::RemoveFromDisk;
+            Capability::RemoveFromDisk |
+            Capability::EditMetadata |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed |
+            Capability::Analyze |
+            Capability::Properties;
 }
 
 QString HiddenTableModel::modelKey(bool noSearch) const {

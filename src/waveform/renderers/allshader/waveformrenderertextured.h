@@ -2,12 +2,14 @@
 
 #ifndef QT_OPENGL_ES_2
 
+#include "rendergraph/openglnode.h"
 #include "shaders/rgbshader.h"
 #include "track/track_decl.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/rgbdata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/waveform.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
 class QOpenGLFramebufferObject;
@@ -18,8 +20,9 @@ class WaveformRendererTextured;
 }
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured : public QObject,
-                                            public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererTextured final : public QObject,
+                                                  public allshader::WaveformRendererSignalBase,
+                                                  public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
     explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
@@ -43,6 +46,13 @@ class allshader::WaveformRendererTextured : public QObject,
     void slotWaveformUpdated();
 
   private:
+    struct WaveformTexture {
+        unsigned char low;
+        unsigned char mid;
+        unsigned char high;
+        unsigned char all;
+    };
+
     static QString fragShaderForType(WaveformWidgetType::Type t);
     bool loadShaders();
     bool loadTexture();
@@ -55,6 +65,8 @@ class allshader::WaveformRendererTextured : public QObject,
 
     TrackPointer m_loadedTrack;
     int m_textureRenderedWaveformCompletion;
+
+    std::vector<WaveformFilteredData> m_data;
 
     // Frame buffer for two pass rendering.
     std::unique_ptr<QOpenGLFramebufferObject> m_framebuffer;

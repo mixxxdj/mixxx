@@ -64,7 +64,7 @@ void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
     m_scratching = scratching;
 }
 
-void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
+void EnginePregain::process(CSAMPLE* pInOut, const std::size_t bufferSize) {
     const auto fReplayGain = static_cast<CSAMPLE_GAIN>(m_pCOReplayGain->get());
     CSAMPLE_GAIN fReplayGainCorrection;
     if (!s_pEnableReplayGain->toBool() || m_pPassthroughEnabled->toBool()) {
@@ -148,21 +148,20 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
-        SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, iBufferSize / 2);
-        SampleUtil::applyRampingGain(&pInOut[iBufferSize / 2], 0, totalGain, iBufferSize / 2);
+        SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, bufferSize / 2);
+        SampleUtil::applyRampingGain(&pInOut[bufferSize / 2], 0, totalGain, bufferSize / 2);
     } else if (totalGain != m_fPrevGain) {
         // Prevent sound wave discontinuities by interpolating from old to new gain
         // if not stopped or starting
         // This handles also the ramping of play (from speed 0) and pause (to speed 0)
-        SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
+        SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, bufferSize);
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
-        SampleUtil::applyGain(pInOut, totalGain, iBufferSize);
+        SampleUtil::applyGain(pInOut, totalGain, bufferSize);
     }
     m_fPrevGain = totalGain;
 }
 
 void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->gain = m_pPotmeterPregain->get();
-    pGroupFeatures->has_gain = true;
 }

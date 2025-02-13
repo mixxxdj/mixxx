@@ -18,7 +18,7 @@ constexpr bool kDefaultCueFileAnnotationEnabled = false;
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_selFormat(QString(), QString(), false, QString()) {
+          m_selFormat({QString(), QString(), false, QString()}) {
     setupUi(this);
 
     // Setting recordings path.

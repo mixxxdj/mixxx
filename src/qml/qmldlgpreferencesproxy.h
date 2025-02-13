@@ -2,7 +2,7 @@
 
 #include <QDialog>
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 #include <memory>
 
 namespace mixxx {

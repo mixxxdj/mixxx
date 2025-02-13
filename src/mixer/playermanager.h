@@ -145,19 +145,28 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Sampler") + QString::number(i + 1) + ']';
+        return QStringLiteral("[Sampler") + QString::number(i + 1) + QChar(']');
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
+        return QStringLiteral("[Channel") + QString::number(i + 1) + QChar(']');
     }
+
+#ifdef __STEM__
+    // Returns the group for the deck and stem where deckIndex and stemInde are zero based
+    static QString groupForDeckStem(int deckIdx, int stemIdx) {
+        DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 4);
+        return QStringLiteral("[Channel") + QString::number(deckIdx + 1) +
+                QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+    }
+#endif
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + ']';
+        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + QChar(']');
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
@@ -167,7 +176,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         // the group [Microphone]. For backwards compatibility we keep it that
         // way.
         if (i > 0) {
-            return QStringLiteral("[Microphone") + QString::number(i + 1) + ']';
+            return QStringLiteral("[Microphone") + QString::number(i + 1) + QChar(']');
         } else {
             return QStringLiteral("[Microphone]");
         }
@@ -176,7 +185,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith Auxiliary where i is zero indexed
     static QString groupForAuxiliary(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
+        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + QChar(']');
     }
 
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
@@ -185,7 +194,14 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
+#ifdef __STEM__
+    void slotLoadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+#endif
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
 

@@ -17,7 +17,7 @@ Item {
     property alias foreground: foreground.data
     property real min: 0
     property real max: 1
-    property real wheelStepSize: (root.max - root.min) / 10
+    property real wheelStepSize: (root.max - root.min) / 100
     property real angle: 130
     property bool arc: false
     property int arcStart: Knob.Center

@@ -21,6 +21,7 @@ class SeratoBeatsImporter : public BeatsImporter {
     bool isEmpty() const override;
     BeatsPointer importBeatsAndApplyTimingOffset(
             const QString& filePath,
+            const QString& fileType,
             const audio::StreamInfo& streamInfo) override;
 
   private:

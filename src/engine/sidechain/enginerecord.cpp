@@ -117,7 +117,7 @@ bool EngineRecord::metaDataHasChanged()
     return true;
 }
 
-void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     const auto recordingStatus = static_cast<int>(m_pRecReady->get());
     static const QString tag("EngineRecord recording");
 
@@ -156,6 +156,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // clean frames counting and get current sample rate.
             m_frames = 0;
             m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+            m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -209,7 +210,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (m_pRecReady->get() == RECORD_ON) {
         // Compress audio. Encoder will call method 'write()' below to
         // write a file stream and emit bytesRecorded.
-        m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
+        m_pEncoder->encodeBuffer(pBuffer, bufferSize);
 
         //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.
@@ -220,7 +221,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         }
 
         // update frames counting and recorded duration (seconds)
-        m_frames += iBufferSize / 2;
+        m_frames += bufferSize / 2;
         unsigned long lastDuration = m_recordedDuration;
         m_recordedDuration = m_frames / m_sampleRate;
 
@@ -233,9 +234,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(m_recordedDuration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(m_recordedDuration % 60, 2, 10, QChar('0')); // seconds
 }
 
 void EngineRecord::writeCueLine() {

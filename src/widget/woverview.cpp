@@ -26,6 +26,12 @@
 #include "widget/controlwidgetconnection.h"
 #include "wskincolor.h"
 
+namespace {
+// Horizontal and vertical margin around the widget where we accept play pos dragging.
+constexpr int kDragOutsideLimitX = 100;
+constexpr int kDragOutsideLimitY = 50;
+} // anonymous namespace
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -34,7 +40,7 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(-1),
+          m_type(Type::RGB),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -50,13 +56,23 @@ WOverview::WOverview(
           m_iPlayPos(0),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
+          m_dragMarginH(kDragOutsideLimitX),
+          m_dragMarginV(kDragOutsideLimitY),
           m_iLabelFontSize(10),
-          m_a(1.0),
-          m_b(0.0),
+          m_maxPixelPos(1.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
           m_trackLoaded(false),
           m_pHoveredMark(nullptr),
-          m_scaleFactor(1.0) {
+          m_scaleFactor(1.0),
+          m_trackSampleRateControl(
+                  m_group,
+                  QStringLiteral("track_samplerate")),
+          m_trackSamplesControl(
+                  m_group,
+                  QStringLiteral("track_samples")),
+          m_playpositionControl(
+                  m_group,
+                  QStringLiteral("playposition")) {
     m_endOfTrackControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
@@ -65,12 +81,6 @@ WOverview::WOverview(
     // Needed to recalculate range durations when rate slider is moved without the deck playing
     m_pRateRatioControl->connectValueChanged(
             this, &WOverview::onRateRatioChange);
-    m_trackSampleRateControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("track_samplerate"), this, ControlFlag::NoAssertIfMissing);
-    m_trackSamplesControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("track_samples"), this);
-    m_playpositionControl = make_parented<ControlProxy>(
-            m_group, QStringLiteral("playposition"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("passthrough"), this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
@@ -80,8 +90,30 @@ WOverview::WOverview(
             QStringLiteral("[Waveform]"),
             QStringLiteral("WaveformOverviewType"),
             this);
-    m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeChanged);
-    slotTypeChanged(m_pTypeControl->get());
+    m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
+    slotTypeControlChanged(m_pTypeControl->get());
+
+    m_pMinuteMarkersControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("draw_overview_minute_markers"),
+            this);
+    m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
+    slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
+
+    // Update immediately when the normalize option or the visual gain have been
+    // changed in the preferences.
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
+    connect(pWidgetFactory,
+            &WaveformWidgetFactory::overviewNormalizeChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+    connect(pWidgetFactory,
+            &WaveformWidgetFactory::overallVisualGainChanged,
+            this,
+            &WOverview::slotNormalizeOrVisualGainChanged);
+    // Also listen to ReplayGain changes to scale the waveform
+    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -128,9 +160,12 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_backgroundPixmap = QPixmap();
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (!m_backgroundPixmapPath.isEmpty()) {
-        m_backgroundPixmap = *WPixmapStore::getPixmapNoCache(
+        auto pPixmap = WPixmapStore::getPixmapNoCache(
                 context.makeSkinPath(m_backgroundPixmapPath),
                 m_scaleFactor);
+        if (pPixmap) {
+            m_backgroundPixmap = *pPixmap;
+        }
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
@@ -209,13 +244,13 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     // qDebug() << "WOverview : std::as_const(m_marks)" << m_marks.size();
     // qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
-    if (!m_connections.isEmpty()) {
-        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-        if (defaultConnection) {
-            if (defaultConnection->getEmitOption() &
+    if (!m_connections.empty()) {
+        auto& pDefaultConnection = m_connections.at(0);
+        if (pDefaultConnection) {
+            if (pDefaultConnection->getEmitOption() &
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
-                defaultConnection->setEmitOption(
+                pDefaultConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_RELEASE);
             }
         }
@@ -392,19 +427,23 @@ void WOverview::onRateRatioChange(double v) {
 void WOverview::onPassthroughChange(double v) {
     m_bPassthroughEnabled = static_cast<bool>(v);
 
-    if (!m_bPassthroughEnabled) {
+    if (m_bPassthroughEnabled) {
+        // Abort play position dragging
+        m_bLeftClickDragging = false;
+        m_bTimeRulerActive = false;
+        m_iPickupPos = m_iPlayPos;
+    } else {
         slotWaveformSummaryUpdated();
     }
 
-    // Always call this to trigger a repaint even if not track is loaded
+    // Always call this to trigger a repaint even if no track is loaded
     update();
 }
 
-void WOverview::slotTypeChanged(double v) {
-    int type = static_cast<int>(v);
-    VERIFY_OR_DEBUG_ASSERT(type >= 0 && type <= 2) {
-        type = 2;
-    }
+void WOverview::slotTypeControlChanged(double v) {
+    // Assert that v is in enum range to prevent UB.
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<Type>().keyCount());
+    Type type = static_cast<Type>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -412,6 +451,14 @@ void WOverview::slotTypeChanged(double v) {
     m_type = type;
     m_pWaveform.clear();
     slotWaveformSummaryUpdated();
+}
+
+void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
+    update();
+}
+
+void WOverview::slotNormalizeOrVisualGainChanged() {
+    update();
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
@@ -455,18 +502,27 @@ void WOverview::receiveCuesUpdated() {
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
-        if (m_orientation == Qt::Horizontal) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
-#else
-            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
-#endif
+        if (isPosInAllowedPosDragZone(e->pos())) {
+            m_bTimeRulerActive = true;
+            m_timeRulerPos = e->pos();
+            unsetCursor();
         } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
-#else
-            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
-#endif
+            // Remove the time ruler to indicate dragging position is invalid,
+            // don't abort dragging!
+            m_iPickupPos = m_iPlayPos;
+            m_bTimeRulerActive = false;
+
+            setCursor(Qt::ForbiddenCursor);
+            // Remember to restore cursor everywhere where we cancel dragging.
+            // Update immediately.
+            update();
+            return;
+        }
+
+        if (m_orientation == Qt::Horizontal) {
+            m_iPickupPos = math_clamp(e->pos().x(), 0, width() - 1);
+        } else {
+            m_iPickupPos = math_clamp(e->pos().y(), 0, height() - 1);
         }
     }
 
@@ -483,7 +539,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
     m_pHoveredMark = m_marks.findHoveredMark(e->pos(), m_orientation);
 
-    //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
+    // qDebug() << "WOverview::mouseMoveEvent" << e->pos();
     update();
 }
 
@@ -491,16 +547,28 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
+        // We may be dragging, and we may be outside the valid dragging area.
+        // If so, we've set the 'invalid drag' cursor. Restore the cursor now.
+        unsetCursor();
         return;
     }
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
         if (m_bLeftClickDragging) {
-            m_iPlayPos = m_iPickupPos;
-            double dValue = positionToValue(m_iPickupPos);
-            setControlParameterUp(dValue);
-            m_bLeftClickDragging = false;
+            unsetCursor();
+            if (isPosInAllowedPosDragZone(e->pos())) {
+                m_iPlayPos = m_iPickupPos;
+                double dValue = positionToValue(m_iPickupPos);
+                setControlParameterUp(dValue);
+                m_bLeftClickDragging = false;
+            } else {
+                // Abort dragging if we are way outside the widget.
+                m_iPickupPos = m_iPlayPos;
+                m_bLeftClickDragging = false;
+                m_bTimeRulerActive = false;
+                return;
+            }
         }
         m_bTimeRulerActive = false;
     } else if (e->button() == Qt::RightButton) {
@@ -515,6 +583,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
+        unsetCursor();
         return;
     }
     double trackSamples = getTrackSamples();
@@ -523,17 +592,9 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
-#else
-            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
-#endif
+            m_iPickupPos = math_clamp(e->pos().x(), 0, width() - 1);
         } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
-#else
-            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
-#endif
+            m_iPickupPos = math_clamp(e->pos().y(), 0, height() - 1);
         }
 
         if (m_pHoveredMark != nullptr) {
@@ -549,9 +610,11 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
+            // Abort dragging
             m_iPickupPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
+            unsetCursor();
         } else if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
@@ -562,7 +625,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             // WOverview in the future, another way to associate
             // WaveformMarks with Cues will need to be implemented.
             CuePointer pHoveredCue;
-            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            const QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
             for (const auto& pCue : cueList) {
                 if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
                     pHoveredCue = pCue;
@@ -574,6 +637,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     m_pCurrentTrack->removeCue(pHoveredCue);
                     return;
                 } else {
+                    // Clear the pickup position display, we have all cue info in the menu.
+                    leaveEvent(nullptr);
                     m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
@@ -619,6 +684,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
         drawPlayedOverlay(&painter);
+        drawMinuteMarkers(&painter);
         drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
@@ -640,6 +706,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
     if (m_bPassthroughEnabled) {
         drawPassthroughOverlay(&painter);
         m_pPassthroughLabel->show();
+        unsetCursor();
     } else {
         m_pPassthroughLabel->hide();
     }
@@ -665,16 +732,17 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (!m_waveformSourceImage.isNull()) {
-        PainterScope painterScope(pPainter);
+        WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
         float diffGain;
-        bool normalize = widgetFactory->isOverviewNormalized();
+        bool normalize = pWidgetFactory->isOverviewNormalized();
         if (normalize && m_pixmapDone && m_waveformPeak > 1) {
             diffGain = 255 - m_waveformPeak - 1;
         } else {
+            DEBUG_ASSERT(m_pCurrentTrack);
             const auto visualGain = static_cast<float>(
-                    widgetFactory->getVisualGain(WaveformWidgetFactory::All));
+                    pWidgetFactory->getVisualGain(WaveformWidgetFactory::All) *
+                    m_pCurrentTrack->getReplayGain().getRatio());
             diffGain = 255.0f - (255.0f / visualGain);
         }
 
@@ -696,6 +764,50 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
 
         pPainter->drawImage(rect(), m_waveformImageScaled);
+    }
+}
+
+void WOverview::drawMinuteMarkers(QPainter* pPainter) {
+    if (!m_trackLoaded) {
+        return;
+    }
+
+    if (!static_cast<bool>(m_pMinuteMarkersControl->get())) {
+        return;
+    }
+
+    if (m_pRateRatioControl->get() == 0) {
+        return;
+    }
+
+    // Faster than track->getDuration() and already has playback speed ratio compensated for
+    const double trackSeconds = samplePositionToSeconds(getTrackSamples());
+
+    QLineF line;
+    pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
+    pPainter->setOpacity(1.0);
+
+    const double overviewHeight = m_orientation == Qt::Horizontal ? height() : width();
+    const double markerHeight = overviewHeight * 0.08;
+    const double lowerMarkerYPos = overviewHeight * 0.92;
+    double currentMarkerXPos;
+    const int iWidth = m_orientation == Qt::Horizontal ? width() : height();
+    for (double currentMarkerSeconds = 60; currentMarkerSeconds < trackSeconds;
+            currentMarkerSeconds += 60) {
+        currentMarkerXPos = currentMarkerSeconds / trackSeconds * iWidth;
+
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
+            pPainter->drawLine(line);
+            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+            pPainter->drawLine(line);
+        } else {
+            // untested, best effort basis
+            line.setLine(0.0, currentMarkerXPos, markerHeight, currentMarkerXPos);
+            pPainter->drawLine(line);
+            line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
+            pPainter->drawLine(line);
+        }
     }
 }
 
@@ -1002,7 +1114,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
             double markSamples = pMark->getSamplePosition();
             double trackSamples = getTrackSamples();
-            double currentPositionSamples = m_playpositionControl->get() * trackSamples;
+            double currentPositionSamples = m_playpositionControl.get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
@@ -1122,7 +1234,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         qreal timePositionTillEnd = samplePositionToSeconds(
                 (1 - widgetPositionFraction) * trackSamples);
         qreal timeDistance = samplePositionToSeconds(
-                (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
+                (widgetPositionFraction - m_playpositionControl.get()) * trackSamples);
 
         QString timeText = mixxx::Duration::formatTime(timePosition) + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
@@ -1288,11 +1400,11 @@ bool WOverview::drawNextPixmapPart() {
     QPainter painter(&m_waveformSourceImage);
     painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
-    if (m_type == 0) {
+    if (m_type == Type::Filtered) {
         drawNextPixmapPartLMH(&painter, pWaveform, nextCompletion);
-    } else if (m_type == 1) {
+    } else if (m_type == Type::HSV) {
         drawNextPixmapPartHSV(&painter, pWaveform, nextCompletion);
-    } else {
+    } else { // Type::RGB:
         drawNextPixmapPartRGB(&painter, pWaveform, nextCompletion);
     }
 
@@ -1542,26 +1654,19 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 }
 
 double WOverview::samplePositionToSeconds(double sample) {
+    double rate = m_pRateRatioControl->get();
+    VERIFY_OR_DEBUG_ASSERT(rate != 0.0) {
+        return 1;
+    }
+
     double trackTime = sample /
-            (m_trackSampleRateControl->get() * mixxx::kEngineChannelOutputCount);
-    return trackTime / m_pRateRatioControl->get();
+            (m_trackSampleRateControl.get() * mixxx::kEngineChannelOutputCount);
+    return trackTime / rate;
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
-    // Play-position potmeters range from 0 to 1 but they allow out-of-range
-    // sets. This is to give VC access to the pre-roll area.
-    constexpr double kMaxPlayposRange = 1.0;
-    constexpr double kMinPlayposRange = 0.0;
-
-    // Values of zero and one in normalized space.
-    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-
-    // These coefficients convert between widget space and normalized value
-    // space.
-    m_a = (length() - 1) / (one - zero);
-    m_b = zero * m_a;
+    m_maxPixelPos = length() - 1;
 
     m_devicePixelRatio = devicePixelRatioF();
 

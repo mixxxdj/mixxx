@@ -32,6 +32,13 @@ class WOverview : public WWidget, public TrackDropTarget {
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
 
+    enum class Type {
+        Filtered,
+        HSV,
+        RGB,
+    };
+    Q_ENUM(Type);
+
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
@@ -66,7 +73,9 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
 
-    void slotTypeChanged(double v);
+    void slotTypeControlChanged(double v);
+    void slotMinuteMarkersChanged(bool v);
+    void slotNormalizeOrVisualGainChanged();
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -85,6 +94,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
+    void drawMinuteMarkers(QPainter* pPainter);
     void drawPlayedOverlay(QPainter* pPainter);
     void drawPlayPosition(QPainter* pPainter);
     void drawEndOfTrackFrame(QPainter* pPainter);
@@ -98,10 +108,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
-        return static_cast<int>(m_a * value - m_b);
+        return static_cast<int>(m_maxPixelPos * value);
     }
     inline double positionToValue(int position) const {
-        return (static_cast<double>(position) + m_b) / m_a;
+        return static_cast<double>(position) / m_maxPixelPos;
     }
 
     void updateCues(const QList<CuePointer> &loadedCues);
@@ -114,13 +124,22 @@ class WOverview : public WWidget, public TrackDropTarget {
         return m_orientation == Qt::Horizontal ? height() : width();
     }
 
+    inline bool isPosInAllowedPosDragZone(const QPoint pos) {
+        const QRect dragZone = rect().marginsAdded(QMargins(
+                m_dragMarginH,
+                m_dragMarginV,
+                m_dragMarginH,
+                m_dragMarginV));
+        return dragZone.contains(pos);
+    }
+
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
     }
 
     double getTrackSamples() const {
         if (m_trackLoaded) {
-            return m_trackSamplesControl->get();
+            return m_trackSamplesControl.get();
         } else {
             // Ignore the value, because the engine can still have the old track
             // during loading
@@ -133,7 +152,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
-    int m_type;
+    Type m_type;
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;
@@ -154,11 +173,12 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPlayPos;
     bool m_bTimeRulerActive;
     Qt::Orientation m_orientation;
+    int m_dragMarginH;
+    int m_dragMarginV;
     int m_iLabelFontSize;
 
-    // Coefficient value-position linear transposition
-    double m_a;
-    double m_b;
+    // Coefficient for linear value <-> position  transposition
+    double m_maxPixelPos;
 
     AnalyzerProgress m_analyzerProgress;
     bool m_trackLoaded;
@@ -176,11 +196,13 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     parented_ptr<ControlProxy> m_endOfTrackControl;
     parented_ptr<ControlProxy> m_pRateRatioControl;
-    parented_ptr<ControlProxy> m_trackSampleRateControl;
-    parented_ptr<ControlProxy> m_trackSamplesControl;
-    parented_ptr<ControlProxy> m_playpositionControl;
+    PollingControlProxy m_trackSampleRateControl;
+    PollingControlProxy m_trackSamplesControl;
+    PollingControlProxy m_playpositionControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
+    parented_ptr<ControlProxy> m_pMinuteMarkersControl;
+    parented_ptr<ControlProxy> m_pReplayGain;
 
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
@@ -205,5 +227,4 @@ class WOverview : public WWidget, public TrackDropTarget {
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;
-
 };

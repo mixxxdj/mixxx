@@ -1,5 +1,8 @@
 #include "library/baseexternaltrackmodel.h"
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"

@@ -24,7 +24,7 @@
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
 class LegacyControllerMapping {
-  public:
+  protected:
     LegacyControllerMapping()
             : m_bDirty(false),
               m_deviceDirection(DeviceDirection::Bidirectionnal) {
@@ -53,10 +53,12 @@ class LegacyControllerMapping {
               m_scripts(other.m_scripts),
               m_deviceDirection(other.m_deviceDirection) {
     }
+    LegacyControllerMapping& operator=(const LegacyControllerMapping&) = delete;
+    LegacyControllerMapping(LegacyControllerMapping&&) = delete;
+    LegacyControllerMapping& operator=(LegacyControllerMapping&&) = delete;
     virtual ~LegacyControllerMapping() = default;
 
-    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
-
+  public:
     struct ScriptFileInfo {
         enum class Type {
             Javascript,
@@ -154,8 +156,8 @@ class LegacyControllerMapping {
     /// @brief Set a setting layout as they should be perceived when edited in
     /// the preference dialog.
     /// @param layout The layout root element
-    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement>&& layout) {
-        VERIFY_OR_DEBUG_ASSERT(layout.get()) {
+    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement> layout) {
+        VERIFY_OR_DEBUG_ASSERT(layout) {
             return;
         }
         m_settingsLayout = std::move(layout);

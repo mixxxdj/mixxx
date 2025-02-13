@@ -128,6 +128,20 @@ CueControl::CueControl(const QString& group,
     m_pPassthrough->connectValueChanged(this,
             &CueControl::passthroughChanged,
             Qt::DirectConnection);
+
+    m_pSortHotcuesByPos = std::make_unique<ControlPushButton>(ConfigKey(group, "sort_hotcues"));
+    connect(m_pSortHotcuesByPos.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::setHotcueIndicesSortedByPosition,
+            Qt::DirectConnection);
+    m_pSortHotcuesByPosCompress = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "sort_hotcues_remove_offsets"));
+    connect(m_pSortHotcuesByPosCompress.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::setHotcueIndicesSortedByPositionCompress,
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -138,9 +152,9 @@ CueControl::~CueControl() {
 
 void CueControl::createControls() {
     m_pCueSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_set"));
-    m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
+    m_pCueSet->setButtonMode(mixxx::control::ButtonMode::Trigger);
     m_pCueClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_clear"));
-    m_pCueClear->setButtonMode(ControlPushButton::TRIGGER);
+    m_pCueClear->setButtonMode(mixxx::control::ButtonMode::Trigger);
     m_pCueGoto = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_goto"));
     m_pCueGotoAndPlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_gotoandplay"));
     m_pCuePlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_play"));
@@ -201,9 +215,9 @@ void CueControl::createControls() {
 
     m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
     setHotcueFocusIndex(Cue::kNoHotCue);
-    m_pHotcueFocusColorPrev = std::make_unique<ControlObject>(
+    m_pHotcueFocusColorPrev = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "hotcue_focus_color_prev"));
-    m_pHotcueFocusColorNext = std::make_unique<ControlObject>(
+    m_pHotcueFocusColorNext = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "hotcue_focus_color_next"));
 
     // Create hotcue controls
@@ -394,6 +408,11 @@ void CueControl::connectControls() {
                 this,
                 &CueControl::hotcueClear,
                 Qt::DirectConnection);
+        connect(pControl,
+                &HotcueControl::hotcueSwap,
+                this,
+                &CueControl::hotcueSwap,
+                Qt::DirectConnection);
     }
 }
 
@@ -440,6 +459,18 @@ void CueControl::passthroughChanged(double enabled) {
     } else {
         // Reconnect all controls when deck returns to regular mode.
         connectControls();
+    }
+}
+
+void CueControl::setHotcueIndicesSortedByPosition(double v) {
+    if (v > 0 && m_pLoadedTrack) {
+        m_pLoadedTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::KeepOffsets);
+    }
+}
+
+void CueControl::setHotcueIndicesSortedByPositionCompress(double v) {
+    if (v > 0 && m_pLoadedTrack) {
+        m_pLoadedTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::RemoveOffsets);
     }
 }
 
@@ -1216,6 +1247,26 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
     setHotcueFocusIndex(Cue::kNoHotCue);
+}
+
+void CueControl::hotcueSwap(HotcueControl* pControl, double v) {
+    // 1-based GUI/human index to 0-based internal index
+    int newCuenum = static_cast<int>(v) - 1;
+    if (newCuenum < mixxx::kFirstHotCueIndex || newCuenum >= m_iNumHotCues) {
+        return;
+    }
+
+    auto lock = lockMutex(&m_trackMutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    m_pLoadedTrack->swapHotcues(pCue->getHotCue(), newCuenum);
 }
 
 void CueControl::hotcuePositionChanged(
@@ -2585,6 +2636,13 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcueClear,
             Qt::DirectConnection);
 
+    m_hotcueSwap = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("swap")));
+    connect(m_hotcueSwap.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueSwap,
+            Qt::DirectConnection);
+
     m_previewingType.setValue(mixxx::CueType::Invalid);
     m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }
@@ -2641,6 +2699,10 @@ void HotcueControl::slotHotcueActivatePreview(double v) {
 
 void HotcueControl::slotHotcueClear(double v) {
     emit hotcueClear(this, v);
+}
+
+void HotcueControl::slotHotcueSwap(double v) {
+    emit hotcueSwap(this, v);
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {

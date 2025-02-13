@@ -14,6 +14,11 @@ void TrackExportWizard::exportTracks() {
 }
 
 bool TrackExportWizard::selectDestinationDirectory() {
+    if (m_tracks.isEmpty()) {
+        qInfo() << "TrackExportWizard: No tracks to export, cancel.";
+        return false;
+    }
+
     QString lastExportDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastTrackCopyDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
