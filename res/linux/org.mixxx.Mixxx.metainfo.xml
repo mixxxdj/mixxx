@@ -96,23 +96,52 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-01-03" timestamp="1735859957">
+    <release version="2.5.1" type="development" date="2025-02-13" timestamp="1739430195">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
-   Numark NS6II: Add new controller mapping
+   Behringer DDM4000 &amp; BCR2000: Update mappings to 2.5
+   #14232
+  </li>
+  <li>
+   Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+   #14051
+   #14057
+  </li>
+  <li>
+   Numark NS6II: New mapping
    #11075
   </li>
   <li>
-   Hercules Inpulse 300: Updated mapping
-   #14051
+   Numark Platinum FX: New mapping
+   #12872
+  </li>
+  <li>
+   Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls
+   #11307
+  </li>
+  <li>
+   Reloop Digital Jockey 2 IE: New mapping
+   #4614
+  </li>
+  <li>
+   Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
+   #14249
+  </li>
+  <li>
+   Traktor S4mk3: Smooth xfader curve for Const Power mode
+   #14305
+  </li>
+  <li>
+   Traktor Kontrol S3: Use pitch absolute mode as described in the manual
+   #14123
   </li>
  </ul>
  <p>
-  Fixes
+  Skins
  </p>
  <ul>
   <li>
@@ -121,8 +150,157 @@
    #14097
   </li>
   <li>
+   Fix crash when hiding waveforms in Deere
+   #14170
+  </li>
+  <li>
+   Waveform Overview: Abort play pos dragging if cursor is released outside the valid area
+   #13741
+   #13732
+  </li>
+  <li>
+   Waveform Overview: Also render analysis progress when triggered by track menu or analysis feature
+   #14150
+  </li>
+  <li>
+   Don't show 'menubar hide' dialog when switching skins
+   #14254
+  </li>
+  <li>
+   Key Wheel: Move to View menu and make it a floating tool window
+   #14256
+   #14239
+  </li>
+ </ul>
+ <p>
+  Fixes
+ </p>
+ <ul>
+  <li>
    Enable R3 time-stretching with Rubberband 4.0.0 API version numbers
    #14100
+  </li>
+  <li>
+   Library: Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
+   #14114
+   #14065
+  </li>
+  <li>
+   Preferences Effects: add Hide/Unhide (move) buttons to Effects tab
+   #13329
+  </li>
+  <li>
+   Fix MusicBrainz lookup on Windows and macOS
+   #14216
+  </li>
+  <li>
+   Controller Learning: Correct skin control for mic/aux section
+   #14221
+  </li>
+  <li>
+   Apply talkover ducking after master effects to allow using a compressor effect
+   #13844
+   #12451
+  </li>
+  <li>
+   Fix for
+   TypeError
+   in
+   midi-components-0.0.js
+   #14203
+   #14197
+  </li>
+  <li>
+   Library scanner: Update cached 'missing' flag when file is redicovered
+   #14250
+  </li>
+  <li>
+   Controller preference: Fix notify of pending changes when closing preferences
+   #14234
+   #14220
+  </li>
+  <li>
+   Controller preferences: Fix broken overwrite dialog ('Save as..' not working)
+   #14263
+  </li>
+  <li>
+   Controller preferences: Don't break support link texts
+   #14079
+  </li>
+  <li>
+   MIDI controller learning: Make control box search usable
+   #14260
+  </li>
+  <li>
+   Hidden Tracks: Allow 'load to' via track context manu
+   #14077
+  </li>
+  <li>
+   MIDI controller learning: don't reload mapping after learn
+   #14253
+  </li>
+  <li>
+   Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
+   #14281
+   #14280
+   #14292
+  </li>
+  <li>
+   Allow
+   midino
+   0 in `MidiController::makeInputHandler()
+   #14266
+   #14265
+  </li>
+  <li>
+   Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
+   #14172
+   #14289
+  </li>
+  <li>
+   Fix sporadic deadlocks when closing Mixxx or changing sound devices
+   #14208
+   #14055
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Allow to build with git "showSignature = true"
+   #14115
+   #12997
+  </li>
+  <li>
+   Support building with Qt 6.8/6.9
+   #14080
+   #14071
+   #14200
+   #14204
+  </li>
+  <li>
+   Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
+   #14148
+   #14158
+  </li>
+  <li>
+   Add more translations to Linux desktop file
+   #14153
+   #14169
+  </li>
+  <li>
+   Debian: recommend qt6-translations-l10n
+   #14147
+  </li>
+  <li>
+   Update FindFFTW3.cmake to not find version 2
+   #13937
+   #13931
+  </li>
+  <li>
+   Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
+   #14269
   </li>
  </ul>
 </description>

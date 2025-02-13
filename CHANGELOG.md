@@ -4,15 +4,95 @@
 
 ### Controller Mappings
 
-* Numark NS6II: Add new controller mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
-* Hercules Inpulse 300: Updated mapping [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
+* Behringer DDM4000 & BCR2000: Update mappings to 2.5 [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
+* Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+  [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
+  [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
+* Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
+* Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
+* Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
+* Reloop Digital Jockey 2 IE: New mapping [#4614](https://github.com/mixxxdj/mixxx/pull/4614)
+* Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
+  [#14249](https://github.com/mixxxdj/mixxx/pull/14249)
+* Traktor S4mk3: Smooth xfader curve for Const Power mode [#14305](https://github.com/mixxxdj/mixxx/pull/14305)
+* Traktor Kontrol S3: Use pitch absolute mode as described in the manual [#14123](https://github.com/mixxxdj/mixxx/pull/14123)
 
-### Fixes
+### Skins
 
 * Deere (64 samplers): Bring back library in regular view
   [#14101](https://github.com/mixxxdj/mixxx/pull/14101)
   [#14097](https://github.com/mixxxdj/mixxx/issues/14097)
+* Fix crash when hiding waveforms in Deere
+  [#14170](https://github.com/mixxxdj/mixxx/pull/14170)
+* Waveform Overview: Abort play pos dragging if cursor is released outside the valid area
+  [#13741](https://github.com/mixxxdj/mixxx/pull/13741)
+  [#13732](https://github.com/mixxxdj/mixxx/issues/13732)
+* Waveform Overview: Also render analysis progress when triggered by track menu or analysis feature [#14150](https://github.com/mixxxdj/mixxx/pull/14150)
+* Don't show 'menubar hide' dialog when switching skins [#14254](https://github.com/mixxxdj/mixxx/pull/14254)
+* Key Wheel: Move to View menu and make it a floating tool window
+  [#14256](https://github.com/mixxxdj/mixxx/pull/14256)
+  [#14239](https://github.com/mixxxdj/mixxx/pull/14239)
+
+### Fixes
+
 * Enable R3 time-stretching with Rubberband 4.0.0 API version numbers [#14100](https://github.com/mixxxdj/mixxx/pull/14100)
+* Library: Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
+  [#14114](https://github.com/mixxxdj/mixxx/pull/14114)
+  [#14065](https://github.com/mixxxdj/mixxx/issues/14065)
+* Preferences Effects: add Hide/Unhide (move) buttons to Effects tab [#13329](https://github.com/mixxxdj/mixxx/pull/13329)
+* Fix MusicBrainz lookup on Windows and macOS [#14216](https://github.com/mixxxdj/mixxx/pull/14216)
+* Controller Learning: Correct skin control for mic/aux section [#14221](https://github.com/mixxxdj/mixxx/pull/14221)
+* Apply talkover ducking after master effects to allow using a compressor effect
+  [#13844](https://github.com/mixxxdj/mixxx/pull/13844)
+  [#12451](https://github.com/mixxxdj/mixxx/issues/12451)
+* Fix for `TypeError` in `midi-components-0.0.js`
+  [#14203](https://github.com/mixxxdj/mixxx/pull/14203)
+  [#14197](https://github.com/mixxxdj/mixxx/issues/14197)
+* Library scanner: Update cached 'missing' flag when file is redicovered
+  [#14250](https://github.com/mixxxdj/mixxx/pull/14250)
+* Controller preference: Fix notify of pending changes when closing preferences [#14234](https://github.com/mixxxdj/mixxx/pull/14234)
+  [#14220](https://github.com/mixxxdj/mixxx/issues/14220)
+* Controller preferences: Fix broken overwrite dialog ('Save as..' not working) [#14263](https://github.com/mixxxdj/mixxx/pull/14263)
+* Controller preferences: Don't break support link texts [#14079](https://github.com/mixxxdj/mixxx/pull/14079)
+* MIDI controller learning: Make control box search usable [#14260](https://github.com/mixxxdj/mixxx/pull/14260)
+* Hidden Tracks: Allow 'load to' via track context manu [#14077](https://github.com/mixxxdj/mixxx/pull/14077)
+* MIDI controller learning: don't reload mapping after learn [#14253](https://github.com/mixxxdj/mixxx/pull/14253)
+* Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
+  [#14281](https://github.com/mixxxdj/mixxx/pull/14281)
+  [#14280](https://github.com/mixxxdj/mixxx/issues/14280)
+  [#14292](https://github.com/mixxxdj/mixxx/pull/14292)
+* Allow `midino` 0 in `MidiController::makeInputHandler()
+  [#14266](https://github.com/mixxxdj/mixxx/pull/14266)
+  [#14265](https://github.com/mixxxdj/mixxx/issues/14265)
+* Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
+  [#14172](https://github.com/mixxxdj/mixxx/pull/14172)
+  [#14289](https://github.com/mixxxdj/mixxx/pull/14289)
+* Fix sporadic deadlocks when closing Mixxx or changing sound devices
+  [#14208](https://github.com/mixxxdj/mixxx/pull/14208)
+  [#14055](https://github.com/mixxxdj/mixxx/issues/14055)
+
+### Target support
+
+* Allow to build with git "showSignature = true"
+  [#14115](https://github.com/mixxxdj/mixxx/pull/14115)
+  [#12997](https://github.com/mixxxdj/mixxx/issues/12997)
+* Support building with Qt 6.8/6.9
+  [#14080](https://github.com/mixxxdj/mixxx/pull/14080)
+  [#14071](https://github.com/mixxxdj/mixxx/issues/14071)
+  [#14200](https://github.com/mixxxdj/mixxx/pull/14200)
+  [#14204](https://github.com/mixxxdj/mixxx/pull/14204)
+* Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
+  [#14148](https://github.com/mixxxdj/mixxx/pull/14148)
+  [#14158](https://github.com/mixxxdj/mixxx/pull/14158)
+* Add more translations to Linux desktop file
+  [#14153](https://github.com/mixxxdj/mixxx/pull/14153)
+  [#14169](https://github.com/mixxxdj/mixxx/pull/14169)
+* Debian: recommend qt6-translations-l10n [#14147](https://github.com/mixxxdj/mixxx/pull/14147)
+* Update FindFFTW3.cmake to not find version 2
+  [#13937](https://github.com/mixxxdj/mixxx/pull/13937)
+  [#13931](https://github.com/mixxxdj/mixxx/issues/13931)
+* Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
+  [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
