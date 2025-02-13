@@ -393,6 +393,19 @@ bool DlgTrackInfo::eventFilter(QObject* pObj, QEvent* pEvent) {
                 }
             }
     }
+    if (pEvent->type() == QEvent::FocusIn) {
+        auto* pFocusEvent = static_cast<QFocusEvent*>(pEvent);
+
+        if (pFocusEvent->reason() == Qt::TabFocusReason ||
+                pFocusEvent->reason() == Qt::BacktabFocusReason ||
+                pFocusEvent->reason() == Qt::ShortcutFocusReason) {
+            auto* pLabel = qobject_cast<QLabel*>(pObj);
+            if (pLabel && !pLabel->hasSelectedText()) {
+                pLabel->setSelection(0, pLabel->text().size());
+                return false;
+            }
+        }
+    }
     return false;
 }
 
@@ -674,7 +687,7 @@ void DlgTrackInfo::focusField(const QString& property) {
             // If we shall focus the BPM spinbox, switch to BPM tab
             tabWidget->setCurrentIndex(tabWidget->indexOf(tabBPM));
         }
-        it.value()->setFocus();
+        it.value()->setFocus(Qt::ShortcutFocusReason);
     }
 }
 
