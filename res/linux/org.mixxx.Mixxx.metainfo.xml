@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-01-31" timestamp="1738358788">
+    <release version="2.5.1" type="development" date="2025-02-07" timestamp="1738958006">
       <description>
  <p>
   Controller Mappings
@@ -208,7 +208,7 @@
    #14263
   </li>
   <li>
-   DlgController Learning: Make control box completer usable
+   MIDI controller learning: Make control box search usable
    #14260
   </li>
   <li>
@@ -216,7 +216,7 @@
    #14077
   </li>
   <li>
-   Controller preferences: don't reload mapping after MIDI learn
+   MIDI controller learning: don't reload mapping after learn
    #14253
   </li>
   <li>
@@ -226,7 +226,7 @@
    #14292
   </li>
   <li>
-   Fix: Allow
+   Allow
    midino
    0 in `MidiController::makeInputHandler()
    #14266
