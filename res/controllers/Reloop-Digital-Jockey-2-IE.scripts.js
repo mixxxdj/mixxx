@@ -446,7 +446,7 @@ RDJ2.JogModeSelector.prototype = new components.Component({
         var scratchValue = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.MIDI_ON : RDJ2.MIDI_OFF;
         var fxDryWetValue = this.jogMode === RDJ2.JOGMODES.fxdrywet ? RDJ2.MIDI_ON : RDJ2.MIDI_OFF;
 
-        if (midi.sendShortMsg) {
+        if (midi.sendShortMsg && this.searchMidiCtrl !== undefined && this.scratchMidiCtrl !== undefined && this.fxDryWetMidiCtrl !== undefined) {
             midi.sendShortMsg(0x90, this.searchMidiCtrl, searchValue);
             midi.sendShortMsg(0x90, this.scratchMidiCtrl, scratchValue);
             midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, fxDryWetValue);
