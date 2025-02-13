@@ -242,13 +242,13 @@ def get_global_names(mixxx_path):
             ext = os.path.splitext(fname)[1]
             if ext in (".h", ".cpp"):
                 fpath = os.path.join(root, fname)
-                with open(fpath, mode="r") as f:
+                with open(fpath, mode="r", encoding="utf-8") as f:
                     for line in f:
                         classnames.update(set(RE_CPP_CLASSNAME.findall(line)))
                         objectnames.update(set(RE_CPP_OBJNAME.findall(line)))
             elif ext == ".ui":
                 fpath = os.path.join(root, fname)
-                with open(fpath, mode="r") as f:
+                with open(fpath, mode="r", encoding="utf-8") as f:
                     objectnames.update(set(RE_UI_OBJNAME.findall(f.read())))
     return classnames, objectnames
 
@@ -266,7 +266,7 @@ def get_skin_objectnames(skin_path):
                 continue
 
             fpath = os.path.join(root, fname)
-            with open(fpath, mode="r") as f:
+            with open(fpath, mode="r", encoding="utf-8") as f:
                 for line in f:
                     yield from RE_XML_OBJNAME.findall(line)
                     yield from RE_XML_OBJNAME_SETVAR.findall(line)
