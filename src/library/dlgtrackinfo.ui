@@ -75,7 +75,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="WBasicLineEdit" name="txtTrackName">
+             <widget class="QLineEdit" name="txtTrackName">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -131,7 +131,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="WBasicLineEdit" name="txtArtist">
+             <widget class="QLineEdit" name="txtArtist">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -163,7 +163,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="WBasicLineEdit" name="txtAlbum">
+             <widget class="QLineEdit" name="txtAlbum">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -195,7 +195,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="WBasicLineEdit" name="txtAlbumArtist">
+             <widget class="QLineEdit" name="txtAlbumArtist">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -240,7 +240,7 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="WBasicLineEdit" name="txtComposer">
+             <widget class="QLineEdit" name="txtComposer">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -266,7 +266,7 @@
              </widget>
             </item>
             <item row="4" column="3">
-             <widget class="WBasicLineEdit" name="txtYear">
+             <widget class="QLineEdit" name="txtYear">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -286,7 +286,7 @@
              </widget>
             </item>
             <item row="5" column="1">
-             <widget class="WBasicLineEdit" name="txtGenre">
+             <widget class="QLineEdit" name="txtGenre">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -312,7 +312,7 @@
              </widget>
             </item>
             <item row="5" column="3">
-             <widget class="WBasicLineEdit" name="txtKey">
+             <widget class="QLineEdit" name="txtKey">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -338,7 +338,7 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="WBasicLineEdit" name="txtGrouping">
+             <widget class="QLineEdit" name="txtGrouping">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -364,7 +364,7 @@
              </widget>
             </item>
             <item row="6" column="3">
-             <widget class="WBasicLineEdit" name="txtTrackNumber">
+             <widget class="QLineEdit" name="txtTrackNumber">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1073,11 +1073,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
-  <customwidget>
-   <class>WBasicLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>widget/wbasiclineedit.h</header>
-  </customwidget>
   <customwidget>
    <class>WBasicPushButton</class>
    <extends>QPushButton</extends>
