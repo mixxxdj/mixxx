@@ -12,6 +12,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
+#include "util/compatibility/qmutex.h"
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 
@@ -38,6 +39,7 @@ MidiController::MidiController(const QString& deviceName)
 
 void MidiController::slotBeforeEngineShutdown() {
     Controller::slotBeforeEngineShutdown();
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "slotBeforeEngineShutdown");
     m_pMapping->removeInputHandlerMappings();
 }
 
@@ -56,10 +58,12 @@ QString MidiController::mappingExtension() {
 }
 
 void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "setMapping");
     m_pMapping = downcastAndClone<LegacyMidiControllerMapping>(pMapping.get());
 }
 
 std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "cloneMapping");
     if (!m_pMapping) {
         return nullptr;
     }
@@ -93,6 +97,7 @@ bool MidiController::applyMapping() {
 }
 
 void MidiController::createOutputHandlers() {
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "createOutputHandlers");
     if (!m_pMapping) {
         return;
     }
@@ -224,10 +229,10 @@ void MidiController::clearTemporaryInputMappings() {
 }
 
 void MidiController::commitTemporaryInputMappings() {
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "commitTemporaryInputMappings");
     if (!m_pMapping) {
         return;
     }
-
     // We want to replace duplicates that exist in m_mapping but allow duplicates
     // in m_temporaryInputMappings. To do this, we first remove every key in
     // m_temporaryInputMappings from m_mapping's input mappings.
@@ -287,6 +292,7 @@ void MidiController::receivedShortMessage(unsigned char status,
         }
     }
 
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "receivedShortMessage");
     for (auto [it, end] =
                     m_pMapping->getInputMappings().equal_range(mappingKey.key);
             it != end;
@@ -587,6 +593,7 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
         }
     }
 
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "receive");
     for (auto [it, end] =
                     m_pMapping->getInputMappings().equal_range(mappingKey.key);
             it != end;
@@ -641,6 +648,7 @@ QJSValue MidiController::makeInputHandler(unsigned char status,
 
     const auto midiKey = MidiKey(status, control);
 
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "makeInputHandler");
     auto it = m_pMapping->getInputMappings().constFind(midiKey.key);
     if (it != m_pMapping->getInputMappings().constEnd() &&
             it.value().options.testFlag(MidiOption::Script) &&
@@ -667,5 +675,6 @@ QJSValue MidiController::makeInputHandler(unsigned char status,
 
 bool MidiController::removeInputMapping(
         uint16_t key, const MidiInputMapping& mapping) {
+    const auto locker = MMutexLockerDebug(&m_mappingMutex, "removeInputMapping");
     return m_pMapping->removeInputMapping(key, mapping);
 }
