@@ -115,6 +115,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
         : AbstractLegacyControllerSetting(element) {
+    m_pToggleCheckboxEventFilter = nullptr;
     m_defaultValue = parseValue(element.attribute("default"));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
@@ -159,7 +160,10 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
     pLabelWidget->setBuddy(pCheckBox);
-    pLabelWidget->installEventFilter(this);
+    if (!m_pToggleCheckboxEventFilter) {
+        m_pToggleCheckboxEventFilter = new ToggleCheckboxEventFilter(pWidget);
+    }
+    pLabelWidget->installEventFilter(m_pToggleCheckboxEventFilter);
 
     QBoxLayout* pLayout = new QHBoxLayout();
 
@@ -181,7 +185,8 @@ bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
                     Qt::CaseInsensitive) == 0;
 }
 
-bool LegacyControllerBooleanSetting::eventFilter(QObject* pObj, QEvent* pEvent) {
+bool LegacyControllerBooleanSetting::ToggleCheckboxEventFilter::eventFilter(
+        QObject* pObj, QEvent* pEvent) {
     QLabel* pLabel = qobject_cast<QLabel*>(pObj);
     if (pLabel && pEvent->type() == QEvent::MouseButtonPress) {
         QCheckBox* pCheckBox = qobject_cast<QCheckBox*>(pLabel->buddy());

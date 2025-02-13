@@ -136,8 +136,6 @@ class LegacyControllerBooleanSetting
                     LegacyControllerSettingsLayoutContainer::HORIZONTAL)
             override;
 
-    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
-
     QJSValue value() const override {
         return QJSValue(m_savedValue);
     }
@@ -188,6 +186,15 @@ class LegacyControllerBooleanSetting
     virtual QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
+    class ToggleCheckboxEventFilter : public QObject {
+      public:
+        ToggleCheckboxEventFilter(QObject* pParent)
+                : QObject(pParent) {
+        }
+        bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+    };
+
+    ToggleCheckboxEventFilter* m_pToggleCheckboxEventFilter;
     bool m_savedValue;
     bool m_defaultValue;
     bool m_editedValue;
