@@ -250,20 +250,20 @@ void EngineRecord::writeCueLine() {
                                     % 75);
 
     m_cueFile.write(QStringLiteral("  TRACK %1 AUDIO\n")
-                            .arg((double)m_cueTrack, 2, 'f', 0, '0')
-                            .toUtf8());
+                    .arg((double)m_cueTrack, 2, 'f', 0, '0')
+                    .toUtf8());
 
     m_cueFile.write(QStringLiteral("    TITLE \"%1\"\n")
-                            .arg(m_pCurrentTrack->getTitle())
-                            .toUtf8());
+                    .arg(m_pCurrentTrack->getTitle())
+                    .toUtf8());
     m_cueFile.write(QStringLiteral("    PERFORMER \"%1\"\n")
-                            .arg(m_pCurrentTrack->getArtist())
-                            .toUtf8());
+                    .arg(m_pCurrentTrack->getArtist())
+                    .toUtf8());
 
     if (m_bCueUsesFileAnnotation) {
         m_cueFile.write(QStringLiteral("    FILE \"%1\"\n")
-                                .arg(m_pCurrentTrack->getLocation())
-                                .toUtf8());
+                        .arg(m_pCurrentTrack->getLocation())
+                        .toUtf8());
     }
 
     // Woefully inaccurate (at the seconds level anyways).
@@ -397,4 +397,3 @@ void EngineRecord::closeCueFile() {
         m_cueFile.close();
     }
 }
-

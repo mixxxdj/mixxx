@@ -79,7 +79,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     CheckBoxUseCueFileAnnotation->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"),
-                    kDefaultCueFileAnnotationEnabled));
+            kDefaultCueFileAnnotationEnabled));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -461,11 +461,10 @@ void DlgPrefRecord::saveUseCueFile() {
 
 void DlgPrefRecord::saveUseCueFileAnnotation() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"),
-                   ConfigValue(CheckBoxUseCueFileAnnotation->isChecked()));
+            ConfigValue(CheckBoxUseCueFileAnnotation->isChecked()));
 }
 
 void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
                    ConfigValue(comboBoxSplitting->currentText()));
 }
-
