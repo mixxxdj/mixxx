@@ -225,12 +225,12 @@ void allshader::WaveformRenderMark::update() {
     // from m_pMarkNodesParent and store each with their mark
     // (transferring ownership). Later in this function we move the
     // visible nodes back to m_pMarkNodesParent children.
-    while (auto pChild = m_pMarkNodesParent->firstChild()) {
+    while (auto* pChild = m_pMarkNodesParent->firstChild()) {
         auto pNode = m_pMarkNodesParent->detachChildNode(pChild);
         WaveformMarkNode* pWaveformMarkNode = static_cast<WaveformMarkNode*>(pNode.get());
         // Determine its WaveformMark
-        auto pMark = pWaveformMarkNode->m_pOwner;
-        auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
+        auto* pMark = pWaveformMarkNode->m_pOwner;
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         // Store the node with the WaveformMark
         pGraphics->attachNode(std::move(pNode));
     }
@@ -272,10 +272,11 @@ void allshader::WaveformRenderMark::update() {
             continue;
         }
 
-        auto pMarkGraphics = pMark->m_pGraphics.get();
-        auto pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
-        if (!pMarkGraphics) // is this even possible?
+        auto* pMarkGraphics = pMark->m_pGraphics.get();
+        auto* pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
+        if (!pMarkGraphics) { // is this even possible?
             continue;
+        }
 
         const float currentMarkPos = static_cast<float>(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
@@ -526,7 +527,7 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
                         pMark->generateImage(
                                 m_waveformRenderer->getDevicePixelRatio()));
     } else {
-        auto pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         pGraphics->updateTexture(m_waveformRenderer->getContext(),
                 pMark->generateImage(
                         m_waveformRenderer->getDevicePixelRatio()));

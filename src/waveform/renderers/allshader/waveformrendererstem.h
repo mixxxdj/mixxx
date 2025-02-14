@@ -11,7 +11,7 @@ class QOpenGLTexture;
 
 namespace allshader {
 class WaveformRendererStem;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererStem final
         : public allshader::WaveformRendererSignalBase,
