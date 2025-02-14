@@ -50,7 +50,7 @@ void HiddenTableModel::setTableModel() {
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
-    setSearch("", "");
+    setSearch("");
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {

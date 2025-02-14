@@ -84,7 +84,7 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
             &RhythmboxFeature::onTrackCollectionLoaded,
             Qt::QueuedConnection);
 
-    m_pRhythmboxTrackModel->setSearch("", ""); // enable search.
+    m_pRhythmboxTrackModel->setSearch(""); // enable search.
 }
 
 RhythmboxFeature::~RhythmboxFeature() {

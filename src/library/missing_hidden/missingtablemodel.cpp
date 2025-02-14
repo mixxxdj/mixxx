@@ -52,7 +52,7 @@ void MissingTableModel::setTableModel(int id) {
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
-    setSearch("", "");
+    setSearch("");
 }
 
 MissingTableModel::~MissingTableModel() {
