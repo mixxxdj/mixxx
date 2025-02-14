@@ -198,7 +198,7 @@
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
-                    } else if (this.triggerOnRelease === true) {
+                    } else if (this.triggerOnRelease) {
                         this.trigger();
                     }
                     if (this.longPressTimer !== 0) {
