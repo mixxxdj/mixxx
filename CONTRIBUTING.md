@@ -12,7 +12,15 @@ Table of Contents
 
 ## Orientation
 
-We have lots more helpful information for users and developers on the [Mixxx wiki](https://mixxx.org/wiki/doku.php/start), including [build instructions](https://mixxx.org/wiki/doku.php/start#compile_mixxx_from_source_code).
+We have lots more helpful information for users and developers on the [Mixxx wiki](https://github.com/mixxxdj/mixxx/wiki) and elsewhere, including [build instructions](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code).
+
+### Important Guidelines and Policies
+
+* [Git Workflow](#git-workflow)
+* [Coding Guidelines](https://github.com/mixxxdj/mixxx/wiki/Coding-Guidelines) & [Setting up `pre-commit`](#pre-commit)
+* [Minimum Requirements Policy](https://github.com/mixxxdj/mixxx/wiki/Coding-Guidelines)
+* [Internationalization Workflow](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
+* [Release Checklist](https://github.com/mixxxdj/mixxx/wiki/Release-Checklist-2.5.0)
 
 ### Git Repositories
 
@@ -48,7 +56,7 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
 
   Refer to [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/) for more details.
 
-* Install [pre-commit](https://pre-commit.com/#install) to automatically ensure that your commits comply with our code style for both C++ and JavaScript. This saves time reviewing so we don't have to point out nitpicky style issues. Once you have pre-commit installed on your computer, set it up in your local Git repository:
+* <a name="pre-commit"></a> Install [pre-commit](https://pre-commit.com/#install) to automatically ensure that your commits comply with our code style for both C++ and JavaScript. This saves time reviewing so we don't have to point out nitpicky style issues. Once you have pre-commit installed on your computer, set it up in your local Git repository:
 
       cd /path/to/your/git/repo
       pre-commit install
