@@ -12,10 +12,9 @@
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
-#include "widget/wcolorpickeraction.h"
 
 class TrackModel;
-class WColorPickerAction;
+class WColorPickerActionMenu;
 class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
@@ -32,7 +31,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     explicit DlgTrackInfo(
             UserSettingsPointer pUserSettings,
             const TrackModel* trackModel = nullptr);
-    ~DlgTrackInfo() override = default;
+    ~DlgTrackInfo() override;
+
+  protected:
+    bool eventFilter(QObject* pObj, QEvent* pEvent);
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
@@ -71,7 +73,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
-    void slotColorButtonClicked();
 
     void slotCoverFound(
             const QObject* pRequester,
@@ -81,8 +82,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
+    QModelIndex getPrevNextTrack(bool next);
     void loadNextTrack();
     void loadPrevTrack();
+    void refocusCurrentWidget();
     void loadTrackInternal(const TrackPointer& pTrack);
     void reloadTrackBeats(const Track& track);
     void trackColorDialogSetColor(const mixxx::RgbColor::optional_t& color);
@@ -108,18 +111,14 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateSpinBpmFromBeats();
 
     const UserSettingsPointer m_pUserSettings;
-
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
-
     QModelIndex m_currentTrackIndex;
-
     mixxx::TrackRecord m_trackRecord;
 
     mixxx::BeatsPointer m_pBeatsClone;
     bool m_trackHasBeatMap;
-
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 
@@ -127,8 +126,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
-    parented_ptr<WStarRating> m_pWStarRating;
-    parented_ptr<WColorPickerAction> m_pColorPicker;
+    parented_ptr<WColorPickerActionMenu> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };

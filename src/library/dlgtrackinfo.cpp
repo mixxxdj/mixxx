@@ -1,5 +1,6 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QShortcut>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -19,6 +20,7 @@
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "widget/wcolorpickeractionmenu.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
@@ -46,8 +48,7 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(this)),
-          m_pColorPicker(make_parented<WColorPickerAction>(
+          m_pColorPicker(make_parented<WColorPickerActionMenu>(
                   WColorPicker::Option::AllowNoColor |
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
@@ -56,13 +57,20 @@ DlgTrackInfo::DlgTrackInfo(
     init();
 }
 
+DlgTrackInfo::~DlgTrackInfo() {
+    // ~parented_ptr() needs the definition of the wrapped type
+    // upon deletion! Otherwise the behavior is undefined.
+    // The wrapped types of some parented_ptr members are only
+    // forward declared in the header file.
+}
+
 void DlgTrackInfo::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
     // Store tag edit widget pointers to allow focusing a specific widgets when
     // this is opened by double-clicking a WTrackProperty label.
-    // Associate with property strings taken from library/dao/trackdao.h
+    // Associate with property strings taken from library/dao/trackdao.cpp
     m_propertyWidgets.insert("artist", txtArtist);
     m_propertyWidgets.insert("title", txtTrackName);
     m_propertyWidgets.insert("titleInfo", txtTrackName);
@@ -70,24 +78,31 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
     m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("rating", starRating);
     m_propertyWidgets.insert("year", txtYear);
     m_propertyWidgets.insert(kBpmPropertyName, spinBpm);
     m_propertyWidgets.insert("tracknumber", txtTrackNumber);
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("color", btnColorPicker);
+    m_propertyWidgets.insert("datetime_added", txtDateAdded);
+    m_propertyWidgets.insert("duration", txtDuration);
+    m_propertyWidgets.insert("timesplayed", txtDateLastPlayed);
+    m_propertyWidgets.insert("last_played_at", txtDateLastPlayed);
+    m_propertyWidgets.insert("filetype", txtType);
+    m_propertyWidgets.insert("bitrate", txtBitrate);
+    m_propertyWidgets.insert("samplerate", txtSamplerate);
+    m_propertyWidgets.insert("replaygain", txtReplayGain);
+    m_propertyWidgets.insert("replaygain_peak", txtReplayGain);
+    m_propertyWidgets.insert("track_locations.location", txtLocation);
 
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
 
-    starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    starsLayout->setSpacing(0);
-    starsLayout->setContentsMargins(0, 0, 0, 0);
-    starsLayout->insertWidget(0, m_pWStarRating.get());
-    // This is necessary to pass on mouseMove events to WStarRating
-    m_pWStarRating->setMouseTracking(true);
+    // Workaround: Align the baseline of the "Comments" label
+    // with the baseline of the text inside the comments field
+    const int topMargin = txtComment->frameWidth() + int(txtComment->document()->documentMargin());
+    lblTrackComment->setContentsMargins(0, topMargin, 0, 0);
 
     if (m_pTrackModel) {
         connect(btnNext,
@@ -98,6 +113,18 @@ void DlgTrackInfo::init() {
                 &QPushButton::clicked,
                 this,
                 &DlgTrackInfo::slotPrevButton);
+
+        QShortcut* nextShortcut = new QShortcut(QKeySequence("Alt+Right"), this);
+        QShortcut* prevShortcut = new QShortcut(QKeySequence("Alt+Left"), this);
+
+        connect(nextShortcut,
+                &QShortcut::activated,
+                btnNext,
+                [this] { btnNext->animateClick(); });
+        connect(prevShortcut,
+                &QShortcut::activated,
+                btnPrev,
+                [this] { btnPrev->animateClick(); });
     } else {
         btnNext->hide();
         btnPrev->hide();
@@ -271,27 +298,75 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 
-    connect(m_pWStarRating,
+    connect(starRating,
             &WStarRating::ratingChangeRequest,
             this,
             &DlgTrackInfo::slotRatingChanged);
 
     btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
-    QMenu* pColorPickerMenu = new QMenu(this);
-    pColorPickerMenu->addAction(m_pColorPicker);
-    btnColorPicker->setMenu(pColorPickerMenu);
+    btnColorPicker->setMenu(m_pColorPicker.get());
 
-    connect(btnColorPicker,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotColorButtonClicked);
     connect(m_pColorPicker.get(),
-            &WColorPickerAction::colorPicked,
+            &WColorPickerActionMenu::colorPicked,
             this,
             [this](const mixxx::RgbColor::optional_t& newColor) {
                 trackColorDialogSetColor(newColor);
                 m_trackRecord.setColor(newColor);
             });
+
+    installEventFilter(this);
+    tabWidget->installEventFilter(this);
+    txtTrackName->installEventFilter(this);
+    txtArtist->installEventFilter(this);
+    txtAlbum->installEventFilter(this);
+    txtAlbumArtist->installEventFilter(this);
+    txtComposer->installEventFilter(this);
+    txtGenre->installEventFilter(this);
+    txtGrouping->installEventFilter(this);
+    txtYear->installEventFilter(this);
+    txtKey->installEventFilter(this);
+    txtTrackNumber->installEventFilter(this);
+    txtDuration->installEventFilter(this);
+    txtBpm->installEventFilter(this);
+    txtDateAdded->installEventFilter(this);
+    txtDateLastPlayed->installEventFilter(this);
+    txtType->installEventFilter(this);
+    txtBpm->installEventFilter(this);
+    txtBitrate->installEventFilter(this);
+    txtSamplerate->installEventFilter(this);
+    txtReplayGain->installEventFilter(this);
+    txtLocation->installEventFilter(this);
+}
+
+bool DlgTrackInfo::eventFilter(QObject* pObj, QEvent* pEvent) {
+    if (pEvent->type() != QEvent::KeyPress) {
+        auto* pKeyEvent = static_cast<QKeyEvent*>(pEvent);
+
+        const bool noModifiersPressed = !(pKeyEvent->modifiers() &
+                (Qt::ControlModifier | Qt::AltModifier |
+                        Qt::ShiftModifier | Qt::MetaModifier));
+
+        if (!noModifiersPressed) {
+            return false
+        }
+
+        if (pObj == this || qobject_cast<QLabel*>(pObj) ||
+                qobject_cast<QLineEdit*>(pObj) ||
+                qobject_cast<QTabWidget*>(pObj))
+
+            if (pKeyEvent->key() == Qt::Key_Up) {
+                if (focusPreviousChild()) {
+                    event->accept();
+                    return true;
+                }
+            } else if (pKeyEvent->key() == Qt::Key_Down) {
+                if (focusNextChild()) {
+                    event->accept();
+                    return true;
+                }
+            }
+    }
+    return false;
 }
 
 void DlgTrackInfo::slotApply() {
@@ -325,21 +400,42 @@ void DlgTrackInfo::slotPrevDlgTagFetcher() {
     loadPrevTrack();
 }
 
+QModelIndex DlgTrackInfo::getPrevNextTrack(bool next) {
+    return m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() + (next ? 1 : -1),
+            m_currentTrackIndex.column());
+}
+
 void DlgTrackInfo::loadNextTrack() {
-    auto nextRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+    auto nextRow = getPrevNextTrack(true);
     if (nextRow.isValid()) {
         loadTrack(nextRow);
+        refocusCurrentWidget();
         emit next();
     }
 }
 
 void DlgTrackInfo::loadPrevTrack() {
-    QModelIndex prevRow = m_currentTrackIndex.sibling(
-            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+    auto prevRow = getPrevNextTrack(false);
     if (prevRow.isValid()) {
         loadTrack(prevRow);
+        refocusCurrentWidget();
         emit previous();
+    }
+}
+
+/// Simulate moving the focus out of and then back into the currently
+/// focused widget to trigger behaviors like the "Select all on focus"
+/// for QLineEdit.
+///
+/// This is done when moving to the previous/next track, because,
+/// logically, the user has moved to a new dialog, even though we
+/// reuse the current dialog instance internally.
+void DlgTrackInfo::refocusCurrentWidget() {
+    QWidget* focusedWidget = QApplication::focusWidget();
+    if (focusedWidget && isAncestorOf(focusedWidget)) {
+        focusedWidget->clearFocus();
+        focusedWidget->setFocus(Qt::ShortcutFocusReason);
     }
 }
 
@@ -360,7 +456,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_pWStarRating->slotSetRating(m_pLoadedTrack->getRating());
+    starRating->slotSetRating(m_pLoadedTrack->getRating());
 }
 
 void DlgTrackInfo::replaceTrackRecord(
@@ -383,40 +479,50 @@ void DlgTrackInfo::replaceTrackRecord(
             mixxx::displayLocalDateTime(
                     mixxx::localDateTimeFromUtc(
                             m_trackRecord.getDateAdded())));
+    auto lastPlayed = m_trackRecord.getPlayCounter().getLastPlayedAt();
+    txtDateLastPlayed->setText(lastPlayed.isValid()
+                    ? mixxx::displayLocalDateTime(mixxx::localDateTimeFromUtc(lastPlayed))
+                    : QStringLiteral("-"));
 
     updateTrackMetadataFields();
 }
 
 void DlgTrackInfo::updateTrackMetadataFields() {
+    const auto metadata = m_trackRecord.getMetadata();
+    const auto trackInfo = metadata.getTrackInfo();
+    const auto albumInfo = metadata.getAlbumInfo();
+    const auto signalInfo = metadata.getStreamInfo().getSignalInfo();
+
     // Editable fields
-    txtTrackName->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTitle());
-    txtArtist->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getArtist());
-    txtAlbum->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getTitle());
-    txtAlbumArtist->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getComposer());
-    txtGrouping->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
-    txtYear->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getYear());
-    txtTrackNumber->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
-    txtComment->setPlainText(
-            m_trackRecord.getMetadata().getTrackInfo().getComment());
-    txtBpm->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+    txtTrackName->setText(trackInfo.getTitle());
+    txtArtist->setText(trackInfo.getArtist());
+    txtAlbum->setText(albumInfo.getTitle());
+    txtAlbumArtist->setText(albumInfo.getArtist());
+    txtGenre->setText(trackInfo.getGenre());
+    txtComposer->setText(trackInfo.getComposer());
+    txtGrouping->setText(trackInfo.getGrouping());
+    txtYear->setText(trackInfo.getYear());
+    txtTrackNumber->setText(trackInfo.getTrackNumber());
+    txtComment->setPlainText(trackInfo.getComment());
+    txtBpm->setText(trackInfo.getBpmText());
     displayKeyText();
+
+    // Set cursor / scroll position of editable fields (only relevant
+    // when the content's width is larger than the width of the QLineEdit)
+    txtTrackName->setCursorPosition(0);
+    txtArtist->setCursorPosition(0);
+    txtAlbum->setCursorPosition(0);
+    txtAlbumArtist->setCursorPosition(0);
+    txtGenre->setCursorPosition(0);
+    txtComposer->setCursorPosition(0);
+    txtGrouping->setCursorPosition(0);
+    txtYear->setCursorPosition(0);
+    txtTrackNumber->setCursorPosition(0);
 
     // Non-editable fields
     txtDuration->setText(
-            m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+            metadata.getDurationText(mixxx::Duration::Precision::SECONDS));
+    QString bitrate = metadata.getBitrateText();
     if (bitrate.isEmpty()) {
         txtBitrate->clear();
     } else {
@@ -424,9 +530,9 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     }
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
-                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+                    trackInfo.getReplayGain().getRatio()));
 
-    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
+    auto samplerate = signalInfo.getSampleRate();
     if (samplerate.isValid()) {
         txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
     } else {
@@ -498,7 +604,11 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
         return;
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
+
     m_currentTrackIndex = index;
+    btnPrev->setEnabled(getPrevNextTrack(false).isValid());
+    btnNext->setEnabled(getPrevNextTrack(true).isValid());
+
     loadTrackInternal(pTrack);
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
@@ -553,13 +663,6 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
         return;
     }
     mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
-}
-
-void DlgTrackInfo::slotColorButtonClicked() {
-    if (!m_pLoadedTrack) {
-        return;
-    }
-    btnColorPicker->showMenu();
 }
 
 void DlgTrackInfo::trackColorDialogSetColor(const mixxx::RgbColor::optional_t& newColor) {
@@ -646,7 +749,7 @@ void DlgTrackInfo::clear() {
 
     txtLocation->setText("");
 
-    m_pWStarRating->slotSetRating(0);
+    starRating->slotSetRating(0);
 }
 
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
@@ -770,7 +873,7 @@ void DlgTrackInfo::slotRatingChanged(int rating) {
     }
     if (m_trackRecord.isValidRating(rating) &&
             rating != m_trackRecord.getRating()) {
-        m_pWStarRating->slotSetRating(rating);
+        starRating->slotSetRating(rating);
         m_trackRecord.setRating(rating);
     }
 }
