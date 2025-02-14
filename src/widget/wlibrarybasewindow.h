@@ -35,8 +35,6 @@ class WLibraryBaseWindow : public QStackedWidget, public WBaseWidget {
 
     LibraryView* getActiveView() const;
     WTrackTableView* getCurrentTrackTableView() const;
-    // WLibraryPreparationWindowTrackTableView* getCurrentTrackTableView() const;
-    // WLibraryPreparationWindowTrackTableView* getCurrentTrackTableViewInPreparationWindow() const;
     //  This returns true if the current view is or has a WTracksTableView and
     //  contains trackId, otherwise false.
     //  This is primarily used to disable the "Select track in library" track menu action
@@ -60,7 +58,6 @@ class WLibraryBaseWindow : public QStackedWidget, public WBaseWidget {
     bool getShowButtonText() const {
         return m_bShowButtonText;
     }
-    // bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
 
   signals:
     FocusWidget setLibraryFocus(FocusWidget newFocus);
@@ -80,9 +77,7 @@ class WLibraryBaseWindow : public QStackedWidget, public WBaseWidget {
 
   protected:
     bool event(QEvent* pEvent) override;
-    //    bool eventInPreparationWindow(QEvent* pEvent) override;
     void keyPressEvent(QKeyEvent* event) override;
-    //    void keyPressEventInPreparationWindow(QKeyEvent* event) override;
     const QString m_callingParent;
 
   private:

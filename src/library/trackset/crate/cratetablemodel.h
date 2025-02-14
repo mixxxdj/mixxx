@@ -10,9 +10,7 @@ class CrateTableModel final : public TrackSetTableModel {
     CrateTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~CrateTableModel() final = default;
 
-    // void selectCrate(CrateId crateId, const QString& targetWindow);
     void selectCrate(CrateId crateId);
-    // void selectCrate(CrateId crateId = CrateId());
     CrateId selectedCrate() const {
         return m_selectedCrate;
     }

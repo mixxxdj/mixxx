@@ -109,17 +109,3 @@ bool LibraryFeature::exportPlaylistItemsIntoFile(
                 useRelativePath);
     }
 }
-
-// void LibraryFeature::switchToFeature(LibraryFeature* newFeature) {
-//     if (this != newFeature) {
-//         // Deactivate current feature
-//         this->deactivate();
-//
-//         // Activate the new feature
-//         newFeature->activate();
-//     }
-// }
-//
-// void LibraryFeature::deactivate() {
-//     // Default behavior: do nothing
-// }

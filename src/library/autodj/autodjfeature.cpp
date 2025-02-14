@@ -6,7 +6,6 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-// #include "library/autodj/dlgautodjpreparationwindow.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -25,12 +24,8 @@
 #include "widget/wlibrarysidebar.h"
 
 namespace {
-
+const bool sDebug = true;
 const QString kViewName = QStringLiteral("Auto DJ");
-
-} // namespace
-
-namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
 int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
@@ -66,9 +61,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             pPlayerManager,
             pLibrary->trackCollectionManager(),
             m_iAutoDJPlaylistId);
-
-    // m_target = AutoDJTarget::Library;
-    // m_libraryViewRegistered = false;
 
     // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
     // previous load attempt have been called #10504.
@@ -199,7 +191,9 @@ void AutoDJFeature::bindLibraryWidget(
             QKeySequence::PortableText);
     m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
     m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
-    qDebug() << "[AutoDJFeature -> bindLibraryWidget finished";
+    if (sDebug) {
+        qDebug() << "[AutoDJFeature -> bindLibraryWidget finished";
+    }
 }
 
 void AutoDJFeature::bindLibraryPreparationWindowWidget(
@@ -236,14 +230,9 @@ void AutoDJFeature::bindLibraryPreparationWindowWidget(
             &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
-
-    // Update shortcuts displayed in the context menu
-    //    QKeySequence toggleAutoDJShortcut = QKeySequence(
-    //            keyboard->getKeyboardConfig()->getValueString(ConfigKey("[AutoDJ]", "enabled")),
-    //            QKeySequence::PortableText);
-    //    m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
-    //    m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
-    qDebug() << "[AutoDJFeature -> bindLibraryPreparationWindowWidget finished";
+    if (sDebug) {
+        qDebug() << "[AutoDJFeature -> bindLibraryPreparationWindowWidget finished";
+    }
 }
 
 void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -256,66 +245,33 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 }
 
 void AutoDJFeature::slotShowInPreparationWindow() {
-    qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow()";
-    qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow() - Opening in: PreparationWindow";
-    // m_target = AutoDJTarget::PreparationWindow;
+    if (sDebug) {
+        qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow()";
+        qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow() - Opening in PreparationWindow";
+    }
+    // Opening PrepWin
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        proxy->set(1);
+    }
 
-    // m_pLibraryPreparationWindowWidget->registerView(kViewName,
-    // m_pAutoDJView);
-    ///////////m_pLibraryPreparationWindowWidget->registerViewInPreparationWindow(kViewName,
-    /// m_pAutoDJView);
-    // m_libraryViewRegistered = false;
-    // emit switchToView(kViewName, "PreparationWindow");
     emit switchToViewInPreparationWindow(kViewName);
+    emit disableSearch();
+    // emit enableCoverArtDisplay(true);
 }
 
 void AutoDJFeature::activate() {
-    qDebug() << "[AutoDJFeature] -> activate()";
-    // if (ControlObject::exists(ConfigKey("[Skin]",
-    // "show_preparation_window"))) {
-    //     // auto proxy = std::make_unique<PollingControlProxy>("[Skin]",
-    //     "show_preparation_window"); if
-    //     (static_cast<bool>(ControlObject::getControl(
-    //                 "[Skin]", "show_preparation_window")
-    //                                   ->get())) {
-    //         qDebug() << "[AutoDJFeature] -> activate() -> PreparationWindow";
-    //         emit switchToView(kViewName, "PreparationWindow");
-    //     } else {
-    //         qDebug() << "[AutoDJFeature] -> activate() -> Library";
-    //         emit switchToView(kViewName, "Library");
-    //     }
-    // } else {
-    //     qDebug() << "[AutoDJFeature] -> activate() -> Library";
-    //     emit switchToView(kViewName, "Library");
-    // }
+    if (sDebug) {
+        qDebug() << "[AutoDJFeature] -> activate()";
+        qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow() - Opening in Library";
+    }
 
     if (!m_pLibraryWidget) {
         qWarning() << "AutoDJFeature: No library widget available!";
         return;
     }
 
-    //    if (m_target == AutoDJTarget::Library) {
-    //        qDebug() << "[AutoDJFeature] -> activate() -> Library";
-    //        if (m_pLibraryWidget && !m_libraryViewRegistered) {
-    //            m_pLibraryWidget->registerView(kViewName, m_pAutoDJView);
-    //            m_libraryViewRegistered = true;
-    //        }
-    // emit switchToView(kViewName, "Library");
     emit switchToView(kViewName);
-
-    //    } else {
-    //        qDebug() << "[AutoDJFeature] -> activate() -> PreparationWindow";
-    //        if (m_pLibraryPreparationWindowWidget && !m_prepWinViewRegistered)
-    //        {
-    // m_pLibraryPreparationWindowWidget->registerView(kViewName + "_PrepWin",
-    // m_pAutoDJViewPrepWin);
-    //            m_pLibraryPreparationWindowWidget->registerViewInPreparationWindow(kViewName
-    //            + "_PrepWin", m_pAutoDJViewPrepWin); m_prepWinViewRegistered =
-    //            true;
-    //        }
-    // emit switchToView(kViewName + "_PrepWin", "PreparationWindow");
-    //        emit switchToViewInPreparationWindow(kViewName + "_PrepWin");
-    //    }
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }
@@ -536,19 +492,3 @@ void AutoDJFeature::slotRandomQueue(int numTracksToAdd) {
         slotAddRandomTrack();
     }
 }
-
-// void AutoDJFeature::deactivate() {
-//  Example cleanup logic
-//    qDebug() << "Deactivating AutoDJFeature...";
-
-// Reset the register view flag to allow re-registration if needed
-//    m_libraryViewRegistered = false;
-
-// Emit stopAutoDJ signal (if you have this signal to stop the AutoDJ)
-// emit stopAutoDJ();
-
-// Optionally hide the track model or perform any cleanup for the AutoDJ UI
-// emit hideTrackModel();
-
-// Additional cleanup logic as needed
-//}

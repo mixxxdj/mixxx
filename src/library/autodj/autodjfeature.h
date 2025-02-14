@@ -12,13 +12,7 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
-enum class AutoDJTarget {
-    Library,
-    PreparationWindow
-};
-
 class DlgAutoDJ;
-// class DlgAutoDJPreparationWindow;
 class Library;
 class PlayerManagerInterface;
 class TrackCollection;
@@ -76,7 +70,6 @@ class AutoDJFeature : public LibraryFeature {
     parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
     DlgAutoDJ* m_pAutoDJViewPrepWin;
-    // DlgAutoDJPreparationWindow* m_pAutoDJViewPrepWin;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
@@ -107,7 +100,6 @@ class AutoDJFeature : public LibraryFeature {
     WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget = nullptr;
 
     // void deactivate() override;
-    AutoDJTarget m_target;
 
     WLibrary* m_pLibraryWidget = nullptr;
 

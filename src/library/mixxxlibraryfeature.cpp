@@ -203,7 +203,6 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 }
 
 bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
-    qDebug() << "EVE \\\\ MIXXXLIBRARYFEATURE \\\\\ DROPACCEPT \\\\\ pSource" << pSource;
     if (pSource) {
         return false;
     } else {

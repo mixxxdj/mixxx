@@ -16,20 +16,14 @@ QDrag* dragUrls(
     if (trackUrls.isEmpty()) {
         return nullptr;
     }
-    qDebug() << "---------------------- DragURL's ";
     QMimeData* mimeData = new QMimeData();
     mimeData->setUrls(trackUrls);
     mimeData->setText(sourceIdentifier);
-    qDebug() << "---------------------- DragURL's - mimeData trackUrls: " << trackUrls;
-    qDebug() << "---------------------- DragURL's - mimeData sourceIdentifier: " << sourceIdentifier;
     QDrag* drag = new QDrag(pDragSource);
     drag->setMimeData(mimeData);
-    qDebug() << "---------------------- DragURL's - drag: " << mimeData;
     drag->setPixmap(QPixmap(":/images/library/ic_library_drag_and_drop.svg"));
-    qDebug() << "---------------------- DragURL's - drag: just before exec";
     drag->exec(Qt::CopyAction);
-    qDebug() << "---------------------- DragURL's - drag: just before return drag";
-
+    
     return drag;
 }
 
@@ -39,16 +33,12 @@ bool addFileToList(
     if (!fileInfo.checkFileExists()) {
         return false;
     }
-    qDebug() << "---------------------- DND addFilesToList";
     // Filter out invalid URLs (eg. files that aren't supported audio
     // filetypes, etc.)
     if (!SoundSourceProxy::isFileSupported(fileInfo)) {
         return false;
     }
-    qDebug() << "---------------------- DND addFilesToList - filesInfos" << fileInfo;
-    qDebug() << "---------------------- DND addFilesToList - filesInfos" << fileInfos;
     fileInfos->append(std::move(fileInfo));
-    qDebug() << "---------------------- DND addFilesToList - filesInfos" << fileInfos;
     return true;
 }
 
@@ -257,7 +247,7 @@ QDrag* DragAndDropHelper::dragTrackLocations(
     foreach (QString location, locations) {
         trackUrls.append(mixxx::FileInfo(location).toQUrl());
     }
-    qDebug() << "---------------------- DragAndDropHelper: "
+    qDebug() << "DragAndDropHelper: "
              << "trackUrls " << trackUrls
              << "pDragSource " << pDragSource
              << "sourceIdentifier " << sourceIdentifier;

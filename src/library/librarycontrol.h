@@ -56,11 +56,6 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    // void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
-    //    void bindLibraryWidget(WLibrary* pLibraryWidget,
-    //            WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
-    //            KeyboardEventFilter* pKeyboard);
-
     void bindLibraryWidget(
             WLibrary* pLibrary,
             KeyboardEventFilter* pKeyboard);

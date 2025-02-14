@@ -252,18 +252,14 @@ void BasePlaylistFeature::slotShowInPreparationWindow() {
         return;
     }
 
-    // bool existsConfigKey = ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"));
-    // if (existsConfigKey) {
     if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
         auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
         proxy->set(1);
     }
-    // emit saveModelState();
+    emit saveModelState();
     m_pPlaylistTableModel->selectPlaylist(playlistId);
-    //    emit showTrackModel(m_pPlaylistTableModel);
-
     emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
-    // emit enableCoverArtDisplay(true);
+    emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::renameItem(const QModelIndex& index) {

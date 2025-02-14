@@ -70,10 +70,6 @@ class Library: public QObject {
 
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
-    // tried to combine both in 1 procedure -> failed
-    // void bindLibraryWidget(WLibrary* libraryWidget,
-    //        WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
-    //        KeyboardEventFilter* pKeyboard);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindLibraryPreparationWindowWidget(
@@ -126,11 +122,9 @@ class Library: public QObject {
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotShowTrackModelInPreparationWindow(QAbstractItemModel* model);
-    // void slotSwitchToView(const QString& view, const QString& target);
     void slotSwitchToView(const QString& view);
     void slotSwitchToViewInPreparationWindow(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    // void slotSendTargetWindow(const QString& target);
 #ifdef __STEM__
     void slotLoadTrackToPlayer(TrackPointer pTrack,
             const QString& group,
@@ -154,7 +148,6 @@ class Library: public QObject {
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
-    // void sendTargetWindow(const QString& target);
     void switchToView(const QString& view);
     void switchToViewInPreparationWindow(const QString& view);
     void loadTrack(TrackPointer pTrack);

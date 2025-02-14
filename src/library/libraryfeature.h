@@ -35,10 +35,6 @@ class LibraryFeature : public QObject {
 
     virtual QVariant title() = 0;
 
-    // virtual void deactivate() = 0;
-
-    // virtual void switchToFeature(LibraryFeature* newFeature) = 0;
-
     /// Returns the icon name.
     ///
     /// This is useful for QML skins that need to build a URL anyway and may use their own icon theme.
@@ -84,22 +80,6 @@ class LibraryFeature : public QObject {
         Q_UNUSED(index);
     }
     // Reimplement this to register custom views with the library widget.
-    // virtual void bindLibraryWidget(
-    //        WLibrary* /* libraryWidget */,
-    //        KeyboardEventFilter* /* keyboard */) {}
-    // virtual void bindLibraryWidget(
-    //    WLibrary* pLibraryWidget,
-    //    WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
-    //    KeyboardEventFilter* pKeyboard) = 0;
-
-    //    virtual void bindLibraryWidget(
-    //            WLibrary* libraryWidget,
-    //            WLibraryPreparationWindow* libraryPreparationWindowWidget,
-    //            KeyboardEventFilter* keyboard) {
-    //        Q_UNUSED(libraryPreparationWindowWidget);
-    //        bindLibraryWidget(libraryWidget, keyboard); // Calls the original method
-    //    }
-
     virtual void bindLibraryWidget(
             WLibrary* /* libraryWidget */,
             KeyboardEventFilter* /* keyboard */) {
@@ -167,16 +147,11 @@ class LibraryFeature : public QObject {
         Q_UNUSED(index);
     }
   signals:
-    // void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
-    // void showTrackModel(QAbstractItemModel* model, bool restoreState = true,
-    // const QString& target);
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
-    // void switchToView(const QString& view, const QString& target);
     void switchToView(const QString& view);
     void switchToViewInPreparationWindow(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    // void sendTargetWindow(const QString& target);
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
             const QString& group,

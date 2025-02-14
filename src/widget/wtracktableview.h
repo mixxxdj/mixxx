@@ -120,11 +120,8 @@ class WTrackTableView : public WLibraryTableView {
     void trackMissingColorChanged(QColor col);
 
   public slots:
-    // void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
-    //  void loadTrackModel(QAbstractItemModel* model, bool restoreState, const QString& target);
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
     void loadTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = false);
-    void loadTrackModelForAutoDJ(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();

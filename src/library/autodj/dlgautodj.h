@@ -20,7 +20,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
     DlgAutoDJ(
-            // WLibrary* parent,
+            // WLibrary* parent, // Changed to get Auto DJ in PreparationWindow
             QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
