@@ -1072,22 +1072,27 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         if (pLayout != nullptr && !settings.isEmpty()) {
             QWidget* pSettingsWidget = pLayout->build(m_ui.settingsTab);
             m_ui.settingsTab->layout()->addWidget(pSettingsWidget);
-            // Add an expanding spacer so that when we collapse all groups
-            // all are pushed to the top.
+
+            // Add an expanding spacer so that when we collapse all groups,
+            // they are pushed to the top.
             m_ui.settingsTab->layout()->addItem(new QSpacerItem(
                     1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
-            // Set all groupboxes checkable so we get the collapse/expand
-            // functionality. We want to make only the top-level groupboxes
-            // collapsible, so find direct children only. QString() is required
-            // to pass second arg Qt::FindChildOption. This is fine since our
-            // groupboxes don't have ObjectNames.
+            // Make all top-level groupboxes checkable so we get the
+            // collapse/expand functionality. Qt::FindDirectChildrenOnly
+            // ensures we only iterate over the top-level groupboxes.
             const QList<WCollapsibleGroupBox*> boxes =
                     pSettingsWidget->findChildren<WCollapsibleGroupBox*>(
-                            QString(), Qt::FindDirectChildrenOnly);
-            for (auto pBox : boxes) {
+                            QString() /* match any ObjectName */,
+                            Qt::FindDirectChildrenOnly);
+            for (auto* pBox : std::as_const(boxes)) {
                 const QString title = pBox->title();
                 pBox->setCheckable(true);
+                // The collapsed state is saved/restored via the groupbox' title.
+                // Note: If multiple top-levle groups happen to have the same title
+                // (which should not normally happen in well-behaved controller mappings,
+                // but is not strictly prohibited), the last one to be expanded/
+                // collapsed determines the state that will be restored.
                 if (m_settingsCollapsedStates.contains(title)) {
                     pBox->setChecked(m_settingsCollapsedStates.value(title));
                 }

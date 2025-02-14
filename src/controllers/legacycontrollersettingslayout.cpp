@@ -57,14 +57,12 @@ QWidget* LegacyControllerSettingsGroup::build(QWidget* pParent) {
     auto pContainer = make_parented<WCollapsibleGroupBox>(m_label, pParent);
     QBoxLayout* pLayout = buildLayout(pContainer);
 
+    // Note: Don't set checkable here, yet! We do this for top-level groups
+    // only in DlgPrefController.
+
     for (auto& element : m_elements) {
         pLayout->addWidget(element->build(pContainer));
     }
-
-    // Don't set checkable here, yet! We do this for top-level groups
-    // only in DlgPrefController.
-    // Note: don't set an ObjectName, else findChildren() in
-    // DlgPrefController won't work.
 
     return pContainer;
 }
