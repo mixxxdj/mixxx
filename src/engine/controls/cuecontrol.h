@@ -203,7 +203,7 @@ class CueControl : public EngineControl {
     virtual mixxx::audio::FramePos nextTrigger(bool reverse,
             mixxx::audio::FramePos currentPosition,
             mixxx::audio::FramePos* pTargetPosition,
-            mixxx::audio::FrameDiff_t requested_frame);
+            mixxx::audio::FrameDiff_t lookAheadFrames);
 
     void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
