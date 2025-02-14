@@ -263,7 +263,7 @@ void AutoDJFeature::slotShowInPreparationWindow() {
     // m_pLibraryPreparationWindowWidget->registerView(kViewName,
     // m_pAutoDJView);
     ///////////m_pLibraryPreparationWindowWidget->registerViewInPreparationWindow(kViewName,
-    ///m_pAutoDJView);
+    /// m_pAutoDJView);
     // m_libraryViewRegistered = false;
     // emit switchToView(kViewName, "PreparationWindow");
     emit switchToViewInPreparationWindow(kViewName);
