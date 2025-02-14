@@ -192,7 +192,8 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
 
     // Restore search text
-    setSearch(m_searchTexts.value(m_iPlaylistId), "", "library");
+    // setSearch(m_searchTexts.value(m_iPlaylistId), "", "library");
+    setSearch(m_searchTexts.value(m_iPlaylistId), "");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 }
@@ -405,7 +406,8 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
         // the AutoDJ queue.
         caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist | Capability::Sorting;
     } else {
-        caps |= Capability::Remove;
+        // EVE ADDED | Capability::ReceiveDrops for AutoDJ in PreparationWindow
+        caps |= Capability::ReceiveDrops | Capability::Remove;
     }
     if (m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()

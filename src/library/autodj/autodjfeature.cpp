@@ -6,7 +6,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/autodj/dlgautodjpreparationwindow.h"
+// #include "library/autodj/dlgautodjpreparationwindow.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -33,18 +33,18 @@ const QString kViewName = QStringLiteral("Auto DJ");
 namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
-    int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
-        int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
-        // If the AutoDJ playlist does not exist yet then create it.
-        if (playlistId < 0) {
-            playlistId = playlistDAO.createPlaylist(
-                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-            VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
-                qWarning() << "Failed to create Auto DJ playlist!";
-            }
+int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
+    int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the AutoDJ playlist does not exist yet then create it.
+    if (playlistId < 0) {
+        playlistId = playlistDAO.createPlaylist(
+                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+            qWarning() << "Failed to create Auto DJ playlist!";
         }
-        return playlistId;
     }
+    return playlistId;
+}
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
@@ -57,7 +57,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
-          m_pAutoDJPreparationWindowView(nullptr),
+          m_pAutoDJViewPrepWin(nullptr),
+          m_pLibraryPreparationWindowWidget(nullptr),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig) {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
@@ -65,6 +66,9 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             pPlayerManager,
             pLibrary->trackCollectionManager(),
             m_iAutoDJPlaylistId);
+
+    // m_target = AutoDJTarget::Library;
+    // m_libraryViewRegistered = false;
 
     // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
     // previous load attempt have been called #10504.
@@ -100,13 +104,15 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &AutoDJFeature::slotCrateChanged);
 
-    // Create context-menu items for enabling/disabling the auto-DJ
+    // context menu to open autodj in prepwin
     m_pShowTrackModelInPreparationWindowAction =
             make_parented<QAction>(tr("Show in Preparation Window"), this);
     connect(m_pShowTrackModelInPreparationWindowAction,
             &QAction::triggered,
             this,
             &AutoDJFeature::slotShowInPreparationWindow);
+
+    // Create context-menu items for enabling/disabling the auto-DJ
     m_pEnableAutoDJAction = make_parented<QAction>(tr("Enable Auto DJ"), this);
     connect(m_pEnableAutoDJAction.get(),
             &QAction::triggered,
@@ -155,6 +161,7 @@ QVariant AutoDJFeature::title() {
 void AutoDJFeature::bindLibraryWidget(
         WLibrary* libraryWidget,
         KeyboardEventFilter* keyboard) {
+    m_pLibraryWidget = libraryWidget;
     m_pAutoDJView = new DlgAutoDJ(
             libraryWidget,
             m_pConfig,
@@ -192,29 +199,31 @@ void AutoDJFeature::bindLibraryWidget(
             QKeySequence::PortableText);
     m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
     m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+    qDebug() << "[AutoDJFeature -> bindLibraryWidget finished";
 }
 
 void AutoDJFeature::bindLibraryPreparationWindowWidget(
         WLibraryPreparationWindow* libraryPreparationWindowWidget,
         KeyboardEventFilter* keyboard) {
-    m_pAutoDJPreparationWindowView = new DlgAutoDJPreparationWindow(
+    m_pLibraryPreparationWindowWidget = libraryPreparationWindowWidget;
+    m_pAutoDJView = new DlgAutoDJ(
             libraryPreparationWindowWidget,
             m_pConfig,
             m_pLibrary,
             m_pAutoDJProcessor,
             keyboard);
-    libraryPreparationWindowWidget->registerView(kViewName, m_pAutoDJView);
-    connect(m_pAutoDJPreparationWindowView,
-            &DlgAutoDJPreparationWindow::loadTrack,
+    libraryPreparationWindowWidget->registerViewInPreparationWindow(kViewName, m_pAutoDJView);
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::loadTrack,
             this,
             &AutoDJFeature::loadTrack);
-    connect(m_pAutoDJPreparationWindowView,
-            &DlgAutoDJPreparationWindow::loadTrackToPlayer,
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::loadTrackToPlayer,
             this,
             &LibraryFeature::loadTrackToPlayer);
 
-    connect(m_pAutoDJPreparationWindowView,
-            &DlgAutoDJPreparationWindow::trackSelected,
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::trackSelected,
             this,
             &AutoDJFeature::trackSelected);
 
@@ -223,17 +232,18 @@ void AutoDJFeature::bindLibraryPreparationWindowWidget(
             &AutoDJProcessor::randomTrackRequested,
             this,
             &AutoDJFeature::slotRandomQueue);
-    connect(m_pAutoDJPreparationWindowView,
-            &DlgAutoDJPreparationWindow::addRandomTrackButton,
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
 
     // Update shortcuts displayed in the context menu
-    QKeySequence toggleAutoDJShortcut = QKeySequence(
-            keyboard->getKeyboardConfig()->getValueString(ConfigKey("[AutoDJ]", "enabled")),
-            QKeySequence::PortableText);
-    m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
-    m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+    //    QKeySequence toggleAutoDJShortcut = QKeySequence(
+    //            keyboard->getKeyboardConfig()->getValueString(ConfigKey("[AutoDJ]", "enabled")),
+    //            QKeySequence::PortableText);
+    //    m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+    //    m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+    qDebug() << "[AutoDJFeature -> bindLibraryPreparationWindowWidget finished";
 }
 
 void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -246,47 +256,66 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 }
 
 void AutoDJFeature::slotShowInPreparationWindow() {
-    // CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
-    qDebug() << "   AutoDJFeature::slotShowInPreparationWindow()";
+    qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow()";
+    qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow() - Opening in: PreparationWindow";
+    // m_target = AutoDJTarget::PreparationWindow;
 
-    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
-        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
-        proxy->set(1);
-    }
-
-    //    emit switchToView(kViewName, "PreparationWindow");
-    //    emit disableSearch();
-    //    emit enableCoverArtDisplay(true);
-
-    //// emit saveModelState();
-    // emit sendTargetWindow("PreparationWindow");
-    // m_crateTableModel.selectCrate(crateId, "PreparationWindow");
-    //  emit showTrackModel(&m_crateTableModel);
-    // emit showTrackModelInPreparationWindow(&m_crateTableModel);
-    //  emit enableCoverArtDisplay(true);
+    // m_pLibraryPreparationWindowWidget->registerView(kViewName,
+    // m_pAutoDJView);
+    ///////////m_pLibraryPreparationWindowWidget->registerViewInPreparationWindow(kViewName,
+    ///m_pAutoDJView);
+    // m_libraryViewRegistered = false;
+    // emit switchToView(kViewName, "PreparationWindow");
+    emit switchToViewInPreparationWindow(kViewName);
 }
 
 void AutoDJFeature::activate() {
-    // qDebug() << "AutoDJFeature::activate()";
-    //     if (ControlObject::exists(ConfigKey("[Skin]",
-    //     "show_preparation_window"))) {
-    //         // auto proxy = std::make_unique<PollingControlProxy>("[Skin]",
-    //         "show_preparation_window"); if
-    //         (static_cast<bool>(ControlObject::getControl(
-    //                     "[Skin]", "show_preparation_window")
-    //                             ->get())) {
-    //             qDebug() << "[AutoDJFeature] -> activate() ->
-    //             PreparationWindow"; emit switchToView(kViewName,
-    //             "PreparationWindow");
-    //         } else {
-    //             qDebug() << "[AutoDJFeature] -> activate() -> Library";
-    //             emit switchToView(kViewName, "Library");
-    //         }
+    qDebug() << "[AutoDJFeature] -> activate()";
+    // if (ControlObject::exists(ConfigKey("[Skin]",
+    // "show_preparation_window"))) {
+    //     // auto proxy = std::make_unique<PollingControlProxy>("[Skin]",
+    //     "show_preparation_window"); if
+    //     (static_cast<bool>(ControlObject::getControl(
+    //                 "[Skin]", "show_preparation_window")
+    //                                   ->get())) {
+    //         qDebug() << "[AutoDJFeature] -> activate() -> PreparationWindow";
+    //         emit switchToView(kViewName, "PreparationWindow");
     //     } else {
     //         qDebug() << "[AutoDJFeature] -> activate() -> Library";
-    emit switchToView(kViewName, "Library");
-    //    }
+    //         emit switchToView(kViewName, "Library");
+    //     }
+    // } else {
+    //     qDebug() << "[AutoDJFeature] -> activate() -> Library";
+    //     emit switchToView(kViewName, "Library");
+    // }
 
+    if (!m_pLibraryWidget) {
+        qWarning() << "AutoDJFeature: No library widget available!";
+        return;
+    }
+
+    //    if (m_target == AutoDJTarget::Library) {
+    //        qDebug() << "[AutoDJFeature] -> activate() -> Library";
+    //        if (m_pLibraryWidget && !m_libraryViewRegistered) {
+    //            m_pLibraryWidget->registerView(kViewName, m_pAutoDJView);
+    //            m_libraryViewRegistered = true;
+    //        }
+    // emit switchToView(kViewName, "Library");
+    emit switchToView(kViewName);
+
+    //    } else {
+    //        qDebug() << "[AutoDJFeature] -> activate() -> PreparationWindow";
+    //        if (m_pLibraryPreparationWindowWidget && !m_prepWinViewRegistered)
+    //        {
+    // m_pLibraryPreparationWindowWidget->registerView(kViewName + "_PrepWin",
+    // m_pAutoDJViewPrepWin);
+    //            m_pLibraryPreparationWindowWidget->registerViewInPreparationWindow(kViewName
+    //            + "_PrepWin", m_pAutoDJViewPrepWin); m_prepWinViewRegistered =
+    //            true;
+    //        }
+    // emit switchToView(kViewName + "_PrepWin", "PreparationWindow");
+    //        emit switchToViewInPreparationWindow(kViewName + "_PrepWin");
+    //    }
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }
@@ -299,7 +328,7 @@ void AutoDJFeature::clear() {
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
     if (btn == QMessageBox::Yes) {
-            m_playlistDao.clearAutoDJQueue();
+        m_playlistDao.clearAutoDJQueue();
     }
 }
 
@@ -311,7 +340,7 @@ void AutoDJFeature::paste() {
 void AutoDJFeature::deleteItem(const QModelIndex& index) {
     TreeItem* pSelectedItem = static_cast<TreeItem*>(index.internalPointer());
     if (!pSelectedItem || pSelectedItem == m_pCratesTreeItem) {
-            return;
+        return;
     }
     CrateId crateId(pSelectedItem->getData());
     removeCrateFromAutoDj(crateId);
@@ -426,7 +455,7 @@ void AutoDJFeature::slotAddRandomTrack() {
                 pRandomTrack = m_pLibrary->trackCollectionManager()->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
                     qWarning() << "Track does not exist:"
-                            << randomTrackId;
+                               << randomTrackId;
                     continue;
                 }
                 if (!pRandomTrack->getFileInfo().checkFileExists()) {
@@ -460,6 +489,8 @@ void AutoDJFeature::constructCrateChildModel() {
 
 void AutoDJFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pShowTrackModelInPreparationWindowAction);
+    menu.addSeparator();
     if (m_pAutoDJProcessor->getState() == AutoDJProcessor::ADJ_DISABLED) {
         menu.addAction(m_pEnableAutoDJAction.get());
     } else {
@@ -505,3 +536,19 @@ void AutoDJFeature::slotRandomQueue(int numTracksToAdd) {
         slotAddRandomTrack();
     }
 }
+
+// void AutoDJFeature::deactivate() {
+//  Example cleanup logic
+//    qDebug() << "Deactivating AutoDJFeature...";
+
+// Reset the register view flag to allow re-registration if needed
+//    m_libraryViewRegistered = false;
+
+// Emit stopAutoDJ signal (if you have this signal to stop the AutoDJ)
+// emit stopAutoDJ();
+
+// Optionally hide the track model or perform any cleanup for the AutoDJ UI
+// emit hideTrackModel();
+
+// Additional cleanup logic as needed
+//}

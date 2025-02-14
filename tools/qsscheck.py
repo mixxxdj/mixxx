@@ -271,7 +271,6 @@ def get_skin_objectnames(skin_path):
                     yield from RE_XML_OBJNAME.findall(line)
                     yield from RE_XML_OBJNAME_SETVAR.findall(line)
 
-
 def get_stylesheets(path):
     """Yields (qss_path, stylesheet) tuples for each qss file in path)."""
     cssparser = tinycss.css21.CSS21Parser()

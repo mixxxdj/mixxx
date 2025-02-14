@@ -170,7 +170,8 @@ void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
     // Restore search text
-    setSearch(m_searchTexts.value(m_currentPlaylistId), "", "library");
+    // setSearch(m_searchTexts.value(m_currentPlaylistId), "", "library");
+    setSearch(m_searchTexts.value(m_currentPlaylistId), "");
 }
 
 TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {

@@ -423,14 +423,16 @@ const QString BaseSqlTableModel::currentTargetWindow() {
     return m_currentTargetWindow;
 }
 
+// void BaseSqlTableModel::setSearch(const QString& searchText,
+//         const QString& extraFilter,
+//         const QString& targetWindow) {
 void BaseSqlTableModel::setSearch(const QString& searchText,
-        const QString& extraFilter,
-        const QString& targetWindow) {
+        const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
 
-    m_currentTargetWindow = targetWindow;
+    // m_currentTargetWindow = targetWindow;
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
 
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
@@ -449,7 +451,8 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
-    setSearch(searchText, extraFilter, "library");
+    // setSearch(searchText, extraFilter, "library");
+    setSearch(searchText, extraFilter);
     select();
 }
 

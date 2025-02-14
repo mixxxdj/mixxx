@@ -750,7 +750,8 @@ void BasePlaylistFeature::bindLibraryPreparationWindowWidget(
             this,
             &BasePlaylistFeature::htmlLinkClicked);
     m_pLibraryPreparationWindowWidget = QPointer(pLibraryPreparationWindowWidget);
-    m_pLibraryPreparationWindowWidget->registerView(m_rootViewName, pEdit);
+    // m_pLibraryPreparationWindowWidget->registerView(m_rootViewName, pEdit, "PreparationWindow");
+    ////    m_pLibraryPreparationWindowWidget->registerView(m_rootViewName, pEdit);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

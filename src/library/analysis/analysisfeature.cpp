@@ -126,7 +126,7 @@ void AnalysisFeature::refreshLibraryModels() {
 
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
-    emit switchToView(kViewName, "Library");
+    emit switchToView(kViewName);
     if (m_pAnalysisView) {
         emit restoreSearch(m_pAnalysisView->currentSearch());
     }

@@ -276,7 +276,7 @@ void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void BrowseFeature::activate() {
-    emit switchToView(kViewName, "Library");
+    emit switchToView(kViewName);
     emit disableSearch();
     emit enableCoverArtDisplay(false);
 }

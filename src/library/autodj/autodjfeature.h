@@ -12,13 +12,19 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
+enum class AutoDJTarget {
+    Library,
+    PreparationWindow
+};
+
 class DlgAutoDJ;
-class DlgAutoDJPreparationWindow;
+// class DlgAutoDJPreparationWindow;
 class Library;
 class PlayerManagerInterface;
 class TrackCollection;
 class AutoDJProcessor;
 class WLibrarySidebar;
+class WLibraryPreparation;
 class QAction;
 class QModelIndex;
 class QPoint;
@@ -27,8 +33,8 @@ class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AutoDJFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig,
-                  PlayerManagerInterface* pPlayerManager);
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager);
     virtual ~AutoDJFeature();
 
     QVariant title() override;
@@ -44,8 +50,7 @@ class AutoDJFeature : public LibraryFeature {
             KeyboardEventFilter* keyboard) override;
     void bindLibraryPreparationWindowWidget(
             WLibraryPreparationWindow* libraryPreparationWindowWidget,
-            KeyboardEventFilter* keyboard) override;
-
+            KeyboardEventFilter* keyboard);
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
@@ -70,7 +75,8 @@ class AutoDJFeature : public LibraryFeature {
     AutoDJProcessor* m_pAutoDJProcessor;
     parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
-    DlgAutoDJPreparationWindow* m_pAutoDJPreparationWindowView;
+    DlgAutoDJ* m_pAutoDJViewPrepWin;
+    // DlgAutoDJPreparationWindow* m_pAutoDJViewPrepWin;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
@@ -97,12 +103,21 @@ class AutoDJFeature : public LibraryFeature {
     parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    // QPointer<WLibraryPreparationWindow> m_pLibraryPreparationWindowWidget;
+    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget = nullptr;
+
+    // void deactivate() override;
+    AutoDJTarget m_target;
+
+    WLibrary* m_pLibraryWidget = nullptr;
+
+    bool m_libraryViewRegistered = false;
+    bool m_prepWinViewRegistered = false;
 
   private slots:
     void slotEnableAutoDJ();
     void slotDisableAutoDJ();
     void slotClearQueue();
-
     void slotShowInPreparationWindow();
 
     // Add a crate to the auto-DJ queue.

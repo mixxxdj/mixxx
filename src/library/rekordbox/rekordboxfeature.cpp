@@ -1476,7 +1476,7 @@ void RekordboxFeature::activate() {
     emit featureIsLoading(this, true);
 
     emit enableCoverArtDisplay(true);
-    emit switchToView("REKORDBOXHOME", "Library");
+    emit switchToView("REKORDBOXHOME");
     emit disableSearch();
 }
 

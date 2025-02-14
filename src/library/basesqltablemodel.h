@@ -28,10 +28,10 @@ class BaseSqlTableModel : public BaseTrackTableModel {
         return m_bInitialized;
     }
 
-    // void setSearch(const QString& searchText, const QString& extraFilter = QString());
-    void setSearch(const QString& searchText,
+    void setSearch(const QString& searchText, const QString& extraFilter = QString());
+    /*void setSearch(const QString& searchText,
             const QString& extraFilter,
-            const QString& targetWindow);
+            const QString& targetWindow);*/
     void setSort(int column, Qt::SortOrder order);
 
     ///////////////////////////////////////////////////////////////////////////

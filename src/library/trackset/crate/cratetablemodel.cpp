@@ -25,7 +25,8 @@ CrateTableModel::CrateTableModel(
                   "mixxx.db.model.crate") {
 }
 
-void CrateTableModel::selectCrate(CrateId crateId, const QString& targetWindow) {
+// void CrateTableModel::selectCrate(CrateId crateId, const QString& targetWindow) {
+void CrateTableModel::selectCrate(CrateId crateId) {
     //qDebug() << "CrateTableModel::setCrate()" << crateId;
     if (crateId == m_selectedCrate) {
         qDebug() << "Already focused on crate " << crateId;
@@ -77,7 +78,8 @@ void CrateTableModel::selectCrate(CrateId crateId, const QString& targetWindow) 
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
 
     // Restore search text
-    setSearch(m_searchTexts.value(m_selectedCrate), "", targetWindow);
+    // setSearch(m_searchTexts.value(m_selectedCrate), "", targetWindow);
+    setSearch(m_searchTexts.value(m_selectedCrate), "");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 

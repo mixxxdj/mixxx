@@ -18,7 +18,7 @@ void BaseTrackSetFeature::pasteChild(const QModelIndex&) {
 }
 
 void BaseTrackSetFeature::activate() {
-    emit switchToView(m_rootViewName, "Library");
+    emit switchToView(m_rootViewName);
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }

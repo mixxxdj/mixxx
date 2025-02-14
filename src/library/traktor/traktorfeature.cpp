@@ -125,7 +125,8 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             this,
             &TraktorFeature::onTrackCollectionLoaded);
 
-    m_pTraktorTableModel->setSearch("", "", "library"); // enable search
+    // m_pTraktorTableModel->setSearch("", "", "library"); // enable search
+    m_pTraktorTableModel->setSearch("", ""); // enable search
 }
 
 TraktorFeature::~TraktorFeature() {

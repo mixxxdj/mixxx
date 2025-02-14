@@ -12,6 +12,7 @@
 #include "util/assert.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wtracktableview.h"
 
 namespace {
@@ -19,7 +20,9 @@ const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
 } // anonymous namespace
 
-DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
+DlgAutoDJ::DlgAutoDJ(
+        // WLibrary* parent,
+        QWidget* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
@@ -28,11 +31,35 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
           Ui::DlgAutoDJ(),
           m_pConfig(pConfig),
           m_pAutoDJProcessor(pProcessor),
+          //          m_pTrackTableView(new WTrackTableView(this,
+          //                  m_pConfig,
+          //                  pLibrary,
+          //                  parent->getTrackTableBackgroundColorOpacity(),
+          //                  /*no sorting*/ false)),
+          //          m_bShowButtonText(parent->getShowButtonText()),
+          m_pAutoDJTableModel(nullptr),
+          // Casting to check if parent is WLibrary or WLibraryPreparationWidget
           m_pTrackTableView(new WTrackTableView(this,
                   m_pConfig,
                   pLibrary,
-                  parent->getTrackTableBackgroundColorOpacity())),
-          m_bShowButtonText(parent->getShowButtonText()),
+                  qobject_cast<WLibrary*>(parent)
+                          ? qobject_cast<WLibrary*>(parent)
+                                    ->getTrackTableBackgroundColorOpacity()
+                          : (qobject_cast<WLibraryPreparationWindow*>(parent)
+                                            ? qobject_cast<
+                                                      WLibraryPreparationWindow*>(
+                                                      parent)
+                                                      ->getTrackTableBackgroundColorOpacity()
+                                            : 1.0),
+                  /*no sorting*/ false)),
+          m_bShowButtonText(qobject_cast<WLibrary*>(parent)
+                          ? qobject_cast<WLibrary*>(parent)->getShowButtonText()
+                          : (qobject_cast<WLibraryPreparationWindow*>(parent)
+                                            ? qobject_cast<
+                                                      WLibraryPreparationWindow*>(
+                                                      parent)
+                                                      ->getShowButtonText()
+                                            : false)),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
 
@@ -54,6 +81,21 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &WTrackTableView::trackSelected,
             this,
             &DlgAutoDJ::updateSelectionInfo);
+
+    if (pLibrary) {
+        connect(pLibrary,
+                &Library::setTrackTableFont,
+                m_pTrackTableView,
+                &WTrackTableView::setTrackTableFont);
+        connect(pLibrary,
+                &Library::setTrackTableRowHeight,
+                m_pTrackTableView,
+                &WTrackTableView::setTrackTableRowHeight);
+        connect(pLibrary,
+                &Library::setSelectedClick,
+                m_pTrackTableView,
+                &WTrackTableView::setSelectedClick);
+    }
 
     connect(pLibrary,
             &Library::setTrackTableFont,
@@ -78,10 +120,25 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
+    // m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
+    // m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel, true, "Library");
+
+    // EVE note: here we check the parent widget (library op prepwin) to see if we need to call
+    // tracktableciew with prepwin caps or not
+
+    // if (qobject_cast<WLibraryPreparationWindow*>(parent)) {
+    //     qDebug() << "Auto DJ in WLibraryPreparationWindow -> loadTrackModelInPreparationWindow ";
+    // m_pTrackTableView->loadTrackModelInPreparationWindow(m_pAutoDJTableModel);
+    // } else if (qobject_cast<WLibrary*>(parent)) {
+    //} else {
+    //    qDebug() << "Auto DJ in WLibrary -> loadTrackModel ";
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
+    //}
+    // m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
+    m_pTrackTableView->setDragDropMode(QAbstractItemView::DragDrop);
 
     connect(pushButtonAutoDJ,
             &QPushButton::clicked,
@@ -355,6 +412,7 @@ void DlgAutoDJ::slotRepeatPlaylistChanged(bool checked) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
+    /////-------------
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
     // Derive total duration from the table model. This is much faster than

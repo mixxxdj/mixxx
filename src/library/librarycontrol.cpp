@@ -628,6 +628,103 @@ void LibraryControl::bindLibraryPreparationWindowWidget(
             &LibraryControl::libraryPreparationWindowWidgetDeleted);
 }
 
+// void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget,
+// KeyboardEventFilter* pKeyboard) {
+//     Q_UNUSED(pKeyboard);
+//     if (m_pLibraryWidget) {
+//         disconnect(m_pLibraryWidget, nullptr, this, nullptr);
+//     }
+//     m_pLibraryWidget = pLibraryWidget;
+//     connect(m_pLibraryWidget,
+//             &WLibrary::destroyed,
+//             this,
+//             &LibraryControl::libraryWidgetDeleted);
+// }
+
+// void LibraryControl::bindLibraryWidget(
+//         WLibrary* pLibraryWidget,
+//         WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+//         KeyboardEventFilter* pKeyboard) {
+//     Q_UNUSED(pKeyboard);
+//     if (m_pLibraryWidget) {
+//         disconnect(m_pLibraryWidget, nullptr, this, nullptr);
+//     }
+//     m_pLibraryWidget = pLibraryWidget;
+//     connect(m_pLibraryWidget,
+//             &WLibrary::destroyed,
+//             this,
+//             &LibraryControl::libraryWidgetDeleted);
+// }
+
+// void LibraryControl::bindLibraryWidget(
+//         WLibrary* pLibraryWidget,
+//         WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+//         KeyboardEventFilter* pKeyboard) {
+//     Q_UNUSED(pKeyboard);
+//
+//     // Disconnect previous connections if a library widget was already assigned
+//     if (m_pLibraryWidget) {
+//         disconnect(m_pLibraryWidget, nullptr, this, nullptr);
+//     }
+//     if (m_pLibraryPreparationWindowWidget) {
+//         disconnect(m_pLibraryPreparationWindowWidget, nullptr, this, nullptr);
+//     }
+//
+//     // Assign the new widgets
+//     m_pLibraryWidget = pLibraryWidget;
+//     m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
+//
+//     // Connect destruction signals to handle cleanup when the widgets are deleted
+//     if (m_pLibraryWidget) {
+//         connect(m_pLibraryWidget,
+//                 &WLibrary::destroyed,
+//                 this,
+//                 &LibraryControl::libraryWidgetDeleted);
+//     }
+//
+//     if (m_pLibraryPreparationWindowWidget) {
+//         connect(m_pLibraryPreparationWindowWidget,
+//                 &WLibraryPreparationWindow::destroyed,
+//                 this,
+//                 &LibraryControl::libraryPreparationWindowWidgetDeleted);
+//     }
+// }
+
+// void LibraryControl::bindLibraryWidget(
+//         WLibrary* pLibraryWidget,
+//         WLibraryPreparationWindow* pLibraryPreparationWindow,
+//         KeyboardEventFilter* pKeyboard) {
+//     Q_UNUSED(pKeyboard);
+
+//    if (m_pLibraryWidget) {
+//        disconnect(m_pLibraryWidget, nullptr, this, nullptr);
+//    }
+//    m_pLibraryWidget = pLibraryWidget;
+//    m_pLibraryPreparationWindowWidget = pLibraryPreparationWindow;
+
+//    connect(m_pLibraryWidget, &WLibrary::destroyed, this, &LibraryControl::libraryWidgetDeleted);
+
+//    if (m_pLibraryPreparationWindowWidget) {
+//        connect(m_pLibraryPreparationWindowWidget,
+//        &WLibraryPreparationWindow::destroyed, this,
+//        &LibraryControl::libraryWidgetDeleted);
+//    }
+//}
+
+// void LibraryControl::bindLibraryPreparationWindowWidget(
+//         WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+//         KeyboardEventFilter* pKeyboard) {
+//     Q_UNUSED(pKeyboard);
+//     if (m_pLibraryPreparationWindowWidget) {
+//         disconnect(m_pLibraryPreparationWindowWidget, nullptr, this, nullptr);
+//     }
+//     m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
+//     connect(m_pLibraryPreparationWindowWidget,
+//             &WLibraryPreparationWindow::destroyed,
+//             this,
+//             &LibraryControl::libraryPreparationWindowWidgetDeleted);
+// }
+
 void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     if (m_pSearchbox) {
         disconnect(m_pSearchbox, nullptr, this, nullptr);

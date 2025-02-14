@@ -87,6 +87,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void connectTrackCollection();
 
     bool activateCrate(CrateId crateId);
+    // void deactivate();
 
     std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);
