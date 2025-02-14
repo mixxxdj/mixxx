@@ -95,7 +95,7 @@ bool WCollapsibleGroupBox::event(QEvent* pEvent) {
 
 void WCollapsibleGroupBox::slotToggled(bool checked) {
     // React to the 'toggled' signal. By now, QGroupBox would already have
-    // enable/disable its children but that doesn't matter for us since we
+    // enabled/disabled its children but that doesn't matter for us since we
     // show/hide them anyway.
     // Set the maximum height to show/hide the content.
     // This may be toggled before we acquired the min height, so only collapse

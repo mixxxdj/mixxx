@@ -3,8 +3,8 @@
 #include <QGroupBox>
 #include <QProxyStyle>
 
-/// Custom style to draw the 'enabled' checkbox with ArrowDown / ArrowRight icons
-/// and not draw the groupbox frame when the box is collapsed.
+/// Custom style for QGroupBox that renders the 'enabled' checkbox as ArrowDown/ArrowRight
+/// icon and skips drawing the groupbox frame when the box is collapsed.
 class CollapsibleGroupBoxStyle : public QProxyStyle {
     Q_OBJECT
   public:
