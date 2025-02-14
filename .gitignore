@@ -66,4 +66,4 @@ src/mixxx.rc.include
 src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
-res/skins/LateNight/style_palemoon.qss
+# res/skins/LateNight/style_palemoon.qss
