@@ -26,7 +26,6 @@ class WColorPickerActionMenu : public QMenu {
 
   protected:
     bool focusNextPrevChild(bool next) override;
-    void keyPressEvent(QKeyEvent* event) override;
 
   private:
     parented_ptr<WColorPickerAction> m_pColorPickerAction;

@@ -39,21 +39,3 @@ bool WColorPickerActionMenu::focusNextPrevChild(bool next) {
     // which would convert this into a keyPressEvent()
     return QWidget::focusNextPrevChild(next);
 }
-
-void WColorPickerActionMenu::keyPressEvent(QKeyEvent* event) {
-    qDebug() << "WColorPickerActionMenu::keyPressEvent()" << event << focusWidget()
-             << m_pColorPickerAction->defaultWidget()->hasFocus()
-             << m_pColorPickerAction->defaultWidget()->focusPolicy()
-             << m_pColorPickerAction->defaultWidget()->focusWidget();
-    if (event->key() == Qt::Key_F) {
-        m_pColorPickerAction->defaultWidget()->setFocus();
-        event->accept();
-        return;
-    }
-    if (event->key() == Qt::Key_A) {
-        setActiveAction(m_pColorPickerAction);
-        event->accept();
-        return;
-    }
-    QWidget::keyPressEvent(event);
-}
