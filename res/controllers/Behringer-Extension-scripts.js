@@ -1519,10 +1519,10 @@
             if (definition.feedback) {
                 const triggers = rebindTriggers || [];
                 const createPublisher = this.createPublisher; // `this` is bound to implementation
-                implementation.forEachComponent(function(effectComponent) {
-                    if (effectComponent instanceof components.Pot) {
-                        const publisher = createPublisher(effectComponent, publisherStorage);
-                        const prototype = Object.getPrototypeOf(effectComponent);
+                implementation.forEachComponent(function(source) {
+                    if (source instanceof components.Pot) {
+                        const publisher = createPublisher(source, publisherStorage);
+                        const prototype = Object.getPrototypeOf(source);
                         triggers.forEach(function(functionName) {
                             const delegate = prototype[functionName];
                             if (typeof delegate === "function") {
