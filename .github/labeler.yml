@@ -35,10 +35,13 @@ controller mappings:
 developer experience:
   - changed-files:
       - any-glob-to-any-file:
+          - .github/ISSUE_TEMPLATE/**
+          - .github/labeler.yml
+          - tools/**
+          - .pre-commit-config.yaml
+          - CODE_OF_CONDUCT.md
           - CONTRIBUTING.md
           - README.md
-          - .github/labeler.yml
-          - .pre-commit-config.yaml
 
 analyzer:
   - changed-files:
