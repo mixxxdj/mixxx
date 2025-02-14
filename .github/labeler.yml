@@ -32,6 +32,14 @@ controller mappings:
       - any-glob-to-any-file:
           - res/controllers/**
 
+developer experience:
+  - changed-files:
+      - any-glob-to-any-file:
+          - CONTRIBUTING.md
+          - README.md
+          - .github/labeler.yml
+          - .pre-commit-config.yaml
+
 analyzer:
   - changed-files:
       - any-glob-to-any-file:
