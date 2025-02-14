@@ -161,7 +161,7 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     pLabelWidget->setText(label());
     pLabelWidget->setBuddy(pCheckBox);
     if (!m_pToggleCheckboxEventFilter) {
-        m_pToggleCheckboxEventFilter = make_parented<ToggleCheckboxEventFilter>(pWidget);
+        m_pToggleCheckboxEventFilter = make_parented<ToggleCheckboxEventFilter>(this);
     }
     pLabelWidget->installEventFilter(m_pToggleCheckboxEventFilter.get());
 
