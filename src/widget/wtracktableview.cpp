@@ -166,6 +166,10 @@ void WTrackTableView::pasteFromSidebar() {
     pasteTracks(QModelIndex());
 }
 
+void WTrackTableView::pasteFromSidebarInPreparationWindow() {
+    pasteTracks(QModelIndex());
+}
+
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreState) {
     if (sDebug) {
@@ -343,17 +347,19 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
 
         // Defaults
         setAcceptDrops(true);
-        setDragDropMode(QAbstractItemView::DragOnly);
+        //setDragDropMode(QAbstractItemView::DragOnly);
+        setDragDropMode(QAbstractItemView::DragDrop);
         // Always enable drag for now (until we have a model that doesn't support
         // this.)
         setDragEnabled(true);
+        setDropIndicatorShown(true);
 
-        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-            setDragDropMode(QAbstractItemView::DragDrop);
-            setDropIndicatorShown(true);
-            setAcceptDrops(true);
-            // viewport()->setAcceptDrops(true);
-        }
+        //if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        //    setDragDropMode(QAbstractItemView::DragDrop);
+        //    setDropIndicatorShown(true);
+        //    setAcceptDrops(true);
+        //    // viewport()->setAcceptDrops(true);
+        //}
 
         // Possible giant fuckup alert - It looks like Qt has something like these
         // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
@@ -503,17 +509,19 @@ void WTrackTableView::loadTrackModelInPreparationWindow(
 
         // Defaults
         setAcceptDrops(true);
-        setDragDropMode(QAbstractItemView::DragOnly);
+        //setDragDropMode(QAbstractItemView::DragOnly);
+        setDragDropMode(QAbstractItemView::DragDrop);
         // Always enable drag for now (until we have a model that doesn't support
         // this.)
+        setDropIndicatorShown(true);
         setDragEnabled(true);
 
-        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-            setDragDropMode(QAbstractItemView::DragDrop);
-            setDropIndicatorShown(true);
-            setAcceptDrops(true);
+        //if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        //    setDragDropMode(QAbstractItemView::DragDrop);
+        //    setDropIndicatorShown(true);
+        //    setAcceptDrops(true);
             // viewport()->setAcceptDrops(true);
-        }
+        //}
 
         setVisible(true);
 
@@ -1026,10 +1034,14 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 
         for (const QModelIndex& index : indices) {
             if (!index.isValid()) {
+                qDebug() << "---------------------- DragDrop index is NOT valid ";
                 continue;
             }
+
             locations.append(pTrackModel->getTrackLocation(index));
+            qDebug() << "---------------------- DragDrop pTrackModel->getTrackLocation(index) " << pTrackModel->getTrackLocation(index);
         }
+        qDebug() << "---------------------- DragDrop locations " << locations;
 
         // EVE
         // Note Setting for d&d in prepwindow
@@ -1037,12 +1049,16 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         if (qobject_cast<WLibraryPreparationWindow*>(parent())) {
             // WLibraryPreparationWindow
             DragAndDropHelper::dragTrackLocations(locations, this, "librarypreparationwindow");
+            qDebug() << "---------------------- DragDrop librarypreparationwindow ";
         } else if (qobject_cast<WLibrary*>(parent())) {
             // WLibrary
             DragAndDropHelper::dragTrackLocations(locations, this, "library");
+            qDebug() << "---------------------- DragDrop wlibrary ";
         } else {
             DragAndDropHelper::dragTrackLocations(locations, this, "Auto DJ");
+            qDebug() << "---------------------- DragDrop else autodj ";
         }
+        qDebug() << "---------------------- DragDrop locations " << locations;
     }
 }
 
@@ -1059,9 +1075,12 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     // if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
     // EVE
     // Note Setting for d&d in prepwindow
-    if (qobject_cast<WLibraryPreparationWindow*>(parent())) {
+//    if (qobject_cast<WLibraryPreparationWindow*>(parent())) {
         // WLibraryPreparationWindow
         if (event->source() == this) {
+            qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ dragEnterEvent - prepwin \\\\\ event->source(): " << event->source();
+            qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ dragEnterEvent - prepwin  \\\\\ pTrackModel: " << pTrackModel;
+            qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ dragEnterEvent - prepwin  \\\\\ pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops: " << pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops);
             if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
                 event->acceptProposedAction();
             }
@@ -1076,19 +1095,19 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
                            true)) {
             event->acceptProposedAction();
         }
-    } else {
-        // WLibrary
-        if (event->source() == this) {
-            if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-                event->acceptProposedAction();
-            }
-        } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                           "library",
-                           true,
-                           true)) {
-            event->acceptProposedAction();
-        }
-    }
+    //} else {
+    //    // WLibrary
+    //    if (event->source() == this) {
+    //        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+    //            event->acceptProposedAction();
+    //        }
+    //    } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
+    //                       "library",
+    //                       true,
+    //                       true)) {
+    //        event->acceptProposedAction();
+    //    }
+    //}
 }
 
 // Drag move event, happens when a dragged item hovers over the track table view...
@@ -1096,24 +1115,39 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     auto* pTrackModel = getTrackModel();
+    qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ pTrackModel" << pTrackModel;
     if (!pTrackModel) {
+        qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ pTrackModel ------ NO pTrackModel->>> STOP ";
         return;
     }
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
+    qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ WLibraryTableView::dragMoveEvent(event)"
+             << event;
+
 
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (pTrackModel && event->mimeData()->hasUrls()) {
+        qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ pTrackModel && event->mimeData()->hasUrls()"
+                 << pTrackModel << " & " << event->mimeData()->hasUrls();
+        qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ OK GO";
         if (event->source() == this) {
-            if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+            //if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+            if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+                qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ IF 1";
                 event->acceptProposedAction();
             } else {
-                event->ignore();
+                qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ ELSE 2";
+                //event->ignore();
+                event->acceptProposedAction();
             }
         } else {
+            qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ ELSE 3";
             event->acceptProposedAction();
         }
     } else {
+        qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ NOOOOOOOOOOOOOOOOOOOOOOOOOOO GO";
+        qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ ELSE 4";
         event->ignore();
     }
 }
@@ -1123,7 +1157,9 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     TrackModel* pTrackModel = getTrackModel();
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
+    qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ pTrackModel" << pTrackModel;
     if (!pTrackModel) {
+        qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ pTrackModel -> ignore";
         event->ignore();
         return;
     }
@@ -1164,6 +1200,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
     // Drag and drop within this widget (track reordering)
+    qDebug() << "EVE \\\\ WTRACKTABLEVIEW \\\\\ DROPEVENT \\\\\ pTrackModel \\\\\ source" << event->source();
     if (event->source() == this &&
             pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
         // Note the above code hides an ambiguous case when a
@@ -1239,14 +1276,19 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 }
 
 QModelIndexList WTrackTableView::getSelectedRows() const {
+    qDebug() << "---------------------- getSelectedRows() ";
+    qDebug() << "---------------------- getTrackModel() " << getTrackModel();
     if (getTrackModel() == nullptr) {
         return {};
     }
+    
     QItemSelectionModel* pSelectionModel = selectionModel();
+    qDebug() << "---------------------- pSelectionModel " << pSelectionModel;
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model available";
         return {};
     }
+    qDebug() << "---------------------- pSelectionModel->selectedRows() " << pSelectionModel->selectedRows();
     return pSelectionModel->selectedRows();
 }
 

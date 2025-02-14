@@ -42,6 +42,7 @@ class WTrackTableView : public WLibraryTableView {
     bool hasFocus() const override;
     void setFocus() override;
     void pasteFromSidebar() override;
+    void pasteFromSidebarInPreparationWindow();
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
     void editSelectedItem();
