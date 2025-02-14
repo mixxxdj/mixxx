@@ -53,6 +53,7 @@ void MissingTableModel::setTableModel(int id) {
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
+
 }
 
 MissingTableModel::~MissingTableModel() {
