@@ -1,0 +1,14 @@
+name: Softfix workflow
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  softfix:
+    name: Softfix action
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/softfix')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dekvall/softfix@v1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
