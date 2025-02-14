@@ -1596,8 +1596,8 @@ add_library(
   src/widget/wlibrary.cpp
   src/widget/wlibrarybasewindow.cpp
   src/widget/wlibrarypreparationwindow.cpp
-  src/widget/wlibrarypreparationwindowtableview.cpp
-  src/widget/wlibrarypreparationwindowtracktableview.cpp
+  #src/widget/wlibrarypreparationwindowtableview.cpp
+  #src/widget/wlibrarypreparationwindowtracktableview.cpp
   src/widget/wlibrarysidebar.cpp
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp

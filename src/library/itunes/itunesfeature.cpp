@@ -122,7 +122,6 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             this,
             &ITunesFeature::onTrackCollectionLoaded);
 
-    // m_pITunesTrackModel->setSearch("", "", "library"); // enable search.
     m_pITunesTrackModel->setSearch("", ""); // enable search.
 }
 

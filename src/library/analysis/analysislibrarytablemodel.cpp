@@ -13,7 +13,6 @@ AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollectionManager,
                             "mixxx.db.model.prepare") {
     // Default to showing recent tracks.
-    // setSearch("", RECENT_FILTER, "library");
     setSearch("", RECENT_FILTER);
 }
 
