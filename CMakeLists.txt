@@ -1201,7 +1201,6 @@ add_library(
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
-  #src/library/autodj/dlgautodjpreparationwindow.cpp
   src/library/autodj/dlgautodj.ui
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
@@ -1596,8 +1595,6 @@ add_library(
   src/widget/wlibrary.cpp
   src/widget/wlibrarybasewindow.cpp
   src/widget/wlibrarypreparationwindow.cpp
-  #src/widget/wlibrarypreparationwindowtableview.cpp
-  #src/widget/wlibrarypreparationwindowtracktableview.cpp
   src/widget/wlibrarysidebar.cpp
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
