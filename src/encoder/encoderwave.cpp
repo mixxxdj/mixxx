@@ -140,10 +140,10 @@ void EncoderWave::flush() {
     // tracklist there for backward compatibility.
     auto trackList = getTrackList().join("\n");
     if (!trackList.isEmpty() && m_sfInfo.format != SF_FORMAT_AIFF) {
-            int ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, trackList.toUtf8().constData());
-            VERIFY_OR_DEBUG_ASSERT(ret == 0) {
-                qWarning() << "libsndfile error when storing tracklist: %s", sf_error_number(ret);
-            }
+        int ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, trackList.toUtf8().constData());
+        VERIFY_OR_DEBUG_ASSERT(ret == 0) {
+            qWarning() << "libsndfile error when storing tracklist: %s", sf_error_number(ret);
+        }
     }
     sf_write_sync(m_pSndfile);
 }
@@ -162,11 +162,11 @@ void EncoderWave::updateMetaData(const QString& artist,
         const QString& album,
         std::chrono::seconds timecode) {
     if (m_pSndfile == nullptr) {
-            m_metaDataTitle = title;
-            m_metaDataArtist = artist;
-            m_metaDataAlbum = album;
+        m_metaDataTitle = title;
+        m_metaDataArtist = artist;
+        m_metaDataAlbum = album;
     } else {
-            addToTracklist(artist, title, timecode);
+        addToTracklist(artist, title, timecode);
     }
 }
 
