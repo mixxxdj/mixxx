@@ -153,46 +153,37 @@ class QmlWaveformMarkRange : public QObject {
         return m_color;
     }
 
-
     QColor disabledColor() const {
         return m_disabledColor;
     }
-
 
     double opacity() const {
         return m_opacity;
     }
 
-
     double disabledOpacity() const {
         return m_disabledOpacity;
     }
-
 
     QColor durationTextColor() const {
         return m_durationTextColor;
     }
 
-
     QString startControl() const {
         return m_startControl;
     }
-
 
     QString endControl() const {
         return m_endControl;
     }
 
-
     QString enabledControl() const {
         return m_enabledControl;
     }
 
-
     QString visibilityControl() const {
         return m_visibilityControl;
     }
-
 
     QString durationTextLocation() const {
         return m_durationTextLocation;

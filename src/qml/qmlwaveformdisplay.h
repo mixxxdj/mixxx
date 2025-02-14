@@ -9,6 +9,7 @@
 #include "qml/qmlplayerproxy.h"
 #include "qml/qmlwaveformrenderer.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 #include "waveform/isynctimeprovider.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -114,10 +115,7 @@ class QmlWaveformDisplay : public QQuickItem, ISyncTimeProvider, public Waveform
     DirtyFlags m_dirtyFlag{DirtyFlag::None};
     QList<QmlWaveformRendererFactory*> m_waveformRenderers;
 
-    // Owned by the QML scene?
-    rendergraph::Node* m_pTopNode;
-    allshader::WaveformRenderMark* m_waveformRenderMark;
-    allshader::WaveformRenderMarkRange* m_waveformRenderMarkRange;
+    parented_ptr<rendergraph::Node> m_pTopNode;
 };
 
 } // namespace qml

@@ -742,7 +742,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
             DEBUG_ASSERT(m_pCurrentTrack);
             const auto replayGain = m_pCurrentTrack->getReplayGain();
             const auto visualGain = static_cast<float>(
-                pWidgetFactory->getVisualGain(FilterIndex::AllChannel) *
+                    pWidgetFactory->getVisualGain(FilterIndex::AllChannel) *
                     (replayGain.hasRatio()
                                     ? replayGain.getRatio()
                                     : 1.0));

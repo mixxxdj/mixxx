@@ -56,7 +56,7 @@ void QmlWaveformDisplay::componentComplete() {
 void QmlWaveformDisplay::slotWindowChanged(QQuickWindow* window) {
     m_rendererStack.clear();
 
-    m_dirtyFlag |= DirtyFlag::Window;
+    m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     if (window) {
         connect(window, &QQuickWindow::afterFrameEnd, this, &QmlWaveformDisplay::slotFrameSwapped);
     }
@@ -80,32 +80,42 @@ void QmlWaveformDisplay::slotFrameSwapped() {
 }
 
 void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
-    m_dirtyFlag |= DirtyFlag::Geometry;
+    m_dirtyFlag.setFlag(DirtyFlag::Geometry, true);
     update();
     QQuickItem::geometryChange(newGeometry, oldGeometry);
 }
 
 QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
-    auto* bgNode = dynamic_cast<QSGSimpleRectNode*>(node);
-    static rendergraph::GeometryNode* pPreRoll;
-
     if (m_dirtyFlag.testFlag(DirtyFlag::Window)) {
-        delete bgNode;
-        auto* pContext = getContext();
-        if (pContext) {
-            delete pContext;
-        }
+        delete node;
         m_dirtyFlag.setFlag(DirtyFlag::Window, false);
     }
-    if (!bgNode) {
-        bgNode = new QSGSimpleRectNode();
-        bgNode->setRect(boundingRect());
+
+    DEBUG_ASSERT(!node || node->childCount() == 1);
+
+    auto* pClipNode = dynamic_cast<QSGClipNode*>(node);
+    auto* pBgNode = pClipNode ? dynamic_cast<QSGSimpleRectNode*>(pClipNode->lastChild()) : nullptr;
+
+    if (!pBgNode) {
+        if (pClipNode) {
+            delete pClipNode;
+        }
+        pClipNode = new QSGClipNode();
+        pBgNode = new QSGSimpleRectNode();
+        m_dirtyFlag.setFlag(DirtyFlag::Background, true);
+        m_dirtyFlag.setFlag(DirtyFlag::Geometry, true);
+
+        pClipNode->setIsRectangular(true);
+        pClipNode->setGeometry(pBgNode->geometry());
+
+        pClipNode->setClipRect(boundingRect());
+        pBgNode->setRect(boundingRect());
 
         if (getContext()) {
             delete getContext();
         }
         setContext(new rendergraph::Context(window()));
-        m_pTopNode = new rendergraph::Node;
+        m_pTopNode = parented_ptr(new rendergraph::Node);
 
         m_rendererStack.clear();
         for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
@@ -115,35 +125,25 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
             }
             addRenderer(renderer.renderer);
             m_pTopNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(renderer.node));
-            auto* pWaveformRenderMark =
-                    dynamic_cast<allshader::WaveformRenderMark*>(
-                            renderer.renderer);
-            if (pWaveformRenderMark) {
-                m_waveformRenderMark = pWaveformRenderMark;
-            }
-            auto* pWaveformRenderMarkRange =
-                    dynamic_cast<allshader::WaveformRenderMarkRange*>(
-                            renderer.renderer);
-            if (pWaveformRenderMarkRange) {
-                m_waveformRenderMarkRange = pWaveformRenderMarkRange;
-            }
         }
 
-        bgNode->appendChildNode(m_pTopNode);
+        pBgNode->appendChildNode(m_pTopNode);
+        pClipNode->appendChildNode(pBgNode);
         init();
     }
 
     if (m_dirtyFlag.testFlag(DirtyFlag::Background)) {
         m_dirtyFlag.setFlag(DirtyFlag::Background, false);
-        bgNode->setColor(m_backgroundColor);
+        pBgNode->setColor(m_backgroundColor);
     }
 
     if (m_dirtyFlag.testFlag(DirtyFlag::Geometry)) {
         m_dirtyFlag.setFlag(DirtyFlag::Geometry, false);
+        pBgNode->setRect(boundingRect());
+        pClipNode->setClipRect(boundingRect());
         resizeRenderer(boundingRect().width(),
                 boundingRect().height(),
                 window()->devicePixelRatio());
-        bgNode->setRect(boundingRect());
     }
 
     onPreRender(this);
@@ -152,8 +152,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
         pRenderer->update();
     }
 
-    bgNode->markDirty(QSGNode::DirtyForceUpdate);
-    return bgNode;
+    pBgNode->markDirty(QSGNode::DirtyForceUpdate);
+    return pClipNode;
 }
 
 QmlPlayerProxy* QmlWaveformDisplay::getPlayer() const {

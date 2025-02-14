@@ -134,7 +134,7 @@ bool WaveformRendererRGB::preprocessInner() {
     const int numVerticesPerLine = 6; // 2 triangles
 
     const int reserved = numVerticesPerLine *
-            // Slip rendere only render a single channel, so the vertices count doesn't change
+            // Slip renderer only render a single channel, so the vertices count doesn't change
             ((splitLeftRight && !m_isSlipRenderer ? pixelLength * 2 : pixelLength) + 1);
 
     geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
