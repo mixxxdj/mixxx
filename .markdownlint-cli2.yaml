@@ -11,11 +11,6 @@ config:
   no-duplicate-heading:
     siblings_only: true
 
-  # The <a> element is required for custom named anchors
-  no-inline-html:
-    allowed_elements:
-      - a
-
   # We use ordered lists to make stuff easier to read in a text editor.
   ol-prefix:
     style: ordered
