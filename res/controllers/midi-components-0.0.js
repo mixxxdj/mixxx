@@ -176,6 +176,7 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
+        triggerOnRelease: false,
         isPress: function(channel, control, value, _status) {
             return value > 0;
         },
@@ -197,6 +198,8 @@
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
+                    } else if (this.triggerOnRelease) {
+                        this.trigger();
                     }
                     if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);
