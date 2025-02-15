@@ -26,6 +26,7 @@ class KeyboardEventFilter;
 class MixxxLibraryFeature;
 class PlayerManager;
 class PlaylistFeature;
+class PreparationFeature;
 class RecordingManager;
 class SidebarModel;
 class TrackCollectionManager;
@@ -209,6 +210,7 @@ class Library: public QObject {
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
+    PreparationFeature* m_pPreparationFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;

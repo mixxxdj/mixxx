@@ -12,7 +12,7 @@
 #include "widget/wtracktableview.h"
 
 namespace {
-const bool sDebug = true;
+const bool sDebug = false;
 const QString windowName = QStringLiteral("[LIBRARYBASEWINDOW]");
 } // namespace
 

@@ -96,7 +96,6 @@ class AutoDJFeature : public LibraryFeature {
     parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
-    // QPointer<WLibraryPreparationWindow> m_pLibraryPreparationWindowWidget;
     WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget = nullptr;
 
     // void deactivate() override;

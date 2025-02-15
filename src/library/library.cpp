@@ -29,6 +29,7 @@
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/playlistfeature.h"
+#include "library/trackset/preparation/preparationfeature.h"
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
@@ -75,6 +76,7 @@ Library::Library(
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
+          m_pPreparationFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -101,6 +103,10 @@ Library::Library(
 #endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+
+    // addFeature(new PreparationFeature(this, UserSettingsPointer(m_pConfig)));
+    m_pPreparationFeature = new PreparationFeature(this, UserSettingsPointer(m_pConfig));
+    addFeature(m_pPreparationFeature);
 
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
