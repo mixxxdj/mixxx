@@ -20,6 +20,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
         PLHT_NOT_HIDDEN = 0,
         PLHT_AUTO_DJ = 1,
         PLHT_SET_LOG = 2,
+        PLHT_SET_PREPARATION = 3,
         PLHT_UNKNOWN = -1
     };
 

@@ -13,8 +13,8 @@
 * menu & special widget styles
 
 
-/**********************************************************************
-************** container background colors & borders *****************/
+/*********************************************************************/
+/************* container background colors & borders *****************/
 #SkinContainer {
   background-color: #080808;
 }
@@ -121,10 +121,13 @@ QAbstractScrollArea::corner {
     #LibrarySplitter {
       border-width: 0px;
       }
-      #LibrarySplitter::handle {
+    #LibrarySplitter::handle {
         border-width: 1px 0px 0px 0px;
       }
     WLibrary {
+      border-width: 1px 0px 0px 0px;
+    }
+	WLibraryPreparationWindow {
       border-width: 1px 0px 0px 0px;
     }
     #PreviewDeckRightSpacer,
@@ -142,6 +145,11 @@ QAbstractScrollArea::corner {
       }
   /* Controls row in AutoDJ, Recording and other library features */
   #LibraryFeatureControls {
+    border-width: 1px 0px 0px 0px;
+    border-radius: 0px;
+    margin-top: 1px;
+  }
+  #LibraryPreparationWindowFeatureControls {
     border-width: 1px 0px 0px 0px;
     border-radius: 0px;
     margin-top: 1px;
@@ -376,14 +384,14 @@ WTrackProperty[selected="true"],
 */
 
 
-/**********************************************************************
-************** container background colors & borders *****************/
+/*********************************************************************/
+/************* container background colors & borders *****************/
 
 
 
 
-/******************* Container layouts, margins etc. ******************
-**********************************************************************/
+/******************* Container layouts, margins etc. *****************/
+/*********************************************************************/
 
 #ToolbarDeckSpacer {
   min-height: 3px;
@@ -1176,14 +1184,14 @@ WEffectSelector:!editable:on {
 #BeatEditCoverDecks {
   background-color: rgba(25, 25, 26, 180);
 }
-/*********************************************************************
-******************* Container layouts, margins etc. *****************/
+/********************************************************************/
+/****************** Container layouts, margins etc. *****************/
 
 
 
 
 
-/************** font colors **************************************************/
+/*////************* font colors *************************************/
 
 WLabel#FxUnitLabel,
 WLabel#MicAuxLabel,
@@ -1445,13 +1453,13 @@ QPushButton#pushButtonRecording:checked {
   }
 
 /************** font colors **************************************************/
-/************** font settings *************************************************/
+/************** font settings ************************************************/
 
 
 
 
-/************** Button styles *************************************************
-*************** Button borders ************************************************/
+/************** Button styles ************************************************/
+/************* Button borders ************************************************/
 
 /* crop shadow on the left border for all buttons in Fx assign and vinyl control grid
   (except leftmost button in each grid > overwritten in the block below) */
@@ -2966,6 +2974,9 @@ WSearchLineEdit {
   Don't use 'WLibrary QPushButton' here, as this would apply padding
   to the Preview & BPM lock buttons as well.
   Define the buttons fore every Library feature instead. */
+#LibraryPreparationWindowFeatureControls QPushButton {
+  margin: 0px 6px 3px 0px;
+  }
 #LibraryFeatureControls QPushButton {
   margin: 0px 6px 3px 0px;
   }
@@ -3024,8 +3035,8 @@ WLibrarySidebar::branch:open:has-children:has-siblings {
 
 
 
-/************** common styles for WEffectSelector ******************************
-*************** QSpinBox, QMenu, QToolTip *************************************/
+/************** common styles for WEffectSelector *****************************/
+/************** QSpinBox, QMenu, QToolTip *************************************/
 QToolTip,
 #MainMenu QMenu,
 WLibrarySidebar QMenu,
@@ -3247,5 +3258,5 @@ WSearchLineEdit::indicator:unchecked,
 WSearchLineEdit::indicator:unchecked:selected {
   image: none;
 }
-/************** common styles for WEffectSelector ******************************
-*************** QSpinBox, QMenu, QToolTip *************************************/
+/************** common styles for WEffectSelector *****************************/
+/************** QSpinBox, QMenu, QToolTip *************************************/

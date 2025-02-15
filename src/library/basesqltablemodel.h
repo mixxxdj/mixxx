@@ -173,6 +173,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackPos2Row m_trackPosToRow;
     QString m_currentSearch;
     QString m_currentSearchFilter;
+
     QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
 
