@@ -76,8 +76,8 @@ Library::Library(
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
-          m_pPreparationFeature(nullptr),
-          m_pAnalysisFeature(nullptr) {
+          m_pAnalysisFeature(nullptr),
+          m_pPreparationFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
     m_pKeyNotation.reset(

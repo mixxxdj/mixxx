@@ -44,7 +44,7 @@ class AutoDJFeature : public LibraryFeature {
             KeyboardEventFilter* keyboard) override;
     void bindLibraryPreparationWindowWidget(
             WLibraryPreparationWindow* libraryPreparationWindowWidget,
-            KeyboardEventFilter* keyboard);
+            KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;

@@ -19,7 +19,7 @@ class PreparationFeature : public BasePlaylistFeature {
     QVariant title() override;
 
     void bindLibraryWidget(WLibrary* plibraryWidget,
-            KeyboardEventFilter* pkeyboard);
+            KeyboardEventFilter* pkeyboard) override;
     void activatePlaylist(int playlistId) override;
 
   public slots:

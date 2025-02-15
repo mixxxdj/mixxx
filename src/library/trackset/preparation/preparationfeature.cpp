@@ -4,6 +4,8 @@
 #include <QMenu>
 #include <QSqlTableModel>
 
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/playlisttablemodel.h"
@@ -603,8 +605,8 @@ void PreparationFeature::slotDeleteAllUnlockedChildPlaylists() {
 void PreparationFeature::slotAddLoadedTrackToPreparation(const QString& group,
         TrackPointer loadedTrack,
         TrackPointer pOldTrack) {
-    // emit trackChanged(group, pTrack, pOld);
-    // void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
+    Q_UNUSED(group, pOldTrack);
+
     if (loadedTrack) {
         TrackId newLoadedTrack(loadedTrack->getId());
         qDebug() << "[PreparationFeature] -> Received Track ID" << newLoadedTrack;
