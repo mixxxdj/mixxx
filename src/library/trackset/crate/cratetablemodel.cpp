@@ -77,7 +77,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
 
     // Restore search text
-    setSearch(m_searchTexts.value(m_selectedCrate), "");
+    setSearch(m_searchTexts.value(m_selectedCrate));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 

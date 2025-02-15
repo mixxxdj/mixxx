@@ -23,7 +23,7 @@ QDrag* dragUrls(
     drag->setMimeData(mimeData);
     drag->setPixmap(QPixmap(":/images/library/ic_library_drag_and_drop.svg"));
     drag->exec(Qt::CopyAction);
-    
+
     return drag;
 }
 

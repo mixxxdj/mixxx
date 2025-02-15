@@ -97,13 +97,7 @@ class AutoDJFeature : public LibraryFeature {
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
     WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget = nullptr;
-
-    // void deactivate() override;
-
     WLibrary* m_pLibraryWidget = nullptr;
-
-    bool m_libraryViewRegistered = false;
-    bool m_prepWinViewRegistered = false;
 
   private slots:
     void slotEnableAutoDJ();

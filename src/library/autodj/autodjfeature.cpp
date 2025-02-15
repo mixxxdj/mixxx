@@ -247,7 +247,8 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 void AutoDJFeature::slotShowInPreparationWindow() {
     if (sDebug) {
         qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow()";
-        qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow() - Opening in PreparationWindow";
+        qDebug() << "[AutoDJFeature] -> slotShowInPreparationWindow() - "
+                    "Opening in PreparationWindow";
     }
     // Opening PrepWin
     if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {

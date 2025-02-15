@@ -347,19 +347,19 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
 
         // Defaults
         setAcceptDrops(true);
-        //setDragDropMode(QAbstractItemView::DragOnly);
+        // setDragDropMode(QAbstractItemView::DragOnly);
         setDragDropMode(QAbstractItemView::DragDrop);
         // Always enable drag for now (until we have a model that doesn't support
         // this.)
         setDragEnabled(true);
         setDropIndicatorShown(true);
 
-        //if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
         //    setDragDropMode(QAbstractItemView::DragDrop);
         //    setDropIndicatorShown(true);
         //    setAcceptDrops(true);
         //    // viewport()->setAcceptDrops(true);
-        //}
+        // }
 
         // Possible giant fuckup alert - It looks like Qt has something like these
         // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
@@ -509,19 +509,19 @@ void WTrackTableView::loadTrackModelInPreparationWindow(
 
         // Defaults
         setAcceptDrops(true);
-        //setDragDropMode(QAbstractItemView::DragOnly);
+        // setDragDropMode(QAbstractItemView::DragOnly);
         setDragDropMode(QAbstractItemView::DragDrop);
         // Always enable drag for now (until we have a model that doesn't support
         // this.)
         setDropIndicatorShown(true);
         setDragEnabled(true);
 
-        //if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
         //    setDragDropMode(QAbstractItemView::DragDrop);
         //    setDropIndicatorShown(true);
         //    setAcceptDrops(true);
-            // viewport()->setAcceptDrops(true);
-        //}
+        //    // viewport()->setAcceptDrops(true);
+        // }
 
         setVisible(true);
 
@@ -915,43 +915,43 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
         event->ignore();
         return;
     }
-    //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    // qDebug() << "dragEnterEvent" << event->mimeData()->formats();
 
     // Eve changed this to be able to D&D tracks between WLibrary & WLibraryPreparationWindow
     // if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
     // EVE
     // Note Setting for d&d in prepwindow
-//    if (qobject_cast<WLibraryPreparationWindow*>(parent())) {
-        // WLibraryPreparationWindow
-        if (event->source() == this) {
-            if (sDebug) {
-                qDebug() << "[WTRACKTABLEVIEW] -> dragEnterEvent - prepwin -> "
-                            "event->source(): "
-                         << event->source();
-                qDebug() << "[WTRACKTABLEVIEW] -> dragEnterEvent - prepwin -> "
-                            "pTrackModel: "
-                         << pTrackModel;
-                qDebug() << "[WTRACKTABLEVIEW] -> dragEnterEvent - prepwin -> "
-                            "pTrackModel->hasCapabilities(TrackModel::"
-                            "Capability::ReceiveDrops: "
-                         << pTrackModel->hasCapabilities(
-                                    TrackModel::Capability::ReceiveDrops);
-            }
-            if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-                event->acceptProposedAction();
-            }
-        } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                           "library",
-                           true,
-                           true)) {
-            event->acceptProposedAction();
-        } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                           "preparationwindow",
-                           true,
-                           true)) {
+    // if (qobject_cast<WLibraryPreparationWindow*>(parent())) {
+    // WLibraryPreparationWindow
+    if (event->source() == this) {
+        if (sDebug) {
+            qDebug() << "[WTRACKTABLEVIEW] -> dragEnterEvent - prepwin -> "
+                        "event->source(): "
+                     << event->source();
+            qDebug() << "[WTRACKTABLEVIEW] -> dragEnterEvent - prepwin -> "
+                        "pTrackModel: "
+                     << pTrackModel;
+            qDebug() << "[WTRACKTABLEVIEW] -> dragEnterEvent - prepwin -> "
+                        "pTrackModel->hasCapabilities(TrackModel::"
+                        "Capability::ReceiveDrops: "
+                     << pTrackModel->hasCapabilities(
+                                TrackModel::Capability::ReceiveDrops);
+        }
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
             event->acceptProposedAction();
         }
-    //} else {
+    } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
+                       "library",
+                       true,
+                       true)) {
+        event->acceptProposedAction();
+    } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
+                       "preparationwindow",
+                       true,
+                       true)) {
+        event->acceptProposedAction();
+    }
+    // } else {
     //    // WLibrary
     //    if (event->source() == this) {
     //        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
@@ -963,7 +963,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     //                       true)) {
     //        event->acceptProposedAction();
     //    }
-    //}
+    // }
 }
 
 // Drag move event, happens when a dragged item hovers over the track table view...
@@ -996,7 +996,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
             qDebug() << "[WTRACKTABLEVIEW] -> DROPEVENT -> OK GO";
         }
         if (event->source() == this) {
-            //if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+            // if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
                 if (sDebug) {
                     qDebug() << "[WTRACKTABLEVIEW] -> DROPEVENT -> IF 1";
@@ -1006,7 +1006,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
                 if (sDebug) {
                     qDebug() << "[WTRACKTABLEVIEW] -> DROPEVENT -> ELSE 2";
                 }
-                //event->ignore();
+                // event->ignore();
                 event->acceptProposedAction();
             }
         } else {
@@ -1161,7 +1161,7 @@ QModelIndexList WTrackTableView::getSelectedRows() const {
     if (getTrackModel() == nullptr) {
         return {};
     }
-    
+
     QItemSelectionModel* pSelectionModel = selectionModel();
     if (sDebug) {
         qDebug() << "[WTRACKTABLEVIEW] -> pSelectionModel " << pSelectionModel;
