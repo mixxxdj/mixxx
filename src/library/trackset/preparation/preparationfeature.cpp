@@ -605,7 +605,8 @@ void PreparationFeature::slotDeleteAllUnlockedChildPlaylists() {
 void PreparationFeature::slotAddLoadedTrackToPreparation(const QString& group,
         TrackPointer loadedTrack,
         TrackPointer pOldTrack) {
-    Q_UNUSED(group, pOldTrack);
+    Q_UNUSED(group);
+    Q_UNUSED(pOldTrack);
 
     if (loadedTrack) {
         TrackId newLoadedTrack(loadedTrack->getId());
