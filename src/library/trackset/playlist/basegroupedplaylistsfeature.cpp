@@ -28,7 +28,7 @@
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
-constexpr bool sDebug = true;
+constexpr bool sDebug = false;
 constexpr QChar kUnsafeFilenameReplacement = '-';
 const ConfigKey kConfigKeyLastImportExportPlaylistDirectory(
         "[Library]", "LastImportExportPlaylistDirectory");

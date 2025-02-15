@@ -134,22 +134,10 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
   private:
     // Stores the id of a playlist in the sidebar that is adjacent to the playlist(playlistId).
     void storePrevSiblingPlaylistId(int playlistId);
-    // void storePrevSiblingPlaylistId(PlaylistId playlistId);
     //  Can be used to restore a similar selection after the sidebar model was rebuilt.
     int m_prevSiblingPlaylist;
-    // PlaylistId m_prevSiblingPlaylist;
-
-    // std::unique_ptr<TreeItem> newTreeItemForPlaylistSummary(
-    //         const PlaylistSummary& playlistSummary);
-    // void updateTreeItemForPlaylistSummary(
-    //        TreeItem* pTreeItem, bool locked) const;
-    //    void updateTreeItemForPlaylistSummary(
-    //            TreeItem* pTreeItem,
-    //            const PlaylistSummary& playlistSummary) const;
 
     TrackCollection* const m_pTrackCollection;
-
-    // QModelIndex rebuildChildModel(PlaylistId selectedPlaylistId);
 
     QString fullPathFromIndex(const QModelIndex& index) const;
     QString groupNameFromIndex(const QModelIndex& index) const;
@@ -159,9 +147,7 @@ class BaseGroupedPlaylistsFeature : public BaseTrackSetFeature {
     void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
-    // QString fetchPlaylistLabel(int playlistId);
     QString fetchPlaylistLabel(int playlistId);
-    // QString fetchPlaylistLabel(PlaylistId playlistId);
 
     const bool m_keepHiddenTracks;
 };

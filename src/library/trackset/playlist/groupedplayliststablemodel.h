@@ -15,7 +15,6 @@ class GroupedPlaylistsTableModel final : public TrackSetTableModel {
             bool keepHiddenTracks = false);
     ~GroupedPlaylistsTableModel() final = default;
 
-    // void oldselectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;

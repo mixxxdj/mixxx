@@ -216,7 +216,6 @@ void GroupedPlaylistsFeature::slotPlaylistTableChanged(int playlistId) {
 
 void GroupedPlaylistsFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
     // qDebug() << "GroupedPlaylistsFeature::slotPlaylistContentOrLockChanged()
-    // playlistId:" << playlistIds;
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) ==
