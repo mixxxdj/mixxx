@@ -41,8 +41,7 @@ Q_ENUM_NS(MultiSamplingMode);
 
 enum class SoundHardwareTab {
     Output,
-    Input,
-    Invalid
+    Input
 };
 Q_ENUM_NS(SoundHardwareTab);
 

@@ -32,8 +32,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
             std::shared_ptr<SoundManager> soundManager,
             UserSettingsPointer pSettings);
 
-    void selectIOTab(mixxx::preferences::SoundHardwareTab tab =
-                             mixxx::preferences::SoundHardwareTab::Invalid);
+    void selectIOTab(mixxx::preferences::SoundHardwareTab tab);
 
     QUrl helpUrl() const override;
 

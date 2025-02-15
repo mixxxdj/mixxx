@@ -384,17 +384,12 @@ QUrl DlgPrefSound::helpUrl() const {
 }
 
 void DlgPrefSound::selectIOTab(mixxx::preferences::SoundHardwareTab tab) {
-    VERIFY_OR_DEBUG_ASSERT(tab != mixxx::preferences::SoundHardwareTab::Invalid) {
-        return;
-    }
     switch (tab) {
     case mixxx::preferences::SoundHardwareTab::Input:
         ioTabs->setCurrentWidget(inputTab);
         return;
     case mixxx::preferences::SoundHardwareTab::Output:
         ioTabs->setCurrentWidget(outputTab);
-        return;
-    case mixxx::preferences::SoundHardwareTab::Invalid:
         return;
     }
 }

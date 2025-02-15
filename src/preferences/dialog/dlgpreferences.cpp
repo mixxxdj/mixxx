@@ -302,13 +302,13 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
     }
 }
 
-void DlgPreferences::showSoundHardwarePage(mixxx::preferences::SoundHardwareTab tab) {
+void DlgPreferences::showSoundHardwarePage(
+        std::optional<mixxx::preferences::SoundHardwareTab> tab) {
     switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
-    if (tab == mixxx::preferences::SoundHardwareTab::Invalid) {
-        return;
+    if (tab.has_value()) {
+        m_pSoundDlg->selectIOTab(*tab);
     }
-    m_pSoundDlg->selectIOTab(tab);
 }
 
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
