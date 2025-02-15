@@ -8,7 +8,7 @@
 #include "moc_playlisttablemodel.cpp"
 
 namespace {
-
+const bool sDebug = false;
 const QString kModelName = "playlist:";
 
 } // anonymous namespace
@@ -130,9 +130,13 @@ void PlaylistTableModel::initSortColumnMapping() {
 }
 
 void PlaylistTableModel::selectPlaylist(int playlistId) {
-    // qDebug() << "PlaylistTableModel::selectPlaylist" << playlistId;
+    if (sDebug) {
+        qDebug() << "PlaylistTableModel::selectPlaylist" << playlistId;
+    }
     if (m_iPlaylistId == playlistId) {
-        qDebug() << "Already focused on playlist " << playlistId;
+        if (sDebug) {
+            qDebug() << "Already focused on playlist " << playlistId;
+        }
         return;
     }
     // Store search text
@@ -224,9 +228,11 @@ int PlaylistTableModel::addTracksWithTrackIds(const QModelIndex& insertionIndex,
         QString playlistName = m_pTrackCollectionManager->internalCollection()
                                        ->getPlaylistDAO()
                                        .getPlaylistName(m_iPlaylistId);
-        qDebug() << "PlaylistTableModel::addTracks could not add"
-                 << trackIds.size() - tracksAdded
-                 << "to playlist id" << m_iPlaylistId << "name" << playlistName;
+        if (sDebug) {
+            qDebug() << "PlaylistTableModel::addTracks could not add"
+                     << trackIds.size() - tracksAdded
+                     << "to playlist id" << m_iPlaylistId << "name" << playlistName;
+        }
     }
     return tracksAdded;
 }
@@ -281,8 +287,9 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         // new position moves up due to closing the gap of the old position
         --newPosition;
     }
-
-    //qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
+    if (sDebug) {
+        qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
+    }
     if (newPosition < 0 || newPosition == oldPosition) {
         // Invalid for the position to be 0 or less.
         // or no move at all

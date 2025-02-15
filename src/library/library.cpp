@@ -44,7 +44,7 @@
 #include "widget/wtracktableview.h"
 
 namespace {
-
+const bool sDebug = false;
 const mixxx::Logger kLogger("Library");
 
 } // namespace
@@ -104,7 +104,6 @@ Library::Library(
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
 
-    // addFeature(new PreparationFeature(this, UserSettingsPointer(m_pConfig)));
     m_pPreparationFeature = new PreparationFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPreparationFeature);
 
@@ -472,7 +471,9 @@ void Library::bindLibraryWidget(
     emit setTrackTableFont(m_trackTableFont);
     emit setTrackTableRowHeight(m_iTrackTableRowHeight);
     emit setSelectedClick(m_editMetadataSelectedClick);
-    qDebug() << "[Library] -> bindLibraryWindow finished";
+    if (sDebug) {
+        qDebug() << "[Library] -> bindLibraryWindow finished";
+    }
 }
 
 void Library::bindLibraryPreparationWindowWidget(
@@ -566,7 +567,9 @@ void Library::bindLibraryPreparationWindowWidget(
     emit setTrackTableFont(m_trackTableFont);
     emit setTrackTableRowHeight(m_iTrackTableRowHeight);
     emit setSelectedClick(m_editMetadataSelectedClick);
-    qDebug() << "[Library] -> bindLibraryPreparationWindow finished";
+    if (sDebug) {
+        qDebug() << "[Library] -> bindLibraryPreparationWindow finished";
+    }
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -647,7 +650,9 @@ void Library::onPlayerManagerTrackAnalyzerIdle() {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    // qDebug() << "Library::slotShowTrackModel" << model;
+    if (sDebug) {
+        qDebug() << "Library::slotShowTrackModel" << model;
+    }
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
@@ -658,7 +663,9 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotShowTrackModelInPreparationWindow(QAbstractItemModel* model) {
-    // qDebug() << "Library::slotShowTrackModelInPreparationWindow" << model;
+    if (sDebug) {
+        qDebug() << "Library::slotShowTrackModelInPreparationWindow" << model;
+    }
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
@@ -669,12 +676,16 @@ void Library::slotShowTrackModelInPreparationWindow(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    // qDebug() << "Library::slotSwitchToView" << view;
+    if (sDebug) {
+        qDebug() << "Library::slotSwitchToView" << view;
+    }
     emit switchToView(view);
 }
 
 void Library::slotSwitchToViewInPreparationWindow(const QString& view) {
-    // qDebug() << "Library::slotSwitchToView" << view;
+    if (sDebug) {
+        qDebug() << "Library::slotSwitchToView" << view;
+    }
     emit switchToViewInPreparationWindow(view);
 }
 

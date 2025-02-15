@@ -510,18 +510,19 @@ void WTrackTableView::loadTrackModelInPreparationWindow(
         // Defaults
         setAcceptDrops(true);
         // setDragDropMode(QAbstractItemView::DragOnly);
+        // Eve -> Preparation Window
         setDragDropMode(QAbstractItemView::DragDrop);
         // Always enable drag for now (until we have a model that doesn't support
         // this.)
         setDropIndicatorShown(true);
         setDragEnabled(true);
 
-        // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-        //    setDragDropMode(QAbstractItemView::DragDrop);
-        //    setDropIndicatorShown(true);
-        //    setAcceptDrops(true);
-        //    // viewport()->setAcceptDrops(true);
-        // }
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+            setDragDropMode(QAbstractItemView::DragDrop);
+            setDropIndicatorShown(true);
+            setAcceptDrops(true);
+            // viewport()->setAcceptDrops(true);
+        }
 
         setVisible(true);
 

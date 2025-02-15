@@ -60,9 +60,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     }
 
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
-    // void searchToWindow(const QString& searchText,
-    //         const QString& extraFilter,
-    //         QString targetWindow);
     const QString currentSearch() const override;
 
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) const override;

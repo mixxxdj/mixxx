@@ -19,6 +19,10 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
+namespace {
+const bool sDebug = false;
+} // namespace
+
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
@@ -216,8 +220,10 @@ void PlaylistFeature::slotShufflePlaylist() {
     }
 
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        qDebug() << "Can't shuffle locked playlist" << playlistId
-                 << m_playlistDao.getPlaylistName(playlistId);
+        if (sDebug) {
+            qDebug() << "Can't shuffle locked playlist" << playlistId
+                     << m_playlistDao.getPlaylistName(playlistId);
+        }
         return;
     }
 
@@ -297,7 +303,9 @@ void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
-    // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
+    if (sDebug) {
+        qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
+    }
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
@@ -340,7 +348,9 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
+    if (sDebug) {
+        qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
+    }
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
             type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
@@ -372,7 +382,11 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "PlaylistFeature::slotPlaylistContentOrLockChanged() playlistId:" << playlistIds;
+    if (sDebug) {
+        qDebug() << "PlaylistFeature::slotPlaylistContentOrLockChanged() "
+                    "playlistId:"
+                 << playlistIds;
+    }
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
@@ -387,7 +401,9 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
 
 void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    // qDebug() << "PlaylistFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
+    if (sDebug) {
+        qDebug() << "PlaylistFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
+    }
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
         // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()
         // in order to rebuild the model, not just updateChildModel()

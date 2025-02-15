@@ -24,7 +24,7 @@
 #include "widget/wlibrarysidebar.h"
 
 namespace {
-const bool sDebug = true;
+const bool sDebug = false;
 const QString kViewName = QStringLiteral("Auto DJ");
 constexpr int kMaxRetrieveAttempts = 3;
 

@@ -326,17 +326,19 @@ WTrackTableView* WLibraryBaseWindow::getCurrentTrackTableView() const {
     return pTracksView; // might still be nullptr
 }
 
-// WTrackTableView* WLibraryBaseWindow::getCurrentTrackTableViewInPreparationWindow() const {
-//     qDebug() << windowName << " -> getCurrentTrackTableViewInPreparationWindow toggled";
-//     QWidget* pCurrent = currentWidget();
-//     WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
-//     if (!pTracksView) {
-//         // This view is not a tracks view, but possibly a special library view
-//         // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
-//         pTracksView = pCurrent->findChild<WTrackTableView*>();
-//     }
-//     return pTracksView; // might still be nullptr
-// }
+// Eve -> please leave for eventual later work
+//
+//  WTrackTableView* WLibraryBaseWindow::getCurrentTrackTableViewInPreparationWindow() const {
+//      qDebug() << windowName << " -> getCurrentTrackTableViewInPreparationWindow toggled";
+//      QWidget* pCurrent = currentWidget();
+//      WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
+//      if (!pTracksView) {
+//          // This view is not a tracks view, but possibly a special library view
+//          // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
+//          pTracksView = pCurrent->findChild<WTrackTableView*>();
+//      }
+//      return pTracksView; // might still be nullptr
+//  }
 
 bool WLibraryBaseWindow::isTrackInCurrentView(const TrackId& trackId) {
     if (sDebug) {
