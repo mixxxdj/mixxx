@@ -207,35 +207,6 @@ void WLibraryBaseWindow::switchToViewInPreparationWindow(const QString& name) {
     }
 }
 
-// bool WLibraryBaseWindow::dropAccept(
-//    const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
-// if (sDebug) {
-//    qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
-//}
-// bool result = false;
-// bool result = true;
-//    if (index.isValid()) {
-//        if (index.internalPointer() == this) {
-//            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
-//        } else {
-//            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-//            if (pTreeItem) {
-//                LibraryFeature* pFeature = pTreeItem->feature();
-//                result = pFeature->dropAcceptChild(index, urls, pSource);
-//            }
-//        }
-//    }
-// return result;
-//}
-
-// void WLibraryBaseWindow::pasteFromSidebarInPreparationWindow() {
-//     QWidget* pCurrent = currentWidget();
-//     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
-//     if (pView) {
-//         //    pView->pasteFromSidebar();
-//     }
-// }
-
 void WLibraryBaseWindow::pasteFromSidebar() {
     if (sDebug) {
         qDebug() << windowName << " -> pasteFromSidebar toggled";
@@ -377,6 +348,7 @@ bool WLibraryBaseWindow::isTrackInCurrentView(const TrackId& trackId) {
             qDebug() << "[WLibraryPreparationWindow] -> isTrackInCurrentView "
                         "in WLibraryPreparationWindow -> NO ACTION";
         }
+        return false;
     } else {
         // Execute for WLibrary
         if (sDebug) {
@@ -421,6 +393,7 @@ bool WLibraryBaseWindow::isTrackInCurrentViewInPreparationWindow(const TrackId& 
             qDebug() << "[WLibrary] -> isTrackInCurrentViewInPreparationWindow "
                         "in WLibrary -> NO ACTION";
         }
+        return false;
     }
 }
 
