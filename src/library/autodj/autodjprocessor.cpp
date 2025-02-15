@@ -434,8 +434,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             }
         }
 
-        TrackPointer nextTrack = getNextTrackFromQueue();
-        if (!nextTrack) {
+        TrackPointer pNextTrack = getNextTrackFromQueue();
+        if (!pNextTrack) {
             qDebug() << "Queue is empty now, disable Auto DJ";
             m_pEnabledAutoDJ->setAndConfirm(0.0);
             emitAutoDJStateChanged(m_eState);
@@ -558,7 +558,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
-            emitLoadTrackToPlayer(nextTrack, pLeftDeck->group, true);
+            emitLoadTrackToPlayer(pNextTrack, pLeftDeck->group, true);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
@@ -566,12 +566,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_isNowStartingEarly = false;
             if (leftDeckPlaying) {
                 // Load track into the right deck.
-                emitLoadTrackToPlayer(nextTrack, pRightDeck->group, false);
+                emitLoadTrackToPlayer(pNextTrack, pRightDeck->group, false);
                 // Move crossfader to the left.
                 setCrossfader(-1.0);
             } else {
                 // Load track into the left deck.
-                emitLoadTrackToPlayer(nextTrack, pLeftDeck->group, false);
+                emitLoadTrackToPlayer(pNextTrack, pLeftDeck->group, false);
                 // Move crossfader to the right.
                 setCrossfader(1.0);
             }
@@ -938,12 +938,12 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 
     while (true) {
-        TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
+        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(
                 m_pAutoDJTableModel->index(0, 0));
 
-        if (nextTrack) {
-            if (nextTrack->getFileInfo().checkFileExists()) {
-                return nextTrack;
+        if (pNextTrack) {
+            if (pNextTrack->getFileInfo().checkFileExists()) {
+                return pNextTrack;
             } else {
                 // Remove missing song from auto DJ playlist.
                 m_pAutoDJTableModel->removeTrack(
@@ -951,25 +951,25 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             }
         } else {
             // We're out of tracks. Return the null TrackPointer.
-            return nextTrack;
+            return pNextTrack;
         }
     }
 }
 
 bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool play) {
-    TrackPointer nextTrack = getNextTrackFromQueue();
+    TrackPointer pNextTrack = getNextTrackFromQueue();
 
     // We ran out of tracks in the queue.
-    if (!nextTrack) {
+    if (!pNextTrack) {
         // Disable AutoDJ.
         toggleAutoDJ(false);
 
-        // And eject track (nextTrack is null) as "End of auto DJ warning"
-        emitLoadTrackToPlayer(nextTrack, deck.group, false);
+        // And eject track (pNextTrack is null) as "End of auto DJ warning"
+        emitLoadTrackToPlayer(pNextTrack, deck.group, false);
         return false;
     }
 
-    emitLoadTrackToPlayer(nextTrack, deck.group, play);
+    emitLoadTrackToPlayer(pNextTrack, deck.group, play);
     return true;
 }
 
