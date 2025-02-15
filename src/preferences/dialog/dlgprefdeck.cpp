@@ -5,6 +5,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
+#include "engine/controls/pitchbendcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
@@ -16,7 +17,7 @@
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
 constexpr double kRateDirectionInverted = -1;
-constexpr RateControl::RampMode kDefaultRampingMode = RateControl::RampMode::Stepping;
+constexpr PitchBendControl::RampMode kDefaultRampingMode = PitchBendControl::RampMode::Stepping;
 constexpr double kDefaultTemporaryRateChangeCoarse = 4.00; // percent
 constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
@@ -366,10 +367,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             &QRadioButton::toggled,
             this,
             &DlgPrefDeck::slotRateRampingModeLinearButton);
-    m_bRateRamping = static_cast<RateControl::RampMode>(
+    m_bRateRamping = static_cast<PitchBendControl::RampMode>(
             m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
                     static_cast<int>(kDefaultRampingMode)));
-    if (m_bRateRamping == RateControl::RampMode::Linear) {
+    if (m_bRateRamping == PitchBendControl::RampMode::Linear) {
         radioButtonRateRampModeLinear->setChecked(true);
     } else {
         radioButtonRateRampModeStepping->setChecked(true);
@@ -407,8 +408,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     spinBoxPermanentRateCoarse->setValue(m_dRatePermCoarse);
     spinBoxPermanentRateFine->setValue(m_dRatePermFine);
 
-    RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
-    RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
+    PitchBendControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
+    PitchBendControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
@@ -490,7 +491,7 @@ void DlgPrefDeck::slotUpdate() {
         checkBoxResetSpeed->setChecked(false);
     }
 
-    if (m_bRateRamping == RateControl::RampMode::Linear) {
+    if (m_bRateRamping == PitchBendControl::RampMode::Linear) {
         radioButtonRateRampModeLinear->setChecked(true);
     } else {
         radioButtonRateRampModeStepping->setChecked(true);
@@ -500,8 +501,8 @@ void DlgPrefDeck::slotUpdate() {
         m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"),
                             kDefaultRateRampSensitivity));
 
-    spinBoxTemporaryRateCoarse->setValue(RateControl::getTemporaryRateChangeCoarseAmount());
-    spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
+    spinBoxTemporaryRateCoarse->setValue(PitchBendControl::getTemporaryRateChangeCoarseAmount());
+    spinBoxTemporaryRateFine->setValue(PitchBendControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
     spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
 }
@@ -654,9 +655,9 @@ void DlgPrefDeck::slotRateRampSensitivitySlider(int value) {
 
 void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
     if (checked) {
-        m_bRateRamping = RateControl::RampMode::Linear;
+        m_bRateRamping = PitchBendControl::RampMode::Linear;
     } else {
-        m_bRateRamping = RateControl::RampMode::Stepping;
+        m_bRateRamping = PitchBendControl::RampMode::Stepping;
     }
 }
 
@@ -749,14 +750,14 @@ void DlgPrefDeck::slotApply() {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
-    RateControl::setRateRampMode(m_bRateRamping);
+    PitchBendControl::setRateRampMode(m_bRateRamping);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
 
-    RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
+    PitchBendControl::setRateRampSensitivity(m_iRateRampSensitivity);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);
 
-    RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
-    RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
+    PitchBendControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
+    PitchBendControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
