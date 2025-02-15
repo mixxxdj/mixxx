@@ -15,11 +15,6 @@
 #include "util/rotary.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
-namespace {
-constexpr int kRateSensitivityMin = 100;
-constexpr int kRateSensitivityMax = 2500;
-} // namespace
-
 // Static default values for rate buttons (percents)
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeFine;
