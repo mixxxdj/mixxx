@@ -53,7 +53,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig),
-          m_pAutoDJViewPrepWin(nullptr),
           m_pLibraryPreparationWindowWidget(nullptr) {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
