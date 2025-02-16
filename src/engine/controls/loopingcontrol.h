@@ -130,6 +130,7 @@ class LoopingControl : public EngineControl {
                     LoopingControl::LoopAnchorPoint::None);
     void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
+    void slotBeatLoopKeepLoopIn(double pressed);
     void slotBeatLoopRollActivate(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl,
             LoopingControl::LoopAnchorPoint forcedAnchor =
@@ -243,6 +244,7 @@ class LoopingControl : public EngineControl {
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
+    ControlObject* m_pCOBeatLoopKeepLoopIn;
     ControlObject* m_pCOBeatLoopSize;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];
