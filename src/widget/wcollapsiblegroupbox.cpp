@@ -58,7 +58,8 @@ bool WCollapsibleGroupBox::event(QEvent* pEvent) {
         return QGroupBox::event(pEvent);
     }
 
-    if (pEvent->type() == QEvent::Show) {
+    switch (pEvent->type()) {
+    case QEvent::Show: {
         if (!hasValidMinHeight()) {
             // Set the min height variable only on first show event.
             QStyleOptionGroupBox gbOpt;
@@ -90,13 +91,14 @@ bool WCollapsibleGroupBox::event(QEvent* pEvent) {
         if (isChecked()) {
             m_maxHeight = maximumHeight();
         } else {
+            DEBUG_ASSERT(hasValidMinHeight());
             setMaximumHeight(m_minHeight);
         }
+        break;
     }
-
-    if (pEvent->type() == QEvent::LayoutRequest ||
-            pEvent->type() == QEvent::ContentsRectChange ||
-            pEvent->type() == QEvent::Resize) {
+    case QEvent::LayoutRequest:
+    case QEvent::ContentsRectChange:
+    case QEvent::Resize: {
         if (!isChecked() && hasValidMinHeight()) {
             // Content size has changed which triggers a paint event and
             // would draw the expanded box.
@@ -107,6 +109,10 @@ bool WCollapsibleGroupBox::event(QEvent* pEvent) {
             // changed, so also adopt it on each resize/layoutchange event.
             m_maxHeight = maximumHeight();
         }
+        break;
+    }
+    default:
+        break;
     }
 
     return QGroupBox::event(pEvent);
