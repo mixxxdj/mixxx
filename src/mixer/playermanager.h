@@ -36,21 +36,21 @@ class PlayerManagerInterface {
     virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
     virtual BaseTrackPlayer* getPlayer(const ChannelHandle& channelHandle) const = 0;
 
-    // Get the deck by its deck number. Decks are numbered starting with 1.
-    virtual Deck* getDeck(unsigned int player) const = 0;
+    // Get the deck as BaseTrackPlayer by its deck index
+    // to allow unit test to return a mocked Deck
+    virtual BaseTrackPlayer* getDeckBase(int deckIndex) const = 0;
 
-    virtual unsigned int numberOfDecks() const = 0;
+    virtual int numberOfDecks() const = 0;
 
-    // Get the preview deck by its deck number. Preview decks are numbered
-    // starting with 1.
-    virtual PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const = 0;
+    // Get the preview deck by its index.
+    virtual PreviewDeck* getPreviewDeck(int previewPlayerIndex) const = 0;
 
-    virtual unsigned int numberOfPreviewDecks() const = 0;
+    virtual int numberOfPreviewDecks() const = 0;
 
-    // Get the sampler by its number. Samplers are numbered starting with 1.
-    virtual Sampler* getSampler(unsigned int sampler) const = 0;
+    // Get the sampler by its index
+    virtual Sampler* getSampler(int samplerIndex) const = 0;
 
-    virtual unsigned int numberOfSamplers() const = 0;
+    virtual int numberOfSamplers() const = 0;
 };
 
 class PlayerManager : public QObject, public PlayerManagerInterface {
@@ -102,28 +102,22 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Get a BaseTrackPlayer (Deck, Sampler or PreviewDeck) by its handle.
     BaseTrackPlayer* getPlayer(const ChannelHandle& handle) const override;
 
-    // Get the deck by its deck number. Decks are numbered starting with 1.
-    Deck* getDeck(unsigned int player) const override;
+    // Get the deck by its index.
+    Deck* getDeck(int deckIndex) const;
+    BaseTrackPlayer* getDeckBase(int deckIndex) const override;
+
     // Return the number of players. Thread-safe.
-    static unsigned int numDecks();
-    unsigned int numberOfDecks() const override {
-        return numDecks();
-    }
+    int numberOfDecks() const override;
 
-    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const override;
+    // Get the preview deck by its index.
+    PreviewDeck* getPreviewDeck(int previewDeckIndex) const override;
     // Return the number of preview decks. Thread-safe.
-    static unsigned int numPreviewDecks();
-    unsigned int numberOfPreviewDecks() const override {
-        return numPreviewDecks();
-    }
+    int numberOfPreviewDecks() const override;
 
-    // Get the sampler by its number. Samplers are numbered starting with 1.
-    Sampler* getSampler(unsigned int sampler) const override;
+    // Get the sampler by its index.
+    Sampler* getSampler(int samplerIndex) const override;
     // Return the number of samplers. Thread-safe.
-    static unsigned int numSamplers();
-    unsigned int numberOfSamplers() const override {
-        return numSamplers();
-    }
+    int numberOfSamplers() const override;
 
     // Returns the track that was last ejected or unloaded. Can return nullptr or
     // invalid TrackId in case of error.
@@ -178,10 +172,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         DEBUG_ASSERT(i >= 0);
         return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
     }
-
-    static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
-    static QAtomicPointer<ControlProxy> m_pCOPNumSamplers;
-    static QAtomicPointer<ControlProxy> m_pCOPNumPreviewDecks;
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
