@@ -8,7 +8,7 @@
 class CollapsibleGroupBoxStyle : public QProxyStyle {
     Q_OBJECT
   public:
-    explicit CollapsibleGroupBoxStyle(QStyle* pStyle = 0)
+    explicit CollapsibleGroupBoxStyle(QStyle* pStyle = nullptr)
             : QProxyStyle(pStyle) {
     }
 
@@ -33,6 +33,6 @@ class WCollapsibleGroupBox : public QGroupBox {
     void slotToggled(bool checked);
 
   private:
-    int m_minH;
-    int m_maxH;
+    int m_minHeight;
+    int m_maxHeight;
 };

@@ -35,8 +35,8 @@ void CollapsibleGroupBoxStyle::drawPrimitive(QStyle::PrimitiveElement element,
 
 WCollapsibleGroupBox::WCollapsibleGroupBox(QWidget* pParent)
         : QGroupBox(pParent),
-          m_minH(-1),
-          m_maxH(10000) {
+          m_minHeight(-1),
+          m_maxHeight(QWIDGETSIZE_MAX) {
     connect(this,
             &QGroupBox::toggled,
             this,
@@ -54,7 +54,7 @@ WCollapsibleGroupBox::WCollapsibleGroupBox(const QString& title, QWidget* pParen
 bool WCollapsibleGroupBox::event(QEvent* pEvent) {
     if (isCheckable()) {
         if (pEvent->type() == QEvent::Show) {
-            if (m_minH == -1) {
+            if (m_minHeight == -1) {
                 // Set the min height variable only on first show event.
                 QStyleOptionGroupBox gbOpt;
                 initStyleOption(&gbOpt);
@@ -64,7 +64,7 @@ bool WCollapsibleGroupBox::event(QEvent* pEvent) {
                         // In case we didn't set a title we use the rect of the original checkbox
                         title().isEmpty() ? QStyle::SC_GroupBoxCheckBox : QStyle::SC_GroupBoxLabel,
                         this);
-                m_minH = titleRect.height();
+                m_minHeight = titleRect.height();
                 // The maximum height may change when the layout direction is changed,
                 // so also set it on each resize/layoutchange event.
             }
@@ -72,21 +72,21 @@ bool WCollapsibleGroupBox::event(QEvent* pEvent) {
             // If this has been toggled 'collapsed' before it has been shown we
             // collapsed it now that we have a valid min height.
             if (isChecked()) {
-                m_maxH = maximumHeight();
+                m_maxHeight = maximumHeight();
             } else {
-                setMaximumHeight(m_minH);
+                setMaximumHeight(m_minHeight);
             }
         } else if (pEvent->type() == QEvent::LayoutRequest ||
                 pEvent->type() == QEvent::ContentsRectChange ||
                 pEvent->type() == QEvent::Resize) {
-            if (!isChecked() && m_minH != -1) {
+            if (!isChecked() && m_minHeight != -1) {
                 // Content size has changed which triggers a paint event and
                 // would draw the expanded box.
                 // Though it is and should stay collapsed, so re-apply max height.
-                setMaximumHeight(m_minH);
-            } else if (isChecked() && m_maxH != maximumHeight()) {
+                setMaximumHeight(m_minHeight);
+            } else if (isChecked() && m_maxHeight != maximumHeight()) {
                 // Adpot the new max height
-                m_maxH = maximumHeight();
+                m_maxHeight = maximumHeight();
             }
         }
     }
@@ -100,8 +100,7 @@ void WCollapsibleGroupBox::slotToggled(bool checked) {
     // Set the maximum height to show/hide the content.
     // This may be toggled before we acquired the min height, so only collapse
     // if we have a valid height.
-    if (isCheckable() && m_minH != -1) {
-        setMaximumHeight(checked ? m_maxH : m_minH);
-        updateGeometry();
+    if (isCheckable() && m_minHeight != -1) {
+        setMaximumHeight(checked ? m_maxHeight : m_minHeight);
     }
 }
