@@ -22,6 +22,7 @@ struct WaveformStride {
     WaveformStride(double samples, double averageSamples, int stemCount)
             : m_position(0),
               m_stemCount(stemCount),
+              m_sampleCount(0),
               m_length(samples),
               m_averageLength(averageSamples),
               m_averagePosition(0),
@@ -34,6 +35,7 @@ struct WaveformStride {
     inline void reset() {
         m_position = 0;
         m_averageDivisor = 0;
+        m_sampleCount = 0;
         for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
@@ -41,6 +43,22 @@ struct WaveformStride {
             SampleUtil::clear(m_averageFilteredData[i], FilterCount);
             SampleUtil::clear(m_stemData[i], m_stemCount);
         }
+    }
+
+    void computeAverage() {
+        if (!m_sampleCount) {
+            return;
+        }
+
+        m_overallData[Right] = std::sqrt(m_overallData[Right] / m_sampleCount);
+        m_overallData[Left] = std::sqrt(m_overallData[Left] / m_sampleCount);
+        m_filteredData[Right][Low] = std::sqrt(m_filteredData[Right][Low] / m_sampleCount);
+        m_filteredData[Left][Low] = std::sqrt(m_filteredData[Left][Low] / m_sampleCount);
+        m_filteredData[Right][Mid] = std::sqrt(m_filteredData[Right][Mid] / m_sampleCount);
+        m_filteredData[Left][Mid] = std::sqrt(m_filteredData[Left][Mid] / m_sampleCount);
+        m_filteredData[Right][High] = std::sqrt(m_filteredData[Right][High] / m_sampleCount);
+        m_filteredData[Left][High] = std::sqrt(m_filteredData[Left][High] / m_sampleCount);
+        m_sampleCount = 1;
     }
 
     inline void store(WaveformData* data) {
@@ -71,6 +89,7 @@ struct WaveformStride {
             for (int stemIdx = 0; stemIdx < m_stemCount; ++stemIdx) {
                 m_stemData[i][stemIdx] = 0.0f;
             }
+            m_sampleCount = 0;
         }
     }
 
@@ -119,6 +138,7 @@ struct WaveformStride {
 
     int m_position;
     int m_stemCount;
+    uint m_sampleCount;
     double m_length;
     double m_averageLength;
     int m_averagePosition;
@@ -176,6 +196,7 @@ class AnalyzerWaveform : public Analyzer {
     std::vector<float> m_buffers[FilterCount];
 
     PerformanceTimer m_timer;
+    UserSettingsPointer m_pConfig;
 
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;
