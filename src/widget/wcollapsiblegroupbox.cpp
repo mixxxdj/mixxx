@@ -51,44 +51,64 @@ WCollapsibleGroupBox::WCollapsibleGroupBox(const QString& title, QWidget* pParen
 }
 
 bool WCollapsibleGroupBox::event(QEvent* pEvent) {
-    if (isCheckable()) {
-        if (pEvent->type() == QEvent::Show) {
-            if (m_minHeight == -1) {
-                // Set the min height variable only on first show event.
-                QStyleOptionGroupBox gbOpt;
-                initStyleOption(&gbOpt);
-                const QRect titleRect = style()->subControlRect(
+    if (!isCheckable()) {
+        // Only enable the special expand/collapse behavior
+        // when the users has requested it via setCheckable(true).
+        // Otherwise, this should just behave like a normal QGroupBox.
+        return QGroupBox::event(pEvent);
+    }
+
+    if (pEvent->type() == QEvent::Show) {
+        if (!hasValidMinHeight()) {
+            // Set the min height variable only on first show event.
+            QStyleOptionGroupBox gbOpt;
+            initStyleOption(&gbOpt);
+            QRect titleRect;
+            if (title().isEmpty()) {
+                // In case we didn't set a title we use the rect of the original checkbox
+                titleRect = style()->subControlRect(
                         QStyle::CC_GroupBox,
                         &gbOpt,
-                        // In case we didn't set a title we use the rect of the original checkbox
-                        title().isEmpty() ? QStyle::SC_GroupBoxCheckBox : QStyle::SC_GroupBoxLabel,
+                        QStyle::SC_GroupBoxCheckBox,
                         this);
-                m_minHeight = titleRect.height();
-                // The maximum height may change when the layout direction is changed,
-                // so also set it on each resize/layoutchange event.
+            } else {
+                titleRect = style()->subControlRect(
+                        QStyle::CC_GroupBox,
+                        &gbOpt,
+                        QStyle::SC_GroupBoxLabel,
+                        this);
             }
 
-            // If this has been toggled 'collapsed' before it has been shown we
-            // collapsed it now that we have a valid min height.
-            if (isChecked()) {
-                m_maxHeight = maximumHeight();
-            } else {
-                setMaximumHeight(m_minHeight);
-            }
-        } else if (pEvent->type() == QEvent::LayoutRequest ||
-                pEvent->type() == QEvent::ContentsRectChange ||
-                pEvent->type() == QEvent::Resize) {
-            if (!isChecked() && m_minHeight != -1) {
-                // Content size has changed which triggers a paint event and
-                // would draw the expanded box.
-                // Though it is and should stay collapsed, so re-apply max height.
-                setMaximumHeight(m_minHeight);
-            } else if (isChecked() && m_maxHeight != maximumHeight()) {
-                // Adpot the new max height
-                m_maxHeight = maximumHeight();
-            }
+            // Get margin of the focus frame (is usually drawn outside the widget's
+            // regular frame)
+            int focusVMargin = style()->pixelMetric(QStyle::PM_FocusFrameHMargin, &gbOpt, this);
+            m_minHeight = titleRect.height() + focusVMargin;
+        }
+
+        // If this has been toggled 'collapsed' before it has been shown we
+        // collapsed it now that we have a valid min height.
+        if (isChecked()) {
+            m_maxHeight = maximumHeight();
+        } else {
+            setMaximumHeight(m_minHeight);
         }
     }
+
+    if (pEvent->type() == QEvent::LayoutRequest ||
+            pEvent->type() == QEvent::ContentsRectChange ||
+            pEvent->type() == QEvent::Resize) {
+        if (!isChecked() && hasValidMinHeight()) {
+            // Content size has changed which triggers a paint event and
+            // would draw the expanded box.
+            // Though it is and should stay collapsed, so re-apply max height.
+            setMaximumHeight(m_minHeight);
+        } else if (isChecked() && m_maxHeight != maximumHeight()) {
+            // The maximum height may have changed when the layout direction
+            // changed, so also adopt it on each resize/layoutchange event.
+            m_maxHeight = maximumHeight();
+        }
+    }
+
     return QGroupBox::event(pEvent);
 }
 
@@ -99,7 +119,7 @@ void WCollapsibleGroupBox::slotToggled(bool checked) {
     // Set the maximum height to show/hide the content.
     // This may be toggled before we acquired the min height, so only collapse
     // if we have a valid height.
-    if (isCheckable() && m_minHeight != -1) {
+    if (isCheckable() && hasValidMinHeight()) {
         setMaximumHeight(checked ? m_maxHeight : m_minHeight);
     }
 }

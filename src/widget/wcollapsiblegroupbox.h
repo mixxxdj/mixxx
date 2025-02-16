@@ -33,6 +33,12 @@ class WCollapsibleGroupBox : public QGroupBox {
     void slotToggled(bool checked);
 
   private:
+    bool hasValidMinHeight() {
+        // This covers invalid dimensions of QRect (-1) returned by style()->subControlRect()
+        // as well as our initial value.
+        return m_minHeight >= 0;
+    }
+
     int m_minHeight;
     int m_maxHeight;
 };
