@@ -804,6 +804,9 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             !mappingFilePath.isEmpty();
     m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, showMidiTabs);
     m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, showMidiTabs);
+    // Also disable accordingly so hidden tabs can not get keyboard focus
+    m_ui.controllerTabs->setTabEnabled(m_inputMappingsTabIndex, showMidiTabs);
+    m_ui.controllerTabs->setTabEnabled(m_outputMappingsTabIndex, showMidiTabs);
 
     // Hide the entire QTabWidget if all tabs are removed
     m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
@@ -1115,8 +1118,9 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     }
 
     // Show or hide the settings tab based on the presence of settings
-    m_ui.controllerTabs->setTabVisible(
-            m_settingsTabIndex, pMapping && !pMapping->getSettings().isEmpty());
+    bool showSettings = pMapping && !pMapping->getSettings().isEmpty();
+    m_ui.controllerTabs->setTabVisible(m_settingsTabIndex, showSettings);
+    m_ui.controllerTabs->setTabEnabled(m_settingsTabIndex, showSettings);
 
     // If there is still settings that may be saved and no new mapping selected
     // (e.g restored default), we keep the the dirty mapping live so it can be
@@ -1135,11 +1139,13 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         auto screens = pMapping->getInfoScreens();
         bool hasScreens = !screens.isEmpty();
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, hasScreens);
+        m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, hasScreens);
         if (hasScreens) {
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
         }
     } else {
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
+        m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, false);
     }
 #endif
 
