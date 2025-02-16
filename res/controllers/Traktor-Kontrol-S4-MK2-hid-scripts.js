@@ -679,7 +679,7 @@ TraktorS4MK2.lightDeck = function(group) {
 };
 
 TraktorS4MK2.pointlessLightShow = function() {
-    var packets = [Object(), Object(), Object()];
+    const packets = [[], [], []];
 
     packets[0].length = 52;
     packets[1].length = 62;

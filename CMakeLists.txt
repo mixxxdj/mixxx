@@ -64,7 +64,12 @@ function(fatal_error_missing_env)
       )
     endif()
   elseif(APPLE AND NOT IOS)
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+      message(
+        FATAL_ERROR
+        "Did you build the Mixxx build environment as described here: https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64?"
+      )
+    elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
         FATAL_ERROR
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`"
@@ -75,11 +80,24 @@ function(fatal_error_missing_env)
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh` or `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`(includes Debug)?"
       )
     endif()
-  elseif(LINUX)
-    message(
-      FATAL_ERROR
-      "Did you install the Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh` or the equivalent packages using your package manager?"
-    )
+  elseif(UNIX AND NOT APPLE)
+    # Linux, BSD, Solaris, Minix
+    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+      message(
+        FATAL_ERROR
+        "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    elseif(EXISTS "/etc/redhat-release") # exists also on Fedora Mageia Madndriva Alma CentOS
+      message(
+        FATAL_ERROR
+        "Did you install the required RPM dev packages via `${CMAKE_SOURCE_DIR}/tools/rpm_buildenv.sh`?"
+      )
+    else()
+      message(
+        FATAL_ERROR
+        "Did you install the equivalent dev packages listed in `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    endif()
   elseif(DEFINED VCPKG_TARGET_TRIPLET)
     message(
       FATAL_ERROR

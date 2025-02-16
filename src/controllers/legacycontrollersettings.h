@@ -8,6 +8,7 @@
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
+#include "util/parented_ptr.h"
 
 namespace {
 template<class T>
@@ -186,8 +187,6 @@ class LegacyControllerBooleanSetting
                     LegacyControllerSettingsLayoutContainer::HORIZONTAL)
             override;
 
-    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
-
     QJSValue value() const override {
         return QJSValue(m_savedValue);
     }
@@ -216,6 +215,16 @@ class LegacyControllerBooleanSetting
     QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
+    class ToggleCheckboxEventFilter : public QObject {
+      public:
+        ToggleCheckboxEventFilter(QObject* pParent)
+                : QObject(pParent) {
+        }
+        bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+    };
+
+    parented_ptr<ToggleCheckboxEventFilter> m_pToggleCheckboxEventFilter;
+
     FRIEND_TEST(LegacyControllerMappingSettingsTest, booleanSettingEditing);
 };
 
