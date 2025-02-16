@@ -1150,6 +1150,8 @@
   <tabstop>chkEnabledDevice</tabstop>
   <tabstop>btnLearningWizard</tabstop>
   <tabstop>comboBoxMapping</tabstop>
+  <tabstop>groupBoxDeviceInfo</tabstop>
+  <tabstop>groupBoxMappingInfo</tabstop>
   <tabstop>controllerTabs</tabstop>
  </tabstops>
  <resources/>
