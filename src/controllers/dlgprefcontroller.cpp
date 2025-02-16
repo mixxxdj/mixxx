@@ -29,6 +29,7 @@
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/string.h"
+#include "widget/wcollapsiblegroupbox.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");
@@ -761,6 +762,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         if (m_pControllerManager->getConfiguredMappingFileForDevice(
                     m_pController->getName()) != mappingFilePath) {
             setDirty(true);
+            m_settingsCollapsedStates.clear();
         } else if (m_pMapping && m_pMapping->isDirty()) {
             // We have pending changes, don't reload the mapping from file!
             // This is called by show()/slotUpdate() after MIDI learning ended
@@ -1068,7 +1070,40 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         }
 
         if (pLayout != nullptr && !settings.isEmpty()) {
-            m_ui.settingsTab->layout()->addWidget(pLayout->build(m_ui.settingsTab));
+            QWidget* pSettingsWidget = pLayout->build(m_ui.settingsTab);
+            m_ui.settingsTab->layout()->addWidget(pSettingsWidget);
+
+            // Add an expanding spacer so that when we collapse all groups,
+            // they are pushed to the top.
+            m_ui.settingsTab->layout()->addItem(new QSpacerItem(
+                    1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+            // Make all top-level groupboxes checkable so we get the
+            // collapse/expand functionality. Qt::FindDirectChildrenOnly
+            // ensures we only iterate over the top-level groupboxes.
+            const QList<WCollapsibleGroupBox*> boxes =
+                    pSettingsWidget->findChildren<WCollapsibleGroupBox*>(
+                            QString() /* match any ObjectName */,
+                            Qt::FindDirectChildrenOnly);
+            for (auto* pBox : std::as_const(boxes)) {
+                const QString title = pBox->title();
+                pBox->setCheckable(true);
+                // The collapsed state is saved/restored via the groupbox' title.
+                // Note: If multiple top-levle groups happen to have the same title
+                // (which should not normally happen in well-behaved controller mappings,
+                // but is not strictly prohibited), the last one to be expanded/
+                // collapsed determines the state that will be restored.
+                if (m_settingsCollapsedStates.contains(title)) {
+                    pBox->setChecked(m_settingsCollapsedStates.value(title));
+                }
+
+                connect(pBox,
+                        &WCollapsibleGroupBox::toggled,
+                        this,
+                        [this, title](bool checked) {
+                            m_settingsCollapsedStates.insert(title, checked);
+                        });
+            }
 
             for (const auto& setting : std::as_const(settings)) {
                 connect(setting.get(),
