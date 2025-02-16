@@ -1152,6 +1152,8 @@
   <tabstop>comboBoxMapping</tabstop>
   <tabstop>groupBoxDeviceInfo</tabstop>
   <tabstop>groupBoxMappingInfo</tabstop>
+  <tabstop>labelMappingSupportLinks</tabstop>
+  <tabstop>labelMappingScriptFileLinks</tabstop>
   <tabstop>controllerTabs</tabstop>
  </tabstops>
  <resources/>
