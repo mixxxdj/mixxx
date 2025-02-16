@@ -208,6 +208,7 @@ bool LegacyControllerBooleanSetting::ToggleCheckboxEventFilter::eventFilter(
         QCheckBox* pCheckBox = qobject_cast<QCheckBox*>(pLabel->buddy());
         if (pCheckBox) {
             pCheckBox->toggle();
+            pCheckBox->setFocus(Qt::MouseFocusReason);
         }
     }
     return QObject::eventFilter(pObj, pEvent);
