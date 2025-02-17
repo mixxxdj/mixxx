@@ -214,17 +214,6 @@ class LegacyControllerBooleanSetting
 
     QWidget* buildInputWidget(QWidget* parent) override;
 
-  private:
-    class ToggleCheckboxEventFilter : public QObject {
-      public:
-        ToggleCheckboxEventFilter(QObject* pParent)
-                : QObject(pParent) {
-        }
-        bool eventFilter(QObject* pObj, QEvent* pEvent) override;
-    };
-
-    parented_ptr<ToggleCheckboxEventFilter> m_pToggleCheckboxEventFilter;
-
     FRIEND_TEST(LegacyControllerMappingSettingsTest, booleanSettingEditing);
 };
 
