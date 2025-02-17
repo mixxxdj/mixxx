@@ -221,7 +221,7 @@ void MixxxMainWindow::initialize() {
         m_pVisualsManager->addDeck(group);
     }
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfDecksChanged,
+            &PlayerManagerInterface::numberOfDecksChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -230,7 +230,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfSamplersChanged,
+            &PlayerManagerInterface::numberOfSamplersChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {

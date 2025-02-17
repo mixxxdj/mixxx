@@ -29,7 +29,8 @@ class SoundManager;
 class ControlProxy;
 
 // For mocking PlayerManager
-class PlayerManagerInterface {
+class PlayerManagerInterface : public QObject {
+    Q_OBJECT
   public:
     virtual ~PlayerManagerInterface() = default;
 
@@ -51,9 +52,14 @@ class PlayerManagerInterface {
     virtual Sampler* getSampler(int samplerIndex) const = 0;
 
     virtual int numberOfSamplers() const = 0;
+
+  signals:
+    // Emitted when the number of decks changes.
+    void numberOfDecksChanged(int decks);
+    void numberOfSamplersChanged(int samplers);
 };
 
-class PlayerManager : public QObject, public PlayerManagerInterface {
+class PlayerManager : public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(UserSettingsPointer pConfig,
@@ -228,10 +234,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Emitted when the user tries to enable vinyl control when there is no
     // input configured.
     void noVinylControlInputConfigured();
-
-    // Emitted when the number of decks changes.
-    void numberOfDecksChanged(int decks);
-    void numberOfSamplersChanged(int samplers);
 
     void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void trackAnalyzerIdle();
