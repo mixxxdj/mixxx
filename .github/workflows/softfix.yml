@@ -24,8 +24,8 @@ jobs:
               username: context.payload.comment.user.login
             });
 
-            const isMaintianer = ['admin', 'write'].includes(response.data.permission);
-            return isMaintianer;
+            const isMaintainer = ['admin', 'write'].includes(response.data.permission);
+            return isMaintainer;
       - name: Checkout repository
         if: steps.check-maintainer.outputs.result == 'true'
         uses: actions/checkout@v4
