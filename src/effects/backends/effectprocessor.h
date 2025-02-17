@@ -110,6 +110,9 @@ class EffectProcessor {
     /// the dry signal is delayed to overlap with the output wet signal
     /// after processing all effects in the effects chain.
     virtual SINT getGroupDelayFrames() = 0;
+    virtual bool isReadyForDisable() {
+        return true;
+    };
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
