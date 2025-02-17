@@ -232,7 +232,7 @@ jobs:
           -DBATTERY=ON
           -DBROADCAST=ON
           -DBULK=ON
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'RelWithDebInfo' }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'Release' }}
           -DOPTIMIZE=${{ matrix.optimize || 'portable' }}
           -DBUILD_UI_TEST=${{ matrix.qml || 'OFF' }}
           -DCOVERAGE=${{ matrix.coverage || 'OFF' }}
