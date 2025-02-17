@@ -142,7 +142,7 @@ DJCi500.vuMeterUpdateMaster = function(value, _group, control) {
     // Reserve the red led for peak indicator, this will in turn, make
     // the display more similar (I hope) to what Mixxx VU shows
     value = script.absoluteLinInverse(value, 0.0, 1.0, 0, 124);
-    let ctrl = (control === "vu_meter_left") ? 0x40 : 0x41;
+    const ctrl = (control === "vu_meter_left") ? 0x40 : 0x41;
     midi.sendShortMsg(0xB0, ctrl, value);
 };
 
@@ -822,9 +822,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
             },
             shift: function() {
                 // Shift button will change the effect to the next in the list
-                this.input = function(channel, control, value, status, group) {
-                    const fxNo = control - 0x67;
-                    const unit = channel - 0x95;
+                this.input = function(channel, control, value, _status, _group) {
                     if (value === 0x7F) {
                         engine.setValue(this.group, "effect_selector", +1);
                     }
@@ -923,7 +921,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0xB0 + midiChannel, 0x01],
         number: midiChannel,
         group: `[QuickEffectRack1_[Channel${midiChannel}]]`,
-        input: function(channel, control, value, status, _group) {
+        input: function(channel, control, value, _status, _group) {
             if (DJCi500.updateEffectStatus(midiChannel, deckData.currentDeck)) {
                 // Move the effects knobs
                 engine.setValue(`[EffectRack1_EffectUnit${this.number}]`, "super1", Math.abs(script.absoluteNonLin(value, 0.0, 0.5, 1.0, 0, 127) - 0.5)*2);
@@ -1485,20 +1483,18 @@ DJCi500.slicerButtonFunc = function(channel, control, value, status, group) {
 };
 
 // this below is connected to beat_active
-DJCi500.slicerBeatActive = function(value, group, control) {
+DJCi500.slicerBeatActive = function(value, group, _control) {
     // This slicer implementation will work for constant beatgrids only!
     const deck = script.deckFromGroup(group) - 1;
     const channel = deck % 2;
 
-    print(`***** SLICER ACTIVE VALUE: ${DJCi500.slicerActive[deck]}`);
-    print(`***** SLICER: deck ${deck} channel ${channel}`);
-
     const bpm = engine.getValue(group, "file_bpm"),
-          playposition = engine.getValue(group, "playposition"),
-          duration = engine.getValue(group, "duration"),
-          slicerPosInSection = 0,
-          ledBeatState = false,
-          domain = DJCi500.selectedSlicerDomain[deck];
+        playposition = engine.getValue(group, "playposition"),
+        duration = engine.getValue(group, "duration"),
+        ledBeatState = false,
+        domain = DJCi500.selectedSlicerDomain[deck];
+
+    let slicerPosInSection = 0;
 
     // this works.
     if (engine.getValue(group, "beat_closest") === engine.getValue(group, "beat_next")) {
