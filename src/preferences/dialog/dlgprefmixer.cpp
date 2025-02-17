@@ -118,8 +118,11 @@ DlgPrefMixer::DlgPrefMixer(
             this,
             &DlgPrefMixer::slotXFaderModeBoxToggled);
     connect(checkBoxReverse,
-            // TODO deprecated after Qt 6.9, replace with checkStateChanged(Qt::CheckState)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotXFaderReverseBoxToggled);
 
@@ -145,33 +148,57 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotLoEqSliderChanged);
 
     connect(CheckBoxEqAutoReset,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotEqAutoResetToggled);
     connect(CheckBoxGainAutoReset,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotGainAutoResetToggled);
 #ifdef __STEM__
     connect(CheckBoxStemAutoReset,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotStemAutoResetToggled);
 #else
     CheckBoxStemAutoReset->hide();
 #endif
     connect(CheckBoxBypass,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotBypassEqToggled);
 
     connect(CheckBoxEqOnly,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotEqOnlyToggled);
 
     connect(CheckBoxSingleEqEffect,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotSingleEqToggled);
 
