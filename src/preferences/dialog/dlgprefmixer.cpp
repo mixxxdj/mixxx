@@ -858,7 +858,7 @@ void DlgPrefMixer::slotUpdateXFader() {
         // wiped on shutdown.
         m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderCurve);
         m_xFaderMode = m_pConfig->getValue<int>(kXfaderModeKey);
-        m_xFaderReverse = m_pConfig->getValue<int>(kXfaderReverseKey) == 1;
+        m_xFaderReverse = m_pConfig->getValue<bool>(kXfaderReverseKey);
     } else {
         qWarning() << "     --> from controls";
         // Update xfader from controls
@@ -1031,9 +1031,6 @@ void DlgPrefMixer::slotXFaderSliderChanged() {
     // calibration which gives us a smooth curve.
     // This wipes any previous value set by controller mappings for example.
     m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderCurve);
-    m_xFaderMode = radioButtonConstantPower->isChecked()
-            ? MIXXX_XFADER_CONSTPWR
-            : MIXXX_XFADER_ADDITIVE;
 
     drawXfaderDisplay();
 }
