@@ -747,9 +747,8 @@ void DlgPrefMixer::slotApply() {
 void DlgPrefMixer::applyXFader() {
     m_xfModeCO->set(m_xFaderMode);
     m_xfCurveCO->set(m_xFaderCurve);
-    m_xfReverseCO->set(m_xFaderReverse ? 1.0 : 0.0);
     m_xfCalibrationCO->set(m_xFaderCal);
-    if (m_xFaderReverse != (m_xfReverseCO->get() > 0)) {
+    if (m_xFaderReverse != m_xfReverseCO->toBool()) {
         double position = m_crossfader.get();
         m_crossfader.set(0.0 - position);
     }
