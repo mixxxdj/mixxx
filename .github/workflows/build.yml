@@ -233,7 +233,7 @@ jobs:
           -DBATTERY=ON
           -DBROADCAST=ON
           -DBULK=ON
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'RelWithDebInfo' }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'Release' }}
           -DOPTIMIZE=${{ matrix.optimize || 'portable' }}
           -DBUILD_UI_TEST=${{ matrix.qml || 'OFF' }}
           -DCOVERAGE=${{ matrix.coverage || 'OFF' }}
@@ -424,7 +424,7 @@ jobs:
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
-          max_attempts: 12
+          max_attempts: ${{ runner.os == 'macOS' && 12 || 1 }}
           retry_wait_seconds: 1
           command: |
             cd build
