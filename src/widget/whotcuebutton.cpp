@@ -155,6 +155,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
     // starting the preview.
     if (!pEvent->modifiers().testFlag(Qt::ShiftModifier)) {
         WPushButton::mousePressEvent(pEvent);
+        DragAndDropHelper::mousePressed(pEvent);
     }
 }
 
