@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPoint>
+#include <QTimer>
 #include <memory>
 
 #include "control/controlproxy.h"
@@ -7,6 +9,7 @@
 #include "effects/defs.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmixerdlg.h"
+#include "preferences/dialog/ui_dlgxfadercurve.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -14,13 +17,33 @@ class QComboBox;
 class QWidget;
 class EffectsManager;
 
+class DlgXfaderCurve : public QDialog, public Ui::DlgXfaderCurve {
+    Q_OBJECT
+
+  public:
+    explicit DlgXfaderCurve(QWidget* pParent);
+
+    void setScene(QGraphicsScene* pScene);
+    void show();
+
+  protected:
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+
+  private:
+    QTimer m_hideTimer;
+    QTimer m_clickTimer;
+    QPoint m_dragStartPosition;
+    bool m_mousePressed;
+    bool m_moved;
+};
+
 class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT
   public:
     DlgPrefMixer(
-            QWidget* parent,
+            QWidget* pParent,
             std::shared_ptr<EffectsManager> pEffectsManager,
-            UserSettingsPointer _config);
+            UserSettingsPointer pConfig);
 
     QUrl helpUrl() const override;
 
@@ -105,6 +128,10 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_xFaderReverse;
     parented_ptr<QGraphicsScene> m_pxfScene;
 
+    // the xfader curve popup
+    parented_ptr<QWidget> m_pCurvePopup;
+    parented_ptr<DlgXfaderCurve> m_pDlgXfaderCurve;
+
     PollingControlProxy m_COLoFreq;
     PollingControlProxy m_COHiFreq;
     double m_lowEqFreq, m_highEqFreq;
@@ -134,6 +161,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqBypass;
 
     bool m_initializing;
+    bool m_updatingGui;
     bool m_updatingMainEQ;
     bool m_applyingDeckEQs;
     bool m_applyingQuickEffects;
