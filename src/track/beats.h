@@ -397,6 +397,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// failure.
     std::optional<BeatsPointer> tryTranslate(audio::FrameDiff_t offset) const;
 
+    /// Translate all beats based on scalar 'xBeats', e.g. half a beat if xBeats
+    /// is set to 0.5. Works only for tracks with constant BPM.
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> tryTranslateBeats(double xBeats) const;
+
     /// Scale the position of every beat in the song by `scale`.
     //
     /// Returns a pointer to the modified beats object, or `nullopt` on
