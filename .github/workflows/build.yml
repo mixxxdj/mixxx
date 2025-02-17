@@ -78,6 +78,7 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
+            qml: ON
           - name: Windows 2019 (MSVC)
             os: windows-2019
             # TODO: Re-enable FFmpeg after licensing issues have been clarified
@@ -337,26 +338,16 @@ jobs:
               Write-Host "Checksum verification failed."
           }
 
-          #   Install 7zip module
-          # [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          # Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
           Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
           Install-Module -Name 7Zip4PowerShell -Force
 
           Expand-7Zip -ArchiveFileName $localPath -TargetPath '.'
-
-
-          # Deploy app into local folder
-          &"${env:MIXXX_VCPKG_ROOT}\installed\x64-windows-release\tools\Qt6\bin\windeployqt6.exe" ./mixxx.exe --dir . --libdir bin --plugindir plugins --qml-deploy-dir qml --qmldir ../res/qml/
 
           mkdir screenshots
           ./mixxx-test --ui --log-level debug --developer
         working-directory: build
         env:
           GTEST_COLOR: 1
-          QT_OPENGL: angle
-          QT_PLUGIN_PATH: "D:\\vcpkg\\installed\\x64-windows-release\\Qt6\\plugins\\"
-          QML_IMPORT_PATH: "D:\\dev\\mixxx\\build\\qml"
       - name: "[*//QML] Upload UI tests artifact"
         if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest_windows.outcome != 'skipped')
         uses: actions/upload-artifact@v4.6.0
