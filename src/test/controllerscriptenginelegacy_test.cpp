@@ -777,8 +777,11 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFun
                   this.timerId = undefined;
                   this.globVar = 7;
                }
-               runTimer() {
-                  this.timerId = engine.beginTimer(20, ()=> {
+               runTimer() {                  
+                  const savedThis = this;
+                  this.timerId = engine.beginTimer(20, () => {
+                     if (savedThis !== this) {throw new Error("savedThis should be equal to this");}
+                     if (!(this instanceof MyClass)) {throw new Error("this should be an instance of MyClass");}
                      engine.setValue('[Test]', 'co', this.globVar);
                      this.globVar++;
                      engine.setValue('[Test]', 'coTimerId', this.timerId + 10);
@@ -814,6 +817,7 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunct
                   this.globVar = 7;
                }
                stopTimer() {
+                  if (!(this instanceof MyClass)) {throw new Error("this should be an instance of MyClass");}
                   engine.stopTimer(this.timerId);
                   this.timerId = 0;
                   engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
@@ -850,13 +854,14 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerThisFuncti
                   this.timerId = undefined;
                   this.globVar = 7;
                }
-               stopTimer() {
+               stopTimer() {    
+                  if (!(this instanceof MyClass)) {throw new Error("this should be an instance of MyClass");}
                   engine.stopTimer(this.timerId);
                   this.timerId = 0;
                   engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
                }
                runTimer() {
-                  this.timerId = engine.beginTimer(20, this.stopTimer, false);              
+                  this.timerId = engine.beginTimer(20, this.stopTimer.bind(this), false);              
                   engine.setValue('[Test]', 'co', this.globVar);
                   engine.setValue('[Test]', 'coTimerId', this.timerId);
                }
