@@ -1317,6 +1317,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
+  src/widget/wsettingscheckboxlabel.cpp
   src/widget/wsingletoncontainer.cpp
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
