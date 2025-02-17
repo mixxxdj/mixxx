@@ -33,7 +33,11 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
+            coverage: ON
             qml: ON
+            warning_fatal: OFF
+            build_type: Debug
+            optimize: off
           - name: macOS 13 x64
             os: macos-13
             cmake_args: >-
@@ -229,7 +233,11 @@ jobs:
           -DBATTERY=ON
           -DBROADCAST=ON
           -DBULK=ON
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'RelWithDebInfo' }}
+          -DOPTIMIZE=${{ matrix.optimize || 'portable' }}
           -DBUILD_UI_TEST=${{ matrix.qml || 'OFF' }}
+          -DCOVERAGE=${{ matrix.coverage || 'OFF' }}
+          -DWARNINGS_FATAL=${{ matrix.warning_fatal || 'ON' }}
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
           -DCMAKE_VERBOSE_MAKEFILE=OFF
           -DDEBUG_ASSERTIONS_FATAL=OFF
@@ -293,6 +301,7 @@ jobs:
           QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
+          # Also prevent *.gcna files from overwriting each other
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
 
@@ -357,6 +366,29 @@ jobs:
             build/screen.webm
             build/screenshots
           retention-days: 1
+      - name: "[Ubuntu] Generate Coverage Report"
+        if: runner.os == 'Linux'
+        run: >-
+          lcov
+          --capture
+          --directory .
+          --base-directory ..
+          --include "${PWD%/*}/src/*"
+          --exclude "${PWD%/*}/src/test/*"
+          --exclude "${PWD%/*}/build/*"
+          --exclude "${PWD%/*}/lib/*"
+          --output-file lcov.info
+        working-directory: build
+
+      - name: "[Ubuntu] Upload Coverage Report to coveralls.io"
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        uses: coverallsapp/github-action@v2.3.6
+        with:
+          flag-name: ubuntu-24.04
+          path-to-lcov: build/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Benchmark
         if: matrix.crosscompile != true
         run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
