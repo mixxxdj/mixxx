@@ -205,26 +205,26 @@ DJCi500.fxSelIndicator = function(_value, group, _control, _status) {
     let active = false;
 
     if (group === "[EffectRack1_EffectUnit1]") {
-        active = engine.getValue(group, `group_${  deckA  }_enable`);
+        active = engine.getValue(group, `group_${deckA}_enable`);
         if (active) {
             midi.sendShortMsg(0x96, 0x63, 0x74);
         } else {
             midi.sendShortMsg(0x96, 0x63, 0x00);
         }
-        active = engine.getValue(group, `group_${  deckB  }_enable`);
+        active = engine.getValue(group, `group_${deckB}_enable`);
         if (active) {
             midi.sendShortMsg(0x97, 0x63, 0x74);
         } else {
             midi.sendShortMsg(0x97, 0x63, 0x00);
         }
     } else if (group === "[EffectRack1_EffectUnit2]") {
-        active = engine.getValue(group, `group_${  deckA  }_enable`);
+        active = engine.getValue(group, `group_${deckA}_enable`);
         if (active) {
             midi.sendShortMsg(0x96, 0x67, 0x74);
         } else {
             midi.sendShortMsg(0x96, 0x67, 0x00);
         }
-        active = engine.getValue(group, `group_${  deckB  }_enable`);
+        active = engine.getValue(group, `group_${deckB}_enable`);
         if (active) {
             midi.sendShortMsg(0x97, 0x67, 0x74);
         } else {
@@ -238,9 +238,9 @@ DJCi500.fxEnabledIndicator = function(_value, group, _control, _status) {
     const deckB = DJCi500.deckB.currentDeck;
     const active = engine.getValue(group, "enabled");
 
-    if (group == `[QuickEffectRack1_${  deckA  }]`) {
+    if (group == `[QuickEffectRack1_${deckA}]`) {
         midi.sendShortMsg(0x96, 0x66, active ? 0x1C : 0x60);
-    } else if (group == `[QuickEffectRack1_${  deckB  }]`) {
+    } else if (group == `[QuickEffectRack1_${deckB}]`) {
         midi.sendShortMsg(0x97, 0x66, active ? 0x1C : 0x60);
     }
 };
@@ -307,7 +307,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         shiftChannel: true,
         sendShifted: true,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(_channel, _control, value, _status, _group) {
                 if (value === 0x7F) {
                     if (engine.getValue(deckData.currentDeck, "play_latched")) {      //play_indicator play_latched
                         const deck = script.deckFromGroup(deckData.currentDeck);
@@ -368,7 +368,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         shiftChannel: true,
         sendShifted: true,
         unshift: function() {
-            this.input = function(channel, _control, value, status, group) {
+            this.input = function(_channel, _control, value, _status, _group) {
                 if (value === 0x7F) {
                     const deck = script.deckFromGroup(deckData.currentDeck);
                     const new_status = !deckData.vinylButtonState[deck - 1];
@@ -429,8 +429,8 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
     for (let k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
             midi: [0xB0 + midiChannel, 0x01 + k],
-            group: `[EqualizerRack1_${  this.currentDeck  }_Effect1]`,
-            inKey: `parameter${  k}`,
+            group: `[EqualizerRack1_${this.currentDeck}_Effect1]`,
+            inKey: `parameter${k}`,
         });
     }
 
@@ -464,7 +464,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
                 engine.setValue(group, "jog", value);
             }
         },
-        inputTouch: function(channel, control, value, status, group) {
+        inputTouch: function(_channel, _control, value, _status, _group) {
             const deck = script.deckFromGroup(deckData.currentDeck);
             if ((value === 0x7F) && deckData.vinylButtonState[deck - 1]) {
                 engine.scratchEnable(deck,
@@ -495,7 +495,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
                 engine.setValue(group, "jog", value);
             }
         },
-        inputTouch: function(channel, control, value, status, group) {
+        inputTouch: function(channel, control, value, status, _group) {
             const deck = script.deckFromGroup(deckData.currentDeck);
             if (this.isPress(channel, control, value, status) && this.vinylMode) {
                 engine.scratchEnable(deck,
@@ -616,8 +616,8 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
             sendShifted: false,
             on: 0x5C,
             off: 0x30,
-            outKey: `beatloop_${  fractions[i - 1]  }_enabled`,
-            inKey: `beatloop_${  fractions[i - 1]  }_toggle`,
+            outKey: `beatloop_${fractions[i - 1]}_enabled`,
+            inKey: `beatloop_${fractions[i - 1]}_toggle`,
         });
     };
 
@@ -631,8 +631,8 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
             sendShifted: false,
             on: 0x5C,
             off: 0x30,
-            outKey: `beatloop_${  shiftFractions[i - 1]  }_enabled`,
-            inKey: `beatloop_${  shiftFractions[i - 1]  }_toggle`,
+            outKey: `beatloop_${shiftFractions[i - 1]}_enabled`,
+            inKey: `beatloop_${shiftFractions[i - 1]}_toggle`,
         });
     };
 
@@ -789,7 +789,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
             sendShifted: true,
             on: 0x1F,
             off: 0x12,
-            key: `beatlooproll_${  fractions[i - 1]  }_activate`,
+            key: `beatlooproll_${fractions[i - 1]}_activate`,
         });
     };
 
@@ -803,7 +803,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
             shiftOffset: 8,
             shiftControl: true,
             sendShifted: true,
-            group: `[EffectRack1_EffectUnit${  midiChannel  }_Effect${  i  }]`,
+            group: `[EffectRack1_EffectUnit${midiChannel}_Effect${i}]`,
             outKey: "enabled",
             output: function(value, group, control) {
                 if (value) {
@@ -842,7 +842,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         shiftOffset: 8,
         shiftControl: true,
         sendShifted: true,
-        group: `[QuickEffectRack1_[Channel${  midiChannel  }]]`,
+        group: `[QuickEffectRack1_[Channel${midiChannel}]]`,
         on: 0x5C,
         off: 0x30,
         input: function(channel, control, value, status, group) {
@@ -861,7 +861,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         shiftOffset: 8,
         shiftControl: true,
         sendShifted: true,
-        group: `[QuickEffectRack1_[Channel${  midiChannel  }]]`,
+        group: `[QuickEffectRack1_[Channel${midiChannel}]]`,
         on: 0x5C,
         off: 0x30,
         input: function(channel, control, value, status, group) {
@@ -881,7 +881,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         shiftOffset: 8,
         shiftControl: true,
         sendShifted: true,
-        group: `[QuickEffectRack1_[Channel${  midiChannel  }]]`,
+        group: `[QuickEffectRack1_[Channel${midiChannel}]]`,
         input: function(_channel, _control, value, _status, _group) {
             if (value === 0x7F) {
                 script.toggleControl(this.group, "enabled");
@@ -900,7 +900,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         input: function(channel, _control, value, _status, group) {
             if (value === 0x7F) {
                 const deckGroup = deckData.currentDeck;
-                script.toggleControl(this.group, `group_${  deckGroup  }_enable`);
+                script.toggleControl(this.group, `group_${deckGroup}_enable`);
             }
         }
     });
@@ -915,7 +915,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         input: function(_channel, _control, value, _status, _group) {
             if (value === 0x7F) {
                 const deckGroup = deckData.currentDeck;
-                script.toggleControl(this.group, `group_${  deckGroup  }_enable`);
+                script.toggleControl(this.group, `group_${deckGroup}_enable`);
             }
         }
     });
@@ -924,14 +924,14 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
     this.filterKnob = new components.Pot({
         midi: [0xB0 + midiChannel, 0x01],
         number: midiChannel,
-        group: `[QuickEffectRack1_[Channel${  midiChannel  }]]`,
+        group: `[QuickEffectRack1_[Channel${midiChannel}]]`,
         input: function(channel, control, value, status, group) {
             if (DJCi500.updateEffectStatus(midiChannel, deckData.currentDeck)) {
                 // Move the effects knobs
-                engine.setValue(`[EffectRack1_EffectUnit${  this.number  }]`, "super1", Math.abs(script.absoluteNonLin(value, 0.0, 0.5, 1.0, 0, 127) - 0.5)*2);
+                engine.setValue(`[EffectRack1_EffectUnit${this.number}]`, "super1", Math.abs(script.absoluteNonLin(value, 0.0, 0.5, 1.0, 0, 127) - 0.5)*2);
             } else {
                 // Move the filter knob
-                engine.setValue(`[QuickEffectRack1_${  deckData.currentDeck  }]`, "super1", script.absoluteNonLin(value, 0.0, 0.5, 1.0, 0, 127));
+                engine.setValue(`[QuickEffectRack1_${deckData.currentDeck}]`, "super1", script.absoluteNonLin(value, 0.0, 0.5, 1.0, 0, 127));
             }
         },
     });
@@ -950,8 +950,8 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
             sendShifted: true,
             on: pairColorsOn[i - 1],
             off: pairColorsOff[i - 1],
-            jump: `beatjump_${  jmpVal  }${movement}`,
-            jumpShift: `beatjump_${  jmpValShft  }${movement}`,
+            jump: `beatjump_${jmpVal}${movement}`,
+            jumpShift: `beatjump_${jmpValShft}${movement}`,
             unshift: function() {
                 this.input = function(_channel, control, value, status, _group) {
                     if (value === 0x7F) {
@@ -1344,7 +1344,7 @@ DJCi500.updateDeckStatus = function(group) {
     DJCi500.fxSelIndicator(0, "[EffectRack1_EffectUnit1]", 0, 0);
     DJCi500.fxSelIndicator(0, "[EffectRack1_EffectUnit2]", 0, 0);
 
-    DJCi500.fxEnabledIndicator(0, `[QuickEffectRack1_${  group  }]`, 0, 0);
+    DJCi500.fxEnabledIndicator(0, `[QuickEffectRack1_${group}]`, 0, 0);
 
     // Slicer
     switch (group) {
@@ -1408,7 +1408,7 @@ DJCi500.deckSelector = function(channel, control, value, status, group) {
 DJCi500.updateEffectStatus = function(midiChannel, channel) {
     let status = false;
     for (let i = 1; i <= 3; i++) {
-        status = status || engine.getValue(`[EffectRack1_EffectUnit${  midiChannel  }_Effect${  i  }]`, "enabled");
+        status = status || engine.getValue(`[EffectRack1_EffectUnit${midiChannel}_Effect${i}]`, "enabled");
     }
     return status;
     // return engine.getValue("[EffectRack1_EffectUnit" + midiChannel + "]", "group_[Channel" + channel + "]_enable");
@@ -1496,8 +1496,8 @@ DJCi500.slicerBeatActive = function(value, group, control) {
     const deck = script.deckFromGroup(deckData.currentDeck) - 1;
     const channel = deck % 2;
 
-    print(`***** SLICER ACTIVE VALUE: ${  DJCi500.slicerActive[deck]}`);
-    print(`***** SLICER: deck ${  deck  } channel ${  channel}`);
+    print(`***** SLICER ACTIVE VALUE: ${DJCi500.slicerActive[deck]}`);
+    print(`***** SLICER: deck ${deck} channel ${channel}`);
 
     let bpm = engine.getValue(group, "file_bpm"),
         playposition = engine.getValue(group, "playposition"),
