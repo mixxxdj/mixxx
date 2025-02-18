@@ -2474,7 +2474,7 @@ elseif(BUILD_BENCH AND NOT BUILD_TESTING)
   message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
 endif()
 
-option(BUILD_UI_TEST "Build Mixxx UI/E2E tests" OFF)
+default_option(BUILD_UI_TEST "Build Mixxx QML UI/E2E tests" "${QML}")
 if(BUILD_UI_TEST)
   set(ANYRPC_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libanyrpc-install")
   set(
