@@ -119,7 +119,8 @@ AutoDJProcessor::AutoDJProcessor(
           m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
-          m_transitionTime(kTransitionPreferenceDefault) {
+          m_transitionTime(kTransitionPreferenceDefault),
+          m_pPlayerManager(pPlayerManager) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
@@ -153,18 +154,11 @@ AutoDJProcessor::AutoDJProcessor(
     m_pEnabledAutoDJ->connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 
-    // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
-    // are created.
-    for (int i = 0; i < pPlayerManager->numberOfDecks(); ++i) {
-        BaseTrackPlayer* pPlayer = pPlayerManager->getDeckBase(i);
-        // Shouldn't be possible.
-        VERIFY_OR_DEBUG_ASSERT(pPlayer) {
-            continue;
-        }
-        m_decks.append(new DeckAttributes(i, pPlayer));
-    }
-    // Auto-DJ needs at least two decks
-    DEBUG_ASSERT(m_decks.length() > 1);
+    connect(pPlayerManager,
+            &PlayerManagerInterface::numberOfDecksChanged,
+            this,
+            &AutoDJProcessor::slotNumberOfDecksChanged);
+    slotNumberOfDecksChanged(pPlayerManager->numberOfDecks());
 
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
@@ -192,6 +186,17 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pFadeNow;
 
     delete m_pAutoDJTableModel;
+}
+
+void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
+    for (int i = m_decks.size(); i < decks; ++i) {
+        BaseTrackPlayer* pPlayer = m_pPlayerManager->getDeckBase(i);
+        // Shouldn't be possible.
+        VERIFY_OR_DEBUG_ASSERT(pPlayer) {
+            continue;
+        }
+        m_decks.append(new DeckAttributes(i, pPlayer));
+    }
 }
 
 double AutoDJProcessor::getCrossfader() const {
@@ -394,8 +399,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             emit autoDJError(ADJ_BOTH_DECKS_PLAYING);
             return ADJ_BOTH_DECKS_PLAYING;
         }
+        // Auto-DJ needs at least two decks
+        DEBUG_ASSERT(m_decks.length() > 1);
 
-        // TODO: This is a total bandaid for making Auto DJ work with four decks.
+        // TODO: This is a total band aid for making Auto DJ work with four decks.
         // We should design a nicer way to handle this.
         for (const auto& pDeck : std::as_const(m_decks)) {
             VERIFY_OR_DEBUG_ASSERT(pDeck) {
