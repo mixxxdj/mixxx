@@ -6,14 +6,17 @@
 #include "audio/frame.h"
 
 class ControlObject;
-class RateIIFilter;
+class ControlProxy;
 class VelocityController;
+class RateIIFilter;
 
 class PositionScratchController : public QObject {
     Q_OBJECT
   public:
     PositionScratchController(const QString& group);
-    virtual ~PositionScratchController();
+    // required for the forward-declarations of uniquq_pointers of
+    // VelocityController and RateIIFilter
+    ~PositionScratchController() override;
 
     void process(double currentSample,
             double releaseRate,
@@ -22,20 +25,28 @@ class PositionScratchController : public QObject {
             int wrappedAround,
             mixxx::audio::FramePos trigger,
             mixxx::audio::FramePos target);
-    bool isEnabled();
-    double getRate();
+    bool isEnabled() const {
+        // TODO return true only if m_rate is valid.
+        return m_isScratching;
+    }
+    double getRate() {
+        return m_rate;
+    }
     void notifySeek(mixxx::audio::FramePos position);
 
   private:
     const QString m_group;
-    ControlObject* m_pScratchEnable;
-    ControlObject* m_pScratchPos;
-    ControlObject* m_pMainSampleRate;
-    VelocityController* m_pVelocityController;
-    RateIIFilter* m_pRateIIFilter;
+
+    std::unique_ptr<ControlObject> m_pScratchEnable;
+    std::unique_ptr<ControlObject> m_pScratchPos;
+    std::unique_ptr<ControlProxy> m_pMainSampleRate;
+    std::unique_ptr<VelocityController> m_pVelocityController;
+    std::unique_ptr<RateIIFilter> m_pRateIIFilter;
+
     bool m_isScratching;
     bool m_inertiaEnabled;
     double m_prevSamplePos;
+    double m_seekSamplePos;
     double m_samplePosDeltaSum;
     double m_scratchTargetDelta;
     double m_scratchStartPos;
