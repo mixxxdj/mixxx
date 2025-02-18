@@ -160,10 +160,8 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
     pLabelWidget->setBuddy(pCheckBox);
-    if (!m_pToggleCheckboxEventFilter) {
-        m_pToggleCheckboxEventFilter = make_parented<ToggleCheckboxEventFilter>(this);
-    }
-    pLabelWidget->installEventFilter(m_pToggleCheckboxEventFilter.get());
+    auto pToggleCheckboxEventFilter = make_parented<ToggleCheckboxEventFilter>(pLabelWidget);
+    pLabelWidget->installEventFilter(pToggleCheckboxEventFilter.get());
 
     QBoxLayout* pLayout = new QHBoxLayout();
 
