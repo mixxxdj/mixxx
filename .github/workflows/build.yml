@@ -236,7 +236,6 @@ jobs:
           -DBULK=ON
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'Release' }}
           -DOPTIMIZE=${{ matrix.optimize || 'portable' }}
-          -DBUILD_UI_TEST=${{ matrix.qml || 'OFF' }}
           -DCOVERAGE=${{ matrix.coverage || 'OFF' }}
           -DWARNINGS_FATAL=${{ matrix.warning_fatal || 'ON' }}
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
@@ -306,21 +305,19 @@ jobs:
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
 
-      - name: "[Ubuntu] UI Test"
-        id: uitest_linux
+      - name: "Create screenshot directory"
+        if: matrix.qml == 'ON'
+        run: mkdir screenshots
+        working-directory: build
+
+      - name: "[Ubuntu] Setup UI dependencies for QML UI Test"
         if: runner.os == 'Linux' && matrix.qml == 'ON'
-        timeout-minutes: 5
         run: |
           sudo apt-get update && sudo apt-get install -y xvfb
-          mkdir screenshots
-          xvfb-run -s "-screen 0 1920x1080x16" -e /dev/stdout ./mixxx-test --ui --log-level debug --developer
+          echo "QT_QPA_PLATFORM=xcb" >> "$GITHUB_ENV"
         working-directory: build
-        env:
-          QT_QPA_PLATFORM: xcb
-          GTEST_COLOR: 1
 
-      - name: "[Windows] UI Test"
-        id: uitest_windows
+      - name: "[Windows] Setup UI dependencies for QML UI tests"
         if: runner.os == 'Windows' && matrix.qml == 'ON'
         timeout-minutes: 5
         run: |
@@ -342,21 +339,33 @@ jobs:
           Install-Module -Name 7Zip4PowerShell -Force
 
           Expand-7Zip -ArchiveFileName $localPath -TargetPath '.'
+        working-directory: build
 
-          mkdir screenshots
+      - name: "Run QML UI tests"
+        id: uitest
+        if: runner.os != 'Linux' && matrix.qml == 'ON'
+        timeout-minutes: 2
+        run: |
           ./mixxx-test --ui --log-level debug --developer
         working-directory: build
-        env:
-          GTEST_COLOR: 1
-      - name: "[*//QML] Upload UI tests artifact"
-        if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest_windows.outcome != 'skipped')
+
+      - name: "[Ubuntu] Run QML UI tests"
+        id: uitest_linux
+        if: runner.os == 'Linux' && matrix.qml == 'ON'
+        timeout-minutes: 2
+        run: |
+          xvfb-run -s "-screen 0 1920x1080x16" -e /dev/stdout ./mixxx-test --ui --log-level debug --developer
+        working-directory: build
+
+      - name: "Upload QML UI tests artifact"
+        if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest.outcome != 'skipped')
         uses: actions/upload-artifact@v4.6.0
         with:
           name: ui-tests-${{ runner.os }}
           path: |
-            build/screen.webm
             build/screenshots
           retention-days: 1
+
       - name: "[Ubuntu] Generate Coverage Report"
         if: runner.os == 'Linux'
         run: >-
