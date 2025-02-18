@@ -189,7 +189,7 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
-      - name: "[*] Restore GitHub cache for ccache"
+      - name: "Restore GitHub cache for ccache"
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -276,7 +276,7 @@ jobs:
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
 
-      - name: "[*] Save GitHub cache for ccache"
+      - name: "Save GitHub cache for ccache"
         if: always() && steps.configure.outcome == 'success'
         uses: actions/cache/save@v4
         with:
