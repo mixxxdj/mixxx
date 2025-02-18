@@ -830,7 +830,9 @@ TrackPointer TrackDAO::addTracksAddFile(
     TrackPointer pTrack = cacheResolver.getTrack();
     switch (cacheResolver.getLookupResult()) {
     case GlobalTrackCacheLookupResult::Hit: {
-        DEBUG_ASSERT(pTrack);
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            return {};
+        }
         const TrackId oldTrackId = pTrack->getId();
         if (oldTrackId.isValid()) {
             qDebug() << "TrackDAO::addTracksAddFile:"
@@ -844,7 +846,9 @@ TrackPointer TrackDAO::addTracksAddFile(
     }
     case GlobalTrackCacheLookupResult::Miss:
         // An (almost) empty track object
-        DEBUG_ASSERT(pTrack);
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            return {};
+        }
         DEBUG_ASSERT(!pTrack->getId().isValid());
         // Continue and populate the (almost) empty track object
         break;
