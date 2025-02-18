@@ -587,7 +587,7 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
         emit trackAdded(pTrack);
         emit progressLoading(trackLocation);
     } else {
-        // This happen only when there is an issue with the database.
+        // This happens only when there is an issue with the database.
         // Acknowledge failed track addition
         // TODO(XXX): Is it really intended to acknowledge a failed
         // track addition with a trackAdded() signal??

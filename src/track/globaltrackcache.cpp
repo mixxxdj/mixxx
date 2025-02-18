@@ -422,7 +422,7 @@ bool GlobalTrackCache::isEmpty() const {
 
 TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
-    while (m_incompletTrack && m_incompletTrack->getId() == trackId) {
+    while (m_incompleteTrack && m_incompleteTrack->getId() == trackId) {
         // Wait unit other threads have completed their temporary.
         m_isTrackCompleted.wait(&m_mutex);
     }
@@ -477,8 +477,8 @@ TrackPointer GlobalTrackCache::lookupByRef(
 
 TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
         const QString& canonicalLocation) {
-    while (m_incompletTrack &&
-            m_incompletTrack->getFileInfo().canonicalLocationPath() == canonicalLocation) {
+    while (m_incompleteTrack &&
+            m_incompleteTrack->getFileInfo().canonicalLocationPath() == canonicalLocation) {
         // Wait unit other threads have completed their temporary.
         m_isTrackCompleted.wait(&m_mutex);
     }
@@ -677,12 +677,12 @@ void GlobalTrackCache::resolve(
     // created object to the main thread.
     savingPtr->moveToThread(QCoreApplication::instance()->thread());
 
-    while (m_incompletTrack) {
+    while (m_incompleteTrack) {
         // Wait unit other threads have completed their temporary.
         m_isTrackCompleted.wait(&m_mutex);
         // now the track should be empty
     }
-    m_incompletTrack = savingPtr;
+    m_incompleteTrack = savingPtr;
 
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::Miss,
@@ -723,12 +723,12 @@ void GlobalTrackCache::resolveTemporary(
     }
 
     pTrack = Track::newTemporary(std::move(fileAccess));
-    while (m_incompletTrack) {
+    while (m_incompleteTrack) {
         // Wait for completion.
         m_isTrackCompleted.wait(&m_mutex);
         // now the track should be empty
     }
-    m_incompletTrack = pTrack;
+    m_incompleteTrack = pTrack;
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::Miss,
             std::move(pTrack),
@@ -749,8 +749,8 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(pDel);
 
     m_mutex.lock();
-    DEBUG_ASSERT(strongPtr == m_incompletTrack);
-    m_incompletTrack = nullptr;
+    DEBUG_ASSERT(strongPtr == m_incompleteTrack);
+    m_incompleteTrack = nullptr;
     m_isTrackCompleted.wakeAll();
 
     // Insert item by id
@@ -767,7 +767,7 @@ TrackRef GlobalTrackCache::initTrackId(
 }
 
 void GlobalTrackCache::discardIncompleteTrack() {
-    m_incompletTrack = nullptr;
+    m_incompleteTrack = nullptr;
     m_isTrackCompleted.wakeAll();
 }
 

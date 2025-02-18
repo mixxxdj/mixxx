@@ -241,9 +241,9 @@ class GlobalTrackCache : public QObject {
     TrackPointer lookupByCanonicalLocation(
             const QString& canonicalLocation);
 
-    /// Lookup the track either first by id primary or afterwards by canonical
-    /// location. If a track with a different ID and the same canonical
-    /// location is already cached, a nullptr is returned.
+    /// Lookup the track either first by id or afterwards by canonical location.
+    /// If a track with a different ID and the same canonical location
+    /// is already cached, a nullptr is returned.
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
 
@@ -286,7 +286,7 @@ class GlobalTrackCache : public QObject {
     deleteTrackFn_t m_deleteTrackFn;
 
     // A track without a
-    TrackPointer m_incompletTrack;
+    TrackPointer m_incompleteTrack;
     QWaitCondition m_isTrackCompleted;
 
     // This caches the unsaved Tracks by ID
