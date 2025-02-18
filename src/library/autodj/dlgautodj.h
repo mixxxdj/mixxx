@@ -11,6 +11,7 @@
 
 class PlaylistTableModel;
 class WLibrary;
+class WLibraryPreparationWindow;
 class WTrackTableView;
 class Library;
 class KeyboardEventFilter;
@@ -18,7 +19,9 @@ class KeyboardEventFilter;
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(WLibrary* parent,
+    DlgAutoDJ(
+            // WLibrary* parent, // Changed to get Auto DJ in PreparationWindow
+            QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
             AutoDJProcessor* pProcessor,
