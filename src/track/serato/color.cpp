@@ -80,10 +80,11 @@ RgbColor::optional_t SeratoStoredHotcueColor::toDisplayedColor() const {
     if (m_color == SeratoStoredColor::kNoColor) {
         return RgbColor::nullopt();
     }
+    const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
 
     return RgbColor::optional(getColorFromOtherPalette(
-            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
-            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+            kPalettes.seratoTrackMetadataHotcueColorPalette,
+            kPalettes.seratoDJProHotcueColorPalette,
             m_color));
 }
 
@@ -92,9 +93,10 @@ SeratoStoredHotcueColor SeratoStoredHotcueColor::fromDisplayedColor(RgbColor::op
     if (!color) {
         return SeratoStoredHotcueColor(SeratoStoredColor::kNoColor);
     }
+    const auto& kPalettes = mixxx::predefinedcolorpalettes::get();
     return SeratoStoredHotcueColor(getColorFromOtherPalette(
-            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
-            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
+            kPalettes.seratoDJProHotcueColorPalette,
+            kPalettes.seratoTrackMetadataHotcueColorPalette,
             *color));
 }
 
