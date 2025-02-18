@@ -115,9 +115,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
     // create the output format
-    const UInt32 numChannels =
-            params.getSignalInfo().getChannelCount().isValid()
-            ? params.getSignalInfo().getChannelCount()
+    const UInt32 numChannels = m_inputFormat.mChannelsPerFrame != 0
+            ? m_inputFormat.mChannelsPerFrame
             : mixxx::kEngineChannelOutputCount;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels,
