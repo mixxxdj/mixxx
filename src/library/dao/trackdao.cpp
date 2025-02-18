@@ -1462,7 +1462,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                     << trackLocation
                     << "with id"
                     << trackId
-                    << "because tack"
+                    << "because track"
                     << cacheResolver.getTrackRef().getLocation()
                     << "with id"
                     << cacheResolver.getTrackRef().getId()
