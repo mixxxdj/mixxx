@@ -117,13 +117,7 @@ public:
   private:
     void lockCache();
 
-protected:
-    GlobalTrackCacheLocker(
-            GlobalTrackCacheLocker&& moveable,
-            GlobalTrackCacheLookupResult lookupResult,
-            TrackPointer&& strongPtr,
-            TrackRef&& trackRef);
-
+  protected:
     GlobalTrackCache* m_pInstance;
 };
 
