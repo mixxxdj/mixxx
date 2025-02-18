@@ -30,6 +30,9 @@
 #include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
+// Eve
+#include "library/trackset/crate/groupedcratesfeature.h"
+// Eve
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "moc_library.cpp"
@@ -73,6 +76,7 @@ Library::Library(
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
+          m_pGroupedCratesFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -103,8 +107,18 @@ Library::Library(
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
 
-    m_pCrateFeature = new CrateFeature(this, m_pConfig);
-    addFeature(m_pCrateFeature);
+    if ((m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesEnabled"), true)) &&
+            (m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesReplace"), false))) {
+        qDebug() << "[GROUPEDCRATESFEATURE] -> GroupedCratesEnabled "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesEnabled"));
+
+        qDebug() << "[GROUPEDCRATESFEATURE] -> GroupedCratesReplace "
+                 << m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesReplace"));
+    } else {
+        m_pCrateFeature = new CrateFeature(this, m_pConfig);
+        addFeature(m_pCrateFeature);
+    }
+
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
@@ -117,6 +131,10 @@ Library::Library(
             &Library::exportCrate, // signal-to-signal
             Qt::DirectConnection);
 #endif
+    if (m_pConfig->getValue(ConfigKey("[Library]", "GroupedCratesEnabled"), true)) {
+        m_pGroupedCratesFeature = new GroupedCratesFeature(this, m_pConfig);
+        addFeature(m_pGroupedCratesFeature);
+    }
 
     m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -145,6 +163,10 @@ Library::Library(
             &AnalysisFeature::analyzeTracks);
     connect(m_pCrateFeature,
             &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
+    connect(m_pGroupedCratesFeature,
+            &GroupedCratesFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
     connect(this,
