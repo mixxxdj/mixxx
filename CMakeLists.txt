@@ -1224,6 +1224,7 @@ add_library(
   src/library/itunes/itunesfeature.cpp
   src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
+  src/library/itunes/itunestrackmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
@@ -1869,6 +1870,17 @@ if(APPLE)
       mixxx-lib
       PRIVATE src/soundio/soundmanagerios.mm src/util/screensaverios.mm
     )
+
+    option(IOS_ITUNES_LIBRARY "Native iOS music library integration" ON)
+    if(IOS_ITUNES_LIBRARY)
+      target_sources(mixxx-lib PRIVATE
+        src/library/itunes/itunesiosassetexporter.mm
+        src/library/itunes/itunesiosimporter.mm
+        src/library/itunes/itunesiostrackresolver.cpp
+      )
+      target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+      target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
+    endif()
   else()
     target_sources(mixxx-lib PRIVATE src/util/darkappearance.mm)
 
