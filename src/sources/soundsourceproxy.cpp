@@ -553,17 +553,22 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         // https://github.com/mixxxdj/mixxx/issues/9944
         return importTrackMetadataAndCoverImageUnavailable();
     }
-    // Since we want to read the cover only, use a temporary track
-    // that is discarded in an incomplet state without saving to library or
-    // track meta data. Lock the track via the global track cache while
-    // accessing the file to ensure that no metadata is written by another trhead.
-    bool temporary = true;
-    auto cacheResolver = GlobalTrackCacheResolver(trackFileAccess, temporary);
-    TrackPointer pTrack = cacheResolver.getTrack();
-    return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
-            pTrackMetadata,
-            pCoverImage,
-            resetMissingTagMetadata);
+
+    // Since the Track object below is only used to read the meta data from
+    // the file, we use a temporary track that is discarded in an incomplete
+    // state without being saved to the database or the track file's meta data
+    // after the meta data import has been completed.
+    // Lock the track via the global track cache while accessing the file to
+    // ensure that no metadata is written by another thread.
+    { // cacheResolver scope
+        const bool temporary = true;
+        auto cacheResolver = GlobalTrackCacheResolver(trackFileAccess, temporary);
+        TrackPointer pTrack = cacheResolver.getTrack();
+        return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+                pTrackMetadata,
+                pCoverImage,
+                resetMissingTagMetadata);
+    }
 }
 
 std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
