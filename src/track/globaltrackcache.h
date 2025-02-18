@@ -279,7 +279,8 @@ class GlobalTrackCache : public QObject {
 
     deleteTrackFn_t m_deleteTrackFn;
 
-    // A track without a
+    // The track that is currently locked by the asynchronous metadata loader background thread.
+    // m_isTrackCompleted will be signaled once the asynchronous loading has been completed.
     TrackPointer m_incompleteTrack;
     QWaitCondition m_isTrackCompleted;
 
