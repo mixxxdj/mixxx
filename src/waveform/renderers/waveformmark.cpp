@@ -94,6 +94,75 @@ bool isShowUntilNextPositionControl(const QString& positionControl) {
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
+        QString positionControl,
+        const QString& visibilityControl,
+        const QString& textColor,
+        const QString& markAlign,
+        const QString& text,
+        const QString& pixmapPath,
+        const QString& iconPath,
+        QColor color,
+        int priority,
+        int hotCue,
+        const WaveformSignalColors& signalColors)
+        : m_textColor(textColor),
+          m_pixmapPath(pixmapPath),
+          m_iconPath(iconPath),
+          m_linePosition{},
+          m_breadth{},
+          m_level{},
+          m_iPriority(priority),
+          m_iHotCue(hotCue),
+          m_showUntilNext{} {
+    QString endPositionControl;
+    QString typeControl;
+    if (hotCue != Cue::kNoHotCue) {
+        positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
+        typeControl = "hotcue_" + QString::number(hotCue + 1) + "_type";
+        m_showUntilNext = true;
+    } else {
+        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
+    }
+
+    if (!positionControl.isEmpty()) {
+        m_pPositionCO = std::make_unique<ControlProxy>(group, positionControl);
+    }
+    if (!endPositionControl.isEmpty()) {
+        m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
+        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+    }
+
+    if (!visibilityControl.isEmpty()) {
+        ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
+        m_pVisibleCO = std::make_unique<ControlProxy>(key);
+    }
+
+    if (!color.isValid()) {
+        // As a fallback, grab the color from the parent's AxesColor
+        // color = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark <Color>:" << color;
+    } else {
+        color = WSkinColor::getCorrectColor(color);
+    }
+    int dimBrightThreshold = signalColors.getDimBrightThreshold();
+    setBaseColor(color, dimBrightThreshold);
+
+    if (!m_textColor.isValid()) {
+        // Read the text color, otherwise use the parent's BgColor.
+        m_textColor = signalColors.getBgColor();
+        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" << m_textColor;
+    }
+
+    m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
+
+    // Hotcue text is set by the cue's label in the database, not by the skin.
+    if (hotCue == Cue::kNoHotCue) {
+        m_text = text;
+    }
+}
+
+WaveformMark::WaveformMark(const QString& group,
         const QDomNode& node,
         const SkinContext& context,
         int priority,
