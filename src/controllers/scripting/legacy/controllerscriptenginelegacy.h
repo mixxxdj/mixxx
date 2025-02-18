@@ -125,7 +125,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     std::unordered_map<QString, std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>> m_rootItems;
     QList<LegacyControllerMapping::QMLModuleInfo> m_modules;
     QList<LegacyControllerMapping::ScreenInfo> m_infoScreens;
-    QString m_resourcePath{QStringLiteral(".")};
+    QString m_resourcePath;
 #endif
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;

@@ -102,15 +102,18 @@ WOverview::WOverview(
 
     // Update immediately when the normalize option or the visual gain have been
     // changed in the preferences.
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
-    connect(widgetFactory,
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
+    connect(pWidgetFactory,
             &WaveformWidgetFactory::overviewNormalizeChanged,
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
-    connect(widgetFactory,
+    connect(pWidgetFactory,
             &WaveformWidgetFactory::overallVisualGainChanged,
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
+    // Also listen to ReplayGain changes to scale the waveform
+    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -729,16 +732,20 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (!m_waveformSourceImage.isNull()) {
-        PainterScope painterScope(pPainter);
+        WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
         float diffGain;
-        bool normalize = widgetFactory->isOverviewNormalized();
+        bool normalize = pWidgetFactory->isOverviewNormalized();
         if (normalize && m_pixmapDone && m_waveformPeak > 1) {
             diffGain = 255 - m_waveformPeak - 1;
         } else {
+            DEBUG_ASSERT(m_pCurrentTrack);
+            const auto replayGain = m_pCurrentTrack->getReplayGain();
             const auto visualGain = static_cast<float>(
-                    widgetFactory->getVisualGain(WaveformWidgetFactory::All));
+                    pWidgetFactory->getVisualGain(WaveformWidgetFactory::All) *
+                    (replayGain.hasRatio()
+                                    ? replayGain.getRatio()
+                                    : 1.0));
             diffGain = 255.0f - (255.0f / visualGain);
         }
 

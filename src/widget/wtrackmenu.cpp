@@ -217,6 +217,9 @@ void WTrackMenu::createMenus() {
         m_pColorMenu->setTitle(tr("Select Color"));
     }
 
+    m_pHotcueMenu = make_parented<QMenu>(this);
+    m_pHotcueMenu->setTitle(tr("Hotcues"));
+
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = make_parented<QMenu>(this);
         //: Reset metadata in right click track context menu in library
@@ -470,6 +473,23 @@ void WTrackMenu::createActions() {
 
         m_pClearAllMetadataAction = make_parented<QAction>(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
+
+        m_pSortHotcuesByPositionCompressAction = make_parented<QAction>(
+                tr("Sort hotcues by position (remove offsets)"), m_pHotcueMenu);
+        connect(m_pSortHotcuesByPositionCompressAction,
+                &QAction::triggered,
+                this,
+                [this]() {
+                    slotSortHotcuesByPosition(HotcueSortMode::RemoveOffsets);
+                });
+        m_pSortHotcuesByPositionAction = make_parented<QAction>(
+                tr("Sort hotcues by position"), m_pHotcueMenu);
+        connect(m_pSortHotcuesByPositionAction,
+                &QAction::triggered,
+                this,
+                [this]() {
+                    slotSortHotcuesByPosition(HotcueSortMode::KeepOffsets);
+                });
     }
 
     if (featureIsEnabled(Feature::BPM)) {
@@ -570,6 +590,7 @@ void WTrackMenu::createActions() {
 }
 
 void WTrackMenu::setupActions() {
+    addSeparator();
     if (featureIsEnabled(Feature::SearchRelated)) {
         addMenu(m_pSearchRelatedMenu);
     }
@@ -675,8 +696,13 @@ void WTrackMenu::setupActions() {
         if (featureIsEnabled(Feature::FindOnWeb)) {
             m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
         }
+
         addSeparator();
         addMenu(m_pMetadataMenu);
+
+        m_pHotcueMenu->addAction(m_pSortHotcuesByPositionCompressAction);
+        m_pHotcueMenu->addAction(m_pSortHotcuesByPositionAction);
+        addMenu(m_pHotcueMenu);
     }
 
     if (featureIsEnabled(Feature::Reset)) {
@@ -692,6 +718,7 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
+        m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
@@ -919,18 +946,17 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
                     close();
                 });
         pParentMenu->addMenu(pStemMenu);
-    } else {
+    } else
 #else
     Q_UNUSED(pTrack)
     Q_UNUSED(primaryDeck)
 #endif
+    {
         QAction* pAction = new QAction(label, this);
         pAction->setEnabled(enabled);
         pParentMenu->addAction(pAction);
         connect(pAction, &QAction::triggered, this, [this, group] { loadSelectionToGroup(group); });
-#ifdef __STEM__
     }
-#endif
 }
 
 void WTrackMenu::updateMenus() {
@@ -2118,6 +2144,19 @@ class ResetOutroTrackPointerOperation : public mixxx::TrackPointerOperation {
     }
 };
 
+class SortHotcuesByPositionTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit SortHotcuesByPositionTrackPointerOperation(HotcueSortMode sortMode)
+            : m_sortMode(sortMode) {
+    }
+
+  private:
+    void doApply(const TrackPointer& pTrack) const override {
+        pTrack->setHotcueIndicesSortedByPosition(m_sortMode);
+    }
+    HotcueSortMode m_sortMode;
+};
+
 } // anonymous namespace
 
 void WTrackMenu::slotResetMainCue() {
@@ -2165,6 +2204,27 @@ void WTrackMenu::slotClearHotCues() {
             tr("Removing hot cues from %n track(s)", "", getTrackCount());
     const auto trackOperator =
             RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType::HotCue);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+void WTrackMenu::slotSortHotcuesByPosition(HotcueSortMode sortMode) {
+    QString progressLabelText;
+    switch (sortMode) {
+    case HotcueSortMode::RemoveOffsets:
+        progressLabelText = tr(
+                "Sorting hotcues of %n track(s) by position (remove offsets)",
+                "",
+                getTrackCount());
+        break;
+    case HotcueSortMode::KeepOffsets:
+        progressLabelText =
+                tr("Sorting hotcues of %n track(s) by position", "", getTrackCount());
+        break;
+    }
+    const auto trackOperator =
+            SortHotcuesByPositionTrackPointerOperation(sortMode);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);

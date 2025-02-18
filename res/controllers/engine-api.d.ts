@@ -314,7 +314,7 @@ declare namespace engine {
         UTF_32BE,       // UTF-32 for Big-Endian devices (MIPS, PPC)
         CentralEurope,  // Windows_1250 which includes all characters of ISO_8859_2
         Cyrillic,       // Windows_1251 which includes all characters of ISO_8859_5
-        Latin1,         // Windows_1252 which includes all characters of ISO_8859_1
+        WesternEurope,  // Windows_1252 which includes all characters of ISO_8859_1
         Greek,          // Windows_1253 which includes all characters of ISO_8859_7
         Turkish,        // Windows_1254 which includes all characters of ISO_8859_9
         Hebrew,         // Windows_1255 which includes all characters of ISO_8859_8
@@ -330,7 +330,8 @@ declare namespace engine {
         UCS2,           // Universal Character Set (2-Byte) ISO_10646
         SCSU,           // Standard Compression Scheme for Unicode
         BOCU_1,         // Binary Ordered Compression for Unicode
-        CESU_8          // Compatibility Encoding Scheme for UTF-16 (8-Bit)
+        CESU_8,         // Compatibility Encoding Scheme for UTF-16 (8-Bit)
+        Latin1          // ISO_8859_1, available on Qt < 6.5
     }
 
     /**

@@ -1297,6 +1297,14 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     restoreCurrentIndex();
 }
 
+/// If applicable, requests that the selected field/item be edited
+/// Does nothing otherwise.
+void WTrackTableView::editSelectedItem() {
+    if (state() != EditingState) {
+        edit(currentIndex(), EditKeyPressed, nullptr);
+    }
+}
+
 void WTrackTableView::activateSelectedTrack() {
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {

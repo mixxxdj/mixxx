@@ -1106,7 +1106,7 @@ void BpmControl::slotUpdateRateSlider(double value) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
                         << value;
     }
-    // Adjust rate slider position response to a change in rate range or m_pEngineBpm
+    // Adjust rate slider position in response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm == 0.0) {

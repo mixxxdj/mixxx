@@ -41,6 +41,7 @@ class WTrackTableView : public WLibraryTableView {
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void editSelectedItem();
     void activateSelectedTrack();
 #ifdef __STEM__
     void loadSelectedTrackToGroup(const QString& group,

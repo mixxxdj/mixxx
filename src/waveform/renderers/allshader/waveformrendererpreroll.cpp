@@ -2,7 +2,6 @@
 
 #include <QDomNode>
 #include <QPainterPath>
-#include <array>
 
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/patternmaterial.h"

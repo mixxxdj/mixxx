@@ -202,6 +202,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
+    parented_ptr<ControlProxy> m_pReplayGain;
 
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;

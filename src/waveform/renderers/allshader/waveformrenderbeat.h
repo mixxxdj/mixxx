@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QColor>
-#include <memory>
 
 #include "rendergraph/geometrynode.h"
 #include "util/class.h"
@@ -12,7 +11,7 @@ class SkinContext;
 
 namespace allshader {
 class WaveformRenderBeat;
-}
+} // namespace allshader
 
 class allshader::WaveformRenderBeat final
         : public ::WaveformRendererAbstract,

@@ -8,7 +8,7 @@
 
 namespace allshader {
 class WaveformRenderBackground;
-}
+} // namespace allshader
 
 class allshader::WaveformRenderBackground final
         : public allshader::WaveformRenderer,

@@ -15,7 +15,7 @@ class SkinContext;
 
 namespace allshader {
 class WaveformRendererEndOfTrack;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererEndOfTrack final
         : public ::WaveformRendererAbstract,

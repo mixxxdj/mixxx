@@ -167,7 +167,7 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
 
 void exportMetadata(
         djinterop::database* pDatabase,
-        const e::engine_version& dbVersion,
+        const e::engine_schema& dbSchemaVersion,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
         const Waveform* pWaveform,
@@ -280,7 +280,8 @@ void exportMetadata(
 
     // Write waveform.
     if (pWaveform) {
-        djinterop::waveform_extents extents = dbVersion.is_v2_schema()
+        djinterop::waveform_extents extents = dbSchemaVersion >=
+                        djinterop::engine::engine_schema::schema_2_18_0
                 ? e::calculate_overview_waveform_extents(
                           frameCount, pTrack->getSampleRate())
                 : e::calculate_high_resolution_waveform_extents(
@@ -315,7 +316,7 @@ void exportMetadata(
 void exportTrack(
         const QSharedPointer<EnginePrimeExportRequest> pRequest,
         djinterop::database* pDatabase,
-        const e::engine_version& dbVersion,
+        const e::engine_schema& dbSchemaVersion,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         const TrackPointer pTrack,
         const Waveform* pWaveform) {
@@ -332,7 +333,7 @@ void exportTrack(
 
     // Export meta-data.
     exportMetadata(pDatabase,
-            dbVersion,
+            dbSchemaVersion,
             pMixxxToEnginePrimeTrackIdMap,
             pTrack,
             pWaveform,
@@ -507,17 +508,17 @@ void EnginePrimeExportJob::run() {
 
     // Ensure that the database exists, creating an empty one if not.
     std::unique_ptr<djinterop::database> pDb;
-    e::engine_version dbVersion;
+    e::engine_schema dbSchemaVersion;
     try {
         bool created;
         pDb = std::make_unique<djinterop::database>(e::create_or_load_database(
                 m_pRequest->engineLibraryDbDir.path().toStdString(),
-                m_pRequest->exportVersion,
+                m_pRequest->exportSchemaVersion,
                 created,
-                dbVersion));
+                dbSchemaVersion));
 
         if (!created) {
-            dbVersion = m_pRequest->exportVersion;
+            dbSchemaVersion = m_pRequest->exportSchemaVersion;
         }
     } catch (std::exception& e) {
         qWarning() << "Failed to create/load database:" << e.what();
@@ -554,7 +555,7 @@ void EnginePrimeExportJob::run() {
         try {
             exportTrack(m_pRequest,
                     pDb.get(),
-                    dbVersion,
+                    dbSchemaVersion,
                     &mixxxToEnginePrimeTrackIdMap,
                     m_pLastLoadedTrack,
                     m_pLastLoadedWaveform.get());

@@ -13,4 +13,5 @@ class ITunesPlaylistModel : public BaseExternalPlaylistModel {
 
   protected:
     void initSortColumnMapping() override;
+    QString resolveLocation(const QString& nativeLocation) const override;
 };

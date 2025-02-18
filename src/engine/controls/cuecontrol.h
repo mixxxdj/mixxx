@@ -249,6 +249,9 @@ class CueControl : public EngineControl {
 
     void passthroughChanged(double v);
 
+    void setHotcueIndicesSortedByPosition(double v);
+    void setHotcueIndicesSortedByPositionCompress(double v);
+
     void cueSet(double v);
     void cueClear(double v);
     void cueGoto(double v);
@@ -374,6 +377,9 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pHotcueFocusColorPrev;
 
     parented_ptr<ControlProxy> m_pPassthrough;
+
+    std::unique_ptr<ControlPushButton> m_pSortHotcuesByPos;
+    std::unique_ptr<ControlPushButton> m_pSortHotcuesByPosCompress;
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
     QAtomicPointer<HotcueControl> m_pCurrentSavedJumpControl;
