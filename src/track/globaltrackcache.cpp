@@ -175,7 +175,13 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
 
 GlobalTrackCacheResolver::~GlobalTrackCacheResolver() {
     if (m_pInstance) {
+        // Temporarily obtain the lock to guard access to m_isTrackCompleted.
+        // Will be released by the parent class destructor
+        // ~GlobalTrackCacheLocker().
         m_pInstance->m_mutex.lock();
+        // Only one GlobalTrackCacheResolver has access to the unique
+        // incomplete Track. Others are suspended during construction.
+        // This call wakes them up.
         m_pInstance->discardIncompleteTrack();
     }
 }
