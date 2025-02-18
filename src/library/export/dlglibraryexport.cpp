@@ -125,7 +125,7 @@ DlgLibraryExport::DlgLibraryExport(
     pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
 
     setLayout(pLayout);
-    setWindowTitle(tr("Export Library to Engine Prime"));
+    setWindowTitle(tr("Export Library to Engine OS"));
 
     show();
     raise();
@@ -164,7 +164,7 @@ void DlgLibraryExport::browseExportDirectory() {
             m_pConfig->getValue(ConfigKey("[Library]", kLastDirConfigItemName),
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
     const auto exportDirectory = QFileDialog::getExistingDirectory(
-            nullptr, tr("Export Library To"), lastExportDirectory);
+            nullptr, tr("Export Library To Engine DJ OS"), lastExportDirectory);
     if (exportDirectory.isEmpty()) {
         return;
     }
