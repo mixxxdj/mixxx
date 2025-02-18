@@ -238,7 +238,8 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
 
     setTable(m_tempTableName, idColumn, std::move(tableColumns), trackSource);
     setSearch("");
-    setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
@@ -263,16 +264,6 @@ TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
         }
     }
     return TrackId();
-}
-
-QVariant BansheePlaylistModel::getFieldVariant(const QModelIndex& index,
-        const QString& fieldName) const {
-    return index.sibling(index.row(), fieldIndex(fieldName)).data();
-}
-
-QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
-        const QString& fieldName) const {
-    return getFieldVariant(index, fieldName).toString();
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
