@@ -1873,10 +1873,12 @@ if(APPLE)
 
     option(IOS_ITUNES_LIBRARY "Native iOS music library integration" ON)
     if(IOS_ITUNES_LIBRARY)
-      target_sources(mixxx-lib PRIVATE
-        src/library/itunes/itunesiosassetexporter.mm
-        src/library/itunes/itunesiosimporter.mm
-        src/library/itunes/itunesiostrackresolver.cpp
+      target_sources(
+        mixxx-lib
+        PRIVATE
+          src/library/itunes/itunesiosassetexporter.mm
+          src/library/itunes/itunesiosimporter.mm
+          src/library/itunes/itunesiostrackresolver.cpp
       )
       target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
       target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
