@@ -382,9 +382,11 @@ void CoreServices::initialize(QApplication* pApp) {
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
 #if defined(Q_OS_IOS) || defined(Q_OS_WASM)
         // On the web and iOS, we are running in a sandbox (a virtual file
-        // system on the web). Since we are generally limited to this sandbox,
-        // there is not much point in asking the user, so we just default to
-        // ~/Music within it (creating it since it usually does not exist).
+        // system on the web). Since we are generally limited to paths within
+        // the sandbox, there is not much point in asking the user about a
+        // custom directory, so we just default to Qt's standard music directory
+        // (~/Documents/Music on iOS and ~/Music on Wasm). Since the sandbox is
+        // initially empty, we create that directory automatically.
         // Advanced users can still customize this directory in the settings.
         QString fd = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
         QDir dir = fd;
