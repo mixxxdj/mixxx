@@ -2189,7 +2189,9 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 TrackPointer TrackDAO::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
-    // This function shall not be used with tracks known already in library
+    // This function should only be used when you do not yet know whether the
+    // specified track is contained in the library. Use TrackDAO::getTrackByRef
+    // instead for tracks that you already know to be in the library.
     DEBUG_ASSERT(!trackRef.hasId());
     VERIFY_OR_DEBUG_ASSERT(trackRef.hasLocation()) {
         return {};
