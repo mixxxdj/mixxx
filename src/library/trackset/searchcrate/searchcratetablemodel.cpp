@@ -882,8 +882,12 @@ QString SearchCrateTableModel::buildWhereClause(const QVariantList& searchCrateD
 
     QStringList combinerOptions = {") END", "AND", "OR", ") AND (", ") OR ("};
     // Assuming searchValue is at index 6 (search_input)
-    const QString& searchValue = searchCrateData[6].toString(); // search_input
-                                                                //    QString condition;
+    // const QString& searchValue = searchCrateData[6].isNull() ? "" :
+    // searchCrateData[6].toString();
+
+    const QString& searchValue = searchCrateData[6].toString();
+    // search_input
+    // QString condition;
     // Assuming searchValue is at index 7 (search_sql)
     // QString searchValue = searchCrateData[7].toString(); // seatch_sql
 

@@ -632,8 +632,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgGroupedSearchCratesInfo::requestDeleteSearchCrate,
                 this,
-                //[this, &searchCrateId]() {
-                [this, searchCrateId]() {
+                [this]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -684,6 +683,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                                 }
                                 m_lastRightClickedIndex = indexFromSearchCrateId(nextSearchCrateId);
                                 activateSearchCrate(nextSearchCrateId);
+                                slotSearchCrateTableChanged(nextSearchCrateId);
                             } else {
                                 return;
                             }
@@ -705,11 +705,11 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                                         indexFromSearchCrateId(
                                                 previousSearchCrateId);
                                 activateSearchCrate(previousSearchCrateId);
+                                slotSearchCrateTableChanged(previousSearchCrateId);
                             } else {
                                 return;
                             }
                         }
-                        slotSearchCrateTableChanged(previousSearchCrateId);
                     }
                 });
         // DLG -> New SearchCrate on 'New'
@@ -762,7 +762,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgGroupedSearchCratesInfo::requestPreviousSearchCrate,
                 this,
-                [this, &searchCrateId]() {
+                [this]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -831,7 +831,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgGroupedSearchCratesInfo::requestNextSearchCrate,
                 this,
-                [this, &searchCrateId]() {
+                [this]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -1154,7 +1154,7 @@ QModelIndex GroupedSearchCratesFeature::rebuildChildModel(SearchCrateId selected
         qDebug() << "[GROUPEDSEARCHCRATESFEATURE] -> rebuildChildModel()" << selectedSearchCrateId;
     }
 
-    QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
+    // QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
 
     // remember open/close state of group
     // QMap<QString, bool> groupExpandedStates;

@@ -11,7 +11,7 @@
 // EVE
 #include "library/basesqltablemodel.h"
 #include "library/library.h"
-#include "library/trackset/searchCrate/searchCrateid.h"
+#include "library/trackset/searchcrate/searchcrateid.h"
 #include "library/trackset/tracksettablemodel.h"
 
 // EVE
