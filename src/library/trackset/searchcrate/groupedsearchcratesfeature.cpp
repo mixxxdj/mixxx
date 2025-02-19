@@ -723,9 +723,8 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgGroupedSearchCratesInfo::requestNewSearchCrate,
                 this,
-                // [this, &searchCrateId]() {
                 [this, searchCrateId]() {
-                
+                    // [this, &searchCrateId]() {
                     //            emit setBlockerOff("new");
                     if (sDebug) {
                         qDebug() << "[GROUPEDSEARCHCRATESFEATURE] [SLOT EDIT SEARCHCRATES] -> "
