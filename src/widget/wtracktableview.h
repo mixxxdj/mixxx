@@ -14,6 +14,8 @@
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
+#include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -21,6 +23,8 @@ class DlgTrackInfo;
 class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
+class WLibrary;
+class WLibraryPreparationWindow;
 
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
@@ -39,6 +43,7 @@ class WTrackTableView : public WLibraryTableView {
     bool hasFocus() const override;
     void setFocus() override;
     void pasteFromSidebar() override;
+    void pasteFromSidebarInPreparationWindow();
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
     void editSelectedItem();
@@ -117,6 +122,7 @@ class WTrackTableView : public WLibraryTableView {
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
+    void loadTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();

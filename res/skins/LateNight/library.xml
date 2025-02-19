@@ -18,8 +18,39 @@
         <Children>
 
           <Splitter>
+            <ObjectName>LibraryMainSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizes>1,4</SplitSizes>
+            <SplitSizesConfigKey>[Skin],prepwin_splitSize</SplitSizesConfigKey>
+            <Collapsible>0,0</Collapsible>
+            <Children>
+
+              <!-- Preparation Window (Can Hide/Show) -->
+              <WidgetGroup trigger="[Skin],show_preparation_window">
+                <ObjectName>LibraryPreparationWindow</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>200,100</MinimumSize>
+                <Children>
+                  <LibraryPreparationWindow>
+                    <Label>
+                      <Text>Preparation Window</Text>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Alignment>center</Alignment>
+                    </Label>
+                  </LibraryPreparationWindow>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_preparation_window</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
+            <!--SplitSizes>1,10</SplitSizes-->
             <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
             <Collapsible>1,0</Collapsible>
@@ -34,7 +65,8 @@
 
                   <Template src="skins:LateNight/decks/preview_deck.xml"/>
 
-                  <WidgetGroup><!--SearchBox + Library expand toggle -->
+                  <WidgetGroup>
+                    <!--SearchBox + Library expand toggle -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
                     <Children>
@@ -53,21 +85,17 @@
                         <Layout>vertical</Layout>
                         <Children>
                           <Template src="skins:LateNight/controls/button_2state.xml">
-                            <SetVariable name="TooltipId">maximize_library</SetVariable>
+                            <!--SetVariable name="TooltipId">maximize_library</SetVariable-->
                             <SetVariable name="ObjectName">LibExpand</SetVariable>
                             <SetVariable name="Size">18f,18me</SetVariable>
                             <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
                           </Template>
                         </Children>
-                      </WidgetGroup><!-- LibExpandBox -->
+                      </WidgetGroup>
+                      <!-- LibExpandBox -->
                     </Children>
-                  </WidgetGroup><!--SearchBox + Library expand toggle -->
-
-                  <WidgetGroup>
-                    <ObjectName>SearchTreeSpacer</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <Children/>
                   </WidgetGroup>
+                  <!--SearchBox + Library expand toggle -->
 
                   <Splitter>
                     <ObjectName>SidebarCoverSplitter</ObjectName>
@@ -99,24 +127,35 @@
                           <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup><!--Cover Art-->
+                      </WidgetGroup>
+                      <!--Cover Art-->
                     </Children>
-                  </Splitter><!-- SidebarCoverSplitter -->
+                  </Splitter>
+                  <!-- SidebarCoverSplitter -->
 
                 </Children>
-              </WidgetGroup><!-- LibSidebarContainer -->
+              </WidgetGroup>
+              <!-- LibSidebarContainer -->
 
-              <!-- Library Table-->
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
-              </Library>
+              <!-- Right Side: PrepWin + Library (Stacked) -->
+
+                  <!-- Main Library -->
+                  <!-- Library Table-->
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                  </Library>
+
+
+                </Children>
+              </Splitter>
+              <!-- LibrarySplitter -->
 
             </Children>
-          </Splitter><!-- LibrarySplitter -->
-
+          </Splitter>
+              <!-- LibraryContainer -->
         </Children>
-      </WidgetGroup><!-- LibraryContainer -->
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

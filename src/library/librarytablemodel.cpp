@@ -48,6 +48,7 @@ void LibraryTableModel::setTableModel() {
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
+
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 
     // Set tooltip for random sorting
