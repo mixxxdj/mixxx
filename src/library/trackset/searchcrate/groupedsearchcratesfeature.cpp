@@ -1164,26 +1164,25 @@ QModelIndex GroupedSearchCratesFeature::rebuildChildModel(SearchCrateId selected
         qDebug() << "[GROUPEDSEARCHCRATESFEATURE] -> rebuildChildModel()" << selectedSearchCrateId;
     }
 
-    QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
-
-    // remember open/close state of group
-    // QMap<QString, bool> groupExpandedStates;
-    // for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
-    //    QModelIndex groupIndex = m_pSidebarModel->index(row, 0);
-    //    if (groupIndex.isValid()) {
-    //        TreeItem* pGroupItem = m_pSidebarModel->getItem(groupIndex);
-    //        if (pGroupItem) {
-    //            const QString& groupName = pGroupItem->getLabel();
-    //            groupExpandedStates[groupName] = m_pSidebarWidget->isExpanded(groupIndex);
-    //            if (sDebug) {
-    //                qDebug() << "[GROUPEDSEARCHCRATESFEATURE] Saved open/close state "
-    //                            "for group:"
-    //                         << groupName << "->"
-    //                         << groupExpandedStates[groupName];
-    //            }
-    //        }
-    //    }
-    //}
+    // QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
+    //  remember open/close state of group
+    //  QMap<QString, bool> groupExpandedStates;
+    //  for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+    //     QModelIndex groupIndex = m_pSidebarModel->index(row, 0);
+    //     if (groupIndex.isValid()) {
+    //         TreeItem* pGroupItem = m_pSidebarModel->getItem(groupIndex);
+    //         if (pGroupItem) {
+    //             const QString& groupName = pGroupItem->getLabel();
+    //             groupExpandedStates[groupName] = m_pSidebarWidget->isExpanded(groupIndex);
+    //             if (sDebug) {
+    //                 qDebug() << "[GROUPEDSEARCHCRATESFEATURE] Saved open/close state "
+    //                             "for group:"
+    //                          << groupName << "->"
+    //                          << groupExpandedStates[groupName];
+    //             }
+    //         }
+    //     }
+    // }
 
     m_lastRightClickedIndex = QModelIndex();
     TreeItem* pRootItem = m_pSidebarModel->getRootItem();

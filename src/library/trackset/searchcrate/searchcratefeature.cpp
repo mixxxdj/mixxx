@@ -654,8 +654,9 @@ void SearchCrateFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgSearchCrateInfo::requestDeleteSearchCrate,
                 this,
-                //[this, &searchCrateId]() {
-                [this, searchCrateId]() {
+                [this]() {
+                    //[this, &searchCrateId]() {
+                    // [this, searchCrateId]() { // last
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -784,7 +785,8 @@ void SearchCrateFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgSearchCrateInfo::requestPreviousSearchCrate,
                 this,
-                [this, &searchCrateId]() {
+                [this]() {
+                    //[this, &searchCrateId]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -849,7 +851,8 @@ void SearchCrateFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgSearchCrateInfo::requestNextSearchCrate,
                 this,
-                [this, &searchCrateId]() {
+                [this]() {
+                    //[this, &searchCrateId]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
