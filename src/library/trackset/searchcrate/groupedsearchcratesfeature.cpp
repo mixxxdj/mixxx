@@ -47,6 +47,13 @@ const ConfigKey kConfigKeyLastImportExportSearchCrateDirectoryKey(
 
 } // anonymous namespace
 
+// added some lines to get github ci starting
+// another line
+// another line
+// another line
+// another line
+// another line
+
 using namespace mixxx::library::prefs;
 
 GroupedSearchCratesFeature::GroupedSearchCratesFeature(
