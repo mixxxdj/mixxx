@@ -30,7 +30,7 @@
 namespace {
 
 constexpr int kInvalidSearchCrateId = -1;
-const bool sDebug = false;
+const bool sDebug = true;
 
 QString formatLabel(
         const SearchCrateSummary& searchCrateSummary) {
@@ -632,6 +632,8 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
         connect(&infoDialog,
                 &dlgGroupedSearchCratesInfo::requestDeleteSearchCrate,
                 this,
+                // [this, &searchCrateId]() {
+                // [this, &searchCrateId]() {
                 [this]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
@@ -683,7 +685,6 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                                 }
                                 m_lastRightClickedIndex = indexFromSearchCrateId(nextSearchCrateId);
                                 activateSearchCrate(nextSearchCrateId);
-                                slotSearchCrateTableChanged(nextSearchCrateId);
                             } else {
                                 return;
                             }
@@ -705,11 +706,11 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                                         indexFromSearchCrateId(
                                                 previousSearchCrateId);
                                 activateSearchCrate(previousSearchCrateId);
-                                slotSearchCrateTableChanged(previousSearchCrateId);
                             } else {
                                 return;
                             }
                         }
+                        slotSearchCrateTableChanged(previousSearchCrateId);
                     }
                 });
         // DLG -> New SearchCrate on 'New'
@@ -718,6 +719,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                 this,
                 // [this, &searchCrateId]() {
                 [this, searchCrateId]() {
+                
                     //            emit setBlockerOff("new");
                     if (sDebug) {
                         qDebug() << "[GROUPEDSEARCHCRATESFEATURE] [SLOT EDIT SEARCHCRATES] -> "
@@ -763,6 +765,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                 &dlgGroupedSearchCratesInfo::requestPreviousSearchCrate,
                 this,
                 [this]() {
+                    // [this, &searchCrateId]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -832,6 +835,7 @@ void GroupedSearchCratesFeature::slotEditSearchCrate() {
                 &dlgGroupedSearchCratesInfo::requestNextSearchCrate,
                 this,
                 [this]() {
+                    // [this, &searchCrateId]() {
                     // current searchCrateId @ 0 prev/bof/next/eof pointers @ 56
                     SearchCrateId searchCrateId(searchCrateData[0]);
                     SearchCrateId previousSearchCrateId(searchCrateData[56]);
@@ -1057,8 +1061,8 @@ void GroupedSearchCratesFeature::slotSearchCrateTableChanged(SearchCrateId searc
                  << " is VALID ";
         rebuildChildModel(searchCrateId);
 
-        // Recall the last clicked or right-clicked smatries
-        activateSearchCrate(searchCrateId);
+        //        // Recall the last clicked or right-clicked smatries
+        //        activateSearchCrate(searchCrateId);
     } else {
         qDebug() << "[GROUPEDSEARCHCRATESFEATURE] -> slotSearchCrateTableChanged -> searchCrateId"
                  << searchCrateId
@@ -1154,7 +1158,7 @@ QModelIndex GroupedSearchCratesFeature::rebuildChildModel(SearchCrateId selected
         qDebug() << "[GROUPEDSEARCHCRATESFEATURE] -> rebuildChildModel()" << selectedSearchCrateId;
     }
 
-    // QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
+    QModelIndex previouslySelectedIndex = m_lastRightClickedIndex;
 
     // remember open/close state of group
     // QMap<QString, bool> groupExpandedStates;

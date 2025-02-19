@@ -884,12 +884,7 @@ QString SearchCrateTableModel::buildWhereClause(const QVariantList& searchCrateD
     // Assuming searchValue is at index 6 (search_input)
     // const QString& searchValue = searchCrateData[6].isNull() ? "" :
     // searchCrateData[6].toString();
-
     const QString& searchValue = searchCrateData[6].toString();
-    // search_input
-    // QString condition;
-    // Assuming searchValue is at index 7 (search_sql)
-    // QString searchValue = searchCrateData[7].toString(); // seatch_sql
 
     for (int i = 1; i <= 12; ++i) {
         int baseIndex = 8 + (i - 1) * 4; // Adjusting for the correct index in searchCrateData
