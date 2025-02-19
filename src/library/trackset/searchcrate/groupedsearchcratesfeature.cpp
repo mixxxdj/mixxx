@@ -53,6 +53,12 @@ const ConfigKey kConfigKeyLastImportExportSearchCrateDirectoryKey(
 // another line
 // another line
 // another line
+// another line
+// another line
+// another line
+// another line
+// another line
+// another line
 
 using namespace mixxx::library::prefs;
 
