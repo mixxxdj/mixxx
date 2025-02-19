@@ -3,7 +3,7 @@
 #include "library/basetrackcache.h"
 #include "library/trackset/crate/crate.h"
 // EVE
-#include "library/trackset/smarties/smarties.h"
+#include "library/trackset/searchcrate/searchcrate.h"
 // EVE
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
@@ -72,7 +72,7 @@ void TrackCollection::repairDatabase(const QSqlDatabase& database) {
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
     // EVE
-    m_smarties.repairDatabase(database);
+    m_searchCrates.repairDatabase(database);
     // EVE
 }
 
@@ -90,7 +90,7 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     m_libraryHashDao.initialize(database);
     m_crates.connectDatabase(database);
     // EVE
-    m_smarties.connectDatabase(database);
+    m_searchCrates.connectDatabase(database);
     // EVE
 }
 
@@ -102,7 +102,7 @@ void TrackCollection::disconnectDatabase() {
     m_trackDao.finish();
     m_crates.disconnectDatabase();
     // EVE
-    m_smarties.disconnectDatabase();
+    m_searchCrates.disconnectDatabase();
     // EVE
 }
 
@@ -345,9 +345,9 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     // TODO(XXX): Emit signals here instead of from DAOs
     emit crateSummaryChanged(modifiedCrateSummaries);
     // EVE
-    QSet<SmartiesId> modifiedSmartiesSummaries(
-            m_smarties.collectSmartiesIdsOfTracks(trackIds));
-    emit smartiesSummaryChanged(modifiedSmartiesSummaries);
+    QSet<SearchCrateId> modifiedSearchCrateSummaries(
+            m_searchCrates.collectSearchCrateIdsOfTracks(trackIds));
+    emit searchCrateSummaryChanged(modifiedSearchCrateSummaries);
     // EVE
 
     return true;
@@ -379,9 +379,9 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
             m_crates.collectCrateIdsOfTracks(trackIds);
     emit crateSummaryChanged(modifiedCrateSummaries);
     // EVE
-    QSet<SmartiesId> modifiedSmartiesSummaries(
-            m_smarties.collectSmartiesIdsOfTracks(trackIds));
-    emit smartiesSummaryChanged(modifiedSmartiesSummaries);
+    QSet<SearchCrateId> modifiedSearchCrateSummaries(
+            m_searchCrates.collectSearchCrateIdsOfTracks(trackIds));
+    emit searchCrateSummaryChanged(modifiedSearchCrateSummaries);
     // EVE
 
     return true;
@@ -405,15 +405,15 @@ bool TrackCollection::purgeTracks(
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
     // EVE
-    QSet<SmartiesId> modifiedSmartiesSummaries(
-            m_smarties.collectSmartiesIdsOfTracks(trackIds));
+    QSet<SearchCrateId> modifiedSearchCrateSummaries(
+            m_searchCrates.collectSearchCrateIdsOfTracks(trackIds));
     // EVE
 
     VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
         return false;
     }
     // EVE
-    VERIFY_OR_DEBUG_ASSERT(m_smarties.onPurgingTracks(trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onPurgingTracks(trackIds)) {
         return false;
     }
     // EVE
@@ -433,7 +433,7 @@ bool TrackCollection::purgeTracks(
     // TODO(XXX): Emit signals here instead of from DAOs
     emit crateSummaryChanged(modifiedCrateSummaries);
     // EVE
-    emit smartiesSummaryChanged(modifiedSmartiesSummaries);
+    emit searchCrateSummaryChanged(modifiedSearchCrateSummaries);
     // EVE
     return true;
 }
@@ -481,9 +481,9 @@ bool TrackCollection::insertCrate(
 }
 
 // Eve
-bool TrackCollection::insertSmarties(
-        const Smarties& smarties,
-        SmartiesId* pSmartiesId) {
+bool TrackCollection::insertSearchCrate(
+        const SearchCrate& searchCrate,
+        SearchCrateId* pSearchCrateId) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
@@ -491,20 +491,20 @@ bool TrackCollection::insertSmarties(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    SmartiesId smartiesId;
-    VERIFY_OR_DEBUG_ASSERT(m_smarties.onInsertingSmarties(smarties, &smartiesId)) {
+    SearchCrateId searchCrateId;
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onInsertingSearchCrate(searchCrate, &searchCrateId)) {
         return false;
     }
-    DEBUG_ASSERT(smartiesId.isValid());
+    DEBUG_ASSERT(searchCrateId.isValid());
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
 
     // Emit signals
-    emit smartiesInserted(smartiesId);
+    emit searchCrateInserted(searchCrateId);
 
-    if (pSmartiesId != nullptr) {
-        *pSmartiesId = smartiesId;
+    if (pSearchCrateId != nullptr) {
+        *pSearchCrateId = searchCrateId;
     }
     return true;
 }
@@ -533,8 +533,8 @@ bool TrackCollection::updateCrate(
 }
 
 // Eve
-bool TrackCollection::updateSmarties(
-        const Smarties& smarties) {
+bool TrackCollection::updateSearchCrate(
+        const SearchCrate& searchCrate) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
@@ -542,7 +542,7 @@ bool TrackCollection::updateSmarties(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_smarties.onUpdatingSmarties(smarties)) {
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onUpdatingSearchCrate(searchCrate)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -550,7 +550,7 @@ bool TrackCollection::updateSmarties(
     }
 
     // Emit signals
-    emit smartiesUpdated(smarties.getId());
+    emit searchCrateUpdated(searchCrate.getId());
 
     return true;
 }
@@ -579,8 +579,8 @@ bool TrackCollection::deleteCrate(
 }
 
 // Eve
-bool TrackCollection::deleteSmarties(
-        SmartiesId smartiesId) {
+bool TrackCollection::deleteSearchCrate(
+        SearchCrateId searchCrateId) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
@@ -588,7 +588,7 @@ bool TrackCollection::deleteSmarties(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_smarties.onDeletingSmarties(smartiesId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onDeletingSearchCrate(searchCrateId)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -596,7 +596,7 @@ bool TrackCollection::deleteSmarties(
     }
 
     // Emit signals
-    emit smartiesDeleted(smartiesId);
+    emit searchCrateDeleted(searchCrateId);
 
     return true;
 }
@@ -626,8 +626,8 @@ bool TrackCollection::addCrateTracks(
 }
 
 // Eve
-bool TrackCollection::addSmartiesTracks(
-        SmartiesId smartiesId,
+bool TrackCollection::addSearchCrateTracks(
+        SearchCrateId searchCrateId,
         const QList<TrackId>& trackIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
@@ -636,7 +636,7 @@ bool TrackCollection::addSmartiesTracks(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_smarties.onAddingSmartiesTracks(smartiesId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onAddingSearchCrateTracks(searchCrateId, trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -644,7 +644,7 @@ bool TrackCollection::addSmartiesTracks(
     }
 
     // Emit signals
-    emit smartiesTracksChanged(smartiesId, trackIds, QList<TrackId>());
+    emit searchCrateTracksChanged(searchCrateId, trackIds, QList<TrackId>());
 
     return true;
 }
@@ -674,8 +674,8 @@ bool TrackCollection::removeCrateTracks(
 }
 
 // Eve
-// bool TrackCollection::removeSmartiesTracks(
-//        SmartiesId smartiesId,
+// bool TrackCollection::removeSearchCrateTracks(
+//        SearchCrateId searchCrateId,
 //        const QList<TrackId>& trackIds) {
 //    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
@@ -684,7 +684,7 @@ bool TrackCollection::removeCrateTracks(
 //    VERIFY_OR_DEBUG_ASSERT(transaction) {
 //        return false;
 //    }
-//    VERIFY_OR_DEBUG_ASSERT(m_smarties.onRemovingSmartiesTracks(smartiesId, trackIds)) {
+//    VERIFY_OR_DEBUG_ASSERT(m_searchCrate.onRemovingSearchCrateTracks(searchCrateId, trackIds)) {
 //        return false;
 //    }
 //    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -692,7 +692,7 @@ bool TrackCollection::removeCrateTracks(
 //    }
 
 //    // Emit signals
-//    emit smartiesTracksChanged(smartiesId, QList<TrackId>(), trackIds);
+//    emit searchCrateTracksChanged(searchCrateId, QList<TrackId>(), trackIds);
 
 //    return true;
 //}
@@ -715,20 +715,20 @@ bool TrackCollection::updateAutoDjCrate(
 }
 
 // Eve
-// bool TrackCollection::updateAutoDjSmarties(
-//        SmartiesId smartiesId,
+// bool TrackCollection::updateAutoDjSearchCrate(
+//        SearchCrateId searchCrateId,
 //        bool isAutoDjSource) {
 //    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-//    Smarties smarties;
-//    VERIFY_OR_DEBUG_ASSERT(smarties().readSmartiesById(smartiesId, &smarties)) {
+//    SearchCrate searchCrate;
+//    VERIFY_OR_DEBUG_ASSERT(searchCrate().readSearchCrateById(searchCrateId, &searchCrate)) {
 //        return false; // inexistent or failure
 //    }
-//    if (smarties.isAutoDjSource() == isAutoDjSource) {
+//    if (searchCrate.isAutoDjSource() == isAutoDjSource) {
 //        return false; // nothing to do
 //    }
-//    smarties.setAutoDjSource(isAutoDjSource);
-//    return updateSmarties(smarties);
+//    searchCrate.setAutoDjSource(isAutoDjSource);
+//    return updateSearchCrate(searchCrate);
 //}
 // Eve
 

@@ -3,28 +3,28 @@
 #include <QString>
 #include <QVariantList>
 
-#include "library/trackset/smarties/ui_dlgsmartiesinfo.h"
+#include "library/trackset/searchcrate/ui_dlgsearchcrateinfo.h"
 
 class BaseTrackSetFeature;
-class SmartiesSetBlockerOff;
+class SearchCrateSetBlockerOff;
 
-class dlgBaseSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
+class dlgBaseSearchCrateInfo : public QDialog, public Ui::dlgSearchCrateInfo {
     Q_OBJECT
 
   public:
-    explicit dlgBaseSmartiesInfo(BaseTrackSetFeature* feature, QWidget* parent = nullptr);
-    virtual ~dlgBaseSmartiesInfo() = default;
+    explicit dlgBaseSearchCrateInfo(BaseTrackSetFeature* feature, QWidget* parent = nullptr);
+    virtual ~dlgBaseSearchCrateInfo() = default;
 
-    void init(const QVariantList& smartiesData, const QVariantList& playlistsCratesData);
+    void init(const QVariantList& searchCrateData, const QVariantList& playlistsCratesData);
 
     QVariant getUpdatedData() const;
 
   signals:
     void dataUpdated(const QVariantList& updatedData);
-    void requestPreviousSmarties();
-    void requestNextSmarties();
-    void requestNewSmarties();
-    void requestDeleteSmarties();
+    void requestPreviousSearchCrate();
+    void requestNextSearchCrate();
+    void requestNewSearchCrate();
+    void requestDeleteSearchCrate();
 
   public slots:
     void connectConditions();
@@ -55,11 +55,12 @@ class dlgBaseSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
   private:
     void setupConditionUI();
     void populateUI();
-    void initHeaderTable(const QVariantList& smartiesData);
-    void initConditionsTable(const QVariantList& smartiesData);
+    void initHeaderTable(const QVariantList& searchCrateData);
+    void initConditionsTable(const QVariantList& searchCrateData);
+    void initPrevNextTable(const QVariantList& searchCrateData);
     void initPlaylistCrateTable(const QVariantList& playlistsCratesData);
     QString buildWhereClause();
-    QVariantList smartiesData;
+    QVariantList searchCrateData;
     QVariantList collectUIChanges() const;
     //    void onApplyButtonClicked(); // Slot for Apply button
     //    void onOkButtonClicked();    // Slot for OK button
@@ -72,6 +73,7 @@ class dlgBaseSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
     bool m_sendNew;      // Flag to prevent signal loops from onNewButton
     QString headerTable[8];
     QString conditionsTable[13][5];
+    QString prevnextTable[8];
     QList<QPair<QString, QString>> playlistTable;
     QHash<QString, QString> playlistNameHash;
     QHash<QString, QString> playlistIdHash;
@@ -84,7 +86,7 @@ class dlgBaseSmartiesInfo : public QDialog, public Ui::dlgSmartiesInfo {
 
   private slots:
     void onSetBlockerOff(const QString& blocker);
-    void onUpdateSmartiesData(const QVariantList& smartiesData);
+    void onUpdateSearchCrateData(const QVariantList& searchCrateData);
     void toggleLockStatus();
     void storeUIIn2Table();
 };

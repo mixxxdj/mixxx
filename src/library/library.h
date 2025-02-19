@@ -10,7 +10,7 @@
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
 // EVE
-#include "library/trackset/smarties/smartiesid.h"
+#include "library/trackset/searchcrate/searchcrateid.h"
 // EVE
 #endif
 #include "preferences/usersettings.h"
@@ -23,8 +23,8 @@ class BrowseFeature;
 class ControlObject;
 class CrateFeature;
 // EVE
-class SmartiesFeature;
-class GroupedSmartiesFeature;
+class SearchCrateFeature;
+class GroupedSearchCratesFeature;
 // EVE
 class LibraryControl;
 class LibraryFeature;
@@ -134,9 +134,9 @@ class Library: public QObject {
     void slotCreatePlaylist();
     void slotCreateCrate();
     // EVE
-    void slotCreateSmarties();
-    //    void slotCreateSmartiesFromSearch();
-    void slotCreateSmartiesFromSearch(const QString& text);
+    void slotCreateSearchCrate();
+    //    void slotCreateSearchCrateFromSearch();
+    void slotCreateSearchCrateFromSearch(const QString& text);
     // EVE
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
@@ -159,7 +159,7 @@ class Library: public QObject {
     void restoreSearch(const QString&);
     void search(const QString& text);
     // EVE
-    //    void newSmartiesFromSearch(const QString& text);
+    //    void newSearchCratesFromSearch(const QString& text);
     // EVE
     void disableSearch();
     void pasteFromSidebar();
@@ -172,7 +172,7 @@ class Library: public QObject {
     void exportLibrary();
     void exportCrate(CrateId crateId);
     // EVE
-    void exportSmarties(SmartiesId smartiesId);
+    void exportSearchCrate(SearchCrateId searchCrateId);
     // EVE
 #endif
     void saveModelState();
@@ -204,8 +204,8 @@ class Library: public QObject {
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
-    SmartiesFeature* m_pSmartiesFeature;
-    GroupedSmartiesFeature* m_pGroupedSmartiesFeature;
+    SearchCrateFeature* m_pSearchCrateFeature;
+    GroupedSearchCratesFeature* m_pGroupedSearchCratesFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;

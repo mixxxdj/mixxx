@@ -29,9 +29,9 @@
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
 // EVE
-#include "library/trackset/smarties/smarties.h"
-#include "library/trackset/smarties/smartiesfeaturehelper.h"
-#include "library/trackset/smarties/smartiessummary.h"
+#include "library/trackset/searchcrate/searchcrate.h"
+#include "library/trackset/searchcrate/searchcratefeaturehelper.h"
+#include "library/trackset/searchcrate/searchcratesummary.h"
 // EVE
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -194,11 +194,14 @@ void WTrackMenu::createMenus() {
     }
 
     // EVE -> SMARTIES
-    if (featureIsEnabled(Feature::Smarties)) {
-        m_pSmartiesMenu = make_parented<QMenu>(this);
-        m_pSmartiesMenu->setTitle(tr("Smarties"));
-        m_pSmartiesMenu->setObjectName("SmartiesMenu");
-        connect(m_pSmartiesMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateSmartiesMenu);
+    if (featureIsEnabled(Feature::SearchCrate)) {
+        m_pSearchCrateMenu = make_parented<QMenu>(this);
+        m_pSearchCrateMenu->setTitle(tr("SearchCrate"));
+        m_pSearchCrateMenu->setObjectName("SearchCrateMenu");
+        connect(m_pSearchCrateMenu,
+                &QMenu::aboutToShow,
+                this,
+                &WTrackMenu::slotPopulateSearchCrateMenu);
     }
     // EVE
 
@@ -1070,10 +1073,10 @@ void WTrackMenu::updateMenus() {
     }
 
     // EVE -> SMARTIES
-    if (featureIsEnabled(Feature::Smarties)) {
-        // Smarties menu is lazy loaded on hover by slotPopulateSmartiesMenu
+    if (featureIsEnabled(Feature::SearchCrate)) {
+        // SearchCrate menu is lazy loaded on hover by slotPopulateSearchCrateMenu
         // to avoid unnecessary database queries
-        m_bSmartiesMenuLoaded = false;
+        m_bSearchCrateMenuLoaded = false;
     }
     // EVE
 
@@ -1647,31 +1650,31 @@ void WTrackMenu::slotPopulateCrateMenu() {
 }
 
 // EVE -> SMARTIES
-void WTrackMenu::slotPopulateSmartiesMenu() {
-    // The user may open the Smarties submenu, move their cursor away, then
-    // return to the Smarties submenu before exiting the track context menu.
+void WTrackMenu::slotPopulateSearchCrateMenu() {
+    // The user may open the SearchCrate submenu, move their cursor away, then
+    // return to the SearchCrate submenu before exiting the track context menu.
     // Avoid querying the database multiple times in that case.
-    if (m_bSmartiesMenuLoaded) {
+    if (m_bSearchCrateMenuLoaded) {
         return;
     }
-    m_pSmartiesMenu->clear();
+    m_pSearchCrateMenu->clear();
     const TrackIdList trackIds = getTrackIds();
 
-    SmartiesSummarySelectResult allSmarties(
+    SearchCrateSummarySelectResult allSearchCrate(
             m_pLibrary->trackCollectionManager()
                     ->internalCollection()
-                    ->smarties()
-                    .selectSmartiesWithTrackCount(trackIds));
+                    ->searchCrates()
+                    .selectSearchCrateWithTrackCount(trackIds));
 
-    SmartiesSummary smarties;
-    while (allSmarties.populateNext(&smarties)) {
+    SearchCrateSummary searchCrate;
+    while (allSearchCrate.populateNext(&searchCrate)) {
         auto pAction = make_parented<QWidgetAction>(
-                m_pSmartiesMenu);
+                m_pSearchCrateMenu);
         auto pCheckBox = make_parented<QCheckBox>(
-                mixxx::escapeTextPropertyWithoutShortcuts(smarties.getName()),
-                m_pSmartiesMenu);
-        pCheckBox->setProperty("smartiesId", QVariant::fromValue(smarties.getId()));
-        pCheckBox->setEnabled(!smarties.isLocked());
+                mixxx::escapeTextPropertyWithoutShortcuts(searchCrate.getName()),
+                m_pSearchCrateMenu);
+        pCheckBox->setProperty("searchCrateId", QVariant::fromValue(searchCrate.getId()));
+        pCheckBox->setEnabled(!searchCrate.isLocked());
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately
         // does not work with QWidgetAction. :hover works for selecting items
@@ -1686,32 +1689,32 @@ void WTrackMenu::slotPopulateSmartiesMenu() {
         //                    pCheckBox->palette().text().color().name()) + "\n" +
         //            QString("QCheckBox:hover {background-color: %1;}").arg(
         //                    pCheckBox->palette().highlight().color().name()));
-        pAction->setEnabled(!smarties.isLocked());
+        pAction->setEnabled(!searchCrate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
 
-        if (smarties.getTrackCount() == 0) {
+        if (searchCrate.getTrackCount() == 0) {
             pCheckBox->setChecked(false);
-        } else if (smarties.getTrackCount() == (uint)trackIds.length()) {
+        } else if (searchCrate.getTrackCount() == (uint)trackIds.length()) {
             pCheckBox->setChecked(true);
         } else {
             pCheckBox->setTristate(true);
             pCheckBox->setCheckState(Qt::PartiallyChecked);
         }
 
-        m_pSmartiesMenu->addAction(pAction.get());
+        m_pSearchCrateMenu->addAction(pAction.get());
         //        connect(pAction.get(), &QAction::triggered, this, [this,
         //        pCheckBox{pCheckBox.get()}] {
-        //        updateSelectionSmarties(pCheckBox); });
+        //        updateSelectionSearchCrate(pCheckBox); });
         //        connect(pCheckBox.get(), &QCheckBox::stateChanged, this,
         //        [this, pCheckBox{pCheckBox.get()}] {
-        //        updateSelectionSmarties(pCheckBox); });
+        //        updateSelectionSearchCrate(pCheckBox); });
     }
-    m_pSmartiesMenu->addSeparator();
-    //    QAction* newSmartiesAction = new QAction(tr("Add to New Smarties"),
-    //    m_pSmartiesMenu); m_pSmartiesMenu->addAction(newSmartiesAction);
-    //    connect(newSmartiesAction, &QAction::triggered, this,
-    //    &WTrackMenu::addSelectionToNewSmarties);
-    m_bSmartiesMenuLoaded = true;
+    m_pSearchCrateMenu->addSeparator();
+    //    QAction* newSearchCrateAction = new QAction(tr("Add to New SearchCrate"),
+    //    m_pSearchCrateMenu); m_pSearchCrateMenu->addAction(newSearchCrateAction);
+    //    connect(newSearchCrateAction, &QAction::triggered, this,
+    //    &WTrackMenu::addSelectionToNewSearchCrate);
+    m_bSearchCrateMenuLoaded = true;
 }
 // EVE
 

@@ -1,23 +1,23 @@
-#include "dlgbasesmartiesinfo.h"
+#include "dlgbasesearchcrateinfo.h"
 
 #include "library/trackset/basetracksetfeature.h"
-#include "library/trackset/smarties/smartiesfuntions.h"
-#include "moc_dlgbasesmartiesinfo.cpp"
+#include "library/trackset/searchcrate/searchcratefuntions.h"
+#include "moc_dlgbasesearchcrateinfo.cpp"
 
 // const bool sDebug = false;
 
-dlgBaseSmartiesInfo::dlgBaseSmartiesInfo(BaseTrackSetFeature* feature, QWidget* parent)
+dlgBaseSearchCrateInfo::dlgBaseSearchCrateInfo(BaseTrackSetFeature* feature, QWidget* parent)
         : QDialog(parent),
           m_feature(feature) {
     setupUi(this);
-    connect(buttonLock, &QPushButton::clicked, this, &dlgBaseSmartiesInfo::toggleLockStatus);
+    connect(buttonLock, &QPushButton::clicked, this, &dlgBaseSearchCrateInfo::toggleLockStatus);
     connect(m_feature,
-            &BaseTrackSetFeature::updateSmartiesData,
+            &BaseTrackSetFeature::updateSearchCrateData,
             this,
-            &dlgBaseSmartiesInfo::onUpdateSmartiesData);
+            &dlgBaseSearchCrateInfo::onUpdateSearchCrateData);
 }
 
-void dlgBaseSmartiesInfo::init(const QVariantList& smartiesData,
+void dlgBaseSearchCrateInfo::init(const QVariantList& searchCratesData,
         const QVariantList& playlistsCratesData) {
     // Initialize tables and UI
     for (int i = 0; i < 8; ++i)
@@ -27,9 +27,13 @@ void dlgBaseSmartiesInfo::init(const QVariantList& smartiesData,
             conditionsTable[i][j] = "";
         }
     }
-    if (!smartiesData.isEmpty()) {
-        initHeaderTable(smartiesData);
-        initConditionsTable(smartiesData);
+    for (int i = 0; i < 5; ++i)
+        prevnextTable[i] = "";
+
+    if (!searchCratesData.isEmpty()) {
+        initHeaderTable(searchCratesData);
+        initConditionsTable(searchCratesData);
+        initPrevNextTable(searchCratesData);
     }
     if (!playlistsCratesData.isEmpty()) {
         initPlaylistCrateTable(playlistsCratesData);
@@ -40,7 +44,7 @@ void dlgBaseSmartiesInfo::init(const QVariantList& smartiesData,
     updateConditionState();
 }
 
-void dlgBaseSmartiesInfo::connectConditions() {
+void dlgBaseSearchCrateInfo::connectConditions() {
     for (int i = 1; i <= 12; ++i) {
         auto* fieldComboBox = findChild<QComboBox*>(
                 QStringLiteral("comboBoxCondition%1Field").arg(i));
@@ -58,28 +62,28 @@ void dlgBaseSmartiesInfo::connectConditions() {
             connect(fieldComboBox,
                     &QComboBox::currentTextChanged,
                     this,
-                    &dlgBaseSmartiesInfo::updateConditionState);
+                    &dlgBaseSearchCrateInfo::updateConditionState);
             connect(operatorComboBox,
                     &QComboBox::currentTextChanged,
                     this,
-                    &dlgBaseSmartiesInfo::updateConditionState);
+                    &dlgBaseSearchCrateInfo::updateConditionState);
             connect(valueLineEdit,
                     &QLineEdit::textChanged,
                     this,
-                    &dlgBaseSmartiesInfo::updateConditionState);
+                    &dlgBaseSearchCrateInfo::updateConditionState);
             connect(valueComboBox,
                     &QComboBox::currentTextChanged,
                     this,
-                    &dlgBaseSmartiesInfo::updateConditionState);
+                    &dlgBaseSearchCrateInfo::updateConditionState);
             connect(combinerComboBox,
                     &QComboBox::currentTextChanged,
                     this,
-                    &dlgBaseSmartiesInfo::updateConditionState);
+                    &dlgBaseSearchCrateInfo::updateConditionState);
         }
     }
 }
 
-void dlgBaseSmartiesInfo::setupConditionUI() {
+void dlgBaseSearchCrateInfo::setupConditionUI() {
     for (int i = 1; i <= 12; ++i) {
         auto* fieldComboBox = findChild<QComboBox*>(
                 QStringLiteral("comboBoxCondition%1Field").arg(i));
@@ -100,19 +104,19 @@ void dlgBaseSmartiesInfo::setupConditionUI() {
             connect(fieldComboBox,
                     QOverload<int>::of(&QComboBox::currentIndexChanged),
                     this,
-                    &dlgBaseSmartiesInfo::onFieldComboBoxChanged);
+                    &dlgBaseSearchCrateInfo::onFieldComboBoxChanged);
         }
         if (operatorComboBox) {
             connect(operatorComboBox,
                     QOverload<int>::of(&QComboBox::currentIndexChanged),
                     this,
-                    &dlgBaseSmartiesInfo::onOperatorComboBoxChanged);
+                    &dlgBaseSearchCrateInfo::onOperatorComboBoxChanged);
         }
         if (valueComboBox) {
             connect(valueComboBox,
                     QOverload<int>::of(&QComboBox::currentIndexChanged),
                     this,
-                    &dlgBaseSmartiesInfo::onValueComboBoxChanged);
+                    &dlgBaseSearchCrateInfo::onValueComboBoxChanged);
         }
         if (insertConditionButton) {
             connect(insertConditionButton,
@@ -141,36 +145,49 @@ void dlgBaseSmartiesInfo::setupConditionUI() {
     }
 }
 
-void dlgBaseSmartiesInfo::initHeaderTable(const QVariantList& smartiesData) {
+void dlgBaseSearchCrateInfo::initHeaderTable(const QVariantList& searchCratesData) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Initialize headerTable with smartiesData ";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Initialize headerTable with searchCratesData ";
     }
     for (int i = 0; i < 8; ++i) {
-        headerTable[i] = smartiesData[i].isNull() ? "" : smartiesData[i].toString();
+        headerTable[i] = searchCratesData[i].isNull() ? "" : searchCratesData[i].toString();
     }
 }
 
-void dlgBaseSmartiesInfo::initConditionsTable(const QVariantList& smartiesData) {
+void dlgBaseSearchCrateInfo::initPrevNextTable(const QVariantList& searchCratesData) {
+    // Start at position 56 for prev/next pointers
+    if (sDebug) {
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Initialize prevnextTable with searchCratesData";
+    }
+    for (int i = 0; i < 4; ++i) {
+        prevnextTable[i] = searchCratesData[56 + i].isNull()
+                ? ""
+                : searchCratesData[56 + i].toString();
+    }
+}
+
+void dlgBaseSearchCrateInfo::initConditionsTable(const QVariantList& searchCratesData) {
     int conditionStartIndex =
             4; // 8 fields in header, starting at 0, counter in for starts at 1
-               // -> position where conditions start in smartiesData
+               // -> position where conditions start in searchCratesData
     int baseIndex = 0;
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Initialize conditionsTable with smartiesData ";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Initialize conditionsTable "
+                    "with searchCratesData ";
     }
     for (int i = 1; i <= 12; ++i) {
         baseIndex = conditionStartIndex + (i * 4);
         for (int j = 1; j <= 4; ++j) {
-            conditionsTable[i][j] = smartiesData[baseIndex + (j - 1)].isNull()
+            conditionsTable[i][j] = searchCratesData[baseIndex + (j - 1)].isNull()
                     ? ""
-                    : smartiesData[baseIndex + (j - 1)].toString();
+                    : searchCratesData[baseIndex + (j - 1)].toString();
         }
     }
 }
 
-void dlgBaseSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCratesData) {
+void dlgBaseSearchCrateInfo::initPlaylistCrateTable(const QVariantList& playlistsCratesData) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Initialize playlistTable & "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Initialize playlistTable & "
                     "historyTable & crateTable with playlistsCratesData ";
     }
     playlistTable.clear();
@@ -193,7 +210,7 @@ void dlgBaseSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCr
             playlistNameHash.insert(name, id);
             playlistIdHash.insert(id, name);
             if (sDebug) {
-                qDebug() << "[SMARTIES] [EDIT DLG] --> Init playlistTable "
+                qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Init playlistTable "
                             "append id "
                          << id << " name " << name;
             }
@@ -202,7 +219,7 @@ void dlgBaseSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCr
             historyNameHash.insert(name, id);
             historyIdHash.insert(id, name);
             if (sDebug) {
-                qDebug() << "[SMARTIES] [EDIT DLG] --> Init historyTable "
+                qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Init historyTable "
                             "append id "
                          << id << " name " << name;
             }
@@ -211,68 +228,69 @@ void dlgBaseSmartiesInfo::initPlaylistCrateTable(const QVariantList& playlistsCr
             crateNameHash.insert(name, id);
             crateIdHash.insert(id, name);
             if (sDebug) {
-                qDebug() << "[SMARTIES] [EDIT DLG] --> Init cratelistTable "
+                qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Init cratelistTable "
                             "append id "
                          << id << " name " << name;
             }
         }
     }
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Finished playlistTable & "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Finished playlistTable & "
                     "crateTable & historyTable with playlistsCratesData ";
     }
 }
 
-void dlgBaseSmartiesInfo::onSetBlockerOff(const QString& blocker) {
+void dlgBaseSearchCrateInfo::onSetBlockerOff(const QString& blocker) {
     if (blocker == "previous") {
         //        m_sendPrevious = !m_sendPrevious; // set the onPrevious signal
         //        back to false after previousprocedure
-        // qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from
+        // qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from
         // feature -> SET 'previous' off";
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from "
                     "feature -> Change 'previous' flag to:"
                  << m_sendPrevious;
     } else if (blocker == "next") {
         //        m_sendNext = !m_sendNext; // set the onNext signal back to
         //        false after nextprocedure
-        // qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from
+        // qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from
         // feature -> SET 'next' off";
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from "
                     "feature -> Change 'next' flag to:"
                  << m_sendNext;
     } else if (blocker == "delete") {
         //        m_sendDelete = !m_sendDelete; // set the onDelete signal back
         //        to false after deleteprocedure
-        // qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from
+        // qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from
         // feature -> SET 'delete' off";
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from "
                     "feature -> Change 'delete' flag to:"
                  << m_sendDelete;
     } else if (blocker == "new") {
         //        m_sendNew = !m_sendNew; // set the onNew signal back to false
         //        after deleteprocedure
-        // qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from
+        // qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from
         // feature -> SET 'new' off";
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from "
                     "feature -> Change 'new' flag to:"
                  << m_sendNew;
     } else if (blocker == "update") {
         //        m_isUpdatingUI = !m_isUpdatingUI; // Set the flag to indicate UI is being updated
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received from "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received from "
                     "feature -> Change 'update' flag to:"
                  << m_isUpdatingUI;
     }
 }
 
-void dlgBaseSmartiesInfo::onUpdateSmartiesData(const QVariantList& smartiesData) {
+void dlgBaseSearchCrateInfo::onUpdateSearchCrateData(const QVariantList& searchCratesData) {
     m_isUpdatingUI = true; // Set the flag to indicate UI is being updated
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL RCVD Received Signal "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL RCVD Received Signal "
                     "from feature -> UPDATE Initializing with data:"
-                 << smartiesData;
+                 << searchCratesData;
     }
-    initHeaderTable(smartiesData);
-    initConditionsTable(smartiesData);
+    initHeaderTable(searchCratesData);
+    initConditionsTable(searchCratesData);
+    initPrevNextTable(searchCratesData);
     //    m_sendDelete = false; // set the onDelete signal back to false after deleteprocedure
     //    m_sendPrevious = false; // set the onPrevious signal back to false after previousprocedure
     //    m_sendNext = false; // set the onNext signal back to false after nextprocedure
@@ -280,12 +298,12 @@ void dlgBaseSmartiesInfo::onUpdateSmartiesData(const QVariantList& smartiesData)
     populateUI();
 }
 
-QVariant dlgBaseSmartiesInfo::getUpdatedData() const {
+QVariant dlgBaseSearchCrateInfo::getUpdatedData() const {
     // Collect and return the updated data
     return collectUIChanges();
 }
 
-void dlgBaseSmartiesInfo::populateUI() {
+void dlgBaseSearchCrateInfo::populateUI() {
     m_isUpdatingUI = true; // Set update flag to prevent emitting signals during population
     lineEditID->setText(headerTable[0]);
     lineEditID->setReadOnly(true);
@@ -406,13 +424,13 @@ void dlgBaseSmartiesInfo::populateUI() {
                         }
                     }
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> playlistName "
                                  << playlistName;
                     }
                 }
                 if (sDebug) {
-                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> conditionsTable[i][3] "
                              << conditionsTable[i][3];
                 }
@@ -442,13 +460,13 @@ void dlgBaseSmartiesInfo::populateUI() {
                         }
                     }
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> historyName "
                                  << historyName;
                     }
                 }
                 if (sDebug) {
-                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> conditionsTable[i][3] "
                              << conditionsTable[i][3];
                 }
@@ -477,13 +495,13 @@ void dlgBaseSmartiesInfo::populateUI() {
                         }
                     }
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                     "comboBoxValue -> crateName "
                                  << crateName;
                     }
                 }
                 if (sDebug) {
-                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> conditionsTable[i][3] "
                              << conditionsTable[i][3];
                 }
@@ -500,13 +518,13 @@ void dlgBaseSmartiesInfo::populateUI() {
                 valueComboBox->addItem("all historylists");
                 valueComboBox->setCurrentText(conditionsTable[i][3]);
                 if (sDebug) {
-                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> conditionsTable[i][3] "
                              << conditionsTable[i][3];
                 }
             } else {
                 if (sDebug) {
-                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> NO playlist / NO crate";
                 }
                 valueLineEdit->setVisible(true);
@@ -532,31 +550,31 @@ void dlgBaseSmartiesInfo::populateUI() {
     connect(applyButton,
             &QPushButton::clicked,
             this,
-            &dlgBaseSmartiesInfo::onApplyButtonClicked);
-    connect(newButton, &QPushButton::clicked, this, &dlgBaseSmartiesInfo::onNewButtonClicked);
+            &dlgBaseSearchCrateInfo::onApplyButtonClicked);
+    connect(newButton, &QPushButton::clicked, this, &dlgBaseSearchCrateInfo::onNewButtonClicked);
     connect(deleteButton,
             &QPushButton::clicked,
             this,
-            &dlgBaseSmartiesInfo::onDeleteButtonClicked);
+            &dlgBaseSearchCrateInfo::onDeleteButtonClicked);
     connect(previousButton,
             &QPushButton::clicked,
             this,
-            &dlgBaseSmartiesInfo::onPreviousButtonClicked);
-    connect(nextButton, &QPushButton::clicked, this, &dlgBaseSmartiesInfo::onNextButtonClicked);
-    connect(okButton, &QPushButton::clicked, this, &dlgBaseSmartiesInfo::onOKButtonClicked);
+            &dlgBaseSearchCrateInfo::onPreviousButtonClicked);
+    connect(nextButton, &QPushButton::clicked, this, &dlgBaseSearchCrateInfo::onNextButtonClicked);
+    connect(okButton, &QPushButton::clicked, this, &dlgBaseSearchCrateInfo::onOKButtonClicked);
     connect(cancelButton,
             &QPushButton::clicked,
             this,
-            &dlgBaseSmartiesInfo::onCancelButtonClicked);
+            &dlgBaseSearchCrateInfo::onCancelButtonClicked);
     // set
     m_isUpdatingUI = false;
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATEUI READY" << headerTable[0];
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATEUI READY" << headerTable[0];
     }
 }
 
 // narrow possible operator selections based on field selection
-void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
+void dlgBaseSearchCrateInfo::onFieldComboBoxChanged() {
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",
@@ -703,7 +721,7 @@ void dlgBaseSmartiesInfo::onFieldComboBoxChanged() {
 }
 
 // narrow possible operator selections based on field selection
-void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
+void dlgBaseSearchCrateInfo::onOperatorComboBoxChanged() {
     QStringList stringFieldOptions = {"artist",
             "title",
             "album",
@@ -1119,7 +1137,7 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
             valueComboBox->addItem("all crates");
             valueComboBox->addItem("all historylists");
             if (sDebug) {
-                qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                             "comboBoxValue -> track -> all p/c/h ";
             }
         }
@@ -1155,7 +1173,7 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
             for (auto it = playlistTable.constBegin(); it != playlistTable.constEnd(); ++it) {
                 valueComboBox->addItem(it->second);
                 if (sDebug) {
-                    qDebug() << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                 "comboBoxValue -> playlist -> it->second "
                              << it->second << " it->first "
                              << it->first;
@@ -1170,7 +1188,7 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
                 valueComboBox->addItem(it->second);
                 if (sDebug) {
                     qDebug()
-                            << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                            << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                "comboBoxValue -> historylist -> it->second "
                             << it->second << " it->first "
                             << it->first;
@@ -1185,7 +1203,7 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
                 valueComboBox->addItem(it->second);
                 if (sDebug) {
                     qDebug()
-                            << "[SMARTIES] [EDIT DLG] --> POPULATE "
+                            << "[SEARCHCRATES] [EDIT DLG] --> POPULATE "
                                "comboBoxValue -> cratelist -> it->second "
                             << it->second << " it->first "
                             << it->first;
@@ -1196,7 +1214,7 @@ void dlgBaseSmartiesInfo::onOperatorComboBoxChanged() {
     }
 }
 
-void dlgBaseSmartiesInfo::onValueComboBoxChanged() {
+void dlgBaseSearchCrateInfo::onValueComboBoxChanged() {
     // Find the value combo box
     QComboBox* valueComboBox = qobject_cast<QComboBox*>(sender());
     if (!valueComboBox) {
@@ -1219,7 +1237,7 @@ void dlgBaseSmartiesInfo::onValueComboBoxChanged() {
     }
 }
 
-void dlgBaseSmartiesInfo::storeUIIn2Table() {
+void dlgBaseSearchCrateInfo::storeUIIn2Table() {
     headerTable[0] = lineEditID->text();
     headerTable[1] = lineEditName->text();
     headerTable[2] = QStringLiteral("%1").arg(spinBoxCount->value());
@@ -1321,7 +1339,7 @@ void dlgBaseSmartiesInfo::storeUIIn2Table() {
 }
 
 // validatity check
-bool dlgBaseSmartiesInfo::validationCheck() {
+bool dlgBaseSearchCrateInfo::validationCheck() {
     storeUIIn2Table();
     textEditValidation->setText(QString(""));
     QStringList stringFieldOptions = {"artist",
@@ -1369,7 +1387,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     checkFieldMatchesOperator = false;
                     foundMatchError = true;
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror String in condition "
                                  << i;
                     }
@@ -1377,7 +1395,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     textEditValidation->setText(
                             QStringLiteral("Your conditions contain errors: the "
                                            "chosen field and operator don't match in "
-                                           "condition %1 \n. Smarties is NOT saved.")
+                                           "condition %1 \n. SearchCrates is NOT saved.")
                                     .arg(i));
                 }
             } else if (dateFieldOptions.contains(conditionsTable[i][1])) {
@@ -1385,7 +1403,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     checkFieldMatchesOperator = false;
                     foundMatchError = true;
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror Date in condition "
                                  << i;
                     }
@@ -1393,7 +1411,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     textEditValidation->setText(
                             QStringLiteral("Your conditions contain errors: the "
                                            "chosen field and operator don't match in "
-                                           "condition %1 \n. Smarties is NOT saved.")
+                                           "condition %1 \n. SearchCrates is NOT saved.")
                                     .arg(i));
                 }
             } else if (numberFieldOptions.contains(conditionsTable[i][1])) {
@@ -1401,7 +1419,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     checkFieldMatchesOperator = false;
                     foundMatchError = true;
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror Number in condition "
                                  << i;
                     }
@@ -1409,7 +1427,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     textEditValidation->setText(
                             QStringLiteral("Your conditions contain errors: the "
                                            "chosen field and operator don't match in "
-                                           "condition %1 \n. Smarties is NOT saved.")
+                                           "condition %1 \n. SearchCrates is NOT saved.")
                                     .arg(i));
                 }
                 // track in all crates / playlists / historylists
@@ -1418,7 +1436,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     checkFieldMatchesOperator = false;
                     foundMatchError = true;
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror Track in condition "
                                  << i;
                     }
@@ -1426,7 +1444,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     textEditValidation->setText(
                             QStringLiteral("Your conditions contain errors: the "
                                            "chosen field and operator don't match in "
-                                           "condition %1 \n. Smarties is NOT saved.")
+                                           "condition %1 \n. SearchCrates is NOT saved.")
                                     .arg(i));
                 }
             } else if (playlistCrateFieldOptions.contains(conditionsTable[i][1])) {
@@ -1434,7 +1452,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     checkFieldMatchesOperator = false;
                     foundMatchError = true;
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror Number in condition "
                                  << i;
                     }
@@ -1442,7 +1460,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                     textEditValidation->setText(
                             QStringLiteral("Your conditions contain errors: the "
                                            "chosen field and operator don't match in "
-                                           "condition %1 \n. Smarties is NOT saved.")
+                                           "condition %1 \n. SearchCrates is NOT saved.")
                                     .arg(i));
                 }
             }
@@ -1450,7 +1468,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
             if (conditionsTable[i][2] == "between") {
                 if (!conditionsTable[i][3].contains("|")) {
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror between Operator and input value in condition "
                                  << i << "no '|' in 'between'-condition.";
                     }
@@ -1462,7 +1480,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                            "When you use the 'between'-operator, "
                                            "the input values need to be separated by a '|'. \n"
                                            "e.g. 2|107 \n"
-                                           "Smarties is NOT saved.")
+                                           "SearchCrates is NOT saved.")
                                     .arg(i));
                     checkFieldMatchesOperator = false;
                     // checkOperatorMatchesValue = false;
@@ -1472,7 +1490,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                         (conditionsTable[i][3].indexOf("|", 0) ==
                                 conditionsTable[i][3].length() - 1)) {
                     if (sDebug) {
-                        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+                        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                                     "Matcherror between Operator and input value in condition "
                                  << i << "missing value in 'between'-condition.";
                     }
@@ -1485,7 +1503,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                            "the input values need to be numbers or "
                                            "dates separated by a '|'. \n"
                                            "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
-                                           "Smarties is NOT saved.")
+                                           "SearchCrates is NOT saved.")
                                     .arg(i));
                     checkFieldMatchesOperator = false;
                     foundMatchError = true;
@@ -1515,17 +1533,17 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                             bool FromValid = From.isValid();
                             bool ToValid = To.isValid();
                             if (sDebug) {
-                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                qDebug() << "[SEARCHCRATES] [EDIT DLG] "
                                             "[VALIDATION] --> From: "
                                          << From << " Valid = " << FromValid;
-                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                qDebug() << "[SEARCHCRATES] [EDIT DLG] "
                                             "[VALIDATION] --> To: "
                                          << To << " Valid = " << ToValid;
                             }
                             if ((!FromValid) || (!ToValid)) {
                                 // one / both of the dates are INvalid
                                 if (sDebug) {
-                                    qDebug() << "[SMARTIES] [EDIT DLG] "
+                                    qDebug() << "[SEARCHCRATES] [EDIT DLG] "
                                                 "[VALIDATION] --> "
                                              << "Matcherror between Operator "
                                                 "and input value in condition "
@@ -1542,7 +1560,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                         "the input values need to be numbers "
                                         "or dates separated by a '|'. \n"
                                         "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
-                                        "Smarties is NOT saved.")
+                                        "SearchCrates is NOT saved.")
                                                 .arg(i));
                                 checkFieldMatchesOperator = false;
                                 foundMatchError = true;
@@ -1550,7 +1568,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                         } else {
                             // one of the dates is not correct mask YYYY-MM-DD
                             if (sDebug) {
-                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                qDebug() << "[SEARCHCRATES] [EDIT DLG] "
                                             "[VALIDATION] --> "
                                          << "Matcherror between Operator and "
                                             "input value in condition "
@@ -1567,7 +1585,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                     "the input values need to be numbers or "
                                     "dates separated by a '|'. \n"
                                     "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
-                                    "Smarties is NOT saved.")
+                                    "SearchCrates is NOT saved.")
                                             .arg(i));
                             checkFieldMatchesOperator = false;
                             foundMatchError = true;
@@ -1580,7 +1598,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                 conditionsTable[i][3].length() - posBar + 1);
                         if ((From.toInt() > 36500) || (To.toInt() > 36500)) {
                             if (sDebug) {
-                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                qDebug() << "[SEARCHCRATES] [EDIT DLG] "
                                             "[VALIDATION] --> "
                                             "Matcherror between Operator and "
                                             "input value in condition "
@@ -1599,14 +1617,14 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                     "input values need to be numbers or dates "
                                     "separated by a '|'. \n"
                                     "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
-                                    "Smarties is NOT saved.")
+                                    "SearchCrates is NOT saved.")
                                             .arg(i));
                             checkFieldMatchesOperator = false;
                             foundMatchError = true;
                         } else if ((From.toInt() / From.toInt() != 1) ||
                                 (To.toInt() / To.toInt() != 1)) {
                             if (sDebug) {
-                                qDebug() << "[SMARTIES] [EDIT DLG] "
+                                qDebug() << "[SEARCHCRATES] [EDIT DLG] "
                                             "[VALIDATION] --> "
                                             "Matcherror between Operator and "
                                             "input value in condition "
@@ -1623,7 +1641,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                                     "the input values need to be numbers or "
                                     "dates separated by a '|'. \n"
                                     "e.g. 2|107 or 1988-02-29|2015-12-02 \n"
-                                    "Smarties is NOT saved.")
+                                    "SearchCrates is NOT saved.")
                                             .arg(i));
                             checkFieldMatchesOperator = false;
                             foundMatchError = true;
@@ -1661,7 +1679,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
                 textEditValidation->setStyleSheet("color: rgb(255,0,0)");
                 textEditValidation->setText(QStringLiteral(
                         "Your conditions contain errors: You didn't place an ') "
-                        "END' in the last combiner. Smarties is NOT saved."));
+                        "END' in the last combiner. SearchCrates is NOT saved."));
                 conditionsAreValid = false;
             } else {
                 // no conditions created -> std conditions
@@ -1674,7 +1692,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
             textEditValidation->setText(
                     QStringLiteral("Your conditions contain errors: ') END' can only "
                                    "be used at the end of your conditions, you have "
-                                   "%1 occurrences. Smarties is NOT saved.")
+                                   "%1 occurrences. SearchCrates is NOT saved.")
                             .arg(endCounter));
             conditionsAreValid = false;
         }
@@ -1682,18 +1700,18 @@ bool dlgBaseSmartiesInfo::validationCheck() {
         textEditValidation->setStyleSheet("color: rgb(255,0,0)");
         textEditValidation->setText(QStringLiteral(
                 "Your conditions contain errors: You didn't place an ') END' "
-                "in the last combiner. Smarties is NOT saved."));
+                "in the last combiner. SearchCrates is NOT saved."));
         conditionsAreValid = false;
     }
     //
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                     "checkMatchBetweenFieldAndOperator "
                  << checkMatchBetweenFieldAndOperator;
     }
     if (checkMatchBetweenFieldAndOperator) {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> "
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> "
                         "checkMatchBetweenFieldAndOperator "
                      << checkMatchBetweenFieldAndOperator
                      << " checkFieldMatchesOperator "
@@ -1701,17 +1719,17 @@ bool dlgBaseSmartiesInfo::validationCheck() {
         }
         if (foundMatchError) {
             if (sDebug) {
-                qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> ERROR -> NO SAVE ";
+                qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> ERROR -> NO SAVE ";
             }
             conditionsAreValid = false;
         } else {
             if (sDebug) {
-                qDebug() << "[SMARTIES] [EDIT DLG] [VALIDATION] --> OK -> SAVE ";
+                qDebug() << "[SEARCHCRATES] [EDIT DLG] [VALIDATION] --> OK -> SAVE ";
             }
             textEditValidation->setStyleSheet("color: rgb(155,0,0)");
             textEditValidation->setStyleSheet("background-color: rgb(0,155,0)");
             textEditValidation->setText(QStringLiteral(
-                    "Your conditions are valid, the smarties will be saved"));
+                    "Your conditions are valid, the searchCrates will be saved"));
             conditionsAreValid = true;
         }
     }
@@ -1719,7 +1737,7 @@ bool dlgBaseSmartiesInfo::validationCheck() {
 }
 
 // Changes the lock-button states in the UI
-void dlgBaseSmartiesInfo::toggleLockStatus() {
+void dlgBaseSearchCrateInfo::toggleLockStatus() {
     if (buttonLock->text() == "Lock") {
         buttonLock->setText("Unlock");
     } else {
@@ -1727,9 +1745,9 @@ void dlgBaseSmartiesInfo::toggleLockStatus() {
     }
 }
 
-QVariantList dlgBaseSmartiesInfo::collectUIChanges() const {
+QVariantList dlgBaseSearchCrateInfo::collectUIChanges() const {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> CollectUIChanges Started!";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> CollectUIChanges Started!";
     }
     QVariantList updatedData;
     updatedData.append(lineEditID->text());
@@ -1746,68 +1764,74 @@ QVariantList dlgBaseSmartiesInfo::collectUIChanges() const {
         updatedData.append(conditionsTable[i][2]);
         updatedData.append(conditionsTable[i][3]);
         updatedData.append(conditionsTable[i][4]);
-        //        qDebug() << "[SMARTIES] [EDIT DLG] --> Collecting Condition " << i << ":"
+        //        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Collecting Condition " << i << ":"
         //                 << "Field:" << conditionsTable[i][1]
         //                 << "Operator:" << conditionsTable[i][2]
         //                 << "Value:" << conditionsTable[i][3]
         //                 << "Combiner:" << conditionsTable[i][4];
     }
 
-    if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> CollectUIChanges Finished!";
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Collected data:" << updatedData;
+    // add prev/next pointers
+    for (int i = 0; i < 4; ++i) {
+        updatedData.append(prevnextTable[i]);
     }
+
+    //    if (sDebug) {
+    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> CollectUIChanges Finished!";
+    qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Collected data:" << updatedData;
+    //    }
     return updatedData;
 }
 
-void dlgBaseSmartiesInfo::onApplyButtonClicked() {
+void dlgBaseSearchCrateInfo::onApplyButtonClicked() {
     textEditValidation->setText(QStringLiteral(" "));
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Apply button clicked!";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Apply button clicked!";
     }
     storeUIIn2Table();
     QVariantList editedData = collectUIChanges();
     if (validationCheck()) {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> Validation check " << validationCheck();
-            qDebug() << "[SMARTIES] [EDIT DLG] --> Validation check OK";
-            qDebug() << "[SMARTIES] [EDIT DLG] --> Data collected for Apply:" << editedData;
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Validation check " << validationCheck();
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Validation check OK";
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Data collected for Apply:" << editedData;
         }
         emit dataUpdated(editedData); // Emit signal with updated data if needed
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Data applied "
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Data applied "
                         "without closing the dialog";
         }
         textEditValidation->setStyleSheet("color: rgb(155,0,0)");
         //            textEditValidation->setStyleSheet("textcolor: rgb(255,255,255)");
         textEditValidation->setStyleSheet("background-color: rgb(0,155,0)");
-        textEditValidation->setText(QStringLiteral("Validation check OK, The smarties is saved"));
+        textEditValidation->setText(QStringLiteral(
+                "Validation check OK, The searchCrates is saved"));
         headerTable[7] = buildWhereClause();
         populateUI();
         //    accept();
     } else {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> Validation check NIET OK";
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Validation check NIET OK";
         }
         populateUI();
         return;
     }
 }
 
-void dlgBaseSmartiesInfo::onNewButtonClicked() {
+void dlgBaseSearchCrateInfo::onNewButtonClicked() {
     if (!m_isUpdatingUI) { // Only emit if not in update mode
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> New button "
-                        "clicked, emitted requestNewwSmarties signal, current "
-                        "smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> New button "
+                        "clicked, emitted requestNewwSearchCrates signal, current "
+                        "searchCratesID="
                      << headerTable[0];
         }
-        emit requestNewSmarties();
+        emit requestNewSearchCrate();
         m_isUpdatingUI = true;
     } else {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> New button "
-                        "clicked, loop signal blocked, current smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> New button "
+                        "clicked, loop signal blocked, current searchCratesID="
                      << headerTable[0];
         }
         const QSignalBlocker signalBlocker(this);
@@ -1815,20 +1839,20 @@ void dlgBaseSmartiesInfo::onNewButtonClicked() {
     }
 }
 
-void dlgBaseSmartiesInfo::onDeleteButtonClicked() {
+void dlgBaseSearchCrateInfo::onDeleteButtonClicked() {
     if (!m_isUpdatingUI) { // Only emit if not in update mode
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Delete button "
-                        "clicked, emitted requestDeleteSmarties signal, "
-                        "current smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Delete button "
+                        "clicked, emitted requestDeleteSearchCrates signal, "
+                        "current searchCratesID="
                      << headerTable[0];
         }
-        emit requestDeleteSmarties();
+        emit requestDeleteSearchCrate();
         m_isUpdatingUI = true;
     } else {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Delete button "
-                        "clicked, loop signal blocked, current smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Delete button "
+                        "clicked, loop signal blocked, current searchCratesID="
                      << headerTable[0];
         }
         const QSignalBlocker signalBlocker(this);
@@ -1836,21 +1860,21 @@ void dlgBaseSmartiesInfo::onDeleteButtonClicked() {
     }
 }
 
-void dlgBaseSmartiesInfo::onPreviousButtonClicked() {
+void dlgBaseSearchCrateInfo::onPreviousButtonClicked() {
     if (!m_isUpdatingUI) { // Only emit if not in update mode
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Previous "
-                        "button clicked, emitted requestPreviousSmarties "
-                        "signal, current smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Previous "
+                        "button clicked, emitted requestPreviousSearchCrates "
+                        "signal, current searchCratesID="
                      << headerTable[0];
         }
-        emit requestPreviousSmarties();
+        emit requestPreviousSearchCrate();
         m_isUpdatingUI = true;
     } else {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Previous "
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Previous "
                         "button clicked, loop signal blocked, current "
-                        "smartiesID="
+                        "searchCratesID="
                      << headerTable[0];
         }
         const QSignalBlocker signalBlocker(this);
@@ -1858,56 +1882,56 @@ void dlgBaseSmartiesInfo::onPreviousButtonClicked() {
     }
 }
 
-void dlgBaseSmartiesInfo::onNextButtonClicked() {
+void dlgBaseSearchCrateInfo::onNextButtonClicked() {
     if (!m_isUpdatingUI) { // Only emit if not in update mode
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Next button "
-                        "clicked, emitted requestNextSmarties signal, current "
-                        "smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Next button "
+                        "clicked, emitted requestNextSearchCrates signal, current "
+                        "searchCratesID="
                      << headerTable[0];
         }
-        emit requestNextSmarties();
+        emit requestNextSearchCrate();
         m_isUpdatingUI = true;
     } else {
         const QSignalBlocker signalBlocker(this);
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Next button "
-                        "clicked, loop signal blocked, current smartiesID="
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Next button "
+                        "clicked, loop signal blocked, current searchCratesID="
                      << headerTable[0];
         }
         m_isUpdatingUI = false;
     }
 }
 
-void dlgBaseSmartiesInfo::onOKButtonClicked() {
+void dlgBaseSearchCrateInfo::onOKButtonClicked() {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> OK button clicked!";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> OK button clicked!";
     }
     QVariantList editedData = collectUIChanges();
 
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Data collected for Apply:" << editedData;
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Data collected for Apply:" << editedData;
     }
     emit dataUpdated(editedData); // Emit signal with updated data if needed
 
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> SIGNAL SND -> Data saved and dialog closed";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> SIGNAL SND -> Data saved and dialog closed";
     }
     accept();
 }
 
-void dlgBaseSmartiesInfo::onCancelButtonClicked() {
+void dlgBaseSearchCrateInfo::onCancelButtonClicked() {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Cancel button clicked!";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Cancel button clicked!";
     }
     accept();
 }
 
 // begin signal grey out / show next condition
 // check initial state on startup -> call updateConditionState once
-void dlgBaseSmartiesInfo::updateConditionState() {
+void dlgBaseSearchCrateInfo::updateConditionState() {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> updateConditionState started / "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> updateConditionState started / "
                     "enable/disable condition fields";
     }
     // check -> enable the next field?
@@ -1997,7 +2021,7 @@ void dlgBaseSmartiesInfo::updateConditionState() {
     }
     for (int i = 12; i >= 1; --i) {
         if (sDebug) {
-            qDebug() << "[SMARTIES] [EDIT DLG] --> updateConditionState "
+            qDebug() << "[SEARCHCRATES] [EDIT DLG] --> updateConditionState "
                         "enable/disable insert/delete/move up/move down";
         }
         auto* fieldComboBox = findChild<QComboBox*>(
@@ -2022,21 +2046,21 @@ void dlgBaseSmartiesInfo::updateConditionState() {
         }
     }
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> updateConditionState finished";
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> updateConditionState finished";
     }
 }
 //  end signal grey out / show next condition
 
 // conditions: insert / delete / up / down
-void dlgBaseSmartiesInfo::insertCondition(int index) {
+void dlgBaseSearchCrateInfo::insertCondition(int index) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Insert button clicked! on condition #" << index;
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Insert button clicked! on condition #" << index;
     }
     if (index < 1 || index > 11) {
         return;
     }
     //    for (int i = 1; i <= 12; ++i) {
-    //        qDebug() << "[SMARTIES] [EDIT DLG] --> BEFORE INSERT COPY " << i << ":"
+    //        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> BEFORE INSERT COPY " << i << ":"
     //                 << "Field:" << conditionsTable[i][1]
     //                 << "Operator:" << conditionsTable[i][2]
     //                 << "Value:" << conditionsTable[i][3]
@@ -2045,7 +2069,7 @@ void dlgBaseSmartiesInfo::insertCondition(int index) {
 
     // Shift all conditions after this index down
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Insert button clicked on "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Insert button clicked on "
                     "condition #"
                  << index << " copy from 11 to " << index;
     }
@@ -2053,7 +2077,8 @@ void dlgBaseSmartiesInfo::insertCondition(int index) {
         copyCondition(i, i + 1);
     }
     //    for (int i = 1; i <= 12; ++i) {
-    //        qDebug() << "[SMARTIES] [EDIT DLG] --> AFTER INSERT COPY BEFORE CLEAR " << i << ":"
+    //        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> AFTER INSERT COPY
+    //        BEFORE CLEAR " << i << ":"
     //                 << "Field:" << conditionsTable[i][1]
     //                 << "Operator:" << conditionsTable[i][2]
     //                 << "Value:" << conditionsTable[i][3]
@@ -2065,9 +2090,9 @@ void dlgBaseSmartiesInfo::insertCondition(int index) {
     populateUI();
 }
 
-void dlgBaseSmartiesInfo::removeCondition(int index) {
+void dlgBaseSearchCrateInfo::removeCondition(int index) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Remove button clicked! on condition #" << index;
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Remove button clicked! on condition #" << index;
     }
     if (index < 1 || index > 12) {
         return;
@@ -2075,7 +2100,7 @@ void dlgBaseSmartiesInfo::removeCondition(int index) {
 
     // Shift all conditions after this index up
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Remove condition #" << index
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Remove condition #" << index
                  << " copy from " << index << " < 12";
     }
     for (int i = index; i < 12; ++i) {
@@ -2086,9 +2111,9 @@ void dlgBaseSmartiesInfo::removeCondition(int index) {
     populateUI();
 }
 
-void dlgBaseSmartiesInfo::swapConditionWithAbove(int index) {
+void dlgBaseSearchCrateInfo::swapConditionWithAbove(int index) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Swap with above button clicked! "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Swap with above button clicked! "
                     "on condition #"
                  << index;
     }
@@ -2097,16 +2122,16 @@ void dlgBaseSmartiesInfo::swapConditionWithAbove(int index) {
     }
     // Swap the current condition with the one above
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Swap with above condition # : "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Swap with above condition # : "
                  << index << " with " << index - 1;
     }
     swapConditions(index, index - 1);
     populateUI();
 }
 
-void dlgBaseSmartiesInfo::swapConditionWithBelow(int index) {
+void dlgBaseSearchCrateInfo::swapConditionWithBelow(int index) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Swap with below button clicked! "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Swap with below button clicked! "
                     "on condition #"
                  << index;
     }
@@ -2115,16 +2140,16 @@ void dlgBaseSmartiesInfo::swapConditionWithBelow(int index) {
     }
     // Swap the current condition with the one below
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> Swap with below condition # : "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> Swap with below condition # : "
                  << index << " with " << index + 1;
     }
     swapConditions(index, index + 1);
     populateUI();
 }
 
-void dlgBaseSmartiesInfo::copyCondition(int fromIndex, int toIndex) {
+void dlgBaseSearchCrateInfo::copyCondition(int fromIndex, int toIndex) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> copy condition from "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> copy condition from "
                  << fromIndex << " to " << toIndex;
     }
     if (fromIndex < 1 || fromIndex > 12 || toIndex < 1 || toIndex > 12) {
@@ -2136,9 +2161,9 @@ void dlgBaseSmartiesInfo::copyCondition(int fromIndex, int toIndex) {
     }
 }
 
-void dlgBaseSmartiesInfo::clearCondition(int index) {
+void dlgBaseSearchCrateInfo::clearCondition(int index) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> clear condition #" << index;
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> clear condition #" << index;
     }
     // Clear the condition on the index row
     for (int j = 1; j <= 4; ++j) {
@@ -2146,9 +2171,9 @@ void dlgBaseSmartiesInfo::clearCondition(int index) {
     }
 }
 
-void dlgBaseSmartiesInfo::swapConditions(int index1, int index2) {
+void dlgBaseSearchCrateInfo::swapConditions(int index1, int index2) {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] --> swap conditions " << index1 << " and " << index2;
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] --> swap conditions " << index1 << " and " << index2;
     }
     // Swap the condition between rows index1 & index2 -> field
     QString tempField = conditionsTable[index1][1];
@@ -2171,9 +2196,9 @@ void dlgBaseSmartiesInfo::swapConditions(int index1, int index2) {
     conditionsTable[index2][4] = tempCombiner;
 }
 
-QString dlgBaseSmartiesInfo::buildWhereClause() {
+QString dlgBaseSearchCrateInfo::buildWhereClause() {
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] [GETWHERECLAUSEFORSMARTIES] "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] [GETWHERECLAUSEFORSEARCHCRATES] "
                     "[CONSTRUCT SQL] --> start constructing buildWhereClause";
     }
     QString whereClause = "(";
@@ -2185,7 +2210,8 @@ QString dlgBaseSmartiesInfo::buildWhereClause() {
         const QString& value = conditionsTable[i][3];
 
         //  begin build condition
-        //  function moved to smartiesfunctions.h to share it with dlgsmartiesinfo to create preview
+        //  function moved to searchCratesfunctions.h to share it with
+        //  dlgsearchCratesinfo to create preview
         const QString& condition = buildCondition(field, op, value);
 
         //  end build condition
@@ -2219,7 +2245,7 @@ QString dlgBaseSmartiesInfo::buildWhereClause() {
     }
 
     if (sDebug) {
-        qDebug() << "[SMARTIES] [EDIT DLG] [GETWHERECLAUSEFORSMARTIES] "
+        qDebug() << "[SEARCHCRATES] [EDIT DLG] [GETWHERECLAUSEFORSEARCHCRATES] "
                     "[CONSTRUCT SQL] -> Constructed WHERE clause:"
                  << whereClause;
     }

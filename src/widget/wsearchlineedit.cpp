@@ -20,10 +20,10 @@
 #include "wskincolor.h"
 
 // EVE
-// #include "library/trackset/smarties/smartiesfeature.cpp"
-#include "library/trackset/smarties/smartiesfeature.h"
-#include "library/trackset/smarties/smartiesfeaturehelper.h"
-#include "library/trackset/smarties/smartiesstorage.h"
+// #include "library/trackset/searchCrate/searchcratefeature.cpp"
+#include "library/trackset/searchcrate/searchcratefeature.h"
+#include "library/trackset/searchcrate/searchcratefeaturehelper.h"
+#include "library/trackset/searchcrate/searchcratestorage.h"
 #include "library/treeitem.h"
 // EVE
 
@@ -41,8 +41,8 @@ const QString kLibraryConfigGroup = QStringLiteral("[Library]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
 // EVE
-const QString kSmartiesConfigGroup = QStringLiteral("[Smarties]");
-const QString kSmartiesQueriesConfigGroup = QStringLiteral("[SmartiesQueries]");
+const QString kSearchCrateConfigGroup = QStringLiteral("[SearchCrate]");
+const QString kSearchCrateQueriesConfigGroup = QStringLiteral("[SearchCrateQueries]");
 // EVE
 
 // Border width, max. 2 px when focused (in official skins)
@@ -102,7 +102,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
           m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
           // EVE
-          m_2SmartiesButton(make_parented<QToolButton>(this)),
+          m_2SearchCrateButton(make_parented<QToolButton>(this)),
           // EVE
           m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
@@ -139,19 +139,19 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             &WSearchLineEdit::slotClearSearch);
 
     // EVE
-    // m_2SmartiesButton->setCursor(Qt::ArrowCursor);
-    m_2SmartiesButton->setCursor(Qt::PointingHandCursor);
-    m_2SmartiesButton->setObjectName(QStringLiteral("2SmartiesButton"));
+    // m_2SearchCrateButton->setCursor(Qt::ArrowCursor);
+    m_2SearchCrateButton->setCursor(Qt::PointingHandCursor);
+    m_2SearchCrateButton->setObjectName(QStringLiteral("2SearchCrateButton"));
 
-    //    m_2SmartiesButton->findChildren(QAction)[0].setIcon(":/images/library/ic_library_locked_tracklist.svg");
-    //    m_2SmartiesButton->addAction(":/images/library/ic_library_locked_tracklist.svg",
+    //    m_2SearchCrateButton->findChildren(QAction)[0].setIcon(":/images/library/ic_library_locked_tracklist.svg");
+    //    m_2SearchCrateButton->addAction(":/images/library/ic_library_locked_tracklist.svg",
     //    QLineEdit::LeadingPosition);
 
-    m_2SmartiesButton->hide();
-    connect(m_2SmartiesButton,
+    m_2SearchCrateButton->hide();
+    connect(m_2SearchCrateButton,
             &QAbstractButton::clicked,
             this,
-            &WSearchLineEdit::slot2Smarties);
+            &WSearchLineEdit::slot2SearchCrate);
     // EVE
 
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
@@ -255,8 +255,8 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Ctrl+Backspace"));
 
     // EVE
-    m_2SmartiesButton->setToolTip(tr("Moves the result of the query") + "\n" +
-            tr("to a new smarties container") + "\n\n" +
+    m_2SearchCrateButton->setToolTip(tr("Moves the result of the query") + "\n" +
+            tr("to a new SearchCrate container") + "\n\n" +
 
             tr("Shortcut") + ": \n" +
             tr("None Yet"));
@@ -323,16 +323,16 @@ void WSearchLineEdit::saveQueriesInConfig() {
 }
 
 // EVE
-void WSearchLineEdit::slot2Smarties() {
+void WSearchLineEdit::slot2SearchCrate() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "slot2Smarties";
+            << "slot2SearchCrate";
 #endif // ENABLE_TRACE_LOG
     if (!isEnabled()) {
         return;
     }
 
-    emit newSmarties(getSearchText());
+    emit newSearchCrate(getSearchText());
     m_queryEmitted = true;
 
     setCurrentIndex(-1);
@@ -359,11 +359,11 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         refreshState();
     }
     // EVE
-    if (m_2SmartiesButton->size().height() != innerHeight) {
+    if (m_2SearchCrateButton->size().height() != innerHeight) {
         QSize newSize = QSize(innerHeight, innerHeight);
-        m_2SmartiesButton->resize(newSize);
-        m_2SmartiesButton->setIconSize(newSize);
-        // Needed to update the m_2SmartiesButton and the cursor
+        m_2SearchCrateButton->resize(newSize);
+        m_2SearchCrateButton->setIconSize(newSize);
+        // Needed to update the m_2SearchCrateButton and the cursor
         // after skin change/reload.
         refreshState();
     }
@@ -374,7 +374,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
                         static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
         // EVE
-        m_2SmartiesButton->move(rect().right() -
+        m_2SearchCrateButton->move(rect().right() -
                         static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
         // EVE
@@ -382,7 +382,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         m_clearButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
         // EVE
-        m_2SmartiesButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
+        m_2SearchCrateButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
         // EVE
     }
@@ -775,7 +775,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     // see disableSearch()
     m_clearButton->setVisible(!text.isEmpty());
     // EVE
-    m_2SmartiesButton->setVisible(!text.isEmpty());
+    m_2SearchCrateButton->setVisible(!text.isEmpty());
     // EVE
     //  Ensure the text is not obscured by the clear button. Otherwise no text,
     //  no clear button, so the placeholder should use the entire width.
@@ -852,11 +852,11 @@ bool WSearchLineEdit::slotClearSearchIfClearButtonHasFocus() {
     return true;
 }
 
-bool WSearchLineEdit::slot2SmartiesIf2SmartiesButtonHasFocus() {
-    if (!m_2SmartiesButton->hasFocus()) {
+bool WSearchLineEdit::slot2SearchCrateIf2SearchCrateButtonHasFocus() {
+    if (!m_2SearchCrateButton->hasFocus()) {
         return false;
     }
-    slot2Smarties();
+    slot2SearchCrate();
     return true;
 }
 

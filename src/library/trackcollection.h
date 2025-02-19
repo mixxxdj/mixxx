@@ -14,7 +14,7 @@
 #include "library/dao/trackdao.h"
 #include "library/trackset/crate/cratestorage.h"
 // Eve
-#include "library/trackset/smarties/smartiesstorage.h"
+#include "library/trackset/searchcrate/searchcratestorage.h"
 // Eve
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
@@ -55,9 +55,9 @@ class TrackCollection : public QObject,
         return m_crates;
     }
 
-    const SmartiesStorage& smarties() const {
+    const SearchCrateStorage& searchCrates() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-        return m_smarties;
+        return m_searchCrates;
     }
 
     TrackDAO& getTrackDAO() {
@@ -91,11 +91,11 @@ class TrackCollection : public QObject,
     bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
     bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
 
-    bool insertSmarties(const Smarties& smarties, SmartiesId* pSmartiesId = nullptr);
-    bool updateSmarties(const Smarties& smarties);
-    bool deleteSmarties(SmartiesId smartiesId);
-    bool addSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
-    //    bool removeSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
+    bool insertSearchCrate(const SearchCrate& searchCrate, SearchCrateId* pSearchCrateId = nullptr);
+    bool updateSearchCrate(const SearchCrate& searchCrate);
+    bool deleteSearchCrate(SearchCrateId searchCrateId);
+    bool addSearchCrateTracks(SearchCrateId searchCrateId, const QList<TrackId>& trackIds);
+    //    bool removeSearchCrateTracks(SearchCrateId searchCrateId, const QList<TrackId>& trackIds);
     // EVE
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
@@ -127,16 +127,16 @@ class TrackCollection : public QObject,
             const QSet<CrateId>& crates);
 
     // Eve
-    void smartiesInserted(SmartiesId id);
-    void smartiesUpdated(SmartiesId id);
-    void smartiesDeleted(SmartiesId id);
+    void searchCrateInserted(SearchCrateId id);
+    void searchCrateUpdated(SearchCrateId id);
+    void searchCrateDeleted(SearchCrateId id);
 
-    void smartiesTracksChanged(
-            SmartiesId smarties,
+    void searchCrateTracksChanged(
+            SearchCrateId searchCrate,
             const QList<TrackId>& tracksAdded,
             const QList<TrackId>& tracksRemoved);
-    void smartiesSummaryChanged(
-            const QSet<SmartiesId>& smarties);
+    void searchCrateSummaryChanged(
+            const QSet<SearchCrateId>& searchCrate);
     // Eve
 
   private:
@@ -201,7 +201,7 @@ class TrackCollection : public QObject,
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;
     // Eve
-    SmartiesStorage m_smarties;
+    SearchCrateStorage m_searchCrates;
     // Eve
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;

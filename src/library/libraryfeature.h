@@ -130,8 +130,8 @@ class LibraryFeature : public QObject {
         Q_UNUSED(index);
     }
     // EVE
-    // Called in SmartiesEdit To be able to use the next/previous button
-    virtual void SetActiveSmartiesToLastRightClicked(const QModelIndex& index) {
+    // Called in SearchCrateEdit To be able to use the next/previous button
+    virtual void SetActiveSearchCrateToLastRightClicked(const QModelIndex& index) {
         Q_UNUSED(index);
     }
 

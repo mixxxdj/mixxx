@@ -5,7 +5,7 @@
 #include "library/library.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-// #include "library/trackset/smarties/dlgsmarties.h"
+// #include "library/trackset/searchcrate/dlgsearchcrate.h"
 #include "moc_libraryfeature.cpp"
 #include "util/logger.h"
 

@@ -50,7 +50,7 @@ class TrackModel {
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
         // EVE
-        // RemoveSmarties = 1u << 15u,
+        // RemoveSearchCrate = 1u << 15u,
         // EVE
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,

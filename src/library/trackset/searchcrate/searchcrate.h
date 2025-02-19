@@ -1,16 +1,16 @@
 #pragma once
 
-#include "library/trackset/smarties/smartiesid.h"
+#include "library/trackset/searchcrate/searchcrateid.h"
 #include "util/db/dbnamedentity.h"
 
-class Smarties : public DbNamedEntity<SmartiesId> {
+class SearchCrate : public DbNamedEntity<SearchCrateId> {
   public:
-    explicit Smarties(SmartiesId id = SmartiesId())
+    explicit SearchCrate(SearchCrateId id = SearchCrateId())
             : DbNamedEntity(id),
               m_locked(false),
               m_autoDjSource(false) {
     }
-    ~Smarties() override = default;
+    ~SearchCrate() override = default;
 
     bool isLocked() const {
         return m_locked;

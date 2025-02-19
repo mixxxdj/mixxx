@@ -31,7 +31,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     // EVE
-    void slotSmartiesContentOrLockChanged(const QSet<int>& playlistIds);
+    void slotSearchCrateContentOrLockChanged(const QSet<int>& playlistIds);
     // EVE
   private slots:
 
@@ -45,7 +45,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
     // EVE
-    QModelIndex constructSmartiesChildModel(int selectedId);
+    QModelIndex constructSearchCrateChildModel(int selectedId);
     // EVE
   private:
     QString getRootViewHtml() const override;

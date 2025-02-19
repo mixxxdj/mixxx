@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dlgSmartiesInfo</class>
- <widget class="QDialog" name="dlgSmartiesInfo">
+ <class>dlgSearchCrateInfo</class>
+ <widget class="QDialog" name="dlgSSearchCrateInfo">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Smarties Info / Editor</string>
+   <string>SearchCrate Info / Editor</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -42,7 +42,7 @@
       </font>
      </property>
      <property name="title">
-      <string>Smarties INFO / Editor</string>
+      <string>SearchCrate INFO / Editor</string>
      </property>
      <widget class="QLineEdit" name="lineEditID">
       <property name="geometry">

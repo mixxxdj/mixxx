@@ -1,19 +1,19 @@
 #pragma once
 
-#include "library/trackset/smarties/smarties.h"
+#include "library/trackset/searchcrate/searchcrate.h"
 #include "util/duration.h"
 
-// A smarties with aggregated track properties (total count + duration)
-class SmartiesSummary : public Smarties {
+// A searchCrate with aggregated track properties (total count + duration)
+class SearchCrateSummary : public SearchCrate {
   public:
-    explicit SmartiesSummary(SmartiesId id = SmartiesId())
-            : Smarties(id),
+    explicit SearchCrateSummary(SearchCrateId id = SearchCrateId())
+            : SearchCrate(id),
               m_trackCount(0),
               m_trackDuration(0.0) {
     }
-    ~SmartiesSummary() override = default;
+    ~SearchCrateSummary() override = default;
 
-    // The number of all tracks in this smarties
+    // The number of all tracks in this searchCrate
     uint getTrackCount() const {
         return m_trackCount;
     }
@@ -21,7 +21,7 @@ class SmartiesSummary : public Smarties {
         m_trackCount = trackCount;
     }
 
-    // The total duration (in seconds) of all tracks in this smarties
+    // The total duration (in seconds) of all tracks in this searchCrate
     double getTrackDuration() const {
         return m_trackDuration;
     }

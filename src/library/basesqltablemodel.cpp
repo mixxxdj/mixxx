@@ -21,7 +21,7 @@
 #include "util/performancetimer.h"
 #include "util/platform.h"
 // EVE
-#include "library/trackset/smarties/smartiesschema.h"
+#include "library/trackset/searchcrate/searchcrateschema.h"
 
 namespace {
 
@@ -222,16 +222,16 @@ void BaseSqlTableModel::select() {
 
     PerformanceTimer time;
     time.start();
-    if (m_tableName.startsWith("smarties")) {
-        // EVE drop view and rebuild it for Smarties
+    if (m_tableName.startsWith("searchcrate")) {
+        // EVE drop view and rebuild it for Searchcrate
         //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] Drop
         //        temp table " << m_tableName;
         QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
         FwdSqlQuery(m_database, queryStringDropView).execPrepared();
         //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] REBUILD TEMP";
         QStringList columns;
-        QString smartiesId = m_tableName;
-        smartiesId = smartiesId.replace("smarties_", "");
+        QString searchCrateId = m_tableName;
+        searchCrateId = searchCrateId.replace("searchcrate_", "");
         columns << LIBRARYTABLE_ID
                 << "'' AS " + LIBRARYTABLE_PREVIEW
                 << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
@@ -241,27 +241,27 @@ void BaseSqlTableModel::select() {
                         "SELECT %2 FROM %3 "
                         "WHERE %4 IN (SELECT %5 FROM %6 WHERE %7 = %8) "
                         "AND %9=0")
-                        .arg(m_tableName,                       // 1
-                                columns.join(","),              // 2
-                                LIBRARY_TABLE,                  // 3
-                                LIBRARYTABLE_ID,                // 4
-                                SMARTIESTRACKSTABLE_TRACKID,    // 5
-                                SMARTIES_TRACKS_TABLE,          // 6
-                                SMARTIESTRACKSTABLE_SMARTIESID, // 7
-                                smartiesId,                     // 8
-                                LIBRARYTABLE_MIXXXDELETED);     // 9
-                                                                //        qDebug()
-                                                                //        <<
-                                                                //        "[BASESQLTABLEMODEL]
-                                                                //        [SELECT]
-                                                                //        ->
-                                                                //        [SMARTIES]
-                                                                //        Rebuild
-                                                                //        temp view
-                                                                //        ->
-                                                                //        queryStringTempView
-                                                                //        " <<
-                                                                //        queryStringTempView;
+                        .arg(m_tableName,                             // 1
+                                columns.join(","),                    // 2
+                                LIBRARY_TABLE,                        // 3
+                                LIBRARYTABLE_ID,                      // 4
+                                SEARCHCRATETRACKSTABLE_TRACKID,       // 5
+                                SEARCHCRATETRACKSTABLE,               // 6
+                                SEARCHCRATETRACKSTABLE_SEARCHCRATEID, // 7
+                                searchCrateId,                        // 8
+                                LIBRARYTABLE_MIXXXDELETED);           // 9
+                                                                      //        qDebug()
+                                                                      //        <<
+                                                                      //        "[BASESQLTABLEMODEL]
+                                                                      //        [SELECT]
+                                                                      //        ->
+                                                                      //        [SMARTIES]
+                                                                      //        Rebuild
+                                                                      //        temp view
+                                                                      //        ->
+                                                                      //        queryStringTempView
+                                                                      //        " <<
+                                                                      //        queryStringTempView;
         FwdSqlQuery(m_database, queryStringTempView).execPrepared();
     }
 

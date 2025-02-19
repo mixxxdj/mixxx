@@ -202,7 +202,7 @@ class TrackSelectResult : public FwdSqlQuerySelectResult {
     }
 
   private:
-    friend class SmartiesStorage;
+    friend class SearchCrateStorage;
     friend class CrateStorage;
     TrackSelectResult() = default;
     explicit TrackSelectResult(FwdSqlQuery&& query)

@@ -401,7 +401,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBoxGroupedSmarties">
+    <widget class="QGroupBox" name="groupBoxGroupedSearchCrates">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -409,9 +409,9 @@
       </size>
      </property>
      <property name="title">
-      <string>Grouped Smarties</string>
+      <string>Grouped SearchCrates</string>
      </property>
-     <widget class="QSpinBox" name="spinBox_grouped_smarties_fixed_length">
+     <widget class="QSpinBox" name="spinBox_grouped_searchcrates_fixed_length">
       <property name="geometry">
        <rect>
         <x>460</x>
@@ -424,7 +424,7 @@
        <number>20</number>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton_grouped_smarties_fixed_length">
+     <widget class="QRadioButton" name="radioButton_grouped_searchcrates_fixed_length">
       <property name="geometry">
        <rect>
         <x>50</x>
@@ -443,7 +443,7 @@
        <string>Fixed length: 1 level of grouping: Group = #Characters</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_grouped_smarties_var_mask">
+     <widget class="QLineEdit" name="lineEdit_grouped_searchcrates_var_mask">
       <property name="geometry">
        <rect>
         <x>460</x>
@@ -453,7 +453,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton_grouped_smarties_var_mask">
+     <widget class="QRadioButton" name="radioButton_grouped_searchcrates_var_mask">
       <property name="geometry">
        <rect>
         <x>50</x>
@@ -472,7 +472,7 @@
        <string>Variable length, multilevel: grouping: Groups are delimited with a mask: </string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox_grouped_smarties_enable">
+     <widget class="QCheckBox" name="checkBox_grouped_searchcrates_enable">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -482,10 +482,10 @@
        </rect>
       </property>
       <property name="text">
-       <string>Enable Grouped Smartiess (Mixxx restart needed)</string>
+       <string>Enable Grouped SearchCrates (Mixxx restart needed)</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_grouped_smarties_restart_remark">
+     <widget class="QLabel" name="label_grouped_searchcrates_restart_remark">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -498,7 +498,7 @@
        <string>Every change in this section requires a restart of Mixxx to get processed</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox_grouped_smarties_replace">
+     <widget class="QCheckBox" name="checkBox_grouped_searchcrates_replace">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -508,7 +508,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Use Grouped Smarties instead of Smarties</string>
+       <string>Use Grouped SearchCrates instead of SearchCrates</string>
       </property>
      </widget>
     </widget>

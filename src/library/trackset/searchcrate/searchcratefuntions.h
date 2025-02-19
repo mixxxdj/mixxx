@@ -1,9 +1,9 @@
-#ifndef SMARTIESFUNCTIONS_H
-#define SMARTIESFUNCTIONS_H
+#ifndef SEARCHCRATESFUNCTIONS_H
+#define SEARCHCRATESFUNCTIONS_H
 
 #include <QString>
 
-const bool sDebug = true;
+const bool sDebug = false;
 
 inline QString buildCondition(const QString& field, const QString& op, const QString& value) {
     // Check if field, operator, and value are not null
@@ -471,4 +471,4 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
     return condition;
 }
 
-#endif /* SMARTIESFUNCTIONS_H */
+#endif /* SEARCHCRATESFUNCTIONS_H */

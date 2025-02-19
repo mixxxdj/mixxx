@@ -1,5 +1,5 @@
 /********************************************************************************
-** Form generated from reading UI file 'dlgsmartiesinfo.ui'
+** Form generated from reading UI file 'dlgsearchCrateinfo.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.5.3
 **
@@ -27,7 +27,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_dlgSmartiesInfo {
+class Ui_dlgSearchCrateInfo {
   public:
     QVBoxLayout* verticalLayout;
     QGroupBox* groupBox;
@@ -195,15 +195,15 @@ class Ui_dlgSmartiesInfo {
     QPushButton* okButton;
     QPushButton* cancelButton;
 
-    void setupUi(QDialog* dlgSmartiesInfo) {
-        if (dlgSmartiesInfo->objectName().isEmpty())
-            dlgSmartiesInfo->setObjectName("dlgSmartiesInfo");
-        dlgSmartiesInfo->resize(885, 800);
-        dlgSmartiesInfo->setMinimumSize(QSize(800, 800));
-        dlgSmartiesInfo->setBaseSize(QSize(800, 800));
-        verticalLayout = new QVBoxLayout(dlgSmartiesInfo);
+    void setupUi(QDialog* dlgSearchCrateInfo) {
+        if (dlgSearchCrateInfo->objectName().isEmpty())
+            dlgSearchCrateInfo->setObjectName("dlgSearchCrateInfo");
+        dlgSearchCrateInfo->resize(885, 800);
+        dlgSearchCrateInfo->setMinimumSize(QSize(800, 800));
+        dlgSearchCrateInfo->setBaseSize(QSize(800, 800));
+        verticalLayout = new QVBoxLayout(dlgSearchCrateInfo);
         verticalLayout->setObjectName("verticalLayout");
-        groupBox = new QGroupBox(dlgSmartiesInfo);
+        groupBox = new QGroupBox(dlgSearchCrateInfo);
         groupBox->setObjectName("groupBox");
         groupBox->setMinimumSize(QSize(0, 320));
         QFont font;
@@ -332,14 +332,14 @@ class Ui_dlgSmartiesInfo {
 
         verticalLayout->addWidget(groupBox);
 
-        labelConditions = new QLabel(dlgSmartiesInfo);
+        labelConditions = new QLabel(dlgSearchCrateInfo);
         labelConditions->setObjectName("labelConditions");
         labelConditions->setMinimumSize(QSize(60, 15));
         labelConditions->setFont(font);
 
         verticalLayout->addWidget(labelConditions);
 
-        scrollAreaConditions = new QScrollArea(dlgSmartiesInfo);
+        scrollAreaConditions = new QScrollArea(dlgSearchCrateInfo);
         scrollAreaConditions->setObjectName("scrollAreaConditions");
         scrollAreaConditions->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
@@ -1318,189 +1318,189 @@ class Ui_dlgSmartiesInfo {
 
         horizontalLayoutButtons = new QHBoxLayout();
         horizontalLayoutButtons->setObjectName("horizontalLayoutButtons");
-        newButton = new QPushButton(dlgSmartiesInfo);
+        newButton = new QPushButton(dlgSearchCrateInfo);
         newButton->setObjectName("newButton");
 
         horizontalLayoutButtons->addWidget(newButton);
 
-        deleteButton = new QPushButton(dlgSmartiesInfo);
+        deleteButton = new QPushButton(dlgSearchCrateInfo);
         deleteButton->setObjectName("deleteButton");
 
         horizontalLayoutButtons->addWidget(deleteButton);
 
-        previousButton = new QPushButton(dlgSmartiesInfo);
+        previousButton = new QPushButton(dlgSearchCrateInfo);
         previousButton->setObjectName("previousButton");
 
         horizontalLayoutButtons->addWidget(previousButton);
 
-        nextButton = new QPushButton(dlgSmartiesInfo);
+        nextButton = new QPushButton(dlgSearchCrateInfo);
         nextButton->setObjectName("nextButton");
 
         horizontalLayoutButtons->addWidget(nextButton);
 
-        applyButton = new QPushButton(dlgSmartiesInfo);
+        applyButton = new QPushButton(dlgSearchCrateInfo);
         applyButton->setObjectName("applyButton");
 
         horizontalLayoutButtons->addWidget(applyButton);
 
-        okButton = new QPushButton(dlgSmartiesInfo);
+        okButton = new QPushButton(dlgSearchCrateInfo);
         okButton->setObjectName("okButton");
 
         horizontalLayoutButtons->addWidget(okButton);
 
-        cancelButton = new QPushButton(dlgSmartiesInfo);
+        cancelButton = new QPushButton(dlgSearchCrateInfo);
         cancelButton->setObjectName("cancelButton");
 
         horizontalLayoutButtons->addWidget(cancelButton);
 
         verticalLayout->addLayout(horizontalLayoutButtons);
 
-        retranslateUi(dlgSmartiesInfo);
+        retranslateUi(dlgSearchCrateInfo);
 
-        QMetaObject::connectSlotsByName(dlgSmartiesInfo);
+        QMetaObject::connectSlotsByName(dlgSearchCrateInfo);
     } // setupUi
 
-    void retranslateUi(QDialog* dlgSmartiesInfo) {
-        dlgSmartiesInfo->setWindowTitle(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties Info / Editor", nullptr));
+    void retranslateUi(QDialog* dlgSearchCrateInfo) {
+        dlgSearchCrateInfo->setWindowTitle(QCoreApplication::translate(
+                "dlgSearchCrateInfo", "SearchCrate Info / Editor", nullptr));
         groupBox->setTitle(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Smarties INFO / Editor", nullptr));
-        labelID->setText(QCoreApplication::translate("dlgSmartiesInfo", "ID:", nullptr));
-        labelName->setText(QCoreApplication::translate("dlgSmartiesInfo", "Name:", nullptr));
-        labelCount->setText(QCoreApplication::translate("dlgSmartiesInfo", "Count:", nullptr));
-        labelShow->setText(QCoreApplication::translate("dlgSmartiesInfo", "Show", nullptr));
-        labelLocked->setText(QCoreApplication::translate("dlgSmartiesInfo", "Locked:", nullptr));
-        buttonLock->setText(QCoreApplication::translate("dlgSmartiesInfo", "Lock", nullptr));
+                "dlgSearchCrateInfo", "SearchCrate INFO / Editor", nullptr));
+        labelID->setText(QCoreApplication::translate("dlgSearchCrateInfo", "ID:", nullptr));
+        labelName->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Name:", nullptr));
+        labelCount->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Count:", nullptr));
+        labelShow->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Show", nullptr));
+        labelLocked->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Locked:", nullptr));
+        buttonLock->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Lock", nullptr));
         labelAutoDJ->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "AutoDJ Source", nullptr));
+                "dlgSearchCrateInfo", "AutoDJ Source", nullptr));
         labelSearchInput->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Search Input:", nullptr));
+                "dlgSearchCrateInfo", "Search Input:", nullptr));
         labelSearchSQL->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Search SQL:", nullptr));
+                "dlgSearchCrateInfo", "Search SQL:", nullptr));
         labelValidation->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Validation:", nullptr));
-        labelConditions->setText(QCoreApplication::translate("dlgSmartiesInfo",
+                "dlgSearchCrateInfo", "Validation:", nullptr));
+        labelConditions->setText(QCoreApplication::translate("dlgSearchCrateInfo",
                 "Search for tracks in the library that meet the following "
                 "conditions:",
                 nullptr));
-        label->setText(QCoreApplication::translate("dlgSmartiesInfo", "1", nullptr));
+        label->setText(QCoreApplication::translate("dlgSearchCrateInfo", "1", nullptr));
         buttoncondition1_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition1_up->setText(QString());
         buttoncondition1_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition1_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_13->setText(QCoreApplication::translate("dlgSmartiesInfo", "2", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_13->setText(QCoreApplication::translate("dlgSearchCrateInfo", "2", nullptr));
         buttoncondition2_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition2_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition2_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition2_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_12->setText(QCoreApplication::translate("dlgSmartiesInfo", "3", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_12->setText(QCoreApplication::translate("dlgSearchCrateInfo", "3", nullptr));
         buttoncondition3_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition3_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition3_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition3_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_11->setText(QCoreApplication::translate("dlgSmartiesInfo", "4", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_11->setText(QCoreApplication::translate("dlgSearchCrateInfo", "4", nullptr));
         buttoncondition4_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition4_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition4_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition4_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_10->setText(QCoreApplication::translate("dlgSmartiesInfo", "5", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_10->setText(QCoreApplication::translate("dlgSearchCrateInfo", "5", nullptr));
         buttoncondition5_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition5_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition5_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition5_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_9->setText(QCoreApplication::translate("dlgSmartiesInfo", "6", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_9->setText(QCoreApplication::translate("dlgSearchCrateInfo", "6", nullptr));
         buttoncondition6_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition6_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition6_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition6_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_8->setText(QCoreApplication::translate("dlgSmartiesInfo", "7", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_8->setText(QCoreApplication::translate("dlgSearchCrateInfo", "7", nullptr));
         buttoncondition7_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition7_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition7_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition7_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_7->setText(QCoreApplication::translate("dlgSmartiesInfo", "8", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_7->setText(QCoreApplication::translate("dlgSearchCrateInfo", "8", nullptr));
         buttoncondition8_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition8_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition8_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition8_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_6->setText(QCoreApplication::translate("dlgSmartiesInfo", "9", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_6->setText(QCoreApplication::translate("dlgSearchCrateInfo", "9", nullptr));
         buttoncondition9_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition9_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition9_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition9_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_5->setText(QCoreApplication::translate("dlgSmartiesInfo", "10", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_5->setText(QCoreApplication::translate("dlgSearchCrateInfo", "10", nullptr));
         buttoncondition10_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition10_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition10_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition10_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_4->setText(QCoreApplication::translate("dlgSmartiesInfo", "11", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_4->setText(QCoreApplication::translate("dlgSearchCrateInfo", "11", nullptr));
         buttoncondition11_insert->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "+", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "+", nullptr));
         buttoncondition11_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition11_down->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\274", nullptr));
+                "dlgSearchCrateInfo", "\342\226\274", nullptr));
         buttoncondition11_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        label_3->setText(QCoreApplication::translate("dlgSmartiesInfo", "12", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        label_3->setText(QCoreApplication::translate("dlgSearchCrateInfo", "12", nullptr));
         buttoncondition12_insert->setText(QString());
         buttoncondition12_up->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "\342\226\262", nullptr));
+                "dlgSearchCrateInfo", "\342\226\262", nullptr));
         buttoncondition12_down->setText(QString());
         buttoncondition12_delete->setText(
-                QCoreApplication::translate("dlgSmartiesInfo", "X", nullptr));
-        newButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "New", nullptr));
-        deleteButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Delete", nullptr));
+                QCoreApplication::translate("dlgSearchCrateInfo", "X", nullptr));
+        newButton->setText(QCoreApplication::translate("dlgSearchCrateInfo", "New", nullptr));
+        deleteButton->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Delete", nullptr));
         previousButton->setText(QCoreApplication::translate(
-                "dlgSmartiesInfo", "Previous", nullptr));
-        nextButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Next", nullptr));
-        applyButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Apply", nullptr));
-        okButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "OK", nullptr));
-        cancelButton->setText(QCoreApplication::translate("dlgSmartiesInfo", "Cancel", nullptr));
+                "dlgSearchCrateInfo", "Previous", nullptr));
+        nextButton->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Next", nullptr));
+        applyButton->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Apply", nullptr));
+        okButton->setText(QCoreApplication::translate("dlgSearchCrateInfo", "OK", nullptr));
+        cancelButton->setText(QCoreApplication::translate("dlgSearchCrateInfo", "Cancel", nullptr));
     } // retranslateUi
 };
 
 namespace Ui {
-class dlgSmartiesInfo : public Ui_dlgSmartiesInfo {};
+class dlgSearchCrateInfo : public Ui_dlgSearchCrateInfo {};
 } // namespace Ui
 
 QT_END_NAMESPACE

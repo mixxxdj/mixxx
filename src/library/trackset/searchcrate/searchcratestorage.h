@@ -3,32 +3,36 @@
 #include <QList>
 #include <QSet>
 
-#include "library/trackset/smarties/smartiesid.h"
+#include "library/trackset/searchcrate/searchcrateid.h"
 #include "track/trackid.h"
 #include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqlstorage.h"
 #include "util/db/sqlsubselectmode.h"
 
-class Smarties;
-class SmartiesSummary;
+class SearchCrate;
+class SearchCrateSummary;
 
-class SmartiesQueryFields {
+class SearchCrateQueryFields {
   public:
-    SmartiesQueryFields() {
+    SearchCrateQueryFields() {
     }
-    explicit SmartiesQueryFields(const FwdSqlQuery& query);
-    virtual ~SmartiesQueryFields() = default;
+    explicit SearchCrateQueryFields(const FwdSqlQuery& query);
+    virtual ~SearchCrateQueryFields() = default;
 
-    void bindConditionField(const QString& fieldName, const Smarties& smarties, int index);
-    void bindConditionOperator(const QString& operatorName, const Smarties& smarties, int index);
-    void bindConditionValue(const QString& valueName, const Smarties& smarties, int index);
-    void bindConditionCombiner(const QString& combinerName, const Smarties& smarties, int index);
+    void bindConditionField(const QString& fieldName, const SearchCrate& searchCrate, int index);
+    void bindConditionOperator(const QString& operatorName,
+            const SearchCrate& searchCrate,
+            int index);
+    void bindConditionValue(const QString& valueName, const SearchCrate& searchCrate, int index);
+    void bindConditionCombiner(const QString& combinerName,
+            const SearchCrate& searchCrate,
+            int index);
 
-    void populateFromQuery(const FwdSqlQuery& query, Smarties* pSmarties) const;
+    void populateFromQuery(const FwdSqlQuery& query, SearchCrate* pSearchCrate) const;
 
   private slots:
-    SmartiesId getId(const FwdSqlQuery& query) const {
-        return SmartiesId(query.fieldValue(m_iId));
+    SearchCrateId getId(const FwdSqlQuery& query) const {
+        return SearchCrateId(query.fieldValue(m_iId));
     }
     QString getName(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iName).toString();
@@ -248,17 +252,17 @@ class SmartiesQueryFields {
     DbFieldIndex m_iCondition12Combiner;
 };
 
-class SmartiesSelectResult : public FwdSqlQuerySelectResult {
+class SearchCrateSelectResult : public FwdSqlQuerySelectResult {
   public:
-    SmartiesSelectResult(SmartiesSelectResult&& other)
+    SearchCrateSelectResult(SearchCrateSelectResult&& other)
             : FwdSqlQuerySelectResult(std::move(other)),
               m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~SmartiesSelectResult() override = default;
+    ~SearchCrateSelectResult() override = default;
 
-    bool populateNext(Smarties* pSmarties) {
+    bool populateNext(SearchCrate* pSearchCrate) {
         if (next()) {
-            m_queryFields.populateFromQuery(query(), pSmarties);
+            m_queryFields.populateFromQuery(query(), pSearchCrate);
             return true;
         } else {
             return false;
@@ -266,28 +270,28 @@ class SmartiesSelectResult : public FwdSqlQuerySelectResult {
     }
 
     // private:
-    friend class SmartiesStorage;
-    SmartiesSelectResult() = default;
-    explicit SmartiesSelectResult(FwdSqlQuery&& query)
+    friend class SearchCrateStorage;
+    SearchCrateSelectResult() = default;
+    explicit SearchCrateSelectResult(FwdSqlQuery&& query)
             : FwdSqlQuerySelectResult(std::move(query)),
               m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
-    SmartiesQueryFields m_queryFields;
+    SearchCrateQueryFields m_queryFields;
 
   private:
 };
 
-class SmartiesSummaryQueryFields : public SmartiesQueryFields {
+class SearchCrateSummaryQueryFields : public SearchCrateQueryFields {
   public:
-    SmartiesSummaryQueryFields() = default;
-    explicit SmartiesSummaryQueryFields(const FwdSqlQuery& query);
-    ~SmartiesSummaryQueryFields() override = default;
+    SearchCrateSummaryQueryFields() = default;
+    explicit SearchCrateSummaryQueryFields(const FwdSqlQuery& query);
+    ~SearchCrateSummaryQueryFields() override = default;
 
     uint getTrackCount(const FwdSqlQuery& query) const {
         QVariant varTrackCount = query.fieldValue(m_iTrackCount);
         if (varTrackCount.isNull()) {
-            return 0; // smarties is empty
+            return 0; // searchCrate is empty
         } else {
             return varTrackCount.toUInt();
         }
@@ -295,7 +299,7 @@ class SmartiesSummaryQueryFields : public SmartiesQueryFields {
     double getTrackDuration(const FwdSqlQuery& query) const {
         QVariant varTrackDuration = query.fieldValue(m_iTrackDuration);
         if (varTrackDuration.isNull()) {
-            return 0.0; // smarties is empty
+            return 0.0; // searchCrate is empty
         } else {
             return varTrackDuration.toDouble();
         }
@@ -303,24 +307,24 @@ class SmartiesSummaryQueryFields : public SmartiesQueryFields {
 
     void populateFromQuery(
             const FwdSqlQuery& query,
-            SmartiesSummary* pSmartiesSummary) const;
+            SearchCrateSummary* pSearchCrateSummary) const;
 
   private:
     DbFieldIndex m_iTrackCount;
     DbFieldIndex m_iTrackDuration;
 };
 
-class SmartiesSummarySelectResult : public FwdSqlQuerySelectResult {
+class SearchCrateSummarySelectResult : public FwdSqlQuerySelectResult {
   public:
-    SmartiesSummarySelectResult(SmartiesSummarySelectResult&& other)
+    SearchCrateSummarySelectResult(SearchCrateSummarySelectResult&& other)
             : FwdSqlQuerySelectResult(std::move(other)),
               m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~SmartiesSummarySelectResult() override = default;
+    ~SearchCrateSummarySelectResult() override = default;
 
-    bool populateNext(SmartiesSummary* pSmartiesSummary) {
+    bool populateNext(SearchCrateSummary* pSearchCrateSummary) {
         if (next()) {
-            m_queryFields.populateFromQuery(query(), pSmartiesSummary);
+            m_queryFields.populateFromQuery(query(), pSearchCrateSummary);
             return true;
         } else {
             return false;
@@ -328,64 +332,64 @@ class SmartiesSummarySelectResult : public FwdSqlQuerySelectResult {
     }
 
   private:
-    friend class SmartiesStorage;
-    SmartiesSummarySelectResult() = default;
-    explicit SmartiesSummarySelectResult(FwdSqlQuery&& query)
+    friend class SearchCrateStorage;
+    SearchCrateSummarySelectResult() = default;
+    explicit SearchCrateSummarySelectResult(FwdSqlQuery&& query)
             : FwdSqlQuerySelectResult(std::move(query)),
               m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
-    SmartiesSummaryQueryFields m_queryFields;
+    SearchCrateSummaryQueryFields m_queryFields;
 };
 
-class SmartiesTrackQueryFields {
+class SearchCrateTrackQueryFields {
   public:
-    SmartiesTrackQueryFields() = default;
-    explicit SmartiesTrackQueryFields(const FwdSqlQuery& query);
-    virtual ~SmartiesTrackQueryFields() = default;
+    SearchCrateTrackQueryFields() = default;
+    explicit SearchCrateTrackQueryFields(const FwdSqlQuery& query);
+    virtual ~SearchCrateTrackQueryFields() = default;
 
-    SmartiesId smartiesId(const FwdSqlQuery& query) const {
-        return SmartiesId(query.fieldValue(m_iSmartiesId));
+    SearchCrateId searchCrateId(const FwdSqlQuery& query) const {
+        return SearchCrateId(query.fieldValue(m_iSearchCrateId));
     }
     TrackId trackId(const FwdSqlQuery& query) const {
         return TrackId(query.fieldValue(m_iTrackId));
     }
 
   private:
-    DbFieldIndex m_iSmartiesId;
+    DbFieldIndex m_iSearchCrateId;
     DbFieldIndex m_iTrackId;
 };
 
-class SmartiesTrackSelectResult : public FwdSqlQuerySelectResult {
+class SearchCrateTrackSelectResult : public FwdSqlQuerySelectResult {
   public:
-    SmartiesTrackSelectResult(SmartiesTrackSelectResult&& other)
+    SearchCrateTrackSelectResult(SearchCrateTrackSelectResult&& other)
             : FwdSqlQuerySelectResult(std::move(other)),
               m_queryFields(std::move(other.m_queryFields)) {
     }
-    ~SmartiesTrackSelectResult() override = default;
+    ~SearchCrateTrackSelectResult() override = default;
 
-    SmartiesId smartiesId() const {
-        return m_queryFields.smartiesId(query());
+    SearchCrateId searchCrateId() const {
+        return m_queryFields.searchCrateId(query());
     }
     TrackId trackId() const {
         return m_queryFields.trackId(query());
     }
 
   private:
-    friend class SmartiesStorage;
-    SmartiesTrackSelectResult() = default;
-    explicit SmartiesTrackSelectResult(FwdSqlQuery&& query)
+    friend class SearchCrateStorage;
+    SearchCrateTrackSelectResult() = default;
+    explicit SearchCrateTrackSelectResult(FwdSqlQuery&& query)
             : FwdSqlQuerySelectResult(std::move(query)),
               m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
-    SmartiesTrackQueryFields m_queryFields;
+    SearchCrateTrackQueryFields m_queryFields;
 };
 
-class SmartiesStorage : public virtual /*implements*/ SqlStorage {
+class SearchCrateStorage : public virtual /*implements*/ SqlStorage {
   public:
-    SmartiesStorage() = default;
-    ~SmartiesStorage() override = default;
+    SearchCrateStorage() = default;
+    ~SearchCrateStorage() override = default;
 
     void repairDatabase(
             const QSqlDatabase& database) override;
@@ -395,7 +399,7 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
     void disconnectDatabase() override;
 
     /////////////////////////////////////////////////////////////////////////
-    // Smarties write operations (transactional, non-const)
+    // SearchCrate write operations (transactional, non-const)
     // Only invoked by TrackCollection!
     //
     // Naming conventions:
@@ -411,96 +415,98 @@ class SmartiesStorage : public virtual /*implements*/ SqlStorage {
     //      for notifications
     /////////////////////////////////////////////////////////////////////////
 
-    bool onInsertingSmarties(const Smarties& smarties, SmartiesId* pSmartiesId = nullptr);
+    bool onInsertingSearchCrate(const SearchCrate& searchCrate,
+            SearchCrateId* pSearchCrateId = nullptr);
 
-    bool onUpdatingSmarties(const Smarties& smarties);
+    bool onUpdatingSearchCrate(const SearchCrate& searchCrate);
 
-    bool onDeletingSmarties(SmartiesId smartiesId);
+    bool onDeletingSearchCrate(SearchCrateId searchCrateId);
 
-    bool onAddingSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
+    bool onAddingSearchCrateTracks(SearchCrateId searchCrateId, const QList<TrackId>& trackIds);
 
-    bool onRemovingSmartiesTracks(SmartiesId smartiesId, const QList<TrackId>& trackIds);
+    bool onRemovingSearchCrateTracks(SearchCrateId searchCrateId, const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(const QList<TrackId>& trackIds);
 
     /////////////////////////////////////////////////////////////////////////
-    // Smarties read operations (read-only, const)
+    // SearchCrate read operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
 
-    uint countSmarties() const;
+    uint countSearchCrate() const;
 
-    // Omit the pSmarties parameter for checking if the corresponding smarties exists.
-    bool readSmartiesById(
-            SmartiesId id,
-            Smarties* pSmarties = nullptr) const;
-    bool readSmartiesByName(
+    // Omit the pSearchCrate parameter for checking if the corresponding searchCrate exists.
+    bool readSearchCrateById(
+            SearchCrateId id,
+            SearchCrate* pSearchCrate = nullptr) const;
+    bool readSearchCrateByName(
             const QString& name,
-            Smarties* pSmarties = nullptr) const;
+            SearchCrate* pSearchCrate = nullptr) const;
 
-    // The following list results are ordered by smarties name:
+    // The following list results are ordered by searchCrate name:
     //  - case-insensitive
     //  - locale-aware
-    SmartiesSelectResult selectSmarties()
-            const; // all smarties
-                   //    SmartiesSelectResult selectSmartiesByIds(    // subset
-                   //    of smarties
-                   //            const QString& subselectForSmartiesIds,
+    SearchCrateSelectResult selectSearchCrate()
+            const; // all searchCrate
+                   //    SearchCrateSelectResult selectSearchCrateByIds(    // subset
+                   //    of searchCrate
+                   //            const QString& subselectForSearchCrateIds,
                    //            SqlSubselectMode subselectMode) const;
 
     // TODO(XXX): Move this function into the AutoDJ component after
     // fixing various database design flaws in AutoDJ itself (see also:
-    // smartiesschema.h). AutoDJ should use the function selectSmartiesByIds()
+    // searchCratechema.h). AutoDJ should use the function selectSearchCrateByIds()
     // from this class for the actual implementation.
     // This refactoring should be deferred until consensus on the
     // redesign of the AutoDJ feature has been reached. The main
     // ideas of the new design should be documented for verification
     // before starting to code.
-    //    SmartiesSelectResult selectAutoDjSmarties(bool autoDjSource = true) const;
+    //    SearchCrateSelectResult selectAutoDjSearchCrate(bool autoDjSource = true) const;
 
-    // Smarties content, i.e. the smarties's tracks referenced by id
-    uint countSmartiesTracks(SmartiesId smartiesId) const;
+    // SearchCrate content, i.e. the searchCrate's tracks referenced by id
+    uint countSearchCrateTracks(SearchCrateId searchCrateId) const;
 
-    // Format a subselect query for the tracks contained in smarties.
-    static QString formatSubselectQueryForSmartiesTrackIds(
-            SmartiesId smartiesId); // no db access
+    // Format a subselect query for the tracks contained in searchCrate.
+    static QString formatSubselectQueryForSearchCrateTrackIds(
+            SearchCrateId searchCrateId); // no db access
 
-    static QString returnSearchSQLFieldFromTable(SmartiesId smartiesId);
+    static QString returnSearchSQLFieldFromTable(SearchCrateId searchCrateId);
 
-    QString formatQueryForTrackIdsBySmartiesNameLike(
-            const QString& smartiesNameLike) const;      // no db access
-    static QString formatQueryForTrackIdsWithSmarties(); // no db access
-    // Select the track ids of a smarties or the smarties ids of a track respectively.
+    QString formatQueryForTrackIdsBySearchCrateNameLike(
+            const QString& searchCrateNameLike) const;      // no db access
+    static QString formatQueryForTrackIdsWithSearchCrate(); // no db access
+    // Select the track ids of a searchCrate or the searchCrate ids of a track respectively.
     // The results are sorted (ascending) by the target id, i.e. the id that is
     // not provided for filtering. This enables the caller to perform efficient
     // binary searches on the result set after storing it in a list or vector.
-    SmartiesTrackSelectResult selectSmartiesTracksSorted(
-            SmartiesId smartiesId) const;
-    SmartiesTrackSelectResult selectTrackSmartiesSorted(
+    SearchCrateTrackSelectResult selectSearchCrateTracksSorted(
+            SearchCrateId searchCrateId) const;
+    SearchCrateTrackSelectResult selectTrackSearchCrateSorted(
             TrackId trackId) const;
-    SmartiesSummarySelectResult selectSmartiesWithTrackCount(
+    SearchCrateSummarySelectResult selectSearchCrateWithTrackCount(
             const QList<TrackId>& trackIds) const;
-    SmartiesTrackSelectResult selectTracksSortedBySmartiesNameLike(
-            const QString& smartiesNameLike) const;
+    SearchCrateTrackSelectResult selectTracksSortedBySearchCrateNameLike(
+            const QString& searchCrateNameLike) const;
     //    TrackSelectResult selectAllTracksSorted() const;
 
-    // Returns the set of smarties ids for smarties that contain any of the
+    // Returns the set of searchCrate ids for searchCrate that contain any of the
     // provided track ids.
-    QSet<SmartiesId> collectSmartiesIdsOfTracks(
+    QSet<SearchCrateId> collectSearchCrateIdsOfTracks(
             const QList<TrackId>& trackIds) const;
 
     /////////////////////////////////////////////////////////////////////////
-    // SmartiesSummary view operations (read-only, const)
+    // SearchCrateSummary view operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
 
-    // Track summaries of all smarties:
-    //  - Hidden tracks are excluded from the smarties summary statistics
-    //  - The result list is ordered by smarties name:
+    // Track summaries of all searchCrate:
+    //  - Hidden tracks are excluded from the searchCrate summary statistics
+    //  - The result list is ordered by searchCrate name:
     //     - case-insensitive
     //     - locale-aware
-    SmartiesSummarySelectResult selectSmartiesSummaries() const; // all smarties
+    SearchCrateSummarySelectResult selectSearchCrateSummaries() const; // all searchCrate
 
-    // Omit the pSmarties parameter for checking if the corresponding smarties exists.
-    bool readSmartiesSummaryById(SmartiesId id, SmartiesSummary* pSmartiesSummary = nullptr) const;
+    // Omit the pSearchCrate parameter for checking if the corresponding searchCrate exists.
+    bool readSearchCrateSummaryById(SearchCrateId id,
+            SearchCrateSummary* pSearchCrateSummary = nullptr) const;
 
   private:
     void createViews();
