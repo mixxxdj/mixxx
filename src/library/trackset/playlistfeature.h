@@ -30,8 +30,11 @@ class PlaylistFeature : public BasePlaylistFeature {
   public slots:
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
-
+    // EVE
+    void slotSearchCrateContentOrLockChanged(const QSet<int>& playlistIds);
+    // EVE
   private slots:
+
     void slotPlaylistTableChanged(int playlistId) override;
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
@@ -41,7 +44,9 @@ class PlaylistFeature : public BasePlaylistFeature {
     void decorateChild(TreeItem* pChild, int playlistId) override;
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
-
+    // EVE
+    QModelIndex constructSearchCrateChildModel(int selectedId);
+    // EVE
   private:
     QString getRootViewHtml() const override;
 

@@ -28,7 +28,7 @@ class SearchQueryParser {
 
   private:
     void parseTokens(QStringList tokens,
-                     AndNode* pQuery) const;
+            AndNode* pQuery) const;
 
     std::unique_ptr<AndNode> parseAndNode(const QString& query) const;
     std::unique_ptr<OrNode> parseOrNode(const QString& query) const;

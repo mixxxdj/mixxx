@@ -239,6 +239,7 @@ void PlaylistFeature::slotShufflePlaylist() {
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
+
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
@@ -259,7 +260,43 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 
         decorateChild(pItem.get(), playlistId);
         childrenToAdd.push_back(std::move(pItem));
+        ++row;
+    }
 
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
+    if (selectedRow == -1) {
+        return QModelIndex();
+    }
+    return m_pSidebarModel->index(selectedRow, 0);
+}
+
+QModelIndex PlaylistFeature::constructSearchCrateChildModel(int selectedId) {
+    qDebug() << "[SMARTIES] [EDIT] "
+                "constructSearchCrateChildModelPlaylistFeature::"
+                "constructChildModel() id:"
+             << selectedId;
+
+    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
+    int selectedRow = -1;
+
+    int row = 0;
+    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+    for (const auto& idAndLabel : playlistLabels) {
+        int playlistId = idAndLabel.id;
+        QString playlistLabel = idAndLabel.label;
+
+        if (selectedId == playlistId) {
+            // save index for selection
+            selectedRow = row;
+        }
+
+        // Create the TreeItem whose parent is the invisible root item
+        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+
+        decorateChild(pItem.get(), playlistId);
+        childrenToAdd.push_back(std::move(pItem));
         ++row;
     }
 
@@ -311,6 +348,20 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         activateChild(newIndex);
         emit featureSelect(this, newIndex);
     }
+}
+
+void PlaylistFeature::slotSearchCrateContentOrLockChanged(const QSet<int>& playlistIds) {
+    // qDebug() << "PlaylistFeature::slotPlaylistContentOrLockChanged() playlistId:" << playlistIds;
+    QSet<int> idsToBeUpdated;
+    for (const auto playlistId : std::as_const(playlistIds)) {
+        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+            idsToBeUpdated.insert(playlistId);
+        }
+    }
+    // Update the playlists set to allow toggling bold correctly after
+    // tracks have been dropped on sidebar items
+    m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
+    updateChildModel(idsToBeUpdated);
 }
 
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
