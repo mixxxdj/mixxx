@@ -11328,7 +11328,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/encoder/encoderfdkaac.cpp" line="258"/>
         <source>&lt;html&gt;Mixxx cannot record or stream in AAC or HE-AAC without the FDK-AAC encoder. In order to record or stream in AAC or AAC+, you need to download &lt;b&gt;libfdk-aac&lt;/b&gt; and install it on your system.</source>
-        <translation>&lt;html&gt;Mixxx kann ohne den FDK-AAC-Encoder nicht in AAC oder HE-AAC aufnehmen oder streamen. Um in AAC oder AAC+ aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;2libfdk-aac2&lt;/b&gt; herunterladen und auf Ihrem System installieren.&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;Mixxx kann ohne den FDK-AAC-Encoder nicht in AAC oder HE-AAC aufnehmen oder streamen. Um in AAC oder AAC+ aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;libfdk-aac&lt;/b&gt; herunterladen und auf Ihrem System installieren.&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../src/encoder/encoderfdkaac.cpp" line="271"/>
