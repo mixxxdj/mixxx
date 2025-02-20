@@ -269,6 +269,7 @@ void DlgPrefEffects::slotHideUnhideEffect() {
         return;
     }
 
+    // We emulate a drag drop to move the effect
     QMimeData* mimeData = new QMimeData;
     mimeData->setText(pManifest->uniqueId());
     // Append the selected effect to the target list
@@ -282,7 +283,11 @@ void DlgPrefEffects::slotHideUnhideEffect() {
     if (!pSourceModel->removeRows(selIdx.row(), 1, selIdx.parent())) {
         // If removing failed, undo add to target list
         pTargetModel->removeRows(pMovedEffect.row(), 1, pMovedEffect.parent());
+        return;
     }
+    // Make sure the Type column is stretched to accommodate "Built-in" in case
+    // the view was last updated with LV2 effects only.
+    pTargetList->resizeColumnToContents(0);
 }
 
 void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selected) {
