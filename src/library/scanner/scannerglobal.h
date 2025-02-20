@@ -145,9 +145,6 @@ class ScannerGlobal {
     }
     void trackAdded(const QString& trackLocation) {
         m_addedTracks << trackLocation;
-        // TODO Collect TrackIds?
-        // If Track is clean / !isDirty() it is new and we may add it
-        // to some sort of 'New Tracks' list (special crate?)
     }
 
     int numScannedDirectories() const {

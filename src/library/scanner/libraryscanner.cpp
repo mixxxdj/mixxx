@@ -619,12 +619,9 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     if (pTrack) {
         DEBUG_ASSERT(!pTrack->isDirty());
         // The track's actual location might differ from the given trackPath.
-        // TODO why?
         const QString trackLocation(pTrack->getLocation());
         // Acknowledge successful track addition
         if (m_scannerGlobal) {
-            // TODO emit pTrack, or use a new signal to store the track id
-            // elsewhere, so we can create a 'New' trackset
             m_scannerGlobal->trackAdded(trackLocation);
         }
         // Signal for TrackCollectionManager::afterTrackAdded() that there is
