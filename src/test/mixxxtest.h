@@ -43,11 +43,11 @@ class MixxxTest : public testing::Test {
         return s_TestDir;
     }
 
-  protected:
     static QApplication* application() {
         return s_pApplication.data();
     }
 
+  protected:
     UserSettingsPointer config() const {
         return m_pConfig;
     }
