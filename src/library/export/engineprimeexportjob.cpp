@@ -246,7 +246,7 @@ void exportMetadata(
         int hotCueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
         if (hotCueIndex < 0 || hotCueIndex >= kMaxHotCues) {
             qInfo() << "Skipping hot cue" << hotCueIndex
-                    << "as the Engine Prime format only supports at most"
+                    << "as the Engine DJ format only supports at most"
                     << kMaxHotCues << "hot cues.";
             continue;
         }
@@ -653,7 +653,7 @@ void EnginePrimeExportJob::run() {
         emit jobProgress(currProgress);
     }
 
-    qInfo() << "Engine Prime Export Job completed successfully";
+    qInfo() << "Engine DJ Export Job completed successfully";
     emit completed(m_trackRefs.size(), m_crateIds.size());
 }
 
