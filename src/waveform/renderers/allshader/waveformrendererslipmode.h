@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "rendergraph/geometrynode.h"
-#include "rendergraph/opacitynode.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformrendererabstract.h"
@@ -15,7 +14,7 @@ class SkinContext;
 
 namespace allshader {
 class WaveformRendererSlipMode;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererSlipMode final
         : public ::WaveformRendererAbstract,

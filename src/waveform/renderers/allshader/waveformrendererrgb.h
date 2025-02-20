@@ -6,7 +6,7 @@
 
 namespace allshader {
 class WaveformRendererRGB;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererRGB final
         : public allshader::WaveformRendererSignalBase,

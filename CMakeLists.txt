@@ -64,7 +64,12 @@ function(fatal_error_missing_env)
       )
     endif()
   elseif(APPLE AND NOT IOS)
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+      message(
+        FATAL_ERROR
+        "Did you build the Mixxx build environment as described here: https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64?"
+      )
+    elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
         FATAL_ERROR
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`"
@@ -75,11 +80,24 @@ function(fatal_error_missing_env)
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh` or `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`(includes Debug)?"
       )
     endif()
-  elseif(LINUX)
-    message(
-      FATAL_ERROR
-      "Did you install the Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh` or the equivalent packages using your package manager?"
-    )
+  elseif(UNIX AND NOT APPLE)
+    # Linux, BSD, Solaris, Minix
+    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+      message(
+        FATAL_ERROR
+        "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    elseif(EXISTS "/etc/redhat-release") # exists also on Fedora Mageia Madndriva Alma CentOS
+      message(
+        FATAL_ERROR
+        "Did you install the required RPM dev packages via `${CMAKE_SOURCE_DIR}/tools/rpm_buildenv.sh`?"
+      )
+    else()
+      message(
+        FATAL_ERROR
+        "Did you install the equivalent dev packages listed in `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    endif()
   elseif(DEFINED VCPKG_TARGET_TRIPLET)
     message(
       FATAL_ERROR
@@ -1206,6 +1224,7 @@ add_library(
   src/library/itunes/itunesfeature.cpp
   src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
+  src/library/itunes/itunestrackmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
@@ -1510,6 +1529,7 @@ add_library(
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
+  src/widget/hotcuedrag.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
@@ -1554,6 +1574,7 @@ add_library(
   src/widget/wnumberrate.cpp
   src/widget/woverview.cpp
   src/widget/wpixmapstore.cpp
+  src/widget/wplaybutton.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
   src/widget/wstarratingaction.cpp
@@ -1561,6 +1582,7 @@ add_library(
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
+  src/widget/wsettingscheckboxlabel.cpp
   src/widget/wsingletoncontainer.cpp
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
@@ -1849,6 +1871,19 @@ if(APPLE)
       mixxx-lib
       PRIVATE src/soundio/soundmanagerios.mm src/util/screensaverios.mm
     )
+
+    option(IOS_ITUNES_LIBRARY "Native iOS music library integration" ON)
+    if(IOS_ITUNES_LIBRARY)
+      target_sources(
+        mixxx-lib
+        PRIVATE
+          src/library/itunes/itunesiosassetexporter.mm
+          src/library/itunes/itunesiosimporter.mm
+          src/library/itunes/itunesiostrackresolver.cpp
+      )
+      target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+      target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
+    endif()
   else()
     target_sources(mixxx-lib PRIVATE src/util/darkappearance.mm)
 
@@ -3434,9 +3469,16 @@ if(Qt_IS_STATIC)
       Qt${QT_VERSION_MAJOR}::QSvgPlugin
       # sqldrivers
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
-      # network plugins
-      Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
   )
+
+  if(NOT IOS)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE
+        # network plugins
+        Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+    )
+  endif()
 
   if(EMSCRIPTEN)
     target_link_libraries(
@@ -3533,14 +3575,16 @@ else()
         applocal
     )
 
-    install(
-      IMPORTED_RUNTIME_ARTIFACTS
-        Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
-        DESTINATION
-        "${MIXXX_INSTALL_DATADIR}/tls"
-        COMPONENT
-        applocal
-    )
+    if(NOT IOS)
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}/tls"
+          COMPONENT
+          applocal
+      )
+    endif()
 
     if(QML)
       install(

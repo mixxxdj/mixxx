@@ -18,7 +18,9 @@
 #endif
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgcontrollerlearning.h"
+#ifdef __HID__
 #include "controllers/hid/hidcontroller.h"
+#endif
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -175,6 +177,7 @@ DlgPrefController::DlgPrefController(
         m_ui.labelUsbInterfaceNumberValue->setVisible(false);
     }
 
+#ifdef __HID__
     // Display HID UsagePage and Usage if the controller is an HidController
     if (auto* hidController = dynamic_cast<HidController*>(m_pController)) {
         m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
@@ -188,7 +191,9 @@ DlgPrefController::DlgPrefController(
         m_ui.labelHidUsagePageValue->setVisible(true);
         m_ui.labelHidUsage->setVisible(true);
         m_ui.labelHidUsageValue->setVisible(true);
-    } else {
+    } else
+#endif
+    {
         m_ui.labelHidUsagePage->setVisible(false);
         m_ui.labelHidUsagePageValue->setVisible(false);
         m_ui.labelHidUsage->setVisible(false);

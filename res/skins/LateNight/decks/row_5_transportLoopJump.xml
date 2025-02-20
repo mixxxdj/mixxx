@@ -71,7 +71,7 @@
                 <Layout>stacked</Layout>
                 <Size>68f,26f</Size>
                 <Children>
-                  <Template src="skins:LateNight/controls/button_2state_right_display.xml">
+                  <Template src="skins:LateNight/controls/button_play_2state_right_display.xml">
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="ObjectName">PlayDeck</SetVariable>
                     <SetVariable name="Size">68f,26f</SetVariable>
