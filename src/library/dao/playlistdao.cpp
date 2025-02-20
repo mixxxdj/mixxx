@@ -646,7 +646,7 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     query.prepare(QStringLiteral(
             "SELECT %1 FROM PlaylistTracks "
             "WHERE playlist_id=:id AND position=:position")
-                          .arg(PLAYLISTTRACKSTABLE_TRACKID));
+                    .arg(PLAYLISTTRACKSTABLE_TRACKID));
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
 

@@ -1874,10 +1874,10 @@ bool TrackDAO::detectMovedTracks(
             "filename=:filename AND "
             "ABS(duration - :duration) < 1 AND "
             "fs_deleted=0")
-                                  .arg(
-                                          TRACK_ID,
-                                          LOCATION_ID,
-                                          SqlStringFormatter::formatList(m_database, addedTracks)));
+                    .arg(
+                            TRACK_ID,
+                            LOCATION_ID,
+                            SqlStringFormatter::formatList(m_database, addedTracks)));
 
     // Query tracks, where we need a successor for
     QSqlQuery oldTrackQuery(m_database);
@@ -1886,7 +1886,7 @@ bool TrackDAO::detectMovedTracks(
             "track_locations.location, filename, duration "
             "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
             "WHERE fs_deleted=1")
-                                  .arg(TRACK_ID, LOCATION_ID));
+                    .arg(TRACK_ID, LOCATION_ID));
     if (!oldTrackQuery.exec()) {
         LOG_FAILED_QUERY(oldTrackQuery);
         DEBUG_ASSERT(!"Failed query");
