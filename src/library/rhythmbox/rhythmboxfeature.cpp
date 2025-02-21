@@ -2,7 +2,9 @@
 
 #include <QStringList>
 #include <QUrl>
-#include <QtConcurrent>
+#include <QXmlStreamAttributes>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include "library/baseexternalplaylistmodel.h"

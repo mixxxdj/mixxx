@@ -47,7 +47,7 @@ MC7000.needleSearchPlay = false;
 // select if the previous sampler shall stop before a new sampler starts
 // true: a running sampler will stop before the new sampler starts
 // false: all triggered samplers will play simultaneously
-MC7000.prevSamplerStop = true;
+MC7000.prevSamplerStop = engine.getSetting("prevSamplerStop") ?? true;
 
 // Quantity of Samplers used in mixxx possible values 16 and 32
 // To use 32 samplers instead of 16 you can set the user variable
@@ -55,7 +55,7 @@ MC7000.prevSamplerStop = true;
 // Deck 2 will trigger sampler 9 to 16, Deck 3 will trigger
 // sampler 17 to 24 and Deck 4 will trigger sampler 25 to 32.
 // Please note that your Mixxx skin needs to support more than 16 samplers.
-MC7000.SamplerQty = 16;
+MC7000.SamplerQty = parseInt(engine.getSetting("samplerQty") ?? "16");
 
 // Set Vinyl Mode on ("true") or off ("false") when MIXXX starts.
 // This sets the Jog Wheel touch detection / Vinyl Mode
@@ -110,6 +110,16 @@ MC7000.jogParams = {
     }
 };
 
+// Parameter button settings (the orange buttons at the bottom left/right of the controller).
+MC7000.parameterButtonSettings = {
+    // Parameter button mode. Available modes are `starsAndColor`, `beatjump` and `introOutro`.
+    mode: engine.getSetting("parameterButtonMode") ?? "starsAndColor",
+    // Whether to use the parameter buttons to change the pitch range during
+    // pitch play mode. If this option is enabled, the pitch change
+    // functionality overrides the normal parameter button mode during pitch play.
+    parameterButtonPitchPlayOverrideEnabled: engine.getSetting("parameterButtonPitchPlayOverrideEnabled") ?? true,
+};
+
 /*/////////////////////////////////
 //      USER VARIABLES END       //
 /////////////////////////////////*/
@@ -161,9 +171,6 @@ MC7000.VuMeterLEDPeakValue = 0x76;
 MC7000.prevVuLevel = [0, 0, 0, 0];
 MC7000.prevJogLED = [0, 0, 0, 0];
 MC7000.prevPadLED = [0, 0, 0, 0];
-
-// Param Buttons for Pitch Play
-MC7000.paramButton = [0, 0, 0, 0];
 
 /*
 Color Codes:
@@ -952,33 +959,85 @@ MC7000.censor = function(channel, control, value, status, group) {
         }
     }
 };
-// Param Button for Pitch Play to decrease pitch, or decrease star rating otherwise
-MC7000.StarsDown = function(channel, control, value, status, group) {
+
+// Parameter Buttons
+MC7000.parameterButton = function(value, group, {isLeftButton, isShiftPressed}) {
+    if (value === 0) {
+        return;
+    }
+
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
-    if (value > 0x00) {
-        if (MC7000.PADMode[deckIndex] === "Pitch") {
-            for (let padIdx = 0; padIdx < 8; padIdx++) {
-                MC7000.halftoneToPadMap[deckIndex][padIdx] = MC7000.halftoneToPadMap[deckIndex][padIdx] - 8; // pitch down
+    const settings = MC7000.parameterButtonSettings;
+
+    if (settings.parameterButtonPitchPlayOverrideEnabled && MC7000.PADMode[deckIndex] === "Pitch") {
+        const pitchDelta = isLeftButton ? -8 : 8;
+        for (let padIdx = 0; padIdx < 8; padIdx++) {
+            MC7000.halftoneToPadMap[deckIndex][padIdx] += pitchDelta;
+        }
+    } else {
+        switch (settings.mode) {
+        case "starsAndColor":
+            if (isShiftPressed) {
+                script.triggerControl(group, `track_color_${isLeftButton ? "prev" : "next"}`);
+            } else {
+                script.triggerControl(group, `stars_${isLeftButton ? "down" : "up"}`);
             }
-        } else {
-            engine.setValue(group, "stars_down", true); // stars down
+            break;
+        case "beatjump":
+            if (isShiftPressed) {
+                const beatJumpSize = engine.getValue(group, "beatjump_size");
+                const indexDelta = isLeftButton ? -1 : 1;
+                const newIndex = Math.max(0, Math.min(MC7000.beatJump.length - 1, MC7000.beatJump.indexOf(beatJumpSize) + indexDelta));
+                const newBeatJumpSize = MC7000.beatJump[newIndex];
+                engine.setValue(group, "beatjump_size", newBeatJumpSize);
+            } else {
+                script.triggerControl(group, `beatjump_${isLeftButton ? "backward" : "forward"}`);
+            }
+            break;
+        case "introOutro":
+            {
+                const cue = isLeftButton ? "intro_end" : "outro_start";
+                const action = isShiftPressed ? "clear" : "activate";
+                script.triggerControl(group, `${cue}_${action}`);
+            }
+            break;
+        default:
+            break;
         }
     }
 };
-// Param Button for Pitch Play to increase pitch, or increase star rating otherwise
-MC7000.StarsUp = function(channel, control, value, status, group) {
-    const deckNumber = script.deckFromGroup(group);
-    const deckIndex = deckNumber - 1;
-    if (value > 0x00) {
-        if (MC7000.PADMode[deckIndex] === "Pitch") {
-            for (let padIdx = 0; padIdx < 8; padIdx++) {
-                MC7000.halftoneToPadMap[deckIndex][padIdx] = MC7000.halftoneToPadMap[deckIndex][padIdx] + 8; // pitch up
-            }
-        } else {
-            engine.setValue(group, "stars_up", true); // stars up
-        }
-    }
+
+// Parameter Button '<'
+MC7000.parameterButtonLeft = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: true,
+        isShiftPressed: false
+    });
+};
+
+// Parameter Button '>'
+MC7000.parameterButtonRight = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: false,
+        isShiftPressed: false
+    });
+};
+
+// Parameter Button '<' + 'SHIFT'
+MC7000.parameterButtonLeftShifted = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: true,
+        isShiftPressed: true
+    });
+};
+
+// Parameter Button '>' + 'SHIFT'
+MC7000.parameterButtonRightShifted = function(channel, control, value, status, group) {
+    MC7000.parameterButton(value, group, {
+        isLeftButton: false,
+        isShiftPressed: true
+    });
 };
 
 // Set Crossfader Curve

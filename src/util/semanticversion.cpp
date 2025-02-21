@@ -1,37 +1,28 @@
 #include "util/semanticversion.h"
 
 #include <QRegularExpression>
+#include <QString>
+#include <QStringView>
 
 namespace {
-
-QRegularExpression regex("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)");
+// while this is accessed mutably concurrently below QRegularExpression is fully
+// threadsafe (even though not documented). See `tst_QRegularExpression::threadSafety`
+// from the Qt sources.
+QRegularExpression regex(
+        QStringLiteral("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)"));
 
 } // anonymous namespace
 
 namespace mixxx {
 
-SemanticVersion::SemanticVersion(unsigned int majorVersion,
-        unsigned int minorVersion,
-        unsigned int patchVersion)
-        : majorVersion(majorVersion),
-          minorVersion(minorVersion),
-          patchVersion(patchVersion) {
-}
-
 SemanticVersion::SemanticVersion(const QString& versionString)
-        : majorVersion(0),
-          minorVersion(0),
-          patchVersion(0) {
+        : SemanticVersion() {
     QRegularExpressionMatch match = regex.match(versionString);
     if (match.hasMatch()) {
-        majorVersion = match.captured(QStringLiteral("major")).toUInt();
-        minorVersion = match.captured(QStringLiteral("minor")).toUInt();
-        patchVersion = match.captured(QStringLiteral("patch")).toUInt();
+        majorVersion = match.capturedView(QStringView(u"major")).toUInt();
+        minorVersion = match.capturedView(QStringView(u"minor")).toUInt();
+        patchVersion = match.capturedView(QStringView(u"patch")).toUInt();
     }
-}
-
-bool SemanticVersion::isValid() const {
-    return !(majorVersion == 0 && minorVersion == 0 && patchVersion == 0);
 }
 
 } // namespace mixxx

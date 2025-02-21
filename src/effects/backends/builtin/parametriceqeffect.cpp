@@ -185,7 +185,9 @@ void ParametricEQEffect::processChannel(
             pState->m_bands[1]->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            if (pOutput != pInput) {
+                SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            }
         }
     }
 

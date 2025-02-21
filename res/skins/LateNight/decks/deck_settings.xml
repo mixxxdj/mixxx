@@ -47,7 +47,7 @@
 
               <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="ButtonName">CurposButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="ObjectName">CurposButton<Variable name="DeckGroup"/></SetVariable>
                 <SetVariable name="CoverName">BeatEditCoverDecks</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>

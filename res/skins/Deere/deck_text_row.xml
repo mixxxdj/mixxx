@@ -6,6 +6,10 @@
     group: the group to connect to
 -->
 <Template>
+  <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+  <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+  <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+
   <WidgetGroup>
     <ObjectName>DeckTextRow</ObjectName>
     <Layout>horizontal</Layout>
@@ -48,7 +52,7 @@
                        display just a label with asterixes instead. -->
                   <TrackProperty>
                     <TooltipId>track_title</TooltipId>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>e,min</SizePolicy>
                     <MinimumSize>1</MinimumSize>
                     <Property>titleInfo</Property>
                     <Group><Variable name="group"/></Group>
@@ -61,7 +65,7 @@
 
                   <Label>
                     <TooltipId>track_title</TooltipId>
-                    <Size>me,min</Size>
+                    <Size>e,min</Size>
                     <ObjectName>HiddenTrackTitleInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
@@ -76,7 +80,8 @@
                   <WidgetGroup>
                     <ObjectName>BpmKeyEditRowExpanded</ObjectName>
                     <Layout>horizontal</Layout>
-                    <Size>164f,-1me</Size>
+                    <MinimuSize>209,22</MinimuSize>
+                    <SizePolicy>max,me</SizePolicy>
                     <Children>
                       <SetVariable name="CoverName">BeatEditCover</SetVariable>
                       <SetVariable name="cover_control"><Variable name="group"/>,bpmlock</SetVariable>
@@ -84,7 +89,8 @@
                       <WidgetGroup>
                         <ObjectName>HotcueShiftButtons</ObjectName>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>min,me</SizePolicy>
+                        <Size>46,22</Size><!-- 22 + 2 spacing + 22 -->
+                        <SizePolicy>f,f</SizePolicy>
                         <Children>
                           <Template src="skin:left_right_1state_button.xml">
                             <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
@@ -121,10 +127,6 @@
                       <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                         <SetVariable name="ObjectName">BeatsAdjustFasterButton</SetVariable>
-                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                        <SetVariable name="state_0_text"></SetVariable>
                         <SetVariable name="state_0_pressed">icon/ic_beats_adjust_faster_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_adjust_faster_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_faster</SetVariable>
@@ -133,10 +135,6 @@
                       <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                         <SetVariable name="ObjectName">BeatsAdjustSlowerButton</SetVariable>
-                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                        <SetVariable name="state_0_text"></SetVariable>
                         <SetVariable name="state_0_pressed">icon/ic_beats_adjust_slower_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_adjust_slower_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_slower</SetVariable>
@@ -145,10 +143,6 @@
                       <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateEarlierButton</SetVariable>
-                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                        <SetVariable name="state_0_text"></SetVariable>
                         <SetVariable name="state_0_pressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_earlier</SetVariable>
@@ -157,10 +151,6 @@
                       <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateLaterButton</SetVariable>
-                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                        <SetVariable name="state_0_text"></SetVariable>
                         <SetVariable name="state_0_pressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
@@ -169,10 +159,6 @@
                       <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
-                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                        <SetVariable name="state_0_text"></SetVariable>
                         <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
@@ -182,12 +168,21 @@
                       <Template src="skin:left_right_1state_button_optional.xml">
                         <SetVariable name="TooltipId">tempo_tap_bpm_tap</SetVariable>
                         <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
-                        <SetVariable name="MinimumSize">30,22</SetVariable>
-                        <SetVariable name="MaximumSize">60,22</SetVariable>
-                        <SetVariable name="SizePolicy">me,me</SetVariable>
+                        <SetVariable name="MinimumSize">44,22</SetVariable>
+                        <SetVariable name="MaximumSize">44,22</SetVariable>
+                        <SetVariable name="SizePolicy">f,f</SetVariable>
                         <SetVariable name="state_0_text">TAP</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,tempo_tap</SetVariable>
                         <SetVariable name="right_connection_control"><Variable name="group"/>,bpm_tap</SetVariable>
+                      </Template>
+
+                      <Template src="skin:left_right_1state_button_optional_invert.xml">
+                        <SetVariable name="TooltipId">beats_undo_adjustment</SetVariable>
+                        <SetVariable name="ObjectName">Undo</SetVariable>
+                        <SetVariable name="state_0_pressed">icon/ic_undo_48px.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">icon/ic_undo_48px.svg</SetVariable>
+                        <SetVariable name="left_connection_control"><Variable name="group"/>,beats_undo_adjustment</SetVariable>
+                        <SetVariable name="cover_control"><Variable name="group"/>,beats_undo_possible</SetVariable>
                       </Template>
 
                       <!-- Can't use left_2state_button.xml since that emits on press & release -->

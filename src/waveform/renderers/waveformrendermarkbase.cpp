@@ -14,9 +14,13 @@ WaveformRenderMarkBase::WaveformRenderMarkBase(
 void WaveformRenderMarkBase::setup(const QDomNode& node, const SkinContext& context) {
     WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
     m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+}
+
+bool WaveformRenderMarkBase::init() {
     m_marks.connectSamplePositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     m_marks.connectSampleEndPositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WaveformRenderMarkBase::onMarkChanged);
+    return true;
 }
 
 void WaveformRenderMarkBase::onSetTrack() {
@@ -57,7 +61,7 @@ void WaveformRenderMarkBase::updateMarksFromCues() {
     }
 
     const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
-    QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
+    const QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
     for (const CuePointer& pCue : loadedCues) {
         const int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {

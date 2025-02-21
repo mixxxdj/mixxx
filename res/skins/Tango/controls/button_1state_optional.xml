@@ -27,7 +27,7 @@ Variables:
           <ConfigKey><Variable name="CoverConfigKey"/></ConfigKey>
         </Connection>
       </Label>
-      <Template src="skins:LateNight/controls/button_1state.xml"/>
+      <Template src="skins:Tango/controls/button_1state.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

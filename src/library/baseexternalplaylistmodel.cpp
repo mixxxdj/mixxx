@@ -32,8 +32,7 @@ BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
-    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    QString location = QDir::fromNativeSeparators(nativeLocation);
+    QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -69,6 +68,15 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         pTrack->trySetBpm(bpm);
     }
     return pTrack;
+}
+
+QString BaseExternalPlaylistModel::resolveLocation(const QString& nativeLocation) const {
+    return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QString BaseExternalPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return resolveLocation(nativeLocation);
 }
 
 TrackId BaseExternalPlaylistModel::getTrackId(const QModelIndex& index) const {
@@ -136,7 +144,7 @@ void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
     // The ordering of columns is relevant (see below)!
     auto playlistViewColumns = QStringList{
             QStringLiteral("track_id"),
-            QStringLiteral("position"),
+            PLAYLISTTRACKSTABLE_POSITION,
             QStringLiteral("'' AS ") + LIBRARYTABLE_PREVIEW};
     const auto queryString =
             QStringLiteral(

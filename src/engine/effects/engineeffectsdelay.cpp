@@ -17,9 +17,9 @@ EngineEffectsDelay::~EngineEffectsDelay() {
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
-        const int iBufferSize) {
+        const std::size_t bufferSize) {
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {
-        for (int i = 0; i < iBufferSize; ++i) {
+        for (std::size_t i = 0; i < bufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
             m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
@@ -38,7 +38,7 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
             kDelayBufferSize;
 
     if (m_prevDelaySamples == m_currentDelaySamples) {
-        for (int i = 0; i < iBufferSize; ++i) {
+        for (std::size_t i = 0; i < bufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
             m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
@@ -59,9 +59,10 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
                 (m_delayBufferWritePos + kDelayBufferSize - m_prevDelaySamples) %
                 kDelayBufferSize;
 
-        const RampingValue<CSAMPLE_GAIN> delayChangeRamped(0.0f, 1.0f, iBufferSize);
+        const RampingValue<CSAMPLE_GAIN> delayChangeRamped(
+                0.0f, 1.0f, static_cast<int>(bufferSize));
 
-        for (int i = 0; i < iBufferSize; ++i) {
+        for (std::size_t i = 0; i < bufferSize; ++i) {
             // Put samples into delay buffer.
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
             m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
@@ -70,7 +71,7 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
             // and with the use of ramping (cross-fading),
             // calculate the result sample value
             // and put it into the dest buffer.
-            CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(i);
+            CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(static_cast<int>(i));
 
             pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
             pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
