@@ -259,10 +259,10 @@ void WTrackMenu::createMenus() {
                     if (!m_pSearchRelatedMenu->isEmpty()) {
                         // We're interested in keypress Qt::Key_Left, so use our
                         // event filter like we do for the crate checkboxes.
-                        for (const auto ch : m_pSearchRelatedMenu->children()) {
-                            QCheckBox* cb = qobject_cast<QCheckBox*>(ch);
-                            if (cb) {
-                                cb->installEventFilter(this);
+                        for (const auto pObj : m_pSearchRelatedMenu->children()) {
+                            QCheckBox* pCB = qobject_cast<QCheckBox*>(pObj);
+                            if (pCB) {
+                                pCB->installEventFilter(this);
                             }
                         }
                     }
