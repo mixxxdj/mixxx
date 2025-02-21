@@ -131,5 +131,6 @@ TrackModel::Capabilities BaseExternalTrackModel::getCapabilities() const {
             Capability::AddToAutoDJ |
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
-            Capability::LoadToSampler;
+            Capability::LoadToSampler |
+            Capability::Sorting;
 }
