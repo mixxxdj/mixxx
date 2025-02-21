@@ -156,17 +156,21 @@ void WTrackMenu::closeEvent(QCloseEvent* event) {
 bool WTrackMenu::eventFilter(QObject* pObj, QEvent* e) {
     // If a checkbox in a QWidgetAction is focused, Left/Right keys are translated
     // to Up/Down which prevents closing the submenus with Left key like in other
-    // submenus. We simply call hide() of the submenu if Left is pressed.
-    if (e->type() == QEvent::KeyPress) {
-        QCheckBox* cbx = qobject_cast<QCheckBox*>(pObj);
-        if (cbx) {
-            // Note: if we ever add checkboxes to the top level we need to
-            // assert that cbx->parentWidget() != this.
-            QKeyEvent* pKe = static_cast<QKeyEvent*>(e);
-            if (pKe && pKe->key() == Qt::Key_Left) {
-                cbx->parentWidget()->hide();
-                return true;
-            }
+    // submenus.
+    // We simply call hide() of the submenu if Left is pressed.
+    // We ignore Right.
+    // Don't continue (close track menu) if the checkbox is at the top level.
+    if (pObj->parent() != this && e->type() == QEvent::KeyPress) {
+        QCheckBox* pCB = qobject_cast<QCheckBox*>(pObj);
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+        if (!pCB || !pKE) {
+            return QObject::eventFilter(pObj, e);
+        }
+        if (pKE->key() == Qt::Key_Left) {
+            pCB->parentWidget()->hide();
+            return true;
+        } else if (pKE->key() == Qt::Key_Right) {
+            return true;
         }
     }
     return QObject::eventFilter(pObj, e);
