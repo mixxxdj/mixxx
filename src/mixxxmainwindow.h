@@ -18,6 +18,7 @@ class LaunchImage;
 class VisualsManager;
 class WMainMenuBar;
 struct LibraryScanResultSummary;
+class OscReceiver;
 
 namespace mixxx {
 
@@ -109,6 +110,7 @@ class MixxxMainWindow : public QMainWindow {
     void checkDirectRendering();
     // EveOSC
     void oscEnable();
+    void onOscThreadFinished();
     // EveOSC
 
     /// Load skin to a QWidget that we set as the central widget.
@@ -165,4 +167,6 @@ class MixxxMainWindow : public QMainWindow {
     mixxx::preferences::ScreenSaver m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
+    QThread m_oscThread;
+    std::unique_ptr<OscReceiver> m_pOscReceiver;
 };
