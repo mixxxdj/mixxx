@@ -112,24 +112,20 @@ class Controller : public QObject {
 
   protected:
     template<typename SpecificMappingType>
-    std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
-            std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        requires(std::is_final_v<SpecificMappingType> == true)
+    std::unique_ptr<SpecificMappingType> downcastAndClone(const LegacyControllerMapping* pMapping) {
         // When unsetting a mapping (select 'No mapping') we receive a nullptr
-        if (pMapping == nullptr) {
+        if (!pMapping) {
+            return nullptr;
+        }
+        auto* pSpecifiedMapping = dynamic_cast<const SpecificMappingType*>(pMapping);
+        VERIFY_OR_DEBUG_ASSERT(pSpecifiedMapping) {
             return nullptr;
         }
         // Controller cannot take ownership if pMapping is referenced elsewhere because
         // the controller polling thread needs exclusive accesses to the non-thread safe
-        // LegacyControllerMapping.
-        // Trying to cast a std::shared_ptr to a std::unique_ptr is not worth the trouble.
-        VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
-            return nullptr;
-        }
-        auto pDowncastedMapping = std::dynamic_pointer_cast<SpecificMappingType>(pMapping);
-        VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
-            return nullptr;
-        }
-        return pDowncastedMapping;
+        // LegacyControllerMapping. So we do a deep copy here.
+        return std::make_unique<SpecificMappingType>(*pSpecifiedMapping);
     }
 
     // The length parameter is here for backwards compatibility for when scripts

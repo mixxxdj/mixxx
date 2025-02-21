@@ -1128,17 +1128,19 @@ class Mixer extends ComponentContainer {
                 switch (value) {
                 case 0x00:  // Picnic Bench / Fast Cut
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
                     break;
                 case 0x01:  // Constant Power
                     engine.setValue("[Mixer Profile]", "xFaderMode", 1);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
+                    // Constant power requires to set an appropriate calibration value
+                    // in order to get a smooth curve.
+                    // This is the output of EngineXfader::getPowerCalibration() for
+                    // the "xFaderCurve" 0.6 (pow(0.5, 1.0 / 0.6))
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.31498);
                     break;
                 case 0x02: // Additive
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
                 }
             },
@@ -2523,8 +2525,33 @@ class S4Mk3Deck extends Deck {
         this.wheelLED = new Component({
             deck: this,
             lastPos: 0,
-            outKey: "playposition",
-            output: function(fractionOfTrack) {
+            lastMode: null,
+            outConnect: function() {
+                if (this.group !== undefined) {
+                    const connection0 = engine.makeConnection(this.group, "playposition", (position) => this.output.bind(this)(position, true, true));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection0) {
+                        this.outConnections[0] = connection0;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.playposition' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection1 = engine.makeConnection(this.group, "play", (play) => this.output.bind(this)(engine.getValue(this.group, "playposition"), play, play || engine.getValue(this.group, "track_loaded")));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection1) {
+                        this.outConnections[1] = connection1;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection2 = engine.makeConnection(this.group, "track_loaded", (trackLoaded) => this.output.bind(this)(engine.getValue(this.group, "playposition"), !trackLoaded ? false : engine.getValue(this.group, "play"), trackLoaded));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection2) {
+                        this.outConnections[2] = connection2;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.track_loaded' to the controller output. The control appears to be unavailable.`);
+                    }
+                }
+            },
+            output: function(fractionOfTrack, playstate, trackLoaded) {
                 if (this.deck.wheelMode > wheelModes.motor) {
                     return;
                 }
@@ -2567,18 +2594,24 @@ class S4Mk3Deck extends Deck {
 
                 const wheelOutput = new Uint8Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
+                wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                if (engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
+                if (!trackLoaded) {
+                    wheelOutput[1] = wheelLEDmodes.off;
+                } else if (playstate && fractionOfTrack < 1 && engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd && !this.deck.wheelTouch.touched) {
                     wheelOutput[1] = wheelLEDmodes.ringFlash;
                 } else {
                     wheelOutput[1] = wheelLEDmodes.spot;
                     wheelOutput[2] = LEDposition & 0xff;
                     wheelOutput[3] = LEDposition >> 8;
+                    if (this.lastMode === wheelLEDmodes.ringFlash) {
+                        wheelOutput[4] = Button.prototype.brightnessOff;
+                        engine.beginTimer(200, () => this.output(fractionOfTrack, playstate, trackLoaded), true);
+                    }
                 }
-                wheelOutput[4] = this.color + Button.prototype.brightnessOn;
+                this.lastMode = wheelOutput[1];
 
                 controller.sendOutputReport(50, wheelOutput.buffer, true);
-
             }
         });
 
@@ -2877,6 +2910,9 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
 class S4MK3 {
     constructor() {
+        if (engine.getValue("[App]", "num_decks") < 4) {
+            engine.setValue("[App]", "num_decks", 4);
+        }
         if (engine.getValue("[App]", "num_samplers") < 16) {
             engine.setValue("[App]", "num_samplers", 16);
         }

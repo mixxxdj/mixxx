@@ -17,7 +17,7 @@ void Rotary::append(double v) {
 double Rotary::calculate() const {
     return std::accumulate(std::cbegin(m_filterHistory),
                    std::cend(m_filterHistory),
-                   0) /
+                   0.0) /
             static_cast<double>(m_filterHistory.size());
 }
 
