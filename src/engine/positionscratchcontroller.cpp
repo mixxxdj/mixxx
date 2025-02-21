@@ -69,6 +69,7 @@ namespace {
 
 constexpr double kDefaultSampleInterval = 0.016;
 // The max wait time when no new position has been set
+// TODO Make threshold configurable for controller use?
 constexpr double kMoveDelayMax = 0.04;
 // The rate threshold above which disabling position scratching will enable
 // an 'inertia' mode.
@@ -76,6 +77,7 @@ constexpr double kThrowThreshold = 2.5;
 // Max velocity we would like to stop in a given time period.
 constexpr double kMaxVelocity = 100;
 // Seconds to stop a throw at the max velocity.
+// TODO make configurable, eg. to customize spinbacks with controllers
 constexpr double kTimeToStop = 1.0;
 
 } // anonymous namespace
@@ -93,15 +95,19 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_isScratching(false),
           m_inertiaEnabled(false),
           m_prevSamplePos(0),
+          // TODO we might as well use FramePos in order to use more convenient
+          // mixxx::audio::kInvalidFramePos, then convert to sample pos on the fly
+          m_seekSamplePos(std::numeric_limits<double>::quiet_NaN()),
           m_samplePosDeltaSum(0),
           m_scratchTargetDelta(0),
           m_scratchStartPos(0),
           m_rate(0),
           m_moveDelay(0),
           m_mouseSampleTime(0),
-          m_bufferSize(-1), // ?
+          m_bufferSize(-1),
           m_dt(1),
           m_callsPerDt(1),
+          m_callsToStop(1),
           m_p(1),
           m_d(1),
           m_f(0.4) {
@@ -122,6 +128,8 @@ void PositionScratchController::slotUpdateFilterParameters(double sampleRate) {
     // have 0 ... 3 samples. The remaining jitter is ironed by the following IIR
     // lowpass filter
     m_callsPerDt = static_cast<int>(ceil(kDefaultSampleInterval / m_dt));
+
+    m_callsToStop = m_dt / kTimeToStop;
 
     // Tweak PD controller for different latencies
     m_p = 0.3;
@@ -162,6 +170,15 @@ void PositionScratchController::process(double currentSamplePos,
         m_mouseSampleTime = 0;
     }
 
+    bool adoptSeekPos = false;
+    if (!util_isnan(m_seekSamplePos)) {
+        // If we were notified about a seek, adopt the new position immediately.
+        m_prevSamplePos = m_seekSamplePos;
+        m_seekSamplePos = std::numeric_limits<double>::quiet_NaN();
+
+        adoptSeekPos = true;
+    }
+
     if (m_isScratching) {
         if (m_inertiaEnabled) {
             // If we got here then we're not scratching and we're in inertia
@@ -179,10 +196,10 @@ void PositionScratchController::process(double currentSamplePos,
             // constants. Roughly we backsolve what the decay should be if we want to
             // stop a throw of max velocity kMaxVelocity in kTimeToStop seconds. Here is
             // the derivation:
-            // kMaxVelocity * alpha ^ (# callbacks to stop in) = decayThreshold
+            // decayThreshold = kMaxVelocity * alpha ^ (# callbacks to stop in)
             // # callbacks = kTimeToStop / m_dt
             // alpha = (decayThreshold / kMaxVelocity) ^ (m_dt / kTimeToStop)
-            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity, m_dt / kTimeToStop);
+            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity, m_callsToStop);
 
             m_rate *= kExponentialDecay;
 
@@ -239,10 +256,9 @@ void PositionScratchController::process(double currentSamplePos,
                 bool calcRate = true;
 
                 if (m_scratchTargetDelta == scratchTargetDelta) {
-                    // We get here if the next mouse position is delayed, the mouse
-                    // is stopped or moves very slowly. Since we don't know the case
-                    // we assume delayed mouse updates for 40 ms.
-                    // TODO Make threshold configurable for controller use?
+                    // We get here if the next mouse position is delayed, the
+                    // mouse is stopped or moves very slowly. Since we don't
+                    // know the case we assume delayed mouse updates for 40 ms.
                     m_moveDelay += m_dt * m_callsPerDt;
                     if (m_moveDelay < kMoveDelayMax) {
                         // Assume a missing Mouse Update and continue with the
@@ -265,15 +281,15 @@ void PositionScratchController::process(double currentSamplePos,
                     m_scratchTargetDelta = scratchTargetDelta;
                 }
 
-                if (calcRate) {
+                // If we just adopted the seek position we need to avoid false
+                // high rate and simply report the previous rate.
+                // It'll adapt to the scratch speed in the next run.
+                // Setting rate to 0 has the same effect apparently.
+                if (calcRate && !adoptSeekPos) {
                     double ctrlError = m_pRateIIFilter->filter(
                             scratchTargetDelta - m_samplePosDeltaSum);
                     m_rate = m_pVelocityController->observation(ctrlError);
-                    m_rate /= ceil(kDefaultSampleInterval / m_dt);
-                    // Note: The following SoundTouch changes the also rate by a ramp
-                    // This looks like average of the new and the old rate independent
-                    // from m_dt. Ramping is disabled when direction changes or rate = 0;
-                    // (determined experimentally)
+                    m_rate /= m_callsPerDt;
                     if (fabs(m_rate) < MIN_SEEK_SPEED) {
                         // we cannot get closer
                         m_rate = 0;
@@ -301,8 +317,8 @@ void PositionScratchController::process(double currentSamplePos,
         m_moveDelay = 0;
         // Set up initial values, in a way that the system is settled
         m_rate = releaseRate;
-        m_samplePosDeltaSum = -(releaseRate / m_p) *
-                m_callsPerDt; // Set to the remaining error of a p controller
+        // Set to the remaining error of a p controller
+        m_samplePosDeltaSum = -(releaseRate / m_p) * m_callsPerDt;
         m_pVelocityController->reset(-m_samplePosDeltaSum);
         m_pRateIIFilter->reset(-m_samplePosDeltaSum);
         m_scratchStartPos = scratchPosition;
@@ -313,7 +329,15 @@ void PositionScratchController::process(double currentSamplePos,
 
 void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
-    // scratching continues after seek due to calculating the relative distance traveled
-    // in m_samplePosDeltaSum
-    m_prevSamplePos = position.toEngineSamplePos();
+    const double newPos = position.toEngineSamplePos();
+    if (!isEnabled()) {
+        // not scratching, ignore";
+        return;
+    } else if (m_prevSamplePos == newPos) {
+        // no-op
+        return;
+    }
+    // Scratching continues after seek due to calculating the relative
+    // distance traveled in m_samplePosDeltaSum
+    m_seekSamplePos = newPos;
 }
