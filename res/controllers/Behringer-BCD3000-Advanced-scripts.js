@@ -41,6 +41,8 @@ BehringerBCD3000.reset = function (id) {
     BehringerBCD3000.alt = false;
     BehringerBCD3000.inputA = false;
     BehringerBCD3000.inputB = false;
+	BehringerBCD3000.playA = false;
+	BehringerBCD3000.playB = false;
     BehringerBCD3000.scratchMode = [false, false];
     BehringerBCD3000.scratchTimer = [-1, -1];
 
