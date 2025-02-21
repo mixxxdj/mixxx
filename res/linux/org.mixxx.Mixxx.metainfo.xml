@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-02-13" timestamp="1739430195">
+    <release version="2.5.1" type="development" date="2025-02-21" timestamp="1740163606">
       <description>
  <p>
   Controller Mappings
@@ -105,6 +105,7 @@
   <li>
    Behringer DDM4000 &amp; BCR2000: Update mappings to 2.5
    #14232
+   #14349
   </li>
   <li>
    Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
@@ -126,6 +127,7 @@
   <li>
    Reloop Digital Jockey 2 IE: New mapping
    #4614
+   #14328
   </li>
   <li>
    Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
@@ -134,6 +136,13 @@
   <li>
    Traktor S4mk3: Smooth xfader curve for Const Power mode
    #14305
+   #14329
+   #14103
+  </li>
+  <li>
+   Traktor S4mk3: stop wheel led blinking when track is over/stopped
+   #14028
+   #13995
   </li>
   <li>
    Traktor Kontrol S3: Use pitch absolute mode as described in the manual
@@ -253,6 +262,13 @@
    #14265
   </li>
   <li>
+   Fix: provide
+   incomingData
+   to MIDI sysex mappings
+   #14368
+   #13133
+  </li>
+  <li>
    Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
    #14172
    #14289
@@ -261,6 +277,39 @@
    Fix sporadic deadlocks when closing Mixxx or changing sound devices
    #14208
    #14055
+  </li>
+  <li>
+   Avoid timer warning on button release
+   #14323
+  </li>
+  <li>
+   Fix log spam when using Midi for light mapping
+   #14326
+   #14327
+   #14333
+   #14338
+   #14371
+  </li>
+  <li>
+   Controller mapping info: Fix cropped description text
+   #14332
+   #14117
+  </li>
+  <li>
+   Fix writing metadata via symlink
+   #13711
+  </li>
+  <li>
+   Fix beat sync in flanger effect
+   #14351
+  </li>
+  <li>
+   Library menu: change "Engine DJ Prime" to "Engine DJ"
+   #14248
+  </li>
+  <li>
+   Preferences Effects: left/right key in effect lists trigger hide/unhide
+   #14205
   </li>
  </ul>
  <p>
@@ -301,6 +350,10 @@
   <li>
    Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
    #14269
+  </li>
+  <li>
+   Fix and improve "missing env" error message
+   #14321
   </li>
  </ul>
 </description>
