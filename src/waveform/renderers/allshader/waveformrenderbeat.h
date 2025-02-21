@@ -14,8 +14,10 @@ class WaveformRenderBeat;
 } // namespace allshader
 
 class allshader::WaveformRenderBeat final
-        : public ::WaveformRendererAbstract,
+        : public QObject,
+          public ::WaveformRendererAbstract,
           public rendergraph::GeometryNode {
+    Q_OBJECT
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
@@ -28,6 +30,11 @@ class allshader::WaveformRenderBeat final
 
     // Virtuals for rendergraph::Node
     void preprocess() override;
+
+  public slots:
+    void setColor(const QColor& color) {
+        m_color = color;
+    }
 
   private:
     QColor m_color;
