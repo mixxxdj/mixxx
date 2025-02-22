@@ -124,7 +124,8 @@ bool WaveformRendererStem::preprocessInner() {
     getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
-    const float halfBreadth = breadth / 2.0f;
+    const float stemBreadth = m_splitStemTracks ? breadth / 4.0f : 0;
+    const float halfBreadth = (m_splitStemTracks ? stemBreadth : breadth) / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
 
@@ -195,10 +196,15 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Lines are thin rectangles
                 // shadow
-                vertexUpdater.addRectangle({fVisualIdx - halfStripSize,
-                                                   halfBreadth - heightFactor * max},
+                vertexUpdater.addRectangle(
+                        {fVisualIdx - halfStripSize,
+                                stemIdx * stemBreadth + halfBreadth -
+                                        heightFactor * max},
                         {fVisualIdx + halfStripSize,
-                                m_isSlipRenderer ? halfBreadth : halfBreadth + heightFactor * max},
+                                m_isSlipRenderer
+                                        ? stemIdx * stemBreadth + halfBreadth
+                                        : stemIdx * stemBreadth + halfBreadth +
+                                                heightFactor * max},
                         {color_r, color_g, color_b, color_a});
             }
         }

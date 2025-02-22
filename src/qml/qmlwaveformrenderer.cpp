@@ -141,6 +141,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererStem::create(
             waveformWidget, m_position);
 
     pRenderer->setAllChannelVisualGain(m_gainAll);
+    pRenderer->setSplitStemTracks(m_splitStemTracks);
     connect(this,
             &QmlWaveformRendererStem::gainAllChanged,
             pRenderer.get(),

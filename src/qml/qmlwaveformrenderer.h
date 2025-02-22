@@ -330,7 +330,8 @@ class QmlWaveformRendererMarkRange
 class QmlWaveformRendererStem
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(double gainAll MEMBER m_gainAll NOTIFY gainAllChanged REQUIRED)
+    Q_PROPERTY(double gainAll MEMBER m_gainAll NOTIFY gainAllChanged)
+    Q_PROPERTY(bool splitStemTracks MEMBER m_splitStemTracks NOTIFY splitStemTracksChanged)
     QML_NAMED_ELEMENT(WaveformRendererStem)
 
   public:
@@ -344,9 +345,11 @@ class QmlWaveformRendererStem
 
   signals:
     void gainAllChanged(double);
+    void splitStemTracksChanged(bool);
 
   private:
-    double m_gainAll;
+    double m_gainAll{1.0};
+    bool m_splitStemTracks{false};
 
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };

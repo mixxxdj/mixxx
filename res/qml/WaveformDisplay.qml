@@ -8,6 +8,7 @@ Item {
     id: root
 
     required property string group
+    property bool splitStemTracks: false
 
     enum MouseStatus {
         Normal,
@@ -74,7 +75,8 @@ Item {
         }
 
         Mixxx.WaveformRendererStem {
-            gainAll: 1.0
+            gainAll: root.splitStemTracks ? 2.0 : 1.0
+            splitStemTracks: root.splitStemTracks
         }
 
         Mixxx.WaveformRendererBeat {
@@ -188,6 +190,11 @@ Item {
 
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onDoubleClicked: {
+            if (mouse.button == Qt.RightButton) {
+                root.splitStemTracks = !root.splitStemTracks;
+            }
+        }
         onPressed: {
             mouseAnchor = Qt.point(mouse.x, mouse.y);
             if (mouse.button == Qt.LeftButton) {
