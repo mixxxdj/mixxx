@@ -30,177 +30,182 @@ RateControl::RampMode RateControl::m_eRateRampMode;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
-RateControl::RateControl(const QString& group,
-        UserSettingsPointer pConfig)
+RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pBpmControl(nullptr),
+          m_pSampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
+          m_pRateRatio(std::make_unique<ControlObject>(
+                  ConfigKey(group, QStringLiteral("rate_ratio")),
+                  true,
+                  false,
+                  false,
+                  1.0)),
+          m_pRateDir(std::make_unique<ControlObject>(
+                  ConfigKey(group, QStringLiteral("rate_dir")))),
+          m_pRateRange(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, QStringLiteral("rateRange")), 0.01, 4.00)),
+          // We need the sample rate so we can guesstimate something close
+          // what latency is.
+          // Allow rate slider to go out of bounds so that sync lock rate
+          // adjustments are not capped.
+          m_pRateSlider(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, QStringLiteral("rate")), -1.0, 1.0, true)),
+          // Search rate. Rate used when searching in sound. This overrules the
+          // playback rate
+          m_pRateSearch(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, QStringLiteral("rateSearch")), -300., 300.)),
+          // Temporary rate-change buttons
+          m_pButtonRateTempDown(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_temp_down")))),
+          m_pButtonRateTempDownSmall(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_temp_down_small")))),
+          m_pButtonRateTempUp(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_temp_up")))),
+          m_pButtonRateTempUpSmall(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_temp_up_small")))),
+          // Permanent rate-change buttons
+          m_pButtonRatePermDown(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_perm_down")))),
+          m_pButtonRatePermDownSmall(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_perm_down_small")))),
+          m_pButtonRatePermUp(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_perm_up")))),
+          m_pButtonRatePermUpSmall(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("rate_perm_up_small")))),
+          // Reverse button
+          m_pReverseButton(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("reverse")))),
+          m_pReverseRollButton(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("reverseroll")))),
+          m_pForwardButton(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("fwd")))),
+          m_pBackButton(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("back")))),
+          // Wheel to control playback position/speed
+          m_pWheel(std::make_unique<ControlTTRotary>(
+                  ConfigKey(group, QStringLiteral("wheel")))),
+          // Scratch controller, this is an accumulator which is useful for
+          // controllers that return individual +1 or -1s, these get added up
+          // and cleared when we read
+          m_pScratch2(std::make_unique<ControlObject>(
+                  ConfigKey(group, QStringLiteral("scratch2")))),
+          m_pScratch2Enable(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, QStringLiteral("scratch2_enable")))),
+          m_pScratch2Scratching(std::make_unique<ControlPushButton>(ConfigKey(
+                  group, QStringLiteral("scratch2_indicates_scratching")))),
+          m_pScratchController(
+                  std::make_unique<PositionScratchController>(group)),
+          m_pJog(std::make_unique<ControlObject>(
+                  ConfigKey(group, QStringLiteral("jog")))),
+          // FIXME: The filter length should be dependent on sample rate/block size or something
+          m_pJogFilter(std::make_unique<Rotary>(25)),
+          // Vinyl control
+          m_pVCEnabled(ControlObject::getControl(ConfigKey(
+                  getGroup(), QStringLiteral("vinylcontrol_enabled")))),
+          m_pVCScratching(ControlObject::getControl(ConfigKey(
+                  getGroup(), QStringLiteral("vinylcontrol_scratching")))),
+          m_pVCMode(ControlObject::getControl(
+                  ConfigKey(getGroup(), QStringLiteral("vinylcontrol_mode")))),
+          m_syncMode(group, QStringLiteral("sync_mode")),
+          m_slipEnabled(group, QStringLiteral("slip_enabled")),
           m_wrapAroundCount(0),
           m_jumpPos(mixxx::audio::FramePos()),
           m_targetPos(mixxx::audio::FramePos()),
           m_bTempStarted(false),
           m_tempRateRatio(0.0),
           m_dRateTempRampChange(0.0) {
-    m_pScratchController = new PositionScratchController(group);
-
     // This is the resulting rate ratio that can be used for display or calculations.
     // The track original rate ratio is 1.
-    m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
-                  true, false, false, 1.0);
-    connect(m_pRateRatio, &ControlObject::valueChanged,
-            this, &RateControl::slotRateRatioChanged,
+    connect(m_pRateRatio.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateRatioChanged,
             Qt::DirectConnection);
 
-    m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
-    connect(m_pRateDir, &ControlObject::valueChanged,
-            this, &RateControl::slotRateRangeChanged,
+    connect(m_pRateDir.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
-    m_pRateRange = new ControlPotmeter(
-            ConfigKey(group, "rateRange"), 0.01, 4.00);
-    connect(m_pRateRange, &ControlObject::valueChanged,
-            this, &RateControl::slotRateRangeChanged,
-            Qt::DirectConnection);
-
-    // Allow rate slider to go out of bounds so that sync lock rate
-    // adjustments are not capped.
-    m_pRateSlider = new ControlPotmeter(
-            ConfigKey(group, "rate"), -1.0, 1.0, true);
-    connect(m_pRateSlider, &ControlObject::valueChanged,
-            this, &RateControl::slotRateSliderChanged,
+    connect(m_pRateRange.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
 
-    // Search rate. Rate used when searching in sound. This overrules the
-    // playback rate
-    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.);
+    connect(m_pRateSlider.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateSliderChanged,
+            Qt::DirectConnection);
 
-    // Reverse button
-    m_pReverseButton = new ControlPushButton(ConfigKey(group, "reverse"));
     m_pReverseButton->set(0);
 
-    // Forward button
-    m_pForwardButton = new ControlPushButton(ConfigKey(group, "fwd"));
-    connect(m_pForwardButton, &ControlObject::valueChanged,
-            this, &RateControl::slotControlFastForward,
+    connect(m_pForwardButton.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotControlFastForward,
             Qt::DirectConnection);
     m_pForwardButton->set(0);
 
-    // Back button
-    m_pBackButton = new ControlPushButton(ConfigKey(group, "back"));
-    connect(m_pBackButton, &ControlObject::valueChanged,
-            this, &RateControl::slotControlFastBack,
+    connect(m_pBackButton.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotControlFastBack,
             Qt::DirectConnection);
     m_pBackButton->set(0);
 
-    m_pReverseRollButton = new ControlPushButton(ConfigKey(group, "reverseroll"));
-    connect(m_pReverseRollButton, &ControlObject::valueChanged,
-            this, &RateControl::slotReverseRollActivate,
+    connect(m_pReverseRollButton.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotReverseRollActivate,
             Qt::DirectConnection);
-
-    m_pSlipEnabled = new ControlProxy(group, "slip_enabled", this);
-
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
-    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
-    m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
 
     // Permanent rate-change buttons
-    m_pButtonRatePermDown =
-        new ControlPushButton(ConfigKey(group,"rate_perm_down"));
-    connect(m_pButtonRatePermDown, &ControlObject::valueChanged,
-            this, &RateControl::slotControlRatePermDown,
-            Qt::DirectConnection);
     m_pButtonRatePermDown->setKbdRepeatable(true);
-
-    m_pButtonRatePermDownSmall =
-        new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
-    connect(m_pButtonRatePermDownSmall, &ControlObject::valueChanged,
-            this, &RateControl::slotControlRatePermDownSmall,
+    connect(m_pButtonRatePermDown.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotControlRatePermDown,
             Qt::DirectConnection);
+
     m_pButtonRatePermDownSmall->setKbdRepeatable(true);
-
-    m_pButtonRatePermUp =
-        new ControlPushButton(ConfigKey(group,"rate_perm_up"));
-    connect(m_pButtonRatePermUp, &ControlObject::valueChanged,
-            this, &RateControl::slotControlRatePermUp,
+    connect(m_pButtonRatePermDownSmall.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotControlRatePermDownSmall,
             Qt::DirectConnection);
+
     m_pButtonRatePermUp->setKbdRepeatable(true);
-
-    m_pButtonRatePermUpSmall =
-        new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
-    connect(m_pButtonRatePermUpSmall, &ControlObject::valueChanged,
-            this, &RateControl::slotControlRatePermUpSmall,
+    connect(m_pButtonRatePermUp.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotControlRatePermUp,
             Qt::DirectConnection);
+
     m_pButtonRatePermUpSmall->setKbdRepeatable(true);
-
-    // Temporary rate-change buttons
-    m_pButtonRateTempDown =
-        new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    m_pButtonRateTempDownSmall =
-        new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    m_pButtonRateTempUp =
-        new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    m_pButtonRateTempUpSmall =
-        new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-
-    // We need the sample rate so we can guesstimate something close
-    // what latency is.
-    m_pSampleRate = ControlObject::getControl(
-            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")));
-
-    // Wheel to control playback position/speed
-    m_pWheel = new ControlTTRotary(ConfigKey(group, "wheel"));
-
-    // Scratch controller, this is an accumulator which is useful for
-    // controllers that return individual +1 or -1s, these get added up and
-    // cleared when we read
-    m_pScratch2 = new ControlObject(ConfigKey(group, "scratch2"));
+    connect(m_pButtonRatePermUpSmall.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotControlRatePermUpSmall,
+            Qt::DirectConnection);
 
     // Scratch enable toggle
-    m_pScratch2Enable = new ControlPushButton(ConfigKey(group, "scratch2_enable"));
     m_pScratch2Enable->set(0);
 
-    m_pScratch2Scratching = new ControlPushButton(ConfigKey(group,
-                                                            "scratch2_indicates_scratching"));
     // Enable by default, because it was always scratching before introducing
     // this control.
     m_pScratch2Scratching->set(1.0);
 
+    //     // Update Internal Settings
+    //     // Set Pitchbend Mode
+    //     m_eRateRampMode = static_cast<RampMode>(
+    //         getConfig()->getValue(ConfigKey("[Controls]","RateRamp"),
+    //                               static_cast<int>(RampMode::Stepping)));
 
-    m_pJog = new ControlObject(ConfigKey(group, "jog"));
-    // FIXME: This should be dependent on sample rate/block size or something
-    m_pJogFilter = new Rotary(25);
-
-    m_pSyncMode = new ControlProxy(group, "sync_mode", this);
-}
-
-RateControl::~RateControl() {
-    delete m_pRateRatio;
-    delete m_pRateSlider;
-    delete m_pRateRange;
-    delete m_pRateDir;
-    delete m_pSyncMode;
-
-    delete m_pRateSearch;
-
-    delete m_pReverseButton;
-    delete m_pReverseRollButton;
-    delete m_pForwardButton;
-    delete m_pBackButton;
-
-    delete m_pButtonRateTempDown;
-    delete m_pButtonRateTempDownSmall;
-    delete m_pButtonRateTempUp;
-    delete m_pButtonRateTempUpSmall;
-    delete m_pButtonRatePermDown;
-    delete m_pButtonRatePermDownSmall;
-    delete m_pButtonRatePermUp;
-    delete m_pButtonRatePermUpSmall;
-
-    delete m_pWheel;
-    delete m_pScratch2;
-    delete m_pScratch2Scratching;
-    delete m_pScratch2Enable;
-    delete m_pJog;
-    delete m_pJogFilter;
-    delete m_pScratchController;
+    //     // Set the Sensitivity
+    //     m_iRateRampSensitivity =
+    //             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 }
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
@@ -293,11 +298,11 @@ void RateControl::slotRateRatioChanged(double v) {
 
 void RateControl::slotReverseRollActivate(double v) {
     if (v > 0.0) {
-        m_pSlipEnabled->set(1);
+        m_slipEnabled.set(1);
         m_pReverseButton->set(1);
     } else {
         m_pReverseButton->set(0);
-        m_pSlipEnabled->set(0);
+        m_slipEnabled.set(0);
     }
 }
 
@@ -380,7 +385,7 @@ double RateControl::getJogFactor() const {
 }
 
 SyncMode RateControl::getSyncMode() const {
-    return syncModeFromDouble(m_pSyncMode->get());
+    return syncModeFromDouble(m_syncMode.get());
 }
 
 double RateControl::calculateSpeed(double baserate,
@@ -546,7 +551,7 @@ void RateControl::processTempRate(const std::size_t bufferSamples) {
         } else if (m_eRateRampMode == RampMode::Linear) {
             if (!m_bTempStarted) {
                 m_bTempStarted = true;
-                double latrate = bufferSamples / m_pSampleRate->get();
+                double latrate = bufferSamples / m_pSampleRate.get();
                 m_dRateTempRampChange = latrate / (m_iRateRampSensitivity / 100.0);
             }
 
@@ -618,4 +623,8 @@ void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
     m_wrapAroundCount++;
     m_jumpPos = triggerPos;
     m_targetPos = targetPos;
+}
+
+void RateControl::notifySeek(mixxx::audio::FramePos position) {
+    m_pScratchController->notifySeek(position);
 }
