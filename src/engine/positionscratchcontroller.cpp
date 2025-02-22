@@ -199,27 +199,25 @@ void PositionScratchController::process(double currentSamplePos,
             // sure.
             m_inertiaEnabled = false;
 
-            double sampleDelta = 0.0;
+            double sampleDelta = currentSamplePos - m_prevSamplePos;
             if (wrappedAround > 0) {
-                // If we wrapped around calculate the virtual position like if
-                // we are not looping, i.e. sum up diffs from loop start/end and
-                // loop length for each wrap-aound (necessary if the buffer is
-                // longer than the loop, e.g. when looping at high rates / with short loops.
-                // This avoids high rate and infinite wrap-around scratching
-                // even after mouse was stopped.
+                // If we wrapped around, add  loop length for each wrap-aound.
+                // This is necessary if the buffer is longer than the loop,
+                // e.g. when looping at high rates / with short loops.
+                // Trigger / target are correct, no need to calculate 'reverse'
+                // or make loopLength negative (see LoopingControl::nextTrigger).
+                //
+                // Example: reverse, wrappedAround = 2
+                //  trigger    | m_prevSamplePos                 target
+                // ----|<<<<<<<X-----------------------------------|----
+                // ----|<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<|----
+                // ----|-------------------------------------O<<<<<|----
+                //                          currentSamplePos |
+                //
                 double triggerPos = trigger.toEngineSamplePos();
                 double targetPos = target.toEngineSamplePos();
-                bool reverse = triggerPos < targetPos;
-                double loopLength = reverse ? -1 * (targetPos - triggerPos)
-                                            : triggerPos - targetPos;
-                if (wrappedAround > 2) {
-                    sampleDelta = (wrappedAround - 1) * loopLength;
-                }
-                sampleDelta +=
-                        (triggerPos - m_prevSamplePos) +
-                        (currentSamplePos - targetPos);
-            } else {
-                sampleDelta = currentSamplePos - m_prevSamplePos;
+                double loopLength = triggerPos - targetPos;
+                sampleDelta += loopLength * wrappedAround;
             }
 
             // Measure the total distance traveled since last call, add it to the
