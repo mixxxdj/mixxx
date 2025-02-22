@@ -11,6 +11,7 @@
 #include <QCoreApplication>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
+#include <QStyleFactory>
 #include <QtGlobal>
 
 #include "config.h"
@@ -353,8 +354,8 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     const QCommandLineOption styleOption(QStringLiteral("style"),
             forUserFeedback
                     ? QCoreApplication::translate("CmdlineArgs",
-                              "Sets the application GUI style. Possible values "
-                              "depend on your system configuration.")
+                              "Overrides the default application GUI style. Possible values: %1")
+                              .arg(QStyleFactory::keys().join(QStringLiteral(", ")))
                     : QString(),
             QStringLiteral("style"));
     parser.addOption(styleOption);
