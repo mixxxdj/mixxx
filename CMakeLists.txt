@@ -4750,6 +4750,7 @@ if(QML)
   )
   target_link_libraries(mixxx-qml-lib PRIVATE rendergraph_sg)
   target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE __SCENEGRAPH__)
   target_compile_definitions(mixxx-qml-lib PRIVATE allshader=allshader_sg)
 endif()
 
