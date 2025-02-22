@@ -8,7 +8,7 @@
 //  Version 1.6c: (August 2023) resetreboot
 //  * Requires Mixxx >= 2.3.4
 //  * Volume meters follow correctly the selected channel
-//  * Use the full 14 bits for knobs for more precission
+//  * Use the full 14 bits for knobs for more precision
 //  * Add effects to the PAD 7 mode
 //  * Create decks for four channel mode
 //  * Change the behavior of the FX buttons, use them as Channel selector, using the LEDs
@@ -66,7 +66,9 @@
 //  * Add beat jump + SHIFT jumps
 //
 // ****************************************************************************
-const DJCi500 = {};
+
+// For some reason, if this is not var, the script errs
+var DJCi500 = {};
 
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
