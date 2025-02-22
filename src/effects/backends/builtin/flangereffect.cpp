@@ -133,8 +133,8 @@ void FlangerEffect::processChannel(
     // When the period is changed, the position of the sound shouldn't
     // so time need to be recalculated
     if (pState->previousPeriodFrames != -1.0) {
-        pState->lfoFrames *= static_cast<unsigned int>(
-                lfoPeriodFrames / pState->previousPeriodFrames);
+        pState->lfoFrames = static_cast<unsigned int>(
+                lfoPeriodFrames / pState->previousPeriodFrames * pState->lfoFrames);
     }
     pState->previousPeriodFrames = lfoPeriodFrames;
 
