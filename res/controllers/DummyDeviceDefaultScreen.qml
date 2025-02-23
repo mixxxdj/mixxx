@@ -6,8 +6,6 @@ import QtQuick.Shapes 1.11
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.15
 
-import Qt5Compat.GraphicalEffects
-
 import Mixxx 1.0 as Mixxx
 import Mixxx.Controls 1.0 as MixxxControls
 
