@@ -163,15 +163,6 @@ void PositionScratchController::process(double currentSamplePos,
         slotUpdateFilterParameters(m_pMainSampleRate->get());
     }
 
-    bool adoptSeekPos = false;
-    if (!util_isnan(m_seekSamplePos)) {
-        // If we were notified about a seek, adopt the new position immediately.
-        m_prevSamplePos = m_seekSamplePos;
-        m_seekSamplePos = std::numeric_limits<double>::quiet_NaN();
-
-        adoptSeekPos = true;
-    }
-
     if (m_isScratching) {
         if (m_inertiaEnabled) {
             // If we got here then we're not scratching and we're in inertia
@@ -281,7 +272,7 @@ void PositionScratchController::process(double currentSamplePos,
                 // high rate and simply report the previous rate.
                 // It'll adapt to the scratch speed in the next run.
                 // Setting rate to 0 has the same effect apparently.
-                if (calcRate && !adoptSeekPos) {
+                if (calcRate) {
                     double ctrlError = m_pRateIIFilter->filter(
                             scratchTargetDelta - m_samplePosDeltaSum);
                     m_rate = m_pVelocityController->observation(ctrlError);
@@ -324,17 +315,21 @@ void PositionScratchController::process(double currentSamplePos,
         m_scratchPosSampleTime = 0;
         // qDebug() << "scratchEnable()" << currentSamplePos;
     }
+
+    if (!util_isnan(m_seekSamplePos)) {
+        // We need to transpose all buffers to compensate the seek
+        // in a way that the next process call does not even notice anything
+        currentSamplePos = m_seekSamplePos;
+        m_seekSamplePos = std::numeric_limits<double>::quiet_NaN();
+    }
     m_prevSamplePos = currentSamplePos;
 }
 
 void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
-    DEBUG_ASSERT(position.isValid());
     const double newPos = position.toEngineSamplePos();
     if (!isEnabled()) {
-        // not scratching, ignore";
-        return;
-    } else if (m_prevSamplePos == newPos) {
-        // no-op
+        // Not scratching, ignore
+        // Such a queued seek would cause a position jump when touching the waveform.
         return;
     }
     // Scratching continues after seek due to calculating the relative
