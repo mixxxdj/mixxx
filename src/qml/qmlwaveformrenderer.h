@@ -28,6 +28,10 @@ class QmlWaveformRendererFactory : public QObject {
         std::unique_ptr<rendergraph::BaseNode> node{nullptr};
     };
 
+    virtual bool isSupported() const {
+        return true;
+    }
+
     virtual Renderer create(WaveformWidgetRenderer* waveformWidget) const = 0;
 };
 
@@ -337,9 +341,17 @@ class QmlWaveformRendererStem
   public:
 #ifdef __STEM__
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+
+    bool isSupported() const override {
+        return true;
+    }
 #else
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override {
         return Renderer{};
+    }
+
+    bool isSupported() const override {
+        return false;
     }
 #endif
 
