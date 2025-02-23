@@ -53,7 +53,7 @@ class PositionScratchController : public QObject {
     double m_scratchStartPos;
     double m_rate;
     double m_moveDelay;
-    double m_mouseSampleTime;
+    double m_scratchPosSampleTime;
 
     int m_bufferSize;
 

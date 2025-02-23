@@ -103,7 +103,7 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_scratchStartPos(0),
           m_rate(0),
           m_moveDelay(0),
-          m_mouseSampleTime(0),
+          m_scratchPosSampleTime(0),
           m_bufferSize(-1),
           m_dt(1),
           m_callsPerDt(1),
@@ -161,13 +161,6 @@ void PositionScratchController::process(double currentSamplePos,
     if (bufferSize != m_bufferSize) {
         m_bufferSize = bufferSize;
         slotUpdateFilterParameters(m_pMainSampleRate->get());
-    }
-
-    double scratchPosition = 0;
-    m_mouseSampleTime += m_dt;
-    if (m_mouseSampleTime >= kDefaultSampleInterval || !m_isScratching) {
-        scratchPosition = m_pScratchPos->get();
-        m_mouseSampleTime = 0;
     }
 
     bool adoptSeekPos = false;
@@ -244,13 +237,16 @@ void PositionScratchController::process(double currentSamplePos,
             // This is required to scratch within loop boundaries.
             m_samplePosDeltaSum += (sampleDelta) / (bufferSize * baseSampleRate);
 
-            // If we may have a new position, calculate scratch parameters and
+            m_scratchPosSampleTime += m_dt;
+            // If the kDefaultSampleInterval has expired, calculate scratch parameters and
             // eventually the new rate.
             // Else, continue with the last rate.
-            if (m_mouseSampleTime == 0) {
+            if (m_scratchPosSampleTime >= kDefaultSampleInterval) {
+                m_scratchPosSampleTime = 0;
+
                 // Set the scratch target to the current set position
                 // and normalize to one buffer
-                double scratchTargetDelta = (scratchPosition - m_scratchStartPos) /
+                double scratchTargetDelta = (m_pScratchPos->get() - m_scratchStartPos) /
                         (bufferSize * baseSampleRate);
 
                 bool calcRate = true;
@@ -321,7 +317,11 @@ void PositionScratchController::process(double currentSamplePos,
         m_samplePosDeltaSum = -(releaseRate / m_p) * m_callsPerDt;
         m_pVelocityController->reset(-m_samplePosDeltaSum);
         m_pRateIIFilter->reset(-m_samplePosDeltaSum);
-        m_scratchStartPos = scratchPosition;
+        // The "scratch_position" CO contains relative traveled audio frames * 2
+        // Not necessarily the actual position in the track. We use this to calculate
+        // the traveled distance of the mouse compared to m_scratchStartPos.
+        m_scratchStartPos = m_pScratchPos->get();
+        m_scratchPosSampleTime = 0;
         // qDebug() << "scratchEnable()" << currentSamplePos;
     }
     m_prevSamplePos = currentSamplePos;
