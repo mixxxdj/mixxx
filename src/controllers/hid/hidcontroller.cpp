@@ -4,8 +4,13 @@
 
 #include "controllers/defs_controllers.h"
 #include "moc_hidcontroller.cpp"
+#include "util/string.h"
 
 class LegacyControllerMapping;
+
+namespace {
+constexpr size_t kMaxHidErrorMessageSize = 512;
+} // namespace
 
 HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
@@ -28,14 +33,14 @@ QString HidController::mappingExtension() {
 }
 
 void HidController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
 std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
     if (!m_pMapping) {
         return nullptr;
     }
-    return m_pMapping->clone();
+    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
 bool HidController::matchMapping(const MappingInfo& mapping) {
@@ -67,9 +72,20 @@ int HidController::open() {
 
     // If that fails, try to open device with vendor/product/serial #
     if (!pHidDevice) {
-        qCWarning(m_logBase) << "Failed. Trying to open with make, model & serial no:"
-                             << m_deviceInfo.getVendorId() << m_deviceInfo.getProductId()
-                             << m_deviceInfo.getSerialNumber();
+        qCWarning(m_logBase) << QStringLiteral(
+                "Unable to open specific HID device %1 using its path %2: %3")
+                                        .arg(getName(),
+                                                m_deviceInfo.pathRaw(),
+                                                mixxx::convertWCStringToQString(
+                                                        hid_error(nullptr),
+                                                        kMaxHidErrorMessageSize));
+        qCInfo(m_logBase) << QStringLiteral(
+                "Trying to open HID device %1 using its vendor, product and "
+                "serial no (0x%2, 0x%3 and %4)")
+                                     .arg(getName(),
+                                             QString::number(m_deviceInfo.getVendorId(), 16),
+                                             QString::number(m_deviceInfo.getProductId(), 16),
+                                             m_deviceInfo.getSerialNumber());
         pHidDevice = hid_open(
                 m_deviceInfo.getVendorId(),
                 m_deviceInfo.getProductId(),
@@ -79,9 +95,23 @@ int HidController::open() {
     // If it does fail, try without serial number WARNING: This will only open
     // one of multiple identical devices
     if (!pHidDevice) {
-        qCWarning(m_logBase) << "Unable to open specific HID device" << getName()
-                             << "Trying now with just make and model."
-                             << "(This may only open the first of multiple identical devices.)";
+        qCWarning(m_logBase) << QStringLiteral(
+                "Unable to open specific HID device %1 using its vendor, "
+                "product and serial no (0x%2, 0x%3 and %4): %5")
+                                        .arg(getName(),
+                                                QString::number(m_deviceInfo.getVendorId(), 16),
+                                                QString::number(m_deviceInfo.getProductId(), 16),
+                                                m_deviceInfo.getSerialNumber(),
+                                                mixxx::convertWCStringToQString(
+                                                        hid_error(nullptr),
+                                                        kMaxHidErrorMessageSize));
+        qCInfo(m_logBase) << QStringLiteral(
+                "Trying to open HID device %1 using its vendor and product "
+                "only (0x%2 and 0x%3). This may only open the first of multiple "
+                "identical devices.")
+                                     .arg(getName(),
+                                             QString::number(m_deviceInfo.getVendorId(), 16),
+                                             QString::number(m_deviceInfo.getProductId(), 16));
         pHidDevice = hid_open(m_deviceInfo.getVendorId(),
                 m_deviceInfo.getProductId(),
                 nullptr);
@@ -89,7 +119,15 @@ int HidController::open() {
 
     // If that fails, we give up!
     if (!pHidDevice) {
-        qCWarning(m_logBase) << "Unable to open HID device" << getName();
+        qCWarning(m_logBase) << QStringLiteral(
+                "Unable to open specific HID device %1 using its vendor and "
+                "product only (0x%2 and 0x%3): %4")
+                                        .arg(getName(),
+                                                QString::number(m_deviceInfo.getVendorId(), 16),
+                                                QString::number(m_deviceInfo.getProductId(), 16),
+                                                mixxx::convertWCStringToQString(
+                                                        hid_error(nullptr),
+                                                        kMaxHidErrorMessageSize));
         return -1;
     }
 

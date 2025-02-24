@@ -102,10 +102,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
-        return static_cast<int>(m_a * value - m_b);
+        return static_cast<int>(m_maxPixelPos * value);
     }
     inline double positionToValue(int position) const {
-        return (static_cast<double>(position) + m_b) / m_a;
+        return static_cast<double>(position) / m_maxPixelPos;
     }
 
     void updateCues(const QList<CuePointer> &loadedCues);
@@ -116,6 +116,15 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     inline int breadth() {
         return m_orientation == Qt::Horizontal ? height() : width();
+    }
+
+    inline bool isPosInAllowedPosDragZone(const QPoint pos) {
+        const QRect dragZone = rect().marginsAdded(QMargins(
+                m_dragMarginH,
+                m_dragMarginV,
+                m_dragMarginH,
+                m_dragMarginV));
+        return dragZone.contains(pos);
     }
 
     ConstWaveformPointer getWaveform() const {
@@ -158,11 +167,12 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPlayPos;
     bool m_bTimeRulerActive;
     Qt::Orientation m_orientation;
+    int m_dragMarginH;
+    int m_dragMarginV;
     int m_iLabelFontSize;
 
-    // Coefficient value-position linear transposition
-    double m_a;
-    double m_b;
+    // Coefficient for linear value <-> position  transposition
+    double m_maxPixelPos;
 
     AnalyzerProgress m_analyzerProgress;
     bool m_trackLoaded;
@@ -186,6 +196,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
+    parented_ptr<ControlProxy> m_pReplayGain;
 
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
@@ -210,5 +221,4 @@ class WOverview : public WWidget, public TrackDropTarget {
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;
-
 };

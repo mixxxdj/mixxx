@@ -127,7 +127,7 @@ class Translations {
 
         qDebug() << "Loaded" << translation << "translations for locale"
                  << locale.name()
-                 << "from" << translationsPath;
+                 << "from" << pTranslator->filePath();
         pApp->installTranslator(pTranslator);
         return true;
     }

@@ -100,6 +100,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
 #endif
+          m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
@@ -1172,6 +1173,7 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
 
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
+    m_inRebootMixxxView = true;
 
     ScopedWaitCursor cursor;
     // safe geometry for later restoration
@@ -1205,6 +1207,7 @@ void MixxxMainWindow::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
+        m_inRebootMixxxView = false;
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
@@ -1233,6 +1236,7 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
 
+    m_inRebootMixxxView = false;
     qDebug() << "rebootMixxxView DONE";
 }
 
@@ -1263,8 +1267,9 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::ToolTip) {
-        // always show tooltips in the preferences window
+    // Always show tooltips if Ctrl is held down
+    if (event->type() == QEvent::ToolTip &&
+            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
                 QLatin1String(activeWindow->metaObject()->className()) !=
@@ -1323,7 +1328,9 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             if (!m_supportsGlobalMenuBar || isFullScreenNow)
 #endif
             {
-                alwaysHideMenuBarDlg();
+                if (!m_inRebootMixxxView) {
+                    alwaysHideMenuBarDlg();
+                }
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif

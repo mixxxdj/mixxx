@@ -85,7 +85,7 @@
                         <Layout>stacked</Layout>
                         <SizePolicy>max,max</SizePolicy>
                         <Children>
-                          <Template src="skins:LateNight/controls/button_2state_right_display.xml">
+                          <Template src="skins:LateNight/controls/button_play_2state_right_display.xml">
                             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
                             <SetVariable name="ObjectName">PlaySampler</SetVariable>
                             <SetVariable name="Size">34f,34f</SetVariable>

@@ -72,10 +72,8 @@ class WPushButton : public WWidget {
     void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
-    void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
-  protected:
     virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget
@@ -98,6 +96,8 @@ class WPushButton : public WWidget {
     bool m_bPressed;
     // True, if the button is pointer is above button
     bool m_bHovered;
+    // Set true by WHotcueButton while it's being dragged
+    bool m_dragging;
 
     // Array of associated pixmaps
     int m_iNoStates;

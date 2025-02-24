@@ -4,22 +4,22 @@
 (function(global) {
 
     /* Controller-specific constants */
-    var ROW_SIZE                       = 8;
-    var PUSHENCODERGROUP_COUNT         = 4;
-    var BUTTONROW_COUNT                = 2;
-    var ENCODERROW_COUNT               = 3;
-    var BUTTONBOX_SIZE                 = 4;
-    var PRESET_MIN                     = 1;
-    var PRESET_MAX                     = 32;
-    var STATUS_CONTROL_CHANGE          = 0xB0;
-    var STATUS_PROGRAM_CHANGE          = 0xC0;
+    const ROW_SIZE                       = 8;
+    const PUSHENCODERGROUP_COUNT         = 4;
+    const BUTTONROW_COUNT                = 2;
+    const ENCODERROW_COUNT               = 3;
+    const BUTTONBOX_SIZE                 = 4;
+    const PRESET_MIN                     = 1;
+    const PRESET_MAX                     = 32;
+    const STATUS_CONTROL_CHANGE          = 0xB0;
+    const STATUS_PROGRAM_CHANGE          = 0xC0;
 
     /* Preset-specific constants */
-    var PUSHENCODERGROUP_START         = 0x01;
-    var PUSHENCODERGROUP_BUTTON_OFFSET = 0x20;
-    var BUTTONROW_START                = 0x41;
-    var ENCODERROW_START               = 0x51;
-    var BUTTONBOX_START                = 0x69;
+    const PUSHENCODERGROUP_START         = 0x01;
+    const PUSHENCODERGROUP_BUTTON_OFFSET = 0x20;
+    const BUTTONROW_START                = 0x41;
+    const ENCODERROW_START               = 0x51;
+    const BUTTONBOX_START                = 0x69;
 
     /**
      * Select a preset in the controller.
@@ -27,7 +27,7 @@
      * @param {number} A preset number (integer 1..32)
      * @public
      */
-    var setPreset = function(presetNumber) {
+    const setPreset = function(presetNumber) {
         if (presetNumber) {
             presetNumber = Math.max(PRESET_MIN, presetNumber);
             presetNumber = Math.min(PRESET_MAX, presetNumber);
@@ -43,7 +43,7 @@
      * @return {Array} Array containing values
      * @private
      */
-    var createElements = function(size, elementFactory) {
+    const createElements = function(size, elementFactory) {
         return Object.keys(Array.apply(0, Array(size))).map(
             function(_v, i) { return elementFactory.call(this, i); });
     };
@@ -64,10 +64,10 @@
      * @return {Array<number>} Array of MIDI addresses for the given range
      * @private
      */
-    var calculateRange = function(startAddress, rangeNumber, size) {
+    const calculateRange = function(startAddress, rangeNumber, size) {
         size = size || ROW_SIZE;
-        var rangeOffset = rangeNumber * ROW_SIZE;
-        var rangeStart = startAddress + rangeOffset;
+        const rangeOffset = rangeNumber * ROW_SIZE;
+        const rangeStart = startAddress + rangeOffset;
         return createElements(size, function(i) { return rangeStart + i; });
     };
 
@@ -81,7 +81,7 @@
      * @return {Array<number>} Address range for the encoders in the encoder group
      * @private
      */
-    var createPushEncoderGroup = function(groupNumber) {
+    const createPushEncoderGroup = function(groupNumber) {
         return calculateRange(PUSHENCODERGROUP_START, groupNumber).map(function(encoder) {
             return {"encoder": encoder, "button": encoder + PUSHENCODERGROUP_BUTTON_OFFSET};
         });
@@ -95,7 +95,7 @@
      * @return {Array<number>} Address range for the encoders in the encoder row
      * @private
      */
-    var createEncoderRow = function(rowNumber) {
+    const createEncoderRow = function(rowNumber) {
         return calculateRange(ENCODERROW_START, rowNumber);
     };
 
@@ -107,7 +107,7 @@
      * @return {Array<number>} Address range for the buttons in the button row
      * @private
      */
-    var createButtonRow = function(rowNumber) {
+    const createButtonRow = function(rowNumber) {
         return calculateRange(BUTTONROW_START,  rowNumber);
     };
 
@@ -118,17 +118,17 @@
      * @return {Array<number>} Address range for the buttons in the button box
      * @private
      */
-    var createButtonBox = function() {
+    const createButtonBox = function() {
         return calculateRange(BUTTONBOX_START, 0, BUTTONBOX_SIZE);
     };
 
     /* Definition of MIDI controls */
-    var pushEncoderGroups = createElements(PUSHENCODERGROUP_COUNT, createPushEncoderGroup);
-    var buttonRows = createElements(BUTTONROW_COUNT, createButtonRow);
-    var encoderRows = createElements(ENCODERROW_COUNT, createEncoderRow);
-    var buttonBox = createButtonBox();
+    const pushEncoderGroups = createElements(PUSHENCODERGROUP_COUNT, createPushEncoderGroup);
+    const buttonRows = createElements(BUTTONROW_COUNT, createButtonRow);
+    const encoderRows = createElements(ENCODERROW_COUNT, createEncoderRow);
+    const buttonBox = createButtonBox();
 
-    var exports = {};
+    const exports = {};
     exports.STATUS_CONTROL_CHANGE = STATUS_CONTROL_CHANGE;
     exports.setPreset             = setPreset;
     exports.pushEncoderGroups     = pushEncoderGroups;

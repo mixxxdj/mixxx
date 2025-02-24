@@ -5,7 +5,7 @@
 
 namespace allshader {
 class RGBData;
-}
+} // namespace allshader
 
 class allshader::RGBData {
     QVector<QVector3D> mData;

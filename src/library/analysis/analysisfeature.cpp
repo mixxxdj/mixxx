@@ -167,8 +167,7 @@ void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks)
         connect(m_pTrackAnalysisScheduler.get(),
                 &TrackAnalysisScheduler::trackProgress,
                 this,
-                &AnalysisFeature::trackProgress,
-                Qt::DirectConnection);
+                &AnalysisFeature::trackProgress);
 
         emit analysisActive(true);
     }

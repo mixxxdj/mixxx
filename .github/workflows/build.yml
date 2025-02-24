@@ -318,7 +318,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -382,7 +382,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -484,7 +484,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
