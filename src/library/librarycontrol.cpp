@@ -376,14 +376,31 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
     m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
+    m_pTrackColorSelector = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "track_color_selector"), false);
     connect(m_pTrackColorPrev.get(),
             &ControlPushButton::valueChanged,
             this,
-            &LibraryControl::slotTrackColorPrev);
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackColorSelector(-1);
+                }
+            });
     connect(m_pTrackColorNext.get(),
             &ControlPushButton::valueChanged,
             this,
-            &LibraryControl::slotTrackColorNext);
+            [this](double value) {
+                if (value > 0) {
+                    LibraryControl::slotTrackColorSelector(1);
+                }
+            });
+    connect(m_pTrackColorSelector.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                int iSteps = static_cast<int>(steps);
+                LibraryControl::slotTrackColorSelector(iSteps);
+            });
 
     // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
@@ -1186,24 +1203,15 @@ void LibraryControl::slotDecrementFontSize(double v) {
     }
 }
 
-void LibraryControl::slotTrackColorPrev(double v) {
-    if (!m_pLibraryWidget || v <= 0) {
+void LibraryControl::slotTrackColorSelector(int steps) {
+    if (!m_pLibraryWidget || steps == 0) {
         return;
     }
 
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
-    if (pTrackTableView) {
-        pTrackTableView->assignPreviousTrackColor();
-    }
-}
-
-void LibraryControl::slotTrackColorNext(double v) {
-    if (!m_pLibraryWidget || v <= 0) {
+    if (!pTrackTableView) {
         return;
     }
 
-    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
-    if (pTrackTableView) {
-        pTrackTableView->assignNextTrackColor();
-    }
+    pTrackTableView->selectTrackColor(steps);
 }

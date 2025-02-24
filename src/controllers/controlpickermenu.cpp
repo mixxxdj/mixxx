@@ -950,6 +950,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Select the previous color in the color palette"
                " for the first selected track"),
             pLibraryMenu);
+    addLibraryControl("track_color_selector",
+            tr("Navigate Through Track Colors"),
+            tr("Select either next or previous color in the"
+               " palette for the first selected track."),
+            pLibraryMenu);
 
     pLibraryMenu->addSeparator();
     addControl("[Recording]",

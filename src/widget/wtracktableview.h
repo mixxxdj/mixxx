@@ -50,8 +50,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrackToGroup(const QString& group,
             bool play);
 #endif
-    void assignNextTrackColor() override;
-    void assignPreviousTrackColor() override;
+    void selectTrackColor(int steps);
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     bool isTrackInCurrentView(const TrackId& trackId);

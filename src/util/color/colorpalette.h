@@ -35,6 +35,7 @@ class ColorPalette final {
     mixxx::RgbColor::optional_t nextColor(mixxx::RgbColor::optional_t color) const;
     mixxx::RgbColor previousColor(mixxx::RgbColor color) const;
     mixxx::RgbColor::optional_t previousColor(mixxx::RgbColor::optional_t color) const;
+    mixxx::RgbColor::optional_t getNthColor(mixxx::RgbColor::optional_t color, int steps) const;
     mixxx::RgbColor colorForHotcueIndex(unsigned int index) const;
 
     QList<mixxx::RgbColor>::const_iterator begin() const {
