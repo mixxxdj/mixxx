@@ -73,9 +73,6 @@ repos:
         files: \.m?[jt]s$
         types: [file]
         verbose: true # always show output so we don't swallow warnings
-        stages:
-          - pre-commit
-          - manual
         additional_dependencies:
           - eslint@^9.14.0
           - "@eslint/js"
@@ -90,9 +87,6 @@ repos:
         description: "Run clang-format in two passes (reformat, then break long lines)"
         entry: python tools/clang_format.py
         require_serial: true
-        stages:
-          - pre-commit
-          - manual
         language: python
         additional_dependencies:
           - clang-format==19.1.3
@@ -150,9 +144,6 @@ repos:
           - tinycss==0.4
         types: [text]
         files: ^.*\.qss$
-        stages:
-          - pre-commit
-          - manual
       - id: changelog
         name: changelog
         description: Add missing links to changelog.
