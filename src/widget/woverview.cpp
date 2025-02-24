@@ -990,9 +990,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 float nextMarkPosition = -1.0f;
                 for (auto m = std::next(it); m != m_marks.cend(); ++m) {
                     const WaveformMarkPointer& otherMark = *m;
-                    bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
+                    bool otherAtSameHeight =
+                            valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
-                    bool otherHasLabel = !otherMark->m_text.isEmpty() || otherMark->getHotCue() != Cue::kNoHotCue;
+                    bool otherHasLabel = !otherMark->m_text.isEmpty() ||
+                            otherMark->getHotCue() != Cue::kNoHotCue;
                     if (otherAtSameHeight && otherHasLabel) {
                         nextMarkPosition = offset +
                                 static_cast<float>(
@@ -1087,7 +1089,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
-            QString cuePositionText = mixxx::Duration::formatTime(markTime) + " -" +
+            const QString cuePositionText = mixxx::Duration::formatTime(markTime) + " -" +
                     mixxx::Duration::formatTime(markTimeRemaining);
             QString cueTimeDistanceText = mixxx::Duration::formatTime(fabs(markTimeDistance));
             // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
@@ -1205,7 +1207,8 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         qreal timeDistance = samplePositionToSeconds(
                 (widgetPositionFraction - m_playpositionControl.get()) * trackSamples);
 
-        QString timeText = mixxx::Duration::formatTime(timePosition) + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
+        const QString timeText = mixxx::Duration::formatTime(timePosition) +
+                " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
         m_timeRulerPositionLabel.prerender(textPoint,
                 QPixmap(),
@@ -1251,10 +1254,12 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             }
         }
         if (m_bShowCueTimes &&
-                (pMark->m_label.intersects(m_cuePositionLabel) || pMark->m_label.intersects(m_cueTimeDistanceLabel))) {
+                (pMark->m_label.intersects(m_cuePositionLabel) ||
+                        pMark->m_label.intersects(m_cueTimeDistanceLabel))) {
             continue;
         }
-        if (pMark->m_label.intersects(m_timeRulerPositionLabel) || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
+        if (pMark->m_label.intersects(m_timeRulerPositionLabel) ||
+                pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
             continue;
         }
 
@@ -1304,7 +1309,10 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     width(),
                     devicePixelRatioF());
 
-            if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
+            if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) ||
+                        markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) ||
+                        markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) ||
+                        markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
             }
         }
