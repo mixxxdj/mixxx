@@ -8,7 +8,9 @@
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformwidgetfactory.h"
 
-QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
+namespace waveformOverviewRenderer {
+
+QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         bool mono) {
@@ -81,14 +83,14 @@ QImage WaveformOverviewRenderer::render(ConstWaveformPointer pWaveform,
     return normImage;
 }
 
-void WaveformOverviewRenderer::drawWaveformPartRGB(
+void drawWaveformPartRGB(
         QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         int* start,
         int end,
         const WaveformSignalColors& signalColors,
         bool mono) {
-    ScopedTimer t(QStringLiteral("WaveformOverviewRenderer::drawNextPixmapPartRGB"));
+    ScopedTimer t(QStringLiteral("waveformOverviewRenderer::drawNextPixmapPartRGB"));
     int startVal = 0;
     if (start) {
         startVal = *start;
@@ -187,14 +189,14 @@ void WaveformOverviewRenderer::drawWaveformPartRGB(
     }
 }
 
-void WaveformOverviewRenderer::drawWaveformPartLMH(
+void drawWaveformPartLMH(
         QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         int* start,
         int end,
         const WaveformSignalColors& signalColors,
         bool mono) {
-    ScopedTimer t(QStringLiteral("WaveformOverviewRenderer::drawNextPixmapPartLMH"));
+    ScopedTimer t(QStringLiteral("waveformOverviewRenderer::drawNextPixmapPartLMH"));
     const QColor lowColor = signalColors.getLowColor();
     const QColor midColor = signalColors.getMidColor();
     const QColor highColor = signalColors.getHighColor();
@@ -248,14 +250,14 @@ void WaveformOverviewRenderer::drawWaveformPartLMH(
     }
 }
 
-void WaveformOverviewRenderer::drawWaveformPartHSV(
+void drawWaveformPartHSV(
         QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         int* start,
         int end,
         const WaveformSignalColors& signalColors,
         bool mono) {
-    ScopedTimer t(QStringLiteral("WaveformOverviewRenderer::drawNextPixmapPartHSV"));
+    ScopedTimer t(QStringLiteral("waveformOverviewRenderer::drawNextPixmapPartHSV"));
     int startVal = 0;
     if (start) {
         startVal = *start;
@@ -330,3 +332,5 @@ void WaveformOverviewRenderer::drawWaveformPartHSV(
         *start = end;
     }
 }
+
+} // namespace waveformOverviewRenderer
