@@ -191,7 +191,7 @@ jobs:
         if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
         run: |
           # Decode the certificate
-          echo "${{ env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}" | base64 -d -o ~/certificate.p12
+          echo "${MACOS_CODESIGN_CERTIFICATE_P12_BASE64}" | base64 -d -o ~/certificate.p12
 
           # Create a temporary keychain for the certificate and import it.
           security create-keychain -p mixxx Mixxx.keychain
@@ -355,11 +355,11 @@ jobs:
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 22.04'
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]] && [[ "${GITHUB_REPOSITORY}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${GITHUB_REF}" == "refs/heads/2.5" ]] && [[ "${GITHUB_REPOSITORY}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${GITHUB_REPOSITORY}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
           else
             # only build the source DEB, do not upload
@@ -554,6 +554,6 @@ jobs:
 
       - name: "Trigger Netlify build"
         if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-        run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
+        run: curl -X POST -d '{}' "${NETLIFY_BUILD_HOOK}"
         env:
           NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
