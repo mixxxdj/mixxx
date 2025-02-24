@@ -150,7 +150,7 @@ void PositionScratchController::process(double currentSamplePos,
         int wrappedAround,
         mixxx::audio::FramePos trigger,
         mixxx::audio::FramePos target) {
-    bool scratchEnable = m_pScratchEnable->get() != 0;
+    bool scratchEnable = m_pScratchEnable->toBool();
 
     if (bufferSize != m_bufferSize) {
         m_bufferSize = bufferSize;
