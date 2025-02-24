@@ -3613,15 +3613,6 @@ else()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickControls2
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickControls2Impl
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
@@ -3641,15 +3632,6 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickTemplates2
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
