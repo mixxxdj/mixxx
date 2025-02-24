@@ -5,6 +5,8 @@ on: [pull_request]
 jobs:
   block-fixup:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v4.2.2
