@@ -129,6 +129,10 @@ repos:
     rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
     hooks:
       - id: qml_formatter
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.0
+    hooks:
+      - id: gitleaks
   - repo: https://github.com/woodruffw/zizmor-pre-commit
     rev: v1.3.1
     hooks:
