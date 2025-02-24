@@ -8,5 +8,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
       - name: Block Fixup Commit Merge
         uses: 13rac1/block-fixup-merge-action@v2.0.0

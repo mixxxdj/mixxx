@@ -134,6 +134,7 @@ jobs:
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
+          persist-credentials: true # Needed for tag fetching in next steps
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
@@ -500,6 +501,7 @@ jobs:
         uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
+          persist-credentials: true # Needed for tag fetching in next step
 
       - name: "Ensure that all tags are fetched"
         # Works around an issue where not the latest tag is not fetched when the

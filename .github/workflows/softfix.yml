@@ -29,6 +29,8 @@ jobs:
       - name: Checkout repository
         if: steps.check-maintainer.outputs.result == 'true'
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Softfix
         if: steps.check-maintainer.outputs.result == 'true'
         uses: daschuer/softfix@v3

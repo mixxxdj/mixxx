@@ -25,6 +25,7 @@ jobs:
           # latest changelog modification date. Otherwise, `fetch-depth: 2` would
           # suffice.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: "Add GitHub workspace as a safe directory"
         # Without this, git commands will fail due to mismatching permissions in
