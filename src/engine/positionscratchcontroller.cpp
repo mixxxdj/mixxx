@@ -280,8 +280,8 @@ void PositionScratchController::process(double currentSamplePos,
                 // qDebug() << m_rate << scratchTargetDelta << m_samplePosDeltaSum << m_dt;
             }
         } else {
-            // We were previously in scratch mode and are no longer in scratch
-            // mode. Disable everything, or optionally enable inertia mode if
+            // We quit scratch mode.
+            // Disable everything, or optionally enable inertia mode if
             // the previous rate was high enough to count as a 'throw'
             if (fabs(m_rate) > kThrowThreshold) {
                 m_inertiaEnabled = true;
@@ -291,8 +291,8 @@ void PositionScratchController::process(double currentSamplePos,
             //qDebug() << "disable";
         }
     } else if (scratchEnable) {
-        // We were not previously in scratch mode but now are in scratch
-        // mode. Enable scratching.
+        // We were not previously in scratch mode but now we are.
+        // Enable scratching.
         m_isScratching = true;
         m_inertiaEnabled = false;
         m_moveDelay = 0;
@@ -302,9 +302,15 @@ void PositionScratchController::process(double currentSamplePos,
         m_samplePosDeltaSum = -(releaseRate / m_p) * m_callsPerDt;
         m_pVelocityController->reset(-m_samplePosDeltaSum);
         m_pRateIIFilter->reset(-m_samplePosDeltaSum);
-        // The "scratch_position" CO contains relative traveled audio frames * 2
-        // Not necessarily the actual position in the track. We use this to calculate
-        // the traveled distance of the mouse compared to m_scratchStartPos.
+        // The "scratch_position" CO contains the distance traveled. We use this
+        // to calculate the traveled distance of the mouse compared to m_scratchStartPos.
+        // When it's set by WWaveformViewer::mousePressEvent or mouseMoveEvent,
+        // this is equal to traveled frames * 2 but usually unrelated to the
+        // the actual position in the track.
+        // Note that "scratch_position" can also be set by anyone, eg. by wheel
+        // functions of controller mappings. In such cases its value depends on
+        // the scaling of the original wheel position / wheel tick values and
+        // may be entirely unrelated to audio frames.
         m_scratchStartPos = m_pScratchPos->get();
         m_scratchPosSampleTime = 0;
         // qDebug() << "scratchEnable()" << currentSamplePos;
