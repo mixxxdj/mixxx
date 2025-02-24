@@ -80,10 +80,10 @@ repos:
         files: \.m?[jt]s$
         types: [file]
         additional_dependencies:
-          - eslint@^9.14.0
+          - eslint@^9.21.0
           - "@eslint/js"
           - typescript-eslint
-          - eslint-plugin-jsdoc@^v50.4.3
+          - eslint-plugin-jsdoc@^v50.6.3
           - eslint-plugin-diff@^2.0.3
         exclude: ^res/translations/.*\.ts$
   - repo: local
