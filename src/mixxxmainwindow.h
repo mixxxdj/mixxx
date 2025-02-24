@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QThread>
 #include <memory>
 
 #include "preferences/constants.h"

@@ -76,6 +76,8 @@ find_package_handle_standard_args(
 )
 
 if(liblo_FOUND)
+  set(liblo_LIBRARIES "${liblo_LIBRARY}")
+  set(liblo_INCLUDE_DIRS "${liblo_INCLUDE_DIR}")
   if(NOT TARGET liblo::liblo)
     add_library(liblo::liblo UNKNOWN IMPORTED)
     set_target_properties(

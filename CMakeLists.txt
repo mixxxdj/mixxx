@@ -3511,7 +3511,8 @@ target_link_libraries(mixxx-lib PRIVATE rekordbox_metadata)
 
 #eve osc
 # liblo
-find_package(Liblo REQUIRED)
+find_package(liblo REQUIRED)
+target_include_directories(mixxx-lib SYSTEM PUBLIC "${liblo_INCLUDE_DIR}")
 target_link_libraries(mixxx-lib PRIVATE liblo::liblo)
 
 #silence "enumeration values not handled in switch" in generated code

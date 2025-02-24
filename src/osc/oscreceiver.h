@@ -2,6 +2,7 @@
 
 #include <lo/lo.h>
 
+#include <QDateTime>
 #include <QThread>
 #include <memory>
 
@@ -32,7 +33,6 @@ class OscReceiver : public QObject {
     explicit OscReceiver(UserSettingsPointer pConfig, QObject* parent = nullptr);
     ~OscReceiver() override;
 
-    // void startOscReceiver(int oscPortin);
     int startOscReceiver(int oscPortin);
     void stop();
     void oscReceiverMain(UserSettingsPointer pConfig);
@@ -42,6 +42,8 @@ class OscReceiver : public QObject {
     void doGetT(OscResult& oscIn);
     void doSet(OscResult& oscIn, float value);
     void sendOscSyncTriggers();
+    void checkResponsiveness();
+    void loadOscConfiguration(UserSettingsPointer pConfig);
 
   private:
     bool m_stopFlag = false;
@@ -49,6 +51,12 @@ class OscReceiver : public QObject {
     QThread* m_pThread = nullptr;
     QMutex m_mutex;
     QReadWriteLock m_configLock;
+
+    //    std::atomic<bool> m_stopFlag;
+    QDateTime m_lastResponseTime;
+    int m_oscPortIn;
+
+    void restartOscReceiver(int oscPortin);
 
   signals:
     void oscMessageReceived(OscResult oscIn);
