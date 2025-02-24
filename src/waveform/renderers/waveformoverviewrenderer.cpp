@@ -4,6 +4,7 @@
 
 #include "util/colorcomponents.h"
 #include "util/math.h"
+#include "util/timer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformwidgetfactory.h"
 
@@ -87,6 +88,7 @@ void WaveformOverviewRenderer::drawWaveformPartRGB(
         int end,
         const WaveformSignalColors& signalColors,
         bool mono) {
+    ScopedTimer t(QStringLiteral("WaveformOverviewRenderer::drawNextPixmapPartRGB"));
     int startVal = 0;
     if (start) {
         startVal = *start;
@@ -192,6 +194,7 @@ void WaveformOverviewRenderer::drawWaveformPartLMH(
         int end,
         const WaveformSignalColors& signalColors,
         bool mono) {
+    ScopedTimer t(QStringLiteral("WaveformOverviewRenderer::drawNextPixmapPartLMH"));
     const QColor lowColor = signalColors.getLowColor();
     const QColor midColor = signalColors.getMidColor();
     const QColor highColor = signalColors.getHighColor();
@@ -252,6 +255,7 @@ void WaveformOverviewRenderer::drawWaveformPartHSV(
         int end,
         const WaveformSignalColors& signalColors,
         bool mono) {
+    ScopedTimer t(QStringLiteral("WaveformOverviewRenderer::drawNextPixmapPartHSV"));
     int startVal = 0;
     if (start) {
         startVal = *start;
