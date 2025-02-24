@@ -4,7 +4,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
 #include "waveform/overviewtype.h"
