@@ -1388,21 +1388,21 @@ bool WOverview::drawNextPixmapPart() {
     }
 
     if (m_type == mixxx::OverviewType::Filtered) {
-        WaveformOverviewRenderer::drawWaveformPartLMH(
+        waveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
     } else if (m_type == mixxx::OverviewType::HSV) {
-        WaveformOverviewRenderer::drawWaveformPartHSV(
+        waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
     } else { // mixxx::OverviewType::RGB:
-        WaveformOverviewRenderer::drawWaveformPartRGB(
+        waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
