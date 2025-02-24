@@ -152,12 +152,6 @@ void PositionScratchController::process(double currentSamplePos,
         mixxx::audio::FramePos target) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
 
-    if (!m_isScratching && !scratchEnable) {
-        // We were not previously in scratch mode are still not in scratch
-        // mode. Do nothing
-        return;
-    }
-
     if (bufferSize != m_bufferSize) {
         m_bufferSize = bufferSize;
         slotUpdateFilterParameters(m_pMainSampleRate->get());
@@ -327,11 +321,6 @@ void PositionScratchController::process(double currentSamplePos,
 
 void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
     const double newPos = position.toEngineSamplePos();
-    if (!isEnabled()) {
-        // Not scratching, ignore
-        // Such a queued seek would cause a position jump when touching the waveform.
-        return;
-    }
     // Scratching continues after seek due to calculating the relative
     // distance traveled in m_samplePosDeltaSum
     m_seekSamplePos = newPos;
