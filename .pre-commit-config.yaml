@@ -69,10 +69,16 @@ repos:
     rev: v9.21.0
     hooks:
       - id: eslint
-        args: [--fix, --report-unused-disable-directives]
+        args:
+          [
+            --fix,
+            --report-unused-disable-directives,
+            --max-warnings,
+            "0",
+            --no-warn-ignored,
+          ]
         files: \.m?[jt]s$
         types: [file]
-        verbose: true # always show output so we don't swallow warnings
         additional_dependencies:
           - eslint@^9.14.0
           - "@eslint/js"
