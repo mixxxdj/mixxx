@@ -116,11 +116,6 @@ jobs:
             artifacts_slug: windows-win64
             qt_qpa_platform: windows
 
-    env:
-      # macOS codesigning
-      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
-      MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
-
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     container: ${{ matrix.container }}
@@ -188,7 +183,7 @@ jobs:
 
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+        if: runner.os == 'macOS' && secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
         run: |
           # Decode the certificate
           echo "${MACOS_CODESIGN_CERTIFICATE_P12_BASE64}" | base64 -d -o ~/certificate.p12
@@ -207,6 +202,10 @@ jobs:
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
+        env:
+          # macOS codesigning
+          MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
+          MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
@@ -369,7 +368,7 @@ jobs:
         working-directory: build
 
       - name: "[macOS] Sign, Notarize, and Staple Package"
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
+        if: runner.os == 'macOS' && secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
         run: packaging/macos/sign_notarize_staple.sh build/*.dmg
         env:
           APPLE_ID_USERNAME: daschuer@mixxx.org
