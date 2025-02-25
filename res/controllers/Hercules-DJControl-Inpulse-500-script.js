@@ -66,9 +66,7 @@
 //  * Add beat jump + SHIFT jumps
 //
 // ****************************************************************************
-
-// For some reason, if this is not var, the script errs
-var DJCi500 = {};
+DJCi500 = {};
 
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -457,13 +455,13 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         beta: (5/6)/128,
         rpm: 33 + 1/3,
         group: `[Channel${midiChannel}]`,
-        inputWheel: function(_channel, _control, value, _status, group) {
+        inputWheel: function(_channel, _control, value, _status, _group) {
             const deck = script.deckFromGroup(deckData.currentDeck);
             value = this.inValueScale(value);
             if (engine.isScratching(deck)) {
                 engine.scratchTick(deck, value);
             } else {
-                engine.setValue(group, "jog", value);
+                engine.setValue(`[Channel${deck}]`, "jog", value);
             }
         },
         inputTouch: function(_channel, _control, value, _status, _group) {
@@ -488,13 +486,13 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         beta: (5/6)/128,
         rpm: 33 + 1/3,
         group: `[Channel${midiChannel}]`,
-        inputWheel: function(_channel, _control, value, _status, group) {
+        inputWheel: function(_channel, _control, value, _status, _group) {
             const deck = script.deckFromGroup(deckData.currentDeck);
             value = this.inValueScale(value) * 4;
             if (engine.isScratching(deck)) {
                 engine.scratchTick(deck, value);
             } else {
-                engine.setValue(group, "jog", value);
+                engine.setValue(`[Channel${deck}]`, "jog", value);
             }
         },
         inputTouch: function(channel, control, value, status, _group) {
