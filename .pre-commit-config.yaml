@@ -32,7 +32,7 @@ default_language_version:
   rust: 1.64.0
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # frozen: v5.0.0
     hooks:
       - id: fix-byte-order-marker
         exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|UTF-8-BOM.txt)$
@@ -51,7 +51,7 @@ repos:
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: 63c8f8312b7559622c0d82815639671ae42132ac # frozen: v2.4.1
     hooks:
       - id: codespell
         args:
@@ -66,7 +66,7 @@ repos:
           ]
         exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|res/linux/org\.mixxx\.Mixxx\.desktop|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.21.0
+    rev: 98fae3b56bd052fa68b76f5f753111f3aab35758 # frozen: v9.21.0
     hooks:
       - id: eslint
         args:
@@ -98,30 +98,30 @@ repos:
           - clang-format==19.1.3
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 8a737e727ac5ab2f1d4cf5876720ed276dc8dc4b # frozen: 25.1.0
     hooks:
       - id: black
         files: ^tools/.*$
   - repo: https://github.com/pycqa/flake8
-    rev: "7.1.2"
+    rev: "bddd87797f8dfc07d2a10c894776018d9bec590b" # frozen: 7.1.2
     hooks:
       - id: flake8
         files: ^tools/.*$
         types: [text, python]
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: a23f6b85d0fdd5bb9d564e2579e678033debbdff # frozen: v0.10.0.1
     hooks:
       - id: shellcheck
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.17.2
+    rev: d174eb7a8f35e05d4065c82d375ad84aa0b32352 # frozen: v0.17.2
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.31.2
+    rev: 828a213a1dd17aa9862aab706e3162c13281ff93 # frozen: 0.31.2
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+    rev: f12edd9c7be1c20cfa42420fd0e6df71e42b51ea # frozen: v4.0.0-alpha.8
     hooks:
       - id: prettier
         types: [yaml]
@@ -130,11 +130,11 @@ repos:
     hooks:
       - id: qml_formatter
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.24.0
+    rev: f565e4e10c6c8081e374235bb4e4bcb8c0c2fa63 # frozen: v8.24.0
     hooks:
       - id: gitleaks
   - repo: https://github.com/woodruffw/zizmor-pre-commit
-    rev: v1.3.1
+    rev: 842b1ccf60ff913680eb3de66a4f8c4ce1297661 # frozen: v1.4.1
     hooks:
       - id: zizmor
   - repo: local
