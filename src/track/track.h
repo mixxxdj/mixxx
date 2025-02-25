@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QList>
+#include <QMetaObject>
 #include <QObject>
 #include <QStack>
 #include <QUrl>
@@ -22,6 +24,8 @@
 #include "util/fileaccess.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
+
+struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -138,10 +142,17 @@ class Track : public QObject {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
 
+    void pausePlayedTime();
+
+    void resumePlayedTime();
+
+    void resetPlayedTime();
+
     // Sets the BPM if not locked.
     bool trySetBpm(double bpmValue) {
         return trySetBpm(mixxx::Bpm(bpmValue));
     }
+
     bool trySetBpm(mixxx::Bpm bpm);
 
     double getBpm() const;
@@ -493,6 +504,7 @@ class Track : public QObject {
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);
+    void readyToBeScrobbled(Track* pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -624,6 +636,14 @@ class Track : public QObject {
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     std::unique_ptr<mixxx::CueInfoImporter> m_pCueInfoImporterPending;
 
+    QMetaObject::Connection m_timerConnection;
+
+    QElapsedTimer m_playedSincePause;
+
+    int m_timerId;
+
+    qint64 m_msPlayed;
+
     friend class TrackDAO;
     void setHeaderParsedFromTrackDAO(bool headerParsed) {
         // Always operating on a newly created, exclusive instance! No need
@@ -640,4 +660,7 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
+
+  protected:
+    void timerEvent(QTimerEvent* timerEvent) override;
 };
