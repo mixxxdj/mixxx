@@ -14,7 +14,7 @@ QImage render(ConstWaveformPointer pWaveform,
         const WaveformSignalColors& signalColors,
         bool mono = false);
 /// These paint methods allow "mono" rendering (mono-mixdown, bottom-aligned).
-/// Note: Don't use with WOverview, it's not adjusted yet! It does some
+/// Note: Don't use mono = true with WOverview, it's not adjusted yet! It does some
 /// additional scaling for normalization which will atm cut off the bottom part.
 void drawWaveformPartRGB(
         QPainter* pPainter,
