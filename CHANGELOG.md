@@ -201,17 +201,27 @@
 
 ### Controller Mappings
 
-* Behringer DDM4000 & BCR2000: Update mappings to 2.5 [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
+* Behringer DDM4000 & BCR2000: Update mappings to 2.5
+  [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
+  [#14349](https://github.com/mixxxdj/mixxx/pull/14349)
 * Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
 * Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
 * Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
 * Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
-* Reloop Digital Jockey 2 IE: New mapping [#4614](https://github.com/mixxxdj/mixxx/pull/4614)
+* Reloop Digital Jockey 2 IE: New mapping
+  [#4614](https://github.com/mixxxdj/mixxx/pull/4614)
+  [#14328](https://github.com/mixxxdj/mixxx/pull/14328)
 * Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
   [#14249](https://github.com/mixxxdj/mixxx/pull/14249)
-* Traktor S4mk3: Smooth xfader curve for Const Power mode [#14305](https://github.com/mixxxdj/mixxx/pull/14305)
+* Traktor S4mk3: Smooth xfader curve for Const Power mode
+  [#14305](https://github.com/mixxxdj/mixxx/pull/14305)
+  [#14329](https://github.com/mixxxdj/mixxx/pull/14329)
+  [#14103](https://github.com/mixxxdj/mixxx/issues/14103)
+* Traktor S4mk3: stop wheel led blinking when track is over/stopped
+  [#14028](https://github.com/mixxxdj/mixxx/pull/14028)
+  [#13995](https://github.com/mixxxdj/mixxx/issues/13995)
 * Traktor Kontrol S3: Use pitch absolute mode as described in the manual [#14123](https://github.com/mixxxdj/mixxx/pull/14123)
 
 ### Skins
@@ -261,12 +271,29 @@
 * Allow `midino` 0 in `MidiController::makeInputHandler()
   [#14266](https://github.com/mixxxdj/mixxx/pull/14266)
   [#14265](https://github.com/mixxxdj/mixxx/issues/14265)
+* Fix: provide `incomingData` to MIDI sysex mappings
+  [#14368](https://github.com/mixxxdj/mixxx/pull/14368)
+  [#13133](https://github.com/mixxxdj/mixxx/issues/13133)
 * Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
   [#14172](https://github.com/mixxxdj/mixxx/pull/14172)
   [#14289](https://github.com/mixxxdj/mixxx/pull/14289)
 * Fix sporadic deadlocks when closing Mixxx or changing sound devices
   [#14208](https://github.com/mixxxdj/mixxx/pull/14208)
   [#14055](https://github.com/mixxxdj/mixxx/issues/14055)
+* Avoid timer warning on button release [#14323](https://github.com/mixxxdj/mixxx/pull/14323)
+* Fix log spam when using Midi for light mapping
+  [#14326](https://github.com/mixxxdj/mixxx/issues/14326)
+  [#14327](https://github.com/mixxxdj/mixxx/pull/14327)
+  [#14333](https://github.com/mixxxdj/mixxx/pull/14333)
+  [#14338](https://github.com/mixxxdj/mixxx/pull/14338)
+  [#14371](https://github.com/mixxxdj/mixxx/pull/14371)
+* Controller mapping info: Fix cropped description text
+  [#14332](https://github.com/mixxxdj/mixxx/pull/14332)
+  [#14117](https://github.com/mixxxdj/mixxx/issues/14117)
+* Fix writing metadata via symlink [#13711](https://github.com/mixxxdj/mixxx/pull/13711)
+* Fix beat sync in flanger effect [#14351](https://github.com/mixxxdj/mixxx/pull/14351)
+* Library menu: change "Engine DJ Prime" to "Engine DJ" [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
+* Preferences Effects: left/right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
 
 ### Target support
 
@@ -290,6 +317,7 @@
   [#13931](https://github.com/mixxxdj/mixxx/issues/13931)
 * Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
+* Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 

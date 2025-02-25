@@ -47,17 +47,19 @@ class PositionScratchController : public QObject {
     bool m_isScratching;
     bool m_inertiaEnabled;
     double m_prevSamplePos;
+    double m_seekSamplePos;
     double m_samplePosDeltaSum;
     double m_scratchTargetDelta;
     double m_scratchStartPos;
     double m_rate;
     double m_moveDelay;
-    double m_mouseSampleTime;
+    double m_scratchPosSampleTime;
 
     std::size_t m_bufferSize;
 
     double m_dt;
     double m_callsPerDt;
+    double m_callsToStop;
 
     double m_p;
     double m_d;
