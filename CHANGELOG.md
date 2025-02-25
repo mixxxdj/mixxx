@@ -96,6 +96,10 @@
   [#14400](https://github.com/mixxxdj/mixxx/issues/14400)
   [#14295](https://github.com/mixxxdj/mixxx/pull/14295)
   [#14294](https://github.com/mixxxdj/mixxx/issues/14294)
+* History: Don't allow joining with locked previous playlist
+  [#14401](https://github.com/mixxxdj/mixxx/pull/14401)
+  [#14399](https://github.com/mixxxdj/mixxx/issues/14399)
+* Track Menu: Reset `eject` after moving track file to trash [#14402](https://github.com/mixxxdj/mixxx/pull/14402)
 
 ### Other Fixes
 
@@ -137,6 +141,7 @@
 * Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
 * Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
+* Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
