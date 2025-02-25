@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740486004">
+    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740512628">
       <description>
  <p>
   Controller Mappings
@@ -150,6 +150,81 @@
   </li>
  </ul>
  <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Controllers: Avoid timer warning on button release
+   #14323
+  </li>
+  <li>
+   Controller preference: Fix notify of pending changes when closing preferences
+   #14234
+   #14220
+  </li>
+  <li>
+   Controller preferences: Fix broken overwrite dialog ('Save as..' not working)
+   #14263
+  </li>
+  <li>
+   Controller preferences: Don't break support link texts
+   #14079
+  </li>
+  <li>
+   Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
+   #14281
+   #14280
+   #14292
+  </li>
+  <li>
+   Controller mapping info: Fix cropped description text
+   #14332
+   #14117
+  </li>
+  <li>
+   MIDI controller learning: Make control box search usable
+   #14260
+  </li>
+  <li>
+   MIDI controller learning: don't reload mapping after learn
+   #14253
+  </li>
+  <li>
+   MIDI controller learning: Correct skin control for mic/aux section
+   #14221
+  </li>
+  <li>
+   Allow
+   midino
+   0 in `MidiController::makeInputHandler()
+   #14266
+   #14265
+  </li>
+  <li>
+   Fix: provide
+   incomingData
+   to MIDI sysex mappings
+   #14368
+   #13133
+  </li>
+  <li>
+   Fix log spam when using Midi for light mapping
+   #14326
+   #14327
+   #14333
+   #14338
+   #14371
+  </li>
+  <li>
+   Fix for
+   TypeError
+   in
+   midi-components-0.0.js
+   #14203
+   #14197
+  </li>
+ </ul>
+ <p>
   Skins
  </p>
  <ul>
@@ -182,91 +257,25 @@
   </li>
  </ul>
  <p>
-  Fixes
+  Library
  </p>
  <ul>
   <li>
-   Enable R3 time-stretching with Rubberband 4.0.0 API version numbers
-   #14100
-  </li>
-  <li>
-   Library: Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
+   Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
    #14114
    #14065
-  </li>
-  <li>
-   Preferences Effects: add Hide/Unhide (move) buttons to Effects tab
-   #13329
   </li>
   <li>
    Fix MusicBrainz lookup on Windows and macOS
    #14216
   </li>
   <li>
-   Controller Learning: Correct skin control for mic/aux section
-   #14221
-  </li>
-  <li>
-   Apply talkover ducking after master effects to allow using a compressor effect
-   #13844
-   #12451
-  </li>
-  <li>
-   Fix for
-   TypeError
-   in
-   midi-components-0.0.js
-   #14203
-   #14197
-  </li>
-  <li>
    Library scanner: Update cached 'missing' flag when file is redicovered
    #14250
   </li>
   <li>
-   Controller preference: Fix notify of pending changes when closing preferences
-   #14234
-   #14220
-  </li>
-  <li>
-   Controller preferences: Fix broken overwrite dialog ('Save as..' not working)
-   #14263
-  </li>
-  <li>
-   Controller preferences: Don't break support link texts
-   #14079
-  </li>
-  <li>
-   MIDI controller learning: Make control box search usable
-   #14260
-  </li>
-  <li>
    Hidden Tracks: Allow 'load to' via track context manu
    #14077
-  </li>
-  <li>
-   MIDI controller learning: don't reload mapping after learn
-   #14253
-  </li>
-  <li>
-   Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
-   #14281
-   #14280
-   #14292
-  </li>
-  <li>
-   Allow
-   midino
-   0 in `MidiController::makeInputHandler()
-   #14266
-   #14265
-  </li>
-  <li>
-   Fix: provide
-   incomingData
-   to MIDI sysex mappings
-   #14368
-   #13133
   </li>
   <li>
    Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
@@ -274,55 +283,16 @@
    #14289
   </li>
   <li>
-   Fix sporadic deadlocks when closing Mixxx or changing sound devices
-   #14208
-   #14055
-  </li>
-  <li>
-   Avoid timer warning on button release
-   #14323
-  </li>
-  <li>
-   Fix log spam when using Midi for light mapping
-   #14326
-   #14327
-   #14333
-   #14338
-   #14371
-  </li>
-  <li>
-   Controller mapping info: Fix cropped description text
-   #14332
-   #14117
-  </li>
-  <li>
    Fix writing metadata via symlink
    #13711
-  </li>
-  <li>
-   Fix beat sync in flanger effect
-   #14351
   </li>
   <li>
    Library menu: change "Engine DJ Prime" to "Engine DJ"
    #14248
   </li>
   <li>
-   Preferences Effects: left/right key in effect lists trigger hide/unhide
-   #14205
-  </li>
-  <li>
-   PositionScratchController: Fix loop wrap-around case
-   #14379
-  </li>
-  <li>
    Fix file extension handling during playlist export
    #14381
-  </li>
-  <li>
-   Allow seeking to a hotcue during waveform scratching
-   #14357
-   #13981
   </li>
   <li>
    Fix manual key metadata editing in track properties dialog
@@ -330,6 +300,46 @@
    #14400
    #14295
    #14294
+  </li>
+ </ul>
+ <p>
+  Other Fixes
+ </p>
+ <ul>
+  <li>
+   Enable R3 time-stretching with Rubberband 4.0.0 API version numbers
+   #14100
+  </li>
+  <li>
+   Preferences Effects: add Hide/Unhide (move) buttons to Effects tab
+   #13329
+  </li>
+  <li>
+   Preferences Effects: left/right key in effect lists trigger hide/unhide
+   #14205
+  </li>
+  <li>
+   Fix beat sync in flanger effect
+   #14351
+  </li>
+  <li>
+   Apply talkover ducking after master effects to allow using a compressor effect
+   #13844
+   #12451
+  </li>
+  <li>
+   Fix sporadic deadlocks when closing Mixxx or changing sound devices
+   #14208
+   #14055
+  </li>
+  <li>
+   PositionScratchController: Fix loop wrap-around case
+   #14379
+  </li>
+  <li>
+   Allow seeking to a hotcue during waveform scratching
+   #14357
+   #13981
   </li>
  </ul>
  <p>
