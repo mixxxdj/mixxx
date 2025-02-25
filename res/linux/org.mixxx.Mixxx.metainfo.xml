@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-02-21" timestamp="1740163606">
+    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740486004">
       <description>
  <p>
   Controller Mappings
@@ -310,6 +310,26 @@
   <li>
    Preferences Effects: left/right key in effect lists trigger hide/unhide
    #14205
+  </li>
+  <li>
+   PositionScratchController: Fix loop wrap-around case
+   #14379
+  </li>
+  <li>
+   Fix file extension handling during playlist export
+   #14381
+  </li>
+  <li>
+   Allow seeking to a hotcue during waveform scratching
+   #14357
+   #13981
+  </li>
+  <li>
+   Fix manual key metadata editing in track properties dialog
+   #14022
+   #14400
+   #14295
+   #14294
   </li>
  </ul>
  <p>

@@ -97,6 +97,16 @@
 * Fix beat sync in flanger effect [#14351](https://github.com/mixxxdj/mixxx/pull/14351)
 * Library menu: change "Engine DJ Prime" to "Engine DJ" [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
 * Preferences Effects: left/right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
+* PositionScratchController: Fix loop wrap-around case [#14379](https://github.com/mixxxdj/mixxx/pull/14379)
+* Fix file extension handling during playlist export [#14381](https://github.com/mixxxdj/mixxx/pull/14381)
+* Allow seeking to a hotcue during waveform scratching
+  [#14357](https://github.com/mixxxdj/mixxx/pull/14357)
+  [#13981](https://github.com/mixxxdj/mixxx/issues/13981)
+* Fix manual key metadata editing in track properties dialog
+  [#14022](https://github.com/mixxxdj/mixxx/pull/14022)
+  [#14400](https://github.com/mixxxdj/mixxx/issues/14400)
+  [#14295](https://github.com/mixxxdj/mixxx/pull/14295)
+  [#14294](https://github.com/mixxxdj/mixxx/issues/14294)
 
 ### Target support
 
