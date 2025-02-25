@@ -51,11 +51,11 @@
 // * Wiki: https://mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_500
 //
 //  Version 1.0c:
-//	* Hot Cue: implementation of the Color API (Work in progress)
-//		- Assigned color directly to pad (XML)
-//	* Added DECK LED number - On when playing
+//  * Hot Cue: implementation of the Color API (Work in progress)
+//    - Assigned color directly to pad (XML)
+//  * Added DECK LED number - On when playing
 //  * Moved Beatjump to Pad mode 3 (Slicer)
-//	* Set different color for upper (Sampler 1-4) and lower (Sampler 5-8) sampler pads
+//  * Set different color for upper (Sampler 1-4) and lower (Sampler 5-8) sampler pads
 //
 //  Version 1.0 - Based upon Inpulse 300 v1.2 (official)
 //
@@ -1524,4 +1524,5 @@ DJCi500.shutdown = function() {
     //cleanup
     midi.sendShortMsg(0x90, 0x05, 0x00); //turn browser led off
     midi.sendShortMsg(0xB0, 0x7F, 0x7E);
+
 };
