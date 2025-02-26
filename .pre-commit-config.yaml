@@ -137,6 +137,7 @@ repos:
     rev: 842b1ccf60ff913680eb3de66a4f8c4ce1297661 # frozen: v1.4.1
     hooks:
       - id: zizmor
+        args: [--pedantic]
   - repo: local
     hooks:
       - id: qsscheck
