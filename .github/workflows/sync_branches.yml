@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: true
 
       - name: "Install merge driver"
         run: |
