@@ -6,6 +6,8 @@ on:
       - "2.5"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   sync-branches:
     strategy:
@@ -16,6 +18,9 @@ jobs:
           - from_branch: "2.5"
             to_branch: "main"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     env:
       SYNC_COMMITTER: github-actions[bot]
     steps:
