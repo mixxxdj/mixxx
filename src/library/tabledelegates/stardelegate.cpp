@@ -106,8 +106,7 @@ void StarDelegate::closingEditor(QWidget* pWidget, QAbstractItemDelegate::EndEdi
 
 void StarDelegate::editRequested(const QModelIndex& index,
         QAbstractItemView::EditTrigger trigger,
-        QEvent* event) {
-    Q_UNUSED(event);
+        QEvent*) {
 
     // This slot is called when an edit is requested for ANY cell on the
     // QTableView but the code should only be executed on a column with a
