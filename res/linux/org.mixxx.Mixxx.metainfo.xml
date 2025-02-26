@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740513345">
+    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740515661">
       <description>
  <p>
   Controller Mappings
@@ -158,7 +158,7 @@
    #14323
   </li>
   <li>
-   Controller preference: Fix notify of pending changes when closing preferences
+   Controller preferences: Fix notify of pending changes when closing preferences
    #14234
    #14220
   </li>
@@ -186,7 +186,7 @@
    #14260
   </li>
   <li>
-   MIDI controller learning: don't reload mapping after learn
+   MIDI controller learning: Don't reload mapping after learn
    #14253
   </li>
   <li>
@@ -330,11 +330,11 @@
    #14205
   </li>
   <li>
-   Fix beat sync in flanger effect
+   Fix beat sync in Flanger effect
    #14351
   </li>
   <li>
-   Apply talkover ducking after master effects to allow using a compressor effect
+   Apply talkover ducking after main effects to allow using a compressor effect
    #13844
    #12451
   </li>
@@ -1191,7 +1191,7 @@
    #13117
   </li>
   <li>
-   Novation Dicer: Remove flanger mapping with quickeffect toggle
+   Novation Dicer: Remove Flanger mapping with quickeffect toggle
    #13196
    #13134
   </li>
