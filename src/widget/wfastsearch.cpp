@@ -159,7 +159,7 @@ QString WFastSearch::generateQuery() const {
                                        &generateCombinations](
                                        const QStringList& fields,
                                        int index,
-                                       QString currentCombination) {
+                                       const QString& currentCombination) {
             if (index >= fields.size()) {
                 pipeCombinations.append(currentCombination.trimmed());
                 return;
