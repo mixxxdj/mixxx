@@ -22,9 +22,10 @@ jobs:
       - name: "Check out repository"
         uses: actions/checkout@v4.1.7
 
-      - name: "Install merge driver"
+      - name: "Configure Git"
         run: |
           git config --global merge.ours.driver true
+          git config --global pull.rebase false
 
       - name: "Check if merge branch already exists"
         id: check_sync
