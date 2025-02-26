@@ -2416,6 +2416,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     for (const QString& group : groups) {
         ControlObject::set(ConfigKey(group, "stop"), 1.0);
         ControlObject::set(ConfigKey(group, "eject"), 1.0);
+        ControlObject::set(ConfigKey(group, "eject"), 0.0);
     }
 
     // Set up and initiate the track batch operation
