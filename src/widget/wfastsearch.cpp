@@ -112,7 +112,7 @@ QString WFastSearch::generateQuery() const {
                     QStringList splitValues = val.split("*");
                     splitValues.removeAll("");
                     values.append(splitValues);
-                    for (const QString& splitVal : splitValues) {
+                    for (const QString& splitVal : std::as_const(splitValues)) {
                         userInputList.append(field + ":" + splitVal);
                     }
                     values.removeOne(val);
@@ -153,7 +153,7 @@ QString WFastSearch::generateQuery() const {
         // Generate combinations if | (pipe) exist
         QStringList pipeCombinations;
 
-        std::function<void(const QStringList&, int, QString)> generateCombinations;
+        std::function<void(const QStringList&, int, const QString&)> generateCombinations;
         generateCombinations = [&fieldValues,
                                        &pipeCombinations,
                                        &generateCombinations](
@@ -165,7 +165,7 @@ QString WFastSearch::generateQuery() const {
                 return;
             }
             QString field = fields[index];
-            for (const QString& value : fieldValues[field]) {
+            for (const QString& value : std::as_const(fieldValues[field])) {
                 generateCombinations(fields,
                         index + 1,
                         currentCombination +
