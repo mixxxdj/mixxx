@@ -1,0 +1,17 @@
+name: Git Checks
+
+on: [pull_request]
+permissions: {}
+
+jobs:
+  block-fixup:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Block Fixup Commit Merge
+        uses: 13rac1/block-fixup-merge-action@bd5504fb9ca0253e109d98eb86b7debc01970cdc

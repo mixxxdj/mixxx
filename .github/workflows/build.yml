@@ -116,11 +116,6 @@ jobs:
             artifacts_slug: windows-win64
             qt_qpa_platform: windows
 
-    env:
-      # macOS codesigning
-      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
-      MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
-
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     container: ${{ matrix.container }}
@@ -130,10 +125,11 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
+          persist-credentials: true # Needed for tag fetching in next steps
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
@@ -147,7 +143,7 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.0
+        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be
         # Ubuntu 22.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
@@ -156,7 +152,7 @@ jobs:
           cmake-version: "3.21.x"
 
       - name: "[Windows] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.0
+        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be
         # Ubuntu 22.04 should use the CMake version from the repos.
         if: runner.os == 'Windows'
         with:
@@ -167,7 +163,7 @@ jobs:
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756
 
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
@@ -180,17 +176,17 @@ jobs:
 
       - name: "[macOS/Windows] Set up build environment cache"
         if: runner.os != 'Linux'
-        uses: actions/cache@v4
+        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f
         with:
           path: ${{ matrix.buildenv_basepath }}
           key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
 
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+        if: runner.os == 'macOS' && secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
         run: |
           # Decode the certificate
-          echo "${{ env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}" | base64 -d -o ~/certificate.p12
+          echo "${MACOS_CODESIGN_CERTIFICATE_P12_BASE64}" | base64 -d -o ~/certificate.p12
 
           # Create a temporary keychain for the certificate and import it.
           security create-keychain -p mixxx Mixxx.keychain
@@ -206,6 +202,10 @@ jobs:
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
+        env:
+          # macOS codesigning
+          MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
+          MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
@@ -224,7 +224,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-        uses: actions/cache@v4
+        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
@@ -269,11 +269,11 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
-        uses: ammaraskar/gcc-problem-matcher@0.3.0
+        uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
-        uses: ammaraskar/msvc-problem-matcher@0.3.0
+        uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0
 
       - name: "Build"
         run: cmake --build . --config RelWithDebInfo
@@ -315,7 +315,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.1
+        uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -335,7 +335,7 @@ jobs:
         # Use retry loop to work around a race condition on macOS causing
         # 'Resource busy' errors with 'hdiutil'. See
         # https://github.com/actions/runner-images/issues/7522
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08
         with:
           timeout_minutes: 30
           max_attempts: 12
@@ -354,11 +354,11 @@ jobs:
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 22.04'
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]] && [[ "${GITHUB_REPOSITORY}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${GITHUB_REF}" == "refs/heads/2.5" ]] && [[ "${GITHUB_REPOSITORY}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${GITHUB_REF}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${GITHUB_REPOSITORY}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
           else
             # only build the source DEB, do not upload
@@ -368,7 +368,7 @@ jobs:
         working-directory: build
 
       - name: "[macOS] Sign, Notarize, and Staple Package"
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
+        if: runner.os == 'macOS' && secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD != null
         run: packaging/macos/sign_notarize_staple.sh build/*.dmg
         env:
           APPLE_ID_USERNAME: daschuer@mixxx.org
@@ -379,7 +379,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.1
+        uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -481,7 +481,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -497,9 +497,10 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
+          persist-credentials: true # Needed for tag fetching in next step
 
       - name: "Ensure that all tags are fetched"
         # Works around an issue where not the latest tag is not fetched when the
@@ -552,6 +553,6 @@ jobs:
 
       - name: "Trigger Netlify build"
         if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-        run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
+        run: curl -X POST -d '{}' "${NETLIFY_BUILD_HOOK}"
         env:
           NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}

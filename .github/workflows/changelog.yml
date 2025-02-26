@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get current branch name
-        uses: nelonoel/branch-name@v1.0.1
+        uses: nelonoel/branch-name@1ea5c86cb559a8c4e623da7f188496208232e49f
       - name: Start workflow run on manual repository
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0
         if: env.MIXXXBOT_TOKEN != null
         with:
           token: ${{ env.MIXXXBOT_TOKEN }}

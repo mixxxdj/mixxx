@@ -2,10 +2,12 @@ name: Clean up downloads
 
 on:
   workflow_dispatch:
+permissions: {}
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+    permissions: {}
 
     steps:
       - name: "Set up SSH Agent"
