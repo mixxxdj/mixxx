@@ -190,7 +190,7 @@ void WSearchLineEdit::slotShowFastSearchDialog() {
     connect(dialog, &WFastSearch::searchRequest, this, [this](const QString& result) {
         QString userInput, query;
         QStringList parts = result.split("\n");
-        for (const QString& part : parts) {
+        for (const QString& part : std::as_const(parts)) {
             if (part.startsWith("userinput: ")) {
                 userInput = part.mid(10).trimmed();
             } else if (part.startsWith("query: ")) {
@@ -204,7 +204,7 @@ void WSearchLineEdit::slotShowFastSearchDialog() {
     connect(dialog, &WFastSearch::search2CrateRequest, this, [this](const QString& result) {
         QString userInput, query;
         QStringList parts = result.split("\n");
-        for (const QString& part : parts) {
+        for (const QString& part : std::as_const(parts)) {
             if (part.startsWith("userinput: ")) {
                 userInput = part.mid(10).trimmed();
             } else if (part.startsWith("query: ")) {
