@@ -165,8 +165,8 @@ class LegacyControllerBooleanSetting
         emit valueReset();
     }
 
-    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
-        return new LegacyControllerBooleanSetting(element);
+    static std::shared_ptr<LegacyControllerBooleanSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerBooleanSetting>(element);
     }
     static bool match(const QDomElement& element);
 
@@ -281,8 +281,8 @@ class LegacyControllerNumberSetting
                 valid_range(m_minValue, m_maxValue, m_stepValue);
     }
 
-    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
-        return new LegacyControllerNumberSetting(element);
+    static std::shared_ptr<LegacyControllerNumberSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerNumberSetting>(element);
     }
     static bool match(const QDomElement& element);
 
@@ -352,8 +352,8 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
         }
     }
 
-    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
-        return new LegacyControllerRealSetting(element);
+    static std::shared_ptr<LegacyControllerRealSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerRealSetting>(element);
     }
 
     QWidget* buildInputWidget(QWidget* parent) override;
@@ -408,8 +408,8 @@ class LegacyControllerEnumSetting
                 static_cast<int>(m_editedValue) < m_options.size();
     }
 
-    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
-        return new LegacyControllerEnumSetting(element);
+    static std::shared_ptr<LegacyControllerEnumSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerEnumSetting>(element);
     }
     static inline bool match(const QDomElement& element);
 
