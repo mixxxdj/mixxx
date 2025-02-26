@@ -40,6 +40,11 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     static void setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled);
     virtual void showPopup() override;
 
+    void showFastSearchDialog();
+    void handleSearch(const QString& query);
+    void handleSearchToCrate(const QString& query);
+    void slotShowFastSearchDialog();
+
     explicit WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig = nullptr);
     ~WSearchLineEdit();
 
@@ -127,4 +132,5 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;
     bool m_queryEmitted;
+    parented_ptr<QAction> m_pFastSearchAction;
 };

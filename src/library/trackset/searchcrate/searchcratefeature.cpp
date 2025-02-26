@@ -314,8 +314,6 @@ void SearchCrateFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateSearchCrateAction.get());
     menu.addSeparator();
-    menu.addAction(m_pEditSearchCrateAction.get());
-    menu.addSeparator();
     menu.exec(globalPos);
 }
 

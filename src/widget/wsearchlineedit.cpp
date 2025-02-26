@@ -20,11 +20,11 @@
 #include "wskincolor.h"
 
 // EVE
-// #include "library/trackset/searchCrate/searchcratefeature.cpp"
 #include "library/trackset/searchcrate/searchcratefeature.h"
 #include "library/trackset/searchcrate/searchcratefeaturehelper.h"
 #include "library/trackset/searchcrate/searchcratestorage.h"
 #include "library/treeitem.h"
+#include "widget/wfastsearch.h"
 // EVE
 
 #define ENABLE_TRACE_LOG false
@@ -101,9 +101,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
           m_pConfig(pConfig),
           m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
-          // EVE
           m_2SearchCrateButton(make_parented<QToolButton>(this)),
-          // EVE
           m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
@@ -138,28 +136,25 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slotClearSearch);
 
-    // EVE
-    // m_2SearchCrateButton->setCursor(Qt::ArrowCursor);
     m_2SearchCrateButton->setCursor(Qt::PointingHandCursor);
     m_2SearchCrateButton->setObjectName(QStringLiteral("2SearchCrateButton"));
-
-    //    m_2SearchCrateButton->findChildren(QAction)[0].setIcon(":/images/library/ic_library_locked_tracklist.svg");
-    //    m_2SearchCrateButton->addAction(":/images/library/ic_library_locked_tracklist.svg",
-    //    QLineEdit::LeadingPosition);
-
     m_2SearchCrateButton->hide();
     connect(m_2SearchCrateButton,
             &QAbstractButton::clicked,
             this,
             &WSearchLineEdit::slot2SearchCrate);
-    // EVE
-
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            &WSearchLineEdit::slotSetShortcutFocus);
-
+    if (pConfig->getValue<bool>(ConfigKey("[Search]", "PopupSearch"))) {
+        connect(setFocusShortcut,
+                &QShortcut::activated,
+                this,
+                &WSearchLineEdit::slotShowFastSearchDialog);
+    } else {
+        connect(setFocusShortcut,
+                &QShortcut::activated,
+                this,
+                &WSearchLineEdit::slotSetShortcutFocus);
+    }
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
@@ -188,6 +183,40 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
 WSearchLineEdit::~WSearchLineEdit() {
     saveQueriesInConfig();
+}
+
+void WSearchLineEdit::slotShowFastSearchDialog() {
+    WFastSearch* dialog = new WFastSearch();
+    connect(dialog, &WFastSearch::searchRequest, this, [this](const QString& result) {
+        QString userInput, query;
+        QStringList parts = result.split("\n");
+        for (const QString& part : parts) {
+            if (part.startsWith("userinput: ")) {
+                userInput = part.mid(10).trimmed();
+            } else if (part.startsWith("query: ")) {
+                query = part.mid(7).trimmed();
+            }
+        }
+        setCurrentText(query);
+        emit search(getSearchText());
+        m_queryEmitted = true;
+    });
+    connect(dialog, &WFastSearch::search2CrateRequest, this, [this](const QString& result) {
+        QString userInput, query;
+        QStringList parts = result.split("\n");
+        for (const QString& part : parts) {
+            if (part.startsWith("userinput: ")) {
+                userInput = part.mid(10).trimmed();
+            } else if (part.startsWith("query: ")) {
+                query = part.mid(7).trimmed();
+            }
+        }
+        setCurrentText(query);
+        emit newSearchCrate(userInput);
+        m_queryEmitted = true;
+    });
+    dialog->exec();
+    dialog->deleteLater();
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -254,13 +283,11 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Shortcut") + ": \n" +
             tr("Ctrl+Backspace"));
 
-    // EVE
     m_2SearchCrateButton->setToolTip(tr("Moves the result of the query") + "\n" +
             tr("to a new SearchCrate container") + "\n\n" +
 
             tr("Shortcut") + ": \n" +
             tr("None Yet"));
-    // EVE
 
     setBaseTooltip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
@@ -322,7 +349,6 @@ void WSearchLineEdit::saveQueriesInConfig() {
     }
 }
 
-// EVE
 void WSearchLineEdit::slot2SearchCrate() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -342,7 +368,6 @@ void WSearchLineEdit::slot2SearchCrate() {
     // Refocus the edit field
     // setFocus(Qt::OtherFocusReason);
 }
-// EVE
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QComboBox::resizeEvent(e);
@@ -358,33 +383,25 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         // after skin change/reload.
         refreshState();
     }
-    // EVE
     if (m_2SearchCrateButton->size().height() != innerHeight) {
         QSize newSize = QSize(innerHeight, innerHeight);
         m_2SearchCrateButton->resize(newSize);
         m_2SearchCrateButton->setIconSize(newSize);
-        // Needed to update the m_2SearchCrateButton and the cursor
-        // after skin change/reload.
         refreshState();
     }
-    // EVE
     int top = rect().top() + kBorderWidth;
     if (layoutDirection() == Qt::LeftToRight) {
         m_clearButton->move(rect().right() -
                         static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
-        // EVE
         m_2SearchCrateButton->move(rect().right() -
                         static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
-        // EVE
     } else {
         m_clearButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
-        // EVE
         m_2SearchCrateButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
-        // EVE
     }
 }
 
