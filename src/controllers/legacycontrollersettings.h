@@ -176,7 +176,8 @@ class LegacyControllerBooleanSetting
             bool defaultValue)
             : AbstractLegacyControllerSetting(element),
               m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
+              m_defaultValue(defaultValue),
+              m_editedValue(currentValue) {
     }
 
     bool parseValue(const QString& in) {
@@ -421,7 +422,8 @@ class LegacyControllerEnumSetting
             : AbstractLegacyControllerSetting(element),
               m_options(options),
               m_savedValue(currentValue),
-              m_defaultValue(defaultValue) {
+              m_defaultValue(defaultValue),
+              m_editedValue(currentValue) {
     }
 
     virtual QWidget* buildInputWidget(QWidget* parent) override;
