@@ -194,10 +194,8 @@ var SMCMixer;
         }
     }
     class Controller extends components.ComponentContainer {
-        constructor(id, debugging) {
+        constructor() {
             super({});
-            this.id = id;
-            this.debugging = debugging;
             this.activeDeck = new SMCMixer.Deck();
             this.eqButtons = new Array(4);
             this.eqButtons[0] = new EqRack(3);
@@ -464,8 +462,8 @@ var SMCMixer;
     }
     SMCMixer.Controller = Controller;
 
-    function init(id, debugging) {
-        SMCMixer.controller = new SMCMixer.Controller(id, debugging);
+    function init(_id, _debugging) {
+        SMCMixer.controller = new SMCMixer.Controller();
     }
     SMCMixer.init = init;
     function shutdown() {
