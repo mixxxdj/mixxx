@@ -10,8 +10,8 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
       - name: Block Fixup Commit Merge
-        uses: 13rac1/block-fixup-merge-action@v2.0.0
+        uses: 13rac1/block-fixup-merge-action@bd5504fb9ca0253e109d98eb86b7debc01970cdc

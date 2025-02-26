@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check if commenter is maintainer
         id: check-maintainer
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const response = await github.rest.repos.getCollaboratorPermissionLevel({
@@ -29,11 +29,11 @@ jobs:
             return isMaintainer;
       - name: Checkout repository
         if: steps.check-maintainer.outputs.result == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
       - name: Softfix
         if: steps.check-maintainer.outputs.result == 'true'
-        uses: daschuer/softfix@v3
+        uses: daschuer/softfix@807aa583c81496801cc5892b0ab43d4aba70e1f0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
