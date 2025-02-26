@@ -94,15 +94,14 @@ void StarDelegate::commitAndCloseEditor() {
     emit closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
 }
 
-void StarDelegate::closingEditor(QWidget* widget, QAbstractItemDelegate::EndEditHint hint) {
-    Q_UNUSED(hint);
+void StarDelegate::closingEditor(QWidget* pWidget, QAbstractItemDelegate::EndEditHint) {
 
-    auto* editor = qobject_cast<StarEditor*>(widget);
-    VERIFY_OR_DEBUG_ASSERT(editor) {
+    auto* pEditor = qobject_cast<StarEditor*>(pWidget);
+    VERIFY_OR_DEBUG_ASSERT(pEditor) {
         return;
     }
 
-    restorePersistentRatingEditor(editor->getModelIndex());
+    restorePersistentRatingEditor(pEditor->getModelIndex());
 }
 
 void StarDelegate::editRequested(const QModelIndex& index,
