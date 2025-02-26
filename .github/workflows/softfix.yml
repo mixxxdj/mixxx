@@ -3,15 +3,16 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  pull-requests: write
-  contents: write
+permissions: {}
 
 jobs:
   softfix:
     name: Softfix action
     if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
       - name: Check if commenter is maintainer
         id: check-maintainer
