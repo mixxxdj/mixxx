@@ -206,7 +206,7 @@
       <control>
         <group>[Channel4]</group>
         <key>SMCMixer.controller.slipButtons[3].input</key>
-        <description>Eigth M button.</description>
+        <description>Eighth M button.</description>
         <status>0x90</status>
         <midino>0x17</midino>
         <options>
@@ -247,7 +247,7 @@
       <control>
         <group>[Channel4]</group>
         <key>SMCMixer.controller.quantizeButtons[3].input</key>
-        <description>Eigth S button.</description>
+        <description>Eighth S button.</description>
         <status>0x90</status>
         <midino>0x0F</midino>
         <options>
@@ -288,7 +288,7 @@
       <control>
         <group>[Channel4]</group>
         <key>SMCMixer.controller.keylockButtons[3].input</key>
-        <description>Eigth R button.</description>
+        <description>Eighth R button.</description>
         <status>0x90</status>
         <midino>0x07</midino>
         <options>
@@ -329,7 +329,7 @@
       <control>
         <group>[Channel4]</group>
         <key>SMCMixer.controller.pflButtons[3].input</key>
-        <description>Eigth square button.</description>
+        <description>Eighth square button.</description>
         <status>0x90</status>
         <midino>0x1F</midino>
         <options>
