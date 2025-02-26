@@ -262,7 +262,7 @@ void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
 }
 
 void KeyboardEventFilter::updateWidgetShortcuts() {
-    // kLogger.debug() << "updateWidgetShortcuts";
+    kLogger.debug() << "updateWidgetShortcuts";
     ScopedTimer timer(QStringLiteral("KeyboardEventFilter::updateWidgetShortcuts"));
     QStringList shortcutHints;
     for (auto* pWidget : std::as_const(m_widgets)) {
@@ -322,7 +322,7 @@ void KeyboardEventFilter::clearMenuBarActions() {
 }
 
 void KeyboardEventFilter::updateMenuBarActionShortcuts() {
-    // kLogger.debug() << "updateMenuBarActionShortcuts";
+    kLogger.debug() << "updateMenuBarActionShortcuts";
     QHashIterator<QAction*, std::pair<ConfigKey, QString>> it(m_menuBarActions);
     while (it.hasNext()) {
         it.next();
@@ -342,6 +342,7 @@ void KeyboardEventFilter::reloadKeyboardConfig() {
 }
 
 void KeyboardEventFilter::createKeyboardConfig() {
+    kLogger.debug() << "createKeyboardConfig";
     // Remove the previously watched file.
     // Could be the user mapping has been removed and we'll need to switch
     // to the built-in default mapping.
