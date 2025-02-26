@@ -2,6 +2,7 @@ name: Clean up downloads
 
 on:
   workflow_dispatch:
+permissions: {}
 
 jobs:
   build:
