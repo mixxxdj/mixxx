@@ -44,11 +44,16 @@ class WBaseWidget {
     }
 
     void setShortcutTooltip(const QString& tooltip) {
-        // This may be called even though this widget's shortcuts are unchanged
-        // or while we currently don't show shortcuts, so just set the new string
-        // and don't call updateBaseTooltipOptShortcuts() right away to prevent
-        // thousands of no-ops.
+        // While the other set functions are called only during widget construction,
+        // this is also called each time the keyboard config file is reloaded,
+        // so this may be called even though this widget's shortcuts are unchanged
+        // and/or while we currently don't show shortcuts, so just update when
+        // we need in order to prevent thousands of no-ops.
+        bool reloadNow = m_showKeyboardShortcuts && m_shortcutTooltip != tooltip;
         m_shortcutTooltip = tooltip;
+        if (reloadNow) {
+            updateBaseTooltipOptShortcuts();
+        }
     }
 
     QString baseTooltip() const {
@@ -63,11 +68,14 @@ class WBaseWidget {
         return m_baseTooltipOptShortcuts;
     }
 
+    /// Set by LegacySkinParser on widget construction
     void setShortcutControlsAndCommands(
             const QList<std::pair<ConfigKey, QString>>& controlsCommands) {
         m_shortcutControlsAndCommands = controlsCommands;
     }
 
+    /// Called by KeyboardEventFilter::updateWidgetShortcuts() when the keyboard
+    /// config has been (re)loaded in order to update the shortcut tooltips
     const QList<std::pair<ConfigKey, QString>>& getShortcutControlsAndCommands() const {
         return m_shortcutControlsAndCommands;
     }
