@@ -278,8 +278,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 // Not thread-save, call from engine thread only
 double ReadAheadManager::getFilePlaypositionFromLog(
         double currentFilePlayposition,
-        double numConsumedSamples,
-        mixxx::audio::ChannelCount channelCount) {
+        double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentFilePlayposition;
     }
@@ -313,7 +312,6 @@ mixxx::audio::FramePos ReadAheadManager::getFilePlaypositionFromLog(
         mixxx::audio::ChannelCount channelCount) {
     const double positionSamples =
             getFilePlaypositionFromLog(currentPosition.toSamplePos(channelCount),
-                    numConsumedFrames * channelCount,
-                    channelCount);
+                    numConsumedFrames * channelCount);
     return mixxx::audio::FramePos::fromSamplePos(positionSamples, channelCount);
 }
