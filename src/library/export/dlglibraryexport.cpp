@@ -125,7 +125,8 @@ DlgLibraryExport::DlgLibraryExport(
     pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
 
     setLayout(pLayout);
-    setWindowTitle(tr("Export Library to Engine Prime"));
+    //: "Engine DJ" must not be translated
+    setWindowTitle(tr("Export Library to Engine DJ"));
 
     show();
     raise();
@@ -197,14 +198,14 @@ void DlgLibraryExport::exportRequested() {
     // Work out what version was requested.
     // If there is an existing database, the version does not matter.
     int versionIndex = m_pVersionCombo->currentData().toInt();
-    e::engine_version exportVersion =
-            versionIndex == -1 ? e::latest_os : e::all_versions[versionIndex];
+    e::engine_schema exportSchemaVersion =
+            versionIndex == -1 ? e::latest_schema : e::supported_schemas[versionIndex];
 
     // Construct a request to export the library/crates.
     auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
     pRequest->engineLibraryDbDir.setPath(databaseDirectory);
     pRequest->musicFilesDir.setPath(musicDirectory);
-    pRequest->exportVersion = exportVersion;
+    pRequest->exportSchemaVersion = exportSchemaVersion;
     if (m_pCratesList->isEnabled()) {
         const auto selectedItems = m_pCratesList->selectedItems();
         for (auto* pItem : selectedItems) {
@@ -231,13 +232,13 @@ void DlgLibraryExport::checkExistingDatabase() {
             m_pVersionCombo->clear();
             m_pVersionCombo->setEnabled(true);
             for (int versionIndex = 0;
-                    versionIndex < static_cast<int>(e::all_versions.size());
+                    versionIndex < static_cast<int>(e::supported_schemas.size());
                     ++versionIndex) {
-                e::engine_version version = e::all_versions[versionIndex];
+                e::engine_schema schemaVersion = e::supported_schemas[versionIndex];
                 m_pVersionCombo->insertItem(0,
-                        QString::fromStdString(version.name),
+                        QString::fromStdString(to_application_version_string(schemaVersion)),
                         QVariant{versionIndex});
-                if (version == e::latest_os) {
+                if (schemaVersion == e::latest_schema) {
                     // Latest firmware version is the default selection.
                     m_pVersionCombo->setCurrentIndex(0);
                 }

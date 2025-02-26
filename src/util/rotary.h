@@ -11,7 +11,8 @@ class Rotary {
 
   public:
     Rotary(qsizetype filterLength)
-            : m_filterHistory(filterLength, 0.0) {
+            : m_filterHistory(filterLength, 0.0),
+              m_headIndex{0} {
         DEBUG_ASSERT(filterLength > 0);
     };
     // Low pass filtered rotary event

@@ -156,8 +156,7 @@ class EngineMixer : public QObject, public AudioSource {
         OrientationVolumeGainCalculator()
                 : m_dLeftGain(1.0),
                   m_dCenterGain(1.0),
-                  m_dRightGain(1.0),
-                  m_dTalkoverDuckingGain(1.0) {
+                  m_dRightGain(1.0) {
         }
 
         inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
@@ -168,24 +167,21 @@ class EngineMixer : public QObject, public AudioSource {
                     m_dLeftGain,
                     m_dCenterGain,
                     m_dRightGain);
-            return channelVolume * orientationGain * m_dTalkoverDuckingGain;
+            return channelVolume * orientationGain;
         }
 
         inline void setGains(CSAMPLE_GAIN leftGain,
                 CSAMPLE_GAIN centerGain,
-                CSAMPLE_GAIN rightGain,
-                CSAMPLE_GAIN talkoverDuckingGain) {
+                CSAMPLE_GAIN rightGain) {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
-            m_dTalkoverDuckingGain = talkoverDuckingGain;
         }
 
       private:
         CSAMPLE_GAIN m_dLeftGain;
         CSAMPLE_GAIN m_dCenterGain;
         CSAMPLE_GAIN m_dRightGain;
-        CSAMPLE_GAIN m_dTalkoverDuckingGain;
     };
 
     enum class MicMonitorMode {
@@ -331,6 +327,7 @@ class EngineMixer : public QObject, public AudioSource {
     CSAMPLE_GAIN m_boothGainOld;
     CSAMPLE_GAIN m_headphoneMainGainOld;
     CSAMPLE_GAIN m_headphoneGainOld;
+    CSAMPLE_GAIN m_duckingGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
     std::atomic<unsigned int> m_numMicsConfigured;

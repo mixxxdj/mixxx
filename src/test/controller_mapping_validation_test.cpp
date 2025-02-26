@@ -199,7 +199,7 @@ bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& m
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping("./res");
+    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
     controller.stopEngine();
     return result;
 }

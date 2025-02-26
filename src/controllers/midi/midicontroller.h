@@ -8,17 +8,18 @@
 #include "controllers/softtakeover.h"
 
 class MidiOutputHandler;
+class MidiController;
 
 class MidiInputHandleJSProxy final : public QObject {
     Q_OBJECT
   public:
     MidiInputHandleJSProxy(
-            const std::shared_ptr<LegacyMidiControllerMapping> mapping,
+            MidiController* pMidiController,
             const MidiInputMapping& inputMapping);
     Q_INVOKABLE bool disconnect();
 
   protected:
-    std::shared_ptr<LegacyMidiControllerMapping> m_mapping;
+    MidiController* m_pMidiController;
     MidiInputMapping m_inputMapping;
 };
 
@@ -53,6 +54,7 @@ class MidiController : public Controller {
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
+    bool removeInputMapping(uint16_t key, const MidiInputMapping& mapping);
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
@@ -70,7 +72,9 @@ class MidiController : public Controller {
         send(data);
     }
 
-    QJSValue makeInputHandler(int status, int midino, const QJSValue& scriptCode);
+    QJSValue makeInputHandler(unsigned char status,
+            unsigned char control,
+            const QJSValue& scriptCode);
 
   protected slots:
     virtual void receivedShortMessage(
@@ -109,7 +113,7 @@ class MidiController : public Controller {
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
 
@@ -140,8 +144,10 @@ class MidiControllerJSProxy : public ControllerJSProxy {
         m_pMidiController->sendSysexMsg(data, length);
     }
 
-    Q_INVOKABLE QJSValue makeInputHandler(int status, int midino, const QJSValue& scriptCode) {
-        return m_pMidiController->makeInputHandler(status, midino, scriptCode);
+    Q_INVOKABLE QJSValue makeInputHandler(unsigned char status,
+            unsigned char control,
+            const QJSValue& scriptCode) {
+        return m_pMidiController->makeInputHandler(status, control, scriptCode);
     }
 
   private:

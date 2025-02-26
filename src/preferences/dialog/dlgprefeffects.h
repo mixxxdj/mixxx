@@ -23,6 +23,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
   private slots:
     void effectsTableItemSelected(const QModelIndex& selected);
+    void slotHideUnhideEffect();
     void slotChainPresetSelectionChanged(const QItemSelection& selected);
     void slotImportPreset();
     void slotExportPreset();
@@ -35,11 +36,13 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
     void clearEffectInfo();
     void clearChainInfo();
-    void updateButtons(int selectedIndices);
+    void updateChainPresetButtons(int selectedIndices);
+    void updateHideUnhideButtons(const QModelIndex& selected = QModelIndex());
     void loadChainPresetLists();
     void saveChainPresetLists();
 
-    bool eventFilter(QObject* pChainList, QEvent* event) override;
+    /// Handles FocusIn and KeyPress events in chain preset lists
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
     QListView* m_pFocusedChainList;
     QListView* unfocusedChainList();
     QTableView* m_pFocusedEffectList;

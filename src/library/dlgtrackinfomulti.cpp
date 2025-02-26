@@ -684,9 +684,9 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refTrackInfo().setYear(year);
         }
         if (!key.isNull()) {
-            static_cast<void>(rec.updateGlobalKeyNormalizeText(
+            rec.updateGlobalKeyNormalizeText(
                     key,
-                    mixxx::track::io::key::USER));
+                    mixxx::track::io::key::USER);
         }
         if (!num.isNull()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num);
@@ -937,13 +937,13 @@ void DlgTrackInfoMulti::slotKeyTextChanged() {
 
     const QString newTextInput = txtKey->currentText().trimmed();
     QString newKeyText;
-    mixxx::track::io::key::ChromaticKey newKey =
-            KeyUtils::guessKeyFromText(newTextInput);
-    if (newKey != mixxx::track::io::key::INVALID) {
-        newKeyText = KeyUtils::keyToString(newKey);
-    } else if (newTextInput.isEmpty()) {
-        // Empty text is not a valid key but indicates we want to clear the key.
-        newKeyText = newTextInput;
+    // Empty text is not a valid key but indicates we want to clear the key.
+    if (!newTextInput.isEmpty()) {
+        mixxx::track::io::key::ChromaticKey newKey =
+                KeyUtils::guessKeyFromText(newTextInput);
+        if (newKey != mixxx::track::io::key::INVALID) {
+            newKeyText = KeyUtils::keyToString(newKey);
+        }
     }
 
     txtKey->blockSignals(true);

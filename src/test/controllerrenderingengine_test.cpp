@@ -19,12 +19,14 @@ class ControllerRenderingEngineTest : public MixxxTest {
     void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::addTestTime(10ms);
-        SETUP_LOG_CAPTURE();
     }
 
     QList<QImage::Format> supportedPixelFormat() const {
         return LegacyControllerMappingFileHandler::kSupportedPixelFormat.values();
     }
+
+  private:
+    LogCaptureGuard m_logCaptureGuard;
 };
 
 class MockRenderingEngine : public ControllerRenderingEngine {

@@ -219,8 +219,6 @@ void WaveformRendererTextured::createFrameBuffers() {
 }
 
 void WaveformRendererTextured::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
-
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -237,8 +235,7 @@ void WaveformRendererTextured::initializeGL() {
     }
 }
 
-void WaveformRendererTextured::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererTextured::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererTextured::onSetTrack() {
@@ -455,11 +452,19 @@ void WaveformRendererTextured::paintGL() {
 
         glBegin(GL_QUADS);
         {
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+            if (m_isSlipRenderer && m_waveformRenderer->isSlipActive()) {
+                glTexCoord2f(0.0, 0.5);
+                glVertex3f(firstVisualIndex, 0.0f, 0.0f);
 
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+                glTexCoord2f(1.0, 0.5);
+                glVertex3f(lastVisualIndex, 0.0f, 0.0f);
+            } else {
+                glTexCoord2f(0.0, 0.0);
+                glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+
+                glTexCoord2f(1.0, 0.0);
+                glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+            }
 
             glTexCoord2f(1.0, 1.0);
             glVertex3f(lastVisualIndex, 1.0f, 0.0f);

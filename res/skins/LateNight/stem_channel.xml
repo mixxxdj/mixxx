@@ -1,5 +1,5 @@
 <Template>
-  <SetVariable name="StemGroup">[Channel<Variable name="ChanNum"/>Stem<Variable name="StemNum"/>]</SetVariable>
+  <SetVariable name="StemGroup">[Channel<Variable name="ChanNum"/>_Stem<Variable name="StemNum"/>]</SetVariable>
 
 	<WidgetGroup>
 		<ObjectName>StemChannel_ControlContainer</ObjectName>

@@ -1,5 +1,7 @@
 #include "engine/channels/enginedeck.h"
 
+#include <QStringView>
+
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/controls/bpmcontrol.h"
@@ -12,17 +14,6 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/sample.h"
-
-#ifdef __STEM__
-namespace {
-QString getGroupForStem(const QString& deckGroup, int stemIdx) {
-    DEBUG_ASSERT(deckGroup.endsWith("]"));
-    return QStringLiteral("%1Stem%2]")
-            .arg(deckGroup.left(deckGroup.size() - 1),
-                    QString::number(stemIdx));
-}
-} // anonymous namespace
-#endif
 
 EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
@@ -77,14 +68,14 @@ EngineDeck::EngineDeck(
     m_stemMute.reserve(mixxx::kMaxSupportedStems);
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("volume"))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
         // The default value is ignored and override with the medium value by
         // ControlPotmeter. This is likely a bug but fixing might have a
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
         auto pMuteButton = std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("mute")));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
         pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
         m_stemMute.push_back(std::move(pMuteButton));
     }
@@ -363,3 +354,11 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
         emit noPassthroughInputConfigured();
     }
 }
+
+#ifdef __STEM__
+// static
+QString EngineDeck::getGroupForStem(QStringView deckGroup, int stemIdx) {
+    DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx < 4);
+    return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+}
+#endif

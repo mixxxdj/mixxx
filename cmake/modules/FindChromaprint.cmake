@@ -102,11 +102,11 @@ if(Chromaprint_FOUND)
           PROPERTY INTERFACE_COMPILE_DEFINITIONS CHROMAPRINT_NODLL
         )
       endif()
-      find_package(FFTW REQUIRED)
+      find_package(FFTW3 REQUIRED)
       set_property(
         TARGET Chromaprint::Chromaprint
         APPEND
-        PROPERTY INTERFACE_LINK_LIBRARIES FFTW::FFTW
+        PROPERTY INTERFACE_LINK_LIBRARIES FFTW3::fftw3
       )
     endif()
   endif()

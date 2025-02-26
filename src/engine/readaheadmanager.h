@@ -23,8 +23,7 @@ class RateControl;
 class ReadAheadManager {
   public:
     ReadAheadManager(); // Only for testing: ReadAheadManagerMock
-    ReadAheadManager(CachingReader* reader,
-                              LoopingControl* pLoopingControl);
+    ReadAheadManager(CachingReader* pReader, LoopingControl* pLoopingControl);
     virtual ~ReadAheadManager();
 
     /// Call this method to fill buffer with requested_samples out of the
@@ -59,8 +58,7 @@ class ReadAheadManager {
     /// Return the position in sample
     virtual double getFilePlaypositionFromLog(
             double currentFilePlayposition,
-            double numConsumedSamples,
-            mixxx::audio::ChannelCount channelCount);
+            double numConsumedSamples);
     /// Return the position in frame
     mixxx::audio::FramePos getFilePlaypositionFromLog(
             mixxx::audio::FramePos currentPosition,
