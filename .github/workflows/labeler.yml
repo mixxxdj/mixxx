@@ -9,7 +9,7 @@
 
 name: "Pull Request Labeler"
 on:
-  - pull_request_target
+  - pull_request_target # zizmor: ignore[dangerous-triggers]
 
 permissions:
   contents: read

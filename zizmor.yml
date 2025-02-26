@@ -1,6 +1,0 @@
-rules:
-  dangerous-triggers:
-    ignore:
-      # We need it for the PR labeler. In this case it's okay and actually
-      # recommended by GitHub.
-      - labeler.yml:11:1
