@@ -564,6 +564,9 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         const bool temporary = true;
         auto cacheResolver = GlobalTrackCacheResolver(trackFileAccess, temporary);
         TrackPointer pTrack = cacheResolver.getTrack();
+        // In the unlikely case that the file has disappeart since the check above
+        // pTrack is null and the next call will log appropriate warnings and
+        // returns importTrackMetadataAndCoverImageUnavailable();
         return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
                 pTrackMetadata,
                 pCoverImage,
