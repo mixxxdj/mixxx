@@ -6,6 +6,8 @@ on:
       - "2.5"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   sync-branches:
     strategy:
@@ -16,15 +18,21 @@ jobs:
           - from_branch: "2.5"
             to_branch: "main"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     env:
       SYNC_COMMITTER: github-actions[bot]
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4.1.7
+        with:
+          persist-credentials: true
 
-      - name: "Install merge driver"
+      - name: "Configure Git"
         run: |
           git config --global merge.ours.driver true
+          git config --global pull.rebase false
 
       - name: "Check if merge branch already exists"
         id: check_sync
