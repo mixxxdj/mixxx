@@ -1,4 +1,6 @@
 "use strict";
+
+
 var SMK25II;
 (function (SMK25II) {
     class Deck extends components.Deck {
@@ -84,14 +86,11 @@ var SMK25II;
             });
         }
     }
-    SMK25II.Deck = Deck;
 
     class Controller extends components.ComponentContainer {
-        constructor(id, debugging) {
+        constructor() {
             super({});
-            this.id = id;
-            this.debugging = debugging;
-            this.activeDeck = new SMK25II.Deck();
+            this.activeDeck = new Deck();
             this.gainKnob = new components.Encoder({
                 group: "[Master]",
                 midi: [0xB0, 0x25],
@@ -138,16 +137,18 @@ var SMK25II;
             }
         }
     }
-    SMK25II.Controller = Controller;
 
-    function init(id, debugging) {
-        SMK25II.controller = new SMK25II.Controller(id, debugging);
-    }
-    SMK25II.init = init;
-    function shutdown() {
+    /**
+     *
+     * @param _id The controller ID
+     * @param _debugging Whether we've started in debugging mode.
+     */
+    SMK25II.init = function(_id, _debugging) {
+        SMK25II.controller = new Controller();
+    };
+    SMK25II.shutdown = function() {
         SMK25II.controller.shutdown();
-    }
-    SMK25II.shutdown = shutdown;
+    };
     const MMCHeader = [0xF0, 0x35, 0x59];
     function decodeButton(data) {
         // Hotcues
@@ -256,11 +257,9 @@ var SMK25II;
         }
         if (data[3] == 0x10) {
             decodeButton(data);
-        }
-        else if (data[3] >= 0x60 && data[3] <= 0x67) {
+        } else if (data[3] >= 0x60 && data[3] <= 0x67) {
             decodePots(data);
-        }
-        else {
+        } else {
             console.log(`unrecognized sysex byte: ${data[3]}`);
         }
     }
