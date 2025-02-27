@@ -139,37 +139,35 @@ var SMCMixer;
         }
     }
     class EqRack {
-        constructor(deck) {
-            // Normalize the deck number to be zero indexed (the third deck is
-            // the 0th control).
-            const normDeck = deck % 2;
+        constructor(index) {
+            const channel = mapIndexToChannel(index);
             this.knob = new Encoder({
-                group: `[Channel${deck}]`,
-                midi: [0xB0, 0x10 + normDeck],
+                group: `[Channel${channel}]`,
+                midi: [0xB0, 0x10 + index],
                 key: "pregain",
             });
             this.highKillButton = new LongPressButton(this.knob, {
                 type: components.Button.prototype.types.powerWindow,
-                group: `[EqualizerRack1_[Channel${deck}]_Effect1]`,
-                midi: [0x90, 0x10 + normDeck],
+                group: `[EqualizerRack1_[Channel${channel}]_Effect1]`,
+                midi: [0x90, 0x10 + index],
                 key: "button_parameter3",
             });
             this.midKillButton = new LongPressButton(this.knob, {
                 type: components.Button.prototype.types.toggle,
-                group: `[EqualizerRack1_[Channel${deck}]_Effect1]`,
-                midi: [0x90, 0x08 + normDeck],
+                group: `[EqualizerRack1_[Channel${channel}]_Effect1]`,
+                midi: [0x90, 0x08 + index],
                 key: "button_parameter2",
             });
             this.lowKillButton = new LongPressButton(this.knob, {
                 type: components.Button.prototype.types.toggle,
-                group: `[EqualizerRack1_[Channel${deck}]_Effect1]`,
-                midi: [0x90, 0x00 + normDeck],
+                group: `[EqualizerRack1_[Channel${channel}]_Effect1]`,
+                midi: [0x90, 0x00 + index],
                 key: "button_parameter1",
             });
             this.quickEffectButton = new LongPressButton(this.knob, {
                 type: components.Button.prototype.types.toggle,
-                group: `[QuickEffectRack1_[Channel${deck}]]`,
-                midi: [0x90, 0x18 + normDeck],
+                group: `[QuickEffectRack1_[Channel${channel}]]`,
+                midi: [0x90, 0x18 + index],
                 key: "enabled",
             });
         }
@@ -188,7 +186,7 @@ var SMCMixer;
             for (let i = 0; i < 4; i++) {
                 const channel = mapIndexToChannel(i);
                 const group = `[Channel${channel}]`;
-                this.eqButtons[i] = new EqRack(channel);
+                this.eqButtons[i] = new EqRack(i);
                 this.slipButtons[i] = new components.Button({
                     type: components.Button.prototype.types.toggle,
                     group: group,
