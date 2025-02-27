@@ -1,6 +1,6 @@
 "use strict";
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-var
 var SMCMixer;
 (function(SMCMixer) {
     const mapIndexToChannel = function(index) {
