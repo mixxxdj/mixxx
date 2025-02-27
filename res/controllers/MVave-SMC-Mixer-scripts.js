@@ -1,6 +1,6 @@
 "use strict";
 var SMCMixer;
-(function (SMCMixer) {
+(function(SMCMixer) {
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
@@ -35,8 +35,7 @@ var SMCMixer;
             this.input = function(_channel, _control, value, _status, _group) {
                 if (value === 0x41) {
                     this.inSetParameter(this.inGetParameter() - 0.01);
-                }
-                else if (value === 0x01) {
+                } else if (value === 0x01) {
                     this.inSetParameter(this.inGetParameter() + 0.01);
                 }
             };
@@ -56,8 +55,7 @@ var SMCMixer;
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
                     }, true);
-                }
-                else {
+                } else {
                     this.inToggle();
                     if (!this.isLongPressed && this.triggerOnRelease) {
                         this.trigger();
@@ -76,27 +74,23 @@ var SMCMixer;
                         this.knob.key = this.origKey;
                         this.knob.inKey = this.origInKey;
                         this.knob.outKey = this.origOutKey;
-                    }
-                    else {
+                    } else {
                         this.knob.group = this.group;
                         let newKey = "";
                         if (this.key === "enabled") {
                             newKey = "super1";
-                        }
-                        else {
+                        } else {
                             newKey = this.key.replace("button_", "");
                         }
                         this.knob.key = newKey;
                         this.knob.inKey = newKey;
                         this.knob.outKey = newKey;
                     }
-                }
-                else {
+                } else {
                     const val = this.inGetParameter();
                     if (val > 0) {
                         this.inSetValue(0);
-                    }
-                    else {
+                    } else {
                         this.inSetValue(0x1F);
                     }
                 }
@@ -385,8 +379,7 @@ var SMCMixer;
                 inToggle: function() {
                     if (this.isLongPressed) {
                         SMCMixer.controller.activeDeck.setCurrentDeck("[Channel3]");
-                    }
-                    else {
+                    } else {
                         SMCMixer.controller.activeDeck.setCurrentDeck("[Channel1]");
                     }
                 },
@@ -398,8 +391,7 @@ var SMCMixer;
                 inToggle: function() {
                     if (this.isLongPressed) {
                         SMCMixer.controller.activeDeck.setCurrentDeck("[Channel4]");
-                    }
-                    else {
+                    } else {
                         SMCMixer.controller.activeDeck.setCurrentDeck("[Channel2]");
                     }
                 },
