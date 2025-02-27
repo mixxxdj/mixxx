@@ -1,8 +1,8 @@
 "use strict";
 
-
+// eslint-disable-next-line no-var
 var SMK25II;
-(function (SMK25II) {
+(function(SMK25II) {
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
@@ -150,6 +150,10 @@ var SMK25II;
         SMK25II.controller.shutdown();
     };
     const MMCHeader = [0xF0, 0x35, 0x59];
+    /**
+     *
+     * @param data
+     */
     function decodeButton(data) {
         // Hotcues
         if (data[4] !== undefined && data[4] >= 0x00 && data[4] <= 0x07) {
@@ -158,88 +162,97 @@ var SMK25II;
         }
         // Other media buttons
         switch (data[4]) {
-            case 0x5D: {
-                SMK25II.controller.activeDeck.cueButton.inToggle();
-                break;
+        case 0x5D: {
+            SMK25II.controller.activeDeck.cueButton.inToggle();
+            break;
+        }
+        case 0x5E: {
+            if (data[5] === 0x00) {
+                SMK25II.controller.activeDeck.playButton.inToggle();
             }
-            case 0x5E: {
-                if (data[5] === 0x00) {
-                    SMK25II.controller.activeDeck.playButton.inToggle();
-                }
-                break;
-            }
-            case 0x5B: {
-                SMK25II.controller.activeDeck.backButton.inToggle();
-                break;
-            }
-            case 0x5C: {
-                SMK25II.controller.activeDeck.forwardButton.inToggle();
-                break;
-            }
-            case 0x5F: {
-                SMK25II.controller.recordButton.inToggle();
-                break;
-            }
-            case 0x2E: {
-                SMK25II.controller.deckLeftButton.inToggle();
-                break;
-            }
-            case 0x2F: {
-                SMK25II.controller.deckRightButton.inToggle();
-                break;
-            }
-            case 0x4C: {
-                SMK25II.controller.activeDeck.loopButton.inToggle();
-                break;
-            }
-            default:
-                console.log(`unrecognized MMC command: ${data[4]}`);
+            break;
+        }
+        case 0x5B: {
+            SMK25II.controller.activeDeck.backButton.inToggle();
+            break;
+        }
+        case 0x5C: {
+            SMK25II.controller.activeDeck.forwardButton.inToggle();
+            break;
+        }
+        case 0x5F: {
+            SMK25II.controller.recordButton.inToggle();
+            break;
+        }
+        case 0x2E: {
+            SMK25II.controller.deckLeftButton.inToggle();
+            break;
+        }
+        case 0x2F: {
+            SMK25II.controller.deckRightButton.inToggle();
+            break;
+        }
+        case 0x4C: {
+            SMK25II.controller.activeDeck.loopButton.inToggle();
+            break;
+        }
+        default:
+            console.log(`unrecognized MMC command: ${data[4]}`);
         }
     }
+    /**
+     *
+     * @param data
+     */
     function decodePots(data) {
         switch (data[3]) {
-            case 0x60: {
-                const knob = SMK25II.controller.activeDeck.gainKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x61: {
-                const knob = SMK25II.controller.activeDeck.highKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x62: {
-                const knob = SMK25II.controller.activeDeck.midKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x63: {
-                const knob = SMK25II.controller.activeDeck.lowKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x64: {
-                const knob = SMK25II.controller.activeDeck.effectKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x65: {
-                const knob = SMK25II.controller.xfadeKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x66: {
-                const knob = SMK25II.controller.headGainKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
-            case 0x67: {
-                const knob = SMK25II.controller.gainKnob;
-                knob.inSetParameter(knob.inValueScale(data[5]));
-                break;
-            }
+        case 0x60: {
+            const knob = SMK25II.controller.activeDeck.gainKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x61: {
+            const knob = SMK25II.controller.activeDeck.highKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x62: {
+            const knob = SMK25II.controller.activeDeck.midKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x63: {
+            const knob = SMK25II.controller.activeDeck.lowKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x64: {
+            const knob = SMK25II.controller.activeDeck.effectKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x65: {
+            const knob = SMK25II.controller.xfadeKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x66: {
+            const knob = SMK25II.controller.headGainKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
+        case 0x67: {
+            const knob = SMK25II.controller.gainKnob;
+            knob.inSetParameter(knob.inValueScale(data[5]));
+            break;
+        }
         }
     }
+    /**
+     *
+     * @param data
+     * @param length
+     */
     function incomingData(data, length) {
         if (length < 6) {
             console.log(`expected sysex packet of length 6, got ${length}`);
