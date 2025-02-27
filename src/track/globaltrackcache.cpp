@@ -203,6 +203,7 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
     DEBUG_ASSERT(GlobalTrackCacheLookupResult::None != m_lookupResult);
     DEBUG_ASSERT(m_strongPtr);
     DEBUG_ASSERT(trackId.isValid());
+    m_pInstance->m_mutex.lock();
     if (m_trackRef.getId().isValid()) {
         // Ignore initializing the same id twice
         DEBUG_ASSERT(m_trackRef.getId() == trackId);
@@ -774,7 +775,6 @@ TrackRef GlobalTrackCache::initTrackId(
     EvictAndSaveFunctor* pDel = std::get_deleter<EvictAndSaveFunctor>(strongPtr);
     DEBUG_ASSERT(pDel);
 
-    m_mutex.lock();
     DEBUG_ASSERT(strongPtr == m_incompleteTrack);
     m_incompleteTrack = nullptr;
     m_isTrackCompleted.wakeAll();
