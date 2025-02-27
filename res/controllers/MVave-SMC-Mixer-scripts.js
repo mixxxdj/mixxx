@@ -3,6 +3,15 @@
 // eslint-disable-next-line no-unused-vars
 var SMCMixer;
 (function(SMCMixer) {
+    const mapIndexToChannel = function(index) {
+        switch (Math.abs(index) % 4) {
+        case 0: return 3;
+        case 1: return 1;
+        case 2: return 2;
+        case 3: return 4;
+        }
+    };
+
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
@@ -34,7 +43,7 @@ var SMCMixer;
         constructor(params) {
             super(params);
         }
-        function inValueScale(value) {
+        inValueScale(value) {
             return this.inGetParameter() - (value - 0x40);
         }
     }
@@ -102,16 +111,11 @@ var SMCMixer;
     class Pot extends components.Pot {
         constructor(params) {
             super(params);
+            // If the hardware control does not match the software control by
+            // anything less than the tolerance window, we consider them the
+            // same. This way we're not constantly blinking the soft takeover
+            // indicator because we didn't get the control matched up exactly.
             this.toleranceWindow = 0.001;
-            // TODO: why do I have to override this?
-            this.connect = function() {
-                if (undefined !== this.group
-                    && undefined !== this.outKey
-                    && undefined !== this.output
-                    && typeof this.output === "function") {
-                    this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
-                }
-            };
             this.input = function(_channel, _control, value, _status, _group) {
                 const receivingFirstValue = this.hardwarePos === undefined;
                 this.hardwarePos = this.inValueScale(value);
@@ -136,19 +140,9 @@ var SMCMixer;
     }
     class EqRack {
         constructor(deck) {
-            // Normalize the deck number to be zero indexed (the third deck is the 0th
-            // control).
-            let normDeck = deck;
-            switch (deck) {
-            case 3: {
-                normDeck = 0;
-                break;
-            }
-            case 4: {
-                normDeck = 3;
-                break;
-            }
-            }
+            // Normalize the deck number to be zero indexed (the third deck is
+            // the 0th control).
+            const normDeck = deck % 2;
             this.knob = new Encoder({
                 group: `[Channel${deck}]`,
                 midi: [0xB0, 0x10 + normDeck],
@@ -184,114 +178,55 @@ var SMCMixer;
         constructor() {
             super({});
             this.activeDeck = new Deck();
+
             this.eqButtons = new Array(4);
-            this.eqButtons[0] = new EqRack(3);
-            this.eqButtons[1] = new EqRack(1);
-            this.eqButtons[2] = new EqRack(2);
-            this.eqButtons[3] = new EqRack(4);
-            // Slip Mode
             this.slipButtons = new Array(4);
-            this.slipButtons[0] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel3]",
-                midi: [0x90, 0x14],
-                key: "slip_enabled",
-            });
-            this.slipButtons[1] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel1]",
-                midi: [0x90, 0x15],
-                key: "slip_enabled",
-            });
-            this.slipButtons[2] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel2]",
-                midi: [0x90, 0x16],
-                key: "slip_enabled",
-            });
-            this.slipButtons[3] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel4]",
-                midi: [0x90, 0x17],
-                key: "slip_enabled",
-            });
-            // Quantize
             this.quantizeButtons = new Array(4);
-            this.quantizeButtons[0] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel3]",
-                midi: [0x90, 0x0C],
-                key: "quantize",
-            });
-            this.quantizeButtons[1] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel1]",
-                midi: [0x90, 0x0D],
-                key: "quantize",
-            });
-            this.quantizeButtons[2] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel2]",
-                midi: [0x90, 0x0E],
-                key: "quantize",
-            });
-            this.quantizeButtons[3] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel4]",
-                midi: [0x90, 0x0F],
-                key: "quantize",
-            });
-            // Key Lock
             this.keylockButtons = new Array(4);
-            this.keylockButtons[0] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel3]",
-                midi: [0x90, 0x04],
-                key: "keylock",
-            });
-            this.keylockButtons[1] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel1]",
-                midi: [0x90, 0x05],
-                key: "keylock",
-            });
-            this.keylockButtons[2] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel2]",
-                midi: [0x90, 0x06],
-                key: "keylock",
-            });
-            this.keylockButtons[3] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel4]",
-                midi: [0x90, 0x07],
-                key: "keylock",
-            });
             this.pflButtons = new Array(4);
-            this.pflButtons[0] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel3]",
-                midi: [0x90, 0x1C],
-                key: "pfl",
-            });
-            this.pflButtons[1] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel1]",
-                midi: [0x90, 0x1D],
-                key: "pfl",
-            });
-            this.pflButtons[2] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel2]",
-                midi: [0x90, 0x1E],
-                key: "pfl",
-            });
-            this.pflButtons[3] = new components.Button({
-                type: components.Button.prototype.types.toggle,
-                group: "[Channel4]",
-                midi: [0x90, 0x1F],
-                key: "pfl",
-            });
+            this.faders = new Array(8);
+            for (let i = 0; i < 4; i++) {
+                const channel = mapIndexToChannel(i);
+                const group = `[Channel${channel}]`;
+                this.eqButtons[i] = new EqRack(channel);
+                this.slipButtons[i] = new components.Button({
+                    type: components.Button.prototype.types.toggle,
+                    group: group,
+                    midi: [0x90, i+0x14],
+                    key: "slip_enabled",
+                });
+                this.quantizeButtons[i] = new components.Button({
+                    type: components.Button.prototype.types.toggle,
+                    group: group,
+                    midi: [0x90, 0x0C+i],
+                    key: "quantize",
+                });
+                this.keylockButtons[i] = new components.Button({
+                    type: components.Button.prototype.types.toggle,
+                    group: group,
+                    midi: [0x90, 0x04+i],
+                    key: "keylock",
+                });
+                this.pflButtons[i] = new components.Button({
+                    type: components.Button.prototype.types.toggle,
+                    group: group,
+                    midi: [0x90, 0x1C+i],
+                    key: "pfl",
+                });
+                this.faders[i] = new Pot({
+                    group: group,
+                    midi: [0xE0+i],
+                    key: "volume",
+                    softTakeover: true,
+                });
+                this.faders[i+4] = new Pot({
+                    group: group,
+                    midi: [0xE4+i],
+                    key: "rate",
+                    softTakeover: true,
+                });
+            }
+
             this.gainKnob = new Encoder({
                 group: "[Master]",
                 midi: [0xB0, 0x14],
@@ -312,6 +247,7 @@ var SMCMixer;
                 midi: [0xB0, 0x17],
                 key: "headMix",
             });
+
             // Navigation buttons
             this.downButton = new components.Button({
                 group: "[Library]",
@@ -323,10 +259,14 @@ var SMCMixer;
                 midi: [0x90, 0x60],
                 key: "MoveUp",
             });
+
+            // For the left and right arrow buttons the controller appears to
+            // handle the LED itself, so we use inKey so as not to be sending
+            // output that will never be used.
             this.leftButton = new components.Button({
                 group: "[Library]",
                 midi: [0x90, 0x62],
-                key: "focused_widget",
+                inKey: "focused_widget",
                 input: function(_channel, _control, value, _status, _group) {
                     const selected = this.inGetParameter();
                     switch (selected) {
@@ -346,7 +286,7 @@ var SMCMixer;
             this.rightButton = new components.Button({
                 group: "[Library]",
                 midi: [0x90, 0x63],
-                key: "focused_widget",
+                inKey: "focused_widget",
                 input: function(_channel, _control, value, _status, _group) {
                     const selected = this.inGetParameter();
                     switch (selected) {
@@ -393,73 +333,13 @@ var SMCMixer;
                     }
                 },
             });
-            // Faders
-            this.faders = new Array(8);
-            this.faders[0] = new Pot({
-                group: "[Channel3]",
-                midi: [0xE0],
-                key: "volume",
-                softTakeover: true,
-            });
-            this.faders[1] = new Pot({
-                group: "[Channel1]",
-                midi: [0xE1],
-                key: "volume",
-                softTakeover: true,
-            });
-            this.faders[2] = new Pot({
-                group: "[Channel2]",
-                midi: [0xE2],
-                key: "volume",
-                softTakeover: true,
-            });
-            this.faders[3] = new Pot({
-                group: "[Channel4]",
-                midi: [0xE3],
-                key: "volume",
-                softTakeover: true,
-            });
-            this.faders[4] = new Pot({
-                group: "[Channel3]",
-                midi: [0xE4],
-                key: "rate",
-                softTakeover: true,
-            });
-            this.faders[5] = new Pot({
-                group: "[Channel1]",
-                midi: [0xE5],
-                key: "rate",
-                softTakeover: true,
-            });
-            this.faders[6] = new Pot({
-                group: "[Channel2]",
-                midi: [0xE6],
-                key: "rate",
-                softTakeover: true,
-            });
-            this.faders[7] = new Pot({
-                group: "[Channel4]",
-                midi: [0xE7],
-                key: "rate",
-                softTakeover: true,
-            });
         }
     }
 
-    /**
-     *
-     * @param _id
-     * @param _debugging
-     */
-    function init(_id, _debugging) {
+    SMCMixer.init = function() {
         SMCMixer.controller = new Controller();
     }
-    SMCMixer.init = init;
-    /**
-     *
-     */
-    function shutdown() {
+    SMCMixer.shutdown = function() {
         SMCMixer.controller.shutdown();
     }
-    SMCMixer.shutdown = shutdown;
 })(SMCMixer || (SMCMixer = {}));
