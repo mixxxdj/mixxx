@@ -65,8 +65,8 @@ void DlgTrackInfo::init() {
     // this is opened by double-clicking a WTrackProperty label.
     // Associate with property strings taken from library/dao/trackdao.h
     m_propertyWidgets.insert("artist", txtArtist);
-    m_propertyWidgets.insert("title", txtTrackName);
-    m_propertyWidgets.insert("titleInfo", txtTrackName);
+    m_propertyWidgets.insert("title", txtTitle);
+    m_propertyWidgets.insert("titleInfo", txtTitle);
     m_propertyWidgets.insert("album", txtAlbum);
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
@@ -173,13 +173,13 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotBpmTap);
 
     // Metadata fields
-    connect(txtTrackName,
+    connect(txtTitle,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                txtTrackName->setText(txtTrackName->text().trimmed());
+                txtTitle->setText(txtTitle->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTitle(
-                        txtTrackName->text());
+                        txtTitle->text());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
@@ -399,7 +399,7 @@ void DlgTrackInfo::replaceTrackRecord(
 
 void DlgTrackInfo::updateTrackMetadataFields() {
     // Editable fields
-    txtTrackName->setText(
+    txtTitle->setText(
             m_trackRecord.getMetadata().getTrackInfo().getTitle());
     txtArtist->setText(
             m_trackRecord.getMetadata().getTrackInfo().getArtist());
@@ -522,6 +522,7 @@ void DlgTrackInfo::focusField(const QString& property) {
     auto it = m_propertyWidgets.constFind(property);
     if (it != m_propertyWidgets.constEnd()) {
         if (property == kBpmPropertyName) {
+            // If we shall focus the BPM spinbox, switch to BPM tab
             tabWidget->setCurrentIndex(tabWidget->indexOf(tabBPM));
         }
         it.value()->setFocus();
