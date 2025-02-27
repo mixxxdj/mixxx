@@ -1,4 +1,6 @@
 "use strict";
+
+// eslint-disable-next-line no-unused-vars
 var SMCMixer;
 (function(SMCMixer) {
     class Deck extends components.Deck {
@@ -143,14 +145,14 @@ var SMCMixer;
             // control).
             let normDeck = deck;
             switch (deck) {
-                case 3: {
-                    normDeck = 0;
-                    break;
-                }
-                case 4: {
-                    normDeck = 3;
-                    break;
-                }
+            case 3: {
+                normDeck = 0;
+                break;
+            }
+            case 4: {
+                normDeck = 3;
+                break;
+            }
             }
             this.knob = new Encoder({
                 group: `[Channel${deck}]`,
@@ -333,16 +335,16 @@ var SMCMixer;
                 input: function(_channel, _control, value, _status, _group) {
                     const selected = this.inGetParameter();
                     switch (selected) {
-                        case 2: {
-                            // Tree View
-                            engine.setParameter(this.group, "GoToItem", value);
-                            break;
-                        }
-                        case 3: {
-                            // Tracks, goto Tree View
-                            this.inSetParameter(2);
-                            break;
-                        }
+                    case 2: {
+                        // Tree View
+                        engine.setParameter(this.group, "GoToItem", value);
+                        break;
+                    }
+                    case 3: {
+                        // Tracks, goto Tree View
+                        this.inSetParameter(2);
+                        break;
+                    }
                     }
                 },
             });
@@ -353,16 +355,16 @@ var SMCMixer;
                 input: function(_channel, _control, value, _status, _group) {
                     const selected = this.inGetParameter();
                     switch (selected) {
-                        case 2: {
-                            // Tree View, goto Library
-                            this.inSetParameter(3);
-                            break;
-                        }
-                        case 3: {
-                            // Tracks
-                            engine.setParameter(this.group, "GoToItem", value);
-                            break;
-                        }
+                    case 2: {
+                        // Tree View, goto Library
+                        this.inSetParameter(3);
+                        break;
+                    }
+                    case 3: {
+                        // Tracks
+                        engine.setParameter(this.group, "GoToItem", value);
+                        break;
+                    }
                     }
                 },
             });
@@ -450,10 +452,18 @@ var SMCMixer;
     }
     SMCMixer.Controller = Controller;
 
+    /**
+     *
+     * @param _id
+     * @param _debugging
+     */
     function init(_id, _debugging) {
         SMCMixer.controller = new SMCMixer.Controller();
     }
     SMCMixer.init = init;
+    /**
+     *
+     */
     function shutdown() {
         SMCMixer.controller.shutdown();
     }
