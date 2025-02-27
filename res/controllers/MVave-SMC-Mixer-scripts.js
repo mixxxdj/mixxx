@@ -126,33 +126,27 @@ var SMCMixer;
             this.knob = new Encoder({
                 group: `[Channel${channel}]`,
                 midi: [0xB0, 0x10 + index],
-                key: "pregain",
+                inKey: "pregain",
             });
 
             const btnInToggle = () => {
                 const knob = this.knob;
                 const origGroup = this.knob.group;
-                const origKey = this.knob.key;
                 const origInKey = this.knob.inKey;
-                const origOutKey = this.knob.outKey;
                 return function() {
                     if (this.isLongPressed) {
-                        if (knob.key === this.key.replace("button_", "") || (this.key === "enabled" && this.knob.key === "super1")) {
+                        if (knob.inKey === this.inKey.replace("button_", "") || (this.inKey === "enabled" && this.knob.inKey === "super1")) {
                             knob.group = origGroup;
-                            knob.key = origKey;
                             knob.inKey = origInKey;
-                            knob.outKey = origOutKey;
                         } else {
                             knob.group = this.group;
                             let newKey = "";
                             if (this.key === "enabled") {
                                 newKey = "super1";
                             } else {
-                                newKey = this.key.replace("button_", "");
+                                newKey = this.inKey.replace("button_", "");
                             }
-                            knob.key = newKey;
                             knob.inKey = newKey;
-                            knob.outKey = newKey;
                         }
                     } else {
                         const val = this.inGetParameter();
