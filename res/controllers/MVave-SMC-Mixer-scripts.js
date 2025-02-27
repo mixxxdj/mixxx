@@ -2,10 +2,6 @@
 var SMCMixer;
 (function (SMCMixer) {
     class Deck extends components.Deck {
-        currentDeckNum() {
-            const deckStr = script.channelRegEx.exec(this.currentDeck)[1];
-            return parseInt(deckStr);
-        }
         constructor() {
             super([1, 2, 3, 4]);
             // Transport buttons
