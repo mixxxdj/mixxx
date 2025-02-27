@@ -29,7 +29,6 @@ var SMCMixer;
             });
         }
     }
-    SMCMixer.Deck = Deck;
 
     class Encoder extends components.Encoder {
         constructor(params) {
@@ -188,7 +187,7 @@ var SMCMixer;
     class Controller extends components.ComponentContainer {
         constructor() {
             super({});
-            this.activeDeck = new SMCMixer.Deck();
+            this.activeDeck = new Deck();
             this.eqButtons = new Array(4);
             this.eqButtons[0] = new EqRack(3);
             this.eqButtons[1] = new EqRack(1);
@@ -450,7 +449,6 @@ var SMCMixer;
             });
         }
     }
-    SMCMixer.Controller = Controller;
 
     /**
      *
@@ -458,7 +456,7 @@ var SMCMixer;
      * @param _debugging
      */
     function init(_id, _debugging) {
-        SMCMixer.controller = new SMCMixer.Controller();
+        SMCMixer.controller = new Controller();
     }
     SMCMixer.init = init;
     /**
