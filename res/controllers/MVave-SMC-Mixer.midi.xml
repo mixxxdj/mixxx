@@ -6,6 +6,10 @@
     <description>MIDI mapping for the M-Vave SMC-Mixer.</description>
     <forums>https://mixxx.discourse.group/t/m-wave-sinco-smc-mixer-radio-broadcast-mapping/30366</forums>
     <devices>
+      <!--
+        This vendor and product ID is shared between multiple controllers and is
+        not unique to this mixer.
+      -->
       <product protocol="midi" vendor_id="0x4353" product_id="0x4b4d" />
     </devices>
   </info>
