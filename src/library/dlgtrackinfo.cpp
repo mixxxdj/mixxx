@@ -382,7 +382,7 @@ void DlgTrackInfo::replaceTrackRecord(
     const auto coverInfo = CoverInfo(
             m_trackRecord.getCoverInfo(),
             trackLocation);
-    m_pWCoverArtLabel->setCoverArt(coverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, QPixmap());
     // Executed concurrently
     CoverArtCache::requestCover(this, coverInfo);
 
@@ -508,6 +508,9 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
         return;
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
@@ -537,7 +540,7 @@ void DlgTrackInfo::slotCoverFound(
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
-        m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 
@@ -862,4 +865,33 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
     m_pDlgTagFetcher->show();
+}
+
+void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
+    QDialog::resizeEvent(pEvent);
+
+    if (!isVisible()) {
+        // Likely one of the resize events before show().
+        // Widgets don't have their final size, yet, so it
+        // makes no sense to resize the cover label.
+        return;
+    }
+
+    // Set a maximum size on the cover label so it can use the available space
+    // but doesn't force-expand the dialog.
+    // The cover label spans across three tag rows and the two rightmost columns.
+    // Unfortunately we can't read row/column sizes directly, so we use the widgets.
+    int contHeight = txtTitle->height() + txtArtist->height() + txtAlbum->height();
+    int vSpacing = tags_layout->verticalSpacing();
+    int totalHeight = vSpacing * 2 + contHeight;
+
+    int contWidth = lblYear->width() + txtYear->width();
+    int hSpacing = tags_layout->horizontalSpacing();
+    int totalWidth = contWidth + hSpacing;
+
+    m_pWCoverArtLabel->setMaxSize(QSize(totalWidth, totalHeight));
+
+    // Also clamp height of the cover's parent widget. Keeping its height minimal
+    // can't be accomplished with QSizePolicies alone unfortunately.
+    coverWidget->setFixedHeight(totalHeight);
 }

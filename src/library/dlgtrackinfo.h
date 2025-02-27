@@ -45,6 +45,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void next();
     void previous();
 
+  protected:
+    // used to set the maximum size of the cover label
+    void resizeEvent(QResizeEvent* pEvent) override;
+
   private slots:
     void slotNextButton();
     void slotPrevButton();
