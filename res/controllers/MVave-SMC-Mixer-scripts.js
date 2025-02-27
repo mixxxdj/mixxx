@@ -336,8 +336,8 @@ var SMCMixer;
 
     SMCMixer.init = function() {
         SMCMixer.controller = new Controller();
-    }
+    };
     SMCMixer.shutdown = function() {
         SMCMixer.controller.shutdown();
-    }
+    };
 })(SMCMixer || (SMCMixer = {}));
