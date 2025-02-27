@@ -44,25 +44,21 @@ var SMCMixer;
             super(params);
         }
         inValueScale(value) {
-					  if (value === 0x41) {
+            if (value === 0x41) {
                 return this.inGetParameter()-0.01;
             } else {
                 return this.inGetParameter()+0.01;
             }
         }
     }
-    // LongPressButton is like a normal button of type powerWindow, except that it
-    // doesn't trigger the short press and the long press. Instead it triggers on
-    // release and leaves it to the user of the class to check if this was a long
-    // press or a short press.
+
+    // LongPressButton is like a normal button of type powerWindow, except that
+    // it doesn't trigger the short press and the long press.
+    // Instead it triggers on release and leaves it to the user of the class to
+    // check if this was a long press or a short press.
     class LongPressButton extends components.Button {
-        constructor(knob, params) {
+        constructor(params) {
             super(params);
-            this.knob = knob;
-            this.origGroup = knob.group;
-            this.origKey = knob.key;
-            this.origInKey = knob.inKey;
-            this.origOutKey = knob.outKey;
         }
 
         input(channel, control, value, status, _group) {
@@ -84,44 +80,15 @@ var SMCMixer;
                 this.isLongPressed = false;
             }
         }
-
-        inToggle() {
-            if (this.isLongPressed) {
-                if (this.knob.key === this.key.replace("button_", "") || (this.key === "enabled" && this.knob.key === "super1")) {
-                    this.knob.group = this.origGroup;
-                    this.knob.key = this.origKey;
-                    this.knob.inKey = this.origInKey;
-                    this.knob.outKey = this.origOutKey;
-                } else {
-                    this.knob.group = this.group;
-                    let newKey = "";
-                    if (this.key === "enabled") {
-                        newKey = "super1";
-                    } else {
-                        newKey = this.key.replace("button_", "");
-                    }
-                    this.knob.key = newKey;
-                    this.knob.inKey = newKey;
-                    this.knob.outKey = newKey;
-                }
-            } else {
-                const val = this.inGetParameter();
-                if (val > 0) {
-                    this.inSetValue(0);
-                } else {
-                    this.inSetValue(0x1F);
-                }
-            }
-        }
     }
 
-	  // Pot is the same as components.Pot except that it keeps track of the value
-	  // set by moving one of the hardware faders, and if that value ever doesn't
-	  // match the value of the fader in software it blinks the LED above the
-	  // physical fader to indicate that soft takeover is enabled.
-	  // Right now the LED always blinks when you attempt to turn it on, but
-	  // M-Vave has indicated that in a future firmware update they will make it
-	  // possible to set the LED to be lit steadily.
+    // Pot is the same as components.Pot except that it keeps track of the value
+    // set by moving one of the hardware faders, and if that value ever doesn't
+    // match the value of the fader in software it blinks the LED above the
+    // physical fader to indicate that soft takeover is enabled.
+    // Right now the LED always blinks when you attempt to turn it on, but
+    // M-Vave has indicated that in a future firmware update they will make it
+    // possible to set the LED to be lit steadily.
     class Pot extends components.Pot {
         constructor(params) {
             super(params);
@@ -161,29 +128,69 @@ var SMCMixer;
                 midi: [0xB0, 0x10 + index],
                 key: "pregain",
             });
-            this.highKillButton = new LongPressButton(this.knob, {
+
+            const btnInToggle = () => {
+                const knob = this.knob;
+                const origGroup = this.knob.group;
+                const origKey = this.knob.key;
+                const origInKey = this.knob.inKey;
+                const origOutKey = this.knob.outKey;
+                return function() {
+                    if (this.isLongPressed) {
+                        if (knob.key === this.key.replace("button_", "") || (this.key === "enabled" && this.knob.key === "super1")) {
+                            knob.group = origGroup;
+                            knob.key = origKey;
+                            knob.inKey = origInKey;
+                            knob.outKey = origOutKey;
+                        } else {
+                            knob.group = this.group;
+                            let newKey = "";
+                            if (this.key === "enabled") {
+                                newKey = "super1";
+                            } else {
+                                newKey = this.key.replace("button_", "");
+                            }
+                            knob.key = newKey;
+                            knob.inKey = newKey;
+                            knob.outKey = newKey;
+                        }
+                    } else {
+                        const val = this.inGetParameter();
+                        if (val > 0) {
+                            this.inSetValue(0);
+                        } else {
+                            this.inSetValue(0x1F);
+                        }
+                    }
+                };
+            };
+            this.highKillButton = new LongPressButton({
                 type: components.Button.prototype.types.powerWindow,
                 group: `[EqualizerRack1_[Channel${channel}]_Effect1]`,
                 midi: [0x90, 0x10 + index],
                 key: "button_parameter3",
+                inToggle: btnInToggle(),
             });
-            this.midKillButton = new LongPressButton(this.knob, {
+            this.midKillButton = new LongPressButton({
                 type: components.Button.prototype.types.toggle,
                 group: `[EqualizerRack1_[Channel${channel}]_Effect1]`,
                 midi: [0x90, 0x08 + index],
                 key: "button_parameter2",
+                inToggle: btnInToggle(),
             });
-            this.lowKillButton = new LongPressButton(this.knob, {
+            this.lowKillButton = new LongPressButton({
                 type: components.Button.prototype.types.toggle,
                 group: `[EqualizerRack1_[Channel${channel}]_Effect1]`,
                 midi: [0x90, 0x00 + index],
                 key: "button_parameter1",
+                inToggle: btnInToggle(),
             });
-            this.quickEffectButton = new LongPressButton(this.knob, {
+            this.quickEffectButton = new LongPressButton({
                 type: components.Button.prototype.types.toggle,
                 group: `[QuickEffectRack1_[Channel${channel}]]`,
                 midi: [0x90, 0x18 + index],
                 key: "enabled",
+                inToggle: btnInToggle(),
             });
         }
     }
