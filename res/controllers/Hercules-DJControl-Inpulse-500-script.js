@@ -66,7 +66,9 @@
 //  * Add beat jump + SHIFT jumps
 //
 // ****************************************************************************
-DJCi500 = {};
+
+// esling-disable-next-line prefer-const
+var DJCi500 = {};
 
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -115,9 +117,8 @@ const pairColorsOff = [0x12, 0x12, 0x02, 0x02, 0x4C, 0x4C, 0x40, 0x40];
 //                          SLICER                           //
 ///////////////////////////////////////////////////////////////
 DJCi500.selectedSlicerDomain = [8, 8, 8, 8]; // Length of the Slicer domain
-//PioneerDDJSX.slicerDomains = [8, 16, 32, 64];
 
-// slicer storage:
+// Slicer storage:
 DJCi500.slicerBeatsPassed = [0, 0, 0, 0];
 DJCi500.slicerPreviousBeatsPassed = [0, 0, 0, 0];
 DJCi500.slicerTimer = [false, false, false, false];
@@ -309,11 +310,11 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         unshift: function() {
             this.input = function(_channel, _control, value, _status, _group) {
                 if (value === 0x7F) {
-                    if (engine.getValue(deckData.currentDeck, "play_latched")) {      //play_indicator play_latched
+                    if (engine.getValue(deckData.currentDeck, "play_latched")) {
                         const deck = script.deckFromGroup(deckData.currentDeck);
                         if (deckData.slowPauseSetState[deck - 1]) {
                             engine.brake(deck,
-                                1, //((status & 0xF0) !=== 0x80 && value > 0),
+                                1,
                                 54);
                         } else {
                             script.toggleControl(deckData.currentDeck, "play");
@@ -449,8 +450,8 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
     // TODO: Handle with less repeat the shift key for this
     this.jogWheel = new components.JogWheelBasic({
         midi: [0xB0 + midiChannel, 0x0A],
-        deck: midiChannel, // whatever deck this jogwheel controls, in this case we ignore it
-        wheelResolution: 720, // how many ticks per revolution the jogwheel has
+        deck: midiChannel, // Whatever deck this jogwheel controls, in this case we ignore it
+        wheelResolution: 720, // How many ticks per revolution the jogwheel has
         alpha: 5/6,
         beta: (5/6)/128,
         rpm: 33 + 1/3,
@@ -1482,7 +1483,7 @@ DJCi500.slicerButtonFunc = function(channel, control, value, status, group) {
     } // if value
 };
 
-// this below is connected to beat_active
+// This below is connected to beat_active
 DJCi500.slicerBeatActive = function(value, group, _control) {
     // This slicer implementation will work for constant beatgrids only!
     const deck = script.deckFromGroup(group) - 1;
@@ -1496,7 +1497,6 @@ DJCi500.slicerBeatActive = function(value, group, _control) {
 
     let slicerPosInSection = 0;
 
-    // this works.
     if (engine.getValue(group, "beat_closest") === engine.getValue(group, "beat_next")) {
         return;
     }
@@ -1521,8 +1521,8 @@ DJCi500.slicerBeatActive = function(value, group, _control) {
 };
 
 DJCi500.shutdown = function() {
-    //cleanup
-    midi.sendShortMsg(0x90, 0x05, 0x00); //turn browser led off
+    // Cleanup
+    midi.sendShortMsg(0x90, 0x05, 0x00); // Turn browser led off
     midi.sendShortMsg(0xB0, 0x7F, 0x7E);
 
 };
