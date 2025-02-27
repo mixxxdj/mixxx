@@ -394,7 +394,7 @@ var SMCMixer;
                 },
             });
             // Faders
-            this.faders = new Array(9);
+            this.faders = new Array(8);
             this.faders[0] = new Pot({
                 group: "[Channel3]",
                 midi: [0xE0],
