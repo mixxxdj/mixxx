@@ -6,6 +6,10 @@
     <description>MIDI mapping for the M-Vave SMK-25 II piano keyboard.</description>
     <forums>https://mixxx.discourse.group/t/sinco-m-wave-smk-25-ii/31350</forums>
     <devices>
+      <!--
+        This vendor and product ID is shared between multiple controllers and is
+        not unique to this device.
+      -->
       <product protocol="midi" vendor_id="0x4353" product_id="0x4b4d"/>
     </devices>
   </info>
