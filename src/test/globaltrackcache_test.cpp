@@ -99,7 +99,7 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
         auto resolver = GlobalTrackCacheResolver(testFileAccess);
         pTrack = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(pTrack));
-        // track, GlobalTrackCacheResolver::m_strongPtr and GlobalTrackCache::m_incompletTrack
+        // track, GlobalTrackCacheResolver::m_strongPtr and GlobalTrackCache::m_incompleteTrack
         EXPECT_EQ(3, pTrack.use_count());
 
         resolver.initTrackIdAndUnlockCache(trackId);

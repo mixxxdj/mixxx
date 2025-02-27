@@ -429,7 +429,15 @@ bool GlobalTrackCache::isEmpty() const {
 TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
     while (m_incompleteTrack && m_incompleteTrack->getId() == trackId) {
-        // Wait unit other threads have completed their temporary.
+        // The requested track is currently locked by another thread
+        // (despite us currently owning the global track cache lock aka. m_mutex).
+        //
+        // The background metadata loader thread can use this mechanism
+        // to avoid blocking the global lock for longer periods of time,
+        // which was observed to cause UI stutter.
+        //
+        // Release the global lock, wait until the asynchronous loading
+        // has completed; afterwards, reacquire the global lock and continue.
         m_isTrackCompleted.wait(&m_mutex);
     }
 
@@ -485,7 +493,9 @@ TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
         const QString& canonicalLocation) {
     while (m_incompleteTrack &&
             m_incompleteTrack->getFileInfo().canonicalLocationPath() == canonicalLocation) {
-        // Wait unit other threads have completed their temporary.
+        // See GlobalTrackCache::lookupById for the comment on how
+        // the synchronization with the background metadata loader
+        // thread works.
         m_isTrackCompleted.wait(&m_mutex);
     }
 
@@ -683,8 +693,13 @@ void GlobalTrackCache::resolve(
     // created object to the main thread.
     savingPtr->moveToThread(QCoreApplication::instance()->thread());
 
+    // Check if someone else is currently busy loading track metadata
+    // in the background, and wait until they are done.
+    //
+    // See GlobalTrackCache::lookupById for more information on how
+    // the locking is implemented.
     while (m_incompleteTrack) {
-        // Wait unit other threads have completed their temporary.
+        // Wait for completion.
         m_isTrackCompleted.wait(&m_mutex);
         // now the track should be empty
     }
@@ -729,6 +744,11 @@ void GlobalTrackCache::resolveTemporary(
     }
 
     pTrack = Track::newTemporary(std::move(fileAccess));
+    // Check if someone else is currently busy loading track metadata
+    // in the background, and wait until they are done.
+    //
+    // See GlobalTrackCache::lookupById for more information on how
+    // the locking is implemented.
     while (m_incompleteTrack) {
         // Wait for completion.
         m_isTrackCompleted.wait(&m_mutex);
