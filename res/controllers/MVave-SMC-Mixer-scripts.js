@@ -33,13 +33,9 @@ var SMCMixer;
     class Encoder extends components.Encoder {
         constructor(params) {
             super(params);
-            this.input = function(_channel, _control, value, _status, _group) {
-                if (value === 0x41) {
-                    this.inSetParameter(this.inGetParameter() - 0.01);
-                } else if (value === 0x01) {
-                    this.inSetParameter(this.inGetParameter() + 0.01);
-                }
-            };
+        }
+        function inValueScale(value) {
+            return this.inGetParameter() - (value - 0x40);
         }
     }
     // LongPressButton is like a normal button of type powerWindow, except that it
