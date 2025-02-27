@@ -44,7 +44,11 @@ var SMCMixer;
             super(params);
         }
         inValueScale(value) {
-            return this.inGetParameter() - (value - 0x40);
+					  if (value === 0x41) {
+                return this.inGetParameter()-0.01;
+            } else {
+                return this.inGetParameter()+0.01;
+            }
         }
     }
     // LongPressButton is like a normal button of type powerWindow, except that it
