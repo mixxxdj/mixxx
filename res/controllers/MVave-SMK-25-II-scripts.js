@@ -138,12 +138,7 @@ var SMK25II;
         }
     }
 
-    /**
-     *
-     * @param _id The controller ID
-     * @param _debugging Whether we've started in debugging mode.
-     */
-    SMK25II.init = function(_id, _debugging) {
+    SMK25II.init = function() {
         SMK25II.controller = new Controller();
     };
     SMK25II.shutdown = function() {
@@ -152,7 +147,7 @@ var SMK25II;
     const MMCHeader = [0xF0, 0x35, 0x59];
     /**
      *
-     * @param data
+     * @param data the full sysex message data.
      */
     function decodeButton(data) {
         // Hotcues
@@ -250,8 +245,8 @@ var SMK25II;
     }
     /**
      *
-     * @param data
-     * @param length
+     * @param data the sysex message data
+     * @param length the length of the data (no longer used)
      */
     function incomingData(data, length) {
         if (length < 6) {
