@@ -144,12 +144,14 @@ var SMK25II;
     SMK25II.shutdown = function() {
         SMK25II.controller.shutdown();
     };
+
     const MMCHeader = [0xF0, 0x35, 0x59];
+
     /**
      *
      * @param data the full sysex message data.
      */
-    function decodeButton(data) {
+    const decodeButton = function(data) {
         // Hotcues
         if (data[4] !== undefined && data[4] >= 0x00 && data[4] <= 0x07) {
             SMK25II.controller.activeDeck.hotcues[data[4]].inToggle();
@@ -194,12 +196,13 @@ var SMK25II;
         default:
             console.log(`unrecognized MMC command: ${data[4]}`);
         }
-    }
+    };
+
     /**
      *
-     * @param data
+     * @param data the full sysex message data.
      */
-    function decodePots(data) {
+    const decodePots = function(data) {
         switch (data[3]) {
         case 0x60: {
             const knob = SMK25II.controller.activeDeck.gainKnob;
@@ -242,13 +245,13 @@ var SMK25II;
             break;
         }
         }
-    }
+    };
     /**
      *
      * @param data the sysex message data
      * @param length the length of the data (no longer used)
      */
-    function incomingData(data, length) {
+    SMK25II.incomingData = function(data, length) {
         if (length < 6) {
             console.log(`expected sysex packet of length 6, got ${length}`);
             return;
@@ -263,13 +266,12 @@ var SMK25II;
             console.log("sysex packet missing trailer");
             return;
         }
-        if (data[3] == 0x10) {
+        if (data[3] === 0x10) {
             decodeButton(data);
         } else if (data[3] >= 0x60 && data[3] <= 0x67) {
             decodePots(data);
         } else {
             console.log(`unrecognized sysex byte: ${data[3]}`);
         }
-    }
-    SMK25II.incomingData = incomingData;
+    };
 })(SMK25II || (SMK25II = {}));
