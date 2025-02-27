@@ -54,60 +54,70 @@ var SMCMixer;
     class LongPressButton extends components.Button {
         constructor(knob, params) {
             super(params);
-            this.input = function(channel, control, value, status, _group) {
-                if (this.isPress(channel, control, value, status)) {
-                    this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
-                        this.isLongPressed = true;
-                        this.longPressTimer = 0;
-                    }, true);
-                } else {
-                    this.inToggle();
-                    if (!this.isLongPressed && this.triggerOnRelease) {
-                        this.trigger();
-                    }
-                    if (this.longPressTimer !== 0) {
-                        engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
-                    }
-                    this.isLongPressed = false;
-                }
-            };
-            this.inToggle = function() {
-                if (this.isLongPressed) {
-                    if (this.knob.key === this.key.replace("button_", "") || (this.key === "enabled" && this.knob.key === "super1")) {
-                        this.knob.group = this.origGroup;
-                        this.knob.key = this.origKey;
-                        this.knob.inKey = this.origInKey;
-                        this.knob.outKey = this.origOutKey;
-                    } else {
-                        this.knob.group = this.group;
-                        let newKey = "";
-                        if (this.key === "enabled") {
-                            newKey = "super1";
-                        } else {
-                            newKey = this.key.replace("button_", "");
-                        }
-                        this.knob.key = newKey;
-                        this.knob.inKey = newKey;
-                        this.knob.outKey = newKey;
-                    }
-                } else {
-                    const val = this.inGetParameter();
-                    if (val > 0) {
-                        this.inSetValue(0);
-                    } else {
-                        this.inSetValue(0x1F);
-                    }
-                }
-            };
             this.knob = knob;
             this.origGroup = knob.group;
             this.origKey = knob.key;
             this.origInKey = knob.inKey;
             this.origOutKey = knob.outKey;
         }
+
+        input(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status)) {
+                this.isLongPressed = false;
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
+                    this.isLongPressed = true;
+                    this.longPressTimer = 0;
+                }, true);
+            } else {
+                this.inToggle();
+                if (!this.isLongPressed && this.triggerOnRelease) {
+                    this.trigger();
+                }
+                if (this.longPressTimer !== 0) {
+                    engine.stopTimer(this.longPressTimer);
+                    this.longPressTimer = 0;
+                }
+                this.isLongPressed = false;
+            }
+        }
+
+        inToggle() {
+            if (this.isLongPressed) {
+                if (this.knob.key === this.key.replace("button_", "") || (this.key === "enabled" && this.knob.key === "super1")) {
+                    this.knob.group = this.origGroup;
+                    this.knob.key = this.origKey;
+                    this.knob.inKey = this.origInKey;
+                    this.knob.outKey = this.origOutKey;
+                } else {
+                    this.knob.group = this.group;
+                    let newKey = "";
+                    if (this.key === "enabled") {
+                        newKey = "super1";
+                    } else {
+                        newKey = this.key.replace("button_", "");
+                    }
+                    this.knob.key = newKey;
+                    this.knob.inKey = newKey;
+                    this.knob.outKey = newKey;
+                }
+            } else {
+                const val = this.inGetParameter();
+                if (val > 0) {
+                    this.inSetValue(0);
+                } else {
+                    this.inSetValue(0x1F);
+                }
+            }
+        }
     }
+
+	  // Pot is the same as components.Pot except that it keeps track of the value
+	  // set by moving one of the hardware faders, and if that value ever doesn't
+	  // match the value of the fader in software it blinks the LED above the
+	  // physical fader to indicate that soft takeover is enabled.
+	  // Right now the LED always blinks when you attempt to turn it on, but
+	  // M-Vave has indicated that in a future firmware update they will make it
+	  // possible to set the LED to be lit steadily.
     class Pot extends components.Pot {
         constructor(params) {
             super(params);
@@ -116,28 +126,29 @@ var SMCMixer;
             // same. This way we're not constantly blinking the soft takeover
             // indicator because we didn't get the control matched up exactly.
             this.toleranceWindow = 0.001;
-            this.input = function(_channel, _control, value, _status, _group) {
-                const receivingFirstValue = this.hardwarePos === undefined;
-                this.hardwarePos = this.inValueScale(value);
-                engine.setParameter(this.group, this.inKey, this.hardwarePos);
-                if (receivingFirstValue) {
-                    this.firstValueReceived = true;
-                    this.connect();
-                    engine.softTakeover(this.group, this.inKey, true);
-                }
-            };
-            this.output = function(value) {
-                if (this.hardwarePos === undefined) {
-                    return;
-                }
-                const parameterValue = engine.getParameter(this.group, this.outKey);
-                const delta = parameterValue - this.hardwarePos;
-                if (delta > this.toleranceWindow) {
-                    midi.sendShortMsg(this.midi[0], this.hardwarePos, this.inValueScale(value));
-                }
-            };
+        }
+        input(_channel, _control, value, _status, _group) {
+            const receivingFirstValue = this.hardwarePos === undefined;
+            this.hardwarePos = this.inValueScale(value);
+            engine.setParameter(this.group, this.inKey, this.hardwarePos);
+            if (receivingFirstValue) {
+                this.firstValueReceived = true;
+                this.connect();
+                engine.softTakeover(this.group, this.inKey, true);
+            }
+        }
+        output(value) {
+            if (this.hardwarePos === undefined) {
+                return;
+            }
+            const parameterValue = engine.getParameter(this.group, this.outKey);
+            const delta = parameterValue - this.hardwarePos;
+            if (delta > this.toleranceWindow) {
+                midi.sendShortMsg(this.midi[0], this.hardwarePos, this.inValueScale(value));
+            }
         }
     }
+
     class EqRack {
         constructor(index) {
             const channel = mapIndexToChannel(index);
