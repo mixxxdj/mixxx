@@ -30,12 +30,12 @@ class OscReceiver : public QObject {
     Q_OBJECT // Ensure Qt meta-object system recognizes this class
 
   public:
-    explicit OscReceiver(UserSettingsPointer pConfig, QObject* parent = nullptr);
+    explicit OscReceiver(UserSettingsPointer pConfig);
     ~OscReceiver() override;
 
     int startOscReceiver(int oscPortin);
     void stop();
-    void oscReceiverMain(UserSettingsPointer pConfig);
+    // void oscReceiverMain(UserSettingsPointer pConfig);
     void determineOscAction(OscResult& oscIn);
     void doGetP(OscResult& oscIn);
     void doGetV(OscResult& oscIn);
@@ -46,9 +46,9 @@ class OscReceiver : public QObject {
     void loadOscConfiguration(UserSettingsPointer pConfig);
 
   private:
-    bool m_stopFlag = false;
     UserSettingsPointer m_pConfig;
-    QThread* m_pThread = nullptr;
+    bool m_stopFlag = false;
+    // QThread* m_pThread = nullptr;
     QMutex m_mutex;
     QReadWriteLock m_configLock;
 

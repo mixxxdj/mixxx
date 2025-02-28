@@ -48,12 +48,12 @@ QString escapeStringToJsonUnicode(const QString& input) {
 }
 
 // Function to send OSC message with liblo
-void sendOscMessage(const char* receiverIp,
-        int port,
-        const QString& oscMessageHeader,
-        const char* bodyType,
-        QVariant oscMessageBodyData) {
-}
+// void sendOscMessage(const char* receiverIp,
+//        int port,
+//        const QString& oscMessageHeader,
+//        const char* bodyType,
+//        QVariant oscMessageBodyData) {
+//}
 
 void oscFunctionsSendPtrType(
         // UserSettingsPointer pConfig,

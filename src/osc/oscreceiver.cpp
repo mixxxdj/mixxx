@@ -22,7 +22,7 @@ QList<std::pair<bool, QString>> s_receiverConfigs;
 std::atomic<bool> s_configLoaded1stTimeFromFile(false);
 static bool s_oscSendSyncTriggers(false);
 static int s_oscSendSyncTriggersInterval;
-static int s_lastCheckStamp;
+// static int s_lastCheckStamp;
 inline std::atomic<qint64> s_lastTriggerTime = 0;
 
 namespace {
@@ -39,8 +39,7 @@ void oscFunctionsSendPtrType(
         float oscMessageBodyFloat);
 
 OscReceiver::OscReceiver(
-        UserSettingsPointer pConfig,
-        QObject* parent)
+        UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_stopFlag(false) {};
 
@@ -58,6 +57,13 @@ static int quit_handler(const char* path,
         int argc,
         lo_message data,
         void* user_data) {
+    Q_UNUSED(path);
+    Q_UNUSED(types);
+    Q_UNUSED(argc);
+    Q_UNUSED(argv);
+    Q_UNUSED(data);
+    Q_UNUSED(user_data);
+
     if (sDebug) {
         qDebug() << "[OSC] [OSCRECEIVER] -> Quitting";
     }
@@ -88,6 +94,7 @@ static int messageCallback(const char* path,
         lo_message data,
         void* user_data) {
     Q_UNUSED(types);
+    Q_UNUSED(data);
     auto* worker = static_cast<OscReceiver*>(user_data);
     if (!worker) {
         qWarning() << "[OSC] [OSCRECEIVER] -> OSC message callback: Invalid user_data!";
@@ -365,39 +372,39 @@ void OscReceiver::restartOscReceiver(int oscPortin) {
     startOscReceiver(oscPortin);
 }
 
-void OscReceiver::oscReceiverMain(UserSettingsPointer pConfig) {
-    if (pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-        if (sDebug) {
-            qDebug() << "[OSC] [OSCRECEIVER] -> Enabled -> Started";
-        }
-        loadOscConfiguration(pConfig);
-        for (const auto& receiver : s_receiverConfigs) {
-            int i = 1;
-            if (receiver.first) { // Check if the receiver is active
-                QByteArray receiverIpBa = receiver.second.toLocal8Bit();
-                if (sDebug) {
-                    qDebug() << QString(
-                            "[OSC] [OSCRECEIVER] -> Mixxx OSC Receiver %1 with "
-                            "ip-address: %2 Activated")
-                                        .arg(i)
-                                        .arg(receiverIpBa);
-                }
-            } else {
-                if (sDebug) {
-                    qDebug()
-                            << QString("[OSC] [OSCRECEIVER] -> Mixxx OSC "
-                                       "Receiver %1 Not Activated")
-                                       .arg(i);
-                }
-            }
-            i = i++;
-        }
-    } else {
-        if (sDebug) {
-            qDebug() << "[OSC] [OSCRECEIVER] -> Mixxx OSC Service NOT Enabled";
-        }
-    }
-}
+// void OscReceiver::oscReceiverMain(UserSettingsPointer pConfig) {
+//     if (pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+//         if (sDebug) {
+//             qDebug() << "[OSC] [OSCRECEIVER] -> Enabled -> Started";
+//         }
+//         loadOscConfiguration(pConfig);
+//         for (const auto& receiver : s_receiverConfigs) {
+//             int i = 1;
+//             if (receiver.first) { // Check if the receiver is active
+//                 QByteArray receiverIpBa = receiver.second.toLocal8Bit();
+//                 if (sDebug) {
+//                     qDebug() << QString(
+//                             "[OSC] [OSCRECEIVER] -> Mixxx OSC Receiver %1 with "
+//                             "ip-address: %2 Activated")
+//                                         .arg(i)
+//                                         .arg(receiverIpBa);
+//                 }
+//             } else {
+//                 if (sDebug) {
+//                     qDebug()
+//                             << QString("[OSC] [OSCRECEIVER] -> Mixxx OSC "
+//                                        "Receiver %1 Not Activated")
+//                                        .arg(i);
+//                 }
+//             }
+//             i = i++;
+//         }
+//     } else {
+//         if (sDebug) {
+//             qDebug() << "[OSC] [OSCRECEIVER] -> Mixxx OSC Service NOT Enabled";
+//         }
+//     }
+// }
 
 void OscReceiver::loadOscConfiguration(UserSettingsPointer pConfig) {
     if (!s_configLoaded1stTimeFromFile.load()) {

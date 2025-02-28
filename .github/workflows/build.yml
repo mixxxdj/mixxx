@@ -294,6 +294,19 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
+      - name: "[macOS] Install liblo"
+        # Eve - get liblo in CI
+        if: runner.os == 'macOS'
+        run: brew install liblo
+
+      - name: "[Ubuntu] Install liblo"
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y liblo-dev
+
+      - name: "[Windows] Install liblo via vcpkg"
+        if: runner.os == 'Windows'
+        run: vcpkg install liblo:x64-windows
+
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
         uses: actions/cache@v4

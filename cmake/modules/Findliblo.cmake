@@ -52,14 +52,20 @@ find_path(
   liblo_INCLUDE_DIR
   NAMES lo/lo.h
   HINTS ${PC_liblo_INCLUDE_DIRS}
+  ENV CPATH
+  ENV CMAKE_INCLUDE_PATH
+  PATH_SUFFIXES include
   DOC "liblo include directory"
 )
 mark_as_advanced(liblo_INCLUDE_DIR)
 
 find_library(
   liblo_LIBRARY
-  NAMES lo
+  NAMES lo liblo
   HINTS ${PC_liblo_LIBRARY_DIRS}
+  ENV LIBRARY_PATH
+  ENV CMAKE_LIBRARY_PATH
+  PATH_SUFFIXES lib
   DOC "liblo library"
 )
 mark_as_advanced(liblo_LIBRARY)
