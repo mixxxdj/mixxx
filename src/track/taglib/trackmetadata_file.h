@@ -15,6 +15,7 @@ namespace mixxx {
 class TrackMetadata;
 
 namespace taglib {
+Q_NAMESPACE
 
 // This enum is aligned with TagLib_File_Type form the TagLib C binding
 enum class FileType {
@@ -40,6 +41,7 @@ enum class FileType {
     DSF,
     DSDIFF
 };
+Q_ENUM_NS(FileType);
 
 QDebug operator<<(QDebug debug, FileType fileType);
 

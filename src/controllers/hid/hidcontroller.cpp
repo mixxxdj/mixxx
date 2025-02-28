@@ -29,14 +29,14 @@ QString HidController::mappingExtension() {
 }
 
 void HidController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
 std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
     if (!m_pMapping) {
         return nullptr;
     }
-    return m_pMapping->clone();
+    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
 bool HidController::matchMapping(const MappingInfo& mapping) {

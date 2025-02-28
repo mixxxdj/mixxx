@@ -101,6 +101,8 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
+    std::shared_ptr<QDialog> makeDlgPreferences() const;
+
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 

@@ -34,6 +34,9 @@ class VersionStore {
     /// Returns the output of "git describe" and the branch name (if available)
     static QString gitVersion();
 
+    /// Returns the version of Qt used to build Mixxx.
+    static QString qtVersion();
+
     /// Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
     /// the null string if the flags are unknown.
     static QString buildFlags();

@@ -14,7 +14,7 @@
 class LibraryTest : public MixxxDbTest, SoundSourceProviderRegistration {
   protected:
     LibraryTest();
-    ~LibraryTest() override = default;
+    ~LibraryTest() override;
 
     TrackCollectionManager* trackCollectionManager() const {
         return m_pTrackCollectionManager.get();

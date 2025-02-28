@@ -37,6 +37,10 @@ LibraryTest::LibraryTest()
     CoverArtCache::createInstance();
 }
 
+LibraryTest::~LibraryTest() {
+    CoverArtCache::destroy();
+}
+
 TrackPointer LibraryTest::getOrAddTrackByLocation(
         const QString& trackLocation) const {
     return m_pTrackCollectionManager->getOrAddTrack(

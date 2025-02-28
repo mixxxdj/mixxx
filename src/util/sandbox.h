@@ -54,13 +54,9 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-#if defined(__GNUC__) && __cplusplus < 201907L
-#define SECURITY_TOKEN_NODISCARD_RATIONALE
-#else
 #define SECURITY_TOKEN_NODISCARD_RATIONALE                             \
     ("A new security token should be used, e.g. by assigning it to a " \
      "variable, otherwise it will be invalidated immediately.")
-#endif
 
     [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
     openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);

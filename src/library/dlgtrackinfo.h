@@ -56,7 +56,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotBpmConstChanged(Qt::CheckState state);
+#else
     void slotBpmConstChanged(int state);
+#endif
     void slotBpmTap(double averageLength, int numSamples);
     void slotSpinBpmValueChanged(double value);
 
@@ -86,7 +90,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void clear();
     void init();
 
-    mixxx::UpdateResult updateKeyText();
+    void updateKeyText();
     void displayKeyText();
 
     void updateFromTrack(const Track& track);

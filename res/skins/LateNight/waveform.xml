@@ -2,6 +2,8 @@
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
   <SetVariable name="BtnType">embedded</SetVariable>
   <SetVariable name="BtnSize">library</SetVariable>
+  <SetVariable name="CoverName">BeatEditCover</SetVariable>
+  <SetVariable name="CoverConfigKey"><Variable name="Group"/>,bpmlock</SetVariable>
 
   <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
@@ -30,6 +32,9 @@
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
             <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+            <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+            <SlipBorderTopOutlineSize>10</SlipBorderTopOutlineSize>
+            <SlipBorderBottomOutlineSize>20</SlipBorderBottomOutlineSize>
             <PassthroughLabelColor><Variable name="PassthroughLabelColor"/></PassthroughLabelColor>
             <DimBrightThreshold><Variable name="DimBrightThresholdWaveform"/></DimBrightThreshold>
             <!--
@@ -154,8 +159,7 @@
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-              <!-- CurPos -->
-              <Template src="skins:LateNight/controls/button_1state_right.xml">
+              <Template src="skins:LateNight/controls/button_1state_right_optional.xml"><!-- CurPos -->
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                 <SetVariable name="Size">26f,52f</SetVariable>
@@ -168,13 +172,13 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatsEarlier</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -187,14 +191,14 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
@@ -204,6 +208,44 @@
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->
+
+              <WidgetGroup><!-- Undo & Lock -->
+                <Layout>vertical</Layout>
+                <Size>26f,52f</Size>
+                <Children>
+                  <Template src="skins:LateNight/controls/button_1state_optional_invert.xml">
+                    <SetVariable name="TooltipId">beats_undo_adjustment</SetVariable>
+                    <SetVariable name="ObjectName">Undo</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_undo_adjustment</SetVariable>
+                    <SetVariable name="CoverConfigKey"><Variable name="Group"/>,beats_undo_possible</SetVariable>
+                  </Template>
+
+                  <!-- Custom 2-state button where 0 and 1 have the same border image -->
+                  <PushButton>
+                    <TooltipId>bpmlock</TooltipId>
+                    <ObjectName>BpmLockToggle</ObjectName>
+                    <Size>26f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,bpmlock</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                </Children>
+              </WidgetGroup><!-- /Undo & Lock -->
 
               <WidgetGroup><!-- Hotcue shift -->
                 <Layout>vertical</Layout>

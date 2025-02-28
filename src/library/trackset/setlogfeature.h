@@ -60,8 +60,6 @@ class SetlogFeature : public BasePlaylistFeature {
 
     int m_currentPlaylistId;
     int m_yearNodeId;
-
-    QPointer<WLibrary> m_libraryWidget;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
 };

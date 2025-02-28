@@ -2,6 +2,7 @@
 
 #include <QStylePainter>
 
+#include "control/controlobject.h"
 #include "moc_wtrackwidgetgroup.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
@@ -17,12 +18,14 @@ constexpr int kDefaultTrackColorAlpha = 255;
 WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        const QString& group)
+        const QString& group,
+        bool isMainDeck)
         : WWidgetGroup(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
-          m_trackColorAlpha(kDefaultTrackColorAlpha) {
+          m_trackColorAlpha(kDefaultTrackColorAlpha),
+          m_isMainDeck(isMainDeck) {
     setAcceptDrops(true);
 }
 
@@ -119,8 +122,22 @@ void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* pEvent) {
 }
 
 void WTrackWidgetGroup::ensureTrackMenuIsCreated() {
-    if (m_pTrackMenu.get() == nullptr) {
-        m_pTrackMenu = make_parented<WTrackMenu>(
-                this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
+    if (m_pTrackMenu.get() != nullptr) {
+        return;
     }
+    m_pTrackMenu = make_parented<WTrackMenu>(
+            this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
+
+    // The show control exists onlyfor main decks.
+    // See WTrackProperty for info
+    if (!m_isMainDeck) {
+        return;
+    }
+    connect(m_pTrackMenu,
+            &WTrackMenu::trackMenuVisible,
+            this,
+            [this](bool visible) {
+                ControlObject::set(ConfigKey(m_group, kShowTrackMenuKey),
+                        visible ? 1.0 : 0.0);
+            });
 }

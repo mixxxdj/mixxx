@@ -4,6 +4,8 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QSqlTableModel>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -169,7 +171,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
         return kInvalidPlaylistId;
@@ -470,10 +472,10 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
     // This is used as a proxy object to write to the database.
     // We cannot use m_pPlaylistTableModel since it might have another playlist selected which
     // is not the playlist that received the right-click.
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
@@ -569,11 +571,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export",
-                    m_keepHiddenTracks));
+                    m_keepHiddenTracks);
 
     emit saveModelState();
     pPlaylistTableModel->selectPlaylist(playlistId);
@@ -588,13 +590,13 @@ void BasePlaylistFeature::slotExportPlaylist() {
             kUseRelativePathOnExportConfigKey);
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.get(), useRelativePath);
     } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
         if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) ==
                 PlaylistDAO::PLHT_SET_LOG) {
-            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), true);
+            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.get(), true);
         } else {
-            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), false);
+            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.get(), false);
         }
     } else {
         // Create and populate a list of files of the playlist
@@ -616,10 +618,10 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
 
     emit saveModelState();
     pPlaylistTableModel->selectPlaylist(playlistId);
@@ -677,7 +679,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
+            const QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             QList<AnalyzerScheduledTrack> tracks;
             for (auto id : ids) {
                 tracks.append(id);
@@ -691,17 +693,18 @@ TreeItemModel* BasePlaylistFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
 
-void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
-        KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit,
+void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
+        KeyboardEventFilter* pKeyboard) {
+    Q_UNUSED(pKeyboard);
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryWidget);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit,
             &WLibraryTextBrowser::anchorClicked,
             this,
             &BasePlaylistFeature::htmlLinkClicked);
-    libraryWidget->registerView(m_rootViewName, edit);
+    m_pLibraryWidget = QPointer(pLibraryWidget);
+    m_pLibraryWidget->registerView(m_rootViewName, pEdit);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

@@ -11,7 +11,8 @@
 
 using RubberBand::RubberBandStretcher;
 
-#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+#define RUBBERBANDV3 (RUBBERBAND_API_MAJOR_VERSION >= 3 || \
+        (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7))
 
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
         ReadAheadManager* pReadAheadManager)
@@ -154,8 +155,8 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
 
     DEBUG_ASSERT(received_frames <= frames);
     SampleUtil::interleaveBuffer(pBuffer,
-            m_buffers[0].data() + frame_offset,
-            m_buffers[1].data() + frame_offset,
+            m_buffers[0].data(frame_offset),
+            m_buffers[1].data(frame_offset),
             received_frames);
 
     return received_frames;

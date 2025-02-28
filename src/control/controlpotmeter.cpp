@@ -81,6 +81,10 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
           m_controlMinusToggle(configKeyFromBaseKey(key, QStringLiteral("_minus_toggle"))),
           m_stepCount(10),
           m_smallStepCount(100) {
+    m_controlUp.setKbdRepeatable(true);
+    m_controlDown.setKbdRepeatable(true);
+    m_controlUpSmall.setKbdRepeatable(true);
+    m_controlDownSmall.setKbdRepeatable(true);
     connect(&m_controlUp, &ControlPushButton::valueChanged, this, &PotmeterControls::incValue);
     connect(&m_controlDown, &ControlPushButton::valueChanged, this, &PotmeterControls::decValue);
     connect(&m_controlUpSmall,

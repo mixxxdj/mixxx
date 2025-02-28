@@ -51,7 +51,7 @@ class SeratoBeatGridTest : public testing::Test {
         dir.setFilter(QDir::Files);
         dir.setNameFilters(QStringList() << "*.octet-stream");
 
-        QFileInfoList fileList = dir.entryInfoList();
+        const QFileInfoList fileList = dir.entryInfoList();
         EXPECT_FALSE(fileList.isEmpty());
         for (const QFileInfo& fileInfo : fileList) {
             qDebug() << "--- File:" << fileInfo.fileName();

@@ -1,5 +1,8 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include <QMetaEnum>
+
+#include "control/controlpushbutton.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
@@ -7,6 +10,12 @@
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/woverview.h"
+
+namespace {
+const ConfigKey kOverviewTypeCfgKey(QStringLiteral("[Waveform]"),
+        QStringLiteral("WaveformOverviewType"));
+} // namespace
 
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
@@ -18,9 +27,27 @@ DlgPrefWaveform::DlgPrefWaveform(
     setupUi(this);
 
     // Waveform overview init
-    waveformOverviewComboBox->addItem(tr("Filtered")); // "0"
-    waveformOverviewComboBox->addItem(tr("HSV")); // "1"
-    waveformOverviewComboBox->addItem(tr("RGB")); // "2"
+    waveformOverviewComboBox->addItem(
+            tr("Filtered"), QVariant::fromValue(WOverview::Type::Filtered));
+    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(WOverview::Type::HSV));
+    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(WOverview::Type::RGB));
+    m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
+    m_pTypeControl->setStates(QMetaEnum::fromType<WOverview::Type>().keyCount());
+    m_pTypeControl->setReadOnly();
+    // Update the control with the config value
+    WOverview::Type overviewType =
+            m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
+    int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
+    if (cfgTypeIndex == -1) {
+        // Invalid config value, set default type RGB and write it to config
+        waveformOverviewComboBox->setCurrentIndex(
+                waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
+        m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
+    } else {
+        waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
+    }
+    // Set the control used by WOverview
+    m_pTypeControl->forceSet(cfgTypeIndex);
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -40,6 +67,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             i++) {
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
+
+    // Populate untilMark options
+    untilMarkAlignComboBox->addItem(tr("Top"));
+    untilMarkAlignComboBox->addItem(tr("Center"));
+    untilMarkAlignComboBox->addItem(tr("Bottom"));
+
+    untilMarkTextHeightLimitComboBox->addItem(tr("1/3rd of waveform viewer"));
+    untilMarkTextHeightLimitComboBox->addItem(tr("Full waveform viewer height"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
@@ -131,6 +166,26 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+    connect(untilMarkShowBeatsCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkShowBeats);
+    connect(untilMarkShowTimeCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkShowTime);
+    connect(untilMarkAlignComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkAlign);
+    connect(untilMarkTextPointSizeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkTextPointSize);
+    connect(untilMarkTextHeightLimitComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkTextHeightLimit);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -153,6 +208,8 @@ void DlgPrefWaveform::slotUpdate() {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
+    updateEnableUntilMark();
+
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
     endOfTrackWarningTimeSpinBox->setValue(factory->getEndOfTrackWarningTime());
@@ -169,11 +226,23 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
-    // By default we set RGB woverview = "2"
-    int overviewType = m_pConfig->getValue(
-            ConfigKey("[Waveform]","WaveformOverviewType"), 2);
-    if (overviewType != waveformOverviewComboBox->currentIndex()) {
-        waveformOverviewComboBox->setCurrentIndex(overviewType);
+    untilMarkShowBeatsCheckBox->setChecked(factory->getUntilMarkShowBeats());
+    untilMarkShowTimeCheckBox->setChecked(factory->getUntilMarkShowTime());
+    untilMarkAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toUntilMarkAlignIndex(
+                    factory->getUntilMarkAlign()));
+    untilMarkTextPointSizeSpinBox->setValue(factory->getUntilMarkTextPointSize());
+    untilMarkTextHeightLimitComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(
+                    factory->getUntilMarkTextHeightLimit()));
+
+    WOverview::Type cfgOverviewType =
+            m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
+    // Assumes the combobox index is in sync with the ControlPushButton
+    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<WOverview::Type>()) {
+        int cfgOverviewTypeIndex =
+                waveformOverviewComboBox->findData(QVariant::fromValue(cfgOverviewType));
+        waveformOverviewComboBox->setCurrentIndex(cfgOverviewTypeIndex);
     }
 
     WaveformSettings waveformSettings(m_pConfig);
@@ -184,10 +253,6 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
-    ConfigValue overviewtype = ConfigValue(waveformOverviewComboBox->currentIndex());
-    if (overviewtype != m_pConfig->get(ConfigKey("[Waveform]", "WaveformOverviewType"))) {
-        m_pConfig->set(ConfigKey("[Waveform]", "WaveformOverviewType"), overviewtype);
-    }
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -216,7 +281,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     synchronizeZoomCheckBox->setChecked(true);
 
     // RGB overview.
-    waveformOverviewComboBox->setCurrentIndex(2);
+    waveformOverviewComboBox->setCurrentIndex(
+            waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
@@ -252,11 +318,29 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     }
     int handleIndex = waveformTypeComboBox->itemData(index).toInt();
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(handleIndex);
+
+    updateEnableUntilMark();
 }
 
-void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
-    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    emit reloadUserInterface();
+void DlgPrefWaveform::updateEnableUntilMark() {
+    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark();
+    untilMarkShowBeatsCheckBox->setEnabled(enabled);
+    untilMarkShowTimeCheckBox->setEnabled(enabled);
+    untilMarkAlignLabel->setEnabled(enabled);
+    untilMarkAlignComboBox->setEnabled(enabled);
+    untilMarkTextPointSizeLabel->setEnabled(enabled);
+    untilMarkTextPointSizeSpinBox->setEnabled(enabled);
+    untilMarkTextHeightLimitComboBox->setEnabled(enabled);
+    requiresGLSLLabel->setVisible(!enabled);
+}
+
+void DlgPrefWaveform::slotSetWaveformOverviewType() {
+    // Apply immediately
+    QVariant comboboxData = waveformOverviewComboBox->currentData();
+    DEBUG_ASSERT(comboboxData.canConvert<WOverview::Type>());
+    auto type = comboboxData.value<WOverview::Type>();
+    m_pConfig->setValue(kOverviewTypeCfgKey, type);
+    m_pTypeControl->forceSet(static_cast<double>(type));
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
@@ -302,6 +386,8 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 }
 
 void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
+    // TODO(xxx) For consistency set this in WaveformWidgetFactory like
+    // the other waveform controls.
     m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridAlpha"), alpha);
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
 }
@@ -310,6 +396,28 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
+    WaveformWidgetFactory::instance()->setUntilMarkShowBeats(checked);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
+    WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
+    WaveformWidgetFactory::instance()->setUntilMarkAlign(
+            WaveformWidgetFactory::toUntilMarkAlign(index));
+}
+
+void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
+    WaveformWidgetFactory::instance()->setUntilMarkTextPointSize(value);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
+    WaveformWidgetFactory::instance()->setUntilMarkTextHeightLimit(
+            WaveformWidgetFactory::toUntilMarkTextHeightLimit(index));
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

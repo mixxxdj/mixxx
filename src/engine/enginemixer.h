@@ -15,6 +15,7 @@
 #include "recording/recordingmanager.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/samplebuffer.h"
 
 class EngineWorkerScheduler;
 class EngineVuMeter;
@@ -39,11 +40,11 @@ class EngineMixer : public QObject, public AudioSource {
             EffectsManager* pEffectsManager,
             ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain);
-    virtual ~EngineMixer();
+    ~EngineMixer() override;
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* buffer(const AudioOutput& output) const;
+    const CSAMPLE* buffer(const AudioOutput& output) const override;
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
@@ -58,8 +59,8 @@ class EngineMixer : public QObject, public AudioSource {
     // these methods are called the callback is guaranteed to be inactive
     // (SoundManager closes all devices before calling these). This may change
     // in the future.
-    virtual void onOutputConnected(const AudioOutput& output);
-    virtual void onOutputDisconnected(const AudioOutput& output);
+    void onOutputConnected(const AudioOutput& output) override;
+    void onOutputDisconnected(const AudioOutput& output) override;
     void onInputConnected(const AudioInput& input);
     void onInputDisconnected(const AudioInput& input);
 
@@ -107,14 +108,13 @@ class EngineMixer : public QObject, public AudioSource {
     struct ChannelInfo {
         ChannelInfo(int index)
                 : m_pChannel(NULL),
-                  m_pBuffer(NULL),
                   m_pVolumeControl(NULL),
                   m_pMuteControl(NULL),
                   m_index(index) {
         }
         ChannelHandle m_handle;
         EngineChannel* m_pChannel;
-        CSAMPLE* m_pBuffer;
+        mixxx::SampleBuffer m_pBuffer;
         ControlObject* m_pVolumeControl;
         ControlPushButton* m_pMuteControl;
         GroupFeatureState m_features;
@@ -131,7 +131,7 @@ class EngineMixer : public QObject, public AudioSource {
         virtual ~GainCalculator() = default;
         virtual CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const = 0;
     };
-    class PflGainCalculator : public GainCalculator {
+    class PflGainCalculator final : public GainCalculator {
       public:
         inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
@@ -144,22 +144,21 @@ class EngineMixer : public QObject, public AudioSource {
       private:
         CSAMPLE_GAIN m_dGain;
     };
-    class TalkoverGainCalculator : public GainCalculator {
+    class TalkoverGainCalculator final : public GainCalculator {
       public:
         inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
             return static_cast<CSAMPLE_GAIN>(pChannelInfo->m_pVolumeControl->get());
         }
     };
-    class OrientationVolumeGainCalculator : public GainCalculator {
+    class OrientationVolumeGainCalculator final : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
                 : m_dLeftGain(1.0),
                   m_dCenterGain(1.0),
-                  m_dRightGain(1.0),
-                  m_dTalkoverDuckingGain(1.0) {
+                  m_dRightGain(1.0) {
         }
 
-        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const {
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
             const CSAMPLE_GAIN channelVolume = static_cast<CSAMPLE_GAIN>(
                     pChannelInfo->m_pVolumeControl->get());
             const CSAMPLE_GAIN orientationGain = EngineMixer::gainForOrientation(
@@ -167,24 +166,21 @@ class EngineMixer : public QObject, public AudioSource {
                     m_dLeftGain,
                     m_dCenterGain,
                     m_dRightGain);
-            return channelVolume * orientationGain * m_dTalkoverDuckingGain;
+            return channelVolume * orientationGain;
         }
 
         inline void setGains(CSAMPLE_GAIN leftGain,
                 CSAMPLE_GAIN centerGain,
-                CSAMPLE_GAIN rightGain,
-                CSAMPLE_GAIN talkoverDuckingGain) {
+                CSAMPLE_GAIN rightGain) {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
-            m_dTalkoverDuckingGain = talkoverDuckingGain;
         }
 
       private:
         CSAMPLE_GAIN m_dLeftGain;
         CSAMPLE_GAIN m_dCenterGain;
         CSAMPLE_GAIN m_dRightGain;
-        CSAMPLE_GAIN m_dTalkoverDuckingGain;
     };
 
     enum class MicMonitorMode {
@@ -242,7 +238,7 @@ class EngineMixer : public QObject, public AudioSource {
 
   protected:
     // The main buffer is protected so it can be accessed by test subclasses.
-    CSAMPLE* m_pMain;
+    mixxx::SampleBuffer m_main;
 
     // ControlObjects for switching off unnecessary processing
     // These are protected so tests can set them
@@ -285,12 +281,12 @@ class EngineMixer : public QObject, public AudioSource {
     mixxx::audio::SampleRate m_sampleRate;
 
     // Mixing buffers for each output.
-    CSAMPLE* m_pOutputBusBuffers[3];
-    CSAMPLE* m_pBooth;
-    CSAMPLE* m_pHead;
-    CSAMPLE* m_pTalkover;
-    CSAMPLE* m_pTalkoverHeadphones;
-    CSAMPLE* m_pSidechainMix;
+    mixxx::SampleBuffer m_outputBusBuffers[3];
+    mixxx::SampleBuffer m_booth;
+    mixxx::SampleBuffer m_head;
+    mixxx::SampleBuffer m_talkover;
+    mixxx::SampleBuffer m_talkoverHeadphones;
+    mixxx::SampleBuffer m_sidechainMix;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pEngineSync;
@@ -329,6 +325,7 @@ class EngineMixer : public QObject, public AudioSource {
     CSAMPLE_GAIN m_boothGainOld;
     CSAMPLE_GAIN m_headphoneMainGainOld;
     CSAMPLE_GAIN m_headphoneGainOld;
+    CSAMPLE_GAIN m_duckingGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
     std::atomic<unsigned int> m_numMicsConfigured;

@@ -146,6 +146,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // clean frames counting and get current sample rate.
             m_frames = 0;
             m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+            m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -223,9 +224,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(m_recordedDuration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(m_recordedDuration % 60, 2, 10, QChar('0')); // seconds
 }
 
 void EngineRecord::writeCueLine() {

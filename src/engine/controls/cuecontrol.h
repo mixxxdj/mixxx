@@ -35,6 +35,7 @@ enum class SeekOnLoadMode {
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
     IntroStart = 3, // Use intro start cue point
+    FirstHotcue = 4,
 };
 
 /// Used for requesting a specific hotcue type when activating/setting a
@@ -352,8 +353,8 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlProxy> m_pVinylControlMode;
 
     std::unique_ptr<ControlObject> m_pHotcueFocus;
-    std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
-    std::unique_ptr<ControlObject> m_pHotcueFocusColorPrev;
+    std::unique_ptr<ControlPushButton> m_pHotcueFocusColorNext;
+    std::unique_ptr<ControlPushButton> m_pHotcueFocusColorPrev;
 
     parented_ptr<ControlProxy> m_pPassthrough;
 

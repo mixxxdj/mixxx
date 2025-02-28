@@ -5,6 +5,7 @@
 #include <QScopedPointer>
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "mixxxtest.h"
@@ -23,7 +24,7 @@ TEST_F(BpmControlTest, ShortestPercentageChange) {
 }
 
 TEST_F(BpmControlTest, BeatContext_BeatGrid) {
-    constexpr int sampleRate = 44100;
+    constexpr auto sampleRate = mixxx::audio::SampleRate(44100);
 
     TrackPointer pTrack = Track::newTemporary();
     pTrack->setAudioProperties(

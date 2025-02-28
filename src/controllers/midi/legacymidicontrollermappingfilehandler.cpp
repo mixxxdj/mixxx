@@ -30,6 +30,7 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
 
     // Superclass handles parsing <info> tag and script files
     parseMappingInfo(root, pMapping);
+    parseMappingSettings(root, pMapping.get());
     addScriptFilesToMapping(controller, pMapping, systemMappingsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
@@ -240,7 +241,7 @@ void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
     // to remove duplicate keys or else we'll duplicate those values.
     auto sortedInputKeys = mapping.getInputMappings().uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
-    for (const auto& key : sortedInputKeys) {
+    for (const auto& key : std::as_const(sortedInputKeys)) {
         for (auto it = mapping.getInputMappings().constFind(key);
                 it != mapping.getInputMappings().constEnd() && it.key() == key;
                 ++it) {
@@ -254,7 +255,7 @@ void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
     QDomElement outputs = doc->createElement("outputs");
     auto sortedOutputKeys = mapping.getOutputMappings().uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
-    for (const auto& key : sortedOutputKeys) {
+    for (const auto& key : std::as_const(sortedOutputKeys)) {
         for (auto it = mapping.getOutputMappings().constFind(key);
                 it != mapping.getOutputMappings().constEnd() && it.key() == key;
                 ++it) {
@@ -276,10 +277,15 @@ QDomElement LegacyMidiControllerMappingFileHandler::makeTextElement(QDomDocument
 
 QDomElement LegacyMidiControllerMappingFileHandler::inputMappingToXML(
         QDomDocument* doc, const MidiInputMapping& mapping) const {
+    if (std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+        return QDomElement();
+    }
+
     QDomElement controlNode = doc->createElement("control");
 
-    controlNode.appendChild(makeTextElement(doc, "group", mapping.control.group));
-    controlNode.appendChild(makeTextElement(doc, "key", mapping.control.item));
+    controlNode.appendChild(makeTextElement(
+            doc, "group", std::get<ConfigKey>(mapping.control).group));
+    controlNode.appendChild(makeTextElement(doc, "key", std::get<ConfigKey>(mapping.control).item));
     if (!mapping.description.isEmpty()) {
         controlNode.appendChild(
                 makeTextElement(doc, "description", mapping.description));

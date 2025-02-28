@@ -7,12 +7,16 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/defs_controllers.h"
-#include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 #include "util/time.h"
+
+#ifdef __PORTMIDI__
+#include "controllers/midi/portmidienumerator.h"
+#endif
+
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif
@@ -148,7 +152,9 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
+#ifdef __PORTMIDI__
     m_enumerators.append(new PortMidiEnumerator());
+#endif
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator(m_pConfig));
 #endif
@@ -237,7 +243,7 @@ void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
-    QList<Controller*> deviceList = getControllerList(false, true);
+    const QList<Controller*> deviceList = getControllerList(false, true);
     QStringList mappingPaths(getMappingPaths(m_pConfig));
 
     for (Controller* pController : deviceList) {
@@ -276,9 +282,10 @@ void ControllerManager::slotSetUpDevices() {
         if (!pMapping) {
             continue;
         }
+        pMapping->loadSettings(m_pConfig, pController->getName());
 
         // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-        pController->setMapping(pMapping->clone());
+        pController->setMapping(std::move(pMapping));
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -416,6 +423,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     if (!pMapping) {
         closeController(pController);
         // Unset the controller mapping for this controller
+        pController->setMapping(nullptr);
         m_pConfig->remove(key);
         emit mappingApplied(false);
         return;
@@ -431,7 +439,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     m_pConfig->set(key, pMapping->filePath());
 
     // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-    pController->setMapping(pMapping->clone());
+    pController->setMapping(std::move(pMapping));
 
     if (bEnabled) {
         openController(pController);

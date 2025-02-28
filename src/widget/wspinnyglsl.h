@@ -26,7 +26,7 @@ class WSpinnyGLSL : public WSpinnyBase, private QOpenGLFunctions {
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
-    void drawTexture(QOpenGLTexture* texture);
+    void drawTexture(QOpenGLTexture* pTexture);
     void cleanupGL();
     void updateTextures();
 

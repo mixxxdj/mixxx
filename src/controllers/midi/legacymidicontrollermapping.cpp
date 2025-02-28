@@ -13,12 +13,27 @@ bool LegacyMidiControllerMapping::isMappable() const {
 
 void LegacyMidiControllerMapping::addInputMapping(uint16_t key, const MidiInputMapping& mapping) {
     m_inputMappings.insert(key, mapping);
-    setDirty(true);
+    if (!std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+        // Note: JS handler are not saved to the XML file
+        setDirty(true);
+    }
 }
 
 void LegacyMidiControllerMapping::removeInputMapping(uint16_t key) {
+    for (auto [it, end] = m_inputMappings.equal_range(key); it != end; ++it) {
+        const MidiInputMapping& mapping = it.value();
+        if (!std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+            setDirty(true);
+        }
+    }
     m_inputMappings.remove(key);
+}
+
+bool LegacyMidiControllerMapping::removeInputMapping(
+        uint16_t key, const MidiInputMapping& mapping) {
+    auto result = m_inputMappings.remove(key, mapping);
     setDirty(true);
+    return result > 0;
 }
 
 const QMultiHash<uint16_t, MidiInputMapping>&
@@ -58,4 +73,20 @@ void LegacyMidiControllerMapping::setOutputMappings(
         m_outputMappings.unite(mappings);
         setDirty(true);
     }
+}
+void LegacyMidiControllerMapping::removeInputHandlerMappings() {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+    m_inputMappings.removeIf(
+            [](std::pair<const uint16_t&, MidiInputMapping&> it) {
+                return !std::holds_alternative<ConfigKey>(it.second.control);
+            });
+#else
+    for (auto it = m_inputMappings.begin(); it != m_inputMappings.end();) {
+        if (!std::holds_alternative<ConfigKey>(it.value().control)) {
+            it = m_inputMappings.erase(it);
+        } else {
+            ++it;
+        }
+    }
+#endif
 }

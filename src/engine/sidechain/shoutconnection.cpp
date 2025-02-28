@@ -10,14 +10,7 @@
 #include <unistd.h>
 #endif
 
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "encoder/encoder.h"

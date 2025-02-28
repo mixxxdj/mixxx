@@ -35,6 +35,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString doubleClick = tr("Double-click");
+    QString selectedClick = tr("Select and click: Show inline value editor");
     QString scrollWheel = tr("Scroll-wheel");
     QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
@@ -47,6 +48,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Waveform Overview")
             << tr("Shows information about the track currently loaded in this deck.") << "\n"
             << tr("Left click to jump around in the track.")
+            << tr("Left click and hold allows to preview the position where the play head "
+                  "will jump to on release. Dragging can be aborted with right click.")
             << tr("Right click hotcues to edit their labels and colors.")
             << tr("Right click anywhere else to show the time at that point.")
             << dropTracksHere;
@@ -324,28 +327,44 @@ void Tooltips::addStandardTooltips() {
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
+    QString pitchAffected = tr("If keylock is disabled, pitch is also affected.");
+
     add("rate_perm_up_rate_perm_up_small")
-            << tr("Raise Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch higher in small steps."))
+            << tr("Speed Up")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Raises the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Raises playback speed in small steps."))
             << changeAmount;
 
     add("rate_perm_down_rate_perm_down_small")
-            << tr("Lower Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch lower."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch lower in small steps."))
+            << tr("Slow Down")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Lowers the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Lowers playback speed in small steps."))
             << changeAmount;
 
     add("rate_temp_up_rate_temp_up_small")
-            << tr("Raise Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch higher while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch higher (small amount) while active."))
+            << tr("Speed Up Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed higher while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed higher (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("rate_temp_down_rate_temp_down_small")
-            << tr("Lower Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch lower while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch lower (small amount) while active."))
+            << tr("Slow Down Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed lower while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed lower (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("filterLow")
@@ -380,6 +399,11 @@ void Tooltips::addStandardTooltips() {
             << eqKillLatch;
 
     QString tempoDisplay = tr("Displays the tempo of the loaded track in BPM (beats per minute).");
+    // TODO Clarify this refers to 'file BPM', not playback rate?
+    QString bpmTapButton = tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+    QString tempoTapButton =
+            tr("When tapped repeatedly, adjusts the tempo to match the tapped "
+               "BPM.");
     add("visual_bpm")
             << tr("Tempo")
             << tempoDisplay;
@@ -391,7 +415,14 @@ void Tooltips::addStandardTooltips() {
 
     add("bpm_tap")
             << tr("BPM Tap")
-            << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+            << bpmTapButton;
+    add("tempo_tap")
+            << tr("Tempo Tap")
+            << tempoTapButton;
+    add("tempo_tap_bpm_tap")
+            << tr("Rate Tap and BPM Tap")
+            << QString("%1: %2").arg(leftClick, tempoTapButton)
+            << QString("%1: %2").arg(rightClick, bpmTapButton);
 
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
@@ -418,11 +449,30 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust Beatgrid")
             << tr("Adjust beatgrid to match another playing deck.");
 
-    //this is a special case, in some skins we might display a transparent png for bpm_tap on top of visual_bpm
+    add("beats_undo_adjustment")
+            << tr("Revert last BPM/Beatgrid Change")
+            << tr("Revert last BPM/Beatgrid Change of the loaded track.");
+
+    add("bpmlock")
+            << tr("Toggle the BPM/beatgrid lock")
+            << tr("Toggle the BPM/beatgrid lock");
+
+    // These are special cases:
+    // in some skins we display a transparent button for tempo_tap and/or bpm_tap
+    // on top of the visual_bpm display.
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
             << tempoDisplay
-            << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+            << bpmTapButton;
+    add("tempo_tap_visual_bpm")
+            << tr("Tempo and Rate Tap")
+            << tempoDisplay
+            << tempoTapButton;
+    add("tempo_tap_bpm_tap_visual_bpm")
+            << tr("Tempo, Rate Tap and BPM Tap")
+            << tempoDisplay
+            << QString("%1: %2").arg(leftClick, tempoTapButton)
+            << QString("%1: %2").arg(rightClick, bpmTapButton);
 
     add("shift_cues_earlier")
             << tr("Shift cues earlier")
@@ -653,6 +703,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
+    add("expand_samplers")
+            << tr("Expand/Collapse Samplers")
+            << tr("Toggle expanded samplers view.");
+
     // Status displays and toggle buttons
     add("recording_duration")
             << tr("Recording Duration")
@@ -675,17 +729,28 @@ void Tooltips::addStandardTooltips() {
             << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
 
-    add("vinylcontrol_enabled")
-            << tr("Enable Vinyl Control")
-            << tr("When disabled, the track is controlled by Mixxx playback controls.")
-            << tr("When enabled, the track responds to external vinyl control.");
+    QStringList vcStatus;
+    vcStatus << tr("Provides visual feedback for vinyl control status:")
+             << tr("Green for control enabled.")
+             << tr("Blinking yellow for when the needle reaches the end of the "
+                   "record.")
+             << tr("Red for when needle skip has been detected.");
+    QStringList vcEnabled;
+    vcEnabled << tr("Enable Vinyl Control")
+              << tr("When disabled, the track is controlled by Mixxx playback "
+                    "controls.")
+              << tr("When enabled, the track responds to external vinyl "
+                    "control.");
+
+    add("vinylcontrol_enabled") << vcEnabled;
 
     add("vinylcontrol_status")
-            << tr("Vinyl Status")
-            << tr("Provides visual feedback for vinyl control status:")
-            << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Blue for passthrough enabled.");
+            << tr("Vinyl Status") << vcStatus;
+
+    add("vinylcontrol_enabled_status")
+            << vcEnabled
+            << " " // generates a linebreak. \n would result in two linebrekas.
+            << vcStatus;
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
@@ -727,9 +792,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Loop Double")
             << tr("Doubles the current loop's length by moving the end marker.");
 
+    QString noBeatsSeconds = tr("If the track has no beats the unit is seconds.");
+
     add("beatloop_size")
             << tr("Beatloop Size")
             << tr("Select the size of the loop in beats to set with the Beatloop button.")
+            << noBeatsSeconds
             << tr("Changing this resizes the loop if the loop already matches this size.");
 
     add("beatloop_halve")
@@ -742,27 +810,44 @@ void Tooltips::addStandardTooltips() {
     add("beatloop_activate")
             << tr("Beatloop")
             << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
+            << noBeatsSeconds
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
+    add("loop_anchor")
+            << tr("Beatloop Anchor")
+            << tr("Define whether the loop is created and adjusted from its "
+                  "staring point or ending point.");
+
     add("beatjump_size")
             << tr("Beatjump/Loop Move Size")
+            << noBeatsSeconds
             << tr("Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.");
 
     add("beatjump_forward")
             << tr("Beatjump Forward")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
-            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
-            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
+            << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                       tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopActive,
+                       tr("Move the loop forward by the set number of beats."))
+            << QString("%1: %2").arg(rightClick + " " + loopInactive,
+                       tr("Jump forward by 1 beat."))
+            << QString("%1: %2").arg(rightClick + " " + loopActive,
+                       tr("Move the loop forward by 1 beat."))
+            << noBeatsSeconds;
 
     add("beatjump_backward")
             << tr("Beatjump Backward")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
-            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
-            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
+            << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                       tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopActive,
+                       tr("Move the loop backward by the set number of beats."))
+            << QString("%1: %2").arg(rightClick + " " + loopInactive,
+                       tr("Jump backward by 1 beat."))
+            << QString("%1: %2").arg(rightClick + " " + loopActive,
+                       tr("Move the loop backward by 1 beat."))
+            << noBeatsSeconds;
 
     add("loop_exit")
             << tr("Loop Exit")
@@ -799,7 +884,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_title")
             << tr("Track Title")
@@ -808,7 +894,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_album")
             << tr("Track Album")
@@ -817,7 +904,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_key")
             //: The musical key of a track
@@ -841,7 +929,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("time")
             << tr("Clock")

@@ -1,13 +1,13 @@
 #include "dialog/dlgabout.h"
 
 #include <QDebug>
-#include <QDesktopServices>
 #include <QFile>
 #include <QLocale>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
 #include "util/color/color.h"
+#include "util/desktophelper.h"
 #include "util/versionstore.h"
 
 DlgAbout::DlgAbout()
@@ -22,6 +22,7 @@ DlgAbout::DlgAbout()
     version_label->setText(VersionStore::applicationName() +
             QStringLiteral(" ") + VersionStore::version());
     git_version_label->setText(VersionStore::gitVersion());
+    qt_version_label->setText(VersionStore::qtVersion());
     platform_label->setText(VersionStore::platform());
     QLocale locale;
     date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
@@ -49,7 +50,6 @@ DlgAbout::DlgAbout()
             << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Daniel Sch&uuml;rmann"
-            << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
             << "Jan Holthuis"
@@ -57,42 +57,26 @@ DlgAbout::DlgAbout()
             << "Ferran Pujol Camins"
             << "J&ouml;rg Wartenberg"
             << "Fredrik Wieczerkowski"
-            << "Maarten de Boer";
+            << "Maarten de Boer"
+            << "Antoine Colombier";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
     // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
+            << "Be"
             << "Uwe Klotz"
-            << "Nino MP"
             << "D&aacute;vid Szak&aacute;llas"
-            << "Daniel Poelzleithner"
-            << "luzpaz"
-            << "Kshitij Gupta"
-            << "Sebastian Hasler"
             << "Philip Gottschling"
             << "Adam Szmigin"
-            << "Evan Dekker"
-            << "Harshit Maurya"
-            << "Janek Fischer"
-            << "Matthias Beyer"
-            << "Kristiyan Katsarov"
-            << "Sanskar Bajpai"
             << "Christian"
             << "Geraldo Nascimento"
-            << "Javier Vilarroig"
             << "Allen Wittenauer"
             << "Raphael Bigal"
             << "Filok"
             << "tcoyvwac"
-            << "Gary Tunstall"
             << "Tobias Oszlanyi (OsZ)"
-            << "Viktor Gal"
-            << "Maty&aacute;&scaron; Bobek"
-            << "Mr. Rincewind"
-            << "Stefan N&uuml;rnberger"
-            << "motific"
             << "Fatih Emre YILDIZ"
             << "Neil Naveen"
             << "Javier Vilalta"
@@ -105,19 +89,44 @@ DlgAbout::DlgAbout()
             << "Jakob Leifhelm"
             << "Florian Goth"
             << "Chase Durand"
-            << "Antoine Colombier"
             << "John Last"
+            << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
             << "Robbert van der Helm"
             << "Andrew Burns"
             << "Michael Wigard"
+            << "Alexandre Bique"
+            << "Milkii Brewster"
             << "djantti"
             << "Eugene Erokhin"
             << "Ben Duval"
             << "Nicolau Leal Werneck"
             << "David Guglielmi"
             << "Chris H. Meyer"
-            << "Mariano Ntrougkas";
+            << "Mariano Ntrougkas"
+            << "Daniel Fernandes"
+            << "Gr&eacute;goire Locqueville"
+            << "grizeldi"
+            << "codingspiderfox"
+            << "Ashnidh Khandelwal"
+            << "Sergey"
+            << "Raphael Quast"
+            << "Christophe Henry"
+            << "Lukas Waslowski"
+            << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
+            << "HorstBaerbel"
+            << "gqzomer"
+            << "Bacadam"
+            << "Leon Eckardt"
+            << "Th&eacute;odore Noel"
+            << "Aquassaut"
+            << "Morgan Nunan"
+            << "FrankwaP"
+            << "Markus Kohlhase"
+            << "Daniel Fernandes"
+            << "Frank Grimy"
+            << "Al Hadebe"
+            << "Emilien Colombier";
 
     QStringList specialThanks;
     specialThanks
@@ -365,7 +374,6 @@ DlgAbout::DlgAbout()
             << "David Baker"
             << "Justin Kourie"
             << "Waylon Robertson"
-            << "Al Hadebe"
             << "Ball&oacute; Gy&ouml;rgy"
             << "Pino Toscano"
             << "Alexander Horner"
@@ -375,7 +383,25 @@ DlgAbout::DlgAbout()
             << "Vincent Duez-Dellac"
             << "Somesh Metri"
             << "Doteya"
-            << "olafklingt";
+            << "olafklingt"
+            << "Nino MP"
+            << "Daniel Poelzleithner"
+            << "luzpaz"
+            << "Sebastian Hasler"
+            << "Kshitij Gupta"
+            << "Evan Dekker"
+            << "Harshit Maurya"
+            << "Janek Fischer"
+            << "Matthias Beyer"
+            << "Kristiyan Katsarov"
+            << "Sanskar Bajpai"
+            << "Javier Vilarroig"
+            << "Gary Tunstall"
+            << "Viktor Gal"
+            << "Maty&aacute;&scaron; Bobek"
+            << "Mr. Rincewind"
+            << "Stefan N&uuml;rnberger"
+            << "motific";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
@@ -410,7 +436,7 @@ DlgAbout::DlgAbout()
     }
     btnDonate->setText(tr("Donate"));
     connect(btnDonate, &QPushButton::clicked, this, [] {
-        QDesktopServices::openUrl(QUrl(MIXXX_DONATE_URL));
+        mixxx::DesktopHelper::openUrl(QUrl(MIXXX_DONATE_URL));
     });
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);

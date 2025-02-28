@@ -81,6 +81,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.fieldIndex(fieldName);
     }
 
+    void cutTracks(const QModelIndexList& indices) override;
+    void copyTracks(const QModelIndexList& indices) const override;
+    QList<int> pasteTracks(const QModelIndex& index) override;
+
     bool isColumnHiddenByDefault(
             int column) override;
 
@@ -100,6 +104,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int kBpmColumnPrecisionMinimum = 0;
     static constexpr int kBpmColumnPrecisionMaximum = 10;
     static void setBpmColumnPrecision(int precision);
+
+    static constexpr bool kApplyPlayedTrackColorDefault = true;
+    static void setApplyPlayedTrackColor(bool apply);
 
   protected:
     static constexpr int defaultColumnWidth() {
@@ -265,6 +272,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
+    QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
 
     ColumnCache m_columnCache;
 
@@ -281,4 +290,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
+
+    static bool s_bApplyPlayedTrackColor;
 };

@@ -37,6 +37,9 @@ class DlgPrefController : public DlgPreferencePage {
     void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
     void slotApply() override;
+    /// Called when the preferences are hidden, e.g. when closing the window
+    /// with the [X] button or keyboard shortcut
+    void slotHide() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
 
@@ -81,7 +84,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingPathFromIndex(int index) const;
+    QString mappingFilePathFromIndex(int index) const;
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
     bool saveMapping();

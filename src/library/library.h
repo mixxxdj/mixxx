@@ -86,17 +86,25 @@ class Library: public QObject {
         return m_trackTableFont;
     }
 
+    bool selectedClickEnabled() const {
+        return m_editMetadataSelectedClick;
+    }
+
     //static Library* buildDefaultLibrary();
 
     static const int kDefaultRowHeightPx;
 
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
-    void setEditMedatataSelectedClick(bool enable);
+    void setEditMetadataSelectedClick(bool enable);
 
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
+
+    bool requestAddDir(const QString& directory);
+    bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
+    bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
 
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
@@ -111,9 +119,6 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotRequestAddDir(const QString& directory);
-    void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
-    void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;
@@ -126,6 +131,7 @@ class Library: public QObject {
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();
+    void pasteFromSidebar();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void selectTrack(const TrackId&);
@@ -141,6 +147,8 @@ class Library: public QObject {
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
     void setSelectedClick(bool enable);
+
+    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   private slots:
       void onPlayerManagerTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>661</width>
-    <height>1203</height>
+    <height>1522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
       </item>
 
       <item row="0" column="1">
-       <widget class="QPushButton" name="PushButtonAddDir">
+       <widget class="QPushButton" name="pushButton_add_dir">
         <property name="font">
          <font/>
         </property>
@@ -54,7 +54,7 @@
       </item>
 
       <item row="1" column="1">
-       <widget class="QPushButton" name="PushButtonRelocateDir">
+       <widget class="QPushButton" name="pushButton_relocate_dir">
         <property name="toolTip">
          <string>If an existing music directory is moved, Mixxx doesn't know where to find the audio files in it. Choose Relink to select the music directory in its new location. &lt;br/&gt; This will re-establish the links to the audio files in the Mixxx library.</string>
         </property>
@@ -65,7 +65,7 @@
       </item>
 
       <item row="2" column="1">
-       <widget class="QPushButton" name="PushButtonRemoveDir">
+       <widget class="QPushButton" name="pushButton_remove_dir">
         <property name="font">
          <font/>
         </property>
@@ -119,26 +119,35 @@
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileTags">
      <property name="title">
-      <string>Track Metadata Synchronization</string>
+      <string>Track Metadata Synchronization / Playlists</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_metadata">
       <item row="0" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_SyncTrackMetadata">
-        <property name="text">
-         <string>Synchronize library track metadata from/to file tags</string>
-        </property>
+       <widget class="QCheckBox" name="checkBox_sync_track_metadata">
         <property name="toolTip">
          <string>Automatically write modified track metadata from the library into file tags and reimport metadata from updated file tags into the library</string>
         </property>
+        <property name="text">
+         <string>Synchronize library track metadata from/to file tags</string>
+        </property>
        </widget>
       </item>
+
       <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
+       <widget class="QCheckBox" name="checkBox_serato_metadata_export">
+        <property name="toolTip">
+         <string>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</string>
+        </property>
         <property name="text">
          <string>Synchronize Serato track metadata from/to file tags (experimental)</string>
         </property>
-        <property name="toolTip">
-         <string>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</string>
+       </widget>
+      </item>
+
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_use_relative_path">
+        <property name="text">
+         <string>Use relative paths for playlist export if possible</string>
         </property>
        </widget>
       </item>
@@ -154,7 +163,7 @@
      <layout class="QGridLayout" name="gridLayout_track_table_view">
 
       <item row="1" column="0" colspan="3">
-       <widget class="QCheckBox" name="checkBoxEditMetadataSelectedClicked">
+       <widget class="QCheckBox" name="checkBox_edit_metadata_selected_clicked">
         <property name="text">
          <string>Edit metadata after clicking selected track</string>
         </property>
@@ -162,7 +171,7 @@
       </item>
 
       <item row="2" column="0" colspan="3">
-       <widget class="QLabel" name="doubeClickActionLabel">
+       <widget class="QLabel" name="label_doubeClickAction">
         <property name="text">
          <string>Track Double-Click Action:</string>
         </property>
@@ -205,6 +214,58 @@
       </item>
 
       <item row="7" column="0">
+       <widget class="QLabel" name="label_rowHeight">
+        <property name="text">
+         <string>Library Row Height:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QSpinBox" name="spinBox_row_height">
+        <property name="suffix">
+         <string> px</string>
+        </property>
+        <property name="minimum">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>20</number>
+        </property>
+       </widget>
+      </item>
+
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_libraryFont">
+        <property name="text">
+         <string>Library Font:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="lineEdit_library_font">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QToolButton" name="btn_library_font">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="9" column="0">
        <widget class="QLabel" name="label_bpm_precision">
         <property name="text">
          <string>BPM display precision:</string>
@@ -214,14 +275,93 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="1" colspan="2">
-       <widget class="QSpinBox" name="spinbox_bpm_precision">
+      <item row="9" column="1" colspan="2">
+       <widget class="QSpinBox" name="spinbox_bpm_precision"/>
+      </item>
+
+      <item row="10" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkbox_played_track_color">
+        <property name="text">
+         <string>Grey out played tracks</string>
+        </property>
        </widget>
       </item>
 
      </layout>
     </widget>
    </item><!-- Track Table View -->
+
+   <item>
+    <widget class="QGroupBox" name="groupBox_Search">
+     <property name="title">
+      <string>Track Search</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_search">
+
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_searchDebouncingTimeout">
+        <property name="text">
+         <string>Search-as-you-type timeout:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QSpinBox" name="spinBox_search_debouncing_timeout">
+        <property name="suffix">
+         <string> ms</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkBox_enable_search_completions">
+        <property name="text">
+         <string>Enable search completions</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="2" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkBox_enable_search_history_shortcuts">
+        <property name="text">
+         <string>Enable search history keyboard shortcuts</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_searchBpmFuzzyRange">
+        <property name="text">
+         <string>Percentage of pitch slider range for 'fuzzy' BPM search:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>comboBox_search_bpm_fuzzy_range</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBox_search_bpm_fuzzy_range"/>
+      </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QLabel" name="label_searchBpmFuzzyRangeInfo">
+        <property name="text">
+         <string>This range will be used for the 'fuzzy' BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu &gt; Search related Tracks</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item><!-- Search box -->
 
    <item>
     <widget class="QGroupBox" name="groupBox_History">
@@ -290,110 +430,6 @@
      </layout>
     </widget>
    </item><!-- History -->
-
-   <item>
-    <widget class="QGroupBox" name="groupBox_Miscellaneous">
-     <property name="title">
-      <string>Miscellaneous</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_misc">
-
-      <item row="0" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_use_relative_path">
-        <property name="text">
-         <string>Use relative paths for playlist export if possible</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="1" column="0">
-       <widget class="QLabel" name="rowHeightLabel">
-        <property name="text">
-         <string>Library Row Height:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
-       <widget class="QSpinBox" name="spinBoxRowHeight">
-        <property name="suffix">
-         <string> px</string>
-        </property>
-        <property name="minimum">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>20</number>
-        </property>
-       </widget>
-      </item>
-
-      <item row="2" column="0">
-       <widget class="QLabel" name="libraryFontLabel">
-        <property name="text">
-         <string>Library Font:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="libraryFont">
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QToolButton" name="libraryFontButton">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="3" column="0">
-       <widget class="QLabel" name="searchDebouncingTimeoutLabel">
-        <property name="text">
-         <string>Search-as-you-type timeout:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QSpinBox" name="searchDebouncingTimeoutSpinBox">
-        <property name="suffix">
-         <string> ms</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="4" column="0" colspan="3">
-       <widget class="QCheckBox" name="checkBoxEnableSearchCompletions">
-        <property name="text">
-         <string>Enable search completions</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="3">
-       <widget class="QCheckBox" name="checkBoxEnableSearchHistoryShortcuts">
-        <property name="text">
-         <string>Enable search history keyboard shortcuts</string>
-        </property>
-       </widget>
-      </item>
-
-     </layout>
-    </widget>
-   </item>
 
    <item>
     <widget class="QGroupBox" name="groupBox_external_libraries">
@@ -466,11 +502,11 @@
         <property name="text">
          <string>All external libraries shown are write protected.</string>
         </property>
-        <property name="topMargin">
-         <number>10</number>
-        </property>
         <property name="wordWrap">
          <bool>true</bool>
+        </property>
+        <property name="topMargin" stdset="0">
+         <number>10</number>
         </property>
        </widget>
       </item>
@@ -507,19 +543,20 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>Note: ">1200 px" can fetch up to very large cover arts.</string>
+         <string>Note: &quot;&gt;1200 px&quot; can fetch up to very large cover arts.</string>
         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QRadioButton" name="radioButton_cover_art_fetcher_highest">
         <property name="text">
-         <string>>1200 px (if available)</string>
+         <string>&gt;1200 px (if available)</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -529,6 +566,7 @@
          <string>1200 px (if available)</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -538,6 +576,7 @@
          <string>500 px</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -547,6 +586,7 @@
          <string>250 px</string>
         </property>
         <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -573,9 +613,12 @@
       <item>
        <widget class="QLabel" name="label_settingsManualLink">
         <property name="text">
-         <string></string>
+         <string/>
         </property>
         <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
          <bool>true</bool>
         </property>
        </widget>
@@ -591,7 +634,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="PushButtonOpenSettingsDir">
+       <widget class="QPushButton" name="pushButton_open_settings_dir">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -624,27 +667,28 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>dirList</tabstop>
-  <tabstop>PushButtonAddDir</tabstop>
-  <tabstop>PushButtonRelocateDir</tabstop>
-  <tabstop>PushButtonRemoveDir</tabstop>
+  <tabstop>pushButton_add_dir</tabstop>
+  <tabstop>pushButton_relocate_dir</tabstop>
+  <tabstop>pushButton_remove_dir</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
-  <tabstop>checkBox_SyncTrackMetadata</tabstop>
-  <tabstop>checkBox_SeratoMetadataExport</tabstop>
-  <tabstop>checkBoxEditMetadataSelectedClicked</tabstop>
+  <tabstop>checkBox_sync_track_metadata</tabstop>
+  <tabstop>checkBox_serato_metadata_export</tabstop>
+  <tabstop>checkBox_use_relative_path</tabstop>
+  <tabstop>checkBox_edit_metadata_selected_clicked</tabstop>
   <tabstop>radioButton_dbclick_deck</tabstop>
   <tabstop>radioButton_dbclick_bottom</tabstop>
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
+  <tabstop>spinBox_row_height</tabstop>
+  <tabstop>btn_library_font</tabstop>
   <tabstop>spinbox_bpm_precision</tabstop>
+  <tabstop>checkbox_played_track_color</tabstop>
+  <tabstop>spinBox_search_debouncing_timeout</tabstop>
+  <tabstop>checkBox_enable_search_completions</tabstop>
+  <tabstop>checkBox_enable_search_history_shortcuts</tabstop>
+  <tabstop>comboBox_search_bpm_fuzzy_range</tabstop>
   <tabstop>spinbox_history_track_duplicate_distance</tabstop>
   <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
-  <tabstop>checkBox_use_relative_path</tabstop>
-  <tabstop>spinBoxRowHeight</tabstop>
-  <tabstop>libraryFont</tabstop>
-  <tabstop>libraryFontButton</tabstop>
-  <tabstop>searchDebouncingTimeoutSpinBox</tabstop>
-  <tabstop>checkBoxEnableSearchCompletions</tabstop>
-  <tabstop>checkBoxEnableSearchHistoryShortcuts</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>
@@ -655,7 +699,7 @@
   <tabstop>radioButton_cover_art_fetcher_high</tabstop>
   <tabstop>radioButton_cover_art_fetcher_medium</tabstop>
   <tabstop>radioButton_cover_art_fetcher_lowest</tabstop>
-  <tabstop>PushButtonOpenSettingsDir</tabstop>
+  <tabstop>pushButton_open_settings_dir</tabstop>
  </tabstops>
  <resources/>
  <connections/>

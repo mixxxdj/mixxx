@@ -93,7 +93,7 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
     if (input_name == "Launchpad X LPX DAW Out" && output_name == "Launchpad X LPX DAW In") {
         return true;
     }
-    
+
     return false;
 }
 

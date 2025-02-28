@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/types.h"
 #include "engine/filters/enginefilteriir.h"
 
 #ifdef _MSC_VER
@@ -12,9 +13,12 @@
 class EngineFilterBiquad1LowShelving : public EngineFilterIIR<5, IIR_BP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1LowShelving(int sampleRate, double centerFreq, double Q);
-    void setFrequencyCorners(int sampleRate, double centerFreq,
-                             double Q, double dBgain);
+    EngineFilterBiquad1LowShelving(
+            mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
+    void setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+            double centerFreq,
+            double Q,
+            double dBgain);
 
   private:
     char m_spec[FIDSPEC_LENGTH];
@@ -23,9 +27,11 @@ class EngineFilterBiquad1LowShelving : public EngineFilterIIR<5, IIR_BP> {
 class EngineFilterBiquad1Peaking : public EngineFilterIIR<5, IIR_BP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1Peaking(int sampleRate, double centerFreq, double Q);
-    void setFrequencyCorners(int sampleRate, double centerFreq,
-                             double Q, double dBgain);
+    EngineFilterBiquad1Peaking(mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
+    void setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+            double centerFreq,
+            double Q,
+            double dBgain);
 
   private:
     char m_spec[FIDSPEC_LENGTH];
@@ -34,9 +40,12 @@ class EngineFilterBiquad1Peaking : public EngineFilterIIR<5, IIR_BP> {
 class EngineFilterBiquad1HighShelving : public EngineFilterIIR<5, IIR_BP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1HighShelving(int sampleRate, double centerFreq, double Q);
-    void setFrequencyCorners(int sampleRate, double centerFreq,
-                             double Q, double dBgain);
+    EngineFilterBiquad1HighShelving(
+            mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
+    void setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+            double centerFreq,
+            double Q,
+            double dBgain);
 
   private:
     char m_spec[FIDSPEC_LENGTH];
@@ -45,9 +54,11 @@ class EngineFilterBiquad1HighShelving : public EngineFilterIIR<5, IIR_BP> {
 class EngineFilterBiquad1Low : public EngineFilterIIR<2, IIR_LP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1Low(int sampleRate, double centerFreq, double Q,
-                           bool startFromDry);
-    void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
+    EngineFilterBiquad1Low(mixxx::audio::SampleRate sampleRate,
+            double centerFreq,
+            double Q,
+            bool startFromDry);
+    void setFrequencyCorners(mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
 
   private:
     char m_spec[FIDSPEC_LENGTH];
@@ -56,8 +67,8 @@ class EngineFilterBiquad1Low : public EngineFilterIIR<2, IIR_LP> {
 class EngineFilterBiquad1Band : public EngineFilterIIR<2, IIR_BP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1Band(int sampleRate, double centerFreq, double Q);
-    void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
+    EngineFilterBiquad1Band(mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
+    void setFrequencyCorners(mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
 
   private:
     char m_spec[FIDSPEC_LENGTH];
@@ -66,9 +77,11 @@ class EngineFilterBiquad1Band : public EngineFilterIIR<2, IIR_BP> {
 class EngineFilterBiquad1High : public EngineFilterIIR<2, IIR_HP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1High(int sampleRate, double centerFreq, double Q,
-                            bool startFromDry);
-    void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
+    EngineFilterBiquad1High(mixxx::audio::SampleRate sampleRate,
+            double centerFreq,
+            double Q,
+            bool startFromDry);
+    void setFrequencyCorners(mixxx::audio::SampleRate sampleRate, double centerFreq, double Q);
 
   private:
     char m_spec[FIDSPEC_LENGTH];

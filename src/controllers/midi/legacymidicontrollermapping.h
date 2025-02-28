@@ -7,14 +7,10 @@
 
 /// Represents a MIDI controller mapping, containing the data elements that make
 /// it up.
-class LegacyMidiControllerMapping : public LegacyControllerMapping {
+class LegacyMidiControllerMapping final : public LegacyControllerMapping {
   public:
     LegacyMidiControllerMapping(){};
     virtual ~LegacyMidiControllerMapping(){};
-
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        return std::make_shared<LegacyMidiControllerMapping>(*this);
-    }
 
     bool saveMapping(const QString& fileName) const override;
 
@@ -23,6 +19,8 @@ class LegacyMidiControllerMapping : public LegacyControllerMapping {
     // Input mappings
     void addInputMapping(uint16_t key, const MidiInputMapping& mapping);
     void removeInputMapping(uint16_t key);
+    bool removeInputMapping(uint16_t key, const MidiInputMapping& mapping);
+    void removeInputHandlerMappings();
     const QMultiHash<uint16_t, MidiInputMapping>& getInputMappings() const;
     void setInputMappings(const QMultiHash<uint16_t, MidiInputMapping>& mappings);
 

@@ -98,7 +98,7 @@ NK2.bankSelect = function bankSelect(deck, bank) {
     }else if (NK2.curNSMR=="R"){
         NK2.LEDBankIndicator=NK2.Rbutton[NK2.curDeck];
     }
-    if (NK2.LEDflasheson===true){engine.stopTimer(NK2.LEDtimer);NK2.LEDtimer=engine.beginTimer(750, NK2.indicatorLEDs);}//start timer for LED indicator flasher
+    if (NK2.LEDflasheson===true) { engine.stopTimer(NK2.LEDtimer); NK2.LEDtimer=engine.beginTimer(750, NK2.indicatorLEDs); }//start timer for LED indicator flasher
     NK2.updateLEDs();
 };
 
@@ -512,9 +512,9 @@ NK2.toggleBinaryControlAll = function toggleBinaryControlAll(control){
 NK2.wavezoomAll = function wavezoomAll(value){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
 
-    var range=10-1;
+    const range=10-1;
     var newValue=Math.round(1+((value/127)*range));
-    if (newValue>10)newValue=10;
+    if (newValue>10) { newValue=10; }
     if (newValue<1)newValue=1;
     if (NK2.lastwavevalue!=value){
         for (var i=1; i<9; i++){
@@ -528,9 +528,9 @@ NK2.wavezoomDeck = function wavezoomDeck(value, group){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (group=="default"){group=NK2.Deck[NK2.curDeck];};
 
-    var range=10-1;
+    const range=10-1;
     var newValue=Math.round(1+((value/127)*range));
-    if (newValue>10)newValue=10;
+    if (newValue>10) { newValue=10; }
     if (newValue<1)newValue=1;
     if (NK2.lastwavevalue!=value){
         engine.setValue(group, "waveform_zoom", newValue);

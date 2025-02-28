@@ -201,9 +201,9 @@ void CueControl::createControls() {
 
     m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
     setHotcueFocusIndex(Cue::kNoHotCue);
-    m_pHotcueFocusColorPrev = std::make_unique<ControlObject>(
+    m_pHotcueFocusColorPrev = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "hotcue_focus_color_prev"));
-    m_pHotcueFocusColorNext = std::make_unique<ControlObject>(
+    m_pHotcueFocusColorNext = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "hotcue_focus_color_next"));
 
     // Create hotcue controls
@@ -542,7 +542,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekOnLoad(mixxx::audio::kStartFramePos);
         }
-        break;
+        return;
     case SeekOnLoadMode::FirstSound: {
         CuePointer pN60dBSound =
                 pNewTrack->findCueByType(mixxx::CueType::N60dBSound);
@@ -567,8 +567,19 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pCuePoint->get());
         if (mainCuePosition.isValid()) {
             seekOnLoad(mainCuePosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
+        }
+        break;
+    }
+    case SeekOnLoadMode::FirstHotcue: {
+        mixxx::audio::FramePos firstHotcuePosition;
+        HotcueControl* pControl = m_hotcueControls.value(0, nullptr);
+        if (pControl) {
+            firstHotcuePosition = pControl->getPosition();
+            if (firstHotcuePosition.isValid()) {
+                seekOnLoad(firstHotcuePosition);
+                return;
+            }
         }
         break;
     }
@@ -578,16 +589,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pIntroStartPosition->get());
         if (introStartPosition.isValid()) {
             seekOnLoad(introStartPosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
         }
         break;
     }
     default:
         DEBUG_ASSERT(!"Unknown enum value");
-        seekOnLoad(mixxx::audio::kStartFramePos);
         break;
     }
+    seekOnLoad(mixxx::audio::kStartFramePos);
 }
 
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
@@ -2266,10 +2276,7 @@ bool CueControl::isTrackAtIntroCue() {
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
-    int configValue =
-            getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                    static_cast<int>(SeekOnLoadMode::IntroStart));
-    return static_cast<SeekOnLoadMode>(configValue);
+    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), SeekOnLoadMode::IntroStart);
 }
 
 void CueControl::hotcueFocusColorPrev(double value) {

@@ -42,15 +42,6 @@ if(NOT CPACK_DEBIAN_GPG_RET EQUAL "0")
     SET(CPACK_DEBIAN_DEBUILD_NOSIGN "--no-sign")
 endif()
 
-# hack to advance the version from the legacy version like this:
-# dpkg --compare-versions 2.4.0~alpha~pre1~git7859  lt 2.4.0~alpha2~5463~gf2da9e619d && echo true
-# and from changing to --first-parent
-# dpkg --compare-versions 2.4.0~alpha1~6372~g0244af2e04-1~impish lt 2.4.0~alpha2~805~g4f13bc1d5d-1~impish && echo true
-# dpkg --compare-versions 2.4.0~alpha2~5463~gf2da9e619d lt 2.4.0 && echo true
-if(DEB_UPLOAD_PPA MATCHES "nightlies")
-  string(REPLACE "2.4~alpha~" "2.4.0~alpha2~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_PACKAGE_VERSION}")
-endif()
-
 message(NOTICE "Creating mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}.orig.tar.gz")
 execute_process(
   COMMAND tar -czf "mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}.orig.tar.gz" ${CPACK_PACKAGE_FILE_NAME}
@@ -97,10 +88,10 @@ endif()
 
 foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
 
-  if (RELEASE STREQUAL "bionic")
-    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libmp4v2-dev,")
+  if (RELEASE STREQUAL "jammy")
+    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libqt6shadertools6-dev,")
   else()
-    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavformat-dev,")
+    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "qt6-shadertools-dev,")
   endif()
 
   configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/packaging/debian/control.in

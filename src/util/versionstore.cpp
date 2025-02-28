@@ -5,15 +5,8 @@
 #include <QStandardPaths>
 #include <QtGlobal>
 
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
 #ifdef __BROADCAST__
 #include <shoutidjc/shout.h>
-#endif
-#ifdef WIN64
-#undef WIN32
 #endif
 
 #ifdef __RUBBERBAND__
@@ -86,6 +79,8 @@ QString VersionStore::platform() {
     QString base = QStringLiteral("FreeBSD");
 #elif defined(__BSD__)
     QString base = QStringLiteral("BSD");
+#elif defined(__EMSCRIPTEN__)
+    QString base = QStringLiteral("Emscripten");
 #else
     QString base = QStringLiteral("Unknown OS");
 #endif
@@ -112,6 +107,10 @@ QString VersionStore::platform() {
         defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) ||   \
         defined(_M_PPC)
     base.append(" PowerPC");
+#elif defined(__wasm32__)
+    base.append(" Wasm32");
+#elif defined(__wasm__)
+    base.append(" Wasm");
 #endif
 
     return base;
@@ -140,6 +139,11 @@ QString VersionStore::gitVersion() {
     }
 
     return gitVersion;
+}
+
+// static
+QString VersionStore::qtVersion() {
+    return qVersion();
 }
 
 // static

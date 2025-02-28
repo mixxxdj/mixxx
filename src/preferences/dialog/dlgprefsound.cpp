@@ -66,11 +66,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::apiChanged);
 
     sampleRateComboBox->clear();
-    for (auto& srate : m_pSoundManager->getSampleRates()) {
-        if (srate > 0) {
+    const auto sampleRates = m_pSoundManager->getSampleRates();
+    for (const auto& sampleRate : sampleRates) {
+        if (sampleRate.isValid()) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(tr("%1 Hz").arg(srate), srate);
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate));
         }
     }
     connect(sampleRateComboBox,
@@ -434,7 +436,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
     }
-    int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
+    int sampleRateIndex = sampleRateComboBox->findData(
+            QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
@@ -561,8 +564,7 @@ void DlgPrefSound::updateAPIs() {
 /// Slot called when the sample rate combo box changes to update the
 /// sample rate in the config.
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(
-            sampleRateComboBox->itemData(index).toUInt());
+    m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
@@ -623,7 +625,11 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                 static_cast<unsigned int>(SoundManagerConfig::
                                 JackAudioBufferSizeIndex::Size4096fpp));
     } else {
-        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
+        DEBUG_ASSERT(sampleRateComboBox->itemData(sampleRateIndex)
+                             .canConvert<mixxx::audio::SampleRate>());
+        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
+                                    .value<mixxx::audio::SampleRate>()
+                                    .toDouble();
         unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
         // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
         // don't right now!), so we iterate over all the buffer sizes until we

@@ -16,6 +16,7 @@
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefmixer.cpp"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 #include "util/rescaler.h"
 
@@ -52,7 +53,7 @@ constexpr int kFrequencyLowerLimit = 16;
 constexpr int kXfaderGridHLines = 3;
 constexpr int kXfaderGridVLines = 5;
 
-bool isMixingEQ(EffectManifest* pManifest) {
+bool isMixingEQ(const EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
@@ -470,7 +471,6 @@ void DlgPrefMixer::slotResetToDefaults() {
 
     setDefaultShelves();
     comboBoxMainEq->setCurrentIndex(0); // '---' no EQ
-    slotApply();
 }
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
@@ -1200,11 +1200,11 @@ const QList<EffectManifestPointer> DlgPrefMixer::getDeckEqManifests() const {
             allManifests.end(),
             [](const auto& pManifest) { return isMixingEQ(pManifest.data()); });
     if (m_eqEffectsOnly) {
-        allManifests.erase(nonEqsStartIt, allManifests.end());
+        erase(&allManifests, nonEqsStartIt, allManifests.end());
     } else {
         // Add a null item between EQs and non-EQs. The combobox fill function
         // will use this to insert a separator.
-        allManifests.insert(nonEqsStartIt, EffectManifestPointer());
+        insert(&allManifests, nonEqsStartIt, EffectManifestPointer());
     }
     return allManifests;
 }
