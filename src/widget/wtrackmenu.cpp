@@ -28,6 +28,11 @@
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
+// EVE
+#include "library/trackset/searchcrate/searchcrate.h"
+#include "library/trackset/searchcrate/searchcratefeaturehelper.h"
+#include "library/trackset/searchcrate/searchcratesummary.h"
+// EVE
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
@@ -187,6 +192,18 @@ void WTrackMenu::createMenus() {
         m_pCrateMenu->setObjectName("CratesMenu");
         connect(m_pCrateMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateCrateMenu);
     }
+
+    // EVE -> SMARTIES
+    if (featureIsEnabled(Feature::SearchCrate)) {
+        m_pSearchCrateMenu = make_parented<QMenu>(this);
+        m_pSearchCrateMenu->setTitle(tr("SearchCrate"));
+        m_pSearchCrateMenu->setObjectName("SearchCrateMenu");
+        connect(m_pSearchCrateMenu,
+                &QMenu::aboutToShow,
+                this,
+                &WTrackMenu::slotPopulateSearchCrateMenu);
+    }
+    // EVE
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu = make_parented<QMenu>(this);
@@ -498,7 +515,7 @@ void WTrackMenu::createActions() {
         connect(m_pBpmLockAction, &QAction::triggered, this, &WTrackMenu::slotLockBpm);
         connect(m_pBpmUnlockAction, &QAction::triggered, this, &WTrackMenu::slotUnlockBpm);
 
-        //BPM edit actions
+        // BPM edit actions
         m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
         m_pBpmHalveAction = make_parented<QAction>(tr("Halve BPM"), m_pBPMMenu);
@@ -1081,6 +1098,14 @@ void WTrackMenu::updateMenus() {
         m_bCrateMenuLoaded = false;
     }
 
+    // EVE -> SMARTIES
+    if (featureIsEnabled(Feature::SearchCrate)) {
+        // SearchCrate menu is lazy loaded on hover by slotPopulateSearchCrateMenu
+        // to avoid unnecessary database queries
+        m_bSearchCrateMenuLoaded = false;
+    }
+    // EVE
+
     if (featureIsEnabled(Feature::Remove)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
@@ -1650,6 +1675,75 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_bCrateMenuLoaded = true;
 }
 
+// EVE -> SMARTIES
+void WTrackMenu::slotPopulateSearchCrateMenu() {
+    // The user may open the SearchCrate submenu, move their cursor away, then
+    // return to the SearchCrate submenu before exiting the track context menu.
+    // Avoid querying the database multiple times in that case.
+    if (m_bSearchCrateMenuLoaded) {
+        return;
+    }
+    m_pSearchCrateMenu->clear();
+    const TrackIdList trackIds = getTrackIds();
+
+    SearchCrateSummarySelectResult allSearchCrate(
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->searchCrates()
+                    .selectSearchCrateWithTrackCount(trackIds));
+
+    SearchCrateSummary searchCrate;
+    while (allSearchCrate.populateNext(&searchCrate)) {
+        auto pAction = make_parented<QWidgetAction>(
+                m_pSearchCrateMenu);
+        auto pCheckBox = make_parented<QCheckBox>(
+                mixxx::escapeTextPropertyWithoutShortcuts(searchCrate.getName()),
+                m_pSearchCrateMenu);
+        pCheckBox->setProperty("searchCrateId", QVariant::fromValue(searchCrate.getId()));
+        pCheckBox->setEnabled(!searchCrate.isLocked());
+        // Strangely, the normal styling of QActions does not automatically
+        // apply to QWidgetActions. The :selected pseudo-state unfortunately
+        // does not work with QWidgetAction. :hover works for selecting items
+        // with the mouse, but not with the keyboard. :focus works for the
+        // keyboard but with the mouse, the last clicked item keeps the style
+        // after the mouse cursor is moved to hover over another item.
+
+        // ronso0 Disabling this stylesheet allows to override the OS style
+        // of the :hover and :focus state.
+        //        pCheckBox->setStyleSheet(
+        //            QString("QCheckBox {color: %1;}").arg(
+        //                    pCheckBox->palette().text().color().name()) + "\n" +
+        //            QString("QCheckBox:hover {background-color: %1;}").arg(
+        //                    pCheckBox->palette().highlight().color().name()));
+        pAction->setEnabled(!searchCrate.isLocked());
+        pAction->setDefaultWidget(pCheckBox.get());
+
+        if (searchCrate.getTrackCount() == 0) {
+            pCheckBox->setChecked(false);
+        } else if (searchCrate.getTrackCount() == (uint)trackIds.length()) {
+            pCheckBox->setChecked(true);
+        } else {
+            pCheckBox->setTristate(true);
+            pCheckBox->setCheckState(Qt::PartiallyChecked);
+        }
+
+        m_pSearchCrateMenu->addAction(pAction.get());
+        //        connect(pAction.get(), &QAction::triggered, this, [this,
+        //        pCheckBox{pCheckBox.get()}] {
+        //        updateSelectionSearchCrate(pCheckBox); });
+        //        connect(pCheckBox.get(), &QCheckBox::stateChanged, this,
+        //        [this, pCheckBox{pCheckBox.get()}] {
+        //        updateSelectionSearchCrate(pCheckBox); });
+    }
+    m_pSearchCrateMenu->addSeparator();
+    //    QAction* newSearchCrateAction = new QAction(tr("Add to New SearchCrate"),
+    //    m_pSearchCrateMenu); m_pSearchCrateMenu->addAction(newSearchCrateAction);
+    //    connect(newSearchCrateAction, &QAction::triggered, this,
+    //    &WTrackMenu::addSelectionToNewSearchCrate);
+    m_bSearchCrateMenuLoaded = true;
+}
+// EVE
+
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
@@ -1981,7 +2075,7 @@ class ResetPlayCounterTrackPointerOperation : public mixxx::TrackPointerOperatio
 
 } // anonymous namespace
 
-//slot for reset played count, sets count to 0 of one or more tracks
+// slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
     const auto progressLabelText =
             tr("Resetting play count of %n track(s)", "", getTrackCount());
@@ -2030,7 +2124,7 @@ class ResetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-//slot for reset played count, sets count to 0 of one or more tracks
+// slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearRating() {
     const auto progressLabelText =
             tr("Clearing rating of %n track(s)", "", getTrackCount());
@@ -2053,7 +2147,7 @@ class ClearCommentTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-//slot for clearing the comment field of one or more tracks
+// slot for clearing the comment field of one or more tracks
 void WTrackMenu::slotClearComment() {
     const auto progressLabelText =
             tr("Clearing comment of %n track(s)", "", getTrackCount());
