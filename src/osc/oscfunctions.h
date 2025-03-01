@@ -134,7 +134,8 @@ void oscFunctionsSendPtrType(
         //                ->getValue(ConfigKey(
         //                        receiver.first, receiver.second + "Ip"))
         //                .toLocal8Bit();
-        for (const auto& receiver : s_receiverConfigs) {
+        // for (const auto& receiver : s_receiverConfigs) {
+        for (const auto& receiver : std::as_const(s_receiverConfigs)) {
             if (receiver.first) { // Check if the receiver is active
                 QByteArray receiverIpBa = receiver.second.toLocal8Bit();
                 sendOscMessage(receiverIpBa.data(),

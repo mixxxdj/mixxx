@@ -199,7 +199,7 @@ class OscReceivePacketListener : public osc::OscPacketListener {
             qDebug() << "[OSC] doGetT triggered oscIn.oscGroup" << oscIn.oscGroup
                      << " oscIn.oscKey " << oscIn.oscKey;
         }
-        QString searchOscKey = QString(oscIn.oscGroup + oscIn.oscKey);
+        // QString searchOscKey = QString(oscIn.oscGroup + oscIn.oscKey);
         if (sDebug) {
             qDebug() << "[OSC] Msg Rcvd: Get Group, TrackInfo: " << oscIn.oscGroup
                      << "," << oscIn.oscKey;
