@@ -62,7 +62,7 @@ jobs:
               echo "Branch ${SYNC_BRANCH} was not modified."
             else
               echo "Branch ${SYNC_BRANCH} was modified, either delete it or update it yourself."
-              echo "skip_sync=true" >> $GITHUB_OUTPUT
+              echo "branch_exists=true" >> $GITHUB_OUTPUT
             fi
           else
             echo "Branch ${SYNC_BRANCH} does not exist yet."
@@ -71,26 +71,33 @@ jobs:
           SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
 
       - name: "Merge Changes"
-        if: steps.check_sync.outputs.skip_sync != 'true'
         run: |
           echo "::group::Fetching and merging branches"
-          git fetch origin "${TO_BRANCH}" "${FROM_BRANCH}"
-          git checkout "origin/${TO_BRANCH}"
-          git checkout -b "${SYNC_BRANCH}"
+          if [ "${BRANCH_EXISTS}" = true ]; then
+            git fetch origin "${SYNC_BRANCH}" "${FROM_BRANCH}"
+            git checkout "${SYNC_BRANCH}"
+          else
+            git fetch origin "${TO_BRANCH}" "${FROM_BRANCH}"
+            git checkout "origin/${TO_BRANCH}"
+            git checkout -b "${SYNC_BRANCH}"
+          fi
           git config --global user.email "${SYNC_COMMITTER_EMAIL}"
           git config --global user.name "${SYNC_COMMITTER_NAME}"
           git pull --no-edit origin "${FROM_BRANCH}" || true
           COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
-          COMMIT_MERGE="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
+          COMMIT_MERGE="$(git show --no-patch --format="%h" "origin/${SYNC_BRANCH}")"
           git status
           echo "::endgroup::"
           if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
             echo "::warning:: No changes (or merge conflict), skipping push and PR creation."
           else
-            git push --force origin "${SYNC_BRANCH}"
-            gh pr create -B "${FROM_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --labels "sync-branches"
+            git push origin "${SYNC_BRANCH}"
+            if [ ! "${BRANCH_EXISTS}" = true ]; then
+              gh pr create -B "${FROM_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --labels "sync-branches"
+            fi
           fi
         env:
+          BRANCH_EXISTS: ${{ steps.check_sync.outputs.branch_exists }}
           FROM_BRANCH: ${{ matrix.from_branch}}
           TO_BRANCH: ${{ matrix.to_branch }}
           SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
