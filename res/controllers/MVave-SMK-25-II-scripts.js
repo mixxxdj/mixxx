@@ -116,15 +116,19 @@ var SMK25II;
             this.deckLeftButton = new components.Button({
                 group: "[Channel1]",
                 midi: [0x90, 0x2E], // << Channel Left Button
-                inToggle: function() {
-                    SMK25II.controller.activeDeck.setCurrentDeck("[Channel1]");
+                input: function(_channel, _control, value, _status, _group) {
+                    if (value === 0x00) {
+                        SMK25II.controller.activeDeck.setCurrentDeck("[Channel1]");
+                    }
                 },
             });
             this.deckRightButton = new components.Button({
                 group: "[Channel2]",
                 midi: [0x90, 0x2F], // >> Channel Right button
-                inToggle: function() {
-                    SMK25II.controller.activeDeck.setCurrentDeck("[Channel2]");
+                input: function(_channel, _control, value, _status, _group) {
+                    if (value === 0x00) {
+                        SMK25II.controller.activeDeck.setCurrentDeck("[Channel2]");
+                    }
                 },
             });
             // Drum Pads
@@ -154,43 +158,52 @@ var SMK25II;
     const decodeButton = function(data) {
         // Hotcues
         if (data[4] !== undefined && data[4] >= 0x00 && data[4] <= 0x07) {
-            SMK25II.controller.activeDeck.hotcues[data[4]].inToggle();
+            // This controller appears to send the release message immediately
+            // even if you're still holding the button down.
+            const button = SMK25II.controller.activeDeck.hotcues[data[4]];
+            button.input(undefined, undefined, data[5], undefined, undefined);
             return;
         }
         // Other media buttons
         switch (data[4]) {
         case 0x5D: {
-            SMK25II.controller.activeDeck.cueButton.inToggle();
+            const button = SMK25II.controller.activeDeck.cueButton;
+            button.input(button.channel, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x5E: {
-            if (data[5] === 0x00) {
-                SMK25II.controller.activeDeck.playButton.inToggle();
-            }
+					  const button = SMK25II.controller.activeDeck.playButton;
+					  button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x5B: {
-            SMK25II.controller.activeDeck.backButton.inToggle();
+            const button = SMK25II.controller.activeDeck.backButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x5C: {
-            SMK25II.controller.activeDeck.forwardButton.inToggle();
+            const button = SMK25II.controller.activeDeck.forwardButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x5F: {
-            SMK25II.controller.recordButton.inToggle();
+            const button = SMK25II.controller.recordButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x2E: {
-            SMK25II.controller.deckLeftButton.inToggle();
+            const button = SMK25II.controller.deckLeftButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x2F: {
-            SMK25II.controller.deckRightButton.inToggle();
+            const button = SMK25II.controller.deckRightButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x4C: {
-            SMK25II.controller.activeDeck.loopButton.inToggle();
+            const button = SMK25II.controller.activeDeck.loopButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         default:
