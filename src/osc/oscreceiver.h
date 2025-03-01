@@ -29,8 +29,6 @@ class OscReceiver {
     UserSettingsPointer m_pConfig;
 };
 void runOscReceiver(UserSettingsPointer pConfig);
-// void runOscReceiver(int oscPortIn, UserSettingsPointer pConfig);
-// void runOscReceiver();
 void oscReceiverMain(UserSettingsPointer pConfig);
 void loadOscConfiguration(UserSettingsPointer pConfig);
 
@@ -38,7 +36,6 @@ void loadOscConfiguration(UserSettingsPointer pConfig);
 QMutex m_mutex;
 QReadWriteLock m_configLock;
 
-//    std::atomic<bool> m_stopFlag;
 QDateTime m_lastResponseTime;
 int m_oscPortIn;
 

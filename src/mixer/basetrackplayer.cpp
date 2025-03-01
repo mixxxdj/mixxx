@@ -35,7 +35,6 @@ inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
 // EveOSC
 extern std::atomic<bool> s_oscEnabled;
 void oscChangedPlayState(
-        // UserSettingsPointer pConfig,
         const QString& oscGroup,
         float playstate);
 // EveOSC
@@ -963,10 +962,8 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }
     //  EveOSC begin
-    // if (m_pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
     if (s_oscEnabled.load()) {
         oscChangedPlayState(
-                // m_pConfig,
                 getGroup(),
                 (float)value);
     }
