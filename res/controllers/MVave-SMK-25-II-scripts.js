@@ -145,7 +145,7 @@ var SMK25II;
         SMK25II.controller.shutdown();
     };
 
-    const MMCHeader = [0xF0, 0x35, 0x59];
+    const SysexHeader = [0xF0, 0x35, 0x59];
 
     /**
      *
@@ -194,7 +194,7 @@ var SMK25II;
             break;
         }
         default:
-            console.log(`unrecognized MMC command: ${data[4]}`);
+            console.log(`unrecognized Sysex command: ${data[4]}`);
         }
     };
 
@@ -249,20 +249,20 @@ var SMK25II;
     /**
      *
      * @param data the sysex message data
-     * @param length the length of the data (no longer used)
+     * @param _length the length of the data (no longer used)
      */
-    SMK25II.incomingData = function(data, length) {
-        if (length < 6) {
+    SMK25II.incomingData = function(data, _length) {
+        if (data.length < 6) {
             console.log(`expected sysex packet of length 6, got ${length}`);
             return;
         }
-        for (let n = 0; n < MMCHeader.length; n++) {
-            if (data[n] !== MMCHeader[n]) {
+        for (let n = 0; n < SysexHeader.length; n++) {
+            if (data[n] !== SysexHeader[n]) {
                 console.log("unknown sysex packet");
                 return;
             }
         }
-        if (data[length - 1] !== 0xF7) {
+        if (data[data.length - 1] !== 0xF7) {
             console.log("sysex packet missing trailer");
             return;
         }
