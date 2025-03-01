@@ -21,7 +21,6 @@ jobs:
               -DQT6=ON
               -DQML=ON
               -DBULK=ON
-              -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
@@ -90,13 +89,8 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
-            # TODO: Re-enable FFmpeg after licensing issues have been clarified
-            # Attention: If you change the cmake_args for the Windows CI build,
-            #            also adjust the for the local Windows build setup in
-            #            ./tools/windows_buildenv.bat
             cmake_args: >-
               -DBULK=ON
-              -DFFMPEG=OFF
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
