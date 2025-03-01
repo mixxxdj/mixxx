@@ -206,42 +206,43 @@ var SMK25II;
         switch (data[3]) {
         case 0x60: {
             const knob = SMK25II.controller.activeDeck.gainKnob;
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             knob.inSetParameter(knob.inValueScale(data[5]));
             break;
         }
         case 0x61: {
             const knob = SMK25II.controller.activeDeck.highKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x62: {
             const knob = SMK25II.controller.activeDeck.midKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x63: {
             const knob = SMK25II.controller.activeDeck.lowKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x64: {
             const knob = SMK25II.controller.activeDeck.effectKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x65: {
             const knob = SMK25II.controller.xfadeKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x66: {
             const knob = SMK25II.controller.headGainKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x67: {
             const knob = SMK25II.controller.gainKnob;
-            knob.inSetParameter(knob.inValueScale(data[5]));
+            knob.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         }
