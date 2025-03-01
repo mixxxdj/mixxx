@@ -31,18 +31,43 @@ const QString kViewName = QStringLiteral("Auto DJ");
 namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
-    int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
-        int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
-        // If the AutoDJ playlist does not exist yet then create it.
-        if (playlistId < 0) {
-            playlistId = playlistDAO.createPlaylist(
-                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-            VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
-                qWarning() << "Failed to create Auto DJ playlist!";
-            }
+int findOrCreateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
+    int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the AutoDJ playlist does not exist yet then create it.
+    if (playlistId < 0) {
+        playlistId = playlistDAO.createPlaylist(
+                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+            qWarning() << "Failed to create Auto DJ playlist!";
         }
-        return playlistId;
     }
+    return playlistId;
+}
+
+/// Create a title for the Auto DJ node
+QString createAutoDjTitle(const QString& name,
+        int count,
+        mixxx::Duration duration,
+        bool showCountRemaining,
+        bool showTimeRemaining) {
+    QString result(name);
+
+    // Show duration and track count only if Auto DJ queue has tracks
+    if (count > 0 && showCountRemaining) {
+        result.append(QStringLiteral(" ("));
+        result.append(QString::number(count));
+        result.append(QStringLiteral(")"));
+    }
+
+    if (count > 0 && showTimeRemaining) {
+        result.append(QStringLiteral(" "));
+        result.append(mixxx::Duration::formatTime(
+                duration.toDoubleSeconds(),
+                mixxx::Duration::Precision::SECONDS));
+    }
+
+    return result;
+}
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
@@ -51,7 +76,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
         : LibraryFeature(pLibrary, pConfig, QStringLiteral("autodj")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
-          m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
+          m_iAutoDJPlaylistId(findOrCreateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
@@ -70,6 +95,13 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &LibraryFeature::loadTrackToPlayer,
             Qt::QueuedConnection);
+
+    // Update the title of the "Auto DJ" node when the
+    // list of queued tracks or their properties have changed.
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::queueDurationChanged,
+            this,
+            &AutoDJFeature::slotRemainingQueueDurationChanged);
 
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
@@ -122,8 +154,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &AutoDJFeature::slotClearQueue);
 
-    // Create context-menu items to allow crates to be added to, and removed
-    // from, the auto-DJ queue.
+    // Create context-menu items to allow crates to be added to,
+    // and removed from, the auto-DJ queue.
     m_pRemoveCrateFromAutoDjAction =
             make_parented<QAction>(tr("Remove Crate as Track Source"), this);
     m_pRemoveCrateFromAutoDjAction->setShortcut(removeKeySequence);
@@ -138,7 +170,20 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-    return tr("Auto DJ");
+    return createAutoDjTitle(tr("Auto DJ"),
+            m_pAutoDJProcessor->getQueueTrackCount(),
+            m_pAutoDJProcessor->getQueueDuration(),
+            true,
+            true);
+}
+
+void AutoDJFeature::slotRemainingQueueDurationChanged(int numTracks, mixxx::Duration duration) {
+    Q_UNUSED(numTracks);
+    Q_UNUSED(duration);
+
+    // As documented by the code docs for featureIsLoading,
+    // it is intended to indicate when the title() has changed.
+    emit featureIsLoading(this, false);
 }
 
 void AutoDJFeature::bindLibraryWidget(
