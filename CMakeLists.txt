@@ -3403,9 +3403,8 @@ if(Qt_IS_STATIC)
   if(WIN32)
     target_link_libraries(
       mixxx-lib
-      PRIVATE
-        Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
-        Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      PRIVATE Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
+      # Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
     )
   endif()
 
@@ -3626,14 +3625,14 @@ else()
           COMPONENT
           applocal
       )
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}/styles"
-          COMPONENT
-          applocal
-      )
+      # install(
+      # IMPORTED_RUNTIME_ARTIFACTS
+      # Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      # DESTINATION
+      # "${MIXXX_INSTALL_DATADIR}/styles"
+      # COMPONENT
+      # applocal
+      # )
     endif()
     if(APPLE)
       install(

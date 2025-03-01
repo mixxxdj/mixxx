@@ -2,6 +2,7 @@
 #define INCLUDED_OSCRECEIVER_H
 
 #include <QDataStream>
+#include <QDateTime>
 #include <QFile>
 #include <QThread>
 #include <memory>
@@ -27,8 +28,18 @@ class OscReceiver {
   public:
     UserSettingsPointer m_pConfig;
 };
-
-void runOscReceiver(int oscPortIn, UserSettingsPointer pConfig);
+void runOscReceiver(UserSettingsPointer pConfig);
+// void runOscReceiver(int oscPortIn, UserSettingsPointer pConfig);
+// void runOscReceiver();
 void oscReceiverMain(UserSettingsPointer pConfig);
+void loadOscConfiguration(UserSettingsPointer pConfig);
+
+//  private:
+QMutex m_mutex;
+QReadWriteLock m_configLock;
+
+//    std::atomic<bool> m_stopFlag;
+QDateTime m_lastResponseTime;
+int m_oscPortIn;
 
 #endif /* INCLUDED_OSCRECEIVER_H */
