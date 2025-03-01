@@ -253,7 +253,7 @@ var SMK25II;
      */
     SMK25II.incomingData = function(data, _length) {
         if (data.length < 6) {
-            console.log(`expected sysex packet of length 6, got ${length}`);
+            console.log(`expected sysex packet of length 6, got ${data.length}`);
             return;
         }
         for (let n = 0; n < SysexHeader.length; n++) {
