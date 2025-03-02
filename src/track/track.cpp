@@ -1,6 +1,7 @@
 #include "track/track.h"
 
 #include <QDebug>
+#include <QUndoCommand>
 #include <atomic>
 
 #include "library/library_prefs.h"
@@ -10,6 +11,44 @@
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/time.h"
+#include "util/undostack.h"
+
+class UndoCommandCue : public QUndoCommand {
+  public:
+    UndoCommandCue(const QString& text, Track* pTrack, const CuePointer& pCue)
+            : QUndoCommand(text), m_pTrack(pTrack), m_pCue(pCue) {
+    }
+
+  protected:
+    Track* m_pTrack;
+    CuePointer m_pCue;
+};
+
+class UndoCommandRemoveCue : public UndoCommandCue {
+  public:
+    UndoCommandRemoveCue(Track* pTrack, const CuePointer& pCue)
+            : UndoCommandCue("Remove Cue", pTrack, pCue) {
+    }
+    void undo() override {
+        m_pTrack->doAddCue(m_pCue);
+    }
+    void redo() override {
+        m_pTrack->doRemoveCue(m_pCue);
+    }
+};
+
+class UndoCommandAddCue : public UndoCommandCue {
+  public:
+    UndoCommandAddCue(Track* pTrack, const CuePointer& pCue)
+            : UndoCommandCue("Add Cue", pTrack, pCue) {
+    }
+    void undo() override {
+        m_pTrack->doRemoveCue(m_pCue);
+    }
+    void redo() override {
+        m_pTrack->doAddCue(m_pCue);
+    }
+};
 
 namespace {
 
@@ -124,6 +163,9 @@ Track::~Track() {
                 << "->"
                 << numberOfInstancesBefore - 1;
     }
+
+    // stop-gap solution
+    UndoStack::instance()->clear();
 }
 
 //static
@@ -1083,6 +1125,7 @@ CuePointer Track::createAndAddCue(
     VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() || endPosition.isValid()) {
         return CuePointer{};
     }
+
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
@@ -1093,6 +1136,14 @@ CuePointer Track::createAndAddCue(
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
     pCue->moveToThread(thread());
+
+    // push will call UndoCommandAddCue::redo which will call Track::doAddCue
+    UndoStack::instance()->push(new UndoCommandAddCue(this, pCue));
+
+    return pCue;
+}
+
+void Track::doAddCue(const CuePointer& pCue) {
     connect(pCue.get(),
             &Cue::updated,
             this,
@@ -1101,7 +1152,6 @@ CuePointer Track::createAndAddCue(
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&locked);
     emit cuesUpdated();
-    return pCue;
 }
 
 CuePointer Track::findCueByType(mixxx::CueType type) const {
@@ -1149,7 +1199,13 @@ void Track::removeCue(const CuePointer& pCue) {
         return;
     }
 
+    // push will call UndoCommandRemoveCue::redo which will call Track::doRemoveCue
+    UndoStack::instance()->push(new UndoCommandRemoveCue(this, pCue));
+}
+
+void Track::doRemoveCue(const CuePointer& pCue) {
     auto locked = lockMutex(&m_qMutex);
+
     disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
