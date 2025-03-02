@@ -902,7 +902,7 @@
                 <status>0x96</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal />
+                    <script-binding />
                 </options>
             </control>
             <!-- PAD Mode 2 + SHIFT -->
@@ -985,7 +985,7 @@
                 <status>0x96</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal />
+                    <script-binding />
                 </options>
             </control>
 
@@ -2123,7 +2123,7 @@
                 <status>0x97</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal />
+                    <script-binding />
                 </options>
             </control>
 

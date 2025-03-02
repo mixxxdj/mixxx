@@ -674,10 +674,10 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x40],
         on: pairColorsOn[0],
         off: pairColorsOff[0],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
-                engine.setValue(group, "pitch_down", 1);
-                engine.setValue(group, "pitch_down", 1);
+                engine.setValue(deckData.currentDeck, "pitch_down", 1);
+                engine.setValue(deckData.currentDeck, "pitch_down", 1);
                 midi.sendShortMsg(status, control, this.on);
             } else {
                 midi.sendShortMsg(status, control, this.off);
@@ -689,9 +689,9 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x41],
         on: pairColorsOn[1],
         off: pairColorsOff[1],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
-                engine.setValue(group, "pitch_down", 1);
+                engine.setValue(deckData.currentDeck, "pitch_down", 1);
                 midi.sendShortMsg(status, control, this.on);
             } else {
                 midi.sendShortMsg(status, control, this.off);
@@ -703,9 +703,9 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x42],
         on: pairColorsOn[6],
         off: pairColorsOff[6],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
-                engine.setValue(group, "pitch_up", 1);
+                engine.setValue(deckData.currentDeck, "pitch_up", 1);
                 midi.sendShortMsg(status, control, this.on);
             } else {
                 midi.sendShortMsg(status, control, this.off);
@@ -717,10 +717,10 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x43],
         on: pairColorsOn[6],
         off: pairColorsOff[6],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
-                engine.setValue(group, "pitch_up", 1);
-                engine.setValue(group, "pitch_up", 1);
+                engine.setValue(deckData.currentDeck, "pitch_up", 1);
+                engine.setValue(deckData.currentDeck, "pitch_up", 1);
                 midi.sendShortMsg(status, control, this.on);
             } else {
                 midi.sendShortMsg(status, control, this.off);
@@ -732,13 +732,13 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x46],
         on: 0x63,
         off: 0x42,
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
                 deckData.pitchRangeId++;
                 if (deckData.pitchRangeId > 6) {
                     deckData.pitchRangeId = 6;
                 }
-                engine.setValue(group, "rateRange", deckData.pitchRanges[deckData.pitchRangeId]);
+                engine.setValue(deckData.currentDeck, "rateRange", deckData.pitchRanges[deckData.pitchRangeId]);
                 midi.sendShortMsg(status, control, this.on); //17 -- 3B
             } else {
                 midi.sendShortMsg(status, control, this.off); //3B -- 33
@@ -750,13 +750,13 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x45],
         on: pairColorsOn[3],
         off: pairColorsOff[3],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
                 deckData.pitchRangeId = deckData.pitchRangeId - 1;
                 if (deckData.pitchRangeId < 0) {
                     deckData.pitchRangeId = 0;
                 }
-                engine.setValue(group, "rateRange", deckData.pitchRanges[deckData.pitchRangeId]);
+                engine.setValue(deckData.currentDeck, "rateRange", deckData.pitchRanges[deckData.pitchRangeId]);
                 midi.sendShortMsg(status, control, this.on); //17 -- 3B
             } else {
                 midi.sendShortMsg(status, control, this.off); //3B -- 33
@@ -768,10 +768,10 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
         midi: [0x95 + midiChannel, 0x44],
         on: pairColorsOn[6],
         off: pairColorsOff[6],
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (value === 0x7F) {
                 deckData.pitchRangeId = 0;
-                engine.setValue(group, "rateRange", deckData.pitchRanges[deckData.pitchRangeId]);
+                engine.setValue(deckData.currentDeck, "rateRange", deckData.pitchRanges[deckData.pitchRangeId]);
                 midi.sendShortMsg(status, control, this.on); //17 -- 3B
             } else {
                 midi.sendShortMsg(status, control, this.off); //3B -- 33
