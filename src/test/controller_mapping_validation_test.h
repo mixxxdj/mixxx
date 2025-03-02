@@ -102,6 +102,24 @@ class FakeController : public Controller {
         return nullptr;
     };
 
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getScriptFiles();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getScriptFiles();
+        }
+        return {};
+    }
+
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getSettings();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getSettings();
+        }
+        return {};
+    }
+
     bool isMappable() const override;
 
     bool matchMapping(const MappingInfo& mapping) override {

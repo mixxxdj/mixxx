@@ -107,6 +107,20 @@ std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
     return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
+QList<LegacyControllerMapping::ScriptFileInfo> BulkController::getMappingScriptFiles() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getScriptFiles();
+}
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
+}
+
 bool BulkController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {

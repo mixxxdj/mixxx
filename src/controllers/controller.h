@@ -3,6 +3,7 @@
 #include <QElapsedTimer>
 
 #include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
@@ -32,6 +33,9 @@ class Controller : public QObject {
     /// WARNING: LegacyControllerMapping is not thread safe!
     /// Clone the mapping before passing to setMapping for use in the controller polling thread.
     virtual void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) = 0;
+
+    virtual QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() = 0;
+    virtual QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;

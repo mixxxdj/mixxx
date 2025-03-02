@@ -70,8 +70,7 @@ bool Controller::applyMapping() {
         return false;
     }
 
-    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
-    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = getMappingScriptFiles();
     if (scriptFiles.isEmpty()) {
         qCWarning(m_logBase)
                 << "No script functions available! Did the XML file(s) load "
@@ -81,7 +80,7 @@ bool Controller::applyMapping() {
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
-    m_pScriptEngineLegacy->setSettings(pMapping->getSettings());
+    m_pScriptEngineLegacy->setSettings(getMappingSettings());
     return m_pScriptEngineLegacy->initialize();
 }
 

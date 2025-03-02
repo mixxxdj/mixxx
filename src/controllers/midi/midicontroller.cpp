@@ -66,6 +66,20 @@ std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
     return std::make_shared<LegacyMidiControllerMapping>(*m_pMapping);
 }
 
+QList<LegacyControllerMapping::ScriptFileInfo> MidiController::getMappingScriptFiles() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getScriptFiles();
+}
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> MidiController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
+}
+
 int MidiController::close() {
     destroyOutputHandlers();
     return 0;

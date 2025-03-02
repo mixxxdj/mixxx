@@ -39,6 +39,20 @@ std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
     return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
+QList<LegacyControllerMapping::ScriptFileInfo> HidController::getMappingScriptFiles() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getScriptFiles();
+}
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> HidController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
+}
+
 bool HidController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {

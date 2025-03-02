@@ -41,7 +41,10 @@ class MidiController : public Controller {
     QString mappingExtension() override;
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+    std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
 
     bool isMappable() const override {
         if (!m_pMapping) {
