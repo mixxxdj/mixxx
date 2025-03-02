@@ -102,14 +102,16 @@ void DlgXfaderCurve::setScene(QGraphicsScene* pScene) {
     adjustSize();
 }
 
-void DlgXfaderCurve::show() {
+void DlgXfaderCurve::show(bool autoHide) {
     if (graphicsViewXfader->scene() == nullptr) {
         return;
     }
     // This saves us from resetting pressed on close.
     m_mousePressed = false;
     QDialog::show();
-    m_hideTimer.start();
+    if (autoHide) {
+        m_hideTimer.start();
+    }
 
     if (m_moved) {
         return;
@@ -1111,13 +1113,20 @@ void DlgPrefMixer::drawXfaderDisplay() {
     graphicsViewXfader->repaint();
 
     if (!isVisible() && !m_initializing && !m_updatingGui) {
-        // show popup with xfader curve
-        if (m_pDlgXfaderCurve.get() == nullptr) {
-            m_pDlgXfaderCurve = make_parented<DlgXfaderCurve>(this);
-            m_pDlgXfaderCurve->setScene(m_pxfScene);
-        }
-        m_pDlgXfaderCurve->show();
+        showXfaderCurvePopup();
     }
+}
+
+void DlgPrefMixer::showXfaderCurvePopup(bool autoHide) {
+    if (m_pDlgXfaderCurve.get() == nullptr) {
+        m_pDlgXfaderCurve = make_parented<DlgXfaderCurve>(this);
+        m_pDlgXfaderCurve->setScene(m_pxfScene);
+    }
+    m_pDlgXfaderCurve->show(autoHide);
+}
+
+void DlgPrefMixer::slotShowXfaderPopupPersist() {
+    showXfaderCurvePopup(false);
 }
 
 void DlgPrefMixer::slotXFaderReverseBoxToggled() {

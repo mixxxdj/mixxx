@@ -451,6 +451,9 @@ void MixxxMainWindow::initialize() {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
     }
+
+    // Show xfader curve popup with current state (set by controller or loaded from config
+    emit m_pPrefDlg->showXfaderPopupPersist();
 }
 
 MixxxMainWindow::~MixxxMainWindow() {

@@ -24,7 +24,7 @@ class DlgXfaderCurve : public QDialog, public Ui::DlgXfaderCurve {
     explicit DlgXfaderCurve(QWidget* pParent);
 
     void setScene(QGraphicsScene* pScene);
-    void show();
+    void show(bool autoHide = true);
 
   protected:
     bool eventFilter(QObject* pObj, QEvent* pEvent) override;
@@ -52,6 +52,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     /// Update the widgets with values from config / EffectsManager
     void slotUpdate() override;
     void slotResetToDefaults() override;
+
+    void slotShowXfaderPopupPersist();
 
   private slots:
     /// Create EQ & QuickEffect selectors and deck label for each added deck
@@ -93,6 +95,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
   private:
     void drawXfaderDisplay();
+    void showXfaderCurvePopup(bool autoHide = true);
 
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
