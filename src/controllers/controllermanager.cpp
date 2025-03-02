@@ -422,9 +422,9 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         return;
     }
 
+    closeController(pController);
     ConfigKey key(kSettingsGroup, sanitizeDeviceName(pController->getName()));
     if (!pMapping) {
-        closeController(pController);
         // Unset the controller mapping for this controller
         pController->setMapping(nullptr);
         m_pConfig->remove(key);
@@ -447,7 +447,6 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         openController(pController);
         emit mappingApplied(pController->isMappable());
     } else {
-        closeController(pController);
         emit mappingApplied(false);
     }
 }
