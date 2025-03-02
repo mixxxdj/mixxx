@@ -197,7 +197,7 @@ void DlgPrefController::showLearningWizard() {
     slotApply();
 
     if (!m_pMapping) {
-        m_pMapping = std::shared_ptr<LegacyControllerMapping>(new LegacyMidiControllerMapping());
+        m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
         emit applyMapping(m_pController, m_pMapping, true);
         // shortcut for creating and assigning required I/O table models
         slotShowMapping(m_pMapping);
