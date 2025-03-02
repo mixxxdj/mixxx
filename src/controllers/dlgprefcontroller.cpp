@@ -62,7 +62,7 @@ DlgPrefController::DlgPrefController(
     initTableView(m_ui.m_pOutputMappingTableView);
 
     std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->getMapping();
-    slotShowMapping(pMapping);
+    showMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
     QString category = m_pController->getCategory();
@@ -200,7 +200,7 @@ void DlgPrefController::showLearningWizard() {
         m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
         emit applyMapping(m_pController, m_pMapping, true);
         // shortcut for creating and assigning required I/O table models
-        slotShowMapping(m_pMapping);
+        showMapping(m_pMapping);
     }
 
     // Note that DlgControllerLearning is set to delete itself on close using
@@ -689,7 +689,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         // the preset combobox.
         enumerateMappings(mappingFilePath);
     }
-    slotShowMapping(pMapping);
+    showMapping(pMapping);
 }
 
 bool DlgPrefController::saveMapping() {
@@ -857,7 +857,7 @@ void DlgPrefController::initTableView(QTableView* pTable) {
     pTable->setAlternatingRowColors(true);
 }
 
-void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
     m_ui.labelLoadedMapping->setText(mappingName(pMapping));
     m_ui.labelLoadedMappingDescription->setText(mappingDescription(pMapping));
     m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(pMapping));
