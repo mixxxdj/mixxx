@@ -120,7 +120,7 @@ class FakeController : public Controller {
         Q_UNUSED(data);
     }
 
-  private slots:
+  private:
     int open() override {
         return 0;
     }
@@ -129,7 +129,6 @@ class FakeController : public Controller {
         return 0;
     }
 
-  private:
     bool m_bMidiMapping;
     bool m_bHidMapping;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;

@@ -56,11 +56,10 @@ class BulkController : public Controller {
   protected:
     void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
+  private:
     int open() override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void sendBytes(const QByteArray& data) override;

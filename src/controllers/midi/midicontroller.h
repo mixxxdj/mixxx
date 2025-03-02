@@ -73,6 +73,9 @@ class MidiController : public Controller {
             unsigned char control,
             const QJSValue& scriptCode);
 
+    bool applyMapping() override;
+    int close() override;
+
   protected slots:
     virtual void receivedShortMessage(
             unsigned char status,
@@ -81,12 +84,9 @@ class MidiController : public Controller {
             mixxx::Duration timestamp);
     // For receiving System Exclusive messages
     void receive(const QByteArray& data, mixxx::Duration timestamp) override;
-    int close() override;
     void slotBeforeEngineShutdown() override;
 
   private slots:
-    bool applyMapping() override;
-
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
