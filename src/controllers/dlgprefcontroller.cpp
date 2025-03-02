@@ -61,7 +61,7 @@ DlgPrefController::DlgPrefController(
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
-    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
+    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->getMapping();
     slotShowMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());

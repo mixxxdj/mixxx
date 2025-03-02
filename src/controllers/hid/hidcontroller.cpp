@@ -29,14 +29,8 @@ QString HidController::mappingExtension() {
 }
 
 void HidController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMutableMapping = pMapping;
     m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
-}
-
-std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
-    if (!m_pMapping) {
-        return nullptr;
-    }
-    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
 QList<LegacyControllerMapping::ScriptFileInfo> HidController::getMappingScriptFiles() {

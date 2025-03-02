@@ -56,14 +56,8 @@ QString MidiController::mappingExtension() {
 }
 
 void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMutableMapping = pMapping;
     m_pMapping = downcastAndClone<LegacyMidiControllerMapping>(pMapping.get());
-}
-
-std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
-    if (!m_pMapping) {
-        return nullptr;
-    }
-    return std::make_shared<LegacyMidiControllerMapping>(*m_pMapping);
 }
 
 QList<LegacyControllerMapping::ScriptFileInfo> MidiController::getMappingScriptFiles() {

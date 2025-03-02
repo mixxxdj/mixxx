@@ -17,7 +17,6 @@ class HidController final : public Controller {
 
     QString mappingExtension() override;
 
-    std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;

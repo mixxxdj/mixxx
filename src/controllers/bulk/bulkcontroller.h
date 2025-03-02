@@ -41,7 +41,6 @@ class BulkController : public Controller {
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
