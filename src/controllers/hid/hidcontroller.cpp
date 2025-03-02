@@ -101,8 +101,6 @@ int HidController::open() {
         return -1;
     }
 
-    setOpen(true);
-
     m_pHidIoThread = std::make_unique<HidIoThread>(pHidDevice, m_deviceInfo);
     m_pHidIoThread->setObjectName(QStringLiteral("HidIoThread ") + getName());
 
@@ -132,6 +130,8 @@ int HidController::open() {
         qWarning() << "HidIoThread wasn't in expected OutputActive state";
     }
 
+    applyMapping();
+    setOpen(true);
     return 0;
 }
 

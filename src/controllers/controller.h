@@ -69,8 +69,6 @@ class Controller : public QObject {
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
-
-    virtual bool applyMapping();
     virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
@@ -78,6 +76,8 @@ class Controller : public QObject {
     void stopLearning();
 
   protected:
+    virtual bool applyMapping();
+
     template<typename SpecificMappingType>
         requires(std::is_final_v<SpecificMappingType> == true)
     std::unique_ptr<SpecificMappingType> downcastAndClone(const LegacyControllerMapping* pMapping) {

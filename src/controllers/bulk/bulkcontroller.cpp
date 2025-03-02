@@ -202,7 +202,6 @@ int BulkController::open() {
     }
 #endif
 
-    setOpen(true);
     startEngine();
 
     if (m_pReader != nullptr) {
@@ -223,7 +222,8 @@ int BulkController::open() {
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-
+    applyMapping();
+    setOpen(true);
     return 0;
 }
 

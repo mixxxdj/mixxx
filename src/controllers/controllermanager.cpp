@@ -301,7 +301,6 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyMapping();
     }
 
     pollIfAnyControllersOpen();
@@ -394,8 +393,6 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
     if (result == 0) {
-        pController->applyMapping();
-
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(
                 ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 1);
