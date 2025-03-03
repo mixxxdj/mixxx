@@ -58,22 +58,22 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
+        const QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
         // We may loose the release event if a the shift key is pressed later
         // and there is character shift like "1" -> "!"
-        int keyId = ke->key();
+        int keyId = pKE->key();
 #else
-        int keyId = ke->nativeScanCode();
+        int keyId = pKE->nativeScanCode();
 #endif
 
         if (shouldSkipHeldKey(keyId)) {
             return true;
         }
 
-        QKeySequence ks = getKeySeq(ke);
+        QKeySequence ks = getKeySeq(pKE);
 
         // If inactive, return after logging the key event in getKeySeq()
         if (!isEnabled()) {
@@ -100,7 +100,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                     // kLogger.debug() << configKey << "MidiOpCode::NoteOn" << 1;
                     // Add key to active key list
                     m_qActiveKeyList.append(KeyDownInformation(
-                            keyId, ke->modifiers(), control));
+                            keyId, pKE->modifiers(), control));
                     // Since setting the value might cause us to go down
                     // a route that would eventually clear the active
                     // key list, do that last.
@@ -116,17 +116,17 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #ifndef __APPLE__
         } else {
             // getKeySeq() returns empty string if the press was a modifier only
-            if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
+            if ((pKE->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
                 // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
                 // Alt modifier is sufficient.
                 // Activate this in case there are issues on Windows
-                // || ke->key() == Qt::Key_Alt) {
+                // || pKE->key() == Qt::Key_Alt) {
                 m_altPressedWithoutKey = true;
             }
 #endif
         }
     } else if (e->type() == QEvent::KeyRelease) {
-        QKeyEvent* ke = (QKeyEvent*)e;
+        const QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
 #ifndef __APPLE__
         // QAction hotkeys are consumed by the object that created them, e.g.
@@ -134,7 +134,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // However, it may happen that we receive a RELEASE event for an Alt+key
         // combo for which no KEYPRESS was registered.
         // So react only to Alt-only releases.
-        if (m_altPressedWithoutKey && ke->key() == Qt::Key_Alt) {
+        if (m_altPressedWithoutKey && pKE->key() == Qt::Key_Alt) {
             emit altPressedWithoutKeys();
         }
         m_altPressedWithoutKey = false;
@@ -142,9 +142,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
-        int keyId = ke->key();
+        int keyId = pKE->key();
 #else
-        int keyId = ke->nativeScanCode();
+        int keyId = pKE->nativeScanCode();
 #endif
         // kLogger.debug() << "KeyRelease event =" << ke->key()
         // << "AutoRepeat=" << autoRepeat << "KeyId =" << keyId;
@@ -154,12 +154,12 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // OS X apparently doesn't deliver KeyRelease events when you are
         // holding Ctrl. So release all key-presses that were triggered with
         // Ctrl.
-        if (ke->key() == Qt::Key_Control) {
+        if (pKE->key() == Qt::Key_Control) {
             clearModifiers = Qt::ControlModifier;
         }
 #endif
 
-        bool autoRepeat = ke->isAutoRepeat();
+        bool autoRepeat = pKE->isAutoRepeat();
         bool matched = false;
         // Run through list of active keys to see if the released key is active.
         // Start from end because we may remove the current item.
