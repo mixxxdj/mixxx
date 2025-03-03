@@ -175,8 +175,8 @@ class LegacyControllerSettingMixin : public AbstractLegacyControllerSetting {
 };
 
 class LegacyControllerBooleanSetting
-        : public LegacyControllerSettingFactory<LegacyControllerBooleanSetting>,
-          public LegacyControllerSettingMixin<bool> {
+        : public LegacyControllerSettingMixin<bool>,
+          public LegacyControllerSettingFactory<LegacyControllerBooleanSetting> {
   public:
     LegacyControllerBooleanSetting(const QDomElement& element);
 
@@ -375,8 +375,8 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
 };
 
 class LegacyControllerEnumSetting
-        : public LegacyControllerSettingFactory<LegacyControllerEnumSetting>,
-          public LegacyControllerSettingMixin<size_t> {
+        : public LegacyControllerSettingMixin<size_t>,
+          public LegacyControllerSettingFactory<LegacyControllerEnumSetting> {
   public:
     struct Item {
         QString value;
@@ -436,8 +436,8 @@ class LegacyControllerEnumSetting
 };
 
 class LegacyControllerColorSetting
-        : public LegacyControllerSettingFactory<LegacyControllerColorSetting>,
-          public LegacyControllerSettingMixin<QColor> {
+        : public LegacyControllerSettingMixin<QColor>,
+          public LegacyControllerSettingFactory<LegacyControllerColorSetting> {
     Q_OBJECT
   public:
     LegacyControllerColorSetting(const QDomElement& element);
@@ -462,8 +462,8 @@ class LegacyControllerColorSetting
                 m_savedValue.isValid();
     }
 
-    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
-        return new LegacyControllerColorSetting(element);
+    static std::shared_ptr<LegacyControllerColorSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerColorSetting>(element);
     }
     static inline bool match(const QDomElement& element) {
         return element.hasAttribute(QStringLiteral("type")) &&
@@ -488,8 +488,8 @@ class LegacyControllerColorSetting
 };
 
 class LegacyControllerFileSetting
-        : public LegacyControllerSettingFactory<LegacyControllerFileSetting>,
-          public LegacyControllerSettingMixin<QFileInfo> {
+        : public LegacyControllerSettingMixin<QFileInfo>,
+          public LegacyControllerSettingFactory<LegacyControllerFileSetting> {
     Q_OBJECT
   public:
     LegacyControllerFileSetting(const QDomElement& element);
@@ -513,8 +513,8 @@ class LegacyControllerFileSetting
                 (m_defaultValue == m_savedValue || m_savedValue.exists());
     }
 
-    static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
-        return new LegacyControllerFileSetting(element);
+    static std::shared_ptr<LegacyControllerFileSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerFileSetting>(element);
     }
     static bool match(const QDomElement& element) {
         return element.hasAttribute(QStringLiteral("type")) &&
