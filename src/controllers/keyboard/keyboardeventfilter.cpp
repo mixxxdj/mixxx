@@ -91,13 +91,12 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             for (auto it = m_keySequenceToControlHash.constFind(ksv);
                  it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
-                if (configKey.group == "[KeyboardShortcuts]") {
+                if (configKey.group == QStringLiteral("[KeyboardShortcuts]")) {
                     // We don't handle menubar shortcuts here
                     continue;
                 }
                 ControlObject* control = ControlObject::getControl(configKey);
                 if (control) {
-                    // kLogger.debug() << configKey << "MidiOpCode::NoteOn" << 1;
                     // Add key to active key list
                     m_qActiveKeyList.append(KeyDownInformation(
                             keyId, pKE->modifiers(), control));
@@ -146,8 +145,6 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #else
         int keyId = pKE->nativeScanCode();
 #endif
-        // kLogger.debug() << "KeyRelease event =" << ke->key()
-        // << "AutoRepeat=" << autoRepeat << "KeyId =" << keyId;
 
         int clearModifiers = Qt::NoModifier;
 #ifdef __APPLE__
@@ -170,7 +167,6 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                     (clearModifiers != Qt::NoModifier &&
                             keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    // kLogger.debug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
                     pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
@@ -182,8 +178,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         return matched;
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
-        // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        // kLogger.debug() << "QEvent::KeyboardLayoutChange";
+        // TODO: find a way to support KeyboardLayoutChange
+        // https://github.com/mixxxdj/mixxx/issues/6424
     }
     return false;
 }
