@@ -321,7 +321,9 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
-    if (opCode != MidiOpCode::ControlChange || progressBarWiggleFeedback->value() != 10) {
+    if (opCode != MidiOpCode::ControlChange &&
+            progressBarWiggleFeedback->value() !=
+                    progressBarWiggleFeedback->maximum()) {
         m_lastMessageTimer.start();
     }
 }
