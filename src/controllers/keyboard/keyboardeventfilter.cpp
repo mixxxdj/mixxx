@@ -58,7 +58,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        const QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
@@ -125,7 +125,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #endif
         }
     } else if (e->type() == QEvent::KeyRelease) {
-        const QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
 #ifndef __APPLE__
         // QAction hotkeys are consumed by the object that created them, e.g.
@@ -287,7 +287,7 @@ void KeyboardEventFilter::clearWidgets() {
 
 const QString KeyboardEventFilter::buildShortcutString(
         const QString& shortcut, const QString& cmd) const {
-    if (shortcut.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!shortcut.isEmpty()) {
         return QString();
     }
 
@@ -307,10 +307,13 @@ const QString KeyboardEventFilter::buildShortcutString(
 }
 
 void KeyboardEventFilter::registerMenuBarActionSetShortcut(QAction* pAction,
-        const ConfigKey& command,
+        const ConfigKey& cfgKey,
         const QString& defaultShortcut) {
-    m_menuBarActions.emplace(pAction, std::make_pair(command, defaultShortcut));
-    pAction->setShortcut(QKeySequence(m_pKbdConfig->getValue(command, defaultShortcut)));
+    VERIFY_OR_DEBUG_ASSERT(pAction && cfgKey.isValid()) {
+        return;
+    }
+    m_menuBarActions.emplace(pAction, std::make_pair(cfgKey, defaultShortcut));
+    pAction->setShortcut(QKeySequence(m_pKbdConfig->getValue(cfgKey, defaultShortcut)));
     pAction->setShortcutContext(Qt::ApplicationShortcut);
 }
 
