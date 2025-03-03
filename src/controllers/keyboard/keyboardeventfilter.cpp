@@ -33,8 +33,9 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
           m_enabled(false),
           m_autoReloader(RuntimeLoggingCategory(QStringLiteral("kbd_auto_reload"))) {
     // Get the enabled state.
-    // Set the default if the key/value doesn't exist.
-    if (pConfig->getValueString(kKbdEnabledCfgKey).isEmpty()) {
+    // Set the default if the key/value doesn't exist so that the shortcuts action
+    // in WMainMenuBar is also enabled by default.
+    if (!pConfig->exists(kKbdEnabledCfgKey)) {
         pConfig->setValue(kKbdEnabledCfgKey, true);
     }
     m_enabled = pConfig->getValue(kKbdEnabledCfgKey, true);
