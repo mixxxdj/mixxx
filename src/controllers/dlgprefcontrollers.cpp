@@ -197,8 +197,8 @@ void DlgPrefControllers::setupControllerWidgets() {
         connect(pController,
                 &Controller::openChanged,
                 this,
-                [this, &pControllerDlg](bool bOpen) {
-                    slotHighlightDevice(pControllerDlg, bOpen);
+                [this, pDlg = pControllerDlg.get()](bool bOpen) {
+                    slotHighlightDevice(pDlg, bOpen);
                 });
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
