@@ -85,7 +85,7 @@ class TrackRecord final {
         return getRating() != kNoRating;
     }
 
-    void setKeys(const Keys& keys);
+    void setKeys(Keys keys);
     void resetKeys() {
         setKeys(Keys());
     }
