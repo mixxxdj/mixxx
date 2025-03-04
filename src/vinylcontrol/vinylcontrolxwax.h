@@ -43,7 +43,7 @@ class VinylControlXwax : public VinylControl {
     void doTrackSelection(bool valid_pos, double pitch, double position);
     void resetSteadyPitch(double pitch, double time);
     double checkSteadyPitch(double pitch, double time);
-    void checkDeltaRelativeDriftAmount(double filePosition);
+    double calcDeltaRelativeDriftAmount(double deltaFilePosition);
     void enableRecordEndMode();
     void disableRecordEndMode();
     void enableConstantMode();
@@ -139,7 +139,6 @@ class VinylControlXwax : public VinylControl {
     // recent run of analyzeSamples.
     double m_dDriftAmt;
     double m_relativedDriftAmtMem;
-    bool m_relativedDriftAmtSet;
     double m_deltaRelativeDriftAmount;
 
     // Records the time of the last UI update. Used to prevent hammering the GUI

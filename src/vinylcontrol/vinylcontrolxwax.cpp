@@ -63,7 +63,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
           m_relativedDriftAmtMem(0.0),
-          m_relativedDriftAmtSet(false),
           m_deltaRelativeDriftAmount(0.0),
           m_deltaFilePos(0.0),
           m_dUiUpdateTime(-1.0) {
@@ -470,7 +469,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //save the absolute amount of drift for when we need to estimate vinyl position
             m_dDriftAmt = m_dVinylPosition - filePosition;
 
-            checkDeltaRelativeDriftAmount(filePosition);
+            if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
+                m_deltaFilePos = filePosition - m_dOldFilePos;
+                m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(m_deltaFilePos);
+            }
 
             //qDebug() << "drift" << m_dDriftAmt;
 
@@ -665,25 +667,16 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     }
 }
 
-// In relative mode, keep track of the relative drift amount delta
-// in order to apply drift control compensation
-void VinylControlXwax::checkDeltaRelativeDriftAmount(double filePosition) {
-    if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
-        m_deltaFilePos = filePosition - m_dOldFilePos;
-
-        // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
-        // when passthrough is enabled or is playing in reverse
-        if (fabs(m_deltaRelativeDriftAmount) > 1.5 || fabs(m_deltaFilePos) > 0.03 ||  // TODO: thresholds to adjust probably
-            passthroughEnabled->toBool() || reverseButton->toBool()) {
-            m_relativedDriftAmtSet = false;
-            }
-        if (!m_relativedDriftAmtSet) {
-            m_relativedDriftAmtMem = m_dDriftAmt;
-            m_relativedDriftAmtSet = true;
-        }
-
-        m_deltaRelativeDriftAmount = m_dDriftAmt - m_relativedDriftAmtMem;
+// returns the delta between the current drift amount and the last reset value of the drift amount.
+double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
+    // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
+    // when passthrough is enabled or is playing in reverse
+    if (fabs(m_deltaRelativeDriftAmount) > 1.5 || fabs(deltaFilePos) > 0.03 ||  // TODO: thresholds to adjust probably
+        passthroughEnabled->toBool() || reverseButton->toBool()) {
+        m_relativedDriftAmtMem = m_dDriftAmt;
     }
+
+    return m_dDriftAmt - m_relativedDriftAmtMem;
 }
 
 void VinylControlXwax::enableRecordEndMode() {
