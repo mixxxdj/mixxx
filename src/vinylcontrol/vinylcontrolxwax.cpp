@@ -516,7 +516,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             // Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
             // (This is caused by the manufacturing process of the vinyl.)
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    fabs(m_dDriftAmt) > 0.1 && fabs(m_dDriftAmt) < 5.0) {
+                    fabs(m_dDriftAmt) > 0.03 && fabs(m_dDriftAmt) < 5.0) {
                 dDriftControl = m_dDriftAmt * .01;
             } else {
                 dDriftControl = 0.0;
