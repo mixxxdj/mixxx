@@ -220,7 +220,6 @@ var SMK25II;
         case 0x60: {
             const knob = SMK25II.controller.activeDeck.gainKnob;
             knob.input(undefined, undefined, data[5], undefined, undefined);
-            knob.inSetParameter(knob.inValueScale(data[5]));
             break;
         }
         case 0x61: {
