@@ -2,9 +2,10 @@
 
 #include <QString>
 
-#include "util/types.h"
 #include "preferences/usersettings.h"
+#include "util/types.h"
 
+class PollingControlProxy;
 class ControlProxy;
 struct VinylSignalQualityReport;
 
@@ -65,7 +66,7 @@ class VinylControl : public QObject {
     ControlProxy* signalenabled;
     // When the user has pressed the "reverse" button.
     ControlProxy* reverseButton;
-    ControlProxy* passthroughEnabled;
+    PollingControlProxy* passthroughEnabled;
 
     // The lead-in time...
     int m_iLeadInTime;
