@@ -2914,6 +2914,27 @@
                     <script-binding />
                 </options>
             </control>
+            <!-- Volume faders have a shift function, tie it to the normal volume -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCi500.deckA.volume.inputMSB</key>
+                <description>Volume Deck A</description>
+                <status>0xB4</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCi500.deckA.volume.inputLSB</key>
+                <description>Volume Deck A</description>
+                <status>0xB4</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
             <!--EQ-->
             <!-- LOW EQ Knob -->
             <control>
@@ -3029,6 +3050,25 @@
                     <script-binding />
                 </options>
             </control>
+            <!-- +shift -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCi500.deckA.pitchFader.inputMSB</key>
+                <status>0xB4</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCi500.deckA.pitchFader.inputLSB</key>
+                <status>0xB4</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
             <!--Jog wheel A    -->
                <control>
                 <group>[Channel1]</group>
@@ -3119,6 +3159,27 @@
                 <key>DJCi500.deckB.volume.inputMSB</key>
                 <description>Volume Deck B</description>
                 <status>0xB2</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCi500.deckB.volume.inputLSB</key>
+                <description>Volume Deck B</description>
+                <status>0xB5</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <!-- Volume faders have a shift channel, tie it to normal volume -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCi500.deckB.volume.inputMSB</key>
+                <description>Volume Deck B</description>
+                <status>0xB5</status>
                 <midino>0x00</midino>
                 <options>
                     <script-binding />
@@ -3244,6 +3305,25 @@
                 <group>[Channel2]</group>
                 <key>DJCi500.deckB.pitchFader.inputLSB</key>
                 <status>0xB2</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <!-- +shift -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCi500.deckB.pitchFader.inputMSB</key>
+                <status>0xB5</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCi500.deckB.pitchFader.inputLSB</key>
+                <status>0xB5</status>
                 <midino>0x28</midino>
                 <options>
                     <script-binding />
