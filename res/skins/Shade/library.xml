@@ -9,52 +9,87 @@
         <Layout>horizontal</Layout>
         <Children>
           <Splitter>
-            <Size>me,me</Size>
-            <SplitSizes>1,6</SplitSizes>
-            <Collapsible>1,0</Collapsible>
-            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+            <ObjectName>LibraryMainSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizes>1,4</SplitSizes>
+            <SplitSizesConfigKey>[Skin],prepwin_splitSize</SplitSizesConfigKey>
+            <Collapsible>0,0</Collapsible>
             <Children>
-              <!-- Sidebar etc. -->
-              <WidgetGroup>
-                <!-- Required for restoring the splitter sizes, otherwise the searchbox
-                    would force.expand the left side.
-                    Also required to avoid resize (shrink) glitch with long titles loaded
-                    to the preview deck. -->
-                <SizePolicy>i,min</SizePolicy>
+
+              <!-- Preparation Window (Can Hide/Show) -->
+              <WidgetGroup trigger="[Skin],show_preparation_window">
+                <ObjectName>LibraryPreparationWindow</ObjectName>
                 <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>200,100</MinimumSize>
                 <Children>
-                  <Template src="skin:preview_deck.xml"/>
+                  <LibraryPreparationWindow>
+                    <Label>
+                      <Text>Preparation Window</Text>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Alignment>center</Alignment>
+                    </Label>
+                  </LibraryPreparationWindow>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_preparation_window</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-                  <SearchBox></SearchBox>
-
-                  <WidgetGroup><Size>,5f</Size></WidgetGroup>
-
-                  <!-- Tree View | Cover Art -->
-                  <Splitter>
-                    <Size>e,me</Size>
-                    <SplitSizes>1,e</SplitSizes>
-                    <Collapsible>0,0</Collapsible>
+              <Splitter>
+                <Size>me,me</Size>
+                <SplitSizes>1,6</SplitSizes>
+                <Collapsible>1,0</Collapsible>
+                <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+                <Children>
+                  <!-- Sidebar etc. -->
+                  <WidgetGroup>
+                    <!-- Required for restoring the splitter sizes, otherwise the searchbox
+                        would force.expand the left side.
+                        Also required to avoid resize (shrink) glitch with long titles loaded
+                        to the preview deck. -->
+                    <SizePolicy>i,min</SizePolicy>
+                    <Layout>vertical</Layout>
                     <Children>
-                      <LibrarySidebar></LibrarySidebar>
-                      <CoverArt>
-                        <MinimumSize>16,16</MinimumSize>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Connection>
-                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </CoverArt>
+                      <Template src="skin:preview_deck.xml"/>
+
+                      <SearchBox></SearchBox>
+
+                      <WidgetGroup>
+                        <Size>,5f</Size>
+                      </WidgetGroup>
+
+                      <!-- Tree View | Cover Art -->
+                      <Splitter>
+                        <Size>e,me</Size>
+                        <SplitSizes>1,e</SplitSizes>
+                        <Collapsible>0,0</Collapsible>
+                        <Children>
+                          <LibrarySidebar></LibrarySidebar>
+                          <CoverArt>
+                            <MinimumSize>16,16</MinimumSize>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Connection>
+                              <ConfigKey>[Skin],show_library_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </CoverArt>
+                        </Children>
+                      </Splitter>
+
                     </Children>
-                  </Splitter>
+                  </WidgetGroup>
+                  <!-- Sidebar etc. -->
+
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.250</TrackTableBackgroundColorOpacity>
+                  </Library>
 
                 </Children>
-              </WidgetGroup><!-- Sidebar etc. -->
-
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.250</TrackTableBackgroundColorOpacity>
-              </Library>
-
+              </Splitter>
             </Children>
           </Splitter>
         </Children>

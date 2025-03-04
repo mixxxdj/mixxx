@@ -28,102 +28,144 @@ Description:
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
-          <Splitter><!-- Split Tree / Tracks table -->
-            <ObjectName>LibrarySplitter</ObjectName>
+          <Splitter>
+            <ObjectName>LibraryMainSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
             <SizePolicy>me,me</SizePolicy>
-            <SplitSizes>1,6</SplitSizes>
-            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
-            <Orientation>horizontal</Orientation>
-            <Collapsible>1,0</Collapsible>
+            <SplitSizes>1,4</SplitSizes>
+            <SplitSizesConfigKey>[Skin],prepwin_splitSize</SplitSizesConfigKey>
+            <Collapsible>0,0</Collapsible>
             <Children>
 
-              <WidgetGroup><!-- Preview Search Cover Tree -->
+              <!-- Preparation Window (Can Hide/Show) -->
+              <WidgetGroup trigger="[Skin],show_preparation_window">
+                <ObjectName>LibraryPreparationWindow</ObjectName>
                 <Layout>vertical</Layout>
-                <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
-                <Size>159min,74me</Size>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>200,100</MinimumSize>
                 <Children>
+                  <LibraryPreparationWindow>
+                    <Label>
+                      <Text>Preparation Window</Text>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Alignment>center</Alignment>
+                    </Label>
+                  </LibraryPreparationWindow>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_preparation_window</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-                  <Template src="skins:Tango/decks/preview_deck.xml"/>
+              <Splitter>
+                <!-- Split Tree / Tracks table -->
+                <ObjectName>LibrarySplitter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <SplitSizes>1,6</SplitSizes>
+                <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+                <Orientation>horizontal</Orientation>
+                <Collapsible>1,0</Collapsible>
+                <Children>
 
                   <WidgetGroup>
-                    <Size>1me,5f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_preview_decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Splitter><!-- Splitter to make CoverArt resizable -->
-                    <ObjectName>LibrarySplitter</ObjectName>
-                    <SizePolicy>me,me</SizePolicy>
-                    <SplitSizes>1,3</SplitSizes>
-                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
-                    <Orientation>vertical</Orientation>
-                    <Collapsible>0,0</Collapsible>
+                    <!-- Preview Search Cover Tree -->
+                    <Layout>vertical</Layout>
+                    <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
+                    <Size>159min,74me</Size>
                     <Children>
 
-                      <WidgetGroup><!-- Preview Deck, Search, Tree View -->
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Children>
-                          <WidgetGroup><!-- Search, Maxi button -->
-                            <ObjectName>SearchBoxContainer</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>me,min</SizePolicy>
-                            <Children>
+                      <Template src="skins:Tango/decks/preview_deck.xml"/>
 
-                              <SearchBox></SearchBox>
-
-                              <!-- Align the expand buttontop in case the searchbox grows taller -->
-                              <WidgetGroup>
-                                <ObjectName>AlignTop</ObjectName>
-                                <Layout>horizontal</Layout>
-                                <Size>19f,15min</Size>
-                                <Children>
-                                  <Template src="skins:Tango/controls/button_2state_persist.xml">
-                                    <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
-                                    <SetVariable name="Size">19f,15f</SetVariable>
-                                    <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
-                                  </Template>
-                                </Children>
-                              </WidgetGroup>
-
-                            </Children>
-                          </WidgetGroup><!-- /Search, Maxi button -->
-
-                          <!-- Tree View -->
-                          <LibrarySidebar></LibrarySidebar>
-                        </Children>
-                      </WidgetGroup><!-- /Preview Deck, Search, Tree View -->
-
-                      <CoverArt>
-                        <Size>30min,30min</Size>
+                      <WidgetGroup>
+                        <Size>1me,5f</Size>
                         <Connection>
-                          <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_preview_decks</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </CoverArt>
+                      </WidgetGroup>
 
+                      <Splitter>
+                        <!-- Splitter to make CoverArt resizable -->
+                        <ObjectName>LibrarySplitter</ObjectName>
+                        <SizePolicy>me,me</SizePolicy>
+                        <SplitSizes>1,3</SplitSizes>
+                        <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                        <Orientation>vertical</Orientation>
+                        <Collapsible>0,0</Collapsible>
+                        <Children>
+
+                          <WidgetGroup>
+                            <!-- Preview Deck, Search, Tree View -->
+                            <Layout>vertical</Layout>
+                            <SizePolicy>me,min</SizePolicy>
+                            <Children>
+                              <WidgetGroup>
+                                <!-- Search, Maxi button -->
+                                <ObjectName>SearchBoxContainer</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,min</SizePolicy>
+                                <Children>
+
+                                  <SearchBox></SearchBox>
+
+                                  <!-- Align the expand buttontop in case the searchbox grows taller -->
+                                  <WidgetGroup>
+                                    <ObjectName>AlignTop</ObjectName>
+                                    <Layout>horizontal</Layout>
+                                    <Size>19f,15min</Size>
+                                    <Children>
+                                      <Template src="skins:Tango/controls/button_2state_persist.xml">
+                                        <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
+                                        <SetVariable name="Size">19f,15f</SetVariable>
+                                        <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
+                                      </Template>
+                                    </Children>
+                                  </WidgetGroup>
+
+                                </Children>
+                              </WidgetGroup>
+                              <!-- /Search, Maxi button -->
+
+                              <!-- Tree View -->
+                              <LibrarySidebar></LibrarySidebar>
+                            </Children>
+                          </WidgetGroup>
+                          <!-- /Preview Deck, Search, Tree View -->
+
+                          <CoverArt>
+                            <Size>30min,30min</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </CoverArt>
+
+                        </Children>
+                      </Splitter>
+                      <!-- /Splitter to make CoverArt resizable -->
                     </Children>
-                  </Splitter><!-- /Splitter to make CoverArt resizable -->
-                </Children>
-              </WidgetGroup><!-- /Preview Search Cover Tree -->
+                  </WidgetGroup>
+                  <!-- /Preview Search Cover Tree -->
 
-              <WidgetGroup><!-- Library Table -->
-                <Layout>vertical</Layout>
-                <Children>
-                  <Library>
-                    <BgColor>#585858</BgColor>
-                    <FgColor>#eece33</FgColor>
-                    <ShowButtonText>false</ShowButtonText>
-                    <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
-                  </Library>
+                  <WidgetGroup>
+                    <!-- Library Table -->
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Library>
+                        <BgColor>#585858</BgColor>
+                        <FgColor>#eece33</FgColor>
+                        <ShowButtonText>false</ShowButtonText>
+                        <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
+                      </Library>
+                    </Children>
+                  </WidgetGroup>
+                  <!-- /Library Table -->
                 </Children>
-              </WidgetGroup><!-- /Library Table -->
+              </Splitter>
+              <!-- /Split Tree / Tracks table -->
             </Children>
-          </Splitter><!-- /Split Tree / Tracks table -->
-
+          </Splitter>
         </Children>
       </WidgetGroup>
     </Children>

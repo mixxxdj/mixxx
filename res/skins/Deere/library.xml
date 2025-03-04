@@ -18,82 +18,111 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <!-- QSplitter between LibrarySidebar and Library -->
           <Splitter>
-            <ObjectName>LibrarySplitter</ObjectName>
-            <Orientation>horizontal</Orientation>
+            <ObjectName>LibraryMainSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
             <SizePolicy>me,me</SizePolicy>
-            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
-            <SplitSizes>2,8</SplitSizes>
+            <SplitSizes>1,4</SplitSizes>
+            <SplitSizesConfigKey>[Skin],prepwin_splitSize</SplitSizesConfigKey>
+            <Collapsible>0,0</Collapsible>
             <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:preview_deck.xml"/>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <SearchBox></SearchBox>
-                      <Template src="skin:hide_show_button.xml">
-                        <SetVariable name="TooltipId">maximize_library</SetVariable>
-                        <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Skin],show_maximized_library</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-                  <!-- QSplitter between LibrarySidebar and CoverArt -->
-                  <Splitter>
-                    <ObjectName>LibraryCoverArtSplitter</ObjectName>
-                    <Orientation>vertical</Orientation>
-                    <SizePolicy>me,me</SizePolicy>
-                    <MinimumSize>30,30</MinimumSize>
-                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
-                    <SplitSizes>2,8</SplitSizes>
-                    <Collapsible>0,0</Collapsible>
-                    <Children>
-                      <LibrarySidebar>
-                      </LibrarySidebar>
 
-                      <CoverArt>
-                        <ObjectName>LibraryCoverArt</ObjectName>
-                        <TooltipId>coverart</TooltipId>
+              <!-- Preparation Window (Can Hide/Show) -->
+              <WidgetGroup trigger="[Skin],show_preparation_window">
+                <ObjectName>LibraryPreparationWindow</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>200,100</MinimumSize>
+                <Children>
+                  <LibraryPreparationWindow>
+                    <Label>
+                      <Text>Preparation Window</Text>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Alignment>center</Alignment>
+                    </Label>
+                  </LibraryPreparationWindow>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_preparation_window</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- QSplitter between LibrarySidebar and Library -->
+              <Splitter>
+                <ObjectName>LibrarySplitter</ObjectName>
+                <Orientation>horizontal</Orientation>
+                <SizePolicy>me,me</SizePolicy>
+                <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+                <SplitSizes>2,8</SplitSizes>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:preview_deck.xml"/>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <SearchBox></SearchBox>
+                          <Template src="skin:hide_show_button.xml">
+                            <SetVariable name="TooltipId">maximize_library</SetVariable>
+                            <SetVariable name="object_name">LibraryToggle</SetVariable>
+                            <SetVariable name="control">[Skin],show_maximized_library</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- QSplitter between LibrarySidebar and CoverArt -->
+                      <Splitter>
+                        <ObjectName>LibraryCoverArtSplitter</ObjectName>
+                        <Orientation>vertical</Orientation>
                         <SizePolicy>me,me</SizePolicy>
                         <MinimumSize>30,30</MinimumSize>
-                        <Connection>
-                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </CoverArt>
+                        <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                        <SplitSizes>2,8</SplitSizes>
+                        <Collapsible>0,0</Collapsible>
+                        <Children>
+                          <LibrarySidebar>
+                          </LibrarySidebar>
+                          <CoverArt>
+                            <ObjectName>LibraryCoverArt</ObjectName>
+                            <TooltipId>coverart</TooltipId>
+                            <SizePolicy>me,me</SizePolicy>
+                            <MinimumSize>30,30</MinimumSize>
+                            <Connection>
+                              <ConfigKey>[Skin],show_library_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </CoverArt>
+                        </Children>
+                      </Splitter>
                     </Children>
-                  </Splitter>
+                  </WidgetGroup>
+
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                  </Library>
+
                 </Children>
-              </WidgetGroup>
+                <!--Connection>
+                  <ConfigKey>[Skin],show_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection-->
+              </Splitter>
 
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
-              </Library>
-
+              <!--WidgetGroup>
+                <ObjectName>Spacer22</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Children/>
+                <Connection>
+                  <ConfigKey>[Skin],show_library</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup-->
             </Children>
-            <!--Connection>
-              <ConfigKey>[Skin],show_library</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection-->
           </Splitter>
-
-          <!--WidgetGroup>
-            <ObjectName>Spacer22</ObjectName>
-            <SizePolicy>me,me</SizePolicy>
-            <Children/>
-            <Connection>
-              <ConfigKey>[Skin],show_library</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup-->
-
         </Children>
       </WidgetGroup>
-        </Children>
-      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>
