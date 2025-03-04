@@ -46,6 +46,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_iVCMode(static_cast<int>(mode->get())),
           m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
           m_dOldFilePos(0.0),
+          m_deltaFilePos(0.0),
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
           m_bWasReversed(false),
@@ -64,7 +65,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dDriftAmt(0.0),
           m_relativedDriftAmtMem(0.0),
           m_deltaRelativeDriftAmount(0.0),
-          m_deltaFilePos(0.0),
           m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
