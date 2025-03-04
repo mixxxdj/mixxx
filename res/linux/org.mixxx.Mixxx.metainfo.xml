@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740515661">
+    <release version="2.5.1" type="development" date="2025-03-03" timestamp="1741001174">
       <description>
  <p>
   Controller Mappings
@@ -111,6 +111,10 @@
    Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
    #14051
    #14057
+  </li>
+  <li>
+   M-Vave SMC-Mixer: Add controller mapping
+   #14411
   </li>
   <li>
    Numark NS6II: New mapping
@@ -192,6 +196,14 @@
   <li>
    MIDI controller learning: Correct skin control for mic/aux section
    #14221
+  </li>
+  <li>
+   MIDI controller learning: Add more cue controls for samplers
+   #14419
+  </li>
+  <li>
+   MIDI controller learning: Continue after the maximum learning time is over
+   #14429
   </li>
   <li>
    Allow
@@ -311,6 +323,11 @@
    eject
    after moving track file to trash
    #14402
+  </li>
+  <li>
+   Fix AutoDJ "Remove Crate" action
+   #14426
+   #14425
   </li>
  </ul>
  <p>
