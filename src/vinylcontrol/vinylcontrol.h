@@ -3,6 +3,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 #include "util/types.h"
 
 class PollingControlProxy;
@@ -66,7 +67,7 @@ class VinylControl : public QObject {
     ControlProxy* signalenabled;
     // When the user has pressed the "reverse" button.
     ControlProxy* reverseButton;
-    PollingControlProxy* passthroughEnabled;
+    parented_ptr<ControlProxy> passthroughEnabled;
 
     // The lead-in time...
     int m_iLeadInTime;
