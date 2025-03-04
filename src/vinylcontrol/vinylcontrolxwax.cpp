@@ -62,6 +62,10 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dLastTrackSelectPos(0.0),
           m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
+          m_relativedDriftAmtMem(0.0),
+          m_relativedDriftAmtSet(false),
+          m_deltaRelativeDriftAmount(0.0),
+          m_deltaFilePos(0.0),
           m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
@@ -466,6 +470,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //save the absolute amount of drift for when we need to estimate vinyl position
             m_dDriftAmt = m_dVinylPosition - filePosition;
 
+            checkDeltaRelativeDriftAmount(filePosition);
+
             //qDebug() << "drift" << m_dDriftAmt;
 
             if (m_bForceResync) {
@@ -519,7 +525,16 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     fabs(m_dDriftAmt) > 0.03 && fabs(m_dDriftAmt) < 5.0) {
                 dDriftControl = m_dDriftAmt * .01;
             } else {
-                dDriftControl = 0.0;
+                // Apply relative drift control
+                if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
+                    if (fabs(m_deltaRelativeDriftAmount) > 0.006 &&
+                        fabs(m_deltaRelativeDriftAmount) < 1.0 &&
+                        fabs(m_deltaFilePos) < 0.03) {
+                        dDriftControl = m_deltaRelativeDriftAmount * 0.3;
+                    }
+                } else {
+                    dDriftControl = 0.0;
+                }
             }
 
             m_dVinylPositionOld = m_dVinylPosition;
@@ -647,6 +662,27 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             m_bForceResync = true;
             vinylStatus->set(VINYL_STATUS_OK);
         }
+    }
+}
+
+// In relative mode, keep track of the relative drift amount delta
+// in order to apply drift control compensation
+void VinylControlXwax::checkDeltaRelativeDriftAmount(double filePosition) {
+    if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
+        m_deltaFilePos = filePosition - m_dOldFilePos;
+
+        // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
+        // when passthrough is enabled or is playing in reverse
+        if (fabs(m_deltaRelativeDriftAmount) > 1.5 || fabs(m_deltaFilePos) > 0.03 ||  // TODO: thresholds to adjust probably
+            passthroughEnabled->toBool() || reverseButton->toBool()) {
+            m_relativedDriftAmtSet = false;
+            }
+        if (!m_relativedDriftAmtSet) {
+            m_relativedDriftAmtMem = m_dDriftAmt;
+            m_relativedDriftAmtSet = true;
+        }
+
+        m_deltaRelativeDriftAmount = m_dDriftAmt - m_relativedDriftAmtMem;
     }
 }
 
