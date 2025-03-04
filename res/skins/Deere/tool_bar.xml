@@ -400,6 +400,18 @@
                 <SetVariable name="state_1_text">MICS &amp; AUX</SetVariable>
                 <SetVariable name="left_connection_control">[Skin],show_microphones</SetVariable>
               </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_preparation_window</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">PREP WIN</SetVariable>
+                <SetVariable name="state_1_text">PREP WIN</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_preparation_window</SetVariable>
+              </Template>
+
             </Children>
             <Connection>
               <ConfigKey>[Skin],show_maximized_library</ConfigKey>

@@ -179,6 +179,19 @@ Description:
                 <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
               </Template>
 
+              <WidgetGroup>
+                <Size>3f,1min</Size>
+              </WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="TooltipId">show_preparation_window</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_text">PW</SetVariable>
+                <SetVariable name="state_1_text">PW</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_preparation_window</SetVariable>
+              </Template>
+
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
               <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- Mixer -->
