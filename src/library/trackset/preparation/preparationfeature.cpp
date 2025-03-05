@@ -237,6 +237,7 @@ QModelIndex PreparationFeature::constructChildModel(int selectedId) {
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
             "  Playlists.date_created AS date_created, "
+            "  Playlists.hidden AS hidden, "
             "  LOWER(Playlists.name) AS sort_name, "
             "  max(PlaylistTracks.position) AS count,"
             "  SUM(library.duration) AS durationSeconds "
@@ -245,9 +246,12 @@ QModelIndex PreparationFeature::constructChildModel(int selectedId) {
             "  ON PlaylistTracks.playlist_id = Playlists.id "
             "LEFT JOIN library "
             "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = %2 "
+            //"  WHERE Playlists.hidden = %2 "
+            "  WHERE ( IFNULL(Playlists.hidden, 0) = %2 OR "
+            "  IFNULL(Playlists.hidden, 0) = %3) "
             "  GROUP BY Playlists.id")
                                   .arg(m_countsDurationTableName,
+                                          QString::number(PlaylistDAO::PLHT_SET_LOG),
                                           QString::number(PlaylistDAO::PLHT_SET_PREPARATION));
     ;
     queryString.append(
@@ -272,6 +276,7 @@ QModelIndex PreparationFeature::constructChildModel(int selectedId) {
     int createdColumn = record.indexOf("date_created");
     int countColumn = record.indexOf("count");
     int durationColumn = record.indexOf("durationSeconds");
+    int hiddenTypeColumn = record.indexOf("hidden");
 
     // Nice to have: restore previous expanded/collapsed state of YEAR items
     clearChildModel();
@@ -279,7 +284,6 @@ QModelIndex PreparationFeature::constructChildModel(int selectedId) {
     std::vector<std::unique_ptr<TreeItem>> itemList;
     // Generous estimate (number of years the db is used ;))
     itemList.reserve(kNumToplevelHistoryEntries + 15);
-
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
                 playlistTableModel
@@ -300,40 +304,46 @@ QModelIndex PreparationFeature::constructChildModel(int selectedId) {
                 playlistTableModel
                         .data(playlistTableModel.index(row, durationColumn))
                         .toInt();
+        int hiddenType =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, hiddenTypeColumn))
+                        .toInt();
         QString label = createPlaylistLabel(name, count, duration);
 
         // Create the TreeItem whose parent is the invisible root item.
         // Show only [kNumToplevelHistoryEntries] recent playlists at the top level
         // before grouping them by year.
-        if (row >= kNumToplevelHistoryEntries) {
-            // group by year
-            int yearCreated = dateCreated.date().year();
+        if (hiddenType == PlaylistDAO::PLHT_SET_PREPARATION) {
+            if (row >= kNumToplevelHistoryEntries) {
+                // group by year
+                int yearCreated = dateCreated.date().year();
 
-            auto i = groups.find(yearCreated);
-            TreeItem* pGroupItem;
-            if (i != groups.end() && i.key() == yearCreated) {
-                // get YEAR item the playlist will sorted into
-                pGroupItem = i.value();
+                auto i = groups.find(yearCreated);
+                TreeItem* pGroupItem;
+                if (i != groups.end() && i.key() == yearCreated) {
+                    // get YEAR item the playlist will sorted into
+                    pGroupItem = i.value();
+                } else {
+                    // create YEAR item the playlist will sorted into
+                    // store id of empty placeholder playlist
+                    auto pNewGroupItem = std::make_unique<TreeItem>(
+                            QString::number(yearCreated), m_yearNodeId);
+                    pGroupItem = pNewGroupItem.get();
+                    groups.insert(yearCreated, pGroupItem);
+                    itemList.push_back(std::move(pNewGroupItem));
+                }
+
+                TreeItem* pItem = pGroupItem->appendChild(label, id);
+                pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+                decorateChild(pItem, id);
             } else {
-                // create YEAR item the playlist will sorted into
-                // store id of empty placeholder playlist
-                auto pNewGroupItem = std::make_unique<TreeItem>(
-                        QString::number(yearCreated), m_yearNodeId);
-                pGroupItem = pNewGroupItem.get();
-                groups.insert(yearCreated, pGroupItem);
-                itemList.push_back(std::move(pNewGroupItem));
+                // add most recent top-level playlist
+                auto pItem = std::make_unique<TreeItem>(label, id);
+                pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+                decorateChild(pItem.get(), id);
+
+                itemList.push_back(std::move(pItem));
             }
-
-            TreeItem* pItem = pGroupItem->appendChild(label, id);
-            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
-            decorateChild(pItem, id);
-        } else {
-            // add most recent top-level playlist
-            auto pItem = std::make_unique<TreeItem>(label, id);
-            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
-            decorateChild(pItem.get(), id);
-
-            itemList.push_back(std::move(pItem));
         }
     }
 
