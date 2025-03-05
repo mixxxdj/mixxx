@@ -530,8 +530,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 // Apply relative drift control
                 if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
                     if (fabs(m_deltaRelativeDriftAmount) > 0.006 &&
-                        fabs(m_deltaRelativeDriftAmount) < 1.0 &&
-                        fabs(m_deltaFilePos) < 0.03) {
+                            fabs(m_deltaRelativeDriftAmount) < 1.0 &&
+                            fabs(m_deltaFilePos) < 0.03) {
                         dDriftControl = m_deltaRelativeDriftAmount * 0.3;
                     }
                 } else {
@@ -671,8 +671,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
     // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
     // when passthrough is enabled or is playing in reverse
-    if (fabs(m_deltaRelativeDriftAmount) > 1.5 || fabs(deltaFilePos) > 0.03 ||  // TODO: thresholds to adjust probably
-        passthroughEnabled->toBool() || reverseButton->toBool() || scratchPositionEnabled->toBool()) {
+    if (fabs(m_deltaRelativeDriftAmount) > 1.5 ||
+            fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
+            passthroughEnabled->toBool() || reverseButton->toBool() ||
+            scratchPositionEnabled->toBool()) {
         m_relativedDriftAmtMem = m_dDriftAmt;
     }
 
