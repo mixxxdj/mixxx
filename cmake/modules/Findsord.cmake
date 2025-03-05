@@ -91,5 +91,14 @@ if(sord_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_sord_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${sord_INCLUDE_DIR}"
     )
+    is_static_library(sord_IS_STATIC sord::sord)
+    if(sord_IS_STATIC)
+      find_package(serd REQUIRED)
+      set_property(
+        TARGET sord::sord
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES serd::serd
+      )
+    endif()
   endif()
 endif()
