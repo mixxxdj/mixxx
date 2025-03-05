@@ -197,8 +197,8 @@ elseif(APPLE)
       set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
     else()
       if(QT6)
-        # Minimum macOS version supported by Qt 6
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
+        # Minimum macOS version supported by Qt 6.5
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
       else()
         # Minimum macOS version supported by Qt 5.12
         set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
