@@ -129,7 +129,8 @@ DlgAbout::DlgAbout()
             << "Emilien Colombier"
             << "DJ aK"
             << "Sam Whited"
-            << "Ryan Bell";
+            << "Ryan Bell"
+            << "Nicolas Parlant";
 
     QStringList specialThanks;
     specialThanks
