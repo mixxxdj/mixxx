@@ -30,6 +30,8 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
                     kDefaultTrackTableBackgroundColorOpacity),
             kMinTrackTableBackgroundColorOpacity,
             kMaxTrackTableBackgroundColorOpacity);
+
+    m_overviewSignalColors.setup(node, context);
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {

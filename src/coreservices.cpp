@@ -21,6 +21,7 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/overviewcache.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -371,6 +372,12 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pTrackCollectionManager.get(),
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
+
+    OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
+    connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
+            &TrackDAO::waveformSummaryUpdated,
+            pOverviewCache,
+            &OverviewCache::onTrackSummaryChanged);
 
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has
