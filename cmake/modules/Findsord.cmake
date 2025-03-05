@@ -94,10 +94,11 @@ if(sord_FOUND)
     is_static_library(sord_IS_STATIC sord::sord)
     if(sord_IS_STATIC)
       find_package(serd REQUIRED)
+      find_package(zix REQUIRED)
       set_property(
         TARGET sord::sord
         APPEND
-        PROPERTY INTERFACE_LINK_LIBRARIES serd::serd
+        PROPERTY INTERFACE_LINK_LIBRARIES serd::serd zix::zix
       )
     endif()
   endif()
