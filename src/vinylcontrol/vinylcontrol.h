@@ -68,6 +68,7 @@ class VinylControl : public QObject {
     // When the user has pressed the "reverse" button.
     ControlProxy* reverseButton;
     parented_ptr<ControlProxy> passthroughEnabled;
+    parented_ptr<ControlProxy> scratchPositionEnabled;
 
     // The lead-in time...
     int m_iLeadInTime;

@@ -672,7 +672,7 @@ double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
     // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
     // when passthrough is enabled or is playing in reverse
     if (fabs(m_deltaRelativeDriftAmount) > 1.5 || fabs(deltaFilePos) > 0.03 ||  // TODO: thresholds to adjust probably
-        passthroughEnabled->toBool() || reverseButton->toBool()) {
+        passthroughEnabled->toBool() || reverseButton->toBool() || scratchPositionEnabled->toBool()) {
         m_relativedDriftAmtMem = m_dDriftAmt;
     }
 
