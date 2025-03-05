@@ -96,6 +96,12 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
         timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2CD_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
         timecode = MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBES7INCH) {
