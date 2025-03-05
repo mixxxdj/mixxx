@@ -38,6 +38,10 @@ var SMK25II;
                 softTakeover: true,
             });
             // Hotcues
+            //
+            // Note:
+            // The color of the pads cannot be set, it is controlled by the
+            // firmware and depends on what layer we're on.
             this.hotcues = [];
             for (let i = 0; i < 8; i++) {
                 const hotcueButton = new components.HotcueButton({
@@ -172,8 +176,8 @@ var SMK25II;
             break;
         }
         case 0x5E: {
-					  const button = SMK25II.controller.activeDeck.playButton;
-					  button.input(undefined, undefined, data[5], undefined, undefined);
+            const button = SMK25II.controller.activeDeck.playButton;
+            button.input(undefined, undefined, data[5], undefined, undefined);
             break;
         }
         case 0x5B: {
