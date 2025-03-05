@@ -135,30 +135,41 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-
                   <WidgetGroup>
-                    <MinimumSize>0,10</MinimumSize>
-                    <MaximumSize>,10</MaximumSize>
-                    <SizePolicy>min,me</SizePolicy>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <ObjectName>VuMeterMain_4Decks</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>max,max</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <SingletonContainer>
-                        <ObjectName>VuMeterMain_Light</ObjectName>
-                      </SingletonContainer>
+
+                      <WidgetGroup>
+                        <MinimumSize>0,10</MinimumSize>
+                        <MaximumSize>,10</MaximumSize>
+                        <SizePolicy>min,me</SizePolicy>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>VuMeterMain_4Decks</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>VuMeterMain_Light</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup><!-- VuMeterMain_4Decks -->
+
+                      <WidgetGroup>
+                        <MinimumSize>0,20</MinimumSize>
+                        <MaximumSize>,20</MaximumSize>
+                        <SizePolicy>min,me</SizePolicy>
+                      </WidgetGroup>
+
                     </Children>
-                  </WidgetGroup><!-- VuMeterMain_4Decks -->
-
-                  <WidgetGroup>
-                    <MinimumSize>0,20</MinimumSize>
-                    <MaximumSize>,20</MaximumSize>
-                    <SizePolicy>min,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_4decks_row</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
                   </WidgetGroup>
-
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
