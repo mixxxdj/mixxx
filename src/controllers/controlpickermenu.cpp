@@ -313,6 +313,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Move Beatgrid"),
             tr("Adjust the beatgrid to the left or right"),
             pBpmMenu);
+    addDeckControl("beats_translate_half",
+            tr("Move Beatgrid Half a Beat"),
+            tr("Adjust the beatgrid by exactly one half beat. Usable only for "
+               "tracks with constant tempo."),
+            pBpmMenu);
     addDeckControl("beats_translate_curpos",
             tr("Adjust Beatgrid"),
             tr("Align beatgrid to current position"),
