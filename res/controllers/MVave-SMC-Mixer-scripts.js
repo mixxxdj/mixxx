@@ -96,7 +96,7 @@ var SMCMixer;
             // anything less than the tolerance window, we consider them the
             // same. This way we're not constantly blinking the soft takeover
             // indicator because we didn't get the control matched up exactly.
-            this.toleranceWindow = 0.001;
+            this.toleranceWindow = 0.03;
         }
         input(_channel, _control, value, _status, _group) {
             const receivingFirstValue = this.hardwarePos === undefined;
@@ -105,7 +105,17 @@ var SMCMixer;
             if (receivingFirstValue) {
                 this.firstValueReceived = true;
                 this.connect();
+            }
+        }
+        connect() {
+            if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
+            }
+            if (undefined !== this.group &&
+                undefined !== this.outKey &&
+                undefined !== this.output &&
+                typeof this.output === "function") {
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         }
         output(value) {
