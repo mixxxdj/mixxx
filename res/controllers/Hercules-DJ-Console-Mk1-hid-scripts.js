@@ -84,20 +84,26 @@ HerculesMk1Hid.init = function() {
     //
 
     c.capture("pitchbend_down", "all", function(g, e, v) {
-        if (engine.getValue(g, "play") == 0) {
-            engine.setValue(g, "back", v > 0 ? 1 : 0);
-        }
-        else if (v > 0) {
-            engine.setValue(g, "jog", -3);
+        if (engine.getSetting("pitchBendAsJogWheel")) {
+            if (!engine.getValue(g, "play")) {
+                engine.setValue(g, "back", v > 0 ? 1 : 0);
+            } else if (v > 0) {
+                engine.setValue(g, "jog", -3);
+            }
+        } else {
+            engine.setParameter(g, "pitch_down", v > 0);
         }
     });
 
     c.capture("pitchbend_up", "all", function(g, e, v) {
-        if (engine.getValue(g, "play") == 0) {
-            engine.setValue(g, "fwd", v > 0 ? 1 : 0);
-        }
-        else if (v > 0) {
-            engine.setValue(g, "jog", 3);
+        if (engine.getSetting("pitchBendAsJogWheel")) {
+            if (!engine.getValue(g, "play")) {
+                engine.setValue(g, "fwd", v > 0 ? 1 : 0);
+            } else if (v > 0) {
+                engine.setValue(g, "jog", 3);
+            }
+        } else {
+            engine.setParameter(g, "pitch_up", v > 0);
         }
     });
 
