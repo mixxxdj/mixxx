@@ -149,6 +149,7 @@
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
 * Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
 * Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
+* Adjust macOS x64 deployment target to 11.0 [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
