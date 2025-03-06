@@ -1370,7 +1370,9 @@ TraktorS4MK2.sendLoopSizeMessage = function(deck, firstChar, secondChar, firstDo
 };
 
 TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character) {
-    if (deck === undefined) return;
+    if (deck === undefined) {
+        return;
+    }
     
     // charPost is 0 or 1 for first or second character on the display
     // the display is placed like this:
@@ -1419,7 +1421,9 @@ TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character) {
 };
 
 TraktorS4MK2.displayCharLoopDot = function(deck, charPos, on) {
-    if (deck === undefined) return;
+    if (deck === undefined) {
+        return;
+    }
     
     var key = "!loopSize" + 8*charPos;
     TraktorS4MK2.controller.setOutput(
