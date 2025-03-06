@@ -458,7 +458,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
         const QString& path) const {
     std::vector<std::unique_ptr<TreeItem>> items;
-
+    // line to start CI
     if (path.isEmpty()) {
         return items;
     }
