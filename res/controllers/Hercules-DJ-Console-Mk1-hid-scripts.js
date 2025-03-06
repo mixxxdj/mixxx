@@ -91,7 +91,7 @@ HerculesMk1Hid.init = function() {
                 engine.setValue(g, "jog", -3);
             }
         } else {
-            engine.setParameter(g, "pitch_down", v > 0);
+            engine.setParameter(g, "pitch_down", v > 0 ? 1 : 0);
         }
     });
 
@@ -103,7 +103,7 @@ HerculesMk1Hid.init = function() {
                 engine.setValue(g, "jog", 3);
             }
         } else {
-            engine.setParameter(g, "pitch_up", v > 0);
+            engine.setParameter(g, "pitch_up", v > 0 ? 1 : 0);
         }
     });
 
