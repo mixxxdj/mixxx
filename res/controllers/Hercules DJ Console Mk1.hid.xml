@@ -21,6 +21,16 @@
                       when the track is playing.
                     </description>
                 </option>
+                <option
+                    variable="gainAsTempo"
+                    type="boolean"
+                    default="false"
+                    label="Use the gain encoder for setting the tempo">
+                    <description>
+                      This will change the gain encoder to modify the tempo
+                      instead.
+                    </description>
+                </option>
             </row>
         </group>
     </settings>
