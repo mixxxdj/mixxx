@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/parser.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -15,6 +16,7 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "moc_preparationfeature.cpp"
+#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
@@ -162,6 +164,37 @@ void PreparationFeature::slotDeletePlaylist() {
         // regular preparationlist, call the base implementation
         BasePlaylistFeature::slotDeletePlaylist();
     }
+}
+
+bool PreparationFeature::dropAcceptChild(
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+    qDebug() << "[PREPARATIONFEATURE] -> dropAcceptChild triggered";
+    int playlistId = playlistIdFromIndex(index);
+    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+        return false;
+    }
+    // If a track is dropped onto a playlist's name, but the track isn't in the
+    // library, then add the track to the library before adding it to the
+    // playlist.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
+                                      ->resolveTrackIdsFromUrls(urls, !pSource);
+    if (trackIds.isEmpty()) {
+        return false;
+    }
+
+    // Return whether appendTracksToPlaylist succeeded.
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+}
+
+bool PreparationFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+    int playlistId = playlistIdFromIndex(index);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+
+    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+    return !locked && formatSupported;
 }
 
 void PreparationFeature::onRightClick(const QPoint& globalPos) {
