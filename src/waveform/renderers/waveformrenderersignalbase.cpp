@@ -1,7 +1,9 @@
 #include "waveformrenderersignalbase.h"
 
 #include "control/controlproxy.h"
+#include "moc_waveformrenderersignalbase.cpp"
 #include "util/colorcomponents.h"
+#include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
 
@@ -21,7 +23,10 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_pHighKillControlObject(nullptr),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
-          m_pColors(nullptr),
+          m_allChannelVisualGain(1),
+          m_lowVisualGain(1),
+          m_midVisualGain(1),
+          m_highVisualGain(1),
           m_axesColor_r(0),
           m_axesColor_g(0),
           m_axesColor_b(0),
@@ -122,51 +127,55 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
         }
     }
 
-    m_pColors = m_waveformRenderer->getWaveformSignalColors();
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
-    const QColor& l = m_pColors->getLowColor();
-    getRgbF(l, &m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
-
-    const QColor& m = m_pColors->getMidColor();
-    getRgbF(m, &m_midColor_r, &m_midColor_g, &m_midColor_b);
-
-    const QColor& h = m_pColors->getHighColor();
-    getRgbF(h, &m_highColor_r, &m_highColor_g, &m_highColor_b);
-
-    const QColor& rgbLow = m_pColors->getRgbLowColor();
-    getRgbF(rgbLow, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
-
-    const QColor& rgbMid = m_pColors->getRgbMidColor();
-    getRgbF(rgbMid, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
-
-    const QColor& rgbHigh = m_pColors->getRgbHighColor();
-    getRgbF(rgbHigh, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
-
-    const QColor& rgbFilteredLow = m_pColors->getRgbLowFilteredColor();
-    getRgbF(rgbFilteredLow,
+    getRgbF(pColors->getLowColor(), &m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
+    getRgbF(pColors->getMidColor(), &m_midColor_r, &m_midColor_g, &m_midColor_b);
+    getRgbF(pColors->getHighColor(), &m_highColor_r, &m_highColor_g, &m_highColor_b);
+    getRgbF(pColors->getRgbLowColor(), &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+    getRgbF(pColors->getRgbMidColor(), &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+    getRgbF(pColors->getRgbHighColor(), &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
+    getRgbF(pColors->getRgbLowFilteredColor(),
             &m_rgbLowFilteredColor_r,
             &m_rgbLowFilteredColor_g,
             &m_rgbLowFilteredColor_b);
 
-    const QColor& rgbFilteredMid = m_pColors->getRgbMidFilteredColor();
-    getRgbF(rgbFilteredMid,
+    getRgbF(pColors->getRgbMidFilteredColor(),
             &m_rgbMidFilteredColor_r,
             &m_rgbMidFilteredColor_g,
             &m_rgbMidFilteredColor_b);
 
-    const QColor& rgbFilteredHigh = m_pColors->getRgbHighFilteredColor();
-    getRgbF(rgbFilteredHigh,
+    getRgbF(pColors->getRgbHighFilteredColor(),
             &m_rgbHighFilteredColor_r,
             &m_rgbHighFilteredColor_g,
             &m_rgbHighFilteredColor_b);
 
-    const QColor& axes = m_pColors->getAxesColor();
-    getRgbF(axes, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
-
-    const QColor& signal = m_pColors->getSignalColor();
-    getRgbF(signal, &m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
-
+    getRgbF(pColors->getAxesColor(),
+            &m_axesColor_r,
+            &m_axesColor_g,
+            &m_axesColor_b,
+            &m_axesColor_a);
+    getRgbF(pColors->getSignalColor(), &m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
     onSetup(node);
+
+    auto* pWaveformFactory = WaveformWidgetFactory::instance();
+    connect(pWaveformFactory,
+            &WaveformWidgetFactory::visualGainChanged,
+            this,
+            [this](CSAMPLE_GAIN allChannelGain,
+                    CSAMPLE_GAIN lowGain,
+                    CSAMPLE_GAIN midGain,
+                    CSAMPLE_GAIN highGain) {
+                setAllChannelVisualGain(allChannelGain);
+                setLowVisualGain(lowGain);
+                setMidVisualGain(midGain);
+                setHighVisualGain(highGain);
+            });
+
+    setAllChannelVisualGain(pWaveformFactory->getVisualGain(BandIndex::AllBand));
+    setLowVisualGain(pWaveformFactory->getVisualGain(BandIndex::Low));
+    setMidVisualGain(pWaveformFactory->getVisualGain(BandIndex::Mid));
+    setHighVisualGain(pWaveformFactory->getVisualGain(BandIndex::High));
 }
 
 void WaveformRendererSignalBase::getGains(float* pAllGain,
@@ -174,55 +183,52 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         float* pLowGain,
         float* pMidGain,
         float* pHighGain) {
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     if (pAllGain) {
-        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain(applyCompensation)) *
-                static_cast<CSAMPLE_GAIN>(factory->getVisualGain(WaveformWidgetFactory::All));
+        *pAllGain = static_cast<CSAMPLE_GAIN>(
+                            m_waveformRenderer->getGain(applyCompensation)) *
+                m_allChannelVisualGain;
         ;
     }
 
     if (pLowGain || pMidGain || pHighGain) {
         // Per-band gain from the EQ knobs.
-        CSAMPLE_GAIN lowGain = 1.0, midGain = 1.0, highGain = 1.0;
+        CSAMPLE_GAIN lowVisualGain = 1.0, midVisualGain = 1.0, highVisualGain = 1.0;
 
         // Only adjust low/mid/high gains if EQs are enabled.
         if (m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
-                m_pMidFilterControlObject &&
-                m_pHighFilterControlObject) {
-                lowGain = static_cast<CSAMPLE_GAIN>(m_pLowFilterControlObject->get());
-                midGain = static_cast<CSAMPLE_GAIN>(m_pMidFilterControlObject->get());
-                highGain = static_cast<CSAMPLE_GAIN>(m_pHighFilterControlObject->get());
+                    m_pMidFilterControlObject &&
+                    m_pHighFilterControlObject) {
+                lowVisualGain = static_cast<CSAMPLE_GAIN>(m_pLowFilterControlObject->get());
+                midVisualGain = static_cast<CSAMPLE_GAIN>(m_pMidFilterControlObject->get());
+                highVisualGain = static_cast<CSAMPLE_GAIN>(m_pHighFilterControlObject->get());
             }
 
-            lowGain *= static_cast<CSAMPLE_GAIN>(
-                    factory->getVisualGain(WaveformWidgetFactory::Low));
-            midGain *= static_cast<CSAMPLE_GAIN>(
-                    factory->getVisualGain(WaveformWidgetFactory::Mid));
-            highGain *= static_cast<CSAMPLE_GAIN>(
-                    factory->getVisualGain(WaveformWidgetFactory::High));
+            lowVisualGain *= m_lowVisualGain;
+            midVisualGain *= m_midVisualGain;
+            highVisualGain *= m_highVisualGain;
 
             if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
-                lowGain = 0;
+                lowVisualGain = 0;
             }
 
             if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
-                midGain = 0;
+                midVisualGain = 0;
             }
 
             if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
-                highGain = 0;
+                highVisualGain = 0;
             }
         }
 
         if (pLowGain != nullptr) {
-            *pLowGain = lowGain;
+            *pLowGain = lowVisualGain;
         }
         if (pMidGain != nullptr) {
-            *pMidGain = midGain;
+            *pMidGain = midVisualGain;
         }
         if (pHighGain != nullptr) {
-            *pHighGain = highGain;
+            *pHighGain = highVisualGain;
         }
     }
 }

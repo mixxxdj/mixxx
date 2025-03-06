@@ -1,10 +1,14 @@
 #include "analyzer/analyzerwaveform.h"
 
+#include <memory>
+#include <vector>
+
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "track/track.h"
 #include "util/logger.h"
+#include "waveform/waveform.h"
 #include "waveform/waveformfactory.h"
 
 namespace {
@@ -26,9 +30,6 @@ AnalyzerWaveform::AnalyzerWaveform(
           m_stride(0, 0, 0),
           m_currentStride(0),
           m_currentSummaryStride(0) {
-    m_filter[0] = nullptr;
-    m_filter[1] = nullptr;
-    m_filter[2] = nullptr;
     m_analysisDao.initialize(dbConnection);
 }
 
@@ -175,22 +176,19 @@ void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8Low(sampleRate, kLowMidFreqHz);
     // m_filter[Mid] = new EngineFilterButterworth8Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
     // m_filter[High] = new EngineFilterButterworth8High(sampleRate, kMidHighFreqHz);
-    m_filter[Low] = new EngineFilterBessel4Low(sampleRate, kLowMidFreqHz);
-    m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
-    m_filter[High] = new EngineFilterBessel4High(sampleRate, kMidHighFreqHz);
+    m_filters = {
+            std::make_unique<EngineFilterBessel4Low>(sampleRate, kLowMidFreqHz),
+            std::make_unique<EngineFilterBessel4Band>(sampleRate, kLowMidFreqHz, kMidHighFreqHz),
+            std::make_unique<EngineFilterBessel4High>(sampleRate, kMidHighFreqHz)};
+
     // settle filters for silence in preroll to avoids ramping (Issue #7776)
-    for (int i = 0; i < FilterCount; ++i) {
-        m_filter[i]->assumeSettled();
-    }
+    m_filters.low->assumeSettled();
+    m_filters.mid->assumeSettled();
+    m_filters.high->assumeSettled();
 }
 
 void AnalyzerWaveform::destroyFilters() {
-    for (int i = 0; i < FilterCount; ++i) {
-        if (m_filter[i]) {
-            delete m_filter[i];
-            m_filter[i] = nullptr;
-        }
-    }
+    m_filters = {};
 }
 
 bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
@@ -221,15 +219,16 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
     }
 
     // This should only append once if count is constant
-    if (count > static_cast<SINT>(m_buffers[0].size())) {
-        m_buffers[Low].resize(count);
-        m_buffers[Mid].resize(count);
-        m_buffers[High].resize(count);
+    if (count > m_buffers.size) {
+        m_buffers.low.resize(count);
+        m_buffers.mid.resize(count);
+        m_buffers.high.resize(count);
+        m_buffers.size = count;
     }
 
-    m_filter[Low]->process(pWaveformInput, &m_buffers[Low][0], count);
-    m_filter[Mid]->process(pWaveformInput, &m_buffers[Mid][0], count);
-    m_filter[High]->process(pWaveformInput, &m_buffers[High][0], count);
+    m_filters.low->process(pWaveformInput, &m_buffers.low[0], count);
+    m_filters.mid->process(pWaveformInput, &m_buffers.mid[0], count);
+    m_filters.high->process(pWaveformInput, &m_buffers.high[0], count);
 
     m_waveform->setSaveState(Waveform::SaveState::NotSaved);
     m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
@@ -237,20 +236,20 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
     for (SINT i = 0; i < count; i += 2) {
         // Take max value, not average of data
         CSAMPLE cover[2] = {fabs(pWaveformInput[i]), fabs(pWaveformInput[i + 1])};
-        CSAMPLE clow[2] = {fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1])};
-        CSAMPLE cmid[2] = {fabs(m_buffers[Mid][i]), fabs(m_buffers[Mid][i + 1])};
-        CSAMPLE chigh[2] = {fabs(m_buffers[High][i]), fabs(m_buffers[High][i + 1])};
+        CSAMPLE clow[2] = {fabs(m_buffers.low[i]), fabs(m_buffers.low[i + 1])};
+        CSAMPLE cmid[2] = {fabs(m_buffers.mid[i]), fabs(m_buffers.mid[i + 1])};
+        CSAMPLE chigh[2] = {fabs(m_buffers.high[i]), fabs(m_buffers.high[i + 1])};
 
         // This is for if you want to experiment with averaging instead of
         // maxing.
         // m_stride.m_overallData[Right] += buffer[i]*buffer[i];
         // m_stride.m_overallData[Left] += buffer[i + 1]*buffer[i + 1];
-        // m_stride.m_filteredData[Right][Low] += m_buffers[Low][i]*m_buffers[Low][i];
-        // m_stride.m_filteredData[Left][Low] += m_buffers[Low][i + 1]*m_buffers[Low][i + 1];
-        // m_stride.m_filteredData[Right][Mid] += m_buffers[Mid][i]*m_buffers[Mid][i];
-        // m_stride.m_filteredData[Left][Mid] += m_buffers[Mid][i + 1]*m_buffers[Mid][i + 1];
-        // m_stride.m_filteredData[Right][High] += m_buffers[High][i]*m_buffers[High][i];
-        // m_stride.m_filteredData[Left][High] += m_buffers[High][i + 1]*m_buffers[High][i + 1];
+        // m_stride.m_filteredData[Right][Low] += m_buffers.low[i]*m_buffers.low[i];
+        // m_stride.m_filteredData[Left][Low] += m_buffers.low[i + 1]*m_buffers.low[i + 1];
+        // m_stride.m_filteredData[Right][Mid] += m_buffers.mid[i]*m_buffers.mid[i];
+        // m_stride.m_filteredData[Left][Mid] += m_buffers.mid[i + 1]*m_buffers.mid[i + 1];
+        // m_stride.m_filteredData[Right][High] += m_buffers.high[i]*m_buffers.high[i];
+        // m_stride.m_filteredData[Left][High] += m_buffers.high[i + 1]*m_buffers.high[i + 1];
 
         // Record the max across this stride.
         storeIfGreater(&m_stride.m_overallData[Left], cover[Left]);

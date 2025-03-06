@@ -230,7 +230,7 @@ void VSyncThread::setSyncIntervalTimeMicros(int syncTime) {
     }
 }
 
-int VSyncThread::fromTimerToNextSyncMicros(const PerformanceTimer& timer) {
+std::chrono::microseconds VSyncThread::fromTimerToNextSync(const PerformanceTimer& timer) {
     int difference = static_cast<int>(m_timer.difference(timer).toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
     int toNextSync = difference + m_waitToSwapMicros;
@@ -239,7 +239,7 @@ int VSyncThread::fromTimerToNextSyncMicros(const PerformanceTimer& timer) {
         // an attempt to render an outdated frame. Render the next frame instead
         toNextSync += m_syncIntervalTimeMicros;
     }
-    return toNextSync;
+    return std::chrono::microseconds(toNextSync);
 }
 
 int VSyncThread::droppedFrames() {

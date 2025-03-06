@@ -5,9 +5,12 @@
 
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/math.h"
+#include "waveform/isynctimeprovider.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveform.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
@@ -83,7 +86,26 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 }
 
 bool WaveformWidgetRenderer::init() {
-    //qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
+    m_trackPixelCount = 0.0;
+    m_visualSamplePerPixel = 1.0;
+    m_audioSamplePerPixel = 1.0;
+    m_totalVSamples = 0;
+    m_gain = 1.0;
+    m_trackSamples = 0.0;
+
+    for (int type = ::WaveformRendererAbstract::Play;
+            type <= ::WaveformRendererAbstract::Slip;
+            type++) {
+        m_firstDisplayedPosition[type] = 0.0;
+        m_lastDisplayedPosition[type] = 0.0;
+        m_posVSample[type] = 0.0;
+        m_pos[type] = -1.0; // disable renderers
+        m_truePosSample[type] = -1.0;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!m_group.isEmpty()) {
+        return false;
+    }
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
@@ -102,7 +124,7 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
+void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
     if (m_passthroughEnabled) {
         // disables renderers in draw()
         for (int type = ::WaveformRendererAbstract::Play;

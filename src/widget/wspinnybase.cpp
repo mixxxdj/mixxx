@@ -15,6 +15,7 @@
 #include "util/fpclassify.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.

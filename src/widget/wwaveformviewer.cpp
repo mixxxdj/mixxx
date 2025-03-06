@@ -195,9 +195,9 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+            onZoomChange(m_waveformWidget->getZoom() / 1.05);
         } else if (event->angleDelta().y() < 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
+            onZoomChange(m_waveformWidget->getZoom() * 1.05);
         }
     }
 }

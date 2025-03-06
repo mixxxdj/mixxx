@@ -12,7 +12,6 @@ import argparse
 import logging
 import os
 import pathlib
-import re
 import shutil
 import subprocess
 import tempfile
@@ -70,26 +69,29 @@ def parse_shader(input_filepath: pathlib.Path) -> typing.Iterator[str]:
     buffered_blank_line = False
     for line in output.splitlines():
         if in_shader_block == 2:
-            if re.match(r"^\*\*", line):
+            if line.startswith("**"):
                 ok = True
+                break
+            if not comment_added and not line.startswith("#"):
+                yield "//// GENERATED - EDITS WILL BE OVERWRITTEN"
+                comment_added = True
+            if line:
+                if buffered_blank_line:
+                    yield ""
+                    buffered_blank_line = False
+                yield line
             else:
-                if not comment_added and not re.match(r"^#", line):
-                    yield "//// GENERATED - EDITS WILL BE OVERWRITTEN"
-                    comment_added = True
-                if line:
-                    if buffered_blank_line:
-                        yield ""
-                        buffered_blank_line = False
-                    yield line
-                else:
-                    buffered_blank_line = True
+                buffered_blank_line = True
         elif in_shader_block == 1:
             if line.rstrip() == "Contents:":
                 in_shader_block = 2
         else:
-            if line.rstrip() == "Shader 1: GLSL 120 [Standard]":
+            if line.startswith("Shader") and line.rstrip().endswith(
+                ": GLSL 120 [Standard]"
+            ):
                 in_shader_block = 1
     if not ok:
+        print(f"qsb output: {output}")
         raise EOFError("end of file reached before end marker reached")
 
 
