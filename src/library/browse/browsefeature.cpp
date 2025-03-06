@@ -469,8 +469,20 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
     QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
             QDir::Dirs | QDir::NoDotAndDotDot);
 
+    int count = 0;
+
     // loop through all the item and construct the children
     foreach (QFileInfo one, all) {
+        if (m_pConfig->getValue(
+                    ConfigKey("[Library]",
+                            "BrowseFilesystemLimitChildItemsEnabled"),
+                    true)) {
+            if (count >= m_pConfig->getValue<int>(ConfigKey("[Library]",
+                                 "BrowseFilesystemLimitChildItemsNumber"))) {
+                // Limit -> Stop adding items
+                break;
+            }
+        }
         // Skip folders that end with .app on OS X
 #if defined(__APPLE__)
         if (one.isDir() && one.fileName().endsWith(".app"))
@@ -482,6 +494,7 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
         items.push_back(std::make_unique<TreeItem>(
                 one.fileName(),
                 QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
+        count++;
     }
 
     return items;
