@@ -654,35 +654,40 @@ void PreparationFeature::slotAddLoadedTrackToPreparation(const QString& group,
     if (sDebug) {
         qDebug() << "PreparationFeature: Loaded Track ID received: " << newLoadedTrackId;
     }
+    if (m_pConfig->getValue(ConfigKey("[Library]", "PreparationListsAddAllLoadedTracks"), true)) {
+        if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
+            if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
+                if (sDebug) {
+                    qDebug() << "PreparationFeature: Loaded Preparation PlayListId "
+                                "m_pPlaylistTableModel->getPlaylist() "
+                             << m_pPlaylistTableModel->getPlaylist();
+                    qDebug() << "PreparationFeature: Loaded Preparation "
+                                "PlayListId "
+                             << m_currentPlaylistId;
+                }
+                // View needs a refresh
 
-    if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
-        if (sDebug) {
-            qDebug() << "PreparationFeature: Loaded Preparation PlayListId "
-                        "m_pPlaylistTableModel->getPlaylist() "
-                     << m_pPlaylistTableModel->getPlaylist();
-            qDebug() << "PreparationFeature: Loaded Preparation PlayListId " << m_currentPlaylistId;
-        }
-        // View needs a refresh
+                bool hasActiveView = false;
+                if (m_pLibraryWidget) {
+                    WTrackTableView* view = dynamic_cast<WTrackTableView*>(
+                            m_pLibraryWidget->getActiveView());
+                    if (view != nullptr) {
+                        hasActiveView = true;
+                        const QList<TrackId> trackIds = view->getSelectedTrackIds();
+                        m_pPlaylistTableModel->appendTrack(newLoadedTrackId);
+                        view->setSelectedTracks(trackIds);
+                    }
+                }
 
-        bool hasActiveView = false;
-        if (m_pLibraryWidget) {
-            WTrackTableView* view = dynamic_cast<WTrackTableView*>(
-                    m_pLibraryWidget->getActiveView());
-            if (view != nullptr) {
-                hasActiveView = true;
-                const QList<TrackId> trackIds = view->getSelectedTrackIds();
-                m_pPlaylistTableModel->appendTrack(newLoadedTrackId);
-                view->setSelectedTracks(trackIds);
+                if (!hasActiveView) {
+                    m_pPlaylistTableModel->appendTrack(newLoadedTrackId);
+                }
+            } else {
+                // TODO(XXX): Care whether the append succeeded.
+                m_playlistDao.appendTrackToPlaylist(
+                        newLoadedTrackId, m_currentPlaylistId);
             }
         }
-
-        if (!hasActiveView) {
-            m_pPlaylistTableModel->appendTrack(newLoadedTrackId);
-        }
-    } else {
-        // TODO(XXX): Care whether the append succeeded.
-        m_playlistDao.appendTrackToPlaylist(
-                newLoadedTrackId, m_currentPlaylistId);
     }
 }
 
