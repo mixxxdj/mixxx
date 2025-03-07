@@ -150,14 +150,13 @@ BrowseFeature::BrowseFeature(
 
     // initialize the model
     m_pSidebarModel->setRootItem(std::move(pRootItem));
-
+    // Vars to limit the created childitems in tree,
+    // for slow pc's or external sources withslow connection
     s_browseLimitChildItemsEnabled = pConfig->getValue<bool>(
             ConfigKey("[Library]",
                     "BrowseFilesystemLimitChildItemsEnabled"));
     s_browseLimitChildItemsNumber = pConfig->getValue<int>(
             ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsNumber"));
-    qDebug() << "s_browseLimitChildItemsEnabled: " << s_browseLimitChildItemsEnabled;
-    qDebug() << "s_browseLimitChildItemsNumber: " << s_browseLimitChildItemsNumber;
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -469,7 +468,6 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
         const QString& path) const {
     std::vector<std::unique_ptr<TreeItem>> items;
-    // line to start CI
     if (path.isEmpty()) {
         return items;
     }
@@ -481,22 +479,10 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
             QDir::Dirs | QDir::NoDotAndDotDot);
 
     int count = 0;
-    qDebug() << "s_browseLimitChildItemsEnabled: " << s_browseLimitChildItemsEnabled;
-    qDebug() << "s_browseLimitChildItemsNumber: " << s_browseLimitChildItemsNumber;
 
     // loop through all the item and construct the children
     // foreach (QFileInfo one, all) {
 
-    // if (m_pConfig->getValue(
-    //             ConfigKey("[Library]",
-    //                     "BrowseFilesystemLimitChildItemsEnabled"),
-    //             true)) {
-    //     if (count >= m_pConfig->getValue<int>(ConfigKey("[Library]",
-    //                          "BrowseFilesystemLimitChildItemsNumber"))) {
-    //         // Limit -> Stop adding items
-    //         break;
-    //     }
-    // }
     for (const QFileInfo& one : all) {
         if (s_browseLimitChildItemsEnabled) {
             if (count >= s_browseLimitChildItemsNumber) {
