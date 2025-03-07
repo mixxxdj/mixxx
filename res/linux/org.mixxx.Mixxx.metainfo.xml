@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-03-03" timestamp="1741001174">
+    <release version="2.5.1" type="development" date="2025-03-06" timestamp="1741243232">
       <description>
  <p>
   Controller Mappings
@@ -416,6 +416,10 @@
   <li>
    Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows
    #14228
+  </li>
+  <li>
+   Adjust macOS x64 deployment target to 11.0
+   #14440
   </li>
  </ul>
 </description>
