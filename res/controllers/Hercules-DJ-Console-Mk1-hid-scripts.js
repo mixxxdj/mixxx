@@ -84,20 +84,26 @@ HerculesMk1Hid.init = function() {
     //
 
     c.capture("pitchbend_down", "all", function(g, e, v) {
-        if (engine.getValue(g, "play") == 0) {
-            engine.setValue(g, "back", v > 0 ? 1 : 0);
-        }
-        else if (v > 0) {
-            engine.setValue(g, "jog", -3);
+        if (engine.getSetting("pitchBendAsJogWheel")) {
+            if (!engine.getValue(g, "play")) {
+                engine.setValue(g, "back", v > 0 ? 1 : 0);
+            } else if (v > 0) {
+                engine.setValue(g, "jog", -3);
+            }
+        } else {
+            engine.setParameter(g, "pitch_down", v > 0 ? 1 : 0);
         }
     });
 
     c.capture("pitchbend_up", "all", function(g, e, v) {
-        if (engine.getValue(g, "play") == 0) {
-            engine.setValue(g, "fwd", v > 0 ? 1 : 0);
-        }
-        else if (v > 0) {
-            engine.setValue(g, "jog", 3);
+        if (engine.getSetting("pitchBendAsJogWheel")) {
+            if (!engine.getValue(g, "play")) {
+                engine.setValue(g, "fwd", v > 0 ? 1 : 0);
+            } else if (v > 0) {
+                engine.setValue(g, "jog", 3);
+            }
+        } else {
+            engine.setParameter(g, "pitch_up", v > 0 ? 1 : 0);
         }
     });
 
@@ -145,13 +151,18 @@ HerculesMk1Hid.init = function() {
     */
 
     //
-    // tempo encoder
+    // volume/tempo encoder
     //
 
-    c.capture("rate", "all", function(g, e, v, ctrl) {
-        var rate = engine.getValue(g, "rate") + ctrl.relative / c.tempo_scaling;
-        if (rate > 1) rate = 1; else if (rate < -1) rate = -1;
-        engine.setValue(g, e, rate);
+    c.capture("pregain", "all", function(g, e, v, ctrl) {
+        if (engine.getSetting("gainAsTempo")) {
+            let rate = engine.getValue(g, "rate") + ctrl.relative / c.tempo_scaling;
+            if (rate > 1) { rate = 1; } else if (rate < -1) { rate = -1; }
+            engine.setValue(g, "rate", rate);
+        } else {
+            const gain = engine.getValue(g, e) + ctrl.relative / 10;
+            engine.setValue(g, e, gain);
+        }
     });
 
     //
@@ -384,7 +395,7 @@ HerculesMk1Hid.define_hid_format = function() {
     c.add_control(pid, "filterMid", "[Channel1]", "fader", 9, 0xff)
     c.add_control(pid, "filterHigh", "[Channel1]", "fader", 10, 0xff)
     c.add_control(pid, "volume", "[Channel1]", "fader", 12, 0xff)
-    c.add_control(pid, "rate", "[Channel1]", "encoder", 14, 0xff)
+    c.add_control(pid, "pregain", "[Channel1]", "encoder", 14, 0xff);
     c.add_control(pid, "jog", "[Channel1]", "encoder", 16, 0xff)
     c.add_control(pid, "layer_select", "[Channel1]", "button", 1, 0x40)
     c.add_control(pid, "layer_btn1", "[Channel1]", "button", 2, 0x40)
@@ -407,7 +418,7 @@ HerculesMk1Hid.define_hid_format = function() {
     c.add_control(pid, "filterMid", "[Channel2]", "fader", 6, 0xff)
     c.add_control(pid, "filterHigh", "[Channel2]", "fader", 7, 0xff)
     c.add_control(pid, "volume", "[Channel2]", "fader", 13, 0xff)
-    c.add_control(pid, "rate", "[Channel2]", "encoder", 15, 0xff)
+    c.add_control(pid, "pregain", "[Channel2]", "encoder", 15, 0xff);
     c.add_control(pid, "jog", "[Channel2]", "encoder", 17, 0xff)
     c.add_control(pid, "layer_select", "[Channel2]", "button", 1, 0x01)
     c.add_control(pid, "layer_btn1", "[Channel2]", "button", 2, 0x80)
