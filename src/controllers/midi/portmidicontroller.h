@@ -56,8 +56,6 @@ class PortMidiController : public MidiController {
     ~PortMidiController() override;
 
   private slots:
-    int open() override;
-    int close() override;
     bool poll() override;
 
   protected:
@@ -66,6 +64,9 @@ class PortMidiController : public MidiController {
                       unsigned char byte2) override;
 
   private:
+    int open() override;
+    int close() override;
+
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
     void sendBytes(const QByteArray& data) override;

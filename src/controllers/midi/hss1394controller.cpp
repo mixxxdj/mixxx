@@ -129,8 +129,9 @@ int Hss1394Controller::open() {
             qWarning() << "Unable to set SCS.1d platter timer period.";
     }
 
-    setOpen(true);
     startEngine();
+    applyMapping();
+    setOpen(true);
     return 0;
 }
 

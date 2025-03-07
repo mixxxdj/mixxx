@@ -41,7 +41,9 @@ class MidiController : public Controller {
     QString mappingExtension() override;
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -73,6 +75,9 @@ class MidiController : public Controller {
             unsigned char control,
             const QJSValue& scriptCode);
 
+    bool applyMapping() override;
+    int close() override;
+
   protected slots:
     virtual void receivedShortMessage(
             unsigned char status,
@@ -81,12 +86,9 @@ class MidiController : public Controller {
             mixxx::Duration timestamp);
     // For receiving System Exclusive messages
     void receive(const QByteArray& data, mixxx::Duration timestamp) override;
-    int close() override;
     void slotBeforeEngineShutdown() override;
 
   private slots:
-    bool applyMapping() override;
-
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
