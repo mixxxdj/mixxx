@@ -38,7 +38,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void rightClicked(const QPoint&, const QModelIndex&);
     void renameItem(const QModelIndex&);
     void deleteItem(const QModelIndex&);
-    FocusWidget setLibraryFocus(FocusWidget newFocus);
+    FocusWidget setLibraryFocus(FocusWidget newFocus,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
 
   protected:
     bool event(QEvent* pEvent) override;
