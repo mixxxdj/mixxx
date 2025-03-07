@@ -18,6 +18,9 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
+bool s_browseLimitChildItemsEnabled;
+int s_browseLimitChildItemsNumber;
+
 namespace {
 
 const QString kViewName = QStringLiteral("BROWSEHOME");
@@ -147,6 +150,14 @@ BrowseFeature::BrowseFeature(
 
     // initialize the model
     m_pSidebarModel->setRootItem(std::move(pRootItem));
+
+    s_browseLimitChildItemsEnabled = pConfig->getValue<bool>(
+            ConfigKey("[Library]",
+                    "BrowseFilesystemLimitChildItemsEnabled"));
+    s_browseLimitChildItemsNumber = pConfig->getValue<int>(
+            ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsNumber"));
+    qDebug() << "s_browseLimitChildItemsEnabled: " << s_browseLimitChildItemsEnabled;
+    qDebug() << "s_browseLimitChildItemsNumber: " << s_browseLimitChildItemsNumber;
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -470,15 +481,25 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
             QDir::Dirs | QDir::NoDotAndDotDot);
 
     int count = 0;
+    qDebug() << "s_browseLimitChildItemsEnabled: " << s_browseLimitChildItemsEnabled;
+    qDebug() << "s_browseLimitChildItemsNumber: " << s_browseLimitChildItemsNumber;
 
     // loop through all the item and construct the children
-    foreach (QFileInfo one, all) {
-        if (m_pConfig->getValue(
-                    ConfigKey("[Library]",
-                            "BrowseFilesystemLimitChildItemsEnabled"),
-                    true)) {
-            if (count >= m_pConfig->getValue<int>(ConfigKey("[Library]",
-                                 "BrowseFilesystemLimitChildItemsNumber"))) {
+    // foreach (QFileInfo one, all) {
+
+    // if (m_pConfig->getValue(
+    //             ConfigKey("[Library]",
+    //                     "BrowseFilesystemLimitChildItemsEnabled"),
+    //             true)) {
+    //     if (count >= m_pConfig->getValue<int>(ConfigKey("[Library]",
+    //                          "BrowseFilesystemLimitChildItemsNumber"))) {
+    //         // Limit -> Stop adding items
+    //         break;
+    //     }
+    // }
+    for (const QFileInfo& one : all) {
+        if (s_browseLimitChildItemsEnabled) {
+            if (count >= s_browseLimitChildItemsNumber) {
                 // Limit -> Stop adding items
                 break;
             }
