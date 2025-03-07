@@ -780,3 +780,7 @@ LibraryTableModel* Library::trackTableModel() const {
 
     return m_pMixxxLibraryFeature->trackTableModel();
 }
+
+SidebarModel* Library::sidebarModel() const {
+    return m_pSidebarModel.get();
+}
