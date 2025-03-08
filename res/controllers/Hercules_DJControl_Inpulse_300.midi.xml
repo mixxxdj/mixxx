@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MixxxMIDIPreset mixxxVersion="2.2" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="2.4" schemaVersion="1">
 	<info>
 		<name>Hercules DJControl Inpulse 300</name>
-		<author>DJ Phatso for Hercules Technical Support</author>
-		<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
-		<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
-		<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
+			<author>DJ Phatso for Hercules Technical Support</author>
+			<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
+			<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
+			<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
 	</info>
 	<controller id="DJControl Inpulse 300">
 		<scriptfiles>
@@ -156,22 +156,22 @@
 			<!--Loop In/Out-->
 			<control>
 				<group>[Channel1]</group>
-				<key>beatloop_4_activate</key>
+				<key>DJCi300.loopInButton</key>
 				<description>Loop In button</description>
 				<status>0x91</status>
 				<midino>0x09</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>reloop_toggle</key>
+				<key>DJCi300.loopOutButton</key>
 				<description>Loop Out button</description>
 				<status>0x91</status>
 				<midino>0x0A</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 
@@ -184,6 +184,88 @@
 				<midino>0x00</midino>
 				<options>
 					<normal />
+				</options>
+			</control>
+
+			<!--Mode buttons-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Hot cue mode</description>
+				<status>0x91</status>
+				<midino>0x0F</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Roll mode</description>
+				<status>0x91</status>
+				<midino>0x10</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer mode</description>
+				<status>0x91</status>
+				<midino>0x11</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Sampler mode</description>
+				<status>0x91</status>
+				<midino>0x12</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Toneplay mode</description>
+				<status>0x91</status>
+				<midino>0x13</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>FX mode</description>
+				<status>0x91</status>
+				<midino>0x14</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer loop mode</description>
+				<status>0x91</status>
+				<midino>0x15</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Beatjump mode</description>
+				<status>0x91</status>
+				<midino>0x16</midino>
+				<options>
+					<script-binding />
 				</options>
 			</control>
 
@@ -276,6 +358,7 @@
 					<normal />
 				</options>
 			</control>
+
 			<!--Vinyl button-->
 			<control>
 				<group>[Channel2]</group>
@@ -287,6 +370,7 @@
 					<script-binding />
 				</options>
 			</control>
+
 			<!--Jog Touch B -->
 			<control>
 				<group>[Channel2]</group>
@@ -298,29 +382,30 @@
 					<script-binding />
 				</options>
 			</control>
+
 			<!--Loop In/Out-->
 			<control>
 				<group>[Channel2]</group>
-				<key>beatloop_4_activate</key>
+				<key>DJCi300.loopInButton</key>
 				<description>Loop In button</description>
 				<status>0x92</status>
 				<midino>0x09</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>reloop_toggle</key>
+				<key>DJCi300.loopOutButton</key>
 				<description>Loop Out button</description>
 				<status>0x92</status>
 				<midino>0x0A</midino>
 				<options>
-					<normal />
+					<script-binding />
 				</options>
 			</control>
-			<!--FX Section Button-->
 
+			<!--FX Section Button-->
 			<control>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
 				<key>enabled</key>
@@ -329,6 +414,88 @@
 				<midino>0x00</midino>
 				<options>
 					<normal />
+				</options>
+			</control>
+
+			<!--Mode buttons-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Hot cue mode</description>
+				<status>0x92</status>
+				<midino>0x0F</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Roll mode</description>
+				<status>0x92</status>
+				<midino>0x10</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer mode</description>
+				<status>0x92</status>
+				<midino>0x11</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Sampler mode</description>
+				<status>0x92</status>
+				<midino>0x12</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Toneplay mode</description>
+				<status>0x92</status>
+				<midino>0x13</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>FX mode</description>
+				<status>0x92</status>
+				<midino>0x14</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer loop mode</description>
+				<status>0x92</status>
+				<midino>0x15</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Beatjump mode</description>
+				<status>0x92</status>
+				<midino>0x16</midino>
+				<options>
+					<script-binding />
 				</options>
 			</control>
 
@@ -485,7 +652,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>loop_double</key>
-				<description>SHIFT + Loop Ou: Loop Double</description>
+				<description>SHIFT + Loop Out: Loop Double</description>
 				<status>0x95</status>
 				<midino>0x0A</midino>
 				<options>
@@ -992,12 +1159,411 @@
 					<normal />
 				</options>
 			</control>
-			<!--Slicer  Not assigned: 0x20 to 0x27-->
+			<!--Sampler (SHIFT mode)-->
+			<control>
+				<group>[Sampler1]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 1</description>
+				<status>0x96</status>
+				<midino>0x38</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler2]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 2</description>
+				<status>0x96</status>
+				<midino>0x39</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler3]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 3</description>
+				<status>0x96</status>
+				<midino>0x3A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler4]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 4</description>
+				<status>0x96</status>
+				<midino>0x3B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler5]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 5</description>
+				<status>0x96</status>
+				<midino>0x3C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler6]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 6</description>
+				<status>0x96</status>
+				<midino>0x3D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler7]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 7</description>
+				<status>0x96</status>
+				<midino>0x3E</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler8]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 8</description>
+				<status>0x96</status>
+				<midino>0x3F</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<!--Slicer-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[0].input</key>
+				<description>PAD 1</description>
+				<status>0x96</status>
+				<midino>0x20</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[1].input</key>
+				<description>PAD 2</description>
+				<status>0x96</status>
+				<midino>0x21</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[2].input</key>
+				<description>PAD 3</description>
+				<status>0x96</status>
+				<midino>0x22</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[3].input</key>
+				<description>PAD 4</description>
+				<status>0x96</status>
+				<midino>0x23</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[4].input</key>
+				<description>PAD 5</description>
+				<status>0x96</status>
+				<midino>0x24</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[5].input</key>
+				<description>PAD 6</description>
+				<status>0x96</status>
+				<midino>0x25</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[6].input</key>
+				<description>PAD 7</description>
+				<status>0x96</status>
+				<midino>0x26</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[7].input</key>
+				<description>PAD 8</description>
+				<status>0x96</status>
+				<midino>0x27</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<!--Toneplay-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 1</description>
+				<status>0x96</status>
+				<midino>0x40</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 2</description>
+				<status>0x96</status>
+				<midino>0x41</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 3</description>
+				<status>0x96</status>
+				<midino>0x42</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 4</description>
+				<status>0x96</status>
+				<midino>0x43</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 5</description>
+				<status>0x96</status>
+				<midino>0x44</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 6</description>
+				<status>0x96</status>
+				<midino>0x45</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 7</description>
+				<status>0x96</status>
+				<midino>0x46</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 8</description>
+				<status>0x96</status>
+				<midino>0x47</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 1</description>
+				<status>0x96</status>
+				<midino>0x48</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 2</description>
+				<status>0x96</status>
+				<midino>0x49</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 3</description>
+				<status>0x96</status>
+				<midino>0x4A</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 4</description>
+				<status>0x96</status>
+				<midino>0x4B</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 5</description>
+				<status>0x96</status>
+				<midino>0x4C</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 6</description>
+				<status>0x96</status>
+				<midino>0x4D</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 7</description>
+				<status>0x96</status>
+				<midino>0x4E</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 8</description>
+				<status>0x96</status>
+				<midino>0x4F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 
-			<!--Toneplay  Not assigned: 0x40 to 0x47-->
-
-			<!--Slicer LOOP  Not assigned: 0x60 to 0x67-->
-
+			<!--Slicer LOOP-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[0].input</key>
+				<description>PAD 1</description>
+				<status>0x96</status>
+				<midino>0x60</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[1].input</key>
+				<description>PAD 2</description>
+				<status>0x96</status>
+				<midino>0x61</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[2].input</key>
+				<description>PAD 3</description>
+				<status>0x96</status>
+				<midino>0x62</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[3].input</key>
+				<description>PAD 4</description>
+				<status>0x96</status>
+				<midino>0x63</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[4].input</key>
+				<description>PAD 5</description>
+				<status>0x96</status>
+				<midino>0x64</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[5].input</key>
+				<description>PAD 6</description>
+				<status>0x96</status>
+				<midino>0x65</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[6].input</key>
+				<description>PAD 7</description>
+				<status>0x96</status>
+				<midino>0x66</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.deck[0].slicerPad[7].input</key>
+				<description>PAD 8</description>
+				<status>0x96</status>
+				<midino>0x67</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Beatjump-->
 			<control>
 				<group>[Channel1]</group>
@@ -1569,12 +2135,411 @@
 					<normal />
 				</options>
 			</control>
-			<!--Slicer  Not assigned: 0x20 to 0x27-->
+			<!--Sampler (SHIFT mode)-->
+			<control>
+				<group>[Sampler9]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 1</description>
+				<status>0x97</status>
+				<midino>0x38</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler10]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 2</description>
+				<status>0x97</status>
+				<midino>0x39</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler11]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 3</description>
+				<status>0x97</status>
+				<midino>0x3A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler12]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 4</description>
+				<status>0x97</status>
+				<midino>0x3B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler13]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 5</description>
+				<status>0x97</status>
+				<midino>0x3C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler14]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 6</description>
+				<status>0x97</status>
+				<midino>0x3D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler15]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 7</description>
+				<status>0x97</status>
+				<midino>0x3E</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler16]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 8</description>
+				<status>0x97</status>
+				<midino>0x3F</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<!--Slicer-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[0].input</key>
+				<description>PAD 1</description>
+				<status>0x97</status>
+				<midino>0x20</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[1].input</key>
+				<description>PAD 2</description>
+				<status>0x97</status>
+				<midino>0x21</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[2].input</key>
+				<description>PAD 3</description>
+				<status>0x97</status>
+				<midino>0x22</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[3].input</key>
+				<description>PAD 4</description>
+				<status>0x97</status>
+				<midino>0x23</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[4].input</key>
+				<description>PAD 5</description>
+				<status>0x97</status>
+				<midino>0x24</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[5].input</key>
+				<description>PAD 6</description>
+				<status>0x97</status>
+				<midino>0x25</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[6].input</key>
+				<description>PAD 7</description>
+				<status>0x97</status>
+				<midino>0x26</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[7].input</key>
+				<description>PAD 8</description>
+				<status>0x97</status>
+				<midino>0x27</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<!--Toneplay-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 1</description>
+				<status>0x97</status>
+				<midino>0x40</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 2</description>
+				<status>0x97</status>
+				<midino>0x41</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 3</description>
+				<status>0x97</status>
+				<midino>0x42</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 4</description>
+				<status>0x97</status>
+				<midino>0x43</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 5</description>
+				<status>0x97</status>
+				<midino>0x44</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 6</description>
+				<status>0x97</status>
+				<midino>0x45</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 7</description>
+				<status>0x97</status>
+				<midino>0x46</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>PAD 8</description>
+				<status>0x97</status>
+				<midino>0x47</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 1</description>
+				<status>0x97</status>
+				<midino>0x48</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 2</description>
+				<status>0x97</status>
+				<midino>0x49</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 3</description>
+				<status>0x97</status>
+				<midino>0x4A</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 4</description>
+				<status>0x97</status>
+				<midino>0x4B</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 5</description>
+				<status>0x97</status>
+				<midino>0x4C</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 6</description>
+				<status>0x97</status>
+				<midino>0x4D</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 7</description>
+				<status>0x97</status>
+				<midino>0x4E</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.toneplay</key>
+				<description>SHIFT + PAD 8</description>
+				<status>0x97</status>
+				<midino>0x4F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 
-			<!--Toneplay  Not assigned: 0x40 to 0x47-->
-
-			<!--Slicer LOOP  Not assigned : 0x60 to 0x67-->
-
+			<!--Slicer LOOP-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[0].input</key>
+				<description>PAD 1</description>
+				<status>0x97</status>
+				<midino>0x60</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[1].input</key>
+				<description>PAD 2</description>
+				<status>0x97</status>
+				<midino>0x61</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[2].input</key>
+				<description>PAD 3</description>
+				<status>0x97</status>
+				<midino>0x62</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[3].input</key>
+				<description>PAD 4</description>
+				<status>0x97</status>
+				<midino>0x63</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[4].input</key>
+				<description>PAD 5</description>
+				<status>0x97</status>
+				<midino>0x64</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[5].input</key>
+				<description>PAD 6</description>
+				<status>0x97</status>
+				<midino>0x65</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[6].input</key>
+				<description>PAD 7</description>
+				<status>0x97</status>
+				<midino>0x66</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.deck[1].slicerPad[7].input</key>
+				<description>PAD 8</description>
+				<status>0x97</status>
+				<midino>0x67</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Beatjump-->
 			<control>
 				<group>[Channel2]</group>
@@ -1784,7 +2749,7 @@
 			<!--Jog wheel	-->
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.scratchWheel</key>
+				<key>DJCi300.jogWheel</key>
 				<description>Scratch Deck A (Jog-Wheel)</description>
 				<status>0xB1</status>
 				<midino>0x0A</midino>
@@ -1794,20 +2759,10 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.bendWheel</key>
+				<key>DJCi300.jogWheel</key>
 				<description>Pitch Bend Deck A (Jog-Wheel)</description>
 				<status>0xB1</status>
 				<midino>0x09</midino>
-				<options>
-					<script-binding />
-				</options>
-			</control>
-			<control>
-				<group>[Channel1]</group>
-				<key>DJCi300.scratchPad</key>
-				<description>Pitch Bend Deck A (FX PAD 7 / 8 )</description>
-				<status>0xB1</status>
-				<midino>0x0C</midino>
 				<options>
 					<script-binding />
 				</options>
@@ -1835,7 +2790,6 @@
 			</control>
 
 			<!-- CC's MIDI Channel 3 (0xB2  Deck B - Standard mode)-->
-
 
 			<!-- Volume-->
 			<control>
@@ -1923,8 +2877,8 @@
 			<!--Jog wheel-->
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.scratchWheel</key>
-				<description>Pitch Bend Deck B (Jog-Wheel)</description>
+				<key>DJCi300.jogWheel</key>
+				<description>Scratch Deck B (Jog-Wheel)</description>
 				<status>0xB2</status>
 				<midino>0x0A</midino>
 				<options>
@@ -1933,20 +2887,10 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.bendWheel</key>
+				<key>DJCi300.jogWheel</key>
 				<description>Pitch Bend Deck B (Jog-Wheel)</description>
 				<status>0xB2</status>
 				<midino>0x09</midino>
-				<options>
-					<script-binding />
-				</options>
-			</control>
-			<control>
-				<group>[Channel2]</group>
-				<key>DJCi300.scratchPad</key>
-				<description>Pitch Bend Deck B (FX PAD 7 / 8 )</description>
-				<status>0xB2</status>
-				<midino>0x0C</midino>
 				<options>
 					<script-binding />
 				</options>
@@ -1978,7 +2922,17 @@
 			<!--Jog wheel-->
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.scratchWheel</key>
+				<key>DJCi300.jogWheel</key>
+				<description>SHIFT + Bend Deck A (Jog-Wheel)</description>
+				<status>0xB4</status>
+				<midino>0x09</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.jogWheel</key>
 				<description>SHIFT + Scratch Deck A (Jog-Wheel)</description>
 				<status>0xB4</status>
 				<midino>0x0A</midino>
@@ -1991,7 +2945,17 @@
 			<!--Jog wheel-->
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.scratchWheel</key>
+				<key>DJCi300.jogWheel</key>
+				<description>SHIFT + Bend Deck B (Jog-Wheel)</description>
+				<status>0xB5</status>
+				<midino>0x09</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.jogWheel</key>
 				<description>SHIFT + Scratch Deck B (Jog-Wheel)</description>
 				<status>0xB5</status>
 				<midino>0x0A</midino>
@@ -2251,340 +3215,327 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-			<!-- LED Beat Align (Track end warning)-->
-			<output>
-				<group>[Channel1]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x91</status>
-				<midino>0x1C</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
-			<output>
-				<group>[Channel1]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x91</status>
-				<midino>0x1D</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x92</status>
-				<midino>0x1C</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x92</status>
-				<midino>0x1D</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
 			<!--LED HOT CUE (Normal Mode)-->
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x96</status>
 				<midino>0x00</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x96</status>
 				<midino>0x01</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x96</status>
 				<midino>0x02</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x96</status>
 				<midino>0x03</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x96</status>
 				<midino>0x04</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x96</status>
 				<midino>0x05</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x96</status>
 				<midino>0x06</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x96</status>
 				<midino>0x07</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x97</status>
 				<midino>0x00</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x97</status>
 				<midino>0x01</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x97</status>
 				<midino>0x02</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x97</status>
 				<midino>0x03</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x97</status>
 				<midino>0x04</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x97</status>
 				<midino>0x05</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x97</status>
 				<midino>0x06</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x97</status>
 				<midino>0x07</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<!--LED HOT CUE (SHIFT Mode)-->
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x96</status>
 				<midino>0x08</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x96</status>
 				<midino>0x09</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x96</status>
 				<midino>0x0A</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x96</status>
 				<midino>0x0B</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x96</status>
 				<midino>0x0C</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x96</status>
 				<midino>0x0D</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x96</status>
 				<midino>0x0E</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x96</status>
 				<midino>0x0F</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_1_enabled</key>
+				<key>hotcue_1_status</key>
 				<description>Hotcue 1 (Pad 1)</description>
 				<status>0x97</status>
 				<midino>0x08</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_2_enabled</key>
+				<key>hotcue_2_status</key>
 				<description>Hotcue 2 (Pad 2)</description>
 				<status>0x97</status>
 				<midino>0x09</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_3_enabled</key>
+				<key>hotcue_3_status</key>
 				<description>Hotcue 3 (Pad 3)</description>
 				<status>0x97</status>
 				<midino>0x0A</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_4_enabled</key>
+				<key>hotcue_4_status</key>
 				<description>Hotcue 4 (Pad 4)</description>
 				<status>0x97</status>
 				<midino>0x0B</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_5_enabled</key>
+				<key>hotcue_5_status</key>
 				<description>Hotcue 5 (Pad 5)</description>
 				<status>0x97</status>
 				<midino>0x0C</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_6_enabled</key>
+				<key>hotcue_6_status</key>
 				<description>Hotcue 6 (Pad 6)</description>
 				<status>0x97</status>
 				<midino>0x0D</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_7_enabled</key>
+				<key>hotcue_7_status</key>
 				<description>Hotcue 7 (Pad 7)</description>
 				<status>0x97</status>
 				<midino>0x0E</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>hotcue_8_enabled</key>
+				<key>hotcue_8_status</key>
 				<description>Hotcue 8 (Pad 8)</description>
 				<status>0x97</status>
 				<midino>0x0F</midino>
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
+				<maximum>2</maximum>
 			</output>
 			<!--LED Roll-->
 			<output>
@@ -2803,7 +3754,7 @@
 				<on>0x7f</on>
 			</output>
 			<output>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<key>group_[Channel1]_enable</key>
 				<description>FX2 is active on Deck A</description>
 				<minimum>0.5</minimum>
@@ -3195,6 +4146,150 @@
 				<description>(Pad 4 DECK B)</description>
 				<status>0x97</status>
 				<midino>0x37</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+						<output>
+				<group>[Sampler1]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 1 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x38</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler9]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 1 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x38</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler2]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 2 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x39</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler10]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 2 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x39</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler3]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 3 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3A</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler11]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 3 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3A</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler4]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 4 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3B</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler12]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 4 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3B</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler5]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 5 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3C</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler13]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 5 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3C</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler6]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 6 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3D</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler14]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 6 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3D</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler7]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 7 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3E</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler15]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 7 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3E</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler8]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 8 DECK A)</description>
+				<status>0x96</status>
+				<midino>0x3F</midino>
+				<on>0x7F</on>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler16]</group>
+				<key>play_indicator</key>
+				<description>(SHIFT + Pad 4 DECK B)</description>
+				<status>0x97</status>
+				<midino>0x3F</midino>
 				<on>0x7F</on>
 				<minimum>0.5</minimum>
 			</output>

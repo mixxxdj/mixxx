@@ -34,7 +34,8 @@
 // Poll every 1ms (where possible) for good controller response
 #ifdef __LINUX__
 // Many Linux distros ship with the system tick set to 250Hz so 1ms timer
-// reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
+// reportedly causes CPU hosage. See https://github.com/mixxxdj/mixxx/issues/6383
+// rryan 6/2012
 const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(5);
 #else
 const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(1);
@@ -153,13 +154,13 @@ void ControllerManager::slotInitialize() {
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
 #ifdef __PORTMIDI__
-    m_enumerators.append(new PortMidiEnumerator());
+    m_enumerators.append(new PortMidiEnumerator(m_pConfig));
 #endif
 #ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator(m_pConfig));
+    m_enumerators.append(new Hss1394Enumerator());
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator(m_pConfig));
+    m_enumerators.append(new BulkEnumerator());
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
@@ -285,7 +286,7 @@ void ControllerManager::slotSetUpDevices() {
         pMapping->loadSettings(m_pConfig, pController->getName());
 
         // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-        pController->setMapping(pMapping->clone());
+        pController->setMapping(std::move(pMapping));
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -423,6 +424,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     if (!pMapping) {
         closeController(pController);
         // Unset the controller mapping for this controller
+        pController->setMapping(nullptr);
         m_pConfig->remove(key);
         emit mappingApplied(false);
         return;
@@ -438,7 +440,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     m_pConfig->set(key, pMapping->filePath());
 
     // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-    pController->setMapping(pMapping->clone());
+    pController->setMapping(std::move(pMapping));
 
     if (bEnabled) {
         openController(pController);

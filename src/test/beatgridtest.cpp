@@ -24,6 +24,43 @@ TrackPointer newTrack(mixxx::audio::SampleRate sampleRate) {
     return pTrack;
 }
 
+TEST(BeatGridTest, TranslateBeats) {
+    TrackPointer pTrack = newTrack(kSampleRate);
+    constexpr mixxx::Bpm bpm(60.0);
+    pTrack->trySetBpm(bpm.value());
+    auto pBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    BeatsPointer pQuarterBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos + 0.25 * kSampleRate,
+            mixxx::Bpm(bpm));
+    BeatsPointer pHalfBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos + 0.5 * kSampleRate,
+            mixxx::Bpm(bpm));
+    BeatsPointer pOneBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos + kSampleRate,
+            mixxx::Bpm(bpm));
+
+    // Test nothing happens for xBeats=0.0
+    EXPECT_EQ(*pBeat, **pBeat->tryTranslateBeats(0.0));
+
+    // Test quarter beat shift
+    EXPECT_EQ(*pQuarterBeat, **pBeat->tryTranslateBeats(0.25));
+
+    // Test half beat shift
+    EXPECT_EQ(*pHalfBeat, **pBeat->tryTranslateBeats(0.5));
+    EXPECT_EQ(*pHalfBeat, **(*pBeat->tryTranslateBeats(0.25))->tryTranslateBeats(0.25));
+
+    // Test full beat shift
+    EXPECT_EQ(*pOneBeat, **pBeat->tryTranslateBeats(1.0));
+    EXPECT_EQ(*pOneBeat, **pQuarterBeat->tryTranslateBeats(0.75));
+    EXPECT_EQ(*pOneBeat, **pHalfBeat->tryTranslateBeats(0.5));
+
+    // Test negative shift
+    EXPECT_EQ(*pBeat, **pHalfBeat->tryTranslateBeats(-0.5));
+    EXPECT_EQ(*pBeat, **pOneBeat->tryTranslateBeats(-1.0));
+}
+
 TEST(BeatGridTest, Scale) {
     TrackPointer pTrack = newTrack(kSampleRate);
 

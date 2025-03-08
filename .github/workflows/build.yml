@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 22.04
-            os: ubuntu-22.04
+          - name: Ubuntu 24.04
+            os: ubuntu-24.04
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -34,12 +34,12 @@ jobs:
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 22.04 Qt6 DEB
+            artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 12 x64
-            os: macos-12
+          - name: macOS 13 x64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -63,8 +63,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 12 arm64
-            os: macos-12
+          - name: macOS 13 arm64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -103,7 +103,7 @@ jobs:
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
               -DQT6=ON
-              -DQML=OFF
+              -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
@@ -133,7 +133,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -151,7 +151,7 @@ jobs:
 
       - name: "[macOS] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
-        # Ubuntu 22.04 should use the CMake version from the repos.
+        # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
           # This should always match the minimum required version in
@@ -160,7 +160,7 @@ jobs:
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
-        # Ubuntu 22.04 should use the CMake version from the repos.
+        # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'Windows'
         with:
           # This is a workaround for a SSL false positive in cmake 3.26.4
@@ -318,7 +318,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -334,9 +334,26 @@ jobs:
           timeout: 600
 
       - name: "Package"
+        id: package
         if: matrix.cpack_generator != null
-        run: cpack -G ${{ matrix.cpack_generator }} -V
-        working-directory: build
+        # Use retry loop to work around a race condition on macOS causing
+        # 'Resource busy' errors with 'hdiutil'. See
+        # https://github.com/actions/runner-images/issues/7522
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 30
+          max_attempts: ${{ runner.os == 'macOS' && 12 || 1 }}
+          retry_wait_seconds: 1
+          command: |
+            cd build
+            cpack -G ${{ matrix.cpack_generator }} -V
+
+      - name: Upload failed packaging logs
+        if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-packages-wix
+          path: D:/a/mixxx/mixxx/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
@@ -346,7 +363,7 @@ jobs:
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.name == 'Ubuntu 22.04'
+        if: matrix.name == 'Ubuntu 24.04'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
@@ -373,7 +390,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -475,7 +492,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -491,7 +508,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 

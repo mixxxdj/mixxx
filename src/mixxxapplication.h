@@ -10,9 +10,7 @@ class MixxxApplication : public QApplication {
     MixxxApplication(int& argc, char** argv);
     ~MixxxApplication() override = default;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     bool notify(QObject*, QEvent*) override;
-#endif
 
   private:
     bool touchIsRightButton();
@@ -20,5 +18,5 @@ class MixxxApplication : public QApplication {
 
     int m_rightPressedButtons;
     ControlProxy* m_pTouchShift;
-
+    bool m_isDeveloper;
 };

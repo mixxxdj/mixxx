@@ -37,8 +37,8 @@ struct WaveformStride {
         for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
-            SampleUtil::clear(m_filteredData[i], FilterCount);
-            SampleUtil::clear(m_averageFilteredData[i], FilterCount);
+            SampleUtil::clear(m_filteredData[i], BandCount);
+            SampleUtil::clear(m_averageFilteredData[i], BandCount);
             SampleUtil::clear(m_stemData[i], m_stemCount);
         }
     }
@@ -46,16 +46,16 @@ struct WaveformStride {
     inline void store(WaveformData* data) {
         for (int i = 0; i < ChannelCount; ++i) {
             WaveformData& datum = *(data + i);
-            datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
+            datum.filtered.all = static_cast<unsigned char>(std::min(255.0,
                     m_postScaleConversion * m_overallData[i] + 0.5));
-            datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
+            datum.filtered.low = static_cast<unsigned char>(std::min(255.0,
                     m_postScaleConversion * m_filteredData[i][Low] + 0.5));
-            datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
+            datum.filtered.mid = static_cast<unsigned char>(std::min(255.0,
                     m_postScaleConversion * m_filteredData[i][Mid] + 0.5));
-            datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
+            datum.filtered.high = static_cast<unsigned char>(std::min(255.0,
                     m_postScaleConversion * m_filteredData[i][High] + 0.5));
             for (int stemIdx = 0; stemIdx < m_stemCount; stemIdx++) {
-                datum.stems[stemIdx] = static_cast<unsigned char>(math_min(255.0,
+                datum.stems[stemIdx] = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_stemData[i][stemIdx] + 0.5));
             }
         }
@@ -64,7 +64,7 @@ struct WaveformStride {
         for (int i = 0; i < ChannelCount; ++i) {
             m_averageOverallData[i] += m_overallData[i];
             m_overallData[i] = 0.0f;
-            for (int f = 0; f < FilterCount; ++f) {
+            for (int f = 0; f < BandCount; ++f) {
                 m_averageFilteredData[i][f] += m_filteredData[i][f];
                 m_filteredData[i][f] = 0.0f;
             }
@@ -78,17 +78,17 @@ struct WaveformStride {
         if (m_averageDivisor) {
             for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
-                datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.all = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_averageOverallData[i] / m_averageDivisor + 0.5));
-                datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.low = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_averageFilteredData[i][Low] /
                                         m_averageDivisor +
                                 0.5));
-                datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.mid = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_averageFilteredData[i][Mid] /
                                         m_averageDivisor +
                                 0.5));
-                datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.high = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_averageFilteredData[i][High] /
                                         m_averageDivisor +
                                 0.5));
@@ -97,13 +97,13 @@ struct WaveformStride {
             // This is the case if The Overview Waveform has more samples than the detailed waveform
             for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
-                datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.all = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_overallData[i] + 0.5));
-                datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.low = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_filteredData[i][Low] + 0.5));
-                datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.mid = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_filteredData[i][Mid] + 0.5));
-                datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
+                datum.filtered.high = static_cast<unsigned char>(std::min(255.0,
                         m_postScaleConversion * m_filteredData[i][High] + 0.5));
             }
         }
@@ -111,7 +111,7 @@ struct WaveformStride {
         m_averageDivisor = 0;
         for (int i = 0; i < ChannelCount; ++i) {
             m_averageOverallData[i] = 0.0f;
-            for (int f = 0; f < FilterCount; ++f) {
+            for (int f = 0; f < BandCount; ++f) {
                 m_averageFilteredData[i][f] = 0.0f;
             }
         }
@@ -125,11 +125,11 @@ struct WaveformStride {
     int m_averageDivisor;
 
     float m_overallData[ChannelCount];
-    float m_filteredData[ChannelCount][FilterCount];
+    float m_filteredData[ChannelCount][BandCount];
     float m_stemData[ChannelCount][mixxx::kMaxSupportedStems];
 
     float m_averageOverallData[ChannelCount];
-    float m_averageFilteredData[ChannelCount][FilterCount];
+    float m_averageFilteredData[ChannelCount][BandCount];
 
     float m_postScaleConversion;
 };
@@ -172,8 +172,30 @@ class AnalyzerWaveform : public Analyzer {
     int m_currentSummaryStride;
     mixxx::audio::ChannelCount m_channelCount;
 
-    EngineFilterIIRBase* m_filter[FilterCount];
-    std::vector<float> m_buffers[FilterCount];
+    struct Filters {
+        std::unique_ptr<EngineFilterIIRBase> low;
+        std::unique_ptr<EngineFilterIIRBase> mid;
+        std::unique_ptr<EngineFilterIIRBase> high;
+    };
+
+    Filters m_filters;
+
+    struct Buffers {
+        std::vector<float> low;
+        std::vector<float> mid;
+        std::vector<float> high;
+
+        SINT size;
+
+        Buffers()
+                : low(),
+                  mid(),
+                  high(),
+                  size(0) {
+        }
+    };
+
+    Buffers m_buffers;
 
     PerformanceTimer m_timer;
 

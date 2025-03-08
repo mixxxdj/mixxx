@@ -9,6 +9,21 @@
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
 
+enum class PhysicalTransportProtocol {
+    UNKNOWN,
+    USB,
+    BlueTooth,
+    I2C,
+    SPI,
+    FireWire // IEEE 1394
+};
+
+enum class DataRepresentationProtocol {
+    MIDI,
+    HID,
+    USB_BULK_TRANSFER // Bulk is only one of the 4 USB transfer modes
+};
+
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
@@ -45,9 +60,17 @@ class Controller : public QObject {
     inline const QString& getName() const {
         return m_sDeviceName;
     }
-    inline const QString& getCategory() const {
-        return m_sDeviceCategory;
-    }
+    virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
+    static QString physicalTransport2String(PhysicalTransportProtocol protocol);
+    virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
+
+    virtual QString getVendorString() const = 0;
+    virtual QString getProductString() const = 0;
+    virtual std::optional<uint16_t> getVendorId() const = 0;
+    virtual std::optional<uint16_t> getProductId() const = 0;
+    virtual QString getSerialNumber() const = 0;
+    virtual std::optional<uint8_t> getUsbInterfaceNumber() const = 0;
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
@@ -89,20 +112,20 @@ class Controller : public QObject {
 
   protected:
     template<typename SpecificMappingType>
-    std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
-            std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        requires(std::is_final_v<SpecificMappingType> == true)
+    std::unique_ptr<SpecificMappingType> downcastAndClone(const LegacyControllerMapping* pMapping) {
+        // When unsetting a mapping (select 'No mapping') we receive a nullptr
+        if (!pMapping) {
+            return nullptr;
+        }
+        auto* pSpecifiedMapping = dynamic_cast<const SpecificMappingType*>(pMapping);
+        VERIFY_OR_DEBUG_ASSERT(pSpecifiedMapping) {
+            return nullptr;
+        }
         // Controller cannot take ownership if pMapping is referenced elsewhere because
         // the controller polling thread needs exclusive accesses to the non-thread safe
-        // LegacyControllerMapping.
-        // Trying to cast a std::shared_ptr to a std::unique_ptr is not worth the trouble.
-        VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
-            return nullptr;
-        }
-        auto pDowncastedMapping = std::dynamic_pointer_cast<SpecificMappingType>(pMapping);
-        VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
-            return nullptr;
-        }
-        return pDowncastedMapping;
+        // LegacyControllerMapping. So we do a deep copy here.
+        return std::make_unique<SpecificMappingType>(*pSpecifiedMapping);
     }
 
     // The length parameter is here for backwards compatibility for when scripts
@@ -120,9 +143,6 @@ class Controller : public QObject {
     // To be called when receiving events
     void triggerActivity();
 
-    inline void setDeviceCategory(const QString& deviceCategory) {
-        m_sDeviceCategory = deviceCategory;
-    }
     inline void setOutputDevice(bool outputDevice) {
         m_bIsOutputDevice = outputDevice;
     }

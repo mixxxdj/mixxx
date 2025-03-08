@@ -82,8 +82,6 @@ BulkController::BulkController(libusb_context* context,
     m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
 
-    setDeviceCategory(tr("USB Controller"));
-
     setInputDevice(true);
     setOutputDevice(true);
     m_pReader = nullptr;
@@ -100,14 +98,14 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
 std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
     if (!m_pMapping) {
         return nullptr;
     }
-    return m_pMapping->clone();
+    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {

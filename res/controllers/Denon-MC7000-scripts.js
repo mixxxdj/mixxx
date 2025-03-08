@@ -47,7 +47,7 @@ MC7000.needleSearchPlay = false;
 // select if the previous sampler shall stop before a new sampler starts
 // true: a running sampler will stop before the new sampler starts
 // false: all triggered samplers will play simultaneously
-MC7000.prevSamplerStop = true;
+MC7000.prevSamplerStop = engine.getSetting("prevSamplerStop") ?? true;
 
 // Quantity of Samplers used in mixxx possible values 16 and 32
 // To use 32 samplers instead of 16 you can set the user variable
@@ -55,7 +55,7 @@ MC7000.prevSamplerStop = true;
 // Deck 2 will trigger sampler 9 to 16, Deck 3 will trigger
 // sampler 17 to 24 and Deck 4 will trigger sampler 25 to 32.
 // Please note that your Mixxx skin needs to support more than 16 samplers.
-MC7000.SamplerQty = 16;
+MC7000.SamplerQty = parseInt(engine.getSetting("samplerQty") ?? "16");
 
 // Set Vinyl Mode on ("true") or off ("false") when MIXXX starts.
 // This sets the Jog Wheel touch detection / Vinyl Mode

@@ -38,6 +38,22 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             this,
             &LoadToGroupController::slotLoadToGroupAndPlay);
 
+#ifdef __STEM__
+    m_loadSelectedTrackStems =
+            std::make_unique<ControlPushButton>(ConfigKey(group, "load_selected_track_stems"));
+    connect(m_loadSelectedTrackStems.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value >= 0 && value <= 2 << mixxx::kMaxSupportedStems) {
+                    emit loadToGroup(m_group,
+                            mixxx::StemChannelSelection::fromInt(
+                                    static_cast<int>(value)),
+                            false);
+                }
+            });
+#endif
+
     connect(this,
             &LoadToGroupController::loadToGroup,
             pParent,
@@ -48,13 +64,24 @@ LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, false);
+        emit loadToGroup(m_group,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, true);
+#ifdef __STEM__
+        emit loadToGroup(m_group,
+                mixxx::StemChannelSelection(),
+                true);
+#else
+        emit loadToGroup(m_group,
+                true);
+#endif
     }
 }
 
@@ -228,6 +255,18 @@ LibraryControl::LibraryControl(Library* pLibrary)
     {
         m_pRefocusPrevWidgetCO->connectValueChangeRequest(this,
                 &LibraryControl::refocusPrevLibraryWidget);
+    }
+
+    // Control to "edit" the currently selected item/field in focused widget (context dependent)
+    m_pEditItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "EditItem"));
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        connect(m_pEditItem.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotEditItem);
     }
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
@@ -600,14 +639,23 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
     m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
+#ifdef __STEM__
+void LibraryControl::slotLoadSelectedTrackToGroup(
+        const QString& group, mixxx::StemChannelSelection stemMask, bool play) {
+#else
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
+#endif
     if (!m_pLibraryWidget) {
         return;
     }
 
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
+#ifdef __STEM__
+        pTrackTableView->loadSelectedTrackToGroup(group, stemMask, play);
+#else
         pTrackTableView->loadSelectedTrackToGroup(group, play);
+#endif
     }
 }
 
@@ -1007,6 +1055,29 @@ void LibraryControl::slotSelectPrevSidebarItem(double v) {
 void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     if (m_pSidebarWidget && v > 0) {
         m_pSidebarWidget->toggleSelectedItem();
+    }
+}
+
+void LibraryControl::slotEditItem(double v) {
+    if (v <= 0) {
+        return;
+    }
+
+    switch (m_focusedWidget) {
+    case FocusWidget::Sidebar: {
+        m_pSidebarWidget->renameSelectedItem();
+        break;
+    }
+    case FocusWidget::TracksTable: {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (pTrackTableView) {
+            pTrackTableView->editSelectedItem();
+        }
+        break;
+    }
+    default: {
+        break;
+    }
     }
 }
 

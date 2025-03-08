@@ -232,12 +232,12 @@ void ControllerScriptEngineLegacy::setInfoScreens(
 #endif
 
 void ControllerScriptEngineLegacy::setScriptFiles(
-        const QList<LegacyControllerMapping::ScriptFileInfo>& scripts) {
+        QList<LegacyControllerMapping::ScriptFileInfo> scripts) {
     const QStringList paths = m_fileWatcher.files();
     if (!paths.isEmpty()) {
         m_fileWatcher.removePaths(paths);
     }
-    m_scriptFiles = scripts;
+    m_scriptFiles = std::move(scripts);
 
 #ifdef MIXXX_USE_QML
     setQMLMode(std::any_of(
@@ -338,8 +338,10 @@ bool ControllerScriptEngineLegacy::initialize() {
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
             new ControllerScriptInterfaceLegacy(this, m_logger);
 
-    engineGlobalObject.setProperty(
-            "engine", m_pJSEngine->newQObject(legacyScriptInterface));
+    auto engine = m_pJSEngine->newQObject(legacyScriptInterface);
+    auto meta = m_pJSEngine->newQMetaObject(&ControllerScriptInterfaceLegacy::staticMetaObject);
+    engine.setProperty("Charset", meta);
+    engineGlobalObject.setProperty("engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
 #ifdef MIXXX_USE_QML
     if (m_bQmlMode) {

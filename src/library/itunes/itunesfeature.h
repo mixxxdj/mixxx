@@ -51,7 +51,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     /// returns the file path.
     QString showOpenDialog();
 
-    bool isMacOSImporterUsed();
+    bool isNativeImporterUsed();
 
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;

@@ -104,12 +104,10 @@ class WaveformWidgetHolder {
 
 //########################################
 
-class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
+class WaveformWidgetFactory : public QObject,
+                              public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
-    //TODO merge this enum with the waveform analyzer one
-    enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
-
     bool setConfig(UserSettingsPointer config);
 
     /// Creates the waveform widget using the type set with setWidgetType
@@ -156,6 +154,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
+    void setUntilMarkTextHeightLimit(float value);
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -169,9 +168,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int getUntilMarkTextPointSize() const {
         return m_untilMarkTextPointSize;
     }
-
+    float getUntilMarkTextHeightLimit() const {
+        return m_untilMarkTextHeightLimit;
+    }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
+    static float toUntilMarkTextHeightLimit(int index);
+    static int toUntilMarkTextHeightLimitIndex(float value);
 
     /// Returns the desired surface format for the OpenGLWindow
     static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
@@ -191,8 +194,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setDisplayBeatGridAlpha(int alpha);
     int getBeatGridAlpha() const { return m_beatGridAlpha; }
 
-    void setVisualGain(FilterIndex index, double gain);
-    double getVisualGain(FilterIndex index) const;
+    void setVisualGain(BandIndex index, double gain);
+    double getVisualGain(BandIndex index) const;
 
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
@@ -206,7 +209,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void addVuMeter(WVuMeterLegacy* pWidget);
     void addVuMeter(WVuMeterBase* pWidget);
 
-    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML);
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
@@ -221,7 +224,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swapVuMeters();
 
     void overviewNormalizeChanged();
-    void overallVisualGainChanged();
+    void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
+
+    void untilMarkShowBeatsChanged(bool value);
+    void untilMarkShowTimeChanged(bool value);
+    void untilMarkAlignChanged(Qt::Alignment align);
+    void untilMarkTextPointSizeChanged(int value);
+    void untilMarkTextHeightLimitChanged(float value);
 
   public slots:
     void slotSkinLoaded();
@@ -274,13 +283,14 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_endOfTrackWarningTime;
     double m_defaultZoom;
     bool m_zoomSync;
-    double m_visualGain[FilterCount];
+    double m_visualGain[BandCount];
     bool m_overviewNormalized;
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
+    float m_untilMarkTextHeightLimit;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
