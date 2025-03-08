@@ -411,7 +411,7 @@
      <property name="title">
       <string>Browse Filesystem</string>
      </property>
-     <widget class="QCheckBox" name="checkBox_browsefilesystemlimitchilditemsenabled">
+     <widget class="QCheckBox" name="checkBox_browsefilesystem_limit_childitems_enabled">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -427,7 +427,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="checkBox_browsefilesystemlimitchilditemslabel">
+     <widget class="QLabel" name="checkBox_browsefilesystem_limit_childitems_label">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -443,7 +443,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QSpinBox" name="spinbox_browsefilesystemlimitchilditemsnumber">
+     <widget class="QSpinBox" name="spinbox_browsefilesystem_limit_childitems_number">
       <property name="geometry">
        <rect>
         <x>230</x>

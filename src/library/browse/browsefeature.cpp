@@ -18,8 +18,12 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
-bool s_browseLimitChildItemsEnabled;
-int s_browseLimitChildItemsNumber;
+const ConfigKey kChildItemLimitNumberKey =
+        ConfigKey(QStringLiteral("[Library]"),
+                QStringLiteral("BrowseFilesystemLimitChildItemsNumber"));
+const ConfigKey kChildItemsLimitEnabledKey =
+        ConfigKey(QStringLiteral("[Library]"),
+                QStringLiteral("BrowseFilesystemLimitChildItemsEnabled"));
 
 namespace {
 
@@ -150,13 +154,6 @@ BrowseFeature::BrowseFeature(
 
     // initialize the model
     m_pSidebarModel->setRootItem(std::move(pRootItem));
-    // Vars to limit the created childitems in tree,
-    // for slow pc's or external sources withslow connection
-    s_browseLimitChildItemsEnabled = pConfig->getValue<bool>(
-            ConfigKey("[Library]",
-                    "BrowseFilesystemLimitChildItemsEnabled"));
-    s_browseLimitChildItemsNumber = pConfig->getValue<int>(
-            ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsNumber"));
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -478,16 +475,39 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
     QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
             QDir::Dirs | QDir::NoDotAndDotDot);
 
+    // Vars to limit the created childitems in tree,
+    // for slow pc's or external sources withslow connection
+    bool limitChildItemsEnabled = (m_pConfig->getValue(kChildItemsLimitEnabledKey) == "1");
+    int limitChildItemsNumber = m_pConfig->getValue(kChildItemLimitNumberKey).toInt();
+    // qDebug() << "limitChildItemsEnabled " << limitChildItemsEnabled;
+    // qDebug() << "limitChildItemsNumber" << limitChildItemsNumber;
+
     int count = 0;
-
     // loop through all the item and construct the children
-    // foreach (QFileInfo one, all) {
-
-    for (const QFileInfo& one : all) {
-        if (s_browseLimitChildItemsEnabled) {
-            if (count >= s_browseLimitChildItemsNumber) {
+    for (const QFileInfo& one : std::as_const(all)) {
+        if (limitChildItemsEnabled) {
+            if (count >= limitChildItemsNumber) {
                 // Limit -> Stop adding items
-                break;
+                // Ask user whether to continue or stop
+                QMessageBox msgBox;
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setWindowTitle(tr("Child Item Limit Reached"));
+                msgBox.setText(tr(
+                        "To prevent Mixxx from stalling when opening "
+                        "folders with a lot of subfolders a limit can be set in "
+                        "Preferences -> Library. At the moment this limit is set to "
+                        "%1, the limit has been reached. Do you want to continue "
+                        "loading another %1 items?")
+                                .arg(limitChildItemsNumber));
+                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msgBox.setDefaultButton(QMessageBox::No);
+
+                int userReaction = msgBox.exec();
+                if (userReaction == QMessageBox::Yes) {
+                    count = 0;
+                } else {
+                    break;
+                }
             }
         }
         // Skip folders that end with .app on OS X
