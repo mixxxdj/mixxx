@@ -5,6 +5,7 @@
     <author>Sam Whited</author>
     <description>MIDI mapping for the M-Vave SMK-25 II piano keyboard.</description>
     <forums>https://mixxx.discourse.group/t/sinco-m-wave-smk-25-ii/31350</forums>
+    <manual>mvave_smk-25-ii</manual>
     <devices>
       <!--
         This vendor and product ID is shared between multiple controllers and is
