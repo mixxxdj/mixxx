@@ -180,9 +180,6 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
-// Whether or not to use the ShareDataAPI, available in the PR 12199.
-const UseSharedDataAPI = engine.getSetting("useSharedDataAPI");
-
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
 // slightly, so use that get 25 different colors to include the Filter
@@ -233,7 +230,6 @@ const wheelRelativeMax = 2 ** 32 - 1;
 const wheelAbsoluteMax = 2879;
 
 const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
 
 const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
 
@@ -283,6 +279,50 @@ let wheelTimer = null;
 // to it and it is guaranteed to be calculated before processing
 // input for the Components.
 let wheelTimerDelta = 0;
+
+/*
+ * helper function
+ */
+
+const quickFxChannel = (group) => {
+    return `[QuickEffectRack1_${group}]`;
+};
+
+const stemChannel = (group, idx) => {
+    return `${group.substr(0, group.length - 1)}_Stem${idx + 1}]`;
+};
+
+const isObject = (item) => {
+    return (item && typeof item === "object" && !Array.isArray(item));
+};
+
+const mergeDeep = (target, ...sources) => {
+    if (!sources.length) { return target; }
+    const source = sources.shift();
+
+    if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!target[key]) { Object.assign(target, {[key]: {}}); }
+                mergeDeep(target[key], source[key]);
+            } else {
+                Object.assign(target, {[key]: source[key]});
+            }
+        }
+    }
+
+    return mergeDeep(target, ...sources);
+};
+
+
+const hasRuntimeDataAPI = () => typeof engine.getSharedData === "function";
+
+const updateRuntimeData = (patch) => {
+    if (!hasRuntimeDataAPI()) {
+        return;
+    }
+    engine.setSharedData(mergeDeep(engine.getSharedData() || {}, patch));
+};
 
 /*
  * HID report parsing library
@@ -529,12 +569,12 @@ class Deck extends ComponentContainer {
         }
         this.secondDeckModes = null;
         this.selectedHotcue = null;
-        if (UseSharedDataAPI) {
-            const data = engine.getSharedData() || {};
-            if (!data.selectedHotcue) { return; }
-            data.selectedHotcue[this.group] = this.selectedHotcue;
-            engine.setSharedData(data);
-        }
+
+        updateRuntimeData({
+            selectedHotcue: {
+                [this.group]: this.selectedHotcue
+            }
+        });
     }
     toggleDeck() {
         if (this.decks === undefined) {
@@ -560,13 +600,12 @@ class Deck extends ComponentContainer {
             this.moveMode = null;
             this.selectedHotcue = null;
 
-            if (UseSharedDataAPI) {
-                const data = engine.getSharedData() || {};
-                if (data.selectedHotcue) {
-                    data.selectedHotcue[this.group] = this.selectedHotcue;
-                    engine.setSharedData(data);
+
+            updateRuntimeData({
+                selectedHotcue: {
+                    [this.group]: this.selectedHotcue
                 }
-            }
+            });
             break;
         }
 
@@ -606,14 +645,11 @@ class Deck extends ComponentContainer {
         this.secondDeckModes = currentModes;
         this.currentDeckNumber = newDeck;
 
-        if (!UseSharedDataAPI) {
-            return;
-        }
-
-        const data = engine.getSharedData() || {};
-        if (!data.group) { return; }
-        data.group[this.decks[0] === 1 ? "leftdeck":"rightdeck"] = this.group;
-        engine.setSharedData(data);
+        updateRuntimeData({
+            group: {
+                [this.decks[0] === 1 ? "leftdeck":"rightdeck"]: this.group
+            }
+        });
     }
     static groupForNumber(deckNumber) {
         return `[Channel${deckNumber}]`;
@@ -869,13 +905,12 @@ class HotcueButton extends PushButton {
     input(pressed) {
         if (this.deck.moveMode === moveModes.hotcueColor) {
             this.deck.selectedHotcue = pressed ? this.number : null;
-            if (UseSharedDataAPI) {
-                const data = engine.getSharedData() || {};
-                if (!data.selectedHotcue) { return; }
-                data.selectedHotcue[this.group] = this.deck.selectedHotcue;
-                engine.setSharedData(data);
-            }
 
+            updateRuntimeData({
+                selectedHotcue: {
+                    [this.group]: this.deck.selectedHotcue
+                }
+            });
         } else if (this.deck.libraryPlayButton.pressed) {
             engine.setValue(this.deck.libraryPlayButton.group, this.inKey, pressed);
         } else {
@@ -1011,12 +1046,11 @@ class StemButton extends PushButton {
         }
         if (!this.shifted) {
             this.deck.selectedStem[this.number - 1] = pressed;
-            if (UseSharedDataAPI) {
-                const data = engine.getSharedData() || {};
-                if (!data.selectedStems) { return; }
-                data.selectedStems[this.group] = this.deck.selectedStem;
-                engine.setSharedData(data);
-            }
+            updateRuntimeData({
+                selectedStems: {
+                    [this.group]: this.deck.selectedStem
+                }
+            });
         }
         if (!this.shifted && pressed && this.deck.mixer.firstPressedFxSelector !== null) {
             const presetNumber = this.deck.mixer.calculatePresetNumber();
@@ -1026,12 +1060,10 @@ class StemButton extends PushButton {
             this.deck.mixer.secondPressedFxSelector = null;
             this.deck.mixer.resetFxSelectorColors();
 
-            if (!UseSharedDataAPI) { return; }
 
-            const data = engine.getSharedData() || {};
-            if (!data.selectedQuickFX) { return; }
-            data.selectedQuickFX = null;
-            engine.setSharedData(data);
+            updateRuntimeData({
+                selectedQuickFX: null
+            });
         }
     }
     output() {
@@ -1616,19 +1648,15 @@ class FXSelect extends Button {
             }
             this.outReport.send();
 
-            if (!UseSharedDataAPI) { return; }
-
-            const data = engine.getSharedData() || {};
-            data.selectedQuickFX = this.mixer.calculatePresetNumber();
-            engine.setSharedData(data);
+            updateRuntimeData({
+                selectedQuickFX: this.mixer.calculatePresetNumber()
+            });
         } else {
             this.mixer.secondPressedFxSelector = this.number;
 
-            if (!UseSharedDataAPI) { return; }
-
-            const data = engine.getSharedData() || {};
-            data.selectedQuickFX = this.mixer.calculatePresetNumber();
-            engine.setSharedData(data);
+            updateRuntimeData({
+                selectedQuickFX: this.mixer.calculatePresetNumber()
+            });
         }
 
     }
@@ -1660,12 +1688,9 @@ class FXSelect extends Button {
         }
         this.mixer.secondPressedFxSelector = null;
 
-        if (!UseSharedDataAPI) { return; }
-
-        const data = engine.getSharedData() || {};
-        if (!data.selectedQuickFX) { return; }
-        data.selectedQuickFX = null;
-        engine.setSharedData(data);
+        updateRuntimeData({
+            selectedQuickFX: null
+        });
     }
 
 }
@@ -1753,18 +1778,6 @@ Button.prototype.uncoloredOutput = function(value) {
     this.send(color);
 };
 Button.prototype.colorMap = new ColorMapper(LedColorMap);
-
-/*
- * helper function
- */
-
-const quickFxChannel = (group) => {
-    return `[QuickEffectRack1_${group}]`;
-};
-
-const stemChannel = (group, idx) => {
-    return `${group.substr(0, group.length - 1)}_Stem${idx + 1}]`;
-};
 
 /*
  * Kontrol S4 Mk3 hardware specific mapping logic
@@ -2249,26 +2262,20 @@ class S4Mk3Deck extends Deck {
             onPress: function() {
                 this.deck.shift();
 
-                if (!UseSharedDataAPI) {
-                    return;
-                }
-
-                const data = engine.getSharedData() || {};
-                if (!data.shift) { return; }
-                data.shift[decks[0] === 1 ? "leftdeck":"rightdeck"] = true;
-                engine.setSharedData(data);
+                updateRuntimeData({
+                    shift: {
+                        [decks[0] === 1 ? "leftdeck":"rightdeck"]: true
+                    }
+                });
             },
             onRelease: function() {
                 this.deck.unshift();
 
-                if (!UseSharedDataAPI) {
-                    return;
-                }
-
-                const data = engine.getSharedData() || {};
-                if (!data.shift) { return; }
-                data.shift[decks[0] === 1 ? "leftdeck":"rightdeck"] = false;
-                engine.setSharedData(data);
+                updateRuntimeData({
+                    shift: {
+                        [decks[0] === 1 ? "leftdeck":"rightdeck"]: false
+                    }
+                });
             },
         });
 
@@ -2370,21 +2377,18 @@ class S4Mk3Deck extends Deck {
                     script.toggleControl(this.group, "pitch_adjust_set_default");
                 }
 
-                if (!UseSharedDataAPI) {
-                    return;
-                }
-
-
-                const data = engine.getSharedData() || {};
-                if (!data.displayBeatloopSize) { return; }
-                data.displayBeatloopSize[this.group] = true;
-                engine.setSharedData(data);
+                updateRuntimeData({
+                    displayBeatloopSize: {
+                        [this.group]: true
+                    }
+                });
             },
-            onRelease: UseSharedDataAPI ? function() {
-                const data = engine.getSharedData() || {};
-                if (!data.displayBeatloopSize) { return; }
-                data.displayBeatloopSize[this.group] = false;
-                engine.setSharedData(data);
+            onRelease: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    displayBeatloopSize: {
+                        [this.group]: false
+                    }
+                });
             } : undefined
         });
 
@@ -2768,11 +2772,12 @@ class S4Mk3Deck extends Deck {
                 }
 
             },
-            onShortPress: UseSharedDataAPI ? function() {
-                const data = engine.getSharedData() || {};
-                if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = ActiveTabPadID.hotcue;
-                engine.setSharedData(data);
+            onShortPress: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.group]: ActiveTabPadID.hotcue
+                    }
+                });
             } : undefined,
             onLongPress: function() {
                 this.previousMoveMode = this.deck.moveMode;
@@ -2788,18 +2793,16 @@ class S4Mk3Deck extends Deck {
                 this.deck.lightPadMode();
             }
         });
-        // The record button doesn't have a mapping by default, but you can add yours here
         this.recordPadModeButton = new Button({
             deck: this,
-            onShortPress: UseSharedDataAPI ? function() {
+            onShortPress: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: ActiveTabPadID.jump
+                    }
+                });
                 switchPadLayer(this.deck, beatJumpPage);
                 this.deck.lightPadMode();
-
-                const data = engine.getSharedData() || {};
-                if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = ActiveTabPadID.jump;
-                engine.setSharedData(data);
-                this.output(data.scrollingWavefom[this.deck.group]);
             } : undefined,
             // hack to switch the LED color when changing decks
             outTrigger: function() {
@@ -2812,13 +2815,11 @@ class S4Mk3Deck extends Deck {
             onShortPress: function() {
                 engine.setValue(this.deck.group, "loop_anchor", 1);
 
-                if (!UseSharedDataAPI) {
-                    return;
-                }
-                const data = engine.getSharedData() || {};
-                if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = UseBeatloopRollInsteadOfSampler ? ActiveTabPadID.roll : ActiveTabPadID.samples;
-                engine.setSharedData(data);
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: UseBeatloopRollInsteadOfSampler ? ActiveTabPadID.roll : ActiveTabPadID.samples
+                    }
+                });
             },
             onShortRelease: function() {
                 if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage) {
@@ -2840,11 +2841,12 @@ class S4Mk3Deck extends Deck {
         // The mute button doesn't have a mapping by default, but you can add yours here
         this.mutePadModeButton = new Button({
             deck: this,
-            onShortPress: UseSharedDataAPI ? function() {
-                const data = engine.getSharedData() || {};
-                if (!data.padsMode) { return; }
-                data.padsMode[this.deck.group] = ActiveTabPadID.mute;
-                engine.setSharedData(data);
+            onShortPress: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: ActiveTabPadID.mute
+                    }
+                });
             } : undefined,
             // hack to switch the LED color when changing decks
             outTrigger: function() {
@@ -2862,12 +2864,11 @@ class S4Mk3Deck extends Deck {
                 }
             },
             onShortPress: function() {
-                if (UseSharedDataAPI) {
-                    const data = engine.getSharedData() || {};
-                    if (!data.padsMode) { return; }
-                    data.padsMode[this.deck.group] = ActiveTabPadID.stems;
-                    engine.setSharedData(data);
-                }
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: ActiveTabPadID.stems
+                    }
+                });
                 if (this.previousMoveMode === null) {
                     this.previousMoveMode = this.deck.moveMode;
                     this.deck.moveMode = moveModes.keyboard;
@@ -3225,11 +3226,11 @@ class S4Mk3Deck extends Deck {
             this.hotcuePadModeButton.send(this.hotcuePadModeButton.color + this.hotcuePadModeButton.brightnessOff);
         }
 
-        const data = (UseSharedDataAPI ? engine.getSharedData() : false) || {};
+        const data = (hasRuntimeDataAPI() ? engine.getSharedData() : false) || {};
 
         // unfortunately the other pad mode buttons only have one LED color
         // const recordPadModeLEDOn = this.currentPadLayer === this.padLayers.hotcuePage3;
-        this.recordPadModeButton.output(data.scrollingWavefom && data.scrollingWavefom[this.group]);
+        this.recordPadModeButton.output(data.padsMode && data.padsMode[this.group] === ActiveTabPadID.jump);
 
         const samplesPadModeLEDOn = this.currentPadLayer === this.padLayers.samplerPage;
         this.samplesPadModeButton.send(samplesPadModeLEDOn ? 127 : 0);
@@ -3242,7 +3243,7 @@ class S4Mk3Deck extends Deck {
             const keyboardPadModeLEDOn = this.currentPadLayer === this.padLayers.keyboard || this.currentPadLayer === this.padLayers.stem;
             this.stemsPadModeButton.send(this.stemsPadModeButton.color + (keyboardPadModeLEDOn ? this.stemsPadModeButton.brightnessOn : this.stemsPadModeButton.brightnessOff));
         }
-        if (!UseSharedDataAPI || !data.keyboardMode) { return; }
+        if (!hasRuntimeDataAPI() || !data.keyboardMode) { return; }
         data.keyboardMode[this.group] = this.currentPadLayer === this.padLayers.keyboard;
         engine.setSharedData(data);
     }
@@ -3742,11 +3743,7 @@ class S4MK3 {
             this.inReports[repordId].handleInput(controller.getInputReport(repordId));
         }
 
-        if (!UseSharedDataAPI) {
-            return;
-        }
-
-        engine.setSharedData({
+        updateRuntimeData({
             group: {
                 "leftdeck": "[Channel1]",
                 "rightdeck": "[Channel2]",

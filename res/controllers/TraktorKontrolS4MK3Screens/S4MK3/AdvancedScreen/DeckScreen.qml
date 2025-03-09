@@ -33,8 +33,9 @@ Item {
     property bool browser: settings.showBrowserOnFavorites ? ((deckInfoModel.viewButton) || (deckInfoModel.favorites)) : (deckInfoModel.viewButton)
 
     Component.onCompleted: {
-        if (engine.getSetting("useSharedDataAPI")) {
+        if (typeof engine.makeSharedDataConnection === "function") {
             engine.makeSharedDataConnection(deckscreen.onSharedDataUpdate)
+            deckscreen.onSharedDataUpdate(engine.getSharedData())
         }
     }
 
