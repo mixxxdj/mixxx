@@ -31,7 +31,7 @@ Item {
             console.log(`Changed selectedQuickFX to ${propSelectedQuickFX.value}`);
         }
         if (typeof data.selectedStems === "object") {
-            let firstSelected = data.selectedStems[viewModel.group].findIndex(x => !!x);
+            let firstSelected = (data.selectedStems[viewModel.group] || []).findIndex(x => !!x);
             propStemSelected.active = firstSelected >= 0;
             if (propStemSelected.active) {
                 propStemSelected.idx = firstSelected;
@@ -92,8 +92,9 @@ Item {
         }
     }
     Component.onCompleted: {
-        if (engine.getSetting("useSharedDataAPI")) {
+        if (typeof engine.makeSharedDataConnection === "function") {
             engine.makeSharedDataConnection(viewModel.onSharedDataUpdate)
+            viewModel.onSharedDataUpdate(engine.getSharedData())
         }
     }
 
