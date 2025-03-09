@@ -130,8 +130,9 @@ var SMCMixer;
         }
     }
 
-    class EqRack {
+    class EqRack extends components.ComponentContainer {
         constructor(index) {
+            super({});
             const channel = mapIndexToChannel(index);
             this.knob = new Encoder({
                 group: `[Channel${channel}]`,
@@ -139,13 +140,20 @@ var SMCMixer;
                 inKey: "pregain",
             });
 
+            const _this = this;
             const btnInToggle = () => {
-                const knob = this.knob;
-                const origGroup = this.knob.group;
-                const origInKey = this.knob.inKey;
+                // "this" is undefined here due to a bug in QJSEngine, so we
+                // redefine it as "_this" above and close over it.
+                // In this context it refers to the EqRack.
+                const knob = _this.knob;
+                const origGroup = knob.group;
+                const origInKey = knob.inKey;
                 return function() {
+                    // "this" in this context refers to the button itself, and
+                    // will be defined after this returned callback is set on
+                    // the button as "inToggle" on each of the buttons below.
                     if (this.isLongPressed) {
-                        if (knob.inKey === this.inKey.replace("button_", "") || (this.inKey === "enabled" && this.knob.inKey === "super1")) {
+                        if (knob.inKey === this.inKey.replace("button_", "") || (this.inKey === "enabled" && knob.inKey === "super1")) {
                             knob.group = origGroup;
                             knob.inKey = origInKey;
                         } else {
