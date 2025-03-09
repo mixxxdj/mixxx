@@ -13,8 +13,6 @@ Rectangle {
     required property string group
     required property string screenId
 
-    readonly property bool useSharedApi: engine.getSetting("useSharedDataAPI") || false
-
     anchors.fill: parent
     color: "black"
 
@@ -95,8 +93,8 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        if (!root.useSharedApi) {
-            return;
+        if (typeof engine.makeSharedDataConnection !== "function") {
+            return
         }
 
         engine.makeSharedDataConnection(root.onSharedDataUpdate)
@@ -418,7 +416,7 @@ Rectangle {
             key: "scratch2_enable"
 
             onValueChanged: {
-                if (root.useSharedApi) {
+                if (typeof engine.makeSharedDataConnection !== "function") {
                     return;
                 }
 
