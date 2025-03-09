@@ -5,6 +5,7 @@
     <author>Sam Whited</author>
     <description>MIDI mapping for the M-Vave SMC-Mixer.</description>
     <forums>https://mixxx.discourse.group/t/m-wave-sinco-smc-mixer-radio-broadcast-mapping/30366</forums>
+    <manual>mvave_smc_mixer</manual>
     <devices>
       <!--
         This vendor and product ID is shared between multiple controllers and is
