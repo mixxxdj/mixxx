@@ -16,11 +16,14 @@ Item {
     readonly property string screenName: isLeftScreen(viewModel.deckId) ? "leftdeck" : "rightdeck"
 
     function onSharedDataUpdate(data) {
-        if (typeof data === "object" && typeof data.group[screenName] === "string") {
+        if (typeof data !== "object") {
+            return;
+        }
+        if (typeof data.group[screenName] === "string") {
             viewModel.group = data.group[screenName]
             console.log(`Changed group for screen ${screenName} to ${viewModel.group}`);
         }
-        if (typeof data === "object" && typeof data.shift === "object") {
+        if (typeof data.shift === "object") {
             propShift.value = !!data.shift[screenName]
         }
         if (typeof data.padsMode === "object") {
@@ -32,7 +35,7 @@ Item {
             console.log(`Changed selectedQuickFX to ${propSelectedQuickFX.value}`);
         }
         if (typeof data.selectedStems === "object") {
-            let firstSelected = data.selectedStems[viewModel.group].findIndex(x => !!x);
+            let firstSelected = (data.selectedStems[viewModel.group] || []).findIndex(x => !!x);
             propStemSelected.active = firstSelected >= 0;
             if (propStemSelected.active) {
                 propStemSelected.idx = firstSelected;
@@ -93,8 +96,9 @@ Item {
         }
     }
     Component.onCompleted: {
-        if (engine.getSetting("useSharedDataAPI")) {
+        if (typeof engine.makeSharedDataConnection === "function") {
             engine.makeSharedDataConnection(viewModel.onSharedDataUpdate)
+            viewModel.onSharedDataUpdate(engine.getSharedData())
         }
     }
 

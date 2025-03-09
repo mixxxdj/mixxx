@@ -26,8 +26,9 @@ Item {
     Defines.Colors {id: colors}
 
     Component.onCompleted: {
-        if (engine.getSetting("useSharedDataAPI")) {
+        if (typeof engine.makeSharedDataConnection === "function") {
             engine.makeSharedDataConnection(screen.onSharedDataUpdate)
+            screen.onSharedDataUpdate(engine.getSharedData())
         }
     }
 
