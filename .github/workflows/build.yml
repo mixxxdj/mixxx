@@ -1,0 +1,127 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: Build
+
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - labeled
+      - unlabeled
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
+jobs:
+  macos-intel:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ci') && (contains(github.event.pull_request.labels.*.name, 'core') || contains(github.event.pull_request.labels.*.name, 'platform/macos') || github.event_name == 'push') }}
+    uses: ./.github/workflows/build-action.yml
+    with:
+      os: macos-13
+      name: macOS 13 x64
+      cmake_args: >-
+        -DCOREAUDIO=ON
+        -DHSS1394=ON
+        -DMACOS_BUNDLE=ON
+        -DQML=OFF
+        -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+        -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
+      # TODO: Fix this broken test on macOS
+      ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
+      cpack_generator: DragNDrop
+      compiler_cache: ccache
+      compiler_cache_path: /Users/runner/Library/Caches/ccache
+      compiler_cache_id: x64
+      buildenv_basepath: /Users/runner/buildenv
+      buildenv_script: tools/macos_release_buildenv.sh
+      artifacts_name: macOS Intel DMG
+      artifacts_path: build/*.dmg
+      artifacts_slug: macos-macosintel
+      qt_qpa_platform: offscreen
+    secrets:
+      # macOS codesigning
+      macos_codesign_certificate_p12_base64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
+      macos_codesign_certificate_password: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+  macos-arm64:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ci') && (contains(github.event.pull_request.labels.*.name, 'core') || contains(github.event.pull_request.labels.*.name, 'platform/macos') || github.event_name == 'push') }}
+    uses: ./.github/workflows/build-action.yml
+    with:
+      os: macos-13
+      name: macOS 13 arm64
+      cmake_args: >-
+        -DCOREAUDIO=ON
+        -DHSS1394=ON
+        -DMACOS_BUNDLE=ON
+        -DQML=ON
+        -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
+        -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
+      # TODO: Fix this broken test on macOS
+      crosscompile: true
+      cpack_generator: DragNDrop
+      compiler_cache: ccache
+      compiler_cache_path: /Users/runner/Library/Caches/ccache
+      compiler_cache_id: arm64
+      buildenv_basepath: /Users/runner/buildenv
+      buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
+      artifacts_name: macOS ARM DMG
+      artifacts_path: build/*.dmg
+      artifacts_slug: macos-macosarm
+      qt_qpa_platform: offscreen
+    secrets:
+      # macOS codesigning
+      macos_codesign_certificate_p12_base64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
+      macos_codesign_certificate_password: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+  ubuntu:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ci') && (contains(github.event.pull_request.labels.*.name, 'core') || contains(github.event.pull_request.labels.*.name, 'platform/linux') || github.event_name == 'push') }}
+    uses: ./.github/workflows/build-action.yml
+    with:
+      os: ubuntu-24.04
+      name: Ubuntu 24.04
+      cmake_args: >-
+        -DQML=ON
+        -DFFMPEG=ON
+        -DLOCALECOMPARE=ON
+        -DMAD=ON
+        -DINSTALL_USER_UDEV_RULES=OFF
+      compiler_cache: ccache
+      compiler_cache_path: /home/runner/.cache/ccache
+      compiler_cache_id: qt6
+      cpack_generator: DEB
+      buildenv_basepath: /home/runner/buildenv
+      buildenv_script: tools/debian_buildenv.sh
+      artifacts_name: Ubuntu 24.04 Qt6 DEB
+      artifacts_path: build/*.deb
+      artifacts_slug: ubuntu-jammy
+      qt_qpa_platform: offscreen
+  windows:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ci') && (contains(github.event.pull_request.labels.*.name, 'core') || contains(github.event.pull_request.labels.*.name, 'platform/windows') || github.event_name == 'push') }}
+    uses: ./.github/workflows/build-action.yml
+    with:
+      name: Windows 2019 (MSVC)
+      os: windows-2019
+      # TODO: Re-enable FFmpeg after licensing issues have been clarified
+      # Attention: If you change the cmake_args for the Windows CI build,
+      #            also adjust the for the local Windows build setup in
+      #            ./tools/windows_buildenv.bat
+      cmake_args: >-
+        -DFFMPEG=OFF
+        -DHSS1394=ON
+        -DLOCALECOMPARE=ON
+        -DMAD=ON
+        -DMEDIAFOUNDATION=ON
+        -DQML=ON
+        -DVCPKG_TARGET_TRIPLET=x64-windows-release
+        -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
+      cc: cl
+      cxx: cl
+      # TODO: Fix these broken tests on Windows
+      ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+      cpack_generator: WIX
+      buildenv_basepath: C:\buildenv
+      buildenv_script: tools/windows_buildenv.bat
+      artifacts_name: Windows Installer
+      artifacts_path: build/*.msi
+      artifacts_slug: windows-win64
+      qt_qpa_platform: windows

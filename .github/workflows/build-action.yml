@@ -1,145 +1,90 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
-
 name: Build
 
 on:
-  push:
-  pull_request:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+      cmake_args:
+        required: true
+        type: string
+      ctest_args:
+        required: false
+        type: string
+      cpack_generator:
+        required: true
+        type: string
+      compiler_cache:
+        required: false
+        type: string
+      compiler_cache_path:
+        required: false
+        type: string
+      compiler_cache_id:
+        required: false
+        type: string
+      buildenv_basepath:
+        required: true
+        type: string
+      buildenv_script:
+        required: true
+        type: string
+      crosscompile:
+        required: false
+        type: boolean
+      artifacts_name:
+        required: true
+        type: string
+      artifacts_path:
+        required: true
+        type: string
+      artifacts_slug:
+        required: true
+        type: string
+      qt_qpa_platform:
+        required: true
+        type: string
+      cc:
+        required: false
+        type: string
+      cxx:
+        required: false
+        type: string
+    secrets:
+      macos_codesign_certificate_p12_base64:
+        required: false
+      macos_codesign_certificate_password:
+        required: false
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
 
+env:
+  # macOS codesigning
+  MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.macos_codesign_certificate_p12_base64 }}
+  MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.macos_codesign_certificate_password }}
+
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Ubuntu 24.04
-            os: ubuntu-24.04
-            cmake_args: >-
-              -DQT6=ON
-              -DQML=ON
-              -DBULK=ON
-              -DFFMPEG=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: /home/runner/.cache/ccache
-            compiler_cache_id: qt6
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 24.04 Qt6 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-jammy
-            qt_qpa_platform: offscreen
-          - name: macOS 13 x64
-            os: macos-13
-            cmake_args: >-
-              -DBULK=ON
-              -DCOREAUDIO=ON
-              -DHSS1394=ON
-              -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=OFF
-              -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
-            # TODO: Fix this broken test on macOS
-            ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
-            cpack_generator: DragNDrop
-            compiler_cache: ccache
-            compiler_cache_path: /Users/runner/Library/Caches/ccache
-            compiler_cache_id: x64
-            buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_release_buildenv.sh
-            artifacts_name: macOS Intel DMG
-            artifacts_path: build/*.dmg
-            artifacts_slug: macos-macosintel
-            qt_qpa_platform: offscreen
-          - name: macOS 13 arm64
-            os: macos-13
-            cmake_args: >-
-              -DBULK=ON
-              -DCOREAUDIO=ON
-              -DHSS1394=ON
-              -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
-            # TODO: Fix this broken test on macOS
-            crosscompile: true
-            cpack_generator: DragNDrop
-            compiler_cache: ccache
-            compiler_cache_path: /Users/runner/Library/Caches/ccache
-            compiler_cache_id: arm64
-            buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
-            artifacts_name: macOS ARM DMG
-            artifacts_path: build/*.dmg
-            artifacts_slug: macos-macosarm
-            qt_qpa_platform: offscreen
-          - name: Windows 2019 (MSVC)
-            os: windows-2019
-            # TODO: Re-enable FFmpeg after licensing issues have been clarified
-            # Attention: If you change the cmake_args for the Windows CI build,
-            #            also adjust the for the local Windows build setup in
-            #            ./tools/windows_buildenv.bat
-            cmake_args: >-
-              -DBULK=ON
-              -DFFMPEG=OFF
-              -DHSS1394=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMEDIAFOUNDATION=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-windows-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
-            cc: cl
-            cxx: cl
-            # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
-            cpack_generator: WIX
-            buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_buildenv.bat
-            artifacts_name: Windows Installer
-            artifacts_path: build/*.msi
-            artifacts_slug: windows-win64
-            qt_qpa_platform: windows
-
-    env:
-      # macOS codesigning
-      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
-      MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
-
-    runs-on: ${{ matrix.os }}
-    name: ${{ matrix.name }}
-    container: ${{ matrix.container }}
+    runs-on: ${{ inputs.os }}
+    name: ${{ inputs.name }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
         with:
           # This is necessary for making `git describe` work.
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
-        if: matrix.container != null
+        if: inputs.container != null
         # See https://github.com/actions/checkout/issues/760 for details
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
@@ -149,19 +94,10 @@ jobs:
         # Possibly related: actions/checkout#290
         run: git fetch origin --force --tags
 
-      - name: "[macOS] Set up cmake"
+      - name: "[macOS/Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
         # Ubuntu 24.04 should use the CMake version from the repos.
-        if: runner.os == 'macOS'
-        with:
-          # This should always match the minimum required version in
-          # our CMakeLists.txt
-          cmake-version: "3.21.x"
-
-      - name: "[Windows] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.0
-        # Ubuntu 24.04 should use the CMake version from the repos.
-        if: runner.os == 'Windows'
+        if: runner.os != 'Linux'
         with:
           # This is a workaround for a SSL false positive in cmake 3.26.4
           # When downloading the manual. 3.21 is required for installing the
@@ -179,13 +115,13 @@ jobs:
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
-        run: ${{ matrix.buildenv_script }} name
+        run: ${{ inputs.buildenv_script }} name
 
       - name: "[macOS/Windows] Set up build environment cache"
         if: runner.os != 'Linux'
         uses: actions/cache@v4
         with:
-          path: ${{ matrix.buildenv_basepath }}
+          path: ${{ inputs.buildenv_basepath }}
           key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
 
       - name: "[macOS] Import Apple code signing identity"
@@ -211,36 +147,36 @@ jobs:
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
       - name: "[macOS/Linux] Set up build environment"
-        if: matrix.buildenv_script != null && runner.os != 'Windows'
-        run: ${{ matrix.buildenv_script }} setup
+        if: inputs.buildenv_script != null && runner.os != 'Windows'
+        run: ${{ inputs.buildenv_script }} setup
         env:
-          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+          BUILDENV_BASEPATH: ${{ inputs.buildenv_basepath }}
 
       - name: "[Windows] Set up build environment"
-        if: matrix.buildenv_script != null && runner.os == 'Windows'
+        if: inputs.buildenv_script != null && runner.os == 'Windows'
         # With the cmd shell the ERRORLEVEL is checked
         shell: cmd
-        run: ${{ matrix.buildenv_script }} setup
+        run: ${{ inputs.buildenv_script }} setup
         env:
-          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+          BUILDENV_BASEPATH: ${{ inputs.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
         uses: actions/cache@v4
         with:
-          path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
+          path: ${{ inputs.compiler_cache_path }}
+          key: ${{ inputs.os }}-${{ inputs.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
-            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
+            ${{ inputs.os }}-${{ inputs.compiler_cache_id }}-${{ github.head_ref }}
+            ${{ inputs.os }}-${{ inputs.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
         # GitHub Actions gives us 10 GB of cache.
         # 4 runs * 2 GB = 8 GB
         run: |
-          ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=2G
+          ${{ inputs.compiler_cache }} --zero-stats
+          ${{ inputs.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
 
       - name: "Create build directory"
@@ -248,27 +184,31 @@ jobs:
 
       - name: "Configure"
         run: >-
-          cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo
-          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          -DWARNINGS_FATAL=ON
-          -DDEBUG_ASSERTIONS_FATAL=OFF
+          cmake ${{ inputs.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DBATTERY=ON
           -DBROADCAST=ON
+          -DBULK=ON
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DDEBUG_ASSERTIONS_FATAL=OFF
           -DDOWNLOAD_MANUAL=ON
           -DHID=ON
           -DKEYFINDER=ON
           -DLILV=ON
+          -DMODPLUG=ON
           -DOPUS=ON
+          -DQT6=ON
           -DQTKEYCHAIN=ON
           -DVINYLCONTROL=ON
-          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DWARNINGS_FATAL=ON
+          -DWAVPACK=ON
           -L
           ..
         working-directory: build
         env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
+          CC: ${{ inputs.cc }}
+          CXX: ${{ inputs.cxx }}
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
@@ -282,8 +222,8 @@ jobs:
         run: cmake --build . --config RelWithDebInfo
         working-directory: build
         env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
+          CC: ${{ inputs.cc }}
+          CXX: ${{ inputs.cxx }}
           CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
@@ -291,28 +231,28 @@ jobs:
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
         run: |
-          ${{ matrix.compiler_cache }} --show-stats
-          ${{ matrix.compiler_cache }} --cleanup
+          ${{ inputs.compiler_cache }} --show-stats
+          ${{ inputs.compiler_cache }} --cleanup
 
       - name: "Test"
-        if: matrix.crosscompile != true
-        run: ctest --timeout 45 ${{ matrix.ctest_args }}
+        if: inputs.crosscompile != true
+        run: ctest --timeout 45 ${{ inputs.ctest_args || '' }}
         working-directory: build
         env:
           # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
+          QT_QPA_PLATFORM: ${{ inputs.qt_qpa_platform }}
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: Benchmark
-        if: matrix.crosscompile != true
+        if: inputs.crosscompile != true
         run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
         working-directory: build
         env:
           # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
+          QT_QPA_PLATFORM: ${{ inputs.qt_qpa_platform }}
 
       - name: "[Windows] Sign executables"
         env:
@@ -346,7 +286,7 @@ jobs:
           retry_wait_seconds: 1
           command: |
             cd build
-            cpack -G ${{ matrix.cpack_generator }} -V
+            cpack -G ${{ inputs.cpack_generator }} -V
 
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
@@ -356,14 +296,14 @@ jobs:
           path: D:/a/mixxx/mixxx/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: startsWith(inputs.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.name == 'Ubuntu 24.04'
+        if: inputs.name == 'Ubuntu 24.04'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
@@ -410,7 +350,7 @@ jobs:
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
         id: prepare_deploy
-        if: github.event_name == 'push' && matrix.artifacts_path != null
+        if: github.event_name == 'push' && inputs.artifacts_path != null
         shell: bash
         run: >
           if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -420,11 +360,11 @@ jobs:
             export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
           fi;
           python3 tools/deploy.py prepare-deployment
-          --slug '${{ matrix.artifacts_slug }}'
+          --slug '${{ inputs.artifacts_slug }}'
           --output-dir 'deploy/'
           --dest-path "${DEPLOY_PATH}"
           --dest-url 'https://downloads.mixxx.org'
-          ${{ matrix.artifacts_path }}
+          ${{ inputs.artifacts_path }}
 
       # Warning: do not move this step before restoring caches or it will break caching due to
       # https://github.com/actions/cache/issues/531
@@ -491,11 +431,11 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        if: matrix.artifacts_path != null
+        if: inputs.artifacts_path != null
         uses: actions/upload-artifact@v4.6.1
         with:
-          name: ${{ matrix.artifacts_name }}
-          path: ${{ matrix.artifacts_path }}
+          name: ${{ inputs.artifacts_name }}
+          path: ${{ inputs.artifacts_path }}
 
   update_manifest:
     name: "Update manifest file on download server"
