@@ -93,41 +93,43 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     const TrackId trackId(QVariant(1));
 
-    TrackPointer track;
-    {
+    TrackPointer pTrack;
+    { // resolver scope
         auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile)));
-        GlobalTrackCacheResolver resolver(testFileAccess);
-        track = resolver.getTrack();
-        EXPECT_TRUE(static_cast<bool>(track));
-        EXPECT_EQ(2, track.use_count());
+        auto resolver = GlobalTrackCacheResolver(testFileAccess);
+        pTrack = resolver.getTrack();
+        EXPECT_TRUE(static_cast<bool>(pTrack));
+        // track, GlobalTrackCacheResolver::m_strongPtr and GlobalTrackCache::m_incompleteTrack
+        EXPECT_EQ(3, pTrack.use_count());
 
         resolver.initTrackIdAndUnlockCache(trackId);
+        EXPECT_EQ(2, pTrack.use_count());
     }
-    EXPECT_EQ(1, track.use_count());
+    EXPECT_EQ(1, pTrack.use_count());
 
-    TrackWeakPointer trackWeak(track);
+    TrackWeakPointer trackWeak(pTrack);
     EXPECT_EQ(1, trackWeak.use_count());
 
-    TrackPointer trackCopy = track;
+    TrackPointer trackCopy = pTrack;
     EXPECT_EQ(2, trackCopy.use_count());
-    EXPECT_EQ(2, track.use_count());
+    EXPECT_EQ(2, pTrack.use_count());
     EXPECT_EQ(2, trackWeak.use_count());
 
     trackCopy.reset();
-    EXPECT_EQ(1, track.use_count());
+    EXPECT_EQ(1, pTrack.use_count());
     EXPECT_EQ(1, trackWeak.use_count());
 
     auto trackById = GlobalTrackCacheLocker().lookupTrackById(trackId);
-    EXPECT_EQ(track, trackById);
+    EXPECT_EQ(pTrack, trackById);
     EXPECT_EQ(2, trackById.use_count());
-    EXPECT_EQ(2, track.use_count());
+    EXPECT_EQ(2, pTrack.use_count());
     EXPECT_EQ(2, trackWeak.use_count());
 
     trackById.reset();
     EXPECT_EQ(1, trackWeak.use_count());
-    EXPECT_EQ(track, TrackPointer(trackWeak.lock()));
+    EXPECT_EQ(pTrack, TrackPointer(trackWeak.lock()));
 
-    track.reset();
+    pTrack.reset();
     EXPECT_EQ(0, trackWeak.use_count());
     EXPECT_EQ(TrackPointer(), TrackPointer(trackWeak.lock()));
 
@@ -169,7 +171,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         TrackPointer track;
         {
             auto testFileAccess = mixxx::FileAccess(testFile);
-            GlobalTrackCacheResolver resolver(testFileAccess);
+            auto resolver = GlobalTrackCacheResolver(testFileAccess);
             track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
