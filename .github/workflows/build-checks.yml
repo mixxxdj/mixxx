@@ -54,7 +54,6 @@ jobs:
             -DOPUS=ON \
             -DQTKEYCHAIN=ON \
             -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
             -DKEYFINDER=ON \
             -DLOCALECOMPARE=ON \
             -DMAD=ON \
@@ -84,7 +83,6 @@ jobs:
             -DOPUS=ON \
             -DQTKEYCHAIN=ON \
             -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
             -DKEYFINDER=ON \
             -DLOCALECOMPARE=ON \
             -DMAD=ON \
@@ -116,7 +114,6 @@ jobs:
             -DOPUS=ON \
             -DQTKEYCHAIN=ON \
             -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
             -DKEYFINDER=ON \
             -DLOCALECOMPARE=ON \
             -DMAD=ON \
