@@ -1,13 +1,23 @@
 #include "encoder/encodermp3.h"
 
+#include <lame/lame.h>
 #include <limits.h>
+#include <qbytearrayview.h>
+#include <qobject.h>
+#include <qstringliteral.h>
 
+#include <QByteArray>
 #include <QObject>
 #include <QtDebug>
 
 #include "audio/types.h"
 #include "encoder/encodercallback.h"
 #include "encoder/encodermp3settings.h"
+#include "util/assert.h"
+
+namespace {
+constexpr size_t kHeaderPadding = 10000;
+}
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number
@@ -134,9 +144,39 @@ void EncoderMp3::flush() {
         numBytes = lame_get_lametag_frame(
                 m_lameFlags, m_bufferOut, m_bufferOutSize);
     }
-    // Write the lame/xing header.
+
+    // Ideally, we should shift the file content forward to insert the header
+    // (ID3v2 & Xing frame) dynamically, but `EncoderCallback` doesn't support
+    // that so we use the static header padding and truncate the tracklist if
+    // too long
+    size_t tracklistMaxSize = kHeaderPadding - numBytes -
+            lame_get_id3v2_tag(m_lameFlags, nullptr, 0);
+    auto trackList = getTrackList().join("\n");
+    if (!trackList.isEmpty()) {
+        // Because of the static header size offset, we need to ensure that the
+        // tracklist comment won't make the header overflow on the MP3 frames,
+        // we we truncate to the max value
+        auto currentSize = static_cast<size_t>(trackList.size());
+        if (currentSize > tracklistMaxSize - 1) { // -1 since we need a byte for the NULL terminator
+            trackList = trackList.left(tracklistMaxSize - 4) + "...";
+        }
+        id3tag_set_comment(m_lameFlags, trackList.toLatin1());
+    }
+
+    size_t id3HeaderNumBytes = lame_get_id3v2_tag(m_lameFlags, nullptr, 0);
+    QByteArray id3Buffer(id3HeaderNumBytes, 0);
+
+    DEBUG_ASSERT(lame_get_id3v2_tag(m_lameFlags,
+                         (unsigned char*)id3Buffer.data(),
+                         id3HeaderNumBytes) == id3HeaderNumBytes);
+    DEBUG_ASSERT(id3Buffer.size() + numBytes <= kHeaderPadding);
+
     m_pCallback->seek(0);
-    m_pCallback->write(nullptr, m_bufferOut, 0, static_cast<int>(numBytes));
+    // Write the lame/xing header.
+    m_pCallback->write((const unsigned char*)id3Buffer.constData(),
+            m_bufferOut,
+            static_cast<int>(id3Buffer.size()),
+            static_cast<int>(numBytes));
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
@@ -176,6 +216,10 @@ void EncoderMp3::initStream() {
 
     m_bufferIn[0] = (float *)malloc(m_bufferOutSize * sizeof(float));
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
+
+    // Add a static header padding, which will be filled one termination
+    QByteArray headerPad(kHeaderPadding, 0);
+    m_pCallback->write(nullptr, (unsigned char*)headerPad.constData(), 0, headerPad.size());
 }
 
 int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
@@ -222,6 +266,8 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserE
 
     //ID3 Tag if fields are not NULL
     id3tag_init(m_lameFlags);
+    // ID3 tags will be written manually when flushing the encoder.
+    lame_set_write_id3tag_automatic(m_lameFlags, 0);
     if (!m_metaDataTitle.isEmpty()) {
         id3tag_set_title(m_lameFlags, m_metaDataTitle.toLatin1().constData());
     }
@@ -243,8 +289,15 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserE
     return 0;
 }
 
-void EncoderMp3::updateMetaData(const QString& artist, const QString& title, const QString& album) {
-    m_metaDataTitle = title;
-    m_metaDataArtist = artist;
-    m_metaDataAlbum = album;
+void EncoderMp3::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds timecode) {
+    if (m_bufferOut == nullptr) {
+        m_metaDataTitle = title;
+        m_metaDataArtist = artist;
+        m_metaDataAlbum = album;
+    } else {
+        addToTracklist(artist, title, timecode);
+    }
 }
