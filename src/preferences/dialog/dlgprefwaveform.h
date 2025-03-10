@@ -45,15 +45,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
         slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
-    void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
     void slotSetVisualGainLow(double gain);
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
-    void slotSetNormalizeOverview(bool normalize);
-    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotWaveformMeasured(float frameRate, int droppedFrames);
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
@@ -63,6 +60,11 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
     void slotSetUntilMarkTextHeightLimit(int index);
+    // overview options
+    void slotSetWaveformOverviewType();
+    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
+    void slotSetOverviewScaling(QAbstractButton* b);
+    void slotSetOverviewCustomScaling(double gain);
 
   private:
     void initWaveformControl();
