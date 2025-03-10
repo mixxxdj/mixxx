@@ -4725,7 +4725,9 @@ target_compile_definitions(
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 target_compile_definitions(mixxx-lib PUBLIC rendergraph=rendergraph_gl)
 target_compile_definitions(mixxx-lib PRIVATE allshader=allshader_gl)
-target_compile_definitions(mixxx-test PRIVATE allshader=allshader_gl)
+if(BUILD_TESTING)
+  target_compile_definitions(mixxx-test PRIVATE allshader=allshader_gl)
+endif()
 if(QML)
   target_compile_definitions(
     rendergraph_sg
