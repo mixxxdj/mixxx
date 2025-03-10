@@ -27,7 +27,23 @@ class ClockControl: public EngineControl {
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private:
+    // helper method to update fractional tempo beat indicators
+    void updateFractionalTempoIndicator(double dRate,
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos trackStartPosition,
+            mixxx::audio::FrameDiff_t beatLength,
+            double tempoRatio,
+            std::unique_ptr<ControlObject>& pCOBeatActive);
+
     std::unique_ptr<ControlObject> m_pCOBeatActive;
+
+    // fractional tempo beat active controls
+    std::unique_ptr<ControlObject> m_pCOBeatActiveTempo_0_5;    // half tempo
+    std::unique_ptr<ControlObject> m_pCOBeatActiveTempo_0_666;  // 2/3 tempo
+    std::unique_ptr<ControlObject> m_pCOBeatActiveTempo_0_75;   // 3/4 tempo
+    std::unique_ptr<ControlObject> m_pCOBeatActiveTempo_1_25;   // 5/4 tempo
+    std::unique_ptr<ControlObject> m_pCOBeatActiveTempo_1_333;  // 4/3 tempo
+    std::unique_ptr<ControlObject> m_pCOBeatActiveTempo_1_5;    // 3/2 tempo
 
     // ControlObjects that come from LoopingControl
     std::unique_ptr<ControlProxy> m_pLoopEnabled;
@@ -56,6 +72,20 @@ class ClockControl: public EngineControl {
     };
 
     StateMachine m_internalState;
+
+    // internal states for fractional tempo indicators
+    struct FractionalTempoState {
+        StateMachine state = StateMachine::outsideIndicationArea;
+        mixxx::audio::FramePos prevBeatPosition = mixxx::audio::kInvalidFramePos;
+        mixxx::audio::FramePos nextBeatPosition = mixxx::audio::kInvalidFramePos;
+    };
+
+    FractionalTempoState m_stateTempo_0_5;
+    FractionalTempoState m_stateTempo_0_666;
+    FractionalTempoState m_stateTempo_0_75;
+    FractionalTempoState m_stateTempo_1_25;
+    FractionalTempoState m_stateTempo_1_333;
+    FractionalTempoState m_stateTempo_1_5;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
