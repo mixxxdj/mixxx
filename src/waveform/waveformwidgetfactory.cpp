@@ -71,6 +71,10 @@ const ConfigKey kDefaultZoomKey =
 const ConfigKey kFrameRateKey =
         ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("FrameRate"));
 const ConfigKey kVSyncKey = ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("VSync"));
+const ConfigKey kOverviewCustomGainKey = ConfigKey(
+        QStringLiteral("[Waveform]"), QStringLiteral("overview_custom_gain"));
+const ConfigKey kOverviewScaleModeKey = ConfigKey(
+        QStringLiteral("[Waveform]"), QStringLiteral("overview_scale_mode"));
 
 ConfigKey visualGainKey(int index) {
     return ConfigKey(QStringLiteral("[Waveform]"),
@@ -120,7 +124,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
-          m_overviewNormalized(false),
+          m_overviewScaleMode(OverviewScaleMode::AllGainReplayGain),
+          m_overviewCustomGain(1.0),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
@@ -406,11 +411,28 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         }
     }
 
-    int overviewNormalized = m_config->getValueString(ConfigKey("[Waveform]","OverviewNormalized")).toInt(&ok);
+    // Try to read scale mode or, if doesn't exists, try migrate legacy normalize option
+    int scaleMode = m_config->getValueString(kOverviewScaleModeKey).toInt(&ok);
     if (ok) {
-        setOverviewNormalized(static_cast<bool>(overviewNormalized));
+        setOverviewScaleMode(static_cast<OverviewScaleMode>(scaleMode));
     } else {
-        m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+        bool overviewNormalized = m_config->getValue<bool>(
+                ConfigKey(QStringLiteral("[Waveform]"),
+                        QStringLiteral("OverviewNormalized")),
+                false);
+        if (overviewNormalized) {
+            setOverviewScaleMode(OverviewScaleMode::Normalize);
+        } else {
+            // Else use same gain as scrolling waveforms, OverviewScaleMode::AllGainReplayGain
+            m_config->setValue(kOverviewScaleModeKey, m_overviewScaleMode);
+        }
+    }
+
+    double customGain = m_config->getValueString(kOverviewCustomGainKey).toDouble(&ok);
+    if (ok) {
+        setOverviewCustomGain(customGain);
+    } else {
+        m_config->setValue(kOverviewCustomGainKey, m_overviewCustomGain);
     }
 
     m_playMarkerPosition =
@@ -713,18 +735,44 @@ void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
             m_visualGain[BandIndex::Low],
             m_visualGain[BandIndex::Mid],
             m_visualGain[BandIndex::High]);
+    if (index == BandIndex::AllBand &&
+            m_overviewScaleMode == OverviewScaleMode::AllGainReplayGain) {
+        emit overviewScalingChanged();
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(BandIndex index) const {
     return m_visualGain[index];
 }
 
-void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
-    m_overviewNormalized = normalize;
-    if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+void WaveformWidgetFactory::setOverviewScaleMode(OverviewScaleMode mode) {
+    if (m_overviewScaleMode == mode) {
+        return;
     }
-    emit overviewNormalizeChanged();
+    m_overviewScaleMode = mode;
+    emit overviewScalingChanged();
+}
+
+OverviewScaleMode WaveformWidgetFactory::getOverviewScaleMode() const {
+    return m_overviewScaleMode;
+}
+
+void WaveformWidgetFactory::setOverviewCustomGain(double gain) {
+    VERIFY_OR_DEBUG_ASSERT(gain > 0) {
+        return;
+    }
+    m_overviewCustomGain = gain;
+    if (m_config) {
+        m_config->set(kOverviewCustomGainKey,
+                QString::number(gain));
+    }
+    if (m_overviewScaleMode == OverviewScaleMode::Custom) {
+        emit overviewScalingChanged();
+    }
+}
+
+double WaveformWidgetFactory::getOverviewCustomGain() const {
+    return m_overviewCustomGain;
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
