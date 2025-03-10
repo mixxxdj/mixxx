@@ -78,6 +78,7 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
 * If you are making changes to the GUI with a pull request, please post before and after screenshots of the changes.
 * Please help review other people's pull requests. When others review your pull requests, please return the favor. The continued progress of Mixxx depends on all of us working together. Even if you are not familiar with the area of the code being changed in a pull request, you can be helpful by building the branch, verifying that it works as described, and commenting with feedback about the user experience design.
 * If you demonstrate good coding skills, help review pull requests, contribute major features, and show a commitment to Mixxx over time, we may invite you to the core team.
+* While you are still working on your PR, we ask you to keep it as a draft state till it is ready for review. As you are working on a feature, you should also considering disabling the CI by commenting your PR with `/disable-ci`. Once your PR has reached maturity and is ready for review, you can re-enable it by commenting `/enable-ci`.
 
 ### Core Team
 
