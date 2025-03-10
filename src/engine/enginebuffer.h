@@ -114,6 +114,9 @@ class EngineBuffer : public EngineObject {
     mixxx::audio::ChannelCount getChannelCount() const {
         return m_channelCount;
     }
+    mixxx::audio::FramePos getPlayPos() const {
+        return m_playPos;
+    }
     bool getScratching() const;
     bool isReverse() const;
     /// Returns current bpm value (not thread-safe)
