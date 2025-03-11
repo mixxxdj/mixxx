@@ -141,7 +141,7 @@ WaveformMark::WaveformMark(const QString& group,
 
     if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
-        // color = signalColors.getAxesColor();
+        color = signalColors.getAxesColor();
         qDebug() << "Didn't get mark <Color>:" << color;
     } else {
         color = WSkinColor::getCorrectColor(color);
