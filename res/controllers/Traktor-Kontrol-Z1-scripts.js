@@ -206,7 +206,13 @@ class TraktorZ1Class {
     }
 
     parameterHandler(field) {
-        engine.setParameter(field.group, field.name, field.value / 4095);
+        let value = field.value / 4095;
+        // Crossfader value don't reach boundaries and need safe margins
+        // min: 36 - max: 4083
+        if (field.name === "crossfader") {
+            value = (field.value - 36) / 4047;
+        }
+        engine.setParameter(field.group, field.name, value);
     }
 
     outputHandler(value, group, key) {
