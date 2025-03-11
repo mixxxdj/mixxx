@@ -97,14 +97,22 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMutableMapping = pMapping;
     m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
-std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+QList<LegacyControllerMapping::ScriptFileInfo> BulkController::getMappingScriptFiles() {
     if (!m_pMapping) {
-        return nullptr;
+        return {};
     }
-    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
+    return m_pMapping->getScriptFiles();
+}
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {
@@ -202,7 +210,6 @@ int BulkController::open() {
     }
 #endif
 
-    setOpen(true);
     startEngine();
 
     if (m_pReader != nullptr) {
@@ -223,7 +230,8 @@ int BulkController::open() {
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-
+    applyMapping();
+    setOpen(true);
     return 0;
 }
 

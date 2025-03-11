@@ -61,8 +61,8 @@ DlgPrefController::DlgPrefController(
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
-    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
-    slotShowMapping(pMapping);
+    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->getMapping();
+    showMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
     QString category = m_pController->getCategory();
@@ -103,7 +103,11 @@ DlgPrefController::DlgPrefController(
     connect(this,
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
-            &ControllerManager::slotApplyMapping);
+            &ControllerManager::slotApplyMapping,
+            Qt::BlockingQueuedConnection);
+    // Wait until the mapping has been cloned in the controller thread
+    // and we can continue to edit our copy
+
     // Update GUI
     connect(m_pControllerManager.get(),
             &ControllerManager::mappingApplied,
@@ -193,10 +197,10 @@ void DlgPrefController::showLearningWizard() {
     slotApply();
 
     if (!m_pMapping) {
-        m_pMapping = std::shared_ptr<LegacyControllerMapping>(new LegacyMidiControllerMapping());
+        m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
         emit applyMapping(m_pController, m_pMapping, true);
         // shortcut for creating and assigning required I/O table models
-        slotShowMapping(m_pMapping);
+        showMapping(m_pMapping);
     }
 
     // Note that DlgControllerLearning is set to delete itself on close using
@@ -685,7 +689,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         // the preset combobox.
         enumerateMappings(mappingFilePath);
     }
-    slotShowMapping(pMapping);
+    showMapping(pMapping);
 }
 
 bool DlgPrefController::saveMapping() {
@@ -853,7 +857,7 @@ void DlgPrefController::initTableView(QTableView* pTable) {
     pTable->setAlternatingRowColors(true);
 }
 
-void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
     m_ui.labelLoadedMapping->setText(mappingName(pMapping));
     m_ui.labelLoadedMappingDescription->setText(mappingDescription(pMapping));
     m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(pMapping));

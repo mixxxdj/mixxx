@@ -93,14 +93,23 @@ class FakeController : public Controller {
         }
     }
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override {
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override {
         if (m_pMidiMapping) {
-            return std::make_shared<LegacyMidiControllerMapping>(*m_pMidiMapping);
+            return m_pMidiMapping->getScriptFiles();
         } else if (m_pHidMapping) {
-            return std::make_shared<LegacyHidControllerMapping>(*m_pHidMapping);
+            return m_pHidMapping->getScriptFiles();
         }
-        return nullptr;
-    };
+        return {};
+    }
+
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getSettings();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getSettings();
+        }
+        return {};
+    }
 
     bool isMappable() const override;
 
@@ -120,7 +129,7 @@ class FakeController : public Controller {
         Q_UNUSED(data);
     }
 
-  private slots:
+  private:
     int open() override {
         return 0;
     }
@@ -129,7 +138,6 @@ class FakeController : public Controller {
         return 0;
     }
 
-  private:
     bool m_bMidiMapping;
     bool m_bHidMapping;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
