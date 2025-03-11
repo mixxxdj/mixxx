@@ -95,14 +95,14 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     DigitsRenderNode* m_pDigitsRenderNode{};
 
-    QColor m_playMarkerForegroundColor;
-    QColor m_playMarkerBackgroundColor;
+    QColor m_playMarkerForegroundColor{};
+    QColor m_playMarkerBackgroundColor{};
 
-    bool m_untilMarkShowBeats;
-    bool m_untilMarkShowTime;
-    Qt::Alignment m_untilMarkAlign;
-    int m_untilMarkTextSize;
-    float m_untilMarkTextHeightLimit;
+    bool m_untilMarkShowBeats{false};
+    bool m_untilMarkShowTime{false};
+    Qt::Alignment m_untilMarkAlign{Qt::AlignVCenter};
+    int m_untilMarkTextSize{0};
+    float m_untilMarkTextHeightLimit{0.0};
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
