@@ -146,7 +146,12 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_pTimeRemainingControl(nullptr),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_playPosHeight(0.f),
-          m_playPosDevicePixelRatio(0.f) {
+          m_playPosDevicePixelRatio(0.f),
+          m_untilMarkShowBeats{false},
+          m_untilMarkShowTime(false),
+          m_untilMarkAlign(Qt::AlignVCenter),
+          m_untilMarkTextSize(0),
+          m_untilMarkTextHeightLimit(0.0) {
     {
         auto pNode = std::make_unique<Node>();
         m_pRangeNodesParent = pNode.get();
@@ -171,14 +176,7 @@ allshader::WaveformRenderMark::WaveformRenderMark(
         m_pPlayPosNode->initForRectangles<TextureMaterial>(1);
         appendChildNode(std::move(pNode));
     }
-}
 
-void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
-    DEBUG_ASSERT(false);
-}
-
-void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    ::WaveformRenderMarkBase::setup(node, context);
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkShowBeatsChanged,
@@ -200,6 +198,26 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
             &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
             this,
             &WaveformRenderMark::setUntilMarkTextHeightLimit);
+}
+
+void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
+    DEBUG_ASSERT(false);
+}
+
+void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    ::WaveformRenderMarkBase::setup(node, context);
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+
+    m_untilMarkShowBeats = pWaveformWidgetFactory->getUntilMarkShowBeats();
+    m_untilMarkShowTime = pWaveformWidgetFactory->getUntilMarkShowTime();
+    m_untilMarkAlign = pWaveformWidgetFactory->getUntilMarkAlign();
+
+    m_untilMarkTextSize =
+            pWaveformWidgetFactory->getUntilMarkTextPointSize();
+    m_untilMarkTextHeightLimit =
+            pWaveformWidgetFactory
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
 
     m_playMarkerForegroundColor = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
     m_playMarkerBackgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
