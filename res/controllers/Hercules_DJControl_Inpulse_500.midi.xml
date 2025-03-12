@@ -9,7 +9,6 @@
     </info>
     <controller id="DJControl Inpulse 500">
         <scriptfiles>
-            <!-- <file filename="lodash.mixxx.js" /> -->
             <file filename="midi-components-0.0.js" />
             <file functionprefix="DJCi500" filename="Hercules-DJControl-Inpulse-500-script.js" />
         </scriptfiles>
