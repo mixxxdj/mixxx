@@ -567,36 +567,30 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 }
 
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
-    //kLogger.debug() << "slotAddNewTrack" << trackPath;
+    // kLogger.debug() << "slotAddNewTrack" << trackPath;
     ScopedTimer timer(u"LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
             trackPath,
             false);
-    if (pTrack) {
-        DEBUG_ASSERT(!pTrack->isDirty());
-        // The track's actual location might differ from the
-        // given trackPath
-        const QString trackLocation(pTrack->getLocation());
-        // Acknowledge successful track addition
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackLocation);
-        }
-        // Signal the main instance of TrackDAO, that there is
-        // a new track in the database.
-        emit trackAdded(pTrack);
-        emit progressLoading(trackLocation);
-    } else {
-        // Acknowledge failed track addition
-        // TODO(XXX): Is it really intended to acknowledge a failed
-        // track addition with a trackAdded() signal??
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackPath);
-        }
-        kLogger.warning()
-                << "Failed to add track to library:"
-                << trackPath;
+    if (!pTrack) {
+        // This happens only when there is an issue with the database which
+        // has been logged already. No need for yet another warning here.
+        return;
     }
+
+    DEBUG_ASSERT(!pTrack->isDirty());
+    // The track's actual location might differ from the
+    // given trackPath
+    const QString trackLocation = pTrack->getLocation();
+    // Acknowledge successful track addition
+    if (m_scannerGlobal) {
+        m_scannerGlobal->trackAdded(trackLocation);
+    }
+    // Signal the main instance of TrackDAO, that there is
+    // a new track in the database.
+    emit trackAdded(pTrack);
+    emit progressLoading(trackLocation);
 }
 
 bool LibraryScanner::changeScannerState(ScannerState newState) {
