@@ -147,7 +147,7 @@ DJCi500.vuMeterUpdateMaster = function(value, _group, control) {
     midi.sendShortMsg(0xB0, ctrl, value);
 };
 
-DJCi500.vuMeterPeakLeftMaster = function(value, _group, _control, _status) {
+DJCi500.vuMeterPeakLeftMaster = function(value, _group, _control) {
     if (value) {
         midi.sendShortMsg(0x90, 0x0A, 0x7F);
     } else {
@@ -155,7 +155,7 @@ DJCi500.vuMeterPeakLeftMaster = function(value, _group, _control, _status) {
     }
 };
 
-DJCi500.vuMeterPeakRightMaster = function(value, _group, _control, _status) {
+DJCi500.vuMeterPeakRightMaster = function(value, _group, _control) {
     if (value) {
         midi.sendShortMsg(0x90, 0x0F, 0x7F);
     } else {
@@ -164,7 +164,7 @@ DJCi500.vuMeterPeakRightMaster = function(value, _group, _control, _status) {
 };
 
 // Deck VU Meter callbacks
-DJCi500.vuMeterUpdateDeck = function(value, group, _control, _status) {
+DJCi500.vuMeterUpdateDeck = function(value, group) {
     // Reserve the red led for peak indicator, this will in turn, make
     // the display more similar (I hope) to what Mixxx VU shows
     value = script.absoluteLinInverse(value, 0.0, 1.0, 0, 125);
@@ -175,7 +175,7 @@ DJCi500.vuMeterUpdateDeck = function(value, group, _control, _status) {
     }
 };
 
-DJCi500.vuMeterPeakDeck = function(value, group, _control, _status) {
+DJCi500.vuMeterPeakDeck = function(value, group, _control) {
     let channel = 0x00;
     if (DJCi500.deckA.currentDeck === group) {
         channel = 0x91;
@@ -192,7 +192,7 @@ DJCi500.vuMeterPeakDeck = function(value, group, _control, _status) {
     }
 };
 
-DJCi500.numberIndicator = function(value, group, _control, _status) {
+DJCi500.numberIndicator = function(value, group, _control) {
     if (DJCi500.deckA.currentDeck === group) {
         midi.sendShortMsg(0x91, 0x30, value);
     } else if (DJCi500.deckB.currentDeck === group) {
@@ -1000,13 +1000,13 @@ DJCi500.init = function() {
 
     // Connect the VUMeters
     engine.makeConnection("[Channel1]", "vu_meter", DJCi500.vuMeterUpdateDeck);
-    engine.getValue("[Channel1]", "vu_meter", DJCi500.vuMeterUpdateDeck);
+    engine.getValue("[Channel1]", "vu_meter");
     engine.makeConnection("[Channel2]", "vu_meter", DJCi500.vuMeterUpdateDeck);
-    engine.getValue("[Channel2]", "vu_meter", DJCi500.vuMeterUpdateDeck);
+    engine.getValue("[Channel2]", "vu_meter");
     engine.makeConnection("[Channel3]", "vu_meter", DJCi500.vuMeterUpdateDeck);
-    engine.getValue("[Channel3]", "vu_meter", DJCi500.vuMeterUpdateDeck);
+    engine.getValue("[Channel3]", "vu_meter");
     engine.makeConnection("[Channel4]", "vu_meter", DJCi500.vuMeterUpdateDeck);
-    engine.getValue("[Channel4]", "vu_meter", DJCi500.vuMeterUpdateDeck);
+    engine.getValue("[Channel4]", "vu_meter");
 
     // Deck VU meters peak indicators
     engine.makeConnection("[Channel1]", "peak_indicator", DJCi500.vuMeterPeakDeck);
@@ -1016,13 +1016,13 @@ DJCi500.init = function() {
 
     // Connect number leds
     engine.makeConnection("[Channel1]", "play_indicator", DJCi500.numberIndicator);
-    engine.getValue("[Channel1]", "play_indicator", DJCi500.numberIndicator);
+    engine.getValue("[Channel1]", "play_indicator");
     engine.makeConnection("[Channel2]", "play_indicator", DJCi500.numberIndicator);
-    engine.getValue("[Channel2]", "play_indicator", DJCi500.numberIndicator);
+    engine.getValue("[Channel2]", "play_indicator");
     engine.makeConnection("[Channel3]", "play_indicator", DJCi500.numberIndicator);
-    engine.getValue("[Channel3]", "play_indicator", DJCi500.numberIndicator);
+    engine.getValue("[Channel3]", "play_indicator");
     engine.makeConnection("[Channel4]", "play_indicator", DJCi500.numberIndicator);
-    engine.getValue("[Channel4]", "play_indicator", DJCi500.numberIndicator);
+    engine.getValue("[Channel4]", "play_indicator");
 
     // Connect Master VU meter
     engine.makeConnection("[Main]", "vu_meter_left", DJCi500.vuMeterUpdateMaster);
@@ -1030,8 +1030,8 @@ DJCi500.init = function() {
     engine.makeConnection("[Main]", "peak_indicator_left", DJCi500.vuMeterPeakLeftMaster);
     engine.makeConnection("[Main]", "peak_indicator_right", DJCi500.vuMeterPeakRightMaster);
 
-    engine.getValue("[Main]", "vu_meter_left", DJCi500.vuMeterUpdateMaster);
-    engine.getValue("[Main]", "vu_meter_right", DJCi500.vuMeterUpdateMaster);
+    engine.getValue("[Main]", "vu_meter_left");
+    engine.getValue("[Main]", "vu_meter_right");
 
     // Connect the FX selection leds
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", DJCi500.fxSelIndicator);

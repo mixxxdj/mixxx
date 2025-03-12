@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MixxxMIDIPreset mixxxVersion="2.3" schemaVersion="1">
     <info>
-        <name>Hercules DJControl Inpulse 500 1d</name>
-        <author>DJ Phatso for Hercules Technical Support</author>
+        <name>Hercules DJControl Inpulse 500</name>
+        <author>DJ Phatso, Event1ne and Reset Reboot</author>
         <description>MIDI Preset for Hercules DJControl Inpulse 500</description>
         <wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_500</wiki>
         <forums>https://mixxx.discourse.group/t/hercules-djcontrol-inpulse-500/19739</forums>
     </info>
     <controller id="DJControl Inpulse 500">
         <scriptfiles>
-            <file filename="lodash.mixxx.js" />
+            <!-- <file filename="lodash.mixxx.js" /> -->
             <file filename="midi-components-0.0.js" />
             <file functionprefix="DJCi500" filename="Hercules-DJControl-Inpulse-500-script.js" />
         </scriptfiles>
