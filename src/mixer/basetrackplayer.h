@@ -140,6 +140,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void loadTrackFromGroup(const QString& group);
     void slotLoadTrackFromDeck(double deck);
     void slotLoadTrackFromSampler(double sampler);
+    void slotLoadTrackFromPreviewDeck(double deck);
     void slotTrackColorChangeRequest(double value);
     /// Slot for change signals from up/down controls (relative values)
     void slotTrackRatingChangeRequestRelative(int change);
@@ -181,6 +182,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // Load track from other deck/sampler
     std::unique_ptr<ControlObject> m_pLoadTrackFromDeck;
     std::unique_ptr<ControlObject> m_pLoadTrackFromSampler;
+    std::unique_ptr<ControlObject> m_pLoadTrackFromPreviewDeck;
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;
