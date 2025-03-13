@@ -61,6 +61,9 @@
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectItems</enum>
          </property>
+         <property name="tabKeyNavigation">
+          <bool>false</bool>
+         </property>
          <property name="verticalScrollMode">
           <enum>QAbstractItemView::ScrollPerPixel</enum>
          </property>
