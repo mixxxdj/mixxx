@@ -8,6 +8,9 @@ on:
 
 permissions: {}
 
+env:
+  SYNC_COMMITTER_EMAIL: bot@mixxx.org
+  SYNC_COMMITTER_NAME: Mixxx Bot
 jobs:
   sync-branches:
     strategy:
@@ -21,12 +24,25 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    env:
-      SYNC_COMMITTER: github-actions[bot]
     steps:
+      # Using an app is the recommended way to allow recursive operations.
+      # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
+      # and short lifespan, unlike PAT.
+      # As we are trialing this approach tho, it is fine to play with a PAT and not spend the
+      # extra time setting up an app
+      #
+      # - name: Generate App Token
+      #   id: generate-token-key-pair
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
+      #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
+
       - name: "Check out repository"
         uses: actions/checkout@v4.1.7
         with:
+          # PAT setup with content:write and pull_request:write
+          token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
           persist-credentials: true
 
       - name: "Configure Git"
@@ -39,12 +55,12 @@ jobs:
         run: |
           if git fetch origin "${SYNC_BRANCH}"; then
             echo "Branch ${SYNC_BRANCH} already exists, checking if the branch was modified..."
-            COMMITTER="$(git show --pretty=format:"%cn <%ce>" --no-patch "origin/${SYNC_BRANCH}")"
-            if [ "${COMMITTER}" = "${SYNC_COMMITTER}" ]; then
-              echo "Branch ${SYNC_BRANCH} was not modified."
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            COMMITTER_EMAIL="$(git show --pretty=format:"%ce" --no-patch "origin/${SYNC_BRANCH}")"
+            if [ "${COMMITTER_EMAIL}" = "${SYNC_COMMITTER_EMAIL}" ]; then
+              echo "Branch ${SYNC_BRANCH} was NOT modified."
             else
-              echo "Branch ${SYNC_BRANCH} was modified, either delete it or update it yourself."
-              echo "skip_sync=true" >> $GITHUB_OUTPUT
+              echo "Branch ${SYNC_BRANCH} was modified."
             fi
           else
             echo "Branch ${SYNC_BRANCH} does not exist yet."
@@ -53,26 +69,38 @@ jobs:
           SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
 
       - name: "Merge Changes"
-        if: steps.check_sync.outputs.skip_sync != 'true'
         run: |
-          git checkout -b "${SYNC_BRANCH}"
-          git fetch origin "${TO_BRANCH}"
-          git reset --hard "origin/${TO_BRANCH}"
-          git pull --no-edit origin "${FROM_BRANCH}"
-          COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
-          COMMIT_MERGE="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
-          if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
-            git status
-            echo "No changes (or merge conflict), skipping push and PR creation."
+          echo "::group::Fetching and merging branches"
+          if [ "${BRANCH_EXISTS}" = true ]; then
+            git fetch origin "${SYNC_BRANCH}" "${FROM_BRANCH}"
+            git checkout "${SYNC_BRANCH}"
           else
-            git push --force origin "${SYNC_BRANCH}"
-            gh pr create -B "${FROM_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --labels "sync-branches"
+            git fetch origin "${TO_BRANCH}" "${FROM_BRANCH}"
+            git checkout "origin/${TO_BRANCH}"
+            git checkout -b "${SYNC_BRANCH}"
+          fi
+          git config --global user.email "${SYNC_COMMITTER_EMAIL}"
+          git config --global user.name "${SYNC_COMMITTER_NAME}"
+          git pull --no-edit origin "${FROM_BRANCH}" || true
+          COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
+          COMMIT_MERGE="$(git show --no-patch --format="%h" "origin/${SYNC_BRANCH}")"
+          git status
+          echo "::endgroup::"
+          if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
+            echo "::warning:: No changes (or merge conflict), skipping push and PR creation."
+          else
+            git push origin "${SYNC_BRANCH}"
+            if [ ! "${BRANCH_EXISTS}" = true ]; then
+              gh pr create -B "${FROM_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --labels "sync-branches"
+            fi
           fi
         env:
+          BRANCH_EXISTS: ${{ steps.check_sync.outputs.branch_exists }}
           FROM_BRANCH: ${{ matrix.from_branch}}
           TO_BRANCH: ${{ matrix.to_branch }}
           SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PAT setup with content:write and pull_request:write
+          GITHUB_TOKEN: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
           PULL_REQUEST_TITLE: Merge changes from `${{ matrix.from_branch }}` into `${{ matrix.to_branch }}`
           PULL_REQUEST_BODY: |
             New content has landed in the `${{ matrix.from_branch }}` branch, so let's merge the changes into `${{ matrix.to_branch }}`.
