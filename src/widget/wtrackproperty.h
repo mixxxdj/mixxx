@@ -88,11 +88,14 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     const QString getPropertyStringFromTrack(QString& property) const;
     void restyleAndRepaint();
 
+    void openEditor();
+
     void ensureTrackMenuIsCreated();
     const QString m_group;
     const UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     const bool m_isMainDeck;
+    bool m_isComment;
     TrackPointer m_pCurrentTrack;
 
     QString m_displayProperty;
