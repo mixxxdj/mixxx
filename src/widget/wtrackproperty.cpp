@@ -380,6 +380,11 @@ void WTrackProperty::slotCommitEditorData(const QString& text) {
     const QString trackText = getPropertyStringFromTrack(m_editProperty);
     QString editorText = text;
     if (m_isComment) {
+        // Transform ALL occurrences of \n into linebreaks.
+        // Existing linebreaks are not affected.
+        QString cr(QChar::CarriageReturn);
+        cr.append(QChar::LineFeed);
+        editorText.replace("\\n", cr);
         // For multi-line comments, the editor received only the first line.
         // In order to keep the other lines, we need to replace
         // the first line of the original text with the editor text.
