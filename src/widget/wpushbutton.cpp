@@ -263,7 +263,9 @@ void WPushButton::setPixmap(int iState,
     if (pPixmap.isNull() || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
         if (!source.isEmpty()) {
-            qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
+            qDebug() << metaObject()->className() << objectName()
+                     << "Error loading pixmap" << source.getPath()
+                     << "for state" << iState;
         }
     } else if (mode == Paintable::FIXED) {
         // Set size of widget equal to pixmap size
@@ -280,7 +282,8 @@ void WPushButton::setPixmapBackground(const PixmapSource& source,
     if (!source.isEmpty() &&
             (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WPushButton: Error loading background pixmap:" << source.getPath();
+        qDebug() << metaObject()->className() << objectName()
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 
@@ -461,7 +464,6 @@ bool WPushButton::event(QEvent* e) {
 }
 
 void WPushButton::focusOutEvent(QFocusEvent* e) {
-    qDebug() << "focusOutEvent" << e->reason();
     if (m_bPressed && e->reason() != Qt::MouseFocusReason) {
         // Since we support multi touch there is no reason to reset
         // the pressed flag if the Primary touch point is moved to an
