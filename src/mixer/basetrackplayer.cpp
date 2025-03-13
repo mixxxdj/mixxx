@@ -866,6 +866,24 @@ bool BaseTrackPlayerImpl::isTrackMenuControlAvailable() {
     }
 }
 
+bool BaseTrackPlayerImpl::isTrackCommentEditControlAvailable() {
+    if (m_pTrackCommentEditControl == nullptr) {
+        // Create the control and return true so LegacySkinParser knows it should
+        // connect our signal to WTrackProperty.
+        m_pTrackCommentEditControl = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "edit_track_comment"));
+        qWarning() << "--- created comment edit control for" << getGroup();
+        m_pTrackCommentEditControl->connectValueChangeRequest(
+                this,
+                [this](double value) {
+                    if (value > 0) {
+                        emit trackCommentEditRequest();
+                    }
+                });
+    }
+    return true;
+}
+
 void BaseTrackPlayerImpl::slotSetAndConfirmTrackMenuControl(bool visible) {
     VERIFY_OR_DEBUG_ASSERT(m_pShowTrackMenuControl) {
         return;

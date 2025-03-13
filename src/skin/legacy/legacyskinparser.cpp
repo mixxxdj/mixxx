@@ -1202,6 +1202,16 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
                     &BaseTrackPlayer::slotSetAndConfirmTrackMenuControl,
                     Qt::DirectConnection);
         }
+        // For editing the track comment tag we connect every 'comment' WTrackProperty.
+        // Only the visible one will attempt to open the editor.
+        if (pTrackProperty->isComment() && pPlayer->isTrackCommentEditControlAvailable()) {
+            qWarning() << "--- parser: connect comment edit control for" << group;
+            connect(pPlayer,
+                    &BaseTrackPlayer::trackCommentEditRequest,
+                    pTrackProperty,
+                    &WTrackProperty::slotEditTrackComment,
+                    Qt::DirectConnection);
+        }
     }
 
     // Relay for the label's WTrackMenu (which is created only on demand):

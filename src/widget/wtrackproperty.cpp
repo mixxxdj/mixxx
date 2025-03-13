@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QMetaProperty>
+#include <QRegExp>
 #include <QStyleOption>
 
 #include "control/controlobject.h"
@@ -67,6 +68,7 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
         }
         m_editProperty = m_displayProperty;
         if (m_editProperty == QStringLiteral("comment")) {
+            qWarning() << "--- TrackProp: is comment," << m_group;
             m_isComment = true;
         }
     }
@@ -156,36 +158,7 @@ void WTrackProperty::mousePressEvent(QMouseEvent* pEvent) {
         m_pSelectedClickTimer->callOnTimeout(
                 this, &WTrackProperty::resetSelectedState);
     } else if (m_pSelectedClickTimer->isActive()) {
-        resetSelectedState();
-        // create the persistent editor, populate & connect
-        if (!m_pEditor) {
-            m_pEditor = make_parented<WTrackPropertyEditor>(this);
-            connect(m_pEditor,
-                    // use custom signal. editingFinished() doesn't suit since it's
-                    // also emitted weh pressing Esc (which should cancel editing)
-                    &WTrackPropertyEditor::commitEditorData,
-                    this,
-                    &WTrackProperty::slotCommitEditorData);
-        }
-        // Don't let the editor expand beyond its initial size
-        m_pEditor->setFixedSize(size());
-
-        QString editText = getPropertyStringFromTrack(m_editProperty);
-        if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
-            editText = tr("title");
-        } else if (m_isComment) {
-            // For comments we only load the first line,
-            // ie. truncate track text at first linebreak.
-            // On commit we replace the first line with the edited text.
-            int firstLB = editText.indexOf('\n');
-            if (firstLB >= 0) {
-                editText.truncate(firstLB);
-            }
-        }
-        m_pEditor->setText(editText);
-        m_pEditor->selectAll();
-        m_pEditor->show();
-        m_pEditor->setFocus();
+        openEditor();
         return;
     }
     // start timer
@@ -322,6 +295,52 @@ void WTrackProperty::slotShowTrackMenuChangeRequest(bool show) {
             QPoint(),
             mapToGlobal(rect().center()));
     contextMenuEvent(pEvent);
+}
+
+void WTrackProperty::slotEditTrackComment() {
+    VERIFY_OR_DEBUG_ASSERT(m_isComment) {
+        return;
+    }
+    openEditor();
+}
+
+void WTrackProperty::openEditor() {
+    if (!m_pCurrentTrack || !isVisible()) {
+        return;
+    }
+
+    // Note: if the editor is already visible, this will
+    // reload/reset the comment from the track
+    resetSelectedState();
+    // create the persistent editor, populate & connect
+    if (!m_pEditor) {
+        m_pEditor = make_parented<WTrackPropertyEditor>(this);
+        connect(m_pEditor,
+                // use custom signal. editingFinished() doesn't suit since it's
+                // also emitted weh pressing Esc (which should cancel editing)
+                &WTrackPropertyEditor::commitEditorData,
+                this,
+                &WTrackProperty::slotCommitEditorData);
+    }
+    // Don't let the editor expand beyond its initial size
+    m_pEditor->setFixedSize(size());
+
+    QString editText = getPropertyStringFromTrack(m_editProperty);
+    if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
+        editText = tr("title");
+    } else if (m_isComment) {
+        // For comments we only load the first line,
+        // ie. truncate track text at first linebreak.
+        // On commit we replace the first line with the edited text.
+        int firstLB = editText.indexOf('\n');
+        if (firstLB >= 0) {
+            editText.truncate(firstLB);
+        }
+    }
+    m_pEditor->setText(editText);
+    m_pEditor->selectAll();
+    m_pEditor->show();
+    m_pEditor->setFocus();
 }
 
 void WTrackProperty::slotCommitEditorData(const QString& text) {
