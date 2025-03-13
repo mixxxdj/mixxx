@@ -91,7 +91,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void clear();
     void init();
 
-    mixxx::UpdateResult updateKeyText();
+    void updateKeyText();
     void displayKeyText();
 
     void updateFromTrack(const Track& track);

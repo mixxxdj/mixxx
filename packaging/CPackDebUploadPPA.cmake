@@ -123,10 +123,10 @@ if(DEB_BUILD)
 endif()
 
 foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
-  if(release STREQUAL "bionic")
-    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libmp4v2-dev,")
+  if(release STREQUAL "jammy")
+    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libqt6shadertools6-dev,")
   else()
-    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavformat-dev,")
+    set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "qt6-shadertools-dev,")
   endif()
 
   configure_file(

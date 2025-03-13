@@ -224,9 +224,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(m_recordedDuration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(m_recordedDuration % 60, 2, 10, QChar('0')); // seconds
 }
 
 void EngineRecord::writeCueLine() {

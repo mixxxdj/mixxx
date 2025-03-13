@@ -64,7 +64,12 @@ function(fatal_error_missing_env)
       )
     endif()
   elseif(APPLE AND NOT IOS)
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+      message(
+        FATAL_ERROR
+        "Did you build the Mixxx build environment as described here: https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64?"
+      )
+    elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
         FATAL_ERROR
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`"
@@ -75,11 +80,24 @@ function(fatal_error_missing_env)
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh` or `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`(includes Debug)?"
       )
     endif()
-  elseif(LINUX)
-    message(
-      FATAL_ERROR
-      "Did you install the Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh` or the equivalent packages using your package manager?"
-    )
+  elseif(UNIX AND NOT APPLE)
+    # Linux, BSD, Solaris, Minix
+    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+      message(
+        FATAL_ERROR
+        "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    elseif(EXISTS "/etc/redhat-release") # exists also on Fedora Mageia Madndriva Alma CentOS
+      message(
+        FATAL_ERROR
+        "Did you install the required RPM dev packages via `${CMAKE_SOURCE_DIR}/tools/rpm_buildenv.sh`?"
+      )
+    else()
+      message(
+        FATAL_ERROR
+        "Did you install the equivalent dev packages listed in `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    endif()
   elseif(DEFINED VCPKG_TARGET_TRIPLET)
     message(
       FATAL_ERROR
@@ -103,16 +121,16 @@ endif()
 
 if(DEFINED MIXXX_VCPKG_ROOT)
   if(
-    EXISTS "$ENV{MIXXX_VCPKG_ROOT}/overlay/ports"
-    OR NOT EXISTS "$ENV{MIXXX_VCPKG_ROOT}/ports"
+    EXISTS "${MIXXX_VCPKG_ROOT}/overlay/ports"
+    OR NOT EXISTS "${MIXXX_VCPKG_ROOT}/ports"
   )
     # MIXXX_VCPKG_ROOT points to our vcpkg environment
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
-    message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
+    message(STATUS "Using MIXXX_VCPKG_ROOT: ${MIXXX_VCPKG_ROOT}")
   else()
     message(
       STATUS
-      "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)"
+      "MIXXX_VCPKG_ROOT not correct (missing ${MIXXX_VCPKG_ROOT}/overlay/ports)"
     )
     fatal_error_missing_env()
   endif()
@@ -1206,6 +1224,7 @@ add_library(
   src/library/itunes/itunesfeature.cpp
   src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
+  src/library/itunes/itunestrackmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
@@ -1510,11 +1529,13 @@ add_library(
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
+  src/widget/hotcuedrag.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
+  src/widget/wcollapsiblegroupbox.cpp
   src/widget/wcolorpicker.cpp
   src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
@@ -1553,6 +1574,7 @@ add_library(
   src/widget/wnumberrate.cpp
   src/widget/woverview.cpp
   src/widget/wpixmapstore.cpp
+  src/widget/wplaybutton.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
   src/widget/wstarratingaction.cpp
@@ -1560,6 +1582,7 @@ add_library(
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
+  src/widget/wsettingscheckboxlabel.cpp
   src/widget/wsingletoncontainer.cpp
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
@@ -1848,6 +1871,19 @@ if(APPLE)
       mixxx-lib
       PRIVATE src/soundio/soundmanagerios.mm src/util/screensaverios.mm
     )
+
+    option(IOS_ITUNES_LIBRARY "Native iOS music library integration" ON)
+    if(IOS_ITUNES_LIBRARY)
+      target_sources(
+        mixxx-lib
+        PRIVATE
+          src/library/itunes/itunesiosassetexporter.mm
+          src/library/itunes/itunesiosimporter.mm
+          src/library/itunes/itunesiostrackresolver.cpp
+      )
+      target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+      target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
+    endif()
   else()
     target_sources(mixxx-lib PRIVATE src/util/darkappearance.mm)
 
@@ -2385,144 +2421,214 @@ endif()
 # Tests
 #
 
-add_executable(
-  mixxx-test
-  src/test/analyserwaveformtest.cpp
-  src/test/analyzersilence_test.cpp
-  src/test/audiotaperpot_test.cpp
-  src/test/autodjprocessor_test.cpp
-  src/test/beatgridtest.cpp
-  src/test/beatmaptest.cpp
-  src/test/beatstest.cpp
-  src/test/beatstranslatetest.cpp
-  src/test/bpmtest.cpp
-  src/test/bpmcontrol_test.cpp
-  src/test/broadcastprofile_test.cpp
-  src/test/broadcastsettings_test.cpp
-  src/test/cache_test.cpp
-  src/test/channelhandle_test.cpp
-  src/test/chrono_clock_resolution_test.cpp
-  src/test/colorconfig_test.cpp
-  src/test/colormapperjsproxy_test.cpp
-  src/test/colorpalette_test.cpp
-  src/test/configobject_test.cpp
-  src/test/controller_mapping_validation_test.cpp
-  src/test/controller_mapping_settings_test.cpp
-  src/test/controllers/controller_columnid_regression_test.cpp
-  src/test/controllerscriptenginelegacy_test.cpp
-  src/test/controlobjecttest.cpp
-  src/test/controlobjectaliastest.cpp
-  src/test/controlobjectscripttest.cpp
-  src/test/controlpotmetertest.cpp
-  src/test/coreservicestest.cpp
-  src/test/coverartcache_test.cpp
-  src/test/coverartutils_test.cpp
-  src/test/cratestorage_test.cpp
-  src/test/cue_test.cpp
-  src/test/cuecontrol_test.cpp
-  src/test/dbconnectionpool_test.cpp
-  src/test/dbidtest.cpp
-  src/test/directorydaotest.cpp
-  src/test/duration_test.cpp
-  src/test/durationutiltest.cpp
-  #TODO: write useful tests for refactored effects system
-  #src/test/effectchainslottest.cpp
-  src/test/enginebufferscalelineartest.cpp
-  src/test/enginebuffertest.cpp
-  src/test/engineeffectsdelay_test.cpp
-  src/test/enginefilterbiquadtest.cpp
-  src/test/enginemixertest.cpp
-  src/test/enginemicrophonetest.cpp
-  src/test/enginesynctest.cpp
-  src/test/fileinfo_test.cpp
-  src/test/frametest.cpp
-  src/test/globaltrackcache_test.cpp
-  src/test/hotcuecontrol_test.cpp
-  src/test/imageutils_test.cpp
-  src/test/indexrange_test.cpp
-  src/test/itunesxmlimportertest.cpp
-  src/test/keyfactorytest.cpp
-  src/test/keyutilstest.cpp
-  src/test/lcstest.cpp
-  src/test/learningutilstest.cpp
-  src/test/libraryscannertest.cpp
-  src/test/librarytest.cpp
-  src/test/looping_control_test.cpp
-  src/test/main.cpp
-  src/test/mathutiltest.cpp
-  src/test/metadatatest.cpp
-  #TODO: make this build again
-  #src/test/metaknob_link_test.cpp
-  src/test/midicontrollertest.cpp
-  src/test/mixxxtest.cpp
-  src/test/mock_networkaccessmanager.cpp
-  src/test/movinginterquartilemean_test.cpp
-  src/test/musicbrainzrecordingstasktest.cpp
-  src/test/nativeeffects_test.cpp
-  src/test/performancetimer_test.cpp
-  src/test/playcountertest.cpp
-  src/test/playermanagertest.cpp
-  src/test/playlisttest.cpp
-  src/test/portmidicontroller_test.cpp
-  src/test/portmidienumeratortest.cpp
-  src/test/queryutiltest.cpp
-  src/test/rangelist_test.cpp
-  src/test/readaheadmanager_test.cpp
-  src/test/replaygaintest.cpp
-  src/test/rescalertest.cpp
-  src/test/rgbcolor_test.cpp
-  src/test/rotary_test.cpp
-  src/test/ringdelaybuffer_test.cpp
-  src/test/samplebuffertest.cpp
-  src/test/sampleutiltest.cpp
-  src/test/schemamanager_test.cpp
-  src/test/searchqueryparsertest.cpp
-  src/test/seratobeatgridtest.cpp
-  src/test/seratomarkerstest.cpp
-  src/test/seratomarkers2test.cpp
-  src/test/seratotagstest.cpp
-  src/test/signalpathtest.cpp
-  src/test/skincontext_test.cpp
-  src/test/softtakeover_test.cpp
-  src/test/soundproxy_test.cpp
-  src/test/soundsourceproviderregistrytest.cpp
-  src/test/sqliteliketest.cpp
-  src/test/synccontroltest.cpp
-  src/test/synctrackmetadatatest.cpp
-  src/test/tableview_test.cpp
-  src/test/taglibtest.cpp
-  src/test/trackdao_test.cpp
-  src/test/trackexport_test.cpp
-  src/test/trackmetadata_test.cpp
-  src/test/trackmetadataexport_test.cpp
-  src/test/tracknumberstest.cpp
-  src/test/trackreftest.cpp
-  src/test/trackupdate_test.cpp
-  src/test/uuid_test.cpp
-  src/test/wbatterytest.cpp
-  src/test/wpushbutton_test.cpp
-  src/test/wwidgetstack_test.cpp
-  src/test/waveform_upgrade_test.cpp
-  src/util/moc_included_test.cpp
-  src/test/helpers/log_test.cpp
-)
-if(QML)
-  target_sources(
-    mixxx-test
-    PRIVATE
-      src/test/controller_mapping_file_handler_test.cpp
-      src/test/controllerrenderingengine_test.cpp
-  )
+find_package(GTest CONFIG)
+default_option(BUILD_TESTING "Build with Unittests" "GTest_FOUND")
+if(BUILD_TESTING)
+  if(GTest_FOUND)
+    message(STATUS "Found GTest: Unittests enabled")
+  else()
+    message(FATAL_ERROR "GTest: not found")
+  endif()
 endif()
-find_package(GTest CONFIG REQUIRED)
-set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(
-  mixxx-test
-  PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
-)
 
 find_package(benchmark)
-target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
+default_option(BUILD_BENCH "Build mixxx-benchmark" "benchmark_FOUND")
+if(BUILD_BENCH AND BUILD_TESTING)
+  if(benchmark_FOUND)
+    message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
+  else()
+    message(FATAL_ERROR "google-benchmark: not found")
+  endif()
+elseif(BUILD_BENCH AND NOT BUILD_TESTING)
+  message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
+endif()
+
+if(BUILD_TESTING)
+  set(
+    src-mixxx-test
+    src/test/analyserwaveformtest.cpp
+    src/test/analyzersilence_test.cpp
+    src/test/audiotaperpot_test.cpp
+    src/test/autodjprocessor_test.cpp
+    src/test/beatgridtest.cpp
+    src/test/beatmaptest.cpp
+    src/test/beatstest.cpp
+    src/test/beatstranslatetest.cpp
+    src/test/borrowabletest.cpp
+    src/test/bpmtest.cpp
+    src/test/bpmcontrol_test.cpp
+    src/test/broadcastprofile_test.cpp
+    src/test/broadcastsettings_test.cpp
+    src/test/cache_test.cpp
+    src/test/channelhandle_test.cpp
+    src/test/chrono_clock_resolution_test.cpp
+    src/test/colorconfig_test.cpp
+    src/test/colormapperjsproxy_test.cpp
+    src/test/colorpalette_test.cpp
+    src/test/configobject_test.cpp
+    src/test/controller_mapping_validation_test.cpp
+    src/test/controller_mapping_settings_test.cpp
+    src/test/controllers/controller_columnid_regression_test.cpp
+    src/test/controllerscriptenginelegacy_test.cpp
+    src/test/controlobjecttest.cpp
+    src/test/controlobjectaliastest.cpp
+    src/test/controlobjectscripttest.cpp
+    src/test/controlpotmetertest.cpp
+    src/test/coreservicestest.cpp
+    src/test/coverartcache_test.cpp
+    src/test/coverartutils_test.cpp
+    src/test/cratestorage_test.cpp
+    src/test/cue_test.cpp
+    src/test/cuecontrol_test.cpp
+    src/test/dbconnectionpool_test.cpp
+    src/test/dbidtest.cpp
+    src/test/directorydaotest.cpp
+    src/test/duration_test.cpp
+    src/test/durationutiltest.cpp
+    #TODO: write useful tests for refactored effects system
+    #src/test/effectchainslottest.cpp
+    src/test/enginebufferscalelineartest.cpp
+    src/test/enginebuffertest.cpp
+    src/test/enginefilterbiquadtest.cpp
+    src/test/enginemixertest.cpp
+    src/test/enginemicrophonetest.cpp
+    src/test/enginesynctest.cpp
+    src/test/fileinfo_test.cpp
+    src/test/frametest.cpp
+    src/test/globaltrackcache_test.cpp
+    src/test/hotcuecontrol_test.cpp
+    src/test/hotcueorderbyposition_test.cpp
+    src/test/imageutils_test.cpp
+    src/test/indexrange_test.cpp
+    src/test/itunesxmlimportertest.cpp
+    src/test/keyfactorytest.cpp
+    src/test/keyutilstest.cpp
+    src/test/lcstest.cpp
+    src/test/learningutilstest.cpp
+    src/test/libraryscannertest.cpp
+    src/test/librarytest.cpp
+    src/test/looping_control_test.cpp
+    src/test/main.cpp
+    src/test/mathutiltest.cpp
+    src/test/metadatatest.cpp
+    #TODO: make this build again
+    #src/test/metaknob_link_test.cpp
+    src/test/midicontrollertest.cpp
+    src/test/mixxxtest.cpp
+    src/test/mock_networkaccessmanager.cpp
+    src/test/musicbrainzrecordingstasktest.cpp
+    src/test/performancetimer_test.cpp
+    src/test/playcountertest.cpp
+    src/test/playermanagertest.cpp
+    src/test/playlisttest.cpp
+    src/test/portmidicontroller_test.cpp
+    src/test/portmidienumeratortest.cpp
+    src/test/queryutiltest.cpp
+    src/test/rangelist_test.cpp
+    src/test/readaheadmanager_test.cpp
+    src/test/replaygaintest.cpp
+    src/test/rescalertest.cpp
+    src/test/rgbcolor_test.cpp
+    src/test/rotary_test.cpp
+    src/test/samplebuffertest.cpp
+    src/test/schemamanager_test.cpp
+    src/test/searchqueryparsertest.cpp
+    src/test/seratobeatgridtest.cpp
+    src/test/seratomarkerstest.cpp
+    src/test/seratomarkers2test.cpp
+    src/test/seratotagstest.cpp
+    src/test/signalpathtest.cpp
+    src/test/skincontext_test.cpp
+    src/test/softtakeover_test.cpp
+    src/test/soundproxy_test.cpp
+    src/test/soundsourceproviderregistrytest.cpp
+    src/test/sqliteliketest.cpp
+    src/test/synccontroltest.cpp
+    src/test/synctrackmetadatatest.cpp
+    src/test/tableview_test.cpp
+    src/test/taglibtest.cpp
+    src/test/trackdao_test.cpp
+    src/test/trackexport_test.cpp
+    src/test/trackmetadata_test.cpp
+    src/test/trackmetadataexport_test.cpp
+    src/test/tracknumberstest.cpp
+    src/test/trackreftest.cpp
+    src/test/trackupdate_test.cpp
+    src/test/uuid_test.cpp
+    src/test/wbatterytest.cpp
+    src/test/wpushbutton_test.cpp
+    src/test/wwidgetstack_test.cpp
+    src/util/moc_included_test.cpp
+    src/test/helpers/log_test.cpp
+  )
+  if(BUILD_BENCH)
+    set(
+      src-mixxx-test
+      ${src-mixxx-test}
+      src/test/engineeffectsdelay_test.cpp
+      src/test/movinginterquartilemean_test.cpp
+      src/test/nativeeffects_test.cpp
+      src/test/ringdelaybuffer_test.cpp
+      src/test/sampleutiltest.cpp
+      src/test/waveform_upgrade_test.cpp
+    )
+  endif()
+
+  add_executable(mixxx-test ${src-mixxx-test})
+
+  if(QML)
+    target_sources(
+      mixxx-test
+      PRIVATE
+        src/test/controller_mapping_file_handler_test.cpp
+        src/test/controllerrenderingengine_test.cpp
+    )
+  endif()
+
+  set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+  target_link_libraries(
+    mixxx-test
+    PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
+  )
+
+  if(BUILD_BENCH)
+    add_compile_definitions(USE_BENCH)
+    target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
+  endif()
+
+  # Test Suite
+  include(CTest)
+  include(GoogleTest)
+  enable_testing()
+  gtest_add_tests(
+    TARGET mixxx-test
+    EXTRA_ARGS --logLevel info
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    TEST_LIST testsuite
+  )
+
+  if(NOT WIN32)
+    # Default to offscreen rendering during tests.
+    # This is required if the build system like Fedora koji/mock does not
+    # allow to pass environment variables into the ctest macro expansion.
+    set_tests_properties(
+      ${testsuite}
+      PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+    )
+  endif()
+
+  if(BUILD_BENCH)
+    # Benchmarking
+    add_custom_target(
+      mixxx-benchmark
+      COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+      COMMENT "Mixxx Benchmarks"
+      VERBATIM
+    )
+    add_dependencies(mixxx-benchmark mixxx-test)
+  endif()
+endif() # BUILD_TESTING
 
 #
 # Resources
@@ -2569,8 +2675,10 @@ endif()
 
 target_sources(mixxx PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx PROPERTIES AUTORCC ON)
-target_sources(mixxx-test PRIVATE res/mixxx.qrc)
-set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
+if(BUILD_TESTING)
+  target_sources(mixxx-test PRIVATE res/mixxx.qrc)
+  set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
+endif()
 
 if(MIXXX_VERSION_PRERELEASE STREQUAL "")
   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}")
@@ -2697,7 +2805,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.22.1)
+  set(LIBDJINTEROP_VERSION 0.24.3)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2760,7 +2868,7 @@ if(ENGINEPRIME)
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
       URL_HASH
-        SHA256=e811158d42c3864f5b682bcf76e0af78278050439d82d14d592dd0a391da6b20
+        SHA256=df41fe39bed9d16d27a3649d237b68edd2cdb6fc71a82cae5cd746d4e4ef6578
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2815,6 +2923,13 @@ if(ENGINEPRIME)
         IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
     )
     add_dependencies(mixxx-libdjinterop libdjinterop)
+    # Add the local include directory explicitly before linking the library
+    # to make sure not the system provided headers are used
+    target_include_directories(
+      mixxx-lib
+      BEFORE
+      PRIVATE "${DJINTEROP_INSTALL_DIR}/include"
+    )
     target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
   endif()
 
@@ -2880,7 +2995,7 @@ if(KEYFINDER)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
     # If KeyFinder is built statically, we need FFTW
-    find_package(FFTW REQUIRED)
+    find_package(FFTW3 REQUIRED)
     set(
       KeyFinder_INSTALL_DIR
       "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install"
@@ -2959,7 +3074,7 @@ if(KEYFINDER)
       PROPERTIES
         IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}"
     )
-    target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
+    target_link_libraries(mixxx-keyfinder INTERFACE FFTW3::fftw3)
     target_include_directories(
       mixxx-keyfinder
       INTERFACE "${KeyFinder_INSTALL_DIR}/include"
@@ -3183,6 +3298,16 @@ if(QT_EXTRA_COMPONENTS)
 endif()
 
 if(QML)
+  if(QT_KNOWN_POLICY_QTP0004)
+    # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
+    # OLD (Qt < 6.8) requires to import qml modules with a folder e.g.:
+    # fragmentShader: "qrc:/shaders/rgbsignal_qml.frag.qsb"
+    # For using NEW, we need to back-port:
+    # https://github.com/qt/qtdeclarative/commit/6314d305ee0d9064ca848980ef2dab1793c191b8
+    # until Qt 6.8 lands in all supported distros
+    qt6_policy(SET QTP0004 OLD)
+  endif()
+
   add_subdirectory(res/shaders)
 
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
@@ -3248,6 +3373,7 @@ if(QML)
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
+      res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
   target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
@@ -3273,6 +3399,21 @@ if(QML)
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlwaveformoverview.cpp
       src/qml/qmlmixxxcontrollerscreen.cpp
+      src/qml/qmlwaveformdisplay.cpp
+      src/qml/qmlwaveformrenderer.cpp
+      src/waveform/renderers/allshader/digitsrenderer.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/renderers/allshader/waveformrendererslipmode.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererhsv.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
       # The following sources need to be in this target to get QML_ELEMENT properly interpreted
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
@@ -3346,6 +3487,15 @@ if(Qt_IS_STATIC)
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
   )
 
+  if(NOT IOS)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE
+        # network plugins
+        Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+    )
+  endif()
+
   if(EMSCRIPTEN)
     target_link_libraries(
       mixxx-lib
@@ -3364,10 +3514,19 @@ if(Qt_IS_STATIC)
   if(WIN32)
     target_link_libraries(
       mixxx-lib
-      PRIVATE
-        Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
-        Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      PRIVATE Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
     )
+    if(QT_VERSION VERSION_LESS 6.7)
+      target_link_libraries(
+        mixxx-lib
+        PRIVATE Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+      )
+    else()
+      target_link_libraries(
+        mixxx-lib
+        PRIVATE Qt${QT_VERSION_MAJOR}::QModernWindowsStylePlugin
+      )
+    endif()
   endif()
 
   if(APPLE)
@@ -3432,19 +3591,21 @@ else()
         applocal
     )
 
+    if(NOT IOS)
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}/tls"
+          COMPONENT
+          applocal
+      )
+    endif()
+
     if(QML)
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::LabsQmlModels
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickControls2
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
@@ -3472,15 +3633,6 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickTemplates2
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
@@ -3587,14 +3739,25 @@ else()
           COMPONENT
           applocal
       )
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}/styles"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}/styles"
+            COMPONENT
+            applocal
+        )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QModernWindowsStylePlugin
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}/styles"
+            COMPONENT
+            applocal
+        )
+      endif()
     endif()
     if(APPLE)
       install(
@@ -4167,14 +4330,16 @@ if(STEM)
     message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-  target_compile_definitions(mixxx-test PUBLIC __STEM__)
-  target_sources(
-    mixxx-test
-    PUBLIC
-      src/test/stemtest.cpp
-      src/test/steminfotest.cpp
-      src/test/stemcontrolobjecttest.cpp
-  )
+  if(BUILD_TESTING)
+    target_compile_definitions(mixxx-test PUBLIC __STEM__)
+    target_sources(
+      mixxx-test
+      PUBLIC
+        src/test/stemtest.cpp
+        src/test/steminfotest.cpp
+        src/test/stemcontrolobjecttest.cpp
+    )
+  endif()
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
   target_sources(
     mixxx-lib
@@ -4193,44 +4358,19 @@ if(STEM)
   endif()
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
-    target_sources(mixxx-qml-lib PRIVATE src/qml/qmlstemsmodel.cpp)
+    target_sources(
+      mixxx-qml-lib
+      PRIVATE
+        src/waveform/renderers/allshader/waveformrendererstem.cpp
+        src/qml/qmlstemsmodel.cpp
+    )
   endif()
 endif()
-
-# Test Suite
-include(CTest)
-include(GoogleTest)
-enable_testing()
-gtest_add_tests(
-  TARGET mixxx-test
-  EXTRA_ARGS --logLevel info
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  TEST_LIST testsuite
-)
-if(NOT WIN32)
-  # Default to offscreen rendering during tests.
-  # This is required if the build system like Fedora koji/mock does not
-  # allow to pass environment variables into the ctest macro expansion.
-  set_tests_properties(
-    ${testsuite}
-    PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-  )
-endif()
-
-# Benchmarking
-add_custom_target(
-  mixxx-benchmark
-  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMENT "Mixxx Benchmarks"
-  VERBATIM
-)
-add_dependencies(mixxx-benchmark mixxx-test)
 
 # Google PerfTools
 option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
-if(GPERFTOOLS OR GPERFTOOLSPROFILER)
+if((BUILD_BENCH) AND (GPERFTOOLS OR GPERFTOOLSPROFILER))
   find_package(GPerfTools REQUIRED)
   if(GPERFTOOLS)
     target_link_libraries(mixxx-lib PRIVATE GPerfTools::tcmalloc)
@@ -4292,7 +4432,9 @@ if(LILV)
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
   target_link_libraries(mixxx-lib PRIVATE lilv::lilv)
-  target_link_libraries(mixxx-test PRIVATE lilv::lilv)
+  if(BUILD_TESTING)
+    target_link_libraries(mixxx-test PRIVATE lilv::lilv)
+  endif()
 endif()
 
 # Live Broadcasting (Shoutcast)
@@ -4377,7 +4519,9 @@ if(OPUS)
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
-  target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+  if(BUILD_TESTING)
+    target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+  endif()
 endif()
 
 # MAD MP3 Decoder
@@ -4573,7 +4717,27 @@ if(VINYLCONTROL)
 endif()
 
 # rendergraph
-add_subdirectory(src/rendergraph/opengl)
+add_subdirectory(src/rendergraph)
+target_compile_definitions(
+  rendergraph_gl
+  PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+)
+target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
+target_compile_definitions(mixxx-lib PUBLIC rendergraph=rendergraph_gl)
+target_compile_definitions(mixxx-lib PRIVATE allshader=allshader_gl)
+if(BUILD_TESTING)
+  target_compile_definitions(mixxx-test PRIVATE allshader=allshader_gl)
+endif()
+if(QML)
+  target_compile_definitions(
+    rendergraph_sg
+    PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+  )
+  target_link_libraries(mixxx-qml-lib PRIVATE rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE __SCENEGRAPH__)
+  target_compile_definitions(mixxx-qml-lib PRIVATE allshader=allshader_sg)
+endif()
 
 # WavPack audio file support
 find_package(wavpack)
@@ -4594,7 +4758,9 @@ target_precompile_headers(
   mixxx-lib
   PUBLIC ${MIXXX_LIB_PRECOMPILED_HEADER} ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
-target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+if(BUILD_TESTING)
+  target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+endif()
 
 # Configure file with build options
 file(
@@ -4643,6 +4809,11 @@ set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+if(QT6)
+  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-translations-l10n")
+else()
+  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qttranslations5-l10n")
+endif()
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 if(QT6)
@@ -4705,7 +4876,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy mantic noble oracular)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy noble oracular plucky)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

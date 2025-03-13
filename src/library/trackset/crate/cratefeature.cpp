@@ -70,7 +70,6 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
-    m_pRenameCrateAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,

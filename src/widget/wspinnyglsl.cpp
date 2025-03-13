@@ -175,14 +175,14 @@ void WSpinnyGLSL::initializeGL() {
     m_vinylQualityShader.init();
 }
 
-void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
+void WSpinnyGLSL::drawTexture(QOpenGLTexture* pTexture) {
     const float texx1 = 0.f;
     const float texy1 = 1.0;
     const float texx2 = 1.f;
     const float texy2 = 0.f;
 
-    const float tw = texture->width();
-    const float th = texture->height();
+    const float tw = pTexture->width();
+    const float th = pTexture->height();
 
     // fill centered
     const float posx2 = tw >= th ? 1.f : tw / th;
@@ -201,11 +201,11 @@ void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray.data(), 2);
 
-    texture->bind();
+    pTexture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    texture->release();
+    pTexture->release();
 }
 
 void WSpinnyGLSL::drawVinylQuality() {

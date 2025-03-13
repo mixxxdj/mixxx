@@ -96,8 +96,109 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2024-12-23" timestamp="1734951567">
+    <release version="2.6.0" type="development" date="2025-02-25" timestamp="1740515661">
       <description>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   fix: sync rate using the current BPM instead of the file one
+   #13671
+   #12738
+  </li>
+  <li>
+   fix: prevent null CO access when cloning sampler or preview
+   #13740
+  </li>
+  <li>
+   Tooltips: fix cue mode setting location
+   #14045
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   (fix) Sound preferences: don't set m_settingsModified in update slots
+   #13450
+  </li>
+  <li>
+   Track Search Preferences: Fix accidental use of wrong preference controls
+   #13592
+  </li>
+  <li>
+   (fix) Pref Mixer: fix crossader graph
+   #13848
+  </li>
+  <li>
+   Make extended controller information available for device selection
+   #13896
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   LegacySkinParser: Short-circuit if template fails to open
+   #13488
+  </li>
+  <li>
+   Update waveforms_container.xml
+   #13501
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   feat: static color coding for key column
+   #13390
+  </li>
+  <li>
+   fix: Key text is elided from left, should be right
+   #13475
+  </li>
+  <li>
+   Add Key Color Palettes
+   #13497
+  </li>
+  <li>
+   Fix BPM and Bitrate columns were wider than normal
+   #13571
+  </li>
+  <li>
+   Track Info dialogs: move metadata buttons below color picker
+   #13632
+  </li>
+  <li>
+   CmdlineArgs: Add
+   --rescan-library
+   for rescanning on startup
+   #13661
+  </li>
+  <li>
+   Track menu, purge: allow to hide further success popups in the current session
+   #13807
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   Compressor effect: Adjust Makeup Time constant calculation
+   #13261
+   #13237
+  </li>
+  <li>
+   fix: prevent quickFX model out of bound
+   #13668
+  </li>
+ </ul>
  <p>
   Waveforms
  </p>
@@ -107,6 +208,63 @@
    #13220
    #6428
    #13226
+  </li>
+  <li>
+   Disable textured waveforms when using OpenGL ES
+   #13381
+   #13380
+  </li>
+  <li>
+   ControllerRenderingEngine: Patch out unavailable APIs when using GL ES
+   #13382
+  </li>
+  <li>
+   fix: invalid slip render marker
+   #13422
+  </li>
+  <li>
+   Add minute markers on horizontal waveform overview
+   #13401
+   #5843
+   #13648
+  </li>
+  <li>
+   Fix high details waveforms wrapping around after visual index 65K
+   #13491
+  </li>
+  <li>
+   Fix: support for new WaveformData struct in shaders
+   #13474
+   #13472
+  </li>
+  <li>
+   Overview waveform: draw minute markers on top of played overlay
+   #13489
+  </li>
+  <li>
+   fix: remove scaleSignal in waveform analyzer
+   #13416
+  </li>
+  <li>
+   feat: improve screen rendering framework
+   #13737
+  </li>
+  <li>
+   fix: prevent double free on DigitsRenderer
+   #13859
+  </li>
+  <li>
+   fix: waveform overview seeking
+   #13947
+   #13946
+  </li>
+  <li>
+   rendergraph: add rendergraph library
+   #14007
+  </li>
+  <li>
+   mark rendering improvements
+   #13969
   </li>
  </ul>
  <p>
@@ -120,6 +278,56 @@
   <li>
    Multithreaded Rubberband
    #13143
+   #13649
+  </li>
+  <li>
+   Add support for stem in the engine
+   #13070
+  </li>
+  <li>
+   Add analyser support for stem
+   #13106
+  </li>
+  <li>
+   Add stem controls
+   #13086
+  </li>
+  <li>
+   Add quick effect support on stem
+   #13123
+  </li>
+  <li>
+   Add stem files to the taglib lookup table
+   #13612
+  </li>
+  <li>
+   fix: exclude stem samples for QML waveform
+   #13655
+  </li>
+  <li>
+   Non-floating stem controls for LateNight
+   #13537
+  </li>
+  <li>
+   (fix) make "stem_group,mute" a powerwindow button
+   #13751
+   #13749
+  </li>
+  <li>
+   feat: add advanced stem loading COs
+   #13268
+  </li>
+  <li>
+   Fix build with -DSTEM=OFF
+   #13948
+  </li>
+  <li>
+   Stem control test fix
+   #13960
+  </li>
+  <li>
+   Solves problem with special characters in path to stems
+   #13784
   </li>
  </ul>
  <p>
@@ -131,6 +339,47 @@
    #11407
    #13334
   </li>
+  <li>
+   Deprecate
+   lodash.mixxx.js
+   , and
+   script.deepMerge
+   #13460
+  </li>
+  <li>
+   Don't return in JogWheelBasic on deck absent in option
+   #13425
+  </li>
+  <li>
+   Refactor: modernize softtakeover code
+   #13553
+  </li>
+  <li>
+   document
+   ScriptConnection
+   readonly properties &amp; slight cleanup
+   #13630
+  </li>
+  <li>
+   Modernize Hid/Bulk Lists
+   #13622
+  </li>
+  <li>
+   Prevent deadlock with BULK transfer and reduce log noise
+   #13735
+  </li>
+  <li>
+   feat: add file and color controller setting types
+   #13669
+  </li>
+  <li>
+   Controllers: allow to enable MIDI Through Port in non-developer sessions
+   #13909
+  </li>
+  <li>
+   Expose convertCharset convenience function to controllers
+   #13935
+  </li>
  </ul>
  <p>
   Auto-DJ
@@ -141,6 +390,58 @@
    #13303
    #11571
   </li>
+  <li>
+   Auto DJ: Add context menu action for enabling/disabling the Auto DJ
+   #13593
+  </li>
+  <li>
+   Auto DJ Cross fader center
+   #13628
+  </li>
+ </ul>
+ <p>
+  Experimental Features
+ </p>
+ <ul>
+  <li>
+   SoundManagerIOS: Remove unsupported/redundant options
+   #13487
+  </li>
+  <li>
+   ControllerRenderingEngine: Disable BGRA when targeting Wasm
+   #13502
+  </li>
+  <li>
+   BaseTrackTableModel: Disable inline track editing on iOS
+   #13494
+  </li>
+  <li>
+   set QQuickStyle to "basic"
+   #13696
+   #13600
+  </li>
+  <li>
+   fix: trigger QML waveform slot at init
+   #13736
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   DlgPrefSound: Add missing ifdefs for building without Rubberband
+   #13577
+  </li>
+  <li>
+   Update Linux-GitHub runner to Ubuntu 24.04.01 LTS
+   #13781
+   #13880
+  </li>
+  <li>
+   Add missing qt6-declarative-private-dev and qt6-base-private-dev package
+   #13904
+  </li>
  </ul>
  <p>
   Misc Refactorings
@@ -149,6 +450,550 @@
   <li>
    Refactor/shrink modernize scopedtimer
    #13258
+  </li>
+  <li>
+   Improve use of parented_ptr
+   #13411
+  </li>
+  <li>
+   Pre-allocate memory in basetrackcache to avoid multiple reallocations
+   #13368
+  </li>
+  <li>
+   Bump actions/checkout from 4.1.6 to 4.1.7
+   #13386
+  </li>
+  <li>
+   Bump actions/checkout from 4.1.7 to 4.2.0
+   #13713
+  </li>
+  <li>
+   Bump actions/checkout from 4.2.0 to 4.2.1
+   #13726
+  </li>
+  <li>
+   Bump actions/checkout from 4.2.1 to 4.2.2
+   #13810
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.3.20 to 0.4.0
+   #13500
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.4.0 to 0.5.0
+   #13809
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.3.4 to 4.3.5
+   #13539
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.3.5 to 4.3.6
+   #13562
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.3.6 to 4.4.0
+   #13621
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.4.0 to 4.4.1
+   #13725
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.4.1 to 4.4.3
+   #13765
+  </li>
+  <li>
+   Bump coverallsapp/github-action from 2.3.0 to 2.3.1
+   #13766
+  </li>
+  <li>
+   Bump coverallsapp/github-action from 2.3.1 to 2.3.3
+   #13793
+  </li>
+  <li>
+   Bump coverallsapp/github-action from 2.3.3 to 2.3.4
+   #13811
+  </li>
+  <li>
+   chore: update the donate button label
+   #13353
+  </li>
+  <li>
+   WPixmapStore: Change getPixmapNoCache to std::unique_ptr and further optimizations
+   #13369
+  </li>
+  <li>
+   Removed unused setSVG and hash functionality from pixmapsource
+   #13423
+  </li>
+  <li>
+   remove FAQ from Readme.md
+   #13453
+  </li>
+  <li>
+   #13452
+  </li>
+  <li>
+   Paintable cleanup
+   #13435
+  </li>
+  <li>
+   Made Paintable::DrawMode an enum class
+   #13424
+  </li>
+  <li>
+   hash clean up
+   #13458
+  </li>
+  <li>
+   clang-format: Indent Objective-C blocks with 4 spaces
+   #13503
+  </li>
+  <li>
+   fix(basetracktablemodel): Fix
+   -Wimplicit-fallthrough
+   warning on GCC 14.1.1
+   #13505
+  </li>
+  <li>
+   Refactor fix trivial cpp coreguideline violations
+   #13552
+  </li>
+  <li>
+   Refactor
+   EngineMixer
+   #13568
+  </li>
+  <li>
+   more
+   ControlDoublePrivate
+   optimization
+   #13581
+  </li>
+  <li>
+   Modernize
+   ControlValueAtomic
+   #13574
+  </li>
+  <li>
+   Optimize control code
+   #13354
+  </li>
+  <li>
+   Fix some minor code issue
+   #13586
+  </li>
+  <li>
+   Static initialization order fix
+   #13594
+  </li>
+  <li>
+   Remove referenceholder
+   #13240
+  </li>
+  <li>
+   chore: add note about ConfigKey naming convention
+   #13658
+  </li>
+  <li>
+   refactor: split out
+   AutoFileReloader
+   from
+   QmlAutoReload
+   #13607
+   #13756
+   #13755
+  </li>
+  <li>
+   Fix Clazy v1.12 errors in main
+   #13770
+  </li>
+  <li>
+   Code cleanup in SidebarModel and WLibrarySidebar
+   #13816
+  </li>
+  <li>
+   Refactor:
+   MovingInterquartileMean
+   #13730
+  </li>
+  <li>
+   Improved comments in enginecontrol and use of std::size_t for bufferSize across the codebase
+   #13819
+  </li>
+  <li>
+   refactor: use higher-level
+   std::span
+   based logic
+   #13654
+  </li>
+  <li>
+   tsan fix pll vars data race
+   #13873
+  </li>
+  <li>
+   use atomic to fix tsan detected data race condition of blink value in control indicator
+   #13875
+  </li>
+  <li>
+   Fix undefined behaviour of infinity()
+   #13884
+  </li>
+  <li>
+   use atomic for m_bWakeScheduler, protect m_bQuit with mutex
+   #13898
+  </li>
+  <li>
+   Refactor
+   ValueTransformer
+   and
+   WBaseWidget
+   #13853
+  </li>
+  <li>
+   avoid data race on m_pStream
+   #13899
+  </li>
+  <li>
+   Cleanup and deprecate more
+   util/
+   classes
+   #13687
+   #13968
+   #13965
+   #14107
+   #14095
+   #14087
+   #14086
+  </li>
+  <li>
+   ci(pre-commit): Add cmake-lint hook
+   #13932
+  </li>
+  <li>
+   refactor: remove samplew_autogen.h
+   #13988
+   #14005
+  </li>
+  <li>
+   fix clang-tidy complain
+   #14029
+  </li>
+  <li>
+   ci(dependabot): Open PRs against 2.5 branch instead of main
+   #14060
+  </li>
+  <li>
+   Happy New Year 2025!
+   #14098
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.5.1" type="development" date="2025-02-25" timestamp="1740515661">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Behringer DDM4000 &amp; BCR2000: Update mappings to 2.5
+   #14232
+   #14349
+  </li>
+  <li>
+   Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+   #14051
+   #14057
+  </li>
+  <li>
+   Numark NS6II: New mapping
+   #11075
+  </li>
+  <li>
+   Numark Platinum FX: New mapping
+   #12872
+  </li>
+  <li>
+   Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls
+   #11307
+  </li>
+  <li>
+   Reloop Digital Jockey 2 IE: New mapping
+   #4614
+   #14328
+  </li>
+  <li>
+   Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
+   #14249
+  </li>
+  <li>
+   Traktor S4mk3: Smooth xfader curve for Const Power mode
+   #14305
+   #14329
+   #14103
+  </li>
+  <li>
+   Traktor S4mk3: stop wheel led blinking when track is over/stopped
+   #14028
+   #13995
+  </li>
+  <li>
+   Traktor Kontrol S3: Use pitch absolute mode as described in the manual
+   #14123
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Controllers: Avoid timer warning on button release
+   #14323
+  </li>
+  <li>
+   Controller preferences: Fix notify of pending changes when closing preferences
+   #14234
+   #14220
+  </li>
+  <li>
+   Controller preferences: Fix broken overwrite dialog ('Save as..' not working)
+   #14263
+  </li>
+  <li>
+   Controller preferences: Don't break support link texts
+   #14079
+  </li>
+  <li>
+   Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
+   #14281
+   #14280
+   #14292
+  </li>
+  <li>
+   Controller mapping info: Fix cropped description text
+   #14332
+   #14117
+  </li>
+  <li>
+   MIDI controller learning: Make control box search usable
+   #14260
+  </li>
+  <li>
+   MIDI controller learning: Don't reload mapping after learn
+   #14253
+  </li>
+  <li>
+   MIDI controller learning: Correct skin control for mic/aux section
+   #14221
+  </li>
+  <li>
+   Allow
+   midino
+   0 in `MidiController::makeInputHandler()
+   #14266
+   #14265
+  </li>
+  <li>
+   Fix: provide
+   incomingData
+   to MIDI sysex mappings
+   #14368
+   #13133
+  </li>
+  <li>
+   Fix log spam when using Midi for light mapping
+   #14326
+   #14327
+   #14333
+   #14338
+   #14371
+  </li>
+  <li>
+   Fix for
+   TypeError
+   in
+   midi-components-0.0.js
+   #14203
+   #14197
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Deere (64 samplers): Bring back library in regular view
+   #14101
+   #14097
+  </li>
+  <li>
+   Fix crash when hiding waveforms in Deere
+   #14170
+  </li>
+  <li>
+   Waveform Overview: Abort play pos dragging if cursor is released outside the valid area
+   #13741
+   #13732
+  </li>
+  <li>
+   Waveform Overview: Also render analysis progress when triggered by track menu or analysis feature
+   #14150
+  </li>
+  <li>
+   Don't show 'menubar hide' dialog when switching skins
+   #14254
+  </li>
+  <li>
+   Key Wheel: Move to View menu and make it a floating tool window
+   #14256
+   #14239
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
+   #14114
+   #14065
+  </li>
+  <li>
+   Fix MusicBrainz lookup on Windows and macOS
+   #14216
+  </li>
+  <li>
+   Library scanner: Update cached 'missing' flag when file is redicovered
+   #14250
+  </li>
+  <li>
+   Hidden Tracks: Allow 'load to' via track context manu
+   #14077
+  </li>
+  <li>
+   Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
+   #14172
+   #14289
+  </li>
+  <li>
+   Fix writing metadata via symlink
+   #13711
+  </li>
+  <li>
+   Library menu: change "Engine DJ Prime" to "Engine DJ"
+   #14248
+  </li>
+  <li>
+   Fix file extension handling during playlist export
+   #14381
+  </li>
+  <li>
+   Fix manual key metadata editing in track properties dialog
+   #14022
+   #14400
+   #14295
+   #14294
+  </li>
+  <li>
+   History: Don't allow joining with locked previous playlist
+   #14401
+   #14399
+  </li>
+  <li>
+   Track Menu: Reset
+   eject
+   after moving track file to trash
+   #14402
+  </li>
+ </ul>
+ <p>
+  Other Fixes
+ </p>
+ <ul>
+  <li>
+   Enable R3 time-stretching with Rubberband 4.0.0 API version numbers
+   #14100
+  </li>
+  <li>
+   Preferences Effects: add Hide/Unhide (move) buttons to Effects tab
+   #13329
+  </li>
+  <li>
+   Preferences Effects: left/right key in effect lists trigger hide/unhide
+   #14205
+  </li>
+  <li>
+   Fix beat sync in Flanger effect
+   #14351
+  </li>
+  <li>
+   Apply talkover ducking after main effects to allow using a compressor effect
+   #13844
+   #12451
+  </li>
+  <li>
+   Fix sporadic deadlocks when closing Mixxx or changing sound devices
+   #14208
+   #14055
+  </li>
+  <li>
+   PositionScratchController: Fix loop wrap-around case
+   #14379
+  </li>
+  <li>
+   Allow seeking to a hotcue during waveform scratching
+   #14357
+   #13981
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Allow to build with git "showSignature = true"
+   #14115
+   #12997
+  </li>
+  <li>
+   Support building with Qt 6.8/6.9
+   #14080
+   #14071
+   #14200
+   #14204
+  </li>
+  <li>
+   Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
+   #14148
+   #14158
+  </li>
+  <li>
+   Add more translations to Linux desktop file
+   #14153
+   #14169
+  </li>
+  <li>
+   Debian: recommend qt6-translations-l10n
+   #14147
+  </li>
+  <li>
+   Update FindFFTW3.cmake to not find version 2
+   #13937
+   #13931
+  </li>
+  <li>
+   Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
+   #14269
+  </li>
+  <li>
+   Fix and improve "missing env" error message
+   #14321
+  </li>
+  <li>
+   Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows
+   #14228
   </li>
  </ul>
 </description>
@@ -310,11 +1155,6 @@
    #13215
   </li>
   <li>
-   Effect Meta Knob: draws arc from default meta position
-   #12638
-   #12634
-  </li>
-  <li>
    Handle not supported files when dragging to waveforms and spinnies
    #13206
   </li>
@@ -427,6 +1267,7 @@
    Add backend for Audio Unit (AU) plugins on macOS
    #12112
    #13938
+   #13887
   </li>
   <li>
    Effect Meta knob: Draw arc from default meta position
@@ -731,10 +1572,6 @@
    #13008
   </li>
   <li>
-   Drop lodash dependency in ComponentJS
-   #12779
-  </li>
-  <li>
    Fix pending reference to the old mapping after selecting 'No mapping'
    #13907
   </li>
@@ -941,7 +1778,7 @@
    #13117
   </li>
   <li>
-   Novation Dicer: Remove flanger mapping with quickeffect toggle
+   Novation Dicer: Remove Flanger mapping with quickeffect toggle
    #13196
    #13134
   </li>
@@ -1015,11 +1852,6 @@
   <li>
    Recording: with empty config, save default split size immediately
    #13304
-  </li>
-  <li>
-   Allow to drop files with supported MIME type regardless off the file extensions
-   #13209
-   #13204
   </li>
   <li>
    Add support for Ubuntu Oracular Oriole and remove Lunar Lobster

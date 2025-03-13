@@ -111,9 +111,9 @@ class FakeController : public Controller {
 
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override {
         if (m_pMidiMapping) {
-            return m_pMidiMapping->clone();
+            return std::make_shared<LegacyMidiControllerMapping>(*m_pMidiMapping);
         } else if (m_pHidMapping) {
-            return m_pHidMapping->clone();
+            return std::make_shared<LegacyHidControllerMapping>(*m_pHidMapping);
         }
         return nullptr;
     };

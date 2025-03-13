@@ -3,6 +3,7 @@
 #include <portaudio.h>
 
 #include <QString>
+#include <condition_variable>
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
@@ -47,6 +48,9 @@ class SoundDevicePortAudio : public SoundDevice {
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
 
+    // Callback called once the process callback returns paAbort.
+    void finishedCallback();
+
     mixxx::audio::SampleRate getDefaultSampleRate() const override {
         return m_deviceInfo ? mixxx::audio::SampleRate::fromDouble(
                                       m_deviceInfo->defaultSampleRate)
@@ -57,6 +61,8 @@ class SoundDevicePortAudio : public SoundDevice {
     void updateCallbackEntryToDacTime(
             SINT framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo);
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
+
+    void makeStreamInactiveAndWait();
 
     // PortAudio stream for this device.
     std::atomic<PaStream*> m_pStream;
@@ -85,4 +91,7 @@ class SoundDevicePortAudio : public SoundDevice {
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
     std::atomic<int> m_callbackResult;
+    std::mutex m_finishedMutex;
+    std::condition_variable m_finishedCV;
+    bool m_bFinished;
 };

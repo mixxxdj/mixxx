@@ -2049,18 +2049,20 @@ bool TrackDAO::verifyRemainingTracks(
                    "SET fs_deleted=:fs_deleted, needs_verification=0 "
                    "WHERE location=:location");
 
+    const int fsDeletedColumn = query.record().indexOf("fs_deleted");
     const int locationColumn = query.record().indexOf("location");
     QString trackLocation;
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
         int fs_deleted = 0;
+        int old_fs_deleded = query.value(fsDeletedColumn).toInt();
         for (const auto& rootDir : libraryRootDirs) {
             if (trackLocation.startsWith(rootDir.location())) {
                 // Track is under the library root,
                 // but was not verified.
-                // This happens if the track was deleted
-                // a symlink duplicate or on a non normalized
-                // path like on non case sensitive file systems.
+                // This happens if the track was deleted,
+                // a symlink duplicate or on a non-normalized
+                // path like on non-case-sensitive file systems.
                 fs_deleted = 1;
                 break;
             }
@@ -2076,6 +2078,16 @@ bool TrackDAO::verifyRemainingTracks(
             LOG_FAILED_QUERY(query2);
         }
         emit progressVerifyTracksOutside(trackLocation);
+        if (fs_deleted != old_fs_deleded) {
+            // Emit update so e.g. the tack model knows.
+            // Otherwise the table view may still paint it with 'track missing'
+            // color even though it has been re-discovered.
+            TrackId id = getTrackIdByLocation(trackLocation);
+            if (id.isValid()) {
+                QSet<TrackId> ids{id};
+                emit tracksChanged(ids);
+            }
+        }
         if (*pCancel) {
             return false;
         }

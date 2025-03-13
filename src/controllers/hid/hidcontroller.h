@@ -85,7 +85,7 @@ class HidController final : public Controller {
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;
-    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 
     friend class HidControllerJSProxy;
 };

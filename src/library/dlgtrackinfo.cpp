@@ -14,6 +14,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
+#include "track/keyfactory.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/datetime.h"
@@ -175,64 +176,73 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtTrackName->setText(txtTrackName->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTitle(
-                        txtTrackName->text().trimmed());
+                        txtTrackName->text());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtArtist->setText(txtArtist->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setArtist(
-                        txtArtist->text().trimmed());
+                        txtArtist->text());
             });
     connect(txtAlbum,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtAlbum->setText(txtAlbum->text().trimmed());
                 m_trackRecord.refMetadata().refAlbumInfo().setTitle(
-                        txtAlbum->text().trimmed());
+                        txtAlbum->text());
             });
     connect(txtAlbumArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtAlbumArtist->setText(txtAlbumArtist->text().trimmed());
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
-                        txtAlbumArtist->text().trimmed());
+                        txtAlbumArtist->text());
             });
     connect(txtGenre,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtGenre->setText(txtGenre->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text().trimmed());
+                        txtGenre->text());
             });
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtComposer->setText(txtComposer->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setComposer(
-                        txtComposer->text().trimmed());
+                        txtComposer->text());
             });
     connect(txtGrouping,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtGrouping->setText(txtGrouping->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setGrouping(
-                        txtGrouping->text().trimmed());
+                        txtGrouping->text());
             });
     connect(txtYear,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtYear->setText(txtYear->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setYear(
-                        txtYear->text().trimmed());
+                        txtYear->text());
             });
     connect(txtTrackNumber,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtTrackNumber->setText(txtTrackNumber->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
-                        txtTrackNumber->text().trimmed());
+                        txtTrackNumber->text());
             });
 
     // Import and file browser buttons
@@ -613,7 +623,7 @@ void DlgTrackInfo::saveTrack() {
     // handlers manually to capture any changes. If the bpm or key was unchanged
     // or invalid then the change will be ignored/rejected.
     slotSpinBpmValueChanged(spinBpm->value());
-    static_cast<void>(updateKeyText()); // discard result
+    updateKeyText();
 
     // Update the cached track
     //
@@ -733,34 +743,21 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     updateSpinBpmFromBeats();
 }
 
-mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
-    const auto keyText = txtKey->text().trimmed();
-    const auto updateResult =
-            m_trackRecord.updateGlobalKeyNormalizeText(
-                    keyText,
-                    mixxx::track::io::key::USER);
-    if (updateResult == mixxx::UpdateResult::Rejected) {
-        // Restore the current key text
-        displayKeyText();
-    }
-    return updateResult;
+void DlgTrackInfo::updateKeyText() {
+    const auto keyText = txtKey->text();
+    m_trackRecord.updateGlobalKeyNormalizeText(
+            keyText,
+            mixxx::track::io::key::USER);
+    displayKeyText();
 }
 
 void DlgTrackInfo::displayKeyText() {
-    QString keyText;
-    if (m_pLoadedTrack) {
-        keyText = KeyUtils::keyFromKeyTextAndIdValues(
-                m_pLoadedTrack->getKeyText(),
-                m_pLoadedTrack->getKey());
-    }
+    const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
-    if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
-        // Ensure that the text field always reflects the actual value
-        displayKeyText();
-    }
+    updateKeyText();
 }
 
 void DlgTrackInfo::slotRatingChanged(int rating) {
@@ -807,6 +804,19 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             sourceSynchronizedAt);
     trackRecord.setCoverInfo(
             std::move(guessedCoverInfo));
+
+    QString importedKeyText = trackRecord.getMetadata().getTrackInfo().getKeyText();
+    {
+        Keys newKeys = KeyFactory::makeBasicKeysKeepText(
+                importedKeyText, mixxx::track::io::key::FILE_METADATA);
+        if (newKeys.getGlobalKey() != mixxx::track::io::key::INVALID &&
+                trackRecord.getKeys().getGlobalKeyText() != importedKeyText) {
+            // Only replace the keys with a single new key if valid and different.
+            // Otherwise preserve existing array of keys for different positions.
+            trackRecord.setKeys(std::move(newKeys));
+        }
+    }
+
     replaceTrackRecord(
             std::move(trackRecord),
             fileInfo.location());

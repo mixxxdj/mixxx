@@ -4,6 +4,7 @@
 #include <QRegExp> // required for 'indexIn(QString &str, int pos)
 #include <QRegularExpression>
 
+#include "util/assert.h"
 #include "util/widgethelper.h"
 
 namespace {
@@ -29,11 +30,13 @@ QString filePathWithSelectedExtension(const QString& fileLocationInput,
     // Extract 'ext' from QFileDialog file filter string 'Funky type (*.ext)'
     const auto extMatch = kExtractExtensionRegex.match(selectedFileFilter);
     const QString ext = extMatch.captured(1);
-    if (ext.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!ext.isEmpty()) {
         return fileLocation;
     }
     const QFileInfo fileName(fileLocation);
-    if (!ext.isEmpty() && fileName.suffix() != ext) {
+    if (fileName.suffix().isEmpty()) {
+        fileLocation += QChar('.') + ext;
+    } else if (fileName.suffix() != ext) {
         // Check if fileLocation ends with any of the available extensions
         int pos = 0;
         // Extract all extensions from the filter list
