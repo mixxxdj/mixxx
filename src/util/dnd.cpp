@@ -332,6 +332,7 @@ QDrag* DragAndDropHelper::dragTrackLocations(
         const QList<mixxx::StemChannelSelection>& stemMasks,
         QWidget* pDragSource,
         const QString& sourceIdentifier) {
+    Q_UNUSED(sourceIdentifier);
     qDebug() << "[DragAndDropHelper::dragTrackLocations] -> stemMasks " << stemMasks;
 #else
 QDrag* DragAndDropHelper::dragTrackLocations(
@@ -367,7 +368,8 @@ QDrag* DragAndDropHelper::dragTrackLocations(
 
     QDrag* pDrag = new QDrag(pDragSource);
     pDrag->setMimeData(pMimeData);
-    Qt::DropAction dropAction = pDrag->exec(Qt::CopyAction | Qt::MoveAction);
+    // Qt::DropAction dropAction = pDrag->exec(Qt::CopyAction | Qt::MoveAction);
+    pDrag->exec(Qt::CopyAction | Qt::MoveAction);
     return pDrag;
 }
 

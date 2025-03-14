@@ -7,6 +7,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
