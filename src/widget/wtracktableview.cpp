@@ -623,8 +623,9 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         // Iterate over selected rows and append each item's location url to a list.
         QList<QString> locations;
         const QModelIndexList indices = getSelectedRows();
+#ifdef __STEM__
         QList<mixxx::StemChannelSelection> stemMasks;
-
+#endif
         for (const QModelIndex& index : indices) {
             if (!index.isValid()) {
                 continue;
