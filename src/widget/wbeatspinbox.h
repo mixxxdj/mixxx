@@ -31,6 +31,19 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
 
     ControlProxy m_valueControl;
 
+    // for L/R button BeatJump/LoopMove
+    ControlProxy beatJumpForward;
+    ControlProxy beatJumpBackward;
+    ControlProxy beatJumpSize;
+    ControlProxy beatJumpOneForward;
+    ControlProxy beatJumpOneBackward;
+    ControlProxy beatJumpEightForward;
+    ControlProxy beatJumpEightBackward;
+    ControlProxy beatLoopEnabled;
+    ControlProxy beatLoopSize;
+    QSize sizeSpinBox;
+    QSize sizeLoopBox;
+
     // for font scaling
     bool event(QEvent* pEvent) override;
     void keyPressEvent(QKeyEvent* pEvent) override;
