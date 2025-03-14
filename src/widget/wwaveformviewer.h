@@ -35,9 +35,23 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void mouseMoveEvent(QMouseEvent * /*unused*/) override;
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
     void leaveEvent(QEvent* /*unused*/) override;
+#ifdef __STEM__
+    void trackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask) override;
+#else
+    void trackDropped(const QString& filename, const QString& group) override;
+#endif
 
   signals:
-    void trackDropped(const QString& filename, const QString& group) override;
+    // void trackDropped(const QString& filename, const QString& group) override;
+#ifdef __STEM__
+    void emitTrackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask);
+#else
+    void emitTrackDropped(const QString& filename, const QString& group);
+#endif
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
     void passthroughChanged(double value);
 

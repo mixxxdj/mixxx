@@ -622,14 +622,42 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         // Iterate over selected rows and append each item's location url to a list.
         QList<QString> locations;
         const QModelIndexList indices = getSelectedRows();
+        QList<mixxx::StemChannelSelection> stemMasks;
 
         for (const QModelIndex& index : indices) {
             if (!index.isValid()) {
                 continue;
             }
             locations.append(pTrackModel->getTrackLocation(index));
+
+#ifdef __STEM__
+            // Cast the TrackModel to QAbstractItemModel
+            QAbstractItemModel* pModel = dynamic_cast<QAbstractItemModel*>(pTrackModel);
+            if (!pModel) {
+                qWarning() << "[WTrackTableView::mouseMoveEvent] -> Failed to "
+                              "cast TrackModel to QAbstractItemModel";
+                continue;
+            }
+            // Get actual title column index
+            int titleColumn = pTrackModel->fieldIndex("title");
+            QModelIndex titleIndex = index.siblingAtColumn(titleColumn);
+            QString modifiedTitle = pModel->data(titleIndex, Qt::DisplayRole).toString();
+            qDebug() << "[WTrackTableView::mouseMoveEvent] -> Corrected "
+                        "modifiedTitle:"
+                     << modifiedTitle;
+            // Extract the stemMask from the modified title
+            mixxx::StemChannelSelection stemMask = mixxx::extractStemMaskFromTitle(modifiedTitle);
+            stemMasks.append(stemMask);
+#endif
         }
+#ifdef __STEM__
+        qDebug() << "[WTrackTableView::mouseMoveEvent] -> stemMasks " << stemMasks;
+        // Start the drag operation with locations and stemMasks
+        DragAndDropHelper::dragTrackLocations(locations, stemMasks, this, "library");
+#else
+        // Start the drag operation with locations only
         DragAndDropHelper::dragTrackLocations(locations, this, "library");
+#endif
     }
 }
 
@@ -1322,6 +1350,7 @@ void WTrackTableView::activateSelectedTrack() {
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
         mixxx::StemChannelSelection stemMask,
         bool play) {
+    qDebug() << "[WTrackTableView::loadSelectedTrackToGroup] -> stemMask: " << stemMask;
 #else
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
         bool play) {
@@ -1360,6 +1389,27 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
     TrackPointer pTrack;
     if (pTrackModel && (pTrack = pTrackModel->getTrack(index))) {
 #ifdef __STEM__
+        QAbstractItemModel* pModel = dynamic_cast<QAbstractItemModel*>(pTrackModel);
+        if (!pModel) {
+            qWarning() << "[WTrackTableView::loadSelectedTrackToGroup] -> "
+                          "Failed to cast TrackModel to QAbstractItemModel";
+            return;
+        }
+
+        QString modifiedTitle =
+                pModel->data(index, ColumnCache::COLUMN_LIBRARYTABLE_TITLE)
+                        .toString();
+        qDebug() << "[WTrackTableView::loadSelectedTrackToGroup] -> "
+                    "modifiedTitle: "
+                 << modifiedTitle;
+        mixxx::StemChannelSelection extractedStemMask =
+                mixxx::extractStemMaskFromTitle(modifiedTitle);
+
+        if (stemMask == mixxx::StemChannelSelection(mixxx::StemChannel::None)) {
+            stemMask = extractedStemMask;
+        }
+        qDebug() << "[WTrackTableView::loadSelectedTrackToGroup] -> stemMask: " << stemMask;
+
         DEBUG_ASSERT(!stemMask || pTrack->hasStem());
         emit loadTrackToPlayer(pTrack, group, stemMask, play);
 #else

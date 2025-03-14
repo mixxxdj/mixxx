@@ -219,7 +219,15 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
 #endif
                                 false);
                     } else {
+//                        m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
+#ifdef __STEM__
+                        m_pPlayerManager->slotLoadLocationToPlayer(location,
+                                group,
+                                mixxx::StemChannelSelection(),
+                                false);
+#else
                         m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
+#endif
                     }
                 }
             }

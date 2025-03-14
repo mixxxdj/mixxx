@@ -70,6 +70,7 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
+    // qDebug() << "[WTracjProperty::slotTrackLoaded] triggered";
     if (!pTrack) {
         return;
     }
@@ -378,3 +379,26 @@ bool WTrackPropertyEditor::eventFilter(QObject* pObj, QEvent* pEvent) {
     }
     return QLineEdit::eventFilter(pObj, pEvent);
 }
+
+#ifdef __STEM__
+void WTrackProperty::trackDropped(const QString& filename,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask) {
+    // qDebug() << "[WTrackProperty::trackDropped] -> File:" << filename <<
+    // "Group:" << group << "StemMask:" << stemMask;
+
+    if (stemMask != mixxx::StemChannel::All) {
+        qDebug() << "[WTrackProperty::trackDropped] -> Specific stem track selected.";
+    }
+    // qDebug() << "WTrackProperty::trackDropped] -> sender() " << sender();
+    // qDebug() << "[WTrackProperty::trackDropped] -> filename: " << filename;
+    // qDebug() << "[WTrackProperty::trackDropped] -> group: " << group;
+    // qDebug() << "[WTrackProperty::trackDropped] -> stemMask " << stemMask;
+    emit emitTrackDropped(filename, group, stemMask);
+}
+#else
+void WTrackProperty::trackDropped(const QString& filename, const QString& group) {
+    // qDebug() << "[WTrackProperty::trackDropped] -> File:" << filename << "Group:" << group;
+    emit emitTrackDropped(filename, group);
+}
+#endif
