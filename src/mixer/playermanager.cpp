@@ -676,6 +676,16 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack,
         const QString& group,
         mixxx::StemChannelSelection stemMask,
         bool play) {
+    qDebug() << "[PlayerManager::slotLoadTrackToPlayer] triggered";
+    qDebug() << "[PlayerManager::slotLoadTrackToPlayer] -> sender() " << sender();
+    if (pTrack) {
+        qDebug() << "[PlayerManager::slotLoadTrackToPlayer] -> "
+                    "pNewTrack->getTitle(): "
+                 << pTrack->getTitle();
+    }
+    qDebug() << "[PlayerManager::slotLoadTrackToPlayer] -> stemMask " << stemMask;
+    qDebug() << "[PlayerManager::slotLoadTrackToPlayer] -> bPlay " << play;
+
 #else
 void PlayerManager::slotLoadTrackToPlayer(
         TrackPointer pTrack, const QString& group, bool play) {
@@ -740,15 +750,40 @@ void PlayerManager::slotLoadTrackToPlayer(
     m_lastLoadedPlayer = group;
 }
 
+#ifdef __STEM__
+void PlayerManager::slotLoadLocationToPlayer(
+        const QString& location,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask = mixxx::StemChannel::All,
+        bool play = false) {
+#else
 void PlayerManager::slotLoadLocationToPlayer(
         const QString& location, const QString& group, bool play) {
-    // The library will get the track and then signal back to us to load the
-    // track via slotLoadTrackToPlayer.
+#endif
+
+// void PlayerManager::slotLoadLocationToPlayer(
+//         const QString& location, const QString& group, bool play) {
+//  The library will get the track and then signal back to us to load the
+//  track via slotLoadTrackToPlayer.
+#ifdef __STEM__
+    emit loadLocationToPlayer(location, group, stemMask, play);
+#else
     emit loadLocationToPlayer(location, group, play);
+#endif
 }
 
+#ifdef __STEM__
+void PlayerManager::slotLoadLocationToPlayerMaybePlay(
+        const QString& location, const QString& group, mixxx::StemChannelSelection stemMask) {
+    qDebug() << "[PlayerManager::slotLoadLocationToPlayerMaybePlay] triggered";
+    qDebug() << "[PlayerManager::slotLoadLocationToPlayerMaybePlay] -> sender() " << sender();
+    qDebug() << "[PlayerManager::slotLoadLocationToPlayerMaybePlay] -> location: " << location;
+    qDebug() << "[PlayerManager::slotLoadLocationToPlayerMaybePlay] -> stemMask " << stemMask;
+#else
 void PlayerManager::slotLoadLocationToPlayerMaybePlay(
         const QString& location, const QString& group) {
+#endif
+
     bool play = false;
     LoadWhenDeckPlaying loadWhenDeckPlaying = m_pConfig->getValue(
             kConfigKeyLoadWhenDeckPlaying, kDefaultLoadWhenDeckPlaying);
@@ -763,19 +798,44 @@ void PlayerManager::slotLoadLocationToPlayerMaybePlay(
         }
         break;
     }
+#ifdef __STEM__
+    slotLoadLocationToPlayer(location, group, stemMask, play);
+#else
     slotLoadLocationToPlayer(location, group, play);
+#endif
 }
 
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
+#ifdef __STEM__
+    slotLoadLocationToPlayer(location,
+            groupForDeck(deck - 1),
+            mixxx::StemChannelSelection(),
+            false);
+#else
     slotLoadLocationToPlayer(location, groupForDeck(deck - 1), false);
+#endif
 }
 
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
+#ifdef __STEM__
+    slotLoadLocationToPlayer(location,
+            groupForPreviewDeck(previewDeck - 1),
+            mixxx::StemChannelSelection(),
+            false);
+#else
     slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1), false);
+#endif
 }
 
 void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
+#ifdef __STEM__
+    slotLoadLocationToPlayer(location,
+            groupForSampler(sampler - 1),
+            mixxx::StemChannelSelection(),
+            false);
+#else
     slotLoadLocationToPlayer(location, groupForSampler(sampler - 1), false);
+#endif
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
@@ -801,7 +861,11 @@ void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& locatio
         return;
     }
 
+#ifdef __STEM__
+    slotLoadLocationToPlayer(location, pDeck->getGroup(), mixxx::StemChannelSelection(), play);
+#else
     slotLoadLocationToPlayer(location, pDeck->getGroup(), play);
+#endif
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {

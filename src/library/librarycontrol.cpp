@@ -652,6 +652,7 @@ void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool pla
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
 #ifdef __STEM__
+        qDebug() << "LibraryControl::slotLoadSelectedTrackToGroup -> stemMask: " << stemMask;
         pTrackTableView->loadSelectedTrackToGroup(group, stemMask, play);
 #else
         pTrackTableView->loadSelectedTrackToGroup(group, play);

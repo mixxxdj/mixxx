@@ -222,6 +222,7 @@ void WWaveformViewer::leaveEvent(QEvent*) {
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
+    // qDebug() << "[WWaveformViewer::slotTrackLoaded] triggered";
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
@@ -354,3 +355,22 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
 bool WWaveformViewer::isPlaying() const {
     return m_pPlayEnabled->toBool();
 }
+
+#ifdef __STEM__
+void WWaveformViewer::trackDropped(const QString& filename,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask) {
+    // qDebug() << "[WWaveformViewer::trackDropped] -> File:" << filename <<
+    // "Group:" << group << "StemMask:" << stemMask;
+
+    if (stemMask != mixxx::StemChannel::All) {
+        qDebug() << "[WWaveformViewer::trackDropped] -> Specific stem track selected.";
+    }
+    emit emitTrackDropped(filename, group, stemMask);
+}
+#else
+void WWaveformViewer::trackDropped(const QString& filename, const QString& group) {
+    // qDebug() << "[WWaveformViewer::trackDropped] -> File:" << filename << "Group:" << group;
+    emit emitTrackDropped(filename, group);
+}
+#endif

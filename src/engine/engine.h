@@ -23,6 +23,26 @@ enum class StemChannel {
     All = First | Second | Third | Fourth
 };
 Q_DECLARE_FLAGS(StemChannelSelection, StemChannel);
+
+// Helper function to extract StemChannelSelection from a track title
+inline StemChannelSelection extractStemMaskFromTitle(const QString& title) {
+    qDebug() << "Extracting stem mask from title:" << title;
+    if (title.endsWith(" [Drums]")) {
+        return StemChannel::First;
+    } else if (title.endsWith(" [Bass]")) {
+        return StemChannel::Second;
+    } else if (title.endsWith(" [Other]")) {
+        return StemChannel::Third;
+    } else if (title.endsWith(" [Vocals]")) {
+        return StemChannel::Fourth;
+    } else if (title.endsWith(" [Pre-Mixed Stereo]")) {
+        return StemChannel::All;
+    } else {
+        // Default -> Stems working with controls
+        qDebug() << "No match found, returning default StemChannel::All";
+        return StemChannel::None;
+    }
+}
 #endif
 
 // Contains the information needed to process a buffer of audio

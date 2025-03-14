@@ -202,8 +202,19 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 #else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
 #endif
-    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
+#ifdef __STEM__
+    void slotLoadLocationToPlayer(const QString& location,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+    void slotLoadLocationToPlayerMaybePlay(const QString& location,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask = mixxx::StemChannel::All);
+#else
+    void slotLoadLocationToPlayer(
+            const QString& location, const QString& group, bool play);
     void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
+#endif
 
     void slotCloneDeck(const QString& source_group, const QString& target_group);
 
@@ -237,7 +248,15 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void onTrackAnalysisFinished();
 
   signals:
+#ifdef __STEM__
+    void loadLocationToPlayer(
+            const QString& location,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask = mixxx::StemChannel::All,
+            bool play = false);
+#else
     void loadLocationToPlayer(const QString& location, const QString& group, bool play);
+#endif
 
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.

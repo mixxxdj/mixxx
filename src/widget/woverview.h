@@ -39,6 +39,14 @@ class WOverview : public WWidget, public TrackDropTarget {
     };
     Q_ENUM(Type);
 
+#ifdef __STEM__
+    void trackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask) override;
+#else
+    void trackDropped(const QString& filename, const QString& group) override;
+#endif
+
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
@@ -47,7 +55,14 @@ class WOverview : public WWidget, public TrackDropTarget {
             AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(const QString& filename, const QString& group) override;
+    // void trackDropped(const QString& filename, const QString& group) override;
+#ifdef __STEM__
+    void emitTrackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask);
+#else
+    void emitTrackDropped(const QString& filename, const QString& group);
+#endif
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:

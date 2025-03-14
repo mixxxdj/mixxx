@@ -13,6 +13,8 @@
 #include "moc_basesqltablemodel.cpp"
 #include "track/keyutils.h"
 #include "track/track.h"
+// EVE
+#include "track/steminfoimporter.h"
 #include "track/trackmetadata.h"
 #include "util/assert.h"
 #include "util/datetime.h"
@@ -221,6 +223,52 @@ void BaseSqlTableModel::select() {
     PerformanceTimer time;
     time.start();
 
+    ///////
+    //  qDebug() << "NO CACHE USED";
+
+    //  if (m_tableName.startsWith("crate")) {
+    //    // EVE drop view and rebuild it for Searchcrate
+    //    //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] Drop
+    //    //        temp table " << m_tableName;
+    //    QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
+    //    FwdSqlQuery(m_database, queryStringDropView).execPrepared();
+    //    //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] REBUILD TEMP";
+    //    QStringList columns;
+    //    QString crateId = m_tableName;
+    //    crateId = crateId.replace("crate_", "");
+
+    //    columns << "library." + LIBRARYTABLE_ID
+    //            << "'' AS " + LIBRARYTABLE_PREVIEW
+    //            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+    //            // the same value as the cover digest.
+    //            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+    //            << "library." + LIBRARYTABLE_TITLE
+    //            << "library." + LIBRARYTABLE_FILETYPE
+    //            << "track_locations." + TRACKLOCATIONSTABLE_LOCATION;
+
+    //    QString queryString =
+    //            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+    //                    "SELECT %2 FROM %3 "
+    //                    "INNER JOIN track_locations "
+    //                    "ON library.location=track_locations.id "
+    //                    //"WHERE %4 IN (%5) "
+    //                    "WHERE %4 IN (SELECT %5 FROM %6 WHERE %7 = %8) "
+    //                    "AND %9=0")
+    //                    .arg(m_tableName,
+    //                            columns.join(","),
+    //                            LIBRARY_TABLE,
+    //                            "library." + LIBRARYTABLE_ID,
+    //                            "crate_tracks.track_id",
+    //                            "crate_tracks",
+    //                            "crate_tracks.crate_id",
+    //                            crateId,
+    //                            LIBRARYTABLE_MIXXXDELETED);
+    //    qDebug() << "Query String:" << queryString;
+    //    FwdSqlQuery(m_database, queryString).execPrepared();
+    //}
+
+    ///////
+
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
                                   .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
@@ -254,6 +302,14 @@ void BaseSqlTableModel::select() {
     QSet<TrackId> trackIds;
     int idColumn = -1;
     int posColumn = -1;
+
+    QString fileType;
+    QString filePath;
+    QString trackTitle;
+    int fileTypeIndex;
+    int filePathIndex;
+    int titleIndex;
+    // int iCounter;
     while (query.next()) {
         QSqlRecord sqlRecord = query.record();
 
@@ -288,6 +344,66 @@ void BaseSqlTableModel::select() {
             rowInfo.columnValues.push_back(sqlRecord.value(i));
         }
         rowInfos.push_back(rowInfo);
+
+        if (m_tableName.contains("crate")) {
+            // EVE
+            fileTypeIndex = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+            filePathIndex = fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
+            titleIndex = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+
+            if (fileTypeIndex != -1 && filePathIndex != -1) {
+                fileType = sqlRecord.value(fileTypeIndex).toString();
+                filePath = sqlRecord.value(filePathIndex).toString();
+                trackTitle = sqlRecord.value(titleIndex).toString();
+
+                // qDebug() << "[BaseSqlTableModel::select()] -> fileType: " << fileType;
+                // qDebug() << "[BaseSqlTableModel::select()] -> filePath: " << filePath;
+                // qDebug() << "[BaseSqlTableModel::select()] -> trackTitle: " << trackTitle;
+            } else {
+                // qDebug() << "[BaseSqlTableModel::select()] -> Invalid column indices!";
+            }
+
+            // if stem -> add stemtracks
+
+            if (fileType == "stem.mp4") {
+                // qDebug() << "[BaseSqlTableModel::select()] -> Stem -> filetype: " << fileType;
+                // Get the StemTracks
+                QList<StemRow> stemTracks = loadStemTracks(filePath);
+                for (int i = 0; i < stemTracks.size(); ++i) {
+                    const StemRow& stemTrack = stemTracks[i];
+
+                    // Copy current RowInfo -> put stemData in it
+                    // qDebug() << "[BaseSqlTableModel::select()] -> RowInfo: "
+                    // << rowInfo.columnValues;
+                    RowInfo stemRowInfo = rowInfo;
+                    // Row Number
+                    stemRowInfo.row = rowInfos.size();
+
+                    int titleIndex = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+                    if (titleIndex == -1) {
+                        // qDebug() << "[BaseSqlTableModel::select()] -> RowInfo
+                        // -> titleIndex: "Invalid title index!";
+                        continue;
+                    }
+                    QString newTitle = trackTitle + " [" + stemTrack.trackName + "]";
+                    stemRowInfo.columnValues[titleIndex] = QVariant(newTitle);
+                    // qDebug() << "[BaseSqlTableModel::select()] ->
+                    // stemRowInfo: "
+                    //          << "Original Title:" << trackTitle;
+                    //          << "New Title: " << newTitle;
+                    // qDebug() << "[BaseSqlTableModel::select()] -> Modified
+                    // columnValues:" << stemRowInfo.columnValues;
+                    rowInfos.push_back(stemRowInfo);
+                    // qDebug() << "[BaseSqlTableModel::select()] -> New RowInfo
+                    // after modification: " << rowInfos.back().columnValues;
+
+                    // iCounter = rowInfos.size() - 1;
+                    // const RowInfo& rowInfo = rowInfos[iCounter];
+                    // QVariant title =
+                    // rowInfo.columnValues[ColumnCache::COLUMN_LIBRARYTABLE_TITLE];
+                }
+            }
+        }
     }
 
     if (sDebug) {
@@ -352,16 +468,45 @@ void BaseSqlTableModel::select() {
         DEBUG_ASSERT(trackPosToRows.size() == rowInfos.size());
     }
 
-    // We're done! Issue the update signals and replace the main maps.
+    // qDebug() << "[BaseSqlTableModel::select()] -> RowInfo -> Rows before
+    // replacement:" << m_rowInfo.size(); We're done! Issue the update signals
+    // and replace the main maps.
     replaceRows(
             std::move(rowInfos),
             std::move(trackIdToRows),
             std::move(trackPosToRows));
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
+    // qDebug() << "[BaseSqlTableModel::select()] -> RowInfo: -> Rows after
+    // replacement:" << m_rowInfo.size();
 
     qDebug() << this << "select() returned" << m_rowInfo.size()
              << "results in" << time.elapsed().debugMillisWithUnit();
+}
+
+TrackId BaseSqlTableModel::generateStemTrackId(
+        const TrackId& parentTrackId,
+        const QString& stemFileName) {
+    QString idString = QString("%1-%2").arg(parentTrackId.toString(), stemFileName);
+    return TrackId(idString);
+}
+
+QList<BaseSqlTableModel::StemRow> BaseSqlTableModel::loadStemTracks(const QString& filePath) {
+    QList<BaseSqlTableModel::StemRow> stemRows;
+    // qDebug() << "[BaseSqlTableModel::loadStemTracks] -> loadStemTracks for filepath" << filePath;
+    QStringList stemNames = {
+            //"Stem-Mixing",
+            "Pre-Mixed Stereo",
+            "Drums",
+            "Bass",
+            "Other",
+            "Vocals"};
+
+    for (const QString& stemName : stemNames) {
+        stemRows.append(StemRow(filePath, stemName, "stem.mp4"));
+    }
+
+    return stemRows;
 }
 
 void BaseSqlTableModel::setTable(QString tableName,
@@ -371,6 +516,8 @@ void BaseSqlTableModel::setTable(QString tableName,
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
+    qDebug() << "m_tableColumns" << m_tableColumns;
+
     m_tableName = std::move(tableName);
     m_idColumn = std::move(idColumn);
     m_tableColumns = std::move(tableColumns);
@@ -675,6 +822,9 @@ QVariant BaseSqlTableModel::rawValue(
         }
 
         const QVector<QVariant>& columnValues = rowInfo.columnValues;
+        // qDebug() << "[BaseSqlTableModel::rawValue] -> Returning value for row:" << row
+        //          << "column:" << column
+        //          << "value:" << columnValues.at(column);
         if (sDebug) {
             qDebug() << "Returning table-column value"
                      << columnValues.at(column)

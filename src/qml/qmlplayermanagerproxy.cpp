@@ -56,7 +56,12 @@ void QmlPlayerManagerProxy::loadLocationUrlIntoNextAvailableDeck(
 
 void QmlPlayerManagerProxy::loadLocationToPlayer(
         const QString& location, const QString& group, bool play) {
+//    m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
+#ifdef __STEM__
+    m_pPlayerManager->slotLoadLocationToPlayer(location, group, mixxx::StemChannel::All, play);
+#else
     m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
+#endif
 }
 
 // static

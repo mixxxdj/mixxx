@@ -550,6 +550,15 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
         mixxx::StemChannelSelection stemMask,
         bool bPlay) {
+    qDebug() << "BaseTrackPlayerImpl::slotLoadTrack -> sender() " << sender();
+    if (pNewTrack) {
+        qDebug() << "BaseTrackPlayerImpl::slotLoadTrack -> "
+                    "pNewTrack->getTitle(): "
+                 << pNewTrack->getTitle();
+    }
+    qDebug() << "BaseTrackPlayerImpl::slotLoadTrack -> stemMask " << stemMask;
+    qDebug() << "BaseTrackPlayerImpl::slotLoadTrack -> bPlay " << bPlay;
+
 #else
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
         bool bPlay) {
@@ -560,7 +569,6 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
     if (pNewTrack) {
         auto fileInfo = pNewTrack->getFileInfo();
         if (!Sandbox::askForAccess(&fileInfo)) {
-            // We don't have access.
             return;
         }
     }
@@ -577,6 +585,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
     // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
 #ifdef __STEM__
+    qDebug() << "BaseTrackPlayerImpl::slotLoadTrack -> stemMask" << stemMask;
     pEngineBuffer->loadTrack(pNewTrack,
             stemMask,
             bPlay,
@@ -621,6 +630,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
+    qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded triggered by sender" << sender();
     //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
     if (!pNewTrack &&
             pOldTrack &&
@@ -815,6 +825,7 @@ void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
 }
 
 void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
+    qDebug() << "BaseTrackPlayerImpl::loadTrackFromGroup triggered";
     EngineChannel* pChannel = m_pEngineMixer->getChannel(group);
     if (!pChannel) {
         return;

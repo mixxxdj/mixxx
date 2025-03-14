@@ -122,7 +122,15 @@ class Library: public QObject {
 #else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
 #endif
+
+#ifdef __STEM__
+    void slotLoadLocationToPlayer(const QString& location,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
+#endif
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();

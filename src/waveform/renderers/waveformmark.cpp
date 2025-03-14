@@ -142,7 +142,8 @@ WaveformMark::WaveformMark(const QString& group,
     if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
         // color = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark <Color>:" << color;
+        // EVE
+        // qDebug() << "Didn't get mark <Color>:" << color;
     } else {
         color = WSkinColor::getCorrectColor(color);
     }
@@ -152,7 +153,8 @@ WaveformMark::WaveformMark(const QString& group,
     if (!m_textColor.isValid()) {
         // Read the text color, otherwise use the parent's BgColor.
         m_textColor = signalColors.getBgColor();
-        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" << m_textColor;
+        // EVE
+        //  qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" << m_textColor;
     }
 
     m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);

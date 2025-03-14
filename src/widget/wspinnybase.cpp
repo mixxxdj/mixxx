@@ -241,6 +241,7 @@ void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
 }
 
 void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
+    // qDebug() << "[WSpinnyBase::slotTrackLoaded] triggered";
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -664,3 +665,22 @@ void WSpinnyBase::dragEnterEvent(QDragEnterEvent* pEvent) {
 void WSpinnyBase::dropEvent(QDropEvent* pEvent) {
     DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
+
+#ifdef __STEM__
+void WSpinnyBase::trackDropped(const QString& filename,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask) {
+    // qDebug() << "[WSpinnyBase::trackDropped] -> File:" << filename <<
+    // "Group:" << group << "StemMask:" << stemMask;
+
+    if (stemMask != mixxx::StemChannel::All) {
+        qDebug() << "[WSpinnyBase::trackDropped] -> Specific stem track selected.";
+    }
+    emit emitTrackDropped(filename, group, stemMask);
+}
+#else
+void WSpinnyBase::trackDropped(const QString& filename, const QString& group) {
+    // qDebug() << "[WSpinnyBase::trackDropped] -> File:" << filename << "Group:" << group;
+    emit emitTrackDropped(filename, group);
+}
+#endif

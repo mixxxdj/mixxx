@@ -43,6 +43,14 @@ class WSpinnyBase : public WGLWidget,
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
+#ifdef __STEM__
+    void trackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask) override;
+#else
+    void trackDropped(const QString& filename, const QString& group) override;
+#endif
+
   public slots:
     void slotLoadTrack(TrackPointer);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -63,7 +71,14 @@ class WSpinnyBase : public WGLWidget,
     void slotTrackCoverArtUpdated();
 
   signals:
-    void trackDropped(const QString& filename, const QString& group) override;
+    // void trackDropped(const QString& filename, const QString& group) override;
+#ifdef __STEM__
+    void emitTrackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask);
+#else
+    void emitTrackDropped(const QString& filename, const QString& group);
+#endif
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:

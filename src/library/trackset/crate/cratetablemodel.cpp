@@ -45,11 +45,15 @@ void CrateTableModel::selectCrate(CrateId crateId) {
 
     QString tableName = QStringLiteral("crate_%1").arg(m_selectedCrate.toString());
     QStringList columns;
-    columns << LIBRARYTABLE_ID
+    columns << "library." + LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "track_locations." + TRACKLOCATIONSTABLE_LOCATION;
+
     // We hide files that have been explicitly deleted in the library
     // (mixxx_deleted = 0) from the view.
     // They are kept in the database, because we treat crate membership as a
@@ -57,20 +61,26 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     QString queryString =
             QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM %3 "
+                    "INNER JOIN track_locations "
+                    "ON library.location=track_locations.id "
                     "WHERE %4 IN (%5) "
                     "AND %6=0")
                     .arg(tableName,
                             columns.join(","),
                             LIBRARY_TABLE,
-                            LIBRARYTABLE_ID,
+                            "library." + LIBRARYTABLE_ID,
                             CrateStorage::formatSubselectQueryForCrateTrackIds(
                                     crateId),
                             LIBRARYTABLE_MIXXXDELETED);
+    // qDebug() << "Query String:" << queryString;
     FwdSqlQuery(m_database, queryString).execPrepared();
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
+    columns[3] = LIBRARYTABLE_TITLE;
+    columns[4] = LIBRARYTABLE_FILETYPE;
+    columns[5] = TRACKLOCATIONSTABLE_LOCATION;
     setTable(tableName,
             LIBRARYTABLE_ID,
             columns,

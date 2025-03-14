@@ -43,11 +43,13 @@ class WTrackTableView : public WLibraryTableView {
     void editSelectedItem();
     void activateSelectedTrack();
 #ifdef __STEM__
-    void loadSelectedTrackToGroup(const QString& group,
+    void loadSelectedTrackToGroup(
+            const QString& group,
             mixxx::StemChannelSelection stemMask,
             bool play);
 #else
-    void loadSelectedTrackToGroup(const QString& group,
+    void loadSelectedTrackToGroup(
+            const QString& group,
             bool play);
 #endif
     void assignNextTrackColor() override;

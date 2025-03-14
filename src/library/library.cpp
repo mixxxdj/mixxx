@@ -551,23 +551,53 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
 }
 
-void Library::slotLoadLocationToPlayer(const QString& location, const QString& group, bool play) {
+#ifdef __STEM__
+void Library::slotLoadLocationToPlayer(
+        const QString& location,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
     auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
-#ifdef __STEM__
-        emit loadTrackToPlayer(pTrack, group, mixxx::StemChannelSelection(), play);
-#else
-        emit loadTrackToPlayer(pTrack, group, play);
-#endif
+        // qDebug() << "[Library::slotLoadLocationToPlayer] triggered";
+        // qDebug() << "[Library::slotLoadLocationToPlayer] -> sender() " <<
+        // sender(); qDebug() << "[Library::slotLoadLocationToPlayer] ->
+        // pNewTrack->getTitle(): " << pTrack->getTitle(); qDebug() <<
+        // "[Library::slotLoadLocationToPlayer] -> stemMask " << stemMask;
+        // qDebug() << "[Library::slotLoadLocationToPlayer] -> bPlay " << play;
+        // emit loadTrackToPlayer(pTrack, group, mixxx::StemChannelSelection(),
+        // play);
+        emit loadTrackToPlayer(pTrack, group, stemMask, play);
     }
 }
+#else
+void Library::slotLoadLocationToPlayer(
+        const QString& location,
+        const QString& group,
+        bool play) {
+    auto trackRef = TrackRef::fromFilePath(location);
+    TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
+    if (pTrack) {
+        emit loadTrackToPlayer(pTrack, group, play);
+    }
+}
+#endif
 
 #ifdef __STEM__
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack,
         const QString& group,
         mixxx::StemChannelSelection stemMask,
         bool play) {
+    // qDebug() << "[Library::slotLoadTrackToPlayer] triggered";
+    // qDebug() << "[Library::slotLoadTrackToPlayer] -> sender() " << sender();
+    if (pTrack) {
+        // qDebug() << "[Library::slotLoadTrackToPlayer] ->
+        // pNewTrack->getTitle(): " << pTrack->getTitle();
+    }
+    // qDebug() << "[Library::slotLoadTrackToPlayer] -> stemMask " << stemMask;
+    // qDebug() << "[Library::slotLoadTrackToPlayer] -> bPlay " << play;
+
     emit loadTrackToPlayer(pTrack, group, stemMask, play);
 }
 #else
