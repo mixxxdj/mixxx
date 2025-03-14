@@ -94,9 +94,12 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFilePathFromIndex(int index) const;
+
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
     bool saveMapping();
+    void copyScriptFilesToUserDir();
+
     void initTableView(QTableView* pTable);
     unsigned int getNumberOfVisibleTabs();
     int getIndexOfFirstVisibleTab();
@@ -119,6 +122,14 @@ class DlgPrefController : public DlgPreferencePage {
     /// @param bDirty The new dialog's dirty state.
     bool isDirty() const {
         return m_bDirty;
+    }
+
+    bool userMappingLoaded() {
+        if (!m_pMapping) {
+            return false;
+        }
+        const QFileInfo fileInfo(m_pMapping->filePath());
+        return fileInfo.absoluteDir().absolutePath().append("/") == m_pUserDir;
     }
 
     /// Reload the mappings in the dropdown dialog
