@@ -399,7 +399,8 @@ void BaseSqlTableModel::select() {
 
                     iCounter = rowInfos.size() - 1;
                     const RowInfo& rowInfo = rowInfos[iCounter];
-                    QVariant title = rowInfo.columnValues[ColumnCache::COLUMN_LIBRARYTABLE_TITLE];
+                    // QVariant title =
+                    // rowInfo.columnValues[ColumnCache::COLUMN_LIBRARYTABLE_TITLE];
                 }
             }
         }
@@ -486,7 +487,7 @@ void BaseSqlTableModel::select() {
 TrackId BaseSqlTableModel::generateStemTrackId(
         const TrackId& parentTrackId,
         const QString& stemFileName) {
-    QString idString = QString("%1-%2").arg(parentTrackId.toString()).arg(stemFileName);
+    QString idString = QString("%1-%2").arg(parentTrackId.toString(), stemFileName);
     return TrackId(idString);
 }
 

@@ -125,7 +125,7 @@ QList<mixxx::FileInfo> dropEventFiles(
 
     // Result list & pair= track + stemMask
     QList<QPair<mixxx::FileInfo, mixxx::StemChannelSelection>> result;
-    for (const auto& track : trackList) {
+    for (const auto& track : std::as_const(trackList)) {
         result.append(qMakePair(track, stemMask));
     }
     qDebug() << "[dropEventFiles()] -> stem-result:" << result;
