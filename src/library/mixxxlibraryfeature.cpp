@@ -112,7 +112,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this,
             pLibrary->trackCollectionManager(),
-            "mixxx.db.model.library");
+            SettingsDAO::s_tracksFeatureNamespace);
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);

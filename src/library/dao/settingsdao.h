@@ -12,6 +12,8 @@ class SettingsDAO final {
             : m_database(std::move(database)) {
     }
 
+    static const char* s_tracksFeatureNamespace;
+
     QString getValue(
             const QString& name,
             QString defaultValue = QString()) const;
