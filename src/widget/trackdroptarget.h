@@ -28,11 +28,11 @@ class TrackDropTarget {
         qDebug() << "[TrackDropTarget] -> emitTrackDropped -> filename "
                  << filename << " group: " << group
                  << " stemMask: " << stemMask;
-        emit trackDropped(filename, group, stemMask);
+        trackDropped(filename, group, stemMask);
     }
 #else
     void emitTrackDropped(const QString& filename, const QString& group) {
-        emit trackDropped(filename, group); // clazy:exclude=incorrect-emit
+        trackDropped(filename, group); // clazy:exclude=incorrect-emit
     }
 #endif
 
