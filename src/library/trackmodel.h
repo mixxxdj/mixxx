@@ -213,6 +213,16 @@ class TrackModel {
         return settings.setValue(key, value);
     }
 
+    // Helpers for getting 'Tracks' header state protobuf to WTrackTableViewHeader
+    virtual bool isTracksModel() const {
+        return m_settingsNamespace == "tracks";
+    }
+    QString getTracksViewHeaderState() {
+        SettingsDAO settings(m_db);
+        return settings.getValue(SettingsDAO::s_tracksFeatureNamespace +
+                QStringLiteral(".header_state_pb"));
+    }
+
     virtual int defaultSortColumn() const {
         return m_iDefaultSortColumn;
     }

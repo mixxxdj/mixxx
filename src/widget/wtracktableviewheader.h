@@ -15,7 +15,7 @@ class QWidget;
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU
 class HeaderViewState {
-public:
+  public:
     HeaderViewState() {}
 
     // Populate the object based on the provided live view.
@@ -30,9 +30,10 @@ public:
 
     // Returns a serialized protobuf of the current state.
     QString saveState() const;
-    // Apply the state to the provided view.  The data in the object may be
+    // Apply the state to the provided view. The data in the object may be
     // changed if the header format has changed.
-    void restoreState(QHeaderView* headers);
+    // Don't sort if explicitly disabled, for example when cloning the Tracks header.
+    void restoreState(QHeaderView* headers, bool sort = true);
 
     // returns false if no headers are listed to be shown.
     bool healthy() const {
@@ -47,7 +48,7 @@ public:
         return false;
     }
 
-private:
+  private:
     mixxx::library::HeaderViewState m_view_state;
 };
 
@@ -63,7 +64,10 @@ class WTrackTableViewHeader : public QHeaderView {
     void saveHeaderState();
     void restoreHeaderState();
     void loadDefaultHeaderState();
-     /** returns false if the header state is stored in the database (on first time usgae) **/
+    // Try to load the header state of the 'Tracks' view.
+    // Should always be valid because Tracks is selected by default after start.
+    void loadTracksViewHeaderState();
+    // returns true if the header state is stored in the database (false on first time usage)
     bool hasPersistedHeaderState();
 
   signals:
