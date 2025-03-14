@@ -9,6 +9,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "broadcast/scrobblingmanager.h"
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -226,7 +227,7 @@ void CoreServices::initializeLogging() {
             logFlags);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
+void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
     VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
         return;
     }
@@ -617,6 +618,9 @@ void CoreServices::finalize() {
 
     Timer t("CoreServices::~CoreServices");
     t.start();
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
+    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
 
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks

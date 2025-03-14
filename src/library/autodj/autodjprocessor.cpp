@@ -155,6 +155,9 @@ AutoDJProcessor::AutoDJProcessor(
     m_pEnabledAutoDJ->connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 
+    m_pIdleState = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "idle"));
+
     // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
     // are created.
     for (unsigned int i = 0; i < pPlayerManager->numberOfDecks(); ++i) {
@@ -194,6 +197,7 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
     delete m_pFadeNow;
+    delete m_pIdleState;
 
     delete m_pAutoDJTableModel;
 }
@@ -564,7 +568,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // loaded track from the queue and wait for the next call to
             // playerPositionChanged for deck1 after the track is loaded.
             m_eState = ADJ_ENABLE_P1LOADED;
-
+            m_pIdleState->set(false);
             // Move crossfader to the left.
             setCrossfader(-1.0);
 
@@ -576,6 +580,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
             m_eState = ADJ_IDLE;
+            m_pIdleState->set(true);
             if (leftDeckPlaying) {
                 // Load track into the right deck.
                 emitLoadTrackToPlayer(nextTrack, pRightDeck->group, false);
@@ -597,6 +602,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &ControlProxy::valueChanged,
                 this,
                 &AutoDJProcessor::crossfaderChanged);
+        m_pIdleState->set(false);
         for (const auto& pDeck : std::as_const(m_decks)) {
             pDeck->disconnect(this);
         }
@@ -729,7 +735,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // sure our thresholds are configured (by calling calculateFadeThresholds
             // for the playing deck).
             m_eState = ADJ_IDLE;
-
+            m_pIdleState->set(true);
             if (!rightDeckPlaying) {
                 // Only left deck playing!
                 // In ADJ_ENABLE_P1LOADED mode we wait until the left deck
@@ -775,6 +781,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 setCrossfader(1.0);
             }
             m_eState = ADJ_IDLE;
+            m_pIdleState->set(true);
             // Invalidate threshold calculated for the old otherDeck
             // This avoids starting a fade back before the new track is
             // loaded into the otherDeck
@@ -840,6 +847,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     otherDeck->play();
                 }
 
+                m_pIdleState->set(false);
+                
                 // Now that we have started the other deck playing, remove the track
                 // that was "on deck" from the top of the queue.
                 // Note: This is a DB call and takes long.
@@ -856,7 +865,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         double crossfaderTarget;
         if (m_eState == ADJ_LEFT_FADING) {
             crossfaderTarget = 1.0;
-
         } else if (m_eState == ADJ_RIGHT_FADING) {
             crossfaderTarget = -1.0;
         } else {

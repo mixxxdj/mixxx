@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 
 #include "audio/types.h"
+#include "broadcast/metadatabroadcast.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -398,8 +399,9 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
+    QString group = groupForDeck(m_decks.count());
     ChannelHandleAndGroup handleGroup =
-            m_pEngine->registerChannelGroup(groupForDeck(m_decks.count()));
+            m_pEngine->registerChannelGroup(group);
     VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
         return;
     }
