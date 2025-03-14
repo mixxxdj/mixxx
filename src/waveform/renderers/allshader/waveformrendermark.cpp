@@ -183,23 +183,39 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkShowBeatsChanged,
             this,
-            &WaveformRenderMark::setUntilMarkShowBeats);
+            &WaveformRenderMark::setUntilMarkShowBeats,
+            Qt::UniqueConnection);
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkShowTimeChanged,
             this,
-            &WaveformRenderMark::setUntilMarkShowTime);
+            &WaveformRenderMark::setUntilMarkShowTime,
+            Qt::UniqueConnection);
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkAlignChanged,
             this,
-            &WaveformRenderMark::setUntilMarkAlign);
+            &WaveformRenderMark::setUntilMarkAlign,
+            Qt::UniqueConnection);
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkTextPointSizeChanged,
             this,
-            &WaveformRenderMark::setUntilMarkTextSize);
+            &WaveformRenderMark::setUntilMarkTextSize,
+            Qt::UniqueConnection);
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
             this,
-            &WaveformRenderMark::setUntilMarkTextHeightLimit);
+            &WaveformRenderMark::setUntilMarkTextHeightLimit,
+            Qt::UniqueConnection);
+
+    m_untilMarkShowBeats = pWaveformWidgetFactory->getUntilMarkShowBeats();
+    m_untilMarkShowTime = pWaveformWidgetFactory->getUntilMarkShowTime();
+    m_untilMarkAlign = pWaveformWidgetFactory->getUntilMarkAlign();
+
+    m_untilMarkTextSize =
+            pWaveformWidgetFactory->getUntilMarkTextPointSize();
+    m_untilMarkTextHeightLimit =
+            pWaveformWidgetFactory
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
 
     m_playMarkerForegroundColor = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
     m_playMarkerBackgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
@@ -397,6 +413,8 @@ void allshader::WaveformRenderMark::update() {
     if (m_untilMarkShowBeats || m_untilMarkShowTime) {
         updateUntilMark(playPosition, nextMarkPosition);
         updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
+    } else {
+        m_pDigitsRenderNode->clear();
     }
 }
 

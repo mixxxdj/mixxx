@@ -190,7 +190,9 @@ bool WaveformRendererFiltered::preprocessInner() {
 
     DEBUG_ASSERT(reserved ==
             vertexUpdater[0].index() + vertexUpdater[1].index() +
-                    vertexUpdater[2].index());
+                    vertexUpdater[2].index() +
+                    numVerticesPerLine); // all lines on the three channels and
+                                         // the axis
 
     markDirtyMaterial();
 
