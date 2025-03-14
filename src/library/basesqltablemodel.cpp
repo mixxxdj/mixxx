@@ -398,7 +398,7 @@ void BaseSqlTableModel::select() {
                     // after modification: " << rowInfos.back().columnValues;
 
                     iCounter = rowInfos.size() - 1;
-                    const RowInfo& rowInfo = rowInfos[iCounter];
+                    // const RowInfo& rowInfo = rowInfos[iCounter];
                     // QVariant title =
                     // rowInfo.columnValues[ColumnCache::COLUMN_LIBRARYTABLE_TITLE];
                 }
