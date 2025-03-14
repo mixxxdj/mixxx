@@ -309,7 +309,7 @@ void BaseSqlTableModel::select() {
     int fileTypeIndex;
     int filePathIndex;
     int titleIndex;
-    int iCounter;
+    // int iCounter;
     while (query.next()) {
         QSqlRecord sqlRecord = query.record();
 
@@ -397,7 +397,7 @@ void BaseSqlTableModel::select() {
                     // qDebug() << "[BaseSqlTableModel::select()] -> New RowInfo
                     // after modification: " << rowInfos.back().columnValues;
 
-                    iCounter = rowInfos.size() - 1;
+                    // iCounter = rowInfos.size() - 1;
                     // const RowInfo& rowInfo = rowInfos[iCounter];
                     // QVariant title =
                     // rowInfo.columnValues[ColumnCache::COLUMN_LIBRARYTABLE_TITLE];
