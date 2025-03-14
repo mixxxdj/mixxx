@@ -29,6 +29,9 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
     QUrl helpUrl() const override;
 
+    void updateMappingIconsAndColoredLinkTexts();
+    void updateColoredLinkTexts() override;
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;

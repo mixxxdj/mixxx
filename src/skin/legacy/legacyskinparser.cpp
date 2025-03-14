@@ -29,6 +29,7 @@
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
+#include "util/widgethelper.h"
 #include "util/xml.h"
 #include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -501,7 +502,11 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
 
         if (newStyle) {
             // New style skins are just a WidgetGroup at the root.
-            result.append(parseWidgetGroup(node));
+            QWidget* skin = parseWidgetGroup(node);
+            // Set an object name so we can address child dialogs
+            // with the skin's stylesheet "Skin"
+            skin->setObjectName(mixxx::widgethelper::skinWidgetName());
+            result.append(skin);
         } else {
             // From here on is loading for legacy skins only.
             QWidget* pOuterWidget = new QWidget(m_pParent);
@@ -2315,13 +2320,6 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
         style = styleElement.text();
     }
 
-    // Legacy fixes: In Mixxx <1.12.0 we used QGroupBox for WWidgetGroup. Some
-    // skin writers used QGroupBox for styling. In 1.12.0 onwards, we have
-    // switched to QFrame and there should be no reason we would ever use a
-    // QGroupBox in a skin. To support legacy skins, we rewrite QGroupBox
-    // selectors to use WWidgetGroup directly.
-    style = style.replace("QGroupBox", "WWidgetGroup");
-
     return style;
 }
 
@@ -2652,6 +2650,45 @@ QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     // skins directory for the launch image style.
     style.replace("url(skins:", "url(" + m_pConfig->getResourcePath() + "skins/");
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
+}
+
+/// static
+QString LegacySkinParser::extractRulesFromStylesheet(
+        const QString& styleSheet,
+        const QStringList& selectors) {
+    // First remove css comments so we can use a simple selector RegEx
+    QString st = styleSheet; // gcc warns when I use std::move: "redundant move"
+    static const QRegularExpression commRegEx("\\/\\*(.|[\\r\\n])*?\\*\\/");
+    st.remove(commRegEx);
+
+    QString extrStyle;
+    // Find all rules for any of the selectors
+    const QRegularExpression styleRegex(
+            QStringLiteral("((?<![\\S])(%1)[\\s,][^}]+})")
+                    .arg(selectors.join('|')));
+    for (auto& match : styleRegex.globalMatch(st)) {
+        auto all = match.captured();
+        extrStyle.append(all);
+        // extrStyle.append('\n'); // to make debug output more readable
+    }
+
+    // enable only this, not all 'sDebug' branches
+    if (false) {
+        qWarning() << "     .";
+        qWarning() << "     extractRulesFromStylesheet";
+        qWarning() << "     selector(s):";
+        for (const auto& sel : selectors) {
+            qWarning() << "       " << sel;
+        }
+        qWarning() << "     .";
+        const QStringList prefSplit = extrStyle.split('\n');
+        for (const auto& line : prefSplit) {
+            qWarning() << "     " << line;
+        }
+        qWarning() << "     .";
+    }
+
+    return extrStyle;
 }
 
 bool LegacySkinParser::requiresStem(const QDomElement& node) {

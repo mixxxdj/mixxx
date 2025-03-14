@@ -215,6 +215,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorMenu = make_parented<QMenu>(this);
         m_pColorMenu->setTitle(tr("Select Color"));
+        m_pColorMenu->setObjectName(QStringLiteral("TrackColorMenu"));
     }
 
     m_pHotcueMenu = make_parented<QMenu>(this);
@@ -1574,7 +1575,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
 
         do {
             bool ok = false;
-            name = QInputDialog::getText(nullptr,
+            name = QInputDialog::getText(this,
                     tr("Create New Playlist"),
                     tr("Enter name for new playlist:"),
                     QLineEdit::Normal,
@@ -1585,11 +1586,11 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
                 return;
             }
             if (playlistDao.getPlaylistIdFromName(name) != -1) {
-                QMessageBox::warning(nullptr,
+                QMessageBox::warning(this,
                         tr("Playlist Creation Failed"),
                         tr("A playlist by that name already exists."));
             } else if (name.isEmpty()) {
-                QMessageBox::warning(nullptr,
+                QMessageBox::warning(this,
                         tr("Playlist Creation Failed"),
                         tr("A playlist cannot have a blank name."));
             } else {
@@ -1598,7 +1599,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
         } while (!validNameGiven);
         iPlaylistId = playlistDao.createPlaylist(name); //-1 is changed to the new playlist ID return from the DAO
         if (iPlaylistId == -1) {
-            QMessageBox::warning(nullptr,
+            QMessageBox::warning(this,
                     tr("Playlist Creation Failed"),
                     tr("An unknown error occurred while creating playlist: ") + name);
             return;
@@ -2467,7 +2468,8 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
 
     {
-        QDialog dlgDelConfirm;
+        // Create and populate the dialog
+        QDialog dlgDelConfirm(this);
 
         // Prepare the delete confirmation dialog.
         // First, create the list view for the files to be deleted
@@ -2592,7 +2594,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         if (s_showPurgeSuccessPopup) {
             // Show purge summary message
-            QMessageBox msgBoxPurgeTracks;
+            QMessageBox msgBoxPurgeTracks(this);
             msgBoxPurgeTracks.setIcon(QMessageBox::Information);
             QString msgTitle;
             QString msgText;
@@ -2651,7 +2653,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         return;
     }
 
-    QDialog dlgNotDeleted;
+    QDialog dlgNotDeleted(this);
 
     // Else show a message with a list of tracks that could not be deleted.
     auto pNotDeletedLabel = make_parented<QLabel>(&dlgNotDeleted);
@@ -2708,6 +2710,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Use the batch editor.
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
+                this,
                 m_pConfig);
         connect(m_pDlgTrackInfoMulti.get(),
                 &QDialog::finished,
@@ -2731,6 +2734,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+                this,
                 m_pConfig,
                 m_pTrackModel);
         connect(m_pDlgTrackInfo.get(),
@@ -2764,7 +2768,9 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     }
     // Create a fresh dialog on invocation
     m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
-            m_pConfig, m_pTrackModel);
+            this,
+            m_pConfig,
+            m_pTrackModel);
     connect(m_pDlgTagFetcher.get(),
             &QDialog::finished,
             this,
