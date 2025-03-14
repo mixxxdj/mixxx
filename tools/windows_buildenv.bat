@@ -4,9 +4,20 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
 
-IF NOT DEFINED PLATFORM (
-    ECHO ^ERROR: The PLATFORM environment variable is not defined. Please ensure you are using the correct shell like 'x64 Native Tools Command Prompt for VS 20XX
+REM Detect host architecture
+IF /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    SET "HOST_ARCH=x64"
+) else IF /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    SET "HOST_ARCH=arm64"
+) else (
+    echo ^Error: Unknown processor architecture: %PROCESSOR_ARCHITECTURE%
+    PAUSE
     EXIT /B 1
+)
+
+IF NOT DEFINED PLATFORM (
+    ECHO ^Info: The PLATFORM environment variable is not defined. Using host's PROCESSOR_ARCHITECTURE=%PROCESSOR_ARCHITECTURE%.
+    SET "PLATFORM=%HOST_ARCH%"
 )
 
 IF NOT DEFINED BUILDENV_BASEPATH (
@@ -49,7 +60,7 @@ IF /I "%PLATFORM%"=="arm64" (
     ECHO ^ERROR: Unsupported PLATFORM: %PLATFORM%
     ECHO ^Please refer to the following guide to manually build the vcpkg environment:"
     ECHO ^https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
-    exit 1
+    PAUSE
     EXIT /B 1
 )
 
@@ -225,9 +236,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "configurationType": "%2",
     >>"%CMakeSettings%" echo       "enableClangTidyCodeAnalysis": true,
     >>"%CMakeSettings%" echo       "generator": "Ninja",
-    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
+    REM <compiler>_<architecture>_<host_arch>
+    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!HOST_ARCH!" ],
     >>"%CMakeSettings%" echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
     >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
+    REM <platform>-<compiler>-<architecture>
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
