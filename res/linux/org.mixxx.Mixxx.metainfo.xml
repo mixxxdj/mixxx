@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-03-04" timestamp="1741072405">
+    <release version="2.6.0" type="development" date="2025-03-16" timestamp="1742082086">
       <description>
  <p>
   Controller Mappings
@@ -188,6 +188,15 @@
   <li>
    Controller Settings: Improve click event filter
    #14355
+  </li>
+  <li>
+   Controller Settings: Add a collapsible group box
+   #14324
+  </li>
+  <li>
+   Add New CO "beats_translate_half" to move beatgrid a half beat
+   #14279
+   #10811
   </li>
  </ul>
  <p>
@@ -415,6 +424,8 @@
    #14186
    #14189
    #14187
+   #13470
+   #14461
   </li>
   <li>
    Improve apperrance of marks on the waveforms
@@ -970,10 +981,19 @@
    Use std::shared_ptr in  controller settings to fix memory leak
    #14413
   </li>
+  <li>
+   github labeler: add Dev Tools to
+   developer experience
+   #14475
+  </li>
+  <li>
+   chore: clean up README.md
+   #14471
+  </li>
  </ul>
 </description>
     </release>
-    <release version="2.5.1" type="development" date="2025-03-04" timestamp="1741072405">
+    <release version="2.5.1" type="development" date="2025-03-16" timestamp="1742082086">
       <description>
  <p>
   Controller Mappings

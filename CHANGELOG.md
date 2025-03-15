@@ -31,6 +31,10 @@
 * Remove boilerplate and duplication in controller setting definition [#13920](https://github.com/mixxxdj/mixxx/pull/13920)
 * Allow feedback on every release of a `powerWindow` button [#14335](https://github.com/mixxxdj/mixxx/pull/14335)
 * Controller Settings: Improve click event filter [#14355](https://github.com/mixxxdj/mixxx/pull/14355)
+* Controller Settings: Add a collapsible group box [#14324](https://github.com/mixxxdj/mixxx/pull/14324)
+* Add New CO "beats_translate_half" to move beatgrid a half beat
+  [#14279](https://github.com/mixxxdj/mixxx/pull/14279)
+  [#10811](https://github.com/mixxxdj/mixxx/issues/10811)
 
 ### Engine
 
@@ -126,6 +130,8 @@
   [#14186](https://github.com/mixxxdj/mixxx/pull/14186)
   [#14189](https://github.com/mixxxdj/mixxx/pull/14189)
   [#14187](https://github.com/mixxxdj/mixxx/pull/14187)
+  [#13470](https://github.com/mixxxdj/mixxx/pull/13470)
+  [#14461](https://github.com/mixxxdj/mixxx/pull/14461)
 * Improve apperrance of marks on the waveforms [#13969](https://github.com/mixxxdj/mixxx/pull/13969)
 * Waveform Overview: Scale by ReplayGain
   [#14309](https://github.com/mixxxdj/mixxx/pull/14309)
@@ -290,6 +296,8 @@
   [#14415](https://github.com/mixxxdj/mixxx/pull/14415)
 * Fix prettier pre commit [#14416](https://github.com/mixxxdj/mixxx/pull/14416)
 * Use std::shared_ptr in  controller settings to fix memory leak [#14413](https://github.com/mixxxdj/mixxx/pull/14413)
+* github labeler: add Dev Tools to `developer experience` [#14475](https://github.com/mixxxdj/mixxx/pull/14475)
+* chore: clean up README.md [#14471](https://github.com/mixxxdj/mixxx/pull/14471)
 
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (unreleased)
 
