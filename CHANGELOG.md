@@ -173,6 +173,7 @@
   [#13600](https://github.com/mixxxdj/mixxx/issues/13600)
 * fix: trigger QML waveform slot at init [#13736](https://github.com/mixxxdj/mixxx/pull/13736)
 * CoreServices: Default to `~/Music` as a music directory on WASM and iOS [#13498](https://github.com/mixxxdj/mixxx/pull/13498)
+* CMakeLists: Disable `QTlsBackendOpenSSLPlugin` on iOS [#14375](https://github.com/mixxxdj/mixxx/pull/14375)
 
 ### Target support
 
@@ -268,8 +269,6 @@
 * (cleanup) remove obsolete focusOutEvent() from WPushButton [#14177](https://github.com/mixxxdj/mixxx/pull/14177)
 * Fix memory leak and use parented_ptr in WTrackMenu [#14199](https://github.com/mixxxdj/mixxx/pull/14199)
 * Fix Clazy warning in main [#14241](https://github.com/mixxxdj/mixxx/pull/14241)
-* Quick fix for [#14197](https://github.com/mixxxdj/mixxx/pull/14197) (`TypeError` in `midi-components-0.0.js`) [#14203](https://github.com/mixxxdj/mixxx/pull/14203)
-* Quick fix for [#14197](https://github.com/mixxxdj/mixxx/pull/14197) (`TypeError` in `midi-components-0.0.js`) [#14251](https://github.com/mixxxdj/mixxx/pull/14251)
 * fix: use generic way to get the group on stem waveform renderer [#14291](https://github.com/mixxxdj/mixxx/pull/14291)
 * Fix calculation of m_resourcePath in the testing case [#14110](https://github.com/mixxxdj/mixxx/pull/14110)
 * borrowable_ptr, a threadsafe callback solution [#1713](https://github.com/mixxxdj/mixxx/pull/1713)
@@ -285,7 +284,6 @@
 * chore: lint CMakeLists.txt [#14369](https://github.com/mixxxdj/mixxx/pull/14369)
 * RateControl/Position ScratchController: use std::unique_ptr, PollingControlProxy etc. [#14058](https://github.com/mixxxdj/mixxx/pull/14058)
 * DlgPrefController: Cond-compile out HID settings when building without HID [#14376](https://github.com/mixxxdj/mixxx/pull/14376)
-* CMakeLists: Disable `QTlsBackendOpenSSLPlugin` on iOS [#14375](https://github.com/mixxxdj/mixxx/pull/14375)
 * added missing space to engine controller API documentation [#14384](https://github.com/mixxxdj/mixxx/pull/14384)
 * Automatically open PRs to sync branches
   [#13767](https://github.com/mixxxdj/mixxx/pull/13767)

@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-03-04" timestamp="1741045159">
+    <release version="2.6.0" type="development" date="2025-03-04" timestamp="1741072405">
       <description>
  <p>
   Controller Mappings
@@ -547,6 +547,12 @@
    as a music directory on WASM and iOS
    #13498
   </li>
+  <li>
+   CMakeLists: Disable
+   QTlsBackendOpenSSLPlugin
+   on iOS
+   #14375
+  </li>
  </ul>
  <p>
   Target support
@@ -885,26 +891,6 @@
    #14241
   </li>
   <li>
-   Quick fix for
-   #14197
-   (
-   TypeError
-   in
-   midi-components-0.0.js
-   )
-   #14203
-  </li>
-  <li>
-   Quick fix for
-   #14197
-   (
-   TypeError
-   in
-   midi-components-0.0.js
-   )
-   #14251
-  </li>
-  <li>
    fix: use generic way to get the group on stem waveform renderer
    #14291
   </li>
@@ -968,12 +954,6 @@
    #14376
   </li>
   <li>
-   CMakeLists: Disable
-   QTlsBackendOpenSSLPlugin
-   on iOS
-   #14375
-  </li>
-  <li>
    added missing space to engine controller API documentation
    #14384
   </li>
@@ -993,7 +973,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.1" type="development" date="2025-03-04" timestamp="1741045159">
+    <release version="2.5.1" type="development" date="2025-03-04" timestamp="1741072405">
       <description>
  <p>
   Controller Mappings
