@@ -79,6 +79,17 @@ function(FATAL_ERROR_MISSING_ENV)
   endif()
 endfunction()
 
+if(UNIX AND NOT APPLE)
+  execute_process(COMMAND uname -r OUTPUT_VARIABLE UNAME_R OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(UNAME_R MATCHES ".*[Mm]icrosoft.*" OR UNAME_R MATCHES ".*WSL.*")
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Building on Windows Subsystem for Linux (WSL) is not supported. For native building you need to download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`.")
+    else()
+      message(FATAL_ERROR "Building on Windows Subsystem for Linux (WSL) is not supported. For native building you need to download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat` or `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`(includes Debug).")
+    endif()
+  endif()
+endif()
+
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 # Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
