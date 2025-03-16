@@ -32,6 +32,12 @@ controller mappings:
       - any-glob-to-any-file:
           - res/controllers/**
 
+core:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/**
+          - res/**
+
 developer experience:
   - changed-files:
       - any-glob-to-any-file:
@@ -113,6 +119,24 @@ packaging:
   - changed-files:
       - any-glob-to-any-file:
           - packaging/**
+
+platform/macos:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packaging/macos/**
+          - tools/macos*
+
+platform/linux:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packaging/debian/**
+          - tools/debian*
+
+platform/windows:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packaging/wix/**
+          - tools/windows*
 
 preferences:
   - changed-files:
