@@ -49,6 +49,22 @@ var SMK25II;
                     group: "[Channel1]",
                     midi: [0x90, i],
                     type: components.Button.prototype.types.push,
+                    colorMapper: new ColorMapper({
+                        0xCC0000: 0x7F, // Red
+                        0xCC7800: 0x10, // Orange
+
+                        0xCCCC00: 0x04, // Yellow
+                        0x81CC00: 0x13, // Lime
+                        0x00CC00: 0x06, // Green
+
+                        0x00CCCC: 0x08, // Bianchi/Celeste/Teal
+                        0x0000CC: 0x17, // Blue
+
+                        0xFCA6D7: 0x01, // Pink
+                        0xCC0091: 0x0D, // Fuscia
+
+                        0xCCCCCC: 0x0E, // White
+                    }),
                 });
                 this.hotcues[i] = hotcueButton;
             }
