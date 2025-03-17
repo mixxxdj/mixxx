@@ -544,7 +544,7 @@ importTrackMetadataAndCoverImageUnavailable() {
 //static
 std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
 SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
-        mixxx::FileAccess trackFileAccess,
+        const mixxx::FileAccess& trackFileAccess,
         mixxx::TrackMetadata* pTrackMetadata,
         QImage* pCoverImage,
         bool resetMissingTagMetadata) {
@@ -553,24 +553,25 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         // https://github.com/mixxxdj/mixxx/issues/9944
         return importTrackMetadataAndCoverImageUnavailable();
     }
-    TrackPointer pTrack;
-    // Lock the global track cache while accessing the file to ensure
-    // that no metadata is written. Since locking individual files
-    // is not possible the whole cache has to be locked.
-    GlobalTrackCacheLocker locker;
-    pTrack = locker.lookupTrackByRef(TrackRef::fromFileInfo(trackFileAccess.info()));
-    if (pTrack) {
-        // We can safely unlock the cache if the track object is already cached.
-        locker.unlockCache();
-    } else {
-        // If the track object is not cached we need to keep the cache
-        // locked and create a temporary track object instead.
-        pTrack = Track::newTemporary(std::move(trackFileAccess));
+
+    // Since the Track object below is only used to read the meta data from
+    // the file, we use a temporary track that is discarded in an incomplete
+    // state without being saved to the database or the track file's meta data
+    // after the meta data import has been completed.
+    // Lock the track via the global track cache while accessing the file to
+    // ensure that no metadata is written by another thread.
+    { // cacheResolver scope
+        const bool temporary = true;
+        auto cacheResolver = GlobalTrackCacheResolver(trackFileAccess, temporary);
+        TrackPointer pTrack = cacheResolver.getTrack();
+        // In the unlikely case that the file has disappeart since the check above
+        // pTrack is null and the next call will log appropriate warnings and
+        // returns importTrackMetadataAndCoverImageUnavailable();
+        return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+                pTrackMetadata,
+                pCoverImage,
+                resetMissingTagMetadata);
     }
-    return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
-            pTrackMetadata,
-            pCoverImage,
-            resetMissingTagMetadata);
 }
 
 std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
