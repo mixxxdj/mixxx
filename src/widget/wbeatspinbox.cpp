@@ -21,18 +21,13 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
         : QDoubleSpinBox(parent),
           WBaseWidget(this),
           m_valueControl(configKey, this, ControlFlag::NoAssertIfMissing),
-          beatJumpForward(configKey.group, "beatjump_forward"),
-          beatJumpBackward(configKey.group, "beatjump_backward"),
-          beatJumpSize(configKey.group, "beatjump_size"),
-          beatJumpOneForward(configKey.group, "beatjump_1_forward"),
-          beatJumpOneBackward(configKey.group, "beatjump_1_backward"),
-          beatJumpEightForward(configKey.group, "beatjump_0.125_forward"),
-          beatJumpEightBackward(configKey.group, "beatjump_0.125_backward"),
-          beatLoopEnabled(configKey.group, "loop_enabled"),
-          beatLoopSize(configKey.group, "beatloop_size"),
-          // Hardcoded values for spinbox and loopbox for differentiation between the two
-          sizeSpinBox(60, 26),
-          sizeLoopBox(78, 26),
+          m_beatJumpForward(configKey.group, "beatjump_forward"),
+          m_beatJumpBackward(configKey.group, "beatjump_backward"),
+          m_beatJumpOneForward(configKey.group, "beatjump_1_forward"),
+          m_beatJumpOneBackward(configKey.group, "beatjump_1_backward"),
+          m_beatJumpEightForward(configKey.group, "beatjump_0.125_forward"),
+          m_beatJumpEightBackward(configKey.group, "beatjump_0.125_backward"),
+          m_beatLoopEnabled(configKey.group, "loop_enabled"),
           m_scaleFactor(1.0) {
     // replace the original QLineEdit by one that supports font scaling.
     setLineEdit(new WBeatLineEdit(this));
@@ -307,36 +302,47 @@ void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
         ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    if (this->size() == sizeSpinBox) {
+    if (m_valueControl.getKey().item == "beatjump_size") {
         if (pEvent->key() == Qt::Key_Right && pEvent->modifiers() == Qt::ControlModifier) {
-            beatJumpOneForward.set(beatJumpSize.get());
+            m_beatJumpOneForward.set(1);
+            m_beatJumpOneForward.set(0);
         } else if (pEvent->key() == Qt::Key_Left && pEvent->modifiers() == Qt::ControlModifier) {
-            beatJumpOneBackward.set(beatJumpSize.get());
+            m_beatJumpOneBackward.set(1);
+            m_beatJumpOneBackward.set(0);
         } else if (pEvent->key() == Qt::Key_Right && pEvent->modifiers() == Qt::AltModifier) {
-            beatJumpEightForward.set(beatJumpSize.get());
+            m_beatJumpEightForward.set(1);
+            m_beatJumpEightForward.set(0);
         } else if (pEvent->key() == Qt::Key_Left && pEvent->modifiers() == Qt::AltModifier) {
-            beatJumpEightBackward.set(beatJumpSize.get());
+            m_beatJumpEightBackward.set(1);
+            m_beatJumpEightBackward.set(0);
         } else if (pEvent->key() == Qt::Key_Right) {
-            beatJumpForward.set(beatJumpSize.get());
+            m_beatJumpForward.set(1);
+            m_beatJumpForward.set(0);
         } else if (pEvent->key() == Qt::Key_Left) {
-            beatJumpBackward.set(beatJumpSize.get());
+            m_beatJumpBackward.set(1);
+            m_beatJumpBackward.set(0);
         }
-    } else if (this->size() == sizeLoopBox && beatLoopEnabled.get() == 1) {
+    } else if (m_valueControl.getKey().item == "beatloop_size" && m_beatLoopEnabled.get() == 1) {
         if (pEvent->key() == Qt::Key_Right && pEvent->modifiers() == Qt::ControlModifier) {
-            beatJumpOneForward.set(beatJumpSize.get());
+            m_beatJumpOneForward.set(1);
+            m_beatJumpOneForward.set(0);
         } else if (pEvent->key() == Qt::Key_Left && pEvent->modifiers() == Qt::ControlModifier) {
-            beatJumpOneBackward.set(beatJumpSize.get());
+            m_beatJumpOneBackward.set(1);
+            m_beatJumpOneBackward.set(0);
         } else if (pEvent->key() == Qt::Key_Right && pEvent->modifiers() == Qt::AltModifier) {
-            beatJumpEightForward.set(beatJumpSize.get());
+            m_beatJumpEightForward.set(1);
+            m_beatJumpEightForward.set(0);
         } else if (pEvent->key() == Qt::Key_Left && pEvent->modifiers() == Qt::AltModifier) {
-            beatJumpEightBackward.set(beatJumpSize.get());
+            m_beatJumpEightBackward.set(1);
+            m_beatJumpEightBackward.set(0);
         } else if (pEvent->key() == Qt::Key_Right) {
-            beatJumpForward.set(beatJumpSize.get());
+            m_beatJumpForward.set(1);
+            m_beatJumpForward.set(0);
         } else if (pEvent->key() == Qt::Key_Left) {
-            beatJumpBackward.set(beatJumpSize.get());
+            m_beatJumpBackward.set(1);
+            m_beatJumpBackward.set(0);
         }
     }
-
     QDoubleSpinBox::keyPressEvent(pEvent);
 }
 
