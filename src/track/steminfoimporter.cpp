@@ -116,13 +116,28 @@ bool StemInfoImporter::maybeStemFile(
         mimeType = QMimeDatabase().mimeTypeForFile(
                 fileName, QMimeDatabase::MatchContent);
     }
+
+// On Windows (at least), the MIME detection seems to sometime detect stem file
+// as `video/quicktime` so we always try and detect from the extension
+#ifdef __WINDOWS__
+    for (const QString& ext : kStemPreferredFileExtensions) {
+        if (fileName.endsWith(ext)) {
+            return true;
+        }
+    }
+#endif
     if (!mimeType.isValid() || mimeType.isDefault()) {
         kLogger.debug() << "Unable to detect MIME type from content in file" << fileName;
+#ifndef __WINDOWS__
         for (const QString& ext : kStemPreferredFileExtensions) {
             if (fileName.endsWith(ext)) {
                 return true;
             }
         }
+#else
+        // No way to be sure, so we default to "maybe a STEM file"
+        return true;
+#endif
     }
     return kStemMimes.contains(mimeType.name());
 }

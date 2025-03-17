@@ -21,16 +21,16 @@ IF NOT DEFINED INSTALL_ROOT (
 )
 
 IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.5-rel
+    SET BUILDENV_BRANCH=2.6-rel
     SET VCPKG_TARGET_TRIPLET=x64-windows-release
     vcpkg_update_main
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
-    SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
+    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-ccad946
+    SET BUILDENV_SHA256=aaaa9c393923422d5ce961577078944a7642b1dc0cf3da8865b679e5a307b656
 ) ELSE (
-    SET BUILDENV_BRANCH=2.5
+    SET BUILDENV_BRANCH=2.6
     SET VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-c15790e
-    SET BUILDENV_SHA256=138e4685ec73c6a6a509f71f8573be581403b091e4ecea2314df2cc79f9720b9
+    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-2dfaf1d
+    SET BUILDENV_SHA256=b95e138bf3d38299d1ed10e975c007822d2a2d1e57925d53057edfe83e957caa
 )
 
 IF "%~1"=="" (
@@ -218,7 +218,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
     REM CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "FFMPEG"                             "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "FFMPEG"                             "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "HSS1394"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "False"
