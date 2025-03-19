@@ -10,6 +10,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#include "library/trackset/relations/relationsfeature.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -73,6 +74,7 @@ Library::Library(
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
+          m_pRelationsFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -105,6 +107,9 @@ Library::Library(
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+
+    m_pRelationsFeature = new RelationsFeature(this, m_pConfig);
+    addFeature(m_pRelationsFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
