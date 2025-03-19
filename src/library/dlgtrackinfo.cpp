@@ -808,7 +808,6 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     }
 
     const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
-
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
             sourceSynchronizedAt);
@@ -829,6 +828,8 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(trackRecord),
             fileInfo.location());
 }
+
+
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
     if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
