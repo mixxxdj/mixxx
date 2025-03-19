@@ -1755,7 +1755,6 @@ elseif (UNIX)
   set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
-
 if(WIN32)
   target_compile_definitions(mixxx-lib PUBLIC __WINDOWS__)
 
@@ -1771,7 +1770,9 @@ if(WIN32)
   # shoutidjc/shout.h checks for WIN32 to see if we are on Windows.
   target_compile_definitions(mixxx-lib PUBLIC WIN32)
 
-  target_link_libraries(mixxx-lib PRIVATE comctl32 shell32)
+  find_library(COMCTL32_LIB comctl32 REQUIRED)
+  find_library(SHELL32_LIB shell32 REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${COMCTL32_LIB} ${SHELL32_LIB})
 
   if(MSVC)
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
@@ -3205,18 +3206,19 @@ elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
   )
 elseif(WIN32)
   if(Qt_IS_STATIC)
-    target_link_libraries(mixxx-lib PRIVATE
+    set(
+      QT_STATIC_SYSTEM_LIBRARIES
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
       kernel32
-      user32      # QtGui, QtOpenGL, libHSS1394
+      user32 # QtGui, QtOpenGL, libHSS1394
       shell32
       uuid
-      ole32       # QtGui,
-      advapi32    # QtGui, portaudio, portmidi
-      ws2_32      # QtGui, QtNetwork, libshout
+      ole32 # QtGui,
+      advapi32 # QtGui, portaudio, portmidi
+      ws2_32 # QtGui, QtNetwork, libshout
       # QtGui
-      gdi32       # QtOpenGL, libshout
+      gdi32 # QtOpenGL, libshout
       comdlg32
       oleaut32
       imm32
@@ -3225,19 +3227,21 @@ elseif(WIN32)
       # QtOpenGL
       glu32
       opengl32
-
       # QtNetwork openssl-linked
       crypt32
-
-      dwmapi      # qtwindows
-      iphlpapi    # qt5network
-      mpr         # qt5core
-      netapi32    # qt5core
-      userenv     # qt5core
-      uxtheme     # ?
-      version     # ?
-      wtsapi32    # ?
+      dwmapi # qtwindows
+      iphlpapi # qt5network
+      mpr # qt5core
+      netapi32 # qt5core
+      userenv # qt5core
+      uxtheme # ?
+      version # ?
+      wtsapi32 # ?
     )
+    foreach(LIB ${QT_STATIC_SYSTEM_LIBRARIES})
+      find_library(${LIB}_LIB ${LIB} REQUIRED)
+      target_link_libraries(mixxx-lib PRIVATE ${LIB}_LIB)
+    endforeach()
 
     find_library(QTFONTDATABASESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}FontDatabaseSupport)
     target_link_libraries(mixxx-lib PRIVATE "${QTFONTDATABASESUPPORT_LIBRARY}")
