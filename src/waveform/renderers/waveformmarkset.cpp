@@ -22,21 +22,14 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     bool hasDefaultMark = false;
 
     QDomNode child = node.firstChild();
-    DefaultMarkerStyle defaultModel;
+    QDomNode defaultChild;
     int priority = 0;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            defaultModel = DefaultMarkerStyle{
-                    context.selectString(node, "Control"),
-                    context.selectString(node, "VisibilityControl"),
-                    context.selectString(node, "TextColor"),
-                    context.selectString(node, "Align"),
-                    context.selectString(node, "Text"),
-                    context.selectString(node, "Pixmap"),
-                    context.selectString(node, "Icon"),
-                    context.selectString(node, "Color"),
-            };
+            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(
+                    group, child, context, --priority, signalColors));
             hasDefaultMark = true;
+            defaultChild = child;
         } else if (child.nodeName() == "Mark") {
             WaveformMarkPointer pMark(new WaveformMark(
                     group, child, context, --priority, signalColors));
@@ -59,7 +52,15 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     // check if there is a default mark and compare declared
     // and to create all missing hot_cues
     if (hasDefaultMark) {
-        setDefault(group, defaultModel, signalColors);
+        for (int i = 0; i < NUM_HOT_CUES; ++i) {
+            if (m_hotCueMarks.value(i).isNull()) {
+                // qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
+                WaveformMarkPointer pMark(new WaveformMark(
+                        group, defaultChild, context, i, signalColors, i));
+                m_marks.push_front(pMark);
+                m_hotCueMarks.insert(pMark->getHotCue(), pMark);
+            }
+        }
     }
 }
 
