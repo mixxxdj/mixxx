@@ -53,6 +53,8 @@ class Controller : public QObject {
 
     virtual QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() = 0;
     virtual QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() = 0;
+    virtual QList<QMLModuleInfo> getMappingModules() = 0;
+    virtual QList<ScreenInfo> getMappingInfoScreens() = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;

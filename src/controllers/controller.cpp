@@ -100,8 +100,8 @@ bool Controller::applyMapping(const QString& resourcePath) {
 
     m_pScriptEngineLegacy->setSettings(getMappingSettings());
 #ifdef MIXXX_USE_QML
-    m_pScriptEngineLegacy->setModulePaths(pMapping->getModules());
-    m_pScriptEngineLegacy->setInfoScreens(pMapping->getInfoScreens());
+    m_pScriptEngineLegacy->setModulePaths(getMappingModules());
+    m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);
 #else
     Q_UNUSED(resourcePath);

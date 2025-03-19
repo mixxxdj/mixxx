@@ -51,6 +51,20 @@ QList<std::shared_ptr<AbstractLegacyControllerSetting>> HidController::getMappin
     return m_pMapping->getSettings();
 }
 
+QList<QMLModuleInfo> HidController::getMappingModules() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getModules();
+}
+
+QList<ScreenInfo> HidController::getMappingInfoScreens() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getInfoScreens();
+}
+
 bool HidController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {

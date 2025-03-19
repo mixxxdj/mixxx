@@ -116,6 +116,20 @@ QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappi
     return m_pMapping->getSettings();
 }
 
+QList<QMLModuleInfo> BulkController::getMappingModules() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getModules();
+}
+
+QList<ScreenInfo> BulkController::getMappingInfoScreens() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getInfoScreens();
+}
+
 bool BulkController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {

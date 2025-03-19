@@ -43,6 +43,8 @@ class MidiController : public Controller {
 
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+    QList<QMLModuleInfo> getMappingModules() override;
+    QList<ScreenInfo> getMappingInfoScreens() override;
 
     DataRepresentationProtocol getDataRepresentationProtocol() const override {
         return DataRepresentationProtocol::MIDI;
