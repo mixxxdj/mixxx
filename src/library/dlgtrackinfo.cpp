@@ -786,25 +786,34 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
+
     const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
             mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
+
+    // Pass false to skip cover loading
+    const bool importCover = false;
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage, resetMissingTagMetadata);
+                            &trackMetadata, importCover ? &coverImage : nullptr, resetMissingTagMetadata);
+
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
+
     const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
-    auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileInfo,
-            trackMetadata.getAlbumInfo().getTitle(),
-            coverImage);
+
+    if (importCover) {  // Import cover only if requested
+        auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
+                fileInfo,
+                trackMetadata.getAlbumInfo().getTitle(),
+                coverImage);
+        trackRecord.setCoverInfo(std::move(guessedCoverInfo));
+    }
+
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
             sourceSynchronizedAt);
-    trackRecord.setCoverInfo(
-            std::move(guessedCoverInfo));
 
     QString importedKeyText = trackRecord.getMetadata().getTrackInfo().getKeyText();
     {
@@ -822,6 +831,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(trackRecord),
             fileInfo.location());
 }
+
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
     if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
