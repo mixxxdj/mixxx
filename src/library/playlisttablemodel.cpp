@@ -159,6 +159,7 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
 
+    // line added to start github CI
     QStringList columns;
     columns << QStringLiteral("%1.%2").arg(
                        QStringLiteral(LIBRARY_TABLE), LIBRARYTABLE_ID)
