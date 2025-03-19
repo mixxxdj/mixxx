@@ -74,19 +74,21 @@ QList<std::shared_ptr<AbstractLegacyControllerSetting>> MidiController::getMappi
     return m_pMapping->getSettings();
 }
 
-QList<QMLModuleInfo> MidiController::getMappingModules() {
+#ifdef MIXXX_USE_QML
+QList<LegacyControllerMapping::QMLModuleInfo> MidiController::getMappingModules() {
     if (!m_pMapping) {
         return {};
     }
     return m_pMapping->getModules();
 }
 
-QList<ScreenInfo> MidiController::getMappingInfoScreens() {
+QList<LegacyControllerMapping::ScreenInfo> MidiController::getMappingInfoScreens() {
     if (!m_pMapping) {
         return {};
     }
     return m_pMapping->getInfoScreens();
 }
+#endif
 
 int MidiController::close() {
     destroyOutputHandlers();

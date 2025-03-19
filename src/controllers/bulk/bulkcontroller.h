@@ -46,8 +46,10 @@ class BulkController : public Controller {
 
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
-    QList<QMLModuleInfo> getMappingModules() override;
-    QList<ScreenInfo> getMappingInfoScreens() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
 
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
         return PhysicalTransportProtocol::USB;

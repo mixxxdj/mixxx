@@ -116,19 +116,21 @@ QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappi
     return m_pMapping->getSettings();
 }
 
-QList<QMLModuleInfo> BulkController::getMappingModules() {
+#ifdef MIXXX_USE_QML
+QList<LegacyControllerMapping::QMLModuleInfo> BulkController::getMappingModules() {
     if (!m_pMapping) {
         return {};
     }
     return m_pMapping->getModules();
 }
 
-QList<ScreenInfo> BulkController::getMappingInfoScreens() {
+QList<LegacyControllerMapping::ScreenInfo> BulkController::getMappingInfoScreens() {
     if (!m_pMapping) {
         return {};
     }
     return m_pMapping->getInfoScreens();
 }
+#endif
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
