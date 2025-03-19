@@ -17,8 +17,10 @@ class HidController final : public Controller {
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
 
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
         return m_deviceInfo.getPhysicalTransportProtocol();
@@ -73,11 +75,10 @@ class HidController final : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
-  private slots:
-    int open() override;
+  private:
+    int open(const QString& resourcePath) override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     bool sendBytes(const QByteArray& data) override;

@@ -33,14 +33,22 @@ QString HidController::mappingExtension() {
 }
 
 void HidController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMutableMapping = pMapping;
     m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
-std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
+QList<LegacyControllerMapping::ScriptFileInfo> HidController::getMappingScriptFiles() {
     if (!m_pMapping) {
-        return nullptr;
+        return {};
     }
-    return std::make_shared<LegacyHidControllerMapping>(*m_pMapping);
+    return m_pMapping->getScriptFiles();
+}
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> HidController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
 }
 
 bool HidController::matchMapping(const MappingInfo& mapping) {
@@ -53,7 +61,7 @@ bool HidController::matchMapping(const MappingInfo& mapping) {
     return false;
 }
 
-int HidController::open() {
+int HidController::open(const QString& resourcePath) {
     if (isOpen()) {
         qDebug() << "HID device" << getName() << "already open";
         return -1;
@@ -138,8 +146,6 @@ int HidController::open() {
         return -1;
     }
 
-    setOpen(true);
-
     m_pHidIoThread = std::make_unique<HidIoThread>(pHidDevice, m_deviceInfo);
     m_pHidIoThread->setObjectName(QStringLiteral("HidIoThread ") + getName());
 
@@ -169,6 +175,8 @@ int HidController::open() {
         qWarning() << "HidIoThread wasn't in expected OutputActive state";
     }
 
+    applyMapping(resourcePath);
+    setOpen(true);
     return 0;
 }
 
