@@ -172,7 +172,7 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
