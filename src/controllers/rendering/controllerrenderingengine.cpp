@@ -1,5 +1,6 @@
 #include "controllers/rendering/controllerrenderingengine.h"
 
+#include <QGuiApplication>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFramebufferObject>
@@ -10,17 +11,15 @@
 #include <QQuickRenderTarget>
 #include <QQuickWindow>
 #include <QThread>
+#include <QTimer>
 
 #include "controllers/controller.h"
 #include "controllers/controllerenginethreadcontrol.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "moc_controllerrenderingengine.cpp"
-#include "qml/qmlwaveformoverview.h"
 #include "util/cmdlineargs.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
-#include "util/time.h"
 #include "util/timer.h"
 
 // Used in the renderFrame method to properly abort the rendering and terminate the engine.
@@ -179,7 +178,15 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
         return;
     }
     QSurfaceFormat format;
-    format.setSamples(m_screenInfo.msaa);
+    // FIXME multi sampling appears to be unsupported when using offscreen
+    // rendering on Wayland QPA:
+    //   warning [CtrlScreen_rightdeck] QWaylandGLContext::makeCurrent:
+    //   eglError: 0x3009, this: 0x7ffd9c001770 warning [CtrlScreen_rightdeck]
+    //   QRhiGles2: Failed to make context current. Expect bad things to happen.
+    //   warning [CtrlScreen_rightdeck] Failed to create RHI (backend 2)
+    if (QGuiApplication::platformName() != QStringLiteral("wayland")) {
+        format.setSamples(m_screenInfo.msaa);
+    }
     format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
 
