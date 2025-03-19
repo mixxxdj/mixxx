@@ -271,6 +271,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+    checkBox_browsefilesystem_limit_childitems_enabled->setChecked(true);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -339,6 +340,11 @@ void DlgPrefLibrary::slotUpdate() {
         radioButton_cover_art_fetcher_lowest->setChecked(true);
         break;
     }
+
+    checkBox_browsefilesystem_limit_childitems_enabled->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsEnabled"), true));
+    spinbox_browsefilesystem_limit_childitems_number->setValue(m_pConfig->getValue<int>(
+            ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsNumber")));
 
     bool editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
@@ -542,6 +548,11 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+
+    m_pConfig->set(ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsEnabled"),
+            ConfigValue((int)checkBox_browsefilesystem_limit_childitems_enabled->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "BrowseFilesystemLimitChildItemsNumber"),
+            ConfigValue(spinbox_browsefilesystem_limit_childitems_number->value()));
 
     int coverartfetcherquality_status;
     if (radioButton_cover_art_fetcher_highest->isChecked()) {
