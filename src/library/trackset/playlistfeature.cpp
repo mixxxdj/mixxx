@@ -155,7 +155,7 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     queryString.append(
             mixxx::DbConnection::collateLexicographically(" ORDER BY sort_name"));
 
-    qDebug() << "[PlaylistFeature] -> queryString: " << queryString;
+    // qDebug() << "[PlaylistFeature] -> queryString: " << queryString;
     QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
