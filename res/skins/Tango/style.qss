@@ -2647,7 +2647,7 @@ WLibrarySidebar::item:focus {
 /* This is for all cells including Played and Location */
 WTrackTableView,
 /* This is for the BPM cell */
-WTrackTableView QCheckBox:focus {
+WTrackTableView > QCheckBox:focus {
     outline: 1px solid #fff;
 }
 /* This uses a custom qproperty to set the focus border
@@ -2664,8 +2664,8 @@ WTrackTableView {
 }
 
   /* Table cell in edit mode */
-  WLibrary QLineEdit,
-  WLibrary QPlainTextEdit,
+  WTrackTableView > QLineEdit,
+  WTrackTableView > QPlainTextEdit,
   /* Track label inline editor in decks and samplers */
   WTrackPropertyEditor,
   #LibraryBPMSpinBox {
@@ -2676,7 +2676,7 @@ WTrackTableView {
     border-width: 1px;
     border-style: solid;
   }
-  WLibrary QLineEdit,
+  WTrackTableView > QLineEdit,
   #LibraryBPMSpinBox {
     border-color: #555;
   }

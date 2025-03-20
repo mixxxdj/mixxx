@@ -19,6 +19,7 @@
 #include "util/clipboard.h"
 #include "util/defs.h"
 #include "util/dnd.h"
+#include "util/widgethelper.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -202,7 +203,8 @@ void AutoDJFeature::activate() {
 }
 
 void AutoDJFeature::clear() {
-    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+    QMessageBox::StandardButton btn = QMessageBox::question(
+            mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
             tr("Confirmation Clear"),
             tr("Do you really want to remove all tracks from the Auto DJ queue?") +
                     tr("This can not be undone."),

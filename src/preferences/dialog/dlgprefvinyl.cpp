@@ -24,8 +24,6 @@ DlgPrefVinyl::DlgPrefVinyl(
     m_pNumDecks->connectValueChanged(this, &DlgPrefVinyl::slotNumDecksChanged);
 
     setupUi(this);
-    // Create text color for the Troubleshooting link
-    createLinkColor();
 
     // Add per-deck vinyl selectors
     m_vcLabels = {VinylLabel1,
@@ -80,12 +78,6 @@ DlgPrefVinyl::DlgPrefVinyl(
         signalQualityLayout->addWidget(widget);
     }
 
-    TroubleshootingLink->setText(coloredLinkString(
-            m_pLinkColor,
-            // QStringLiteral("Troubleshooting") fails to compile on Fedora 36 with GCC 12.0.x
-            "Troubleshooting",
-            MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
-
     connect(SliderVinylGain, &QSlider::sliderReleased, this, &DlgPrefVinyl::slotVinylGainApply);
     connect(SliderVinylGain,
             QOverload<int>::of(&QSlider::valueChanged),
@@ -95,6 +87,8 @@ DlgPrefVinyl::DlgPrefVinyl(
     for (int i = 0; i < kMaxNumberOfDecks; ++i) {
         setDeckWidgetsVisible(i, false);
     }
+
+    updateColoredLinkTexts();
 
     setScrollSafeGuardForAllInputWidgets(this);
 
@@ -295,6 +289,16 @@ void DlgPrefVinyl::slotUpdateVinylGain() {
 
 QUrl DlgPrefVinyl::helpUrl() const {
     return QUrl(MIXXX_MANUAL_VINYL_URL);
+}
+
+void DlgPrefVinyl::updateColoredLinkTexts() {
+    createLinkColor();
+
+    TroubleshootingLink->setText(coloredLinkString(
+            m_pLinkColor,
+            // QStringLiteral("Troubleshooting") fails to compile on Fedora 36 with GCC 12.0.x
+            "Troubleshooting",
+            MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
 }
 
 void DlgPrefVinyl::setDeckWidgetsVisible(int deck, bool visible) {

@@ -23,6 +23,8 @@ RE_OBJNAME_VARTAG = re.compile(r"<.*>")
 CPP_OBJNAMES = [
     "LibraryBPMButton",
     "LibraryPlayedCheckbox",
+    # and the main skin widget in legacyskinparser.cpp
+    "Skin",
 ]
 
 # List of Qt Widgets, generated with:
