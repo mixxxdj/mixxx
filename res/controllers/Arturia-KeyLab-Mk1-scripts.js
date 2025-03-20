@@ -73,7 +73,7 @@ var KeyLabMk1;
         max: 24,
         pressInKey: "reset_key",
         outputValue: (value) => {
-            return keyNums[(((value - 1) % keyNums.length) + keyNums.length) % keyNums.length];
+            return keyNums[script.posMod(value - 1, keyNums.length)];
         },
     }, {
         name: "Beatloop",
@@ -222,11 +222,6 @@ var KeyLabMk1;
     };
 
     class Deck extends components.Deck {
-        currentDeckNum() {
-            const deckStr = script.channelRegEx.exec(this.currentDeck)[1];
-            return parseInt(deckStr);
-        }
-
         constructor(deckNumbers, midiChannel) {
             super(deckNumbers);
 
@@ -444,14 +439,14 @@ var KeyLabMk1;
                 return;
             }
 
-            let blink_state = false;
+            let blinkState = false;
             let velocity = 500;
             if (this.group === group) {
                 velocity = 250;
             }
             this.blinking = engine.beginTimer(velocity, () => {
-                blink_state = !blink_state;
-                setLED(this.midi[2], blink_state);
+                blinkState = !blinkState;
+                setLED(this.midi[2], blinkState);
             });
         }
 
@@ -475,7 +470,7 @@ var KeyLabMk1;
                 setLED(0x1E, Boolean(value));
                 setLED(0x1F, !value);
                 if (!noWrite) {
-                    const currentDeckNum = this.activeDeck.currentDeckNum();
+                    const currentDeckNum = script.deckFromGroup(this.activeDeck.currentDeck);
                     writeDisplay(`Deck ${currentDeckNum}`);
                 }
             };
@@ -655,7 +650,7 @@ var KeyLabMk1;
                     empty: 0x00,
                     loaded: 0x01,
                     blinking: 0,
-                    blink_state: false,
+                    blinkState: false,
 
                     send: function(value) {
                         switch (value) {
@@ -683,8 +678,8 @@ var KeyLabMk1;
                             // timers, one of which we forget to stop.
                             if (this.blinking === 0) {
                                 this.blinking = engine.beginTimer(250, () => {
-                                    this.blink_state = !this.blink_state;
-                                    setLED(this.midi[1] + 0x4c, this.blink_state);
+                                    this.blinkState = !this.blinkState;
+                                    setLED(this.midi[1] + 0x4c, this.blinkState);
                                 });
                             }
                             break;
