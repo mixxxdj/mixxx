@@ -310,6 +310,7 @@ class AutoDJProcessor : public QObject {
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
+    ControlPushButton* m_pIdleState;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
