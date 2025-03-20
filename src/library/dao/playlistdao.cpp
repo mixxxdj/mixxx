@@ -12,6 +12,8 @@
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 
+// Line to start CI
+
 PlaylistDAO::PlaylistDAO()
         : m_pAutoDJProcessor(nullptr) {
 }
