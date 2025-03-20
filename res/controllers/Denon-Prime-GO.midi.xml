@@ -1,0 +1,1573 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <MixxxControllerPreset mixxxVersion="2.4.0+" schemaVersion="1">
+    <info>
+        <name>Denon Prime GO - Mixxx Mapping</name>
+        <author>Levi "Whanake" Williams</author>
+        <description>This is a Work-In-Progress mapping to allow the Denon Prime GO to be used with Mixxx, ideally with the same (if not more) functionality than the Prime GO provides as a standalone device.</description>
+        <wiki>Encoded URL to Mixxx wiki page documenting this controller mapping</wiki>
+        <forums>Encoded URL to Mixxx discussion forums page for this controller mapping</forums>
+    </info>
+    <controller id="primego">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Denon-Prime-GO.scripts.js" functionprefix="PrimeGo"/>
+        </scriptfiles>
+
+        <controls>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Cue Mix Knob</description>
+                <status>0xBF</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Cue Level Knob</description>
+                <status>0xBF</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.deckLoad.input</key>
+                <description>Deck 1 - Load Button ON</description>
+                <status>0x9F</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.deckLoad.input</key>
+                <description>Deck 1 - Load Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.deckLoad.input</key>
+                <description>Deck 2 - Load Button ON</description>
+                <status>0x9F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.deckLoad.input</key>
+                <description>Deck 2 - Load Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.moveBack.input</key>
+                <description>Back Button ON</description>
+                <status>0x9F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.moveBack.input</key>
+                <description>Back Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.moveForward.input</key>
+                <description>Fwd Button ON</description>
+                <status>0x9F</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.moveForward.input</key>
+                <description>Fwd Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.sweepKnob.input</key>
+                <description>Deck 1 - Sweep FX Knob</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveVertical</key>
+                <description>Browse Encoder</description>
+                <status>0xBF</status>
+                <midino>0x05</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.encoderLoad.input</key>
+                <description>Browse Encoder Button ON</description>
+                <status>0x9F</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.encoderLoad.input</key>
+                <description>Browse Encoder Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.sweepA.input</key>
+                <description>Deck 1 - Sweep FX A Button ON</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.sweepA.input</key>
+                <description>Deck 1 - Sweep FX A Button OFF</description>
+                <status>0x80</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.sweepA.input</key>
+                <description>Deck 2 - Sweep FX A Button ON</description>
+                <status>0x91</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.sweepA.input</key>
+                <description>Deck 2 - Sweep FX A Button OFF</description>
+                <status>0x81</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX B Button ON</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX B Button OFF</description>
+                <status>0x80</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX B Button ON</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX B Button OFF</description>
+                <status>0x81</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.sweepKnob.input</key>
+                <description>Deck 2 - Sweep FX Knob</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.volumeFader.input</key>
+                <description>Deck 1 - Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.volumeFader.input</key>
+                <description>Deck 2 - Volume Fader</description>
+                <status>0xB1</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.headphoneCue.input</key>
+                <description>Deck 1 - PFL Button On</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.headphoneCue.input</key>
+                <description>Deck 1 - PFL Button Off</description>
+                <status>0x80</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.headphoneCue.input</key>
+                <description>Deck 2 - PFL Button On</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.headphoneCue.input</key>
+                <description>Deck 2 - PFL Button Off</description>
+                <status>0x81</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Crossfader</description>
+                <status>0xBF</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.maxView.input</key>
+                <description>View Button ON</description>
+                <status>0x9F</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.maxView.input</key>
+                <description>View Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.shiftState</key>
+                <description>Shift Button ON</description>
+                <status>0x9F</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.shiftState</key>
+                <description>Shift Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Touch ON</description>
+                <status>0x94</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Touch OFF</description>
+                <status>0x84</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder</description>
+                <status>0xB4</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Button ON</description>
+                <status>0x94</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Button OFF</description>
+                <status>0x84</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Touch ON</description>
+                <status>0x94</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Touch OFF</description>
+                <status>0x84</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder</description>
+                <status>0xB4</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Button ON</description>
+                <status>0x94</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Button OFF</description>
+                <status>0x84</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Wet/Dry Knob</description>
+                <status>0xB4</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX On Button On</description>
+                <status>0x94</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX On Button Off</description>
+                <status>0x84</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 1 Button On</description>
+                <status>0x94</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 1 Button Off</description>
+                <status>0x84</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 2 Button On</description>
+                <status>0x94</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 2 Button Off</description>
+                <status>0x84</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 1 Button On</description>
+                <status>0x94</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 1 Button Off</description>
+                <status>0x84</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 2 Button On</description>
+                <status>0x94</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 2 Button Off</description>
+                <status>0x84</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Eject Button On</description>
+                <status>0x94</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Eject Button Off</description>
+                <status>0x84</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.gain.input</key>
+                <description>Deck 1 Gain Knob</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.eqLow.input</key>
+                <description>Deck 1 Low Knob</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.eqMid.input</key>
+                <description>Deck 1 Mid Knob</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.eqHigh.input</key>
+                <description>Deck 1 High Knob</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.gain.input</key>
+                <description>Deck 2 Gain Knob</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.eqLow.input</key>
+                <description>Deck 2 Low Knob</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.eqMid.input</key>
+                <description>Deck 2 Mid Knob</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.eqHigh.input</key>
+                <description>Deck 2 High Knob</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.cueButton.input</key>
+                <description>Deck 1 Cue Button On</description>
+                <status>0x92</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.cueButton.input</key>
+                <description>Deck 1 Cue Button Off</description>
+                <status>0x82</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.playButton.input</key>
+                <description>Deck 1 Play/Stop Button On</description>
+                <status>0x92</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.playButton.input</key>
+                <description>Deck 1 Play/Stop Button Off</description>
+                <status>0x82</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.cueButton.input</key>
+                <description>Deck 2 Cue Button On</description>
+                <status>0x93</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.cueButton.input</key>
+                <description>Deck 2 Cue Button Off</description>
+                <status>0x83</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.playButton.input</key>
+                <description>Deck 2 Play/Stop Button On</description>
+                <status>0x93</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.playButton.input</key>
+                <description>Deck 2 Play/Stop Button Off</description>
+                <status>0x83</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.vinylButton.input</key>
+                <description>Deck 1 Vinyl / Grid Edit Button On</description>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.vinylButton.input</key>
+                <description>Deck 1 Vinyl / Grid Edit Button Off</description>
+                <status>0x82</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.vinylButton.input</key>
+                <description>Deck 2 Vinyl / Grid Edit Button On</description>
+                <status>0x93</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.vinylButton.input</key>
+                <description>Deck 2 Vinyl / Grid Edit Button Off</description>
+                <status>0x83</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.pitchBendDown.input</key>
+                <description>Deck 1 Pitch Bend (-) Button On</description>
+                <status>0x92</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.pitchBendDown.input</key>
+                <description>Deck 1 Pitch Bend (-) Button Off</description>
+                <status>0x82</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.pitchBendUp.input</key>
+                <description>Deck 1 Pitch Bend (+) Button On</description>
+                <status>0x92</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.pitchBendUp.input</key>
+                <description>Deck 1 Pitch Bend (+) Button Off</description>
+                <status>0x82</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.pitchBendDown.input</key>
+                <description>Deck 2 Pitch Bend (-) Button On</description>
+                <status>0x93</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.pitchBendDown.input</key>
+                <description>Deck 2 Pitch Bend (-) Button Off</description>
+                <status>0x83</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.pitchBendUp.input</key>
+                <description>Deck 2 Pitch Bend (+) Button On</description>
+                <status>0x93</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.pitchBendUp.input</key>
+                <description>Deck 2 Pitch Bend (+) Button Off</description>
+                <status>0x83</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.syncButton.input</key>
+                <description>Deck 1 Sync / Key Sync Button On</description>
+                <status>0x92</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.syncButton.input</key>
+                <description>Deck 1 Sync / Key Sync Button Off</description>
+                <status>0x82</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.syncButton.input</key>
+                <description>Deck 2 Sync / Key Sync Button On</description>
+                <status>0x93</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.syncButton.input</key>
+                <description>Deck 2 Sync / Key Sync Button Off</description>
+                <status>0x83</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Encoder Button On</description>
+                <status>0x92</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Encoder Button Off</description>
+                <status>0x82</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Encoder</description>
+                <status>0xB2</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Encoder Button On</description>
+                <status>0x93</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Encoder Button Off</description>
+                <status>0x83</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Encoder</description>
+                <status>0xB3</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 1 - Hot Cue Pad On</description>
+                <status>0x92</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 1 - Hot Cue Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 1 - Loop Pad On</description>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 1 - Loop Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 1 - Roll Pad On</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 1 - Roll Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- Handled internally by controller, but MIDI value is logged here if needed
+            <control>
+                <group></group>
+                <description>Deck 1 - Bank Pad On</description>
+                <status>0x92</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <description>Deck 1 - Bank Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+                </control>
+            -->
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 2 - Hot Cue Pad On</description>
+                <status>0x93</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 2 - Hot Cue Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 2 - Loop Pad On</description>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 2 - Loop Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 2 - Roll Pad On</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>Deck 2 - Roll Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- Handled internally by controller, but MIDI value is logged here if needed
+            <control>
+                <group></group>
+                <description>Deck 2 - Bank Pad On</description>
+                <status>0x93</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <description>Deck 2 - Bank Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 1 On</description>
+                <status>0x92</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 1 Off</description>
+                <status>0x82</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 2 On</description>
+                <status>0x92</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 2 Off</description>
+                <status>0x82</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 3 On</description>
+                <status>0x92</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 3 Off</description>
+                <status>0x82</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 4 On</description>
+                <status>0x92</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 4 Off</description>
+                <status>0x82</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 5 On</description>
+                <status>0x92</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 5 Off</description>
+                <status>0x82</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 6 On</description>
+                <status>0x92</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 6 Off</description>
+                <status>0x82</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 7 On</description>
+                <status>0x92</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 7 Off</description>
+                <status>0x82</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 8 On</description>
+                <status>0x92</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.padGrid.performancePad</key>
+                <description>Deck 1 - Pad 8 Off</description>
+                <status>0x82</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 1 On</description>
+                <status>0x93</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 1 Off</description>
+                <status>0x83</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 2 On</description>
+                <status>0x93</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 2 Off</description>
+                <status>0x83</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 3 On</description>
+                <status>0x93</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 3 Off</description>
+                <status>0x83</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 4 On</description>
+                <status>0x93</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 4 Off</description>
+                <status>0x83</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 5 On</description>
+                <status>0x93</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 5 Off</description>
+                <status>0x83</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 6 On</description>
+                <status>0x93</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 6 Off</description>
+                <status>0x83</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 7 On</description>
+                <status>0x93</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 7 Off</description>
+                <status>0x83</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 8 On</description>
+                <status>0x93</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.padGrid.performancePad</key>
+                <description>Deck 2 - Pad 8 Off</description>
+                <status>0x83</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.jogWheel.inputTouch</key>
+                <description>Deck 1 - Jog Wheel Touch On</description>
+                <status>0x92</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.jogWheel.inputTouch</key>
+                <description>Deck 1 - Jog Wheel Touch Off</description>
+                <status>0x82</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.jogWheel.inputTouch</key>
+                <description>Deck 2 - Jog Wheel Touch On</description>
+                <status>0x93</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.jogWheel.inputTouch</key>
+                <description>Deck 2 - Jog Wheel Touch Off</description>
+                <status>0x83</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.jogWheel.inputWheelMSB</key>
+                <description>Deck 1 - Jog Wheel MSB</description>
+                <status>0xB2</status>
+                <midino>0x37</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.jogWheel.inputWheelLSB</key>
+                <description>Deck 1 - Jog Wheel LSB</description>
+                <status>0xB2</status>
+                <midino>0x4D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.jogWheel.inputWheelMSB</key>
+                <description>Deck 2 - Jog Wheel MSB</description>
+                <status>0xB3</status>
+                <midino>0x37</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.jogWheel.inputWheelLSB</key>
+                <description>Deck 2 - Jog Wheel LSB</description>
+                <status>0xB3</status>
+                <midino>0x4D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.tempoFader.inputMSB</key>
+                <description>Deck 1 - Pitch Fader MSB</description>
+                <status>0xB2</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.leftDeck.tempoFader.inputLSB</key>
+                <description>Deck 1 - Pitch Fader LSB</description>
+                <status>0xB2</status>
+                <midino>0x4B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.tempoFader.inputMSB</key>
+                <description>Deck 2 - Pitch Fader MSB</description>
+                <status>0xB3</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>PrimeGo.rightDeck.tempoFader.inputLSB</key>
+                <description>Deck 2 - Pitch Fader LSB</description>
+                <status>0xB3</status>
+                <midino>0x4B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+        </controls>
+
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
