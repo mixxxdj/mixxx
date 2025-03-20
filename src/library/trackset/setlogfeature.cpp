@@ -252,7 +252,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             "  GROUP BY Playlists.id")
                                   .arg(m_countsDurationTableName,
                                           QString::number(PlaylistDAO::PLHT_SET_LOG));
-    ;
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
                     " ORDER BY sort_name"));

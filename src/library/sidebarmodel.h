@@ -3,10 +3,13 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
+#include <QPoint>
 #include <QVariant>
 
 class LibraryFeature;
 class QTimer;
+class TreeItem;
+class TreeItemModel;
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
@@ -20,6 +23,48 @@ class SidebarModel : public QAbstractItemModel {
         DataRole,
     };
     Q_ENUM(Roles);
+
+    // TODO Make class. move to own file?
+    struct Bookmark {
+        Bookmark(
+                int row = -1,
+                const QVariant& datavar = QVariant(),
+                QPoint poLevelAndRow = QPoint(0, 0))
+                : featureRow(row),
+                  data(datavar),
+                  levelAndRow(poLevelAndRow) {
+        }
+        bool isValid() {
+            qWarning() << "CHECK: row" << featureRow
+                       << "| levelAndRow:" << levelAndRow.x() << levelAndRow.y();
+            return featureRow >= 0 &&
+                    levelAndRow.x() >= 0 &&
+                    levelAndRow.y() >= 0;
+        }
+        bool operator==(const Bookmark& other) const {
+            return featureRow == other.featureRow && data == other.data;
+        }
+        bool operator<(Bookmark& other) const {
+            if (featureRow == other.featureRow) {
+                if (levelAndRow.x() == other.levelAndRow.x()) {
+                    return levelAndRow.y() < other.levelAndRow.y();
+                }
+                return levelAndRow.x() < other.levelAndRow.x();
+            }
+            return featureRow < other.featureRow;
+        }
+
+        int featureRow;
+        QVariant data;
+        // Store child level and row number relative to first parent.
+        // This allows to sort bookmarks by their position in the tree.
+        // Note: this might break when a Browse path's tree is rebuilt, and when
+        // a new YEAR node is added.
+        // We might listen to all TreeItemModels' signals rowsRemoved(),
+        // rowsInserted() and modelReset() and re-evaluate the bookmark's level,
+        // but this seems overkill.
+        QPoint levelAndRow;
+    };
 
     explicit SidebarModel(
             QObject* parent = nullptr);
@@ -49,6 +94,10 @@ class SidebarModel : public QAbstractItemModel {
 
     void clear(const QModelIndex& index);
     void paste(const QModelIndex& index);
+
+    void bookmarkSelectedItem(const QModelIndex& selIndex);
+    QModelIndex selectNextPrevBookmark(const QModelIndex& selIndex, int direction);
+
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);
@@ -64,10 +113,9 @@ class SidebarModel : public QAbstractItemModel {
     // void slotColumnsInserted(const QModelIndex& parent, int start, int end);
     // void slotColumnsRemoved(const QModelIndex& parent, int start, int end);
     void slotDataChanged(const QModelIndex& topLeft, const QModelIndex & bottomRight);
-    //void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
+    // void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
     // void slotLayoutAboutToBeChanged();
     // void slotLayoutChanged();
-    // void slotModelAboutToBeReset();
     // void slotModelReset();
     void slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end);
     void slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
@@ -93,7 +141,18 @@ class SidebarModel : public QAbstractItemModel {
 
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
+    QList<Bookmark> m_bookmarks;
+    QModelIndex m_bookmarkIndex;
 
     void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();
+
+    QModelIndex selectBookmarkByPos(int pos);
+    QModelIndex getBookmarkIndex(
+            const TreeItem* pItem,
+            const QModelIndex& parent,
+            const SidebarModel::Bookmark& bookmark);
+    Bookmark createBookmarkFromIndex(const QModelIndex& index);
+    bool treeItemIsBookmark(const TreeItem* pTreeItem) const;
+    bool featureRootIsBookmark(int featureRow) const;
 };

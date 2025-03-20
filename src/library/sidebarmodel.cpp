@@ -20,12 +20,15 @@ constexpr int kPressedUntilClickedTimeoutMillis = 300;
 /// Enables additional debugging output.
 constexpr bool kDebug = false;
 
+const QBrush kBookmarkBgBrush(QColor::fromHsl(161, 255, 70)); // teal
+const QBrush kBookmarkFgBrush(QColor::fromHsl(0, 0, 255));    // white
+
 } // anonymous namespace
 
 SidebarModel::SidebarModel(
         QObject* parent)
         : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0),
+          m_iDefaultSelectedIndex(0), // Tracks
           m_pressedUntilClickedTimer(new QTimer(this)) {
     m_pressedUntilClickedTimer->setSingleShot(true);
     connect(m_pressedUntilClickedTimer,
@@ -110,10 +113,9 @@ QModelIndex SidebarModel::index(int row, int column,
     }
 
     if (parent.isValid()) {
-        /* If we have selected the root of a library feature at position 'row'
-         * its internal pointer is the current sidebar object model
-         * we return its associated childmodel
-         */
+        // If we have selected the root of a library feature at position 'row'
+        // its internal pointer is the current sidebar object model
+        // we return its associated childmodel.
         if (parent.internalPointer() == this) {
             const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->sidebarModel();
             QModelIndex childIndex = childModel->index(row, column);
@@ -146,14 +148,11 @@ QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
     }
-    QModelIndex ind;
-    for (int i = 0; i < m_sFeatures.size(); ++i) {
-        if (m_sFeatures[i] == pFeature) {
-            ind = index(i, 0);
-            break;
-        }
+    int featureRow = m_sFeatures.indexOf(pFeature);
+    VERIFY_OR_DEBUG_ASSERT(featureRow != -1) {
+        return {};
     }
-    return ind;
+    return index(featureRow, 0);
 }
 
 void SidebarModel::clear(const QModelIndex& index) {
@@ -196,17 +195,17 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             if (pTreeItemParent) {
                 if (pTreeItemParent->isRoot()) {
                     LibraryFeature* pFeature = pTreeItem->feature();
-                    for (int i = 0; i < m_sFeatures.size(); ++i) {
-                        if (pFeature == m_sFeatures[i]) {
-                            // create a ModelIndex for parent 'this' having a
-                            // library feature at position 'i'
-                            // `this` is const, but the function expects a
-                            // non-const pointer.
-                            // TODO: Check if we can get rid of this const cast
-                            // somehow.
-                            return createIndex(i, 0, const_cast<SidebarModel*>(this));
-                        }
+                    int featureRow = m_sFeatures.indexOf(pFeature);
+                    VERIFY_OR_DEBUG_ASSERT(featureRow != -1) {
+                        return {};
                     }
+                    // create a ModelIndex for parent 'this' having a
+                    // library feature at position 'i'
+                    // `this` is const, but the function expects a
+                    // non-const pointer.
+                    // TODO: Check if we can get rid of this const cast
+                    // somehow.
+                    return createIndex(featureRow, 0, const_cast<SidebarModel*>(this));
                 }
                 // if we have selected an item at some deeper level of a childnode
                 return createIndex(pTreeItemParent->parentRow(), 0, pTreeItemParent);
@@ -244,6 +243,9 @@ int SidebarModel::columnCount(const QModelIndex& parent) const {
     return 1;
 }
 
+/// Used to decide whether to display the branch expand icon.
+/// Note that for the Browse feature's DEVICE node this always returns true,
+/// regardless the actual chidlren().size().
 bool SidebarModel::hasChildren(const QModelIndex& parent) const {
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
@@ -282,6 +284,18 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return m_sFeatures[index.row()]->icon();
         case SidebarModel::IconNameRole:
             return m_sFeatures[index.row()]->iconName();
+        case Qt::BackgroundRole:
+            // Paint bookmarks.
+            // Get colors from skin template via WLibrarySideBar
+            if (featureRootIsBookmark(index.row())) {
+                return kBookmarkBgBrush; // teal
+            }
+            return QVariant();
+        case Qt::ForegroundRole:
+            if (featureRootIsBookmark(index.row())) {
+                return kBookmarkFgBrush;
+            }
+            return QVariant();
         default:
             return QVariant();
         }
@@ -312,6 +326,18 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return pTreeItem->getIcon();
         case SidebarModel::DataRole:
             return pTreeItem->getData();
+        case Qt::BackgroundRole:
+            // Paint bookmarks.
+            // Get colors from skin template via WLibrarySideBar
+            if (treeItemIsBookmark(pTreeItem)) {
+                return kBookmarkBgBrush;
+            }
+            return QVariant();
+        case Qt::ForegroundRole:
+            if (treeItemIsBookmark(pTreeItem)) {
+                return kBookmarkFgBrush;
+            }
+            return QVariant();
         case SidebarModel::IconNameRole:
             // TODO: Add support for icon names in tree items
         default:
@@ -485,19 +511,16 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) con
 
 /// Translates an index from the child models to an index of the sidebar models
 QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
-    /* These method is called from the slot functions below.
-     * QObject::sender() return the object which emitted the signal
-     * handled by the slot functions.
-
-     * For child models, this always the child models itself
-     */
-
-    const QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(model != nullptr) {
+    // These method is called from the slot functions below.
+    // QObject::sender() return the object which emitted the signal
+    // handled by the slot functions.
+    // For child models, this always the child models itself
+    const QAbstractItemModel* pModel = qobject_cast<QAbstractItemModel*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pModel != nullptr) {
         return QModelIndex();
     }
 
-    return translateIndex(index, model);
+    return translateIndex(index, pModel);
 }
 
 QModelIndex SidebarModel::translateIndex(
@@ -518,22 +541,21 @@ QModelIndex SidebarModel::translateIndex(
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    // qDebug() << "slotDataChanged topLeft:" << topLeft;
+    // qDebug() << "            bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
-    //qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
-
+    // qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
     QModelIndex newParent = translateSourceIndex(parent);
     beginInsertRows(newParent, start, end);
 }
 
 void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) {
-    //qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
-
+    // qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
     QModelIndex newParent = translateSourceIndex(parent);
     beginRemoveRows(newParent, start, end);
 }
@@ -551,24 +573,24 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsRemoved" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsRemoved" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
 }
 
 void SidebarModel::slotModelAboutToBeReset() {
+    // qDebug() << "slotModelAboutToBeReset";
     beginResetModel();
 }
 
 void SidebarModel::slotModelReset() {
+    // qDebug() << "slotModelReset";
     endResetModel();
 }
 
-/*
- * Call this slot whenever the title of the feature has changed.
- * See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
- * If selectFeature is true, the feature is selected when the title change occurs.
- */
+// Call this slot whenever the title of the feature has changed.
+// See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
+// If selectFeature is true, the feature is selected when the title change occurs.
 void SidebarModel::slotFeatureIsLoading(LibraryFeature* pFeature, bool selectFeature) {
     featureRenamed(pFeature);
     if (selectFeature) {
@@ -576,9 +598,6 @@ void SidebarModel::slotFeatureIsLoading(LibraryFeature* pFeature, bool selectFea
     }
 }
 
-/* Tobias: This slot is somewhat redundant but I decided
- * to leave it for code readability reasons
- */
 void SidebarModel::slotFeatureLoadingFinished(LibraryFeature* pFeature) {
     featureRenamed(pFeature);
     slotFeatureSelect(pFeature);
@@ -607,4 +626,220 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex
         }
     }
     emit selectIndex(ind);
+}
+
+void SidebarModel::bookmarkSelectedItem(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return;
+    }
+
+    Bookmark bookmark = createBookmarkFromIndex(index);
+    if (!bookmark.isValid()) {
+        return;
+    }
+
+    if (m_bookmarks.contains(bookmark)) {
+        m_bookmarks.removeOne(bookmark);
+        qWarning() << "---------- removed sidebar bookmark" << bookmark.data;
+        return;
+    }
+
+    m_bookmarks.append(bookmark);
+    qWarning() << "---------- added sidebar bookmark" << bookmark.data;
+
+    // Sort by position in the tree so selectNextPrevBookmark()
+    // switches to bookmark bewlo/above:
+    // feature row -> child level -> child row
+    std::sort(m_bookmarks.begin(), m_bookmarks.end());
+}
+
+QModelIndex SidebarModel::selectNextPrevBookmark(const QModelIndex& selIndex, int direction) {
+    if (!selIndex.isValid() || direction == 0) {
+        qWarning() << " ! SM selectNextPrevBookmark: invalid index or dir == 0" << selIndex;
+        return {};
+    }
+    if (m_bookmarks.isEmpty()) {
+        qWarning() << " ! SM selectNextPrevBookmark: no bookmarks stored";
+        return {};
+    }
+
+    const Bookmark currBM = createBookmarkFromIndex(selIndex);
+    int bookmarkPos = 0;
+    if (m_bookmarks.size() == 0) {
+        if (currBM == m_bookmarks[0]) {
+            // We already have the only bookmark selected
+            return selIndex;
+        }
+    } else {
+        bookmarkPos = m_bookmarks.indexOf(currBM);
+        if (bookmarkPos == -1) {
+            // not found, select first
+            bookmarkPos = 0;
+        } else {
+            bookmarkPos += direction;
+            if (bookmarkPos < 0) {
+                // wrap-around, pick last
+                bookmarkPos = m_bookmarks.size() - 1;
+            } else if (bookmarkPos >= m_bookmarks.size()) {
+                // pick first
+                bookmarkPos = 0;
+            }
+        }
+    }
+    return selectBookmarkByPos(bookmarkPos);
+}
+
+// Not necessary atm, but will help for bookmark select buttons.
+// Those would work like hotcue buttons:
+// click to assign or activate, right-click to unset
+QModelIndex SidebarModel::selectBookmarkByPos(int pos) {
+    if (m_bookmarks.isEmpty()) {
+        return {};
+    }
+    if (pos < 0 || pos > m_bookmarks.size() - 1) {
+        return {};
+    }
+    // qWarning() << " -- new pos:" << pos;
+    // the item we want to find and select
+    Bookmark nextBookmark = m_bookmarks[pos];
+    // qWarning() << " -> bookmark" << pos << nextBookmark.data;
+    if (nextBookmark.data.isNull()) {
+        // top-level item, feature root item
+        // qWarning() << " -> bookmark.data == null, bookmark is root item";
+        return index(nextBookmark.featureRow, 0);
+    }
+
+    // Item is a child (branch or leave)
+    TreeItemModel* pChildModel = m_sFeatures[nextBookmark.featureRow]->sidebarModel();
+    TreeItem* pBaseItem = pChildModel->getRootItem();
+    QModelIndex baseIdx = index(nextBookmark.featureRow, 0);
+    // qWarning() << " -> checking children...";
+    // qWarning() << " -> base index:" << baseIdx;
+    QModelIndex targetIdx = getBookmarkIndex(pBaseItem, baseIdx, nextBookmark);
+    if (targetIdx.isValid()) {
+        // qWarning() << " -> found matching child, index:" << targetIdx;
+        return targetIdx;
+    }
+    // no matching child found
+    // TODO remove invalid bookmark?
+    // Or can this happen after rebuilding a Browse feature's device tree
+    // which is not yet expanded down to the previously bookmarked item?
+    return {};
+}
+
+/// Try to find the TreeItem in a feature's childmodel that matches the bookmark.
+/// Return a valid index when found, else return invalid QModelIndex().
+/// Scans the entire tree from the top.
+QModelIndex SidebarModel::getBookmarkIndex(
+        const TreeItem* pItem,
+        const QModelIndex& baseIndex,
+        const SidebarModel::Bookmark& bookmark) {
+    // qWarning() << " gBIdx   index:" << baseIndex;
+
+    // qWarning() << "   data: " << pItem->getData();
+    // qWarning() << "   curr ch level: " << pItem->childLevel();
+    // qWarning() << "   bookm ch level:" << bookmark.levelAndRow.x();
+    // No need to recurse into children if tree level is already higher than the
+    // that of the bookmark. This is relevant only for Browsefeature where
+    // and SetlogFeature.
+    if (pItem->childLevel() > bookmark.levelAndRow.x()) {
+        return {};
+    }
+    QModelIndex parentIndex = baseIndex;
+    int parentRow = pItem->parentRow();
+    // TreeItem::kInvalidRow indicates this is a feature root item.
+    // No need to adjust the parent index in that case.
+    // Else we have a child and
+    if (parentRow != TreeItem::kInvalidRow) {
+        parentIndex = index(parentRow, 0, baseIndex);
+        // qWarning() << "   child at row" << parentRow;
+        // qWarning() << "     parentIdx:" << parentIndex;
+    }
+
+    // The first item passed to this is the feature root item.
+    // Later, item is a child for which we already created the associated index above.
+    // So just return the index.
+    if (pItem->getData() == bookmark.data) {
+        // qWarning() << "   MATCH------" << baseIndex;
+        return parentIndex;
+    }
+    // Item didn't match, let's check its children
+    const QList<TreeItem*> children = pItem->children();
+    if (children.isEmpty()) {
+        // qWarning() << "  ! no match, no children";
+        return {};
+    }
+
+    for (const auto* pChItem : std::as_const(children)) {
+        const QModelIndex match = getBookmarkIndex(pChItem, parentIndex, bookmark);
+        if (match.isValid()) {
+            // qWarning() << "   xxx MATCH  :" << match << pItem->parentRow();
+            return match;
+        }
+    }
+    return {};
+}
+
+SidebarModel::Bookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return {};
+    }
+
+    // qWarning() << " >> getBookmarkFromIndex" << index;
+    if (index.internalPointer() == this) {
+        // LibraryFeature* pFeature = m_sFeatures[index.row()];
+        // qWarning() << " >> found root" << index.row() << pFeature->title().toString();
+        return Bookmark(index.row(), QVariant(), QPoint(0, 0));
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (!pTreeItem) {
+            // qWarning() << " >> ! found child, no TreeItem";
+            return {};
+        }
+        int featureRow = m_sFeatures.indexOf(pTreeItem->feature());
+        VERIFY_OR_DEBUG_ASSERT(featureRow != -1) {
+            return {};
+        }
+
+        QVariant data = pTreeItem->getData();
+        // Store child level + child row for sorting.
+        int level = pTreeItem->childLevel();
+        int childRow = pTreeItem->parentRow();
+        // int level = 1;
+        // TreeItem* pTempItem = pTreeItem->parent();
+        // while (!pTempItem->isRoot()) {
+        //     level++;
+        //     pTempItem = pTempItem->parent();
+        // }
+
+        // qWarning() << " >> found" << pTreeItem->feature()->title().toString() << "child";
+        // qWarning() << "    level:" << level << "child#" << childRow;
+        return Bookmark(featureRow, data, QPoint(level, childRow));
+    }
+}
+
+bool SidebarModel::treeItemIsBookmark(const TreeItem* pTreeItem) const {
+    // qWarning() << " ?? treeItemIsBookmark" << pTreeItem->getData();
+    for (auto& bm : std::as_const(m_bookmarks)) {
+        if (pTreeItem->getData() == bm.data) {
+            qWarning() << " treeItemIsBookmark row:" << bm.featureRow
+                       << "data:" << pTreeItem->getData();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SidebarModel::featureRootIsBookmark(int featureRow) const {
+    // qWarning() << " ?? featureRootIsBookmark" << featureRow;
+    for (auto& bm : std::as_const(m_bookmarks)) {
+        if (bm.data.isNull() &&
+                // ensure it's a root item, i.e. exclude Missing/Hidden
+                // which also have no data
+                bm.levelAndRow.x() == 0 &&
+                bm.featureRow == featureRow) {
+            return true;
+        }
+    }
+    return false;
 }
