@@ -7,10 +7,21 @@
 * Behringer DDM4000 & BCR2000: Update mappings to 2.5
   [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
   [#14349](https://github.com/mixxxdj/mixxx/pull/14349)
-* Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+* Hercules DJControl Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
-* M-Vave SMC-Mixer: Add controller mapping [#14411](https://github.com/mixxxdj/mixxx/pull/14411)
+* Hercules DJControl Inpulse 500: New mapping
+  [#14491](https://github.com/mixxxdj/mixxx/pull/14491)
+  [#14510](https://github.com/mixxxdj/mixxx/pull/14510)
+* Hercules DJ Console Mk1: Fix pitch bend buttons [#14447](https://github.com/mixxxdj/mixxx/pull/14447)
+* M-Vave SMC-Mixer: Add controller mapping
+  [#14411](https://github.com/mixxxdj/mixxx/pull/14411)
+  [#14448](https://github.com/mixxxdj/mixxx/pull/14448)
+  [#14457](https://github.com/mixxxdj/mixxx/pull/14457)
+  [#14458](https://github.com/mixxxdj/mixxx/pull/14458)
+* M-Vave SMK-25 II: Piano keyboard mapping
+  [#14412](https://github.com/mixxxdj/mixxx/pull/14412)
+  [#14484](https://github.com/mixxxdj/mixxx/pull/14484)
 * Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
 * Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
 * Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
@@ -63,6 +74,7 @@
 * Fix for `TypeError` in `midi-components-0.0.js`
   [#14203](https://github.com/mixxxdj/mixxx/pull/14203)
   [#14197](https://github.com/mixxxdj/mixxx/issues/14197)
+* Fix crash due to concurrent access in MidiController [#14159](https://github.com/mixxxdj/mixxx/pull/14159)
 
 ### Skins
 
@@ -103,10 +115,13 @@
 * History: Don't allow joining with locked previous playlist
   [#14401](https://github.com/mixxxdj/mixxx/pull/14401)
   [#14399](https://github.com/mixxxdj/mixxx/issues/14399)
+* Track info dialog: fixed cover label (max) size [#14418](https://github.com/mixxxdj/mixxx/pull/14418)
 * Track Menu: Reset `eject` after moving track file to trash [#14402](https://github.com/mixxxdj/mixxx/pull/14402)
 * Fix AutoDJ "Remove Crate" action
   [#14426](https://github.com/mixxxdj/mixxx/pull/14426)
   [#14425](https://github.com/mixxxdj/mixxx/issues/14425)
+* Fix scrolling issue with coverart columns visible [#13719](https://github.com/mixxxdj/mixxx/pull/13719)
+* Developer Tools: multi-word search, no Tab navigation in controls table [#14474](https://github.com/mixxxdj/mixxx/pull/14474)
 
 ### Other Fixes
 
@@ -149,6 +164,8 @@
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
 * Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
 * Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
+* Raise macOS target version to 11 (Qt6.5 requirement). [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+* Fail early when building on WSL [#14481](https://github.com/mixxxdj/mixxx/pull/14481)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
