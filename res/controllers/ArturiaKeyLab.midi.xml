@@ -5,6 +5,10 @@
     <author>Sam Whited</author>
     <description>MIDI mapping for the original Arturia KeyLab Mk 1</description>
     <forums>https://mixxx.discourse.group/t/arturia-keylab-mk1/31080</forums>
+    <manual>arturia_keylab_mk1</manual>
+    <devices>
+      <product protocol="midi" vendor_id="0x1c75" product_id="0x02cd" />
+    </devices>
   </info>
   <settings>
     <group label="Pots">
