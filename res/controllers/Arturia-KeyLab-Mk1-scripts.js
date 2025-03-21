@@ -232,11 +232,10 @@ var KeyLabMk1;
                 type: components.Button.prototype.types.push,
                 output: delayLED(0x58),
             });
-            this.stopButton = new components.Button({
+            this.stopButton = new components.CueButton({
                 group: "[Channel1]",
                 midi: [0xB0 + midiChannel, 0x01],
                 type: components.Button.prototype.types.push,
-                key: "start_stop",
                 output: delayLED(0x59),
             });
             this.loopButton = new components.LoopToggleButton({
