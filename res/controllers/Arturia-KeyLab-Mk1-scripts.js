@@ -260,15 +260,29 @@ var KeyLabMk1;
         sendSysex(sysexPayload);
     };
 
-    // The drum pads by default are laid out in a grid starting from the bottom
-    // left (0x24), then going right and up.
-    // This makes the very first pad (what we're calling pad '0') in the top
-    // left 0x30, so do some math to invert the pads and get us to the correct
-    // values going right and down instead by subtracting 8 times the row the
-    // button is on.
-    const pad = function(n) {
-        return n + 0x30 - (Math.floor(n / 4) * 8);
-    };
+    /*
+     * Represent a pad button that interact with a intro/extra special markers
+     * (set, activate, clear)
+     */
+    class IntroOutroButton extends components.Button {
+        constructor(options) {
+            super(options);
+            if (this.cueBaseName === undefined || typeof this.cueBaseName !== "string") {
+                throw Error("must specify cueBaseName as intro_start, intro_end, outro_start, or outro_end");
+            }
+            this.outKey = `${this.cueBaseName}_enabled`;
+            this.output = delayLED(this.midi[1] + 0x4C);
+        }
+        unshift() {
+            this.inKey = `${this.cueBaseName}_activate`;
+        }
+        shift() {
+            // TODO: this class was copied from the Traktor Kontrol S4 Mk3
+            // mapping, but we don't have a shift button. Should this be made a
+            // long press action instead?
+            this.inKey = `${this.cueBaseName}_clear`;
+        }
+    }
 
     class Deck extends components.Deck {
         constructor(deckNumbers, midiChannel) {
@@ -313,32 +327,9 @@ var KeyLabMk1;
                 midi: [0xB0 + midiChannel, 0x1F], // Snapshot 10
                 type: components.Button.prototype.types.push,
             });
-            this.hotcues = [];
+            this.snapshots = [];
             for (let i = 0; i < 8; i++) {
-                this.hotcues[i] = new components.HotcueButton({
-                    number: i + 1,
-                    group: "[Channel1]",
-                    midi: [0xB0 + midiChannel, 0x16 + i], // Snapshot 1-8
-                    type: components.Button.prototype.types.push,
-                    blinkState: false,
-                    blinkTimer: 0,
-                    output: function(value) {
-                        if (value === 2) {
-                            if (this.blinkTimer === 0) {
-                                this.blinkTimer = engine.beginTimer(250, () => {
-                                    this.blinkState = !this.blinkState;
-                                    delayLED(0x12 + i)(this.blinkState ? 1 : 0);
-                                });
-                            }
-                        } else {
-                            if (this.blinkTimer) {
-                                engine.stopTimer(this.blinkTimer);
-                                this.blinkTimer = 0;
-                            }
-                            delayLED(0x12 + i)(value);
-                        }
-                    },
-                });
+                // TODO: add pad grid switching buttons here
             }
 
             // Parameters
@@ -449,6 +440,8 @@ var KeyLabMk1;
                     }
                 },
             });
+
+            this.padGrid = new PadGrid();
         }
     }
 
@@ -512,6 +505,215 @@ var KeyLabMk1;
         }
     }
 
+    class PadGrid extends components.ComponentContainer {
+        // The drum pads by default are laid out in a grid starting from the
+        // bottom left (0x24), then going right and up.
+        // This makes the very first pad (what we're calling pad '0') in the top
+        // left 0x30, so do some math to invert the pads and get us to the
+        // correct values going right and down instead by subtracting 8 times
+        // the row the button is on.
+        padNum(n) {
+            return n + 0x30 - (Math.floor(n / 4) * 8);
+        }
+
+        // TODO: JavaScript is a garbage language. Why in the world would this
+        // make a difference if I copy it or use the one in the parent class?
+        applyLayer(newLayer, reconnectComponents) {
+            if (reconnectComponents !== false) {
+                reconnectComponents = true;
+            }
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.disconnect();
+                });
+            }
+
+            Object.assign(this, newLayer);
+
+            if (reconnectComponents === true) {
+                this.forEachComponent(function(component) {
+                    component.connect();
+                    component.trigger();
+                });
+            }
+        }
+
+        defaultLayer() {
+            const pads = [
+                new IntroOutroButton({
+                    group: "[Channel1]",
+                    cueBaseName: "intro_start",
+                    midi: [0x99, this.padNum(0)],
+                }),
+                new IntroOutroButton({
+                    group: "[Channel1]",
+                    cueBaseName: "intro_end",
+                    midi: [0x99, this.padNum(1)],
+                }),
+                new IntroOutroButton({
+                    group: "[Channel1]",
+                    cueBaseName: "outro_start",
+                    midi: [0x99, this.padNum(2)],
+                }),
+                new IntroOutroButton({
+                    group: "[Channel1]",
+                    cueBaseName: "outro_end",
+                    midi: [0x99, this.padNum(3)],
+                }),
+            ];
+            for (let i = 0; i < 12; i++) {
+                pads[i + 4] = new components.HotcueButton({
+                    group: "[Channel1]",
+                    number: i + 1,
+                    midi: [0x99, this.padNum(i + 4)],
+                    blinkState: false,
+                    blinkTimer: 0,
+                    output: function(value) {
+                        if (value === 2) {
+                            if (this.blinkTimer === 0) {
+                                this.blinkTimer = engine.beginTimer(250, () => {
+                                    this.blinkState = !this.blinkState;
+                                    delayLED(this.midi[1] + 0x4C)(this.blinkState ? 1 : 0);
+                                });
+                            }
+                        } else {
+                            if (this.blinkTimer) {
+                                engine.stopTimer(this.blinkTimer);
+                                this.blinkTimer = 0;
+                            }
+                            delayLED(this.midi[1] + 0x4C)(value);
+                        }
+                    },
+                });
+            }
+            this.applyLayer({pads: pads}, true);
+        }
+
+        hotcueLayer() {
+            const pads = [];
+            for (let i = 0; i < 16; i++) {
+                pads[i] = new components.HotcueButton({
+                    group: "[Channel1]",
+                    number: i + 1,
+                    midi: [0x99, this.padNum(i)],
+                    blinkState: false,
+                    blinkTimer: 0,
+                    output: function(value) {
+                        // TODO: dedup with output function in defaultLayer.
+                        if (value === 2) {
+                            if (this.blinkTimer === 0) {
+                                this.blinkTimer = engine.beginTimer(250, () => {
+                                    this.blinkState = !this.blinkState;
+                                    delayLED(this.midi[1] + 0x4C)(this.blinkState ? 1 : 0);
+                                });
+                            }
+                        } else {
+                            if (this.blinkTimer) {
+                                engine.stopTimer(this.blinkTimer);
+                                this.blinkTimer = 0;
+                            }
+                            delayLED(this.midi[1] + 0x4C)(value);
+                        }
+                    },
+                });
+            }
+            this.applyLayer({pads: pads}, true);
+        }
+
+        samplerLayer() {
+            const pads = [];
+            for (let i = 0; i < 16; i++) {
+                pads[i] = new components.SamplerButton({
+                    group: `[Sampler${i + 1}]`,
+                    number: i + 1,
+                    volumeByVelocity: true,
+                    midi: [0x99, this.padNum(i)],
+                    // These numbers are made up magic constants that can be
+                    // checked in the "send" callback defined below.
+                    playing: 0x72,
+                    empty: 0x00,
+                    loaded: 0x01,
+                    blinking: 0,
+                    blinkState: false,
+                    send: function(value) {
+                        switch (value) {
+                        case this.empty: {
+                            if (this.blinking) {
+                                engine.stopTimer(this.blinking);
+                                this.blinking = 0;
+                            }
+                            delayLED(this.midi[1] + 0x4c)(LedState.off);
+                            break;
+                        }
+                        case this.loaded: {
+                            if (this.blinking) {
+                                engine.stopTimer(this.blinking);
+                                this.blinking = 0;
+                            }
+                            delayLED(this.midi[1] + 0x4c)(LedState.on);
+                            break;
+                        }
+                        case this.playing: {
+                            // Start the sampler blinking every 500ms if it's
+                            // playing.
+                            // If for some reason it's already blinking, do
+                            // nothing so we don't end up with multiple blink
+                            // timers, one of which we forget to stop.
+                            if (this.blinking === 0) {
+                                this.blinking = engine.beginTimer(250, () => {
+                                    this.blinkState = !this.blinkState;
+                                    setLED(this.midi[1] + 0x4c, this.blinkState);
+                                });
+                            }
+                            break;
+                        }
+                        }
+                    },
+                });
+            }
+            this.applyLayer({"pads": pads}, true);
+        }
+
+        disabledLayer() {
+            for (let i = 0; i < 16; i++) {
+                delayLED(this.padNum(i) + 0x4c)(LedState.off);
+            }
+            this.applyLayer({pads: Array(16).fill(new components.Button())});
+        }
+
+        input(channel, control, value, status, group) {
+            const padNum = this.padNum(control);
+            if (this.pads !== undefined && this.pads[padNum] !== undefined) {
+                return this.pads[padNum].input(channel, control, value, status, group);
+            } else {
+                console.log(`pad num ${padNum} not enabled`);
+            }
+        }
+
+        constructor() {
+            super({});
+
+            if (engine.getSetting("pads_disabled")) {
+                this.disabledLayer();
+            } else {
+                const defaultPadLayout = engine.getSetting("defaultPadLayout");
+                switch (defaultPadLayout) {
+                case "default":
+                    this.defaultLayer();
+                    break;
+                case "hotcue":
+                    this.hotcueLayer();
+                    break;
+                case "sampler":
+                    this.samplerLayer();
+                    break;
+                default:
+                    throw Error(`invalid default pad layout "${defaultPadLayout}"`);
+                }
+            }
+        }
+    }
+
     class Controller extends components.ComponentContainer {
         setDeckOutput(noWrite = false) {
             return (value) => {
@@ -523,6 +725,7 @@ var KeyLabMk1;
                 }
             };
         }
+
         constructor(id) {
             super({});
 
@@ -700,63 +903,6 @@ var KeyLabMk1;
                 key: "headGain",
                 softTakeover: softTakeover,
             });
-            // Drum pads
-            this.samplers = [];
-            for (let i = 0; i < 16; i++) {
-                this.samplers[i] = new components.SamplerButton({
-                    number: i + 1,
-                    midi: [0x99, pad(i)], // Drum pads.
-                    volumeByVelocity: true,
-                    // These numbers are made up magic constants that can be
-                    // checked in the "send" callback defined below.
-                    playing: 0x72,
-                    empty: 0x00,
-                    loaded: 0x01,
-                    blinking: 0,
-                    blinkState: false,
-
-                    send: function(value) {
-                        switch (value) {
-                        case this.empty: {
-                            if (this.blinking) {
-                                engine.stopTimer(this.blinking);
-                                this.blinking = 0;
-                            }
-                            delayLED(this.midi[1] + 0x4c)(LedState.off);
-                            break;
-                        }
-                        case this.loaded: {
-                            if (this.blinking) {
-                                engine.stopTimer(this.blinking);
-                                this.blinking = 0;
-                            }
-                            delayLED(this.midi[1] + 0x4c)(LedState.on);
-                            break;
-                        }
-                        case this.playing: {
-                            // Start the sampler blinking every 500ms if it's
-                            // playing.
-                            // If for some reason it's already blinking, do
-                            // nothing so we don't end up with multiple blink
-                            // timers, one of which we forget to stop.
-                            if (this.blinking === 0) {
-                                this.blinking = engine.beginTimer(250, () => {
-                                    this.blinkState = !this.blinkState;
-                                    setLED(this.midi[1] + 0x4c, this.blinkState);
-                                });
-                            }
-                            break;
-                        }
-                        }
-                    },
-                });
-
-                this.padsDisabled = engine.getSetting("pads_disabled");
-                if (this.padsDisabled) {
-                    delayLED(this.samplers[i].midi[1] + 0x4c)(LedState.off);
-                    this.samplers[i].input = () => {};
-                }
-            }
         }
     }
 
