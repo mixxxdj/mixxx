@@ -256,21 +256,25 @@ void WLibrarySidebar::bookmarkSelectedItem() {
     }
 
     pSidebarModel->bookmarkSelectedItem(selIndex);
+    update();
 }
 
 void WLibrarySidebar::selectNextPrevBookmark(int direction, bool activate) {
     SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    const QModelIndex selIndex = selectedIndex();
-    if (!pSidebarModel || !selIndex.isValid()) {
-        qWarning() << " ! WLS selectNextPrevBookmark, invalid index" << selIndex;
+    // Don't use selectedIndex(). Selected item may not be the focused item, eg.
+    // if we focused a bookmark item without activating it.
+    QModelIndex index = currentIndex();
+    if (!pSidebarModel || !index.isValid()) {
+        qWarning() << " ! WLS selectNextPrevBookmark, invalid index" << index;
         return;
     }
 
-    const QModelIndex bookmarkIdx = pSidebarModel->selectNextPrevBookmark(selIndex, direction);
+    const QModelIndex bookmarkIdx = pSidebarModel->selectNextPrevBookmark(index, direction);
     if (!bookmarkIdx.isValid()) {
         qWarning() << " ! WLS selectNextPrevBookmark, invalid bookmark" << bookmarkIdx;
         return;
     }
+
     if (activate) {
         // select, scroll to and activate
         selectIndex(bookmarkIdx);
@@ -282,6 +286,10 @@ void WLibrarySidebar::selectNextPrevBookmark(int direction, bool activate) {
         selectionModel()->setCurrentIndex(bookmarkIdx, QItemSelectionModel::NoUpdate);
     }
     // TODO add control [Library],goToSelectedItem ??
+    // Or add wrapper goToItem() that does
+    // * select & activate focused item if it's selected
+    // * expand / collapse
+    // * jump to tracks if double-tapped
 }
 
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
@@ -493,31 +501,18 @@ void WLibrarySidebar::focusSelectedIndex() {
 }
 
 bool WLibrarySidebar::selectFocusedIndex() {
-    //
-    //    QModelIndexList selIdc = selectionModel()->selectedRows();
-    //    QModelIndexList selIdc = selectionModel()->selectedIndexes();
-    //    if (selIdc.isEmpty()) {
-    //        qWarning() << " -- no sel indices";
-    //        return false;
-    //    }
-    //    int i = 0;
-    //    for (const auto& idx : selIdc) {
-    //        qWarning() << " -- sel" << i << idx;
-    //        i++;
-    //    }
-
     const QModelIndex selIndex = selectedIndex();
     const QModelIndex focusIndex = selectionModel()->currentIndex();
-    qWarning() << " -- selected index:" << selIndex;
-    qWarning() << " -- focused index: " << focusIndex;
+    // qWarning() << " -- selected index:" << selIndex;
+    // qWarning() << " -- focused index: " << focusIndex;
     if (focusIndex.isValid() && focusIndex != selIndex) {
-        qWarning() << " -- select focused index, scroll to";
+        // qWarning() << " -- select focused index, scroll to";
         scrollTo(focusIndex);
         selectIndex(focusIndex);
         emit pressed(focusIndex);
         return true;
     }
-    qWarning() << " -- ! focused index invalid" << focusIndex;
+    // qWarning() << " -- ! focused index invalid" << focusIndex;
     return false;
 }
 

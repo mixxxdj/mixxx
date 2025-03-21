@@ -286,7 +286,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return m_sFeatures[index.row()]->iconName();
         case Qt::BackgroundRole:
             // Paint bookmarks.
-            // Get colors from skin template via WLibrarySideBar
+            // TODO Get colors from skin template via WLibrarySideBar
             if (featureRootIsBookmark(index.row())) {
                 return kBookmarkBgBrush; // teal
             }
@@ -296,6 +296,11 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 return kBookmarkFgBrush;
             }
             return QVariant();
+        case Qt::CheckStateRole:
+            // if (featureRootIsBookmark(index.row())) {
+            //    return Qt::Checked;
+            // }
+            // return Qt::Unchecked;
         default:
             return QVariant();
         }
@@ -338,6 +343,16 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 return kBookmarkFgBrush;
             }
             return QVariant();
+        case Qt::CheckStateRole:
+            // This works nicely. BUT:
+            // Styling is broken in Qt < 6.3.2 https://bugreports.qt.io/browse/QTBUG-103107
+            // bg color or row can be set in qss via QTreeView::indicator with huge
+            // padding-right, but indicator width can not be adjusted, ie. it's always
+            // adding a margin in between branch icon / item icon and text.
+            //    if (treeItemIsBookmark(pTreeItem)) {
+            //        return Qt::Checked;
+            //    }
+            //    return Qt::Unchecked;
         case SidebarModel::IconNameRole:
             // TODO: Add support for icon names in tree items
         default:
@@ -640,16 +655,18 @@ void SidebarModel::bookmarkSelectedItem(const QModelIndex& index) {
 
     if (m_bookmarks.contains(bookmark)) {
         m_bookmarks.removeOne(bookmark);
-        qWarning() << "---------- removed sidebar bookmark" << bookmark.data;
+        qWarning() << "--- removed sidebar bookmark" << bookmark.featureRow
+                   << bookmark.childLevel << bookmark.parentRow << bookmark.data;
         return;
     }
 
     m_bookmarks.append(bookmark);
-    qWarning() << "---------- added sidebar bookmark" << bookmark.data;
+    qWarning() << "+++ added sidebar bookmark" << bookmark.featureRow
+               << bookmark.childLevel << bookmark.parentRow << bookmark.data;
 
     // Sort by position in the tree so selectNextPrevBookmark()
-    // switches to bookmark bewlo/above:
-    // feature row -> child level -> child row
+    // switches to bookmark below/above in a predictable manner:
+    // feature row -> child level -> parent row
     std::sort(m_bookmarks.begin(), m_bookmarks.end());
 }
 
@@ -738,11 +755,11 @@ QModelIndex SidebarModel::getBookmarkIndex(
 
     // qWarning() << "   data: " << pItem->getData();
     // qWarning() << "   curr ch level: " << pItem->childLevel();
-    // qWarning() << "   bookm ch level:" << bookmark.levelAndRow.x();
+    // qWarning() << "   bookm ch level:" << bookmark.childLevel;
     // No need to recurse into children if tree level is already higher than the
     // that of the bookmark. This is relevant only for Browsefeature where
     // and SetlogFeature.
-    if (pItem->childLevel() > bookmark.levelAndRow.x()) {
+    if (pItem->childLevel() > bookmark.childLevel) {
         return {};
     }
     QModelIndex parentIndex = baseIndex;
@@ -789,32 +806,24 @@ SidebarModel::Bookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& 
     if (index.internalPointer() == this) {
         // LibraryFeature* pFeature = m_sFeatures[index.row()];
         // qWarning() << " >> found root" << index.row() << pFeature->title().toString();
-        return Bookmark(index.row(), QVariant(), QPoint(0, 0));
+        return Bookmark(index.row(), QVariant(), 0, 0);
     } else {
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-        if (!pTreeItem) {
-            // qWarning() << " >> ! found child, no TreeItem";
+        VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
             return {};
         }
-        int featureRow = m_sFeatures.indexOf(pTreeItem->feature());
-        VERIFY_OR_DEBUG_ASSERT(featureRow != -1) {
+        Bookmark bm;
+        bm.featureRow = m_sFeatures.indexOf(pTreeItem->feature());
+        VERIFY_OR_DEBUG_ASSERT(bm.featureRow != -1) {
             return {};
         }
-
-        QVariant data = pTreeItem->getData();
+        bm.data = pTreeItem->getData();
         // Store child level + child row for sorting.
-        int level = pTreeItem->childLevel();
-        int childRow = pTreeItem->parentRow();
-        // int level = 1;
-        // TreeItem* pTempItem = pTreeItem->parent();
-        // while (!pTempItem->isRoot()) {
-        //     level++;
-        //     pTempItem = pTempItem->parent();
-        // }
-
+        bm.childLevel = pTreeItem->childLevel();
+        bm.parentRow = pTreeItem->parentRow();
         // qWarning() << " >> found" << pTreeItem->feature()->title().toString() << "child";
         // qWarning() << "    level:" << level << "child#" << childRow;
-        return Bookmark(featureRow, data, QPoint(level, childRow));
+        return bm;
     }
 }
 
@@ -833,11 +842,8 @@ bool SidebarModel::treeItemIsBookmark(const TreeItem* pTreeItem) const {
 bool SidebarModel::featureRootIsBookmark(int featureRow) const {
     // qWarning() << " ?? featureRootIsBookmark" << featureRow;
     for (auto& bm : std::as_const(m_bookmarks)) {
-        if (bm.data.isNull() &&
-                // ensure it's a root item, i.e. exclude Missing/Hidden
-                // which also have no data
-                bm.levelAndRow.x() == 0 &&
-                bm.featureRow == featureRow) {
+        if (bm.childLevel == 0 && bm.featureRow == featureRow) {
+            qWarning() << " featureRootIsBookmark row:" << bm.featureRow;
             return true;
         }
     }

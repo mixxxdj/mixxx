@@ -29,27 +29,33 @@ class SidebarModel : public QAbstractItemModel {
         Bookmark(
                 int row = -1,
                 const QVariant& datavar = QVariant(),
-                QPoint poLevelAndRow = QPoint(0, 0))
+                int cLevel = -1,
+                int pRow = -1)
                 : featureRow(row),
                   data(datavar),
-                  levelAndRow(poLevelAndRow) {
+                  childLevel(cLevel),
+                  parentRow(pRow) {
         }
         bool isValid() {
-            qWarning() << "CHECK: row" << featureRow
-                       << "| levelAndRow:" << levelAndRow.x() << levelAndRow.y();
+            // qWarning() << "Bookmark.isValid? fRrow" << featureRow
+            //           << " level:" << childLevel << "pRow:" << parentRow;
             return featureRow >= 0 &&
-                    levelAndRow.x() >= 0 &&
-                    levelAndRow.y() >= 0;
+                    childLevel >= 0 &&
+                    parentRow >= 0;
+            // No need to compare data for level > 0, Missing/Hidden and AutoDJ
+            // crates items can also have no data.
         }
         bool operator==(const Bookmark& other) const {
-            return featureRow == other.featureRow && data == other.data;
+            return featureRow == other.featureRow &&
+                    data == other.data &&
+                    childLevel == other.childLevel;
         }
         bool operator<(Bookmark& other) const {
             if (featureRow == other.featureRow) {
-                if (levelAndRow.x() == other.levelAndRow.x()) {
-                    return levelAndRow.y() < other.levelAndRow.y();
+                if (childLevel == other.childLevel) {
+                    return parentRow < other.parentRow;
                 }
-                return levelAndRow.x() < other.levelAndRow.x();
+                return childLevel < other.childLevel;
             }
             return featureRow < other.featureRow;
         }
@@ -63,7 +69,8 @@ class SidebarModel : public QAbstractItemModel {
         // We might listen to all TreeItemModels' signals rowsRemoved(),
         // rowsInserted() and modelReset() and re-evaluate the bookmark's level,
         // but this seems overkill.
-        QPoint levelAndRow;
+        int childLevel;
+        int parentRow;
     };
 
     explicit SidebarModel(
