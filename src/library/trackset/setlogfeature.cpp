@@ -234,7 +234,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Setup the sidebar playlist model
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
-    // Line to start CI
+
     QString queryString = QStringLiteral(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
             "SELECT "
