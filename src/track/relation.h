@@ -19,8 +19,8 @@ class Relation : public QObject {
             DbId id,
             TrackId sourceTrackId,
             TrackId targetTrackId,
-            mixxx::audio::FramePos sourcePosition,
-            mixxx::audio::FramePos targetPosition,
+            std::optional<mixxx::audio::FramePos> sourcePosition,
+            std::optional<mixxx::audio::FramePos> targetPosition,
             int bidirectional,
             const QString& comment,
             const QString& tag,
@@ -70,7 +70,7 @@ class Relation : public QObject {
     void updated();
 
   private:
-    void setId(DbId dbId); // Remove?
+    void setId(DbId dbId);
 
     DbId m_dbId;
     TrackId m_sourceTrackId;
