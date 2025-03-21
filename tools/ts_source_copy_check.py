@@ -12,6 +12,8 @@ import fnmatch
 from lxml import etree
 import githelper
 
+import tempfile
+
 # Define the path to the allow list XML file
 ALLOW_LIST_PATH = "res/translations/source_copy_allow_list.tsv"
 PROPOSED_ALLOW_LIST_PATH = (
@@ -191,6 +193,19 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
         )
 
     return ret
+
+# ... Code for writing warnings to temp file for count > 25
+
+def check_warnings(warnings):
+    warning_threshold = 25  # Set your threshold here
+    if len(warnings) > warning_threshold:
+        with tempfile.NamedTemporaryFile(delete=False, mode='w') as temp_file:
+            for warning in warnings:
+                temp_file.write(warning + '\n')
+            print(f"Warning limit exceeded. Warnings written to {temp_file.name}")
+    else:
+        for warning in warnings:
+            print(warning)
 
 
 if __name__ == "__main__":
