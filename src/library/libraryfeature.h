@@ -29,7 +29,9 @@ class LibraryFeature : public QObject {
     LibraryFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig,
-            const QString& iconName);
+            const QString& iconName /*,
+             bool hasUniqueTreeItemsData = true*/
+    );
     ~LibraryFeature() override = default;
 
     virtual QVariant title() = 0;
@@ -86,6 +88,9 @@ class LibraryFeature : public QObject {
 
     virtual bool hasTrackTable() {
         return false;
+    }
+    virtual bool hasUniqueTreeItems() const {
+        return true;
     }
 
   protected:
@@ -179,4 +184,5 @@ class LibraryFeature : public QObject {
 
     QString m_iconName;
     QIcon m_icon;
+    bool m_uniqueTreeItems;
 };

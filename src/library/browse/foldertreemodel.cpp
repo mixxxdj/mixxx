@@ -13,8 +13,8 @@
 #include "library/treeitem.h"
 #include "moc_foldertreemodel.cpp"
 
-FolderTreeModel::FolderTreeModel(QObject *parent)
-        : TreeItemModel(parent) {
+FolderTreeModel::FolderTreeModel(QObject* pParent)
+        : TreeItemModel(pParent) {
 }
 
 FolderTreeModel::~FolderTreeModel() {
@@ -30,12 +30,12 @@ FolderTreeModel::~FolderTreeModel() {
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
     TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
     // Usually the child count is 0 because we do lazy initialization
-    // However, for, buid-in items such as 'Quick Links' there exist
+    // However, for built-in items such as 'Quick Links' there exist
     // child items at init time
     if (item->getData().toString() == QUICK_LINK_NODE) {
         return true;
     }
-    //Can only happen on Windows
+    // Can only happen on Windows
     if (item->getData().toString() == DEVICE_NODE) {
         return true;
     }

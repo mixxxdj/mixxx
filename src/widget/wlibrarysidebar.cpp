@@ -245,6 +245,53 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     return rootIndex == selIndex;
 }
 
+void WLibrarySidebar::bookmarkSelectedItem() {
+    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
+    QModelIndex selIndex = selectedIndex();
+    // TODO add visual hint, custom qproperty
+    // TODO update list when child models changed
+    if (!pSidebarModel || !selIndex.isValid()) {
+        qWarning() << " ! WLS bookmarkSelectedItem, invalid index" << selIndex;
+        return;
+    }
+
+    pSidebarModel->bookmarkSelectedItem(selIndex);
+    update();
+}
+
+void WLibrarySidebar::selectNextPrevBookmark(int direction, bool activate) {
+    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
+    // Don't use selectedIndex(). Selected item may not be the focused item, eg.
+    // if we focused a bookmark item without activating it.
+    QModelIndex index = currentIndex();
+    if (!pSidebarModel || !index.isValid()) {
+        qWarning() << " ! WLS selectNextPrevBookmark, invalid index" << index;
+        return;
+    }
+
+    const QModelIndex bookmarkIdx = pSidebarModel->selectNextPrevBookmark(index, direction);
+    if (!bookmarkIdx.isValid()) {
+        qWarning() << " ! WLS selectNextPrevBookmark, invalid bookmark" << bookmarkIdx;
+        return;
+    }
+
+    if (activate) {
+        // select, scroll to and activate
+        selectIndex(bookmarkIdx);
+        pSidebarModel->clicked(bookmarkIdx);
+    } else {
+        // just scroll to and highlight (focus)
+        scrollTo(bookmarkIdx);
+        // Use this instead of setCurrentIndex() to keep current selection
+        selectionModel()->setCurrentIndex(bookmarkIdx, QItemSelectionModel::NoUpdate);
+    }
+    // TODO add control [Library],goToSelectedItem ??
+    // Or add wrapper goToItem() that does
+    // * select & activate focused item if it's selected
+    // * expand / collapse
+    // * jump to tracks if double-tapped
+}
+
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
 /// sent by LibraryControl
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
@@ -258,10 +305,37 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         return;
     }
 
-    focusSelectedIndex();
+    // Don't focus selection if we receive a modifier-only event, for example
+    // Alt for bookmark actions.
+    //    if (!(event->key() >= Qt::Key_Shift && event->key() <= Qt::Key_Alt) &&
+    //            event->key() != Qt::Key_AltGr) {
+    //        // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
+    //        // avoid returning "khmer vowel sign ie (U+17C0)"
+    //        // TODO move below bookmark actions?
+    //        focusSelectedIndex();
+    //    }
+
+    // Alt + B: un/bookmark selected item
+    // Alt + Up/Down: jump to and activate next/previous bookmarked item
+    // Alt + Shift + Up/Down: only scrollTo and highlight (focus)
+    if (event->modifiers().testFlag(Qt::AltModifier)) {
+        if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+            bool activate = !event->modifiers().testFlag(Qt::ShiftModifier);
+            selectNextPrevBookmark(event->key() == Qt::Key_Down ? 1 : -1, activate);
+        } else if (event->key() == Qt::Key_B) {
+            bookmarkSelectedItem();
+        }
+        // No further Alt / Alt+Shift combos, might as well be a system shortcut
+        return;
+    }
 
     switch (event->key()) {
     case Qt::Key_Return:
+        // If the selection is not focused, focus it and scroll to it first.
+        // Happens when going to bookmark with activating it.
+        if (selectFocusedIndex()) {
+            return;
+        }
         toggleSelectedItem();
         return;
     case Qt::Key_Down:
@@ -270,6 +344,11 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_PageUp:
     case Qt::Key_End:
     case Qt::Key_Home: {
+        // If the selection is not focused, focus it and scroll to it first.
+        // Happens when going to bookmark with activating it.
+        if (selectFocusedIndex()) {
+            return;
+        }
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
@@ -347,12 +426,13 @@ void WLibrarySidebar::mousePressEvent(QMouseEvent* event) {
 
 void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
     // Clear the current index, i.e. remove the focus indicator
-    selectionModel()->clearCurrentIndex();
+    // selectionModel()->clearCurrentIndex();
+    focusSelectedIndex();
     QTreeView::focusInEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    //qDebug() << "WLibrarySidebar::selectIndex" << index;
+    qDebug() << "WLibrarySidebar::selectIndex" << index;
     if (!index.isValid()) {
         return;
     }
@@ -418,6 +498,22 @@ void WLibrarySidebar::focusSelectedIndex() {
     if (selIndex.isValid() && selIndex != selectionModel()->currentIndex()) {
         setCurrentIndex(selIndex);
     }
+}
+
+bool WLibrarySidebar::selectFocusedIndex() {
+    const QModelIndex selIndex = selectedIndex();
+    const QModelIndex focusIndex = selectionModel()->currentIndex();
+    // qWarning() << " -- selected index:" << selIndex;
+    // qWarning() << " -- focused index: " << focusIndex;
+    if (focusIndex.isValid() && focusIndex != selIndex) {
+        // qWarning() << " -- select focused index, scroll to";
+        scrollTo(focusIndex);
+        selectIndex(focusIndex);
+        emit pressed(focusIndex);
+        return true;
+    }
+    // qWarning() << " -- ! focused index invalid" << focusIndex;
+    return false;
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {

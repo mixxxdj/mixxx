@@ -106,6 +106,10 @@ class DbId {
         return qHash(dbId.m_value, seed);
     }
 
+    static bool isValidValue(int value) {
+        return kInvalidValue < value;
+    }
+
 private:
   static constexpr int kInvalidValue = -1;
 
@@ -115,9 +119,6 @@ private:
     static const QVariant::Type kVariantType;
 #endif
 
-  static bool isValidValue(int value) {
-        return 0 <= value;
-  }
 
   static int valueOf(const QVariant& variant) {
         bool ok;

@@ -2652,6 +2652,54 @@ WTrackTableView::item:selected,
   color: #fff;
   background-color: #2c454f;
 }
+
+
+/*********************************************************/
+/*********************************************************/
+/* TEST style bookmarks */
+QAbstractItemView::item {
+  /* set this to allow overriding indicator image.
+     https://bugreports.qt.io/browse/QTBUG-103107, fixed in 6.3.2 */
+  /* disabled to enable painting with SidebarModel::data -> Qt::BackgroundRole *()
+  /*background-image: url(skins:LateNight/palemoon/style/bg_trans.png);*/
+}
+/* QAbstractItemView::indicator,*/
+/* indicator styles are irrelevant / not applied if we don't handle
+   Qt::BackgroundRole in SidebarModel::data(),
+   ie. model returns QVariant() */
+WLibrarySidebar::indicator {
+/*  width: 0px;*/
+  qproperty-iconSize: 2px;
+  width: 0.1em;
+  height: 0.8em;
+/*  margin-right: -50px;*/
+  padding: 5px 300px 0px 0px;
+  image: none;
+}
+WLibrarySidebar QCheckBox,
+WLibrarySidebar QCheckBox::indicator {
+  width: 1px;
+}
+WLibrarySidebar::item {
+  /* this or margin will make the indicator grow to its h-padding */
+  /*padding-left: -20px;*/
+}
+WLibrarySidebar::indicator:checked,
+WLibrarySidebar QCheckBox::indicator:checked {
+/*  image: none;*/
+  background-color: green;
+}
+WLibrarySidebar::indicator:unchecked {
+  image: none;
+/*  background-color: grey;*/
+}
+WLibrarySidebar::item:checked {
+  background-color: orange;
+    }
+
+/*********************************************************/
+/*********************************************************/
+
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
