@@ -21,7 +21,7 @@ const QString kViewName = QStringLiteral("RELATIONSHOME");
 } // anonymous namespace
 
 RelationsFeature::RelationsFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseTrackSetFeature(pLibrary, pConfig, kViewName, QStringLiteral("crates")) {
+        : BaseTrackSetFeature(pLibrary, pConfig, kViewName, QStringLiteral("relations")) {
     // The invisible root item of the child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
 

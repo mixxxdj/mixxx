@@ -1405,6 +1405,7 @@ add_library(
   src/track/keys.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
+  src/track/relation.cpp
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp
   src/track/serato/beatsimporter.cpp

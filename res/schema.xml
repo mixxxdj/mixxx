@@ -584,4 +584,22 @@ reapplying those migrations.
       UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
+  <revision version="40">
+    <description>
+      Add table for track relations.
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS relations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_track_id INTEGER NOT NULL REFERENCES library(id),
+        target_track_id INTEGER NOT NULL REFERENCES library(id),
+        source_position INTEGER DEFAULT -1 NOT NULL,
+        target_position INTEGER DEFAULT -1 NOT NULL,
+        bidirectional INTEGER DEFAULT 0,
+        comment varchar(256),
+        tag varchar(60),
+        datetime_added DEFAULT CURRENT_TIMESTAMP
+      );
+    </sql>
+  </revision>
 </schema>
