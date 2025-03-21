@@ -69,83 +69,122 @@ var KeyLabMk1;
     // Menu items that can be controlled with the parameter and value encoders.
     const menu = [{
         name: "Key",
-        inKey: "key",
-        max: 24,
-        pressInKey: "reset_key",
-        outputValue: (value) => {
-            return keyNums[script.posMod(value - 1, keyNums.length)];
+        rotate: {
+            inKey: "key",
+            max: 24,
+            outputValue: (value) => {
+                return keyNums[script.posMod(value - 1, keyNums.length)];
+            },
+        },
+        press: {
+            inKey: "reset_key",
         },
     }, {
         name: "Beatloop",
-        inKey: "beatloop_size",
-        pressInKey: "beatloop_activate",
+        rotate: {
+            inKey: "beatloop_size",
+        },
+        press: {
+            inKey: "beatloop_activate",
+        },
     }, {
         name: "Beatjump",
-        inKey: "beatjump_size",
+        rotate: {
+            inKey: "beatjump_size",
+        },
     }, {
         name: "Library",
         params: [{
             name: "Search",
-            relative: true,
-            group: "[Library]",
-            inKey: "search_history_selector",
-            pressInKey: "clear_search",
+            rotate: {
+                group: "[Library]",
+                relative: true,
+                inKey: "search_history_selector",
+            },
+            press: {
+                group: "[Library]",
+                inKey: "clear_search",
+            },
         }, {
             name: "Focus",
-            min: 0,
-            max: 6,
-            group: "[Library]",
-            inKey: "focused_widget",
+            rotate: {
+                min: 0,
+                max: 6,
+                group: "[Library]",
+                inKey: "focused_widget",
+            },
         }, {
             name: "Scroll",
-            relative: true,
-            group: "[Library]",
-            inKey: "MoveVertical",
-            pressInKey: "GoToItem",
+            rotate: {
+                group: "[Library]",
+                relative: true,
+                inKey: "MoveVertical",
+            },
+            press: {
+                group: "[Library]",
+                inKey: "GoToItem",
+            },
         }, {
             name: "Sort",
-            min: 1,
-            max: 31,
-            group: "[Library]",
-            inKey: "sort_column_toggle",
-            pressInKey: "sort_order",
-            pressType: components.Button.prototype.types.toggle,
-            outputValue: (value) => {
-                return sortCols[(((value - 1) % sortCols.length) + sortCols.length) % sortCols.length];
+            rotate: {
+                group: "[Library]",
+                min: 1,
+                max: 31,
+                inKey: "sort_column_toggle",
+                outputValue: (value) => {
+                    return sortCols[(((value - 1) % sortCols.length) + sortCols.length) % sortCols.length];
+                },
+            },
+            press: {
+                group: "[Library]",
+                type: components.Button.prototype.types.toggle,
+                inKey: "sort_order",
             },
         }, {
             name: "Maximize",
-            group: "[Skin]",
-            pressType: components.Button.prototype.types.toggle,
-            pressInKey: "show_maximized_library",
+            press: {
+                group: "[Skin]",
+                type: components.Button.prototype.types.toggle,
+                inKey: "show_maximized_library",
+            },
         }, {
             name: "Font Size",
-            relative: true,
-            group: "[Library]",
-            inKey: "font_size_knob",
+            rotate: {
+                group: "[Library]",
+                relative: true,
+                inKey: "font_size_knob",
+            },
         }],
     }, {
         name: "Skin",
         params: [{
             name: "Effect Rack",
-            group: "[Skin]",
-            pressInKey: "show_effectrack",
-            pressType: components.Button.prototype.types.toggle,
+            press: {
+                group: "[Skin]",
+                type: components.Button.prototype.types.toggle,
+                inKey: "show_effectrack",
+            },
         }, {
             name: "Coverart",
-            group: "[Skin]",
-            pressInKey: "show_library_coverart",
-            pressType: components.Button.prototype.types.toggle,
+            press: {
+                group: "[Skin]",
+                type: components.Button.prototype.types.toggle,
+                inKey: "show_library_coverart",
+            },
         }, {
             name: "Samplers",
-            group: "[Skin]",
-            pressInKey: "show_samplers",
-            pressType: components.Button.prototype.types.toggle,
+            press: {
+                group: "[Skin]",
+                type: components.Button.prototype.types.toggle,
+                inKey: "show_samplers",
+            },
         }, {
             name: "Vinyl Control",
-            group: "[Skin]",
-            pressInKey: "show_vinylcontrol",
-            pressType: components.Button.prototype.types.toggle,
+            press: {
+                group: "[Skin]",
+                type: components.Button.prototype.types.toggle,
+                inKey: "show_vinylcontrol",
+            },
         }],
     }];
 
@@ -155,19 +194,29 @@ var KeyLabMk1;
             name: `FX${i + 1}`,
             params: [{
                 name: `FX${i + 1} Preset`,
-                group: `[EffectRack1_EffectUnit${i + 1}]`,
-                inKey: "chain_preset_selector",
-                relative: true,
-                pressInKey: "group_[Channel1]_enable",
-                pressType: components.Button.prototype.types.toggle,
+                rotate: {
+                    group: `[EffectRack1_EffectUnit${i + 1}]`,
+                    inKey: "chain_preset_selector",
+                    relative: true,
+                },
+                press: {
+                    group: `[EffectRack1_EffectUnit${i + 1}]`,
+                    inKey: "group_[Channel1]_enable",
+                    type: components.Button.prototype.types.toggle,
+                },
             }, {
                 name: `FX${i + 1} Focus`,
-                group: `[EffectRack1_EffectUnit${i + 1}]`,
-                min: 1,
-                max: engine.getValue(`[EffectRack1_EffectUnit${i + 1}]`, "num_effectslots"),
-                inKey: "focused_effect",
-                pressInKey: "show_focus",
-                pressType: components.Button.prototype.types.toggle,
+                rotate: {
+                    group: `[EffectRack1_EffectUnit${i + 1}]`,
+                    min: 1,
+                    max: engine.getValue(`[EffectRack1_EffectUnit${i + 1}]`, "num_effectslots"),
+                    inKey: "focused_effect",
+                },
+                press: {
+                    group: `[EffectRack1_EffectUnit${i + 1}]`,
+                    type: components.Button.prototype.types.toggle,
+                    inKey: "show_focus",
+                },
             }],
         });
     }
@@ -495,34 +544,49 @@ var KeyLabMk1;
                 group: "[Channel1]",
                 midi: [0xB0, 0x70], // Param encoder
                 selectedParam: 0,
-                params: [...menu],
+                params: menu,
                 activeDeck: this.activeDeck,
                 input: function(_channel, _control, value, _status, _group) {
                     if (value === 0x3F) {
-                        this.selectedParam = (((this.selectedParam - 1) % this.params.length) + this.params.length)
-                            % this.params.length;
+                        this.selectedParam = script.posMod(this.selectedParam - 1, this.params.length);
                     } else if (value === 0x41) {
-                        this.selectedParam = (((this.selectedParam + 1) % this.params.length) + this.params.length)
-                            % this.params.length;
+                        this.selectedParam = script.posMod(this.selectedParam + 1, this.params.length);
                     }
                     const param = this.params[this.selectedParam];
-                    if (param.group) {
-                        this.activeDeck.valueEncoder.group = param.group;
-                        this.activeDeck.valueButton.group = param.group;
-                    } else {
-                        this.activeDeck.valueEncoder.group = this.activeDeck.currentDeck;
-                        this.activeDeck.valueButton.group = this.activeDeck.currentDeck;
+
+                    // Assign defaults to the value encoder and button, and
+                    // deactivate them.
+                    Object.assign(this.activeDeck.valueEncoder, {
+                        name: param.name,
+                        group: this.activeDeck.currentDeck,
+                        relative: false,
+                        key: undefined,
+                        inKey: undefined,
+                        outKey: undefined,
+                        outputValue: undefined,
+                        min: undefined,
+                        max: undefined,
+                    });
+                    Object.assign(this.activeDeck.valueButton, {
+                        name: param.name,
+                        group: this.activeDeck.currentDeck,
+                        type: components.Button.prototype.types.push,
+                        key: undefined,
+                        inKey: undefined,
+                        outKey: undefined,
+                        outputValue: undefined,
+                        min: undefined,
+                        max: undefined,
+                    });
+
+                    // If the current menu has new actions for the buttons,
+                    // assign them.
+                    if (param.rotate) {
+                        Object.assign(this.activeDeck.valueEncoder, param.rotate);
                     }
-                    this.activeDeck.valueEncoder.name = param.name;
-                    this.activeDeck.valueButton.name = param.name;
-                    this.activeDeck.valueEncoder.inKey = param.inKey;
-                    this.activeDeck.valueEncoder.max = param.max;
-                    this.activeDeck.valueEncoder.min = param.min;
-                    this.activeDeck.valueEncoder.relative = param.relative || false;
-                    this.activeDeck.valueButton.inKey = param.pressInKey;
-                    this.activeDeck.valueButton.type = param.pressType || components.Button.prototype.types.push;
-                    this.activeDeck.valueEncoder.outputValue = param.outputValue;
-                    this.activeDeck.valueButton.outputValue = param.outputValue;
+                    if (param.press) {
+                        Object.assign(this.activeDeck.valueButton, param.press);
+                    }
 
                     writeDisplay(`${param.name}`);
                 },
@@ -543,7 +607,7 @@ var KeyLabMk1;
                         // and set old menu to that submenus back menu.
                         this.prevParams = this.encoder.params;
                         this.prevSelected = this.encoder.selectedParam;
-                        this.encoder.params = [...param.params];
+                        this.encoder.params = param.params;
                         // Always add a back button to the end of sub-menus.
                         this.encoder.params.push({name: "Back"});
                         if (param.selectedParam === undefined) {
