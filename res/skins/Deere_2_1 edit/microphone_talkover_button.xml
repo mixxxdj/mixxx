@@ -1,0 +1,24 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A microphone talkover button.
+  Variables:
+    talk_text: Text to show on the button.
+    group: The group for the microphone.
+-->
+<Template>
+  <Template src="skin:left_2state_button.xml">
+    <SetVariable name="TooltipId"><Variable name="TooltipId"/></SetVariable>
+    <SetVariable name="ObjectName">MicrophoneTalkoverButton</SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="talk_text"/></SetVariable>
+    <SetVariable name="state_0_pressed"></SetVariable>
+    <SetVariable name="state_0_unpressed"></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="talk_text"/></SetVariable>
+    <SetVariable name="state_1_pressed"></SetVariable>
+    <SetVariable name="state_1_unpressed"></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,talkover</SetVariable>
+  </Template>
+</Template>
