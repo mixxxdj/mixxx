@@ -36,10 +36,18 @@ class DragAndDropHelper final {
             QWidget* pDragSource,
             const QString& sourceIdentifier);
 
+#ifdef __STEM__
+    static QDrag* dragTrackLocations(
+            const QList<QString>& locations,
+            const QList<mixxx::StemChannelSelection>& stemMasks,
+            QWidget* pDragSource,
+            const QString& sourceIdentifier);
+#else
     static QDrag* dragTrackLocations(
             const QList<QString>& locations,
             QWidget* pDragSource,
             const QString& sourceIdentifier);
+#endif
 
     static void handleTrackDragEnterEvent(
             QDragEnterEvent* pEvent,

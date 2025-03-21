@@ -164,6 +164,7 @@ void WCoverArt::slotCoverFound(
 }
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    // qDebug() << "[WCoverArt::slotTrackLoaded] triggered";
     if (m_loadedTrack) {
         disconnect(m_loadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -306,3 +307,22 @@ bool WCoverArt::event(QEvent* pEvent) {
     }
     return QWidget::event(pEvent);
 }
+
+#ifdef __STEM__
+void WCoverArt::trackDropped(const QString& filename,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask) {
+    // qDebug() << "[WCoverArt::trackDropped] -> File:" << filename << "Group:"
+    // << group << "StemMask:" << stemMask;
+
+    if (stemMask != mixxx::StemChannel::All) {
+        qDebug() << "[WCoverArt::trackDropped] -> Specific stem track selected.";
+    }
+    emit emitTrackDropped(filename, group, stemMask);
+}
+#else
+void WCoverArt::trackDropped(const QString& filename, const QString& group) {
+    // qDebug() << "[WCoverArt::trackDropped] ->  File:" << filename << "Group:" << group;
+    emit emitTrackDropped(filename, group);
+}
+#endif

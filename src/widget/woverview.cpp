@@ -345,6 +345,7 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
 }
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
+    // qDebug() << "[WOverview::slotTrackLoaded] triggered";
     Q_UNUSED(pTrack); // only used in DEBUG_ASSERT
     //qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
@@ -1685,3 +1686,22 @@ void WOverview::dragEnterEvent(QDragEnterEvent* pEvent) {
 void WOverview::dropEvent(QDropEvent* pEvent) {
     DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
+
+#ifdef __STEM__
+void WOverview::trackDropped(const QString& filename,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask) {
+    // qDebug() << "[WOverview::trackDropped] -> File:" << filename << "Group:"
+    // << group << "StemMask:" << stemMask;
+
+    if (stemMask != mixxx::StemChannel::All) {
+        qDebug() << "[WOverview::trackDropped] -> Specific stem track selected.";
+    }
+    emit emitTrackDropped(filename, group, stemMask);
+}
+#else
+void WOverview::trackDropped(const QString& filename, const QString& group) {
+    // qDebug() << "[WOverview::trackDropped] ->File:" << filename << "Group:" << group;
+    emit emitTrackDropped(filename, group);
+}
+#endif

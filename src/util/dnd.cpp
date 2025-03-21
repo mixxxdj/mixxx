@@ -46,23 +46,93 @@ bool addFileToList(
     return true;
 }
 
+// EVE - OLD
+// QList<mixxx::FileInfo> dropEventFiles(
+//        const QMimeData& mimeData,
+//        const QString& sourceIdentifier,
+//        bool firstOnly,
+//        bool acceptPlaylists) {
+//    qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
+//    qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+//
+//    if (!mimeData.hasUrls() ||
+//            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+//        return {};
+//    }
+//
+//    return DragAndDropHelper::supportedTracksFromUrls(
+//            mimeData.urls(),
+//            firstOnly,
+//            acceptPlaylists);
+//}
+
+#ifdef __STEM__
+QList<QPair<mixxx::FileInfo, mixxx::StemChannelSelection>> dropEventFiles(
+#else
 QList<mixxx::FileInfo> dropEventFiles(
+#endif
         const QMimeData& mimeData,
         const QString& sourceIdentifier,
         bool firstOnly,
         bool acceptPlaylists) {
-    qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
-    qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+    qDebug() << "[dropEventFiles()] -> mimeData.hasUrls()" << mimeData.hasUrls() << mimeData.urls();
+    qDebug() << "[dropEventFiles()] -> mimeData.hasText()" << mimeData.hasText() << mimeData.text();
 
+    // NO URLS | text matches the source identifier -> empty list
     if (!mimeData.hasUrls() ||
             (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
         return {};
     }
 
-    return DragAndDropHelper::supportedTracksFromUrls(
+    // LIST -> supported tracks from URLs
+    auto trackList = DragAndDropHelper::supportedTracksFromUrls(
             mimeData.urls(),
             firstOnly,
             acceptPlaylists);
+
+#ifdef __STEM__
+    // Extract stemMask if available
+    mixxx::StemChannelSelection stemMask = mixxx::StemChannel::All; // Default: full track
+    qDebug() << "[dropEventFiles()] -> before if (mimeData...";
+
+    if (mimeData.hasFormat("application/x-mixxx-stem-mask")) {
+        QByteArray data = mimeData.data("application/x-mixxx-stem-mask");
+        QDataStream stream(&data, QIODevice::ReadOnly);
+
+        // Default
+        int stemValue = static_cast<int>(mixxx::StemChannel::All);
+        qDebug() << "[dropEventFiles()] -> stemValue before deserialization:" << stemValue;
+
+        // Deserialize the stem value
+        stream >> stemValue;
+        stemMask = static_cast<mixxx::StemChannelSelection>(stemValue);
+
+        if (stream.status() != QDataStream::Ok) {
+            qDebug() << "[dropEventFiles()] -> Failed to extract stem mask!";
+        } else {
+            qDebug() << "[dropEventFiles()] -> Successfully extracted stem mask:" << stemMask;
+        }
+    } else {
+        qDebug() << "[dropEventFiles()] -> No stem mask format found!";
+    }
+
+    // Check stemMask
+    if (stemMask == mixxx::StemChannel::All) {
+        qDebug() << "[dropEventFiles()] -> Default stem mask applied: All";
+    } else {
+        qDebug() << "[dropEventFiles()] -> Custom stem mask applied:" << stemMask;
+    }
+
+    // Result list & pair= track + stemMask
+    QList<QPair<mixxx::FileInfo, mixxx::StemChannelSelection>> result;
+    for (const auto& track : std::as_const(trackList)) {
+        result.append(qMakePair(track, stemMask));
+    }
+    qDebug() << "[dropEventFiles()] -> stem-result:" << result;
+    return result;
+#else
+    return trackList;
+#endif
 }
 
 // Allow loading to a player if the player isn't playing
@@ -242,16 +312,65 @@ QDrag* DragAndDropHelper::dragTrack(
     return dragUrls(trackUrls, pDragSource, sourceIdentifier);
 }
 
-//static
+// EVE - OLD
+// static
+// QDrag* DragAndDropHelper::dragTrackLocations(
+//        const QList<QString>& locations,
+//        QWidget* pDragSource,
+//        const QString& sourceIdentifier) {
+//    QList<QUrl> trackUrls;
+//    foreach (QString location, locations) {
+//        trackUrls.append(mixxx::FileInfo(location).toQUrl());
+//    }
+//    return dragUrls(trackUrls, pDragSource, sourceIdentifier);
+//}
+
+// static
+#ifdef __STEM__
+QDrag* DragAndDropHelper::dragTrackLocations(
+        const QList<QString>& locations,
+        const QList<mixxx::StemChannelSelection>& stemMasks,
+        QWidget* pDragSource,
+        const QString& sourceIdentifier) {
+    Q_UNUSED(sourceIdentifier);
+    qDebug() << "[DragAndDropHelper::dragTrackLocations] -> stemMasks " << stemMasks;
+#else
 QDrag* DragAndDropHelper::dragTrackLocations(
         const QList<QString>& locations,
         QWidget* pDragSource,
         const QString& sourceIdentifier) {
+#endif
     QList<QUrl> trackUrls;
-    foreach (QString location, locations) {
+    for (const QString& location : locations) {
         trackUrls.append(mixxx::FileInfo(location).toQUrl());
     }
-    return dragUrls(trackUrls, pDragSource, sourceIdentifier);
+
+    QMimeData* pMimeData = new QMimeData;
+    pMimeData->setUrls(trackUrls);
+
+#ifdef __STEM__
+    if (!stemMasks.isEmpty()) {
+        QByteArray stemMaskData;
+        QDataStream stream(&stemMaskData, QIODevice::WriteOnly);
+
+        // Serialize the list of stem masks to check
+        for (const mixxx::StemChannelSelection& mask : stemMasks) {
+            stream << mask;
+        }
+
+        // Add the serialized stem mask data to the MIME data
+        pMimeData->setData("application/x-mixxx-stem-mask", stemMaskData);
+        qDebug() << "[DragAndDropHelper::dragTrackLocations] -> Serialized "
+                    "stemMasks:"
+                 << stemMaskData.toHex();
+    }
+#endif
+
+    QDrag* pDrag = new QDrag(pDragSource);
+    pDrag->setMimeData(pMimeData);
+    // Qt::DropAction dropAction = pDrag->exec(Qt::CopyAction | Qt::MoveAction);
+    pDrag->exec(Qt::CopyAction | Qt::MoveAction);
+    return pDrag;
 }
 
 //static
@@ -268,7 +387,7 @@ void DragAndDropHelper::handleTrackDragEnterEvent(
     }
 }
 
-//static
+// static
 void DragAndDropHelper::handleTrackDropEvent(
         QDropEvent* pEvent,
         TrackDropTarget& target,
@@ -280,11 +399,22 @@ void DragAndDropHelper::handleTrackDropEvent(
             target.emitCloneDeck(pEvent->mimeData()->text(), group);
             return;
         } else {
+#ifdef __STEM__
+            const QList<QPair<mixxx::FileInfo, mixxx::StemChannelSelection>> files = dropEventFiles(
+                    *pEvent->mimeData(), group, true, false);
+            if (!files.isEmpty()) {
+                pEvent->accept();
+                qDebug() << "[DragAndDropHelper::handleTrackDropEvent] -> "
+                            "before emitTrackDropped files "
+                         << files;
+                target.emitTrackDropped(files.at(0).first.location(), group, files.at(0).second);
+#else
             const QList<mixxx::FileInfo> files = dropEventFiles(
                     *pEvent->mimeData(), group, true, false);
             if (!files.isEmpty()) {
                 pEvent->accept();
                 target.emitTrackDropped(files.at(0).location(), group);
+#endif
                 return;
             }
         }

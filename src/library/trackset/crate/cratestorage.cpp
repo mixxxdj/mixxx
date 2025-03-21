@@ -412,9 +412,9 @@ uint CrateStorage::countCrateTracks(CrateId crateId) const {
 //static
 QString CrateStorage::formatSubselectQueryForCrateTrackIds(CrateId crateId) {
     return QStringLiteral("SELECT %1 FROM %2 WHERE %3=%4")
-            .arg(CRATETRACKSTABLE_TRACKID,
+            .arg("crate_tracks." + CRATETRACKSTABLE_TRACKID,
                     CRATE_TRACKS_TABLE,
-                    CRATETRACKSTABLE_CRATEID,
+                    "crate_tracks." + CRATETRACKSTABLE_CRATEID,
                     crateId.toString());
 }
 

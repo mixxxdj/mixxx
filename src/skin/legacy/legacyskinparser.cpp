@@ -1047,9 +1047,13 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
             new WOverview(group, m_pPlayerManager, m_pConfig, m_pParent);
 
     connect(overviewWidget,
-            &WOverview::trackDropped,
+            &WOverview::emitTrackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    // connect(overviewWidget,
+    //         &WOverview::trackDropped,
+    //         m_pPlayerManager,
+    //         &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
     // This signal stems from AnalysisFeature, and the overview can now
@@ -1121,9 +1125,14 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &WWaveformViewer::slotTrackUnloaded);
 
     connect(viewer,
-            &WWaveformViewer::trackDropped,
+            &WWaveformViewer::emitTrackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+
+    // connect(viewer,
+    //         &WWaveformViewer::trackDropped,
+    //         m_pPlayerManager,
+    //         &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(viewer, &WWaveformViewer::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1203,9 +1212,13 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
             pTrackProperty,
             &WTrackProperty::slotLoadingTrack);
     connect(pTrackProperty,
-            &WTrackProperty::trackDropped,
+            &WTrackProperty::emitTrackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    // connect(pTrackProperty,
+    //         &WTrackProperty::trackDropped,
+    //         m_pPlayerManager,
+    //         &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pTrackProperty,
             &WTrackProperty::cloneDeck,
             m_pPlayerManager,
@@ -1247,9 +1260,13 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
             pGroup,
             &WTrackWidgetGroup::slotLoadingTrack);
     connect(pGroup,
-            &WTrackWidgetGroup::trackDropped,
+            &WTrackWidgetGroup::emitTrackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    // connect(pGroup,
+    //         &WTrackWidgetGroup::trackDropped,
+    //         m_pPlayerManager,
+    //         &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pGroup,
             &WTrackWidgetGroup::cloneDeck,
             m_pPlayerManager,
@@ -1438,9 +1455,13 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
             pSpinny,
             &WSpinnyBase::swap);
     connect(pSpinny,
-            &WSpinnyBase::trackDropped,
+            &WSpinnyBase::emitTrackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    // connect(pSpinny,
+    //         &WSpinnyBase::trackDropped,
+    //         m_pPlayerManager,
+    //         &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pSpinny, &WSpinnyBase::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
@@ -1564,9 +1585,13 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
         connect(m_pLibrary, &Library::trackSelected, pCoverArt, &WCoverArt::slotLoadTrack);
     } else if (pPlayer != nullptr) {
         connect(pCoverArt,
-                &WCoverArt::trackDropped,
+                &WCoverArt::emitTrackDropped,
                 m_pPlayerManager,
                 &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+        // connect(pCoverArt,
+        //         &WCoverArt::trackDropped,
+        //         m_pPlayerManager,
+        //         &PlayerManager::slotLoadLocationToPlayerMaybePlay);
         connect(pCoverArt, &WCoverArt::cloneDeck,
                 m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }

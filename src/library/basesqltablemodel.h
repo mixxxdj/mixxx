@@ -9,6 +9,8 @@
 #include "util/class.h"
 
 class TrackCollectionManager;
+class StemInfoImporter;
+struct StemRow;
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
@@ -20,6 +22,22 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             TrackCollectionManager* pTrackCollectionManager,
             const char* settingsNamespace);
     ~BaseSqlTableModel() override;
+
+    struct StemRow {
+        QString filePath;
+        QString trackName;
+        QString trackType; // = StemTrack Name
+
+        StemRow(const QString& path, const QString& name, const QString& type)
+                : filePath(path),
+                  trackName(name),
+                  trackType(type) {
+        }
+    };
+
+    // EVE
+    QList<BaseSqlTableModel::StemRow> loadStemTracks(const QString& filePath);
+    TrackId generateStemTrackId(const TrackId& parentTrackId, const QString& stemFileName);
 
     // Returns true if the BaseSqlTableModel has been initialized. Calling data
     // access methods on a BaseSqlTableModel which is not initialized is likely
@@ -129,6 +147,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
         int row;
         QVector<QVariant> columnValues;
 
+        StemRow* stemRow = nullptr;
+
         int getPosition(int posCol) const {
             if (posCol < 0) {
                 return -1;
@@ -149,6 +169,11 @@ class BaseSqlTableModel : public BaseTrackTableModel {
                 return true;
             }
             return row < other.row;
+        }
+
+        // RowInfo has stem data?
+        bool hasStemData() const {
+            return stemRow != nullptr;
         }
     };
 

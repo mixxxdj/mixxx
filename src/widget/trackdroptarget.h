@@ -3,6 +3,10 @@
 #include <QEvent>
 #include <QString>
 
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
+
 /// Mixin to mark a widget as a drop target for tracks.
 ///
 /// This class is *not* derived from QObject (inheriting from 2 QObject classes
@@ -17,9 +21,20 @@ class TrackDropTarget {
         emit cloneDeck(sourceGroup, targetGroup); // clazy:exclude=incorrect-emit
     }
 
-    void emitTrackDropped(const QString& filename, const QString& group) {
-        emit trackDropped(filename, group); // clazy:exclude=incorrect-emit
+#ifdef __STEM__
+    void emitTrackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask = mixxx::StemChannel::All) {
+        qDebug() << "[TrackDropTarget] -> emitTrackDropped -> filename "
+                 << filename << " group: " << group
+                 << " stemMask: " << stemMask;
+        trackDropped(filename, group, stemMask);
     }
+#else
+    void emitTrackDropped(const QString& filename, const QString& group) {
+        trackDropped(filename, group); // clazy:exclude=incorrect-emit
+    }
+#endif
 
     virtual bool handleDragAndDropEventFromWindow(QEvent* pEvent) {
         pEvent->ignore();
@@ -27,6 +42,13 @@ class TrackDropTarget {
     }
 
   signals:
+#ifdef __STEM__
+    virtual void trackDropped(const QString& filename,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask) = 0;
+#else
     virtual void trackDropped(const QString& filename, const QString& group) = 0;
+#endif
+
     virtual void cloneDeck(const QString& sourceGroup, const QString& targetGroup) = 0;
 };

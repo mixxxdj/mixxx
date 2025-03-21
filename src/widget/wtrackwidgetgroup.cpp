@@ -45,6 +45,7 @@ void WTrackWidgetGroup::setup(const QDomNode& node, const SkinContext& context) 
 }
 
 void WTrackWidgetGroup::slotTrackLoaded(TrackPointer pTrack) {
+    // qDebug() << "[WTrackWidgetGroup::slotTrackLoaded] triggered";
     if (!pTrack) {
         return;
     }
@@ -141,3 +142,22 @@ void WTrackWidgetGroup::ensureTrackMenuIsCreated() {
                         visible ? 1.0 : 0.0);
             });
 }
+
+#ifdef __STEM__
+void WTrackWidgetGroup::trackDropped(const QString& filename,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask) {
+    // qDebug() << "[WTrackWidgetGroup::trackDropped] -> File:" << filename <<
+    // "Group:" << group << "StemMask:" << stemMask;
+
+    if (stemMask != mixxx::StemChannel::All) {
+        qDebug() << "[WTrackWidgetGroup::trackDropped] -> Specific stem track selected.";
+    }
+    emit emitTrackDropped(filename, group, stemMask);
+}
+#else
+void WTrackWidgetGroup::trackDropped(const QString& filename, const QString& group) {
+    // qDebug() << "[WTrackWidgetGroup::trackDropped] -> File:" << filename << "Group:" << group;
+    emit emitTrackDropped(filename, group);
+}
+#endif
