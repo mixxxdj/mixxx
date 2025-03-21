@@ -19,6 +19,9 @@
 class PlayerManager;
 class QDomNode;
 class SkinContext;
+namespace mixxx {
+enum class OverviewScaleMode;
+}
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
@@ -75,7 +78,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void slotTypeControlChanged(double v);
     void slotMinuteMarkersChanged(bool v);
-    void slotNormalizeOrVisualGainChanged();
+    void slotScalingChanged();
 
   private:
     // Append the waveform overview pixmap according to available data
