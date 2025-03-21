@@ -148,8 +148,8 @@
       <!-- Snapshot / edit parameter buttons -->
       <control>
         <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[0].input</key>
-        <description>Set or jump to a hotcue.</description>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.radioGroup[0].input</key>
+        <description>Select the default pad mode (intro/outro + hotcues).</description>
         <status>0xB0</status>
         <midino>0x16</midino>
         <options>
@@ -158,8 +158,8 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[1].input</key>
-        <description>Set or jump to a hotcue.</description>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.radioGroup[1].input</key>
+        <description>Set drum pads to be hotcues.</description>
         <status>0xB0</status>
         <midino>0x17</midino>
         <options>
@@ -168,71 +168,10 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[2].input</key>
-        <description>Set or jump to a hotcue.</description>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.radioGroup[2].input</key>
+        <description>Set drum pads to be samplers.</description>
         <status>0xB0</status>
         <midino>0x18</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[3].input</key>
-        <description>Set or jump to a hotcue.</description>
-        <status>0xB0</status>
-        <midino>0x19</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[4].input</key>
-        <description>Set or jump to a hotcue.</description>
-        <status>0xB0</status>
-        <midino>0x1A</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[5].input</key>
-        <description>Set or jump to a hotcue.</description>
-        <status>0xB0</status>
-        <midino>0x1B</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[6].input</key>
-        <description>Set or jump to a hotcue.</description>
-        <status>0xB0</status>
-        <midino>0x1C</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.snapshots[7].input</key>
-        <description>Set or jump to a hotcue.</description>
-        <status>0xB0</status>
-        <midino>0x1D</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-
-      <control>
-        <group>[Channel1]</group>
-        <key>KeyLabMk1.controller.activeDeck.cueButton.input</key>
-        <description>Set or jump to the cue point.</description>
-        <status>0xB0</status>
-        <midino>0x1F</midino>
         <options>
           <Script-Binding/>
         </options>
