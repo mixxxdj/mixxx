@@ -5,6 +5,8 @@
     <author>Joe M.</author>
     <description>MIDI Mapping for Mixman DM2 (Windows)</description>
     <manual>mixman_dm2</manual>
+    <forum>https://mixxx.discourse.group/</forum>
+    <wiki>https://github.com/mixxxdj/mixxx/wiki</wiki>
   </info>
   <controller id="Mixman DM2 (Windows)" port="Port">
     <controls>
