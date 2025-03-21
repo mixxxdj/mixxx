@@ -321,16 +321,8 @@ var KeyLabMk1;
                 output: delayLED(0x5C),
             });
 
-            // Snapshot/parameter edit buttons
-            this.cueButton = new components.CueButton({
-                group: "[Channel1]",
-                midi: [0xB0 + midiChannel, 0x1F], // Snapshot 10
-                type: components.Button.prototype.types.push,
-            });
-            this.snapshots = [];
-            for (let i = 0; i < 8; i++) {
-                // TODO: add pad grid switching buttons here
-            }
+            // Snapshot buttons and pads
+            this.padGrid = new PadGrid();
 
             // Parameters
             const softTakeover = engine.getSetting("soft_takeover");
@@ -440,8 +432,6 @@ var KeyLabMk1;
                     }
                 },
             });
-
-            this.padGrid = new PadGrid();
         }
     }
 
@@ -516,8 +506,9 @@ var KeyLabMk1;
             return n + 0x30 - (Math.floor(n / 4) * 8);
         }
 
-        // TODO: JavaScript is a garbage language. Why in the world would this
-        // make a difference if I copy it or use the one in the parent class?
+        // TODO: This is copied exactly from the parent class. However, if I
+        // don't do this the Object.assign doesn't appear to work. Why?
+        // Something about the value of "this"?
         applyLayer(newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
@@ -538,32 +529,32 @@ var KeyLabMk1;
             }
         }
 
-        defaultLayer() {
+        defaultLayer(group) {
             const pads = [
                 new IntroOutroButton({
-                    group: "[Channel1]",
+                    group: group,
                     cueBaseName: "intro_start",
                     midi: [0x99, this.padNum(0)],
                 }),
                 new IntroOutroButton({
-                    group: "[Channel1]",
+                    group: group,
                     cueBaseName: "intro_end",
                     midi: [0x99, this.padNum(1)],
                 }),
                 new IntroOutroButton({
-                    group: "[Channel1]",
+                    group: group,
                     cueBaseName: "outro_start",
                     midi: [0x99, this.padNum(2)],
                 }),
                 new IntroOutroButton({
-                    group: "[Channel1]",
+                    group: group,
                     cueBaseName: "outro_end",
                     midi: [0x99, this.padNum(3)],
                 }),
             ];
             for (let i = 0; i < 12; i++) {
                 pads[i + 4] = new components.HotcueButton({
-                    group: "[Channel1]",
+                    group: group,
                     number: i + 1,
                     midi: [0x99, this.padNum(i + 4)],
                     blinkState: false,
@@ -587,13 +578,16 @@ var KeyLabMk1;
                 });
             }
             this.applyLayer({pads: pads}, true);
+            this.radioGroup.forEach((btn, idx) => {
+                btn.output(idx === 0 ? LedState.on : LedState.off);
+            });
         }
 
-        hotcueLayer() {
+        hotcueLayer(group) {
             const pads = [];
             for (let i = 0; i < 16; i++) {
                 pads[i] = new components.HotcueButton({
-                    group: "[Channel1]",
+                    group: group,
                     number: i + 1,
                     midi: [0x99, this.padNum(i)],
                     blinkState: false,
@@ -618,6 +612,9 @@ var KeyLabMk1;
                 });
             }
             this.applyLayer({pads: pads}, true);
+            this.radioGroup.forEach((btn, idx) => {
+                btn.output(idx === 1 ? LedState.on : LedState.off);
+            });
         }
 
         samplerLayer() {
@@ -672,6 +669,9 @@ var KeyLabMk1;
                 });
             }
             this.applyLayer({"pads": pads}, true);
+            this.radioGroup.forEach((btn, idx) => {
+                btn.output(idx === 2 ? LedState.on : LedState.off);
+            });
         }
 
         disabledLayer() {
@@ -679,6 +679,9 @@ var KeyLabMk1;
                 delayLED(this.padNum(i) + 0x4c)(LedState.off);
             }
             this.applyLayer({pads: Array(16).fill(new components.Button())});
+            this.radioGroup.forEach((btn) => {
+                btn.output(LedState.off);
+            });
         }
 
         input(channel, control, value, status, group) {
@@ -693,16 +696,61 @@ var KeyLabMk1;
         constructor() {
             super({});
 
+            this.radioGroup = [
+                new components.Button({
+                    group: "[Channel1]",
+                    midi: [0xB0, 0x16],
+                    padGrid: this,
+                    input: function(_channel, _control, value, _status, group) {
+                        if (value) {
+                            // If we get an on and an off toggle, only change the
+                            // value once.
+                            return;
+                        }
+                        this.padGrid.defaultLayer(group);
+                    },
+                    output: delayLED(0x12),
+                }),
+                new components.Button({
+                    group: "[Channel1]",
+                    midi: [0xB0, 0x17],
+                    padGrid: this,
+                    input: function(_channel, _control, value, _status, group) {
+                        if (value) {
+                            // If we get an on and an off toggle, only change the
+                            // value once.
+                            return;
+                        }
+                        this.padGrid.hotcueLayer(group);
+                    },
+                    output: delayLED(0x13),
+                }),
+                new components.Button({
+                    group: "[Channel1]",
+                    midi: [0xB0, 0x18],
+                    padGrid: this,
+                    input: function(_channel, _control, value, _status, _group) {
+                        if (value) {
+                            // If we get an on and an off toggle, only change the
+                            // value once.
+                            return;
+                        }
+                        this.padGrid.samplerLayer();
+                    },
+                    output: delayLED(0x14),
+                }),
+            ];
+
             if (engine.getSetting("pads_disabled")) {
                 this.disabledLayer();
             } else {
                 const defaultPadLayout = engine.getSetting("defaultPadLayout");
                 switch (defaultPadLayout) {
                 case "default":
-                    this.defaultLayer();
+                    this.defaultLayer("[Channel1]");
                     break;
                 case "hotcue":
-                    this.hotcueLayer();
+                    this.hotcueLayer("[Channel1]");
                     break;
                 case "sampler":
                     this.samplerLayer();
