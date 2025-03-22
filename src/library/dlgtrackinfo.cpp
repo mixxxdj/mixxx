@@ -65,8 +65,8 @@ void DlgTrackInfo::init() {
     // this is opened by double-clicking a WTrackProperty label.
     // Associate with property strings taken from library/dao/trackdao.h
     m_propertyWidgets.insert("artist", txtArtist);
-    m_propertyWidgets.insert("title", txtTrackName);
-    m_propertyWidgets.insert("titleInfo", txtTrackName);
+    m_propertyWidgets.insert("title", txtTitle);
+    m_propertyWidgets.insert("titleInfo", txtTitle);
     m_propertyWidgets.insert("album", txtAlbum);
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
@@ -173,13 +173,13 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotBpmTap);
 
     // Metadata fields
-    connect(txtTrackName,
+    connect(txtTitle,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                txtTrackName->setText(txtTrackName->text().trimmed());
+                txtTitle->setText(txtTitle->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTitle(
-                        txtTrackName->text());
+                        txtTitle->text());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
@@ -382,7 +382,7 @@ void DlgTrackInfo::replaceTrackRecord(
     const auto coverInfo = CoverInfo(
             m_trackRecord.getCoverInfo(),
             trackLocation);
-    m_pWCoverArtLabel->setCoverArt(coverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, QPixmap());
     // Executed concurrently
     CoverArtCache::requestCover(this, coverInfo);
 
@@ -399,7 +399,7 @@ void DlgTrackInfo::replaceTrackRecord(
 
 void DlgTrackInfo::updateTrackMetadataFields() {
     // Editable fields
-    txtTrackName->setText(
+    txtTitle->setText(
             m_trackRecord.getMetadata().getTrackInfo().getTitle());
     txtArtist->setText(
             m_trackRecord.getMetadata().getTrackInfo().getArtist());
@@ -508,6 +508,9 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
         return;
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
@@ -522,6 +525,7 @@ void DlgTrackInfo::focusField(const QString& property) {
     auto it = m_propertyWidgets.constFind(property);
     if (it != m_propertyWidgets.constEnd()) {
         if (property == kBpmPropertyName) {
+            // If we shall focus the BPM spinbox, switch to BPM tab
             tabWidget->setCurrentIndex(tabWidget->indexOf(tabBPM));
         }
         it.value()->setFocus();
@@ -536,7 +540,7 @@ void DlgTrackInfo::slotCoverFound(
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
-        m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 
@@ -871,4 +875,33 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
     m_pDlgTagFetcher->show();
+}
+
+void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
+    QDialog::resizeEvent(pEvent);
+
+    if (!isVisible()) {
+        // Likely one of the resize events before show().
+        // Widgets don't have their final size, yet, so it
+        // makes no sense to resize the cover label.
+        return;
+    }
+
+    // Set a maximum size on the cover label so it can use the available space
+    // but doesn't force-expand the dialog.
+    // The cover label spans across three tag rows and the two rightmost columns.
+    // Unfortunately we can't read row/column sizes directly, so we use the widgets.
+    int contHeight = txtTitle->height() + txtArtist->height() + txtAlbum->height();
+    int vSpacing = tags_layout->verticalSpacing();
+    int totalHeight = vSpacing * 2 + contHeight;
+
+    int contWidth = lblYear->width() + txtYear->width();
+    int hSpacing = tags_layout->horizontalSpacing();
+    int totalWidth = contWidth + hSpacing;
+
+    m_pWCoverArtLabel->setMaxSize(QSize(totalWidth, totalHeight));
+
+    // Also clamp height of the cover's parent widget. Keeping its height minimal
+    // can't be accomplished with QSizePolicies alone unfortunately.
+    coverWidget->setFixedHeight(totalHeight);
 }

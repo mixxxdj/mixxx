@@ -96,7 +96,7 @@ var SMCMixer;
             // anything less than the tolerance window, we consider them the
             // same. This way we're not constantly blinking the soft takeover
             // indicator because we didn't get the control matched up exactly.
-            this.toleranceWindow = 0.001;
+            this.toleranceWindow = 0.03;
         }
         input(_channel, _control, value, _status, _group) {
             const receivingFirstValue = this.hardwarePos === undefined;
@@ -105,7 +105,17 @@ var SMCMixer;
             if (receivingFirstValue) {
                 this.firstValueReceived = true;
                 this.connect();
+            }
+        }
+        connect() {
+            if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
+            }
+            if (undefined !== this.group &&
+                undefined !== this.outKey &&
+                undefined !== this.output &&
+                typeof this.output === "function") {
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         }
         output(value) {
@@ -120,8 +130,9 @@ var SMCMixer;
         }
     }
 
-    class EqRack {
+    class EqRack extends components.ComponentContainer {
         constructor(index) {
+            super({});
             const channel = mapIndexToChannel(index);
             this.knob = new Encoder({
                 group: `[Channel${channel}]`,
@@ -129,13 +140,20 @@ var SMCMixer;
                 inKey: "pregain",
             });
 
+            const _this = this;
             const btnInToggle = () => {
-                const knob = this.knob;
-                const origGroup = this.knob.group;
-                const origInKey = this.knob.inKey;
+                // "this" is undefined here due to a bug in QJSEngine, so we
+                // redefine it as "_this" above and close over it.
+                // In this context it refers to the EqRack.
+                const knob = _this.knob;
+                const origGroup = knob.group;
+                const origInKey = knob.inKey;
                 return function() {
+                    // "this" in this context refers to the button itself, and
+                    // will be defined after this returned callback is set on
+                    // the button as "inToggle" on each of the buttons below.
                     if (this.isLongPressed) {
-                        if (knob.inKey === this.inKey.replace("button_", "") || (this.inKey === "enabled" && this.knob.inKey === "super1")) {
+                        if (knob.inKey === this.inKey.replace("button_", "") || (this.inKey === "enabled" && knob.inKey === "super1")) {
                             knob.group = origGroup;
                             knob.inKey = origInKey;
                         } else {

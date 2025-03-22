@@ -20,7 +20,7 @@ class MockMidiController : public MidiController {
     ~MockMidiController() override {
     }
 
-    MOCK_METHOD0(open, int());
+    MOCK_METHOD1(open, int(const QString& resourcePath));
     MOCK_METHOD0(close, int());
     MOCK_METHOD3(sendShortMsg,
             void(unsigned char status,
