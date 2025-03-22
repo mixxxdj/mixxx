@@ -257,7 +257,9 @@ var KeyLabMk1;
         } else if (lines.length >= 2) {
             console.log(`KeyLab display overflow, got ${lines.length} lines want 2`);
         }
-        sendSysex(sysexPayload);
+        engine.beginTimer(engine.getSetting("output_delay"), () => {
+            sendSysex(sysexPayload);
+        }, true);
     };
 
     /*
@@ -463,10 +465,11 @@ var KeyLabMk1;
                 this.blinking = 0;
             }
             if (value === 0) {
-                // TODO: this needs to be a nowrite version.
-                this.output(
-                    this.activeDeck.currentDeck === "[Channel1]" || this.activeDeck.currentDeck === "[Channel3]",
-                );
+                if (typeof this.noWriteOutput === "function") {
+                    this.noWriteOutput(
+                        this.activeDeck.currentDeck === "[Channel1]" || this.activeDeck.currentDeck === "[Channel3]",
+                    );
+                }
                 return;
             }
 
@@ -782,11 +785,13 @@ var KeyLabMk1;
             this.deck1Button = new DeckButton([1, 3], this.activeDeck, {
                 group: "[Channel1]",
                 midi: [0xB0, 0x76, 0x1E], // "Sound"
+                noWriteOutput: this.setDeckOutput(true),
                 output: this.setDeckOutput(),
             });
             this.deck2Button = new DeckButton([2, 4], this.activeDeck, {
                 group: "[Channel2]",
                 midi: [0xB0, 0x77, 0x1F], // "Multi"
+                noWriteOutput: this.setDeckOutput(true),
                 output: this.setDeckOutput(),
             });
 
