@@ -279,9 +279,6 @@ var KeyLabMk1;
             this.inKey = `${this.cueBaseName}_activate`;
         }
         shift() {
-            // TODO: this class was copied from the Traktor Kontrol S4 Mk3
-            // mapping, but we don't have a shift button. Should this be made a
-            // long press action instead?
             this.inKey = `${this.cueBaseName}_clear`;
         }
     }
@@ -532,6 +529,13 @@ var KeyLabMk1;
             }
         }
 
+        switchLayer(layerNum, pads) {
+            this.applyLayer({pads: pads}, true);
+            this.radioGroup.forEach((btn, idx) => {
+                btn.output(idx === layerNum ? LedState.on : LedState.off);
+            });
+        }
+
         defaultLayer(group) {
             const pads = [
                 new IntroOutroButton({
@@ -580,10 +584,7 @@ var KeyLabMk1;
                     },
                 });
             }
-            this.applyLayer({pads: pads}, true);
-            this.radioGroup.forEach((btn, idx) => {
-                btn.output(idx === 0 ? LedState.on : LedState.off);
-            });
+            this.switchLayer(0, pads);
         }
 
         hotcueLayer(group) {
@@ -596,7 +597,6 @@ var KeyLabMk1;
                     blinkState: false,
                     blinkTimer: 0,
                     output: function(value) {
-                        // TODO: dedup with output function in defaultLayer.
                         if (value === 2) {
                             if (this.blinkTimer === 0) {
                                 this.blinkTimer = engine.beginTimer(250, () => {
@@ -614,10 +614,7 @@ var KeyLabMk1;
                     },
                 });
             }
-            this.applyLayer({pads: pads}, true);
-            this.radioGroup.forEach((btn, idx) => {
-                btn.output(idx === 1 ? LedState.on : LedState.off);
-            });
+            this.switchLayer(1, pads);
         }
 
         samplerLayer() {
@@ -671,20 +668,14 @@ var KeyLabMk1;
                     },
                 });
             }
-            this.applyLayer({"pads": pads}, true);
-            this.radioGroup.forEach((btn, idx) => {
-                btn.output(idx === 2 ? LedState.on : LedState.off);
-            });
+            this.switchLayer(2, pads);
         }
 
         disabledLayer() {
             for (let i = 0; i < 16; i++) {
                 delayLED(this.padNum(i) + 0x4c)(LedState.off);
             }
-            this.applyLayer({pads: Array(16).fill(new components.Button())});
-            this.radioGroup.forEach((btn) => {
-                btn.output(LedState.off);
-            });
+            this.switchLayer(undefined, Array(16).fill(new components.Button()));
         }
 
         input(channel, control, value, status, group) {
