@@ -2795,6 +2795,10 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(QT_VERSION VERSION_GREATER 6.6)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
+  endif()
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -3041,6 +3045,18 @@ else()
         Qt${QT_VERSION_MAJOR}::QuickControls2Impl
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal)
+
+      if(QT_VERSION VERSION_GREATER 6.6)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2Basic
+            Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::QuickLayouts
