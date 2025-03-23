@@ -88,8 +88,7 @@ bool Controller::applyMapping(const QString& resourcePath) {
         return false;
     }
 
-    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
-    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = getMappingScriptFiles();
     if (scriptFiles.isEmpty()) {
         qCWarning(m_logBase)
                 << "No script functions available! Did the XML file(s) load "
@@ -99,10 +98,10 @@ bool Controller::applyMapping(const QString& resourcePath) {
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
-    m_pScriptEngineLegacy->setSettings(pMapping->getSettings());
+    m_pScriptEngineLegacy->setSettings(getMappingSettings());
 #ifdef MIXXX_USE_QML
-    m_pScriptEngineLegacy->setModulePaths(pMapping->getModules());
-    m_pScriptEngineLegacy->setInfoScreens(pMapping->getInfoScreens());
+    m_pScriptEngineLegacy->setModulePaths(getMappingModules());
+    m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);
 #else
     Q_UNUSED(resourcePath);

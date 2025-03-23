@@ -544,6 +544,15 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotUndoBeatsChange);
     }
 
+    if (!m_pTrackModel && featureIsEnabled(Feature::BPM)) {
+        m_pTranslateBeatsHalf = make_parented<QAction>(tr("Shift Beatgrid Half Beat"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pTranslateBeatsHalf, 2.0);
+
+        connect(m_pTranslateBeatsHalf, &QAction::triggered, this, [this] {
+            slotTranslateBeatsHalf();
+        });
+    }
+
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeAction = make_parented<QAction>(tr("Analyze"), this);
         connect(m_pAnalyzeAction, &QAction::triggered, this, &WTrackMenu::slotAnalyze);
@@ -645,6 +654,10 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
+        if (m_pTranslateBeatsHalf) {
+            m_pBPMMenu->addSeparator();
+            m_pBPMMenu->addAction(m_pTranslateBeatsHalf);
+        }
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -1161,6 +1174,10 @@ void WTrackMenu::updateMenus() {
         m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
+    if (m_pTranslateBeatsHalf) {
+        m_pTranslateBeatsHalf->setEnabled(!m_deckGroup.isEmpty());
+    }
+
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
@@ -1432,6 +1449,21 @@ void WTrackMenu::slotUpdateReplayGainFromPregain() {
         return;
     }
     m_pTrack->adjustReplayGainFromPregain(gain);
+}
+
+void WTrackMenu::slotTranslateBeatsHalf() {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
+    if (!translatedBeats) {
+        return;
+    }
+    m_pTrack->trySetBeats(*translatedBeats);
 }
 
 void WTrackMenu::slotImportMetadataFromFileTags() {
@@ -2534,6 +2566,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     for (const QString& group : groups) {
         ControlObject::set(ConfigKey(group, "stop"), 1.0);
         ControlObject::set(ConfigKey(group, "eject"), 1.0);
+        ControlObject::set(ConfigKey(group, "eject"), 0.0);
     }
 
     // Set up and initiate the track batch operation

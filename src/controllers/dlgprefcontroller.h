@@ -58,9 +58,6 @@ class DlgPrefController : public DlgPreferencePage {
   private slots:
     /// Called when the user selects another mapping in the combobox
     void slotMappingSelected(int index);
-    /// Used to selected the current mapping in the combobox and display the
-    /// mapping information.
-    void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     void slotInputControlSearch();
     void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
@@ -90,6 +87,9 @@ class DlgPrefController : public DlgPreferencePage {
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
+    /// Used to selected the current mapping in the combobox and display the
+    /// mapping information.
+    void showMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     QString mappingShortName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
@@ -146,4 +146,5 @@ class DlgPrefController : public DlgPreferencePage {
     int m_outputMappingsTabIndex; // Index of the output mappings tab
     int m_settingsTabIndex;       // Index of the settings tab
     int m_screensTabIndex;        // Index of the screens tab
+    QHash<QString, bool> m_settingsCollapsedStates;
 };

@@ -134,7 +134,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
-    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
+    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes

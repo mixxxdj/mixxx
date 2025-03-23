@@ -14,8 +14,10 @@ class WaveformRendererPreroll;
 } // namespace allshader
 
 class allshader::WaveformRendererPreroll final
-        : public ::WaveformRendererAbstract,
+        : public QObject,
+          public ::WaveformRendererAbstract,
           public rendergraph::GeometryNode {
+    Q_OBJECT
   public:
     explicit WaveformRendererPreroll(
             WaveformWidgetRenderer* waveformWidget,
@@ -30,6 +32,11 @@ class allshader::WaveformRendererPreroll final
 
     // Virtual for rendergraph::Node
     void preprocess() override;
+
+  public slots:
+    void setColor(const QColor& color) {
+        m_color = color;
+    }
 
   private:
     QColor m_color;

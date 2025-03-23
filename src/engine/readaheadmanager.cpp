@@ -278,8 +278,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 // Not thread-save, call from engine thread only
 double ReadAheadManager::getFilePlaypositionFromLog(
         double currentFilePlayposition,
-        double numConsumedSamples,
-        mixxx::audio::ChannelCount channelCount) {
+        double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentFilePlayposition;
     }
@@ -292,22 +291,8 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     }
 
     double filePlayposition = 0;
-    bool shouldNotifySeek = false;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
         ReadLogEntry& entry = m_readAheadLog.front();
-
-        // Notify EngineControls that we have taken a seek.
-        // Every new entry start with a seek
-        // (Not looping control)
-        if (shouldNotifySeek) {
-            if (m_pRateControl) {
-                const auto seekPosition =
-                        mixxx::audio::FramePos::fromSamplePos(
-                                entry.virtualPlaypositionStart, channelCount);
-                m_pRateControl->notifySeek(seekPosition);
-            }
-        }
-
         // Advance our idea of the current virtual playposition to this
         // ReadLogEntry's start position.
         filePlayposition = entry.advancePlayposition(&numConsumedSamples);
@@ -316,7 +301,6 @@ double ReadAheadManager::getFilePlaypositionFromLog(
             // This entry is empty now.
             m_readAheadLog.pop_front();
         }
-        shouldNotifySeek = true;
     }
 
     return filePlayposition;
@@ -328,7 +312,6 @@ mixxx::audio::FramePos ReadAheadManager::getFilePlaypositionFromLog(
         mixxx::audio::ChannelCount channelCount) {
     const double positionSamples =
             getFilePlaypositionFromLog(currentPosition.toSamplePos(channelCount),
-                    numConsumedFrames * channelCount,
-                    channelCount);
+                    numConsumedFrames * channelCount);
     return mixxx::audio::FramePos::fromSamplePos(positionSamples, channelCount);
 }

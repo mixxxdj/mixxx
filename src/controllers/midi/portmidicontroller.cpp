@@ -43,7 +43,7 @@ PortMidiController::~PortMidiController() {
     }
 }
 
-int PortMidiController::open() {
+int PortMidiController::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "PortMIDI device" << getName() << "already open";
         return -1;
@@ -78,9 +78,9 @@ int PortMidiController::open() {
             return -2;
         }
     }
-
-    setOpen(true);
     startEngine();
+    applyMapping(resourcePath);
+    setOpen(true);
     return 0;
 }
 

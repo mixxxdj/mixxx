@@ -20,6 +20,7 @@ class WaveformRenderMark;
 
 class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
                                       public rendergraph::Node {
+    Q_OBJECT
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
@@ -28,11 +29,36 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     // Pure virtual from WaveformRendererAbstract, not used
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
+
     bool init() override;
 
-    void update();
+    void update() override;
 
     bool isSubtreeBlocked() const override;
+
+  public slots:
+    void setPlayMarkerForegroundColor(const QColor& fgPlayColor) {
+        m_playMarkerForegroundColor = fgPlayColor;
+    }
+    void setPlayMarkerBackgroundColor(const QColor& bgPlayColor) {
+        m_playMarkerBackgroundColor = bgPlayColor;
+    }
+    void setUntilMarkShowBeats(bool untilMarkShowBeats) {
+        m_untilMarkShowBeats = untilMarkShowBeats;
+    }
+    void setUntilMarkShowTime(bool untilMarkShowTime) {
+        m_untilMarkShowTime = untilMarkShowTime;
+    }
+    void setUntilMarkAlign(Qt::Alignment untilMarkAlign) {
+        m_untilMarkAlign = untilMarkAlign;
+    }
+    void setUntilMarkTextSize(int untilMarkTextSize) {
+        m_untilMarkTextSize = untilMarkTextSize;
+    }
+    void setUntilMarkTextHeightLimit(float untilMarkTextHeightLimit) {
+        m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
+    }
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
@@ -68,6 +94,15 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     float m_playPosDevicePixelRatio;
 
     DigitsRenderNode* m_pDigitsRenderNode{};
+
+    QColor m_playMarkerForegroundColor;
+    QColor m_playMarkerBackgroundColor;
+
+    bool m_untilMarkShowBeats;
+    bool m_untilMarkShowTime;
+    Qt::Alignment m_untilMarkAlign;
+    int m_untilMarkTextSize;
+    float m_untilMarkTextHeightLimit;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

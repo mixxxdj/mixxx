@@ -2733,3 +2733,4 @@ ReloopBeatpad.InboundSysex = function(data, length) {
     // Automatically done by Mixxx :
     // midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 };
+ReloopBeatpad.incomingData = ReloopBeatpad.InboundSysex;
