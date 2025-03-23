@@ -171,8 +171,6 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                 }
             }
         }
-        //emit trackDropped(name);
-        //repaintEverything();
     } else {
         event->ignore();
     }
