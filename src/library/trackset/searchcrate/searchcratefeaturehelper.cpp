@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackset/basetracksetfeature.h"
 #include "library/trackset/searchcrate/searchcrate.h"
@@ -40,22 +41,22 @@ QString SearchCrateFeatureHelper::proposeNameForNewSearchCrate(
         qDebug() << "[SEARCHCRATES] [HELPER] [PROPOSE NEW NAME] -> proposedName" << proposedName;
     }
     // would be better with regex but ... :-)
-    proposedName.replace("artist:", "")
-            .replace("title:", "")
-            .replace("album_artist:", "")
-            .replace("album:", "")
-            .replace("genre:", "")
-            .replace("composer:", "")
-            .replace("grouping:", "")
-            .replace("comment:", "")
-            .replace("type:", "")
-            .replace("played:", "")
-            .replace("rating:", "")
-            .replace("year:", "")
-            .replace("key:", "")
-            .replace("bpm:", "")
-            .replace("duration:", "")
-            .replace("datetime_added:", "")
+    proposedName.replace(LIBRARYTABLE_ARTIST + ":", "")
+            .replace(LIBRARYTABLE_TITLE + ":", "")
+            .replace(LIBRARYTABLE_ALBUM + ":", "")
+            .replace(LIBRARYTABLE_ALBUMARTIST + ":", "")
+            .replace(LIBRARYTABLE_GENRE + ":", "")
+            .replace(LIBRARYTABLE_COMMENT + ":", "")
+            .replace(LIBRARYTABLE_COMPOSER + ":", "")
+            .replace(LIBRARYTABLE_GROUPING + ":", "")
+            .replace(LIBRARYTABLE_FILETYPE + ":", "")
+            .replace(LIBRARYTABLE_KEY + ":", "")
+            .replace(LIBRARYTABLE_YEAR + ":", "")
+            .replace(LIBRARYTABLE_DATETIMEADDED + ":", "")
+            .replace(LIBRARYTABLE_DURATION + ":", "")
+            .replace(LIBRARYTABLE_BPM + ":", "")
+            .replace(LIBRARYTABLE_PLAYED + ":", "")
+            .replace(LIBRARYTABLE_RATING + ":", "")
             .replace("\"", "");
     if (sDebug) {
         qDebug() << "[SEARCHCRATES] [HELPER] [PROPOSE NEW NAME] -> cleaned "
@@ -107,38 +108,47 @@ SearchCrateId SearchCrateFeatureHelper::createEmptySearchCrateFromSearch(const Q
         // "location:", "type:", "played:", "rating:", "year:", "key:", "bpm:",
         // "duration:", "datetime_added:"}; clean the name
         // would be better with regex but ... :-)
-        newName.replace("artist:", "")
-                .replace("title:", "")
-                .replace("album_artist:", "")
-                .replace("album:", "")
-                .replace("genre:", "")
-                .replace("composer:", "")
-                .replace("grouping:", "")
-                .replace("comment:", "")
-                .replace("type:", "")
-                .replace("played:", "")
-                .replace("rating:", "")
-                .replace("year:", "")
-                .replace("key:", "")
-                .replace("bpm:", "")
-                .replace("duration:", "")
-                .replace("datetime_added:", "")
+        newName.replace(LIBRARYTABLE_ARTIST + ":", "")
+                .replace(LIBRARYTABLE_TITLE + ":", "")
+                .replace(LIBRARYTABLE_ALBUM + ":", "")
+                .replace(LIBRARYTABLE_ALBUMARTIST + ":", "")
+                .replace(LIBRARYTABLE_GENRE + ":", "")
+                .replace(LIBRARYTABLE_COMMENT + ":", "")
+                .replace(LIBRARYTABLE_COMPOSER + ":", "")
+                .replace(LIBRARYTABLE_GROUPING + ":", "")
+                .replace(LIBRARYTABLE_FILETYPE + ":", "")
+                .replace(LIBRARYTABLE_KEY + ":", "")
+                .replace(LIBRARYTABLE_YEAR + ":", "")
+                .replace(LIBRARYTABLE_DATETIMEADDED + ":", "")
+                .replace(LIBRARYTABLE_DURATION + ":", "")
+                .replace(LIBRARYTABLE_BPM + ":", "")
+                .replace(LIBRARYTABLE_PLAYED + ":", "")
+                .replace(LIBRARYTABLE_RATING + ":", "")
                 .replace("\"", "")
                 .replace("   ", " ")
                 .replace("  ", " ");
 
         // clean the input text
-        QStringList stringTerms = {"artist",
-                "title",
-                "album",
-                "album_artist",
-                "genre",
-                "comment",
-                "composer",
-                "filetype",
-                "key"};
-        QStringList dateTerms = {"year", "datetime_added", "last_played_at"};
-        QStringList numberTerms = {"duration", "bpm", "played", "timesplayed", "rating"};
+        QStringList stringTerms = {
+                LIBRARYTABLE_ARTIST,      // "artist"
+                LIBRARYTABLE_TITLE,       // "title"
+                LIBRARYTABLE_ALBUM,       // "album"
+                LIBRARYTABLE_ALBUMARTIST, // "album_artist"
+                LIBRARYTABLE_GENRE,       // "genre"
+                LIBRARYTABLE_COMMENT,     // "comment"
+                LIBRARYTABLE_COMPOSER,    // "composer"
+                LIBRARYTABLE_FILETYPE,    // "filetype"
+                LIBRARYTABLE_KEY};        // "key"
+        QStringList dateTerms = {
+                LIBRARYTABLE_YEAR,            // "year"
+                LIBRARYTABLE_DATETIMEADDED,   // "datetime_added"
+                LIBRARYTABLE_LAST_PLAYED_AT}; // "last_played_at"
+        QStringList numberTerms = {
+                LIBRARYTABLE_DURATION,    // "duration"
+                LIBRARYTABLE_BPM,         // "bpm"
+                LIBRARYTABLE_PLAYED,      // "played"
+                LIBRARYTABLE_TIMESPLAYED, // "timesplayed"
+                LIBRARYTABLE_RATING};     // "rating"
 
         QString cleanedText = text;
         // possible typing errors: replace ; / 2x  & 3x colons with a single colon
@@ -164,8 +174,32 @@ SearchCrateId SearchCrateFeatureHelper::createEmptySearchCrateFromSearch(const Q
         //        QRegularExpression termRegex(pattern,
         //        QRegularExpression::CaseInsensitiveOption);
 
-        const QString& pattern =
-                R"(\b(artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:)\s*([^:]+?)(?=\s*\b(?:artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:|$)))";
+        // const QString& pattern =
+        //        R"(\b(artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:)\s*([^:]+?)(?=\s*\b(?:artist:|album_artist:|album:|title:|genre:|composer:|grouping:|comment:|location:|type:|played:|rating:|year:|key:|bpm:|duration:|datetime_added:|$)))";
+
+        const QStringList patternFields = {
+                LIBRARYTABLE_ARTIST + ":",
+                LIBRARYTABLE_ALBUMARTIST + ":",
+                LIBRARYTABLE_ALBUM + ":",
+                LIBRARYTABLE_TITLE + ":",
+                LIBRARYTABLE_GENRE + ":",
+                LIBRARYTABLE_COMPOSER + ":",
+                LIBRARYTABLE_GROUPING + ":",
+                LIBRARYTABLE_COMMENT + ":",
+                LIBRARYTABLE_LOCATION + ":",
+                LIBRARYTABLE_FILETYPE + ":",
+                LIBRARYTABLE_PLAYED + ":",
+                LIBRARYTABLE_RATING + ":",
+                LIBRARYTABLE_YEAR + ":",
+                LIBRARYTABLE_KEY + ":",
+                LIBRARYTABLE_BPM + ":",
+                LIBRARYTABLE_DURATION + ":",
+                LIBRARYTABLE_DATETIMEADDED + ":"};
+
+        const QString patternFieldsJoined = patternFields.join("|");
+        const QString pattern = QString(R"(\b(%1)\s*([^:]+?)(?=\s*\b(?:%1|$)))")
+                                        .arg(patternFieldsJoined);
+
         static QRegularExpression termRegex(pattern, QRegularExpression::CaseInsensitiveOption);
 
         QRegularExpressionMatchIterator X = termRegex.globalMatch(cleanedText);
@@ -317,31 +351,31 @@ SearchCrateId SearchCrateFeatureHelper::createEmptySearchCrateFromSearch(const Q
             }
             cleanedText.replace("\"", "");
             newSearchCrate.setSearchSql(newName);
-            newSearchCrate.setCondition1Field("artist");
+            newSearchCrate.setCondition1Field(LIBRARYTABLE_ARTIST);
             newSearchCrate.setCondition1Operator("contains");
             newSearchCrate.setCondition1Value(cleanedText);
             newSearchCrate.setCondition1Combiner(") OR (");
-            newSearchCrate.setCondition2Field("album_artist");
+            newSearchCrate.setCondition2Field(LIBRARYTABLE_ALBUMARTIST);
             newSearchCrate.setCondition2Operator("contains");
             newSearchCrate.setCondition2Value(cleanedText);
             newSearchCrate.setCondition2Combiner(") OR (");
-            newSearchCrate.setCondition3Field("title");
+            newSearchCrate.setCondition3Field(LIBRARYTABLE_TITLE);
             newSearchCrate.setCondition3Operator("contains");
             newSearchCrate.setCondition3Value(cleanedText);
             newSearchCrate.setCondition3Combiner(") OR (");
-            newSearchCrate.setCondition4Field("album");
+            newSearchCrate.setCondition4Field(LIBRARYTABLE_ALBUM);
             newSearchCrate.setCondition4Operator("contains");
             newSearchCrate.setCondition4Value(cleanedText);
             newSearchCrate.setCondition4Combiner(") OR (");
-            newSearchCrate.setCondition5Field("genre");
+            newSearchCrate.setCondition5Field(LIBRARYTABLE_GENRE);
             newSearchCrate.setCondition5Operator("contains");
             newSearchCrate.setCondition5Value(cleanedText);
             newSearchCrate.setCondition5Combiner(") OR (");
-            newSearchCrate.setCondition6Field("composer");
+            newSearchCrate.setCondition6Field(LIBRARYTABLE_COMPOSER);
             newSearchCrate.setCondition6Operator("contains");
             newSearchCrate.setCondition6Value(cleanedText);
             newSearchCrate.setCondition6Combiner(") OR (");
-            newSearchCrate.setCondition7Field("comment");
+            newSearchCrate.setCondition7Field(LIBRARYTABLE_COMMENT);
             newSearchCrate.setCondition7Operator("contains");
             newSearchCrate.setCondition7Value(cleanedText);
             newSearchCrate.setCondition7Combiner(") END");

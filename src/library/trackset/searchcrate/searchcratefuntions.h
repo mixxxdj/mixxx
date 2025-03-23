@@ -9,18 +9,33 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
     // Check if field, operator, and value are not null
     // if (!field.isEmpty() && !op.isEmpty() && !value.isEmpty()) {
     //
-    QStringList stringFieldOptions = {"artist",
-            "title",
-            "album",
-            "album_artist",
-            "genre",
-            "comment",
-            "composer",
-            "filetype",
-            "key"};
-    QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    // QStringList stringFieldOptions = {"artist",
+    //        "title",
+    //        "album",
+    //        "album_artist",
+    //        "genre",
+    //        "comment",
+    //        "composer",
+    //        "filetype",
+    //        "key"};
+    // QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    QStringList stringFieldOptions = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ALBUMARTIST,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_COMPOSER,
+            LIBRARYTABLE_FILETYPE,
+            LIBRARYTABLE_KEY};
+    QStringList numberFieldOptions = {
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_PLAYED,
+            LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_RATING};
     // QStringList trackFieldOptions = {"track"};
-
     // QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     // QStringList playlistCrateOperatorOptions = {"is", "is not"};
 
@@ -35,21 +50,22 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
         // fields like strings -> operator translations
         if (stringFieldOptions.contains(field)) {
             if (op == "contains") {
-                condition = QStringLiteral("library.%1 LIKE '%%2%'").arg(field, value);
+                condition = QStringLiteral("%1.%2 LIKE '%%3%'").arg(LIBRARY_TABLE, field, value);
             } else if (op == "does not contain") {
-                condition = QStringLiteral("library.%1 NOT LIKE '%%2%'").arg(field, value);
+                condition = QStringLiteral("%1.%2 NOT LIKE '%%3%'")
+                                    .arg(LIBRARY_TABLE, field, value);
             } else if (op == "starts with") {
-                condition = QStringLiteral("library.%1 LIKE '%2%'").arg(field, value);
+                condition = QStringLiteral("%1.%2 LIKE '%3%'").arg(LIBRARY_TABLE, field, value);
             } else if (op == "ends with") {
-                condition = QStringLiteral("library.%1 LIKE '%%2'").arg(field, value);
+                condition = QStringLiteral("%1.%2 LIKE '%%3'").arg(LIBRARY_TABLE, field, value);
             } else if (op == "is not empty") {
-                condition = QStringLiteral("library.%1 IS NOT NULL").arg(field);
+                condition = QStringLiteral("%1.%2 IS NOT NULL").arg(LIBRARY_TABLE, field);
             } else if (op == "is empty") {
-                condition = QStringLiteral("library.%1 IS NULL").arg(field);
+                condition = QStringLiteral("%1.%2 IS NULL").arg(LIBRARY_TABLE, field);
             } else if (op == "equal to") {
-                condition = QStringLiteral("library.%1 = '%2'").arg(field, value);
+                condition = QStringLiteral("%1.%2 = '%3'").arg(LIBRARY_TABLE, field, value);
             } else if (op == "not equal to") {
-                condition = QStringLiteral("library.%1 != '%2'").arg(field, value);
+                condition = QStringLiteral("%1.%2 != '%3'").arg(LIBRARY_TABLE, field, value);
             } else {
                 // continue; // Skip unrecognized operators
             }
@@ -58,16 +74,16 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
         if (field == "year") {
             if (op == "before") {
                 condition = QStringLiteral(
-                        "CAST(substr(library.%1,1,4) as INTEGER) < %2")
-                                    .arg(field, value);
+                        "CAST(substr(%1.%2,1,4) as INTEGER) < %3")
+                                    .arg(LIBRARY_TABLE, field, value);
             } else if (op == "after") {
                 condition = QStringLiteral(
-                        "CAST(substr(library.%1,1,4) as INTEGER) > %2")
-                                    .arg(field, value);
+                        "CAST(substr(%1.%2,1,4) as INTEGER) > %3")
+                                    .arg(LIBRARY_TABLE, field, value);
             } else if (op == "equal to") {
                 condition = QStringLiteral(
-                        "CAST(substr(library.%1,1,4) as INTEGER) = %2")
-                                    .arg(field, value);
+                        "CAST(substr(%1.%2,1,4) as INTEGER) = %3")
+                                    .arg(LIBRARY_TABLE, field, value);
             } else if (op == "between") {
                 if (value.indexOf("|", 0) > 0) {
                     int posBar = value.indexOf("|", 0);
@@ -79,20 +95,20 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                         // qDebug() << "between years - yearFrom" << yearFrom <<
                         // " < yearTo" << yearTo;
                         condition = QStringLiteral(
-                                "CAST(substr(library.%1,1,4) as INTEGER) BETWEEN %2 AND %3")
-                                            .arg(field, yearFrom, yearTo);
+                                "CAST(substr(%1.%2,1,4) as INTEGER) BETWEEN %3 AND %4")
+                                            .arg(LIBRARY_TABLE, field, yearFrom, yearTo);
                     } else if (yearFrom.toInt() > yearTo.toInt()) {
                         // qDebug() << "between years - yearFrom" << yearFrom <<
                         // " > yearTo" << yearTo;
                         condition = QStringLiteral(
-                                "CAST(substr(library.%1,1,4) as INTEGER) BETWEEN %2 AND %3")
-                                            .arg(field, yearTo, yearFrom);
+                                "CAST(substr(%1.%2,1,4) as INTEGER) BETWEEN %3 AND %4")
+                                            .arg(LIBRARY_TABLE, field, yearTo, yearFrom);
                     } else if (yearFrom.toInt() == yearTo.toInt()) {
                         // qDebug() << "between years - yearFrom" << yearFrom <<
                         // " == yearTo" << yearTo;
                         condition = QStringLiteral(
-                                "CAST(substr(library.%1,1,4) as INTEGER) = %2")
-                                            .arg(field, yearFrom);
+                                "CAST(substr(%1.%2,1,4) as INTEGER) = %3")
+                                            .arg(LIBRARY_TABLE, field, yearFrom);
                     }
                 } else {
                     // continue; // Skip unrecognized operators
@@ -107,21 +123,21 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                 if (op == "before") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) < "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field, value);
+                                    "strftime('%Y-%m-%d',%1.%2) < "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE, field, value);
                 } else if (op == "after") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) > "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field, value);
+                                    "strftime('%Y-%m-%d',%1.%2) > "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE, field, value);
                 } else if (op == "equal to") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) = "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field, value);
+                                    "strftime('%Y-%m-%d',%1.%2) = "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE, field, value);
                 } else if (op == "between") {
                     if ((value.indexOf("|", 0) == 10) && (value.length() == 21)) {
                         const QString& dateFrom = value.mid(0, 10);
@@ -130,26 +146,26 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                             // qDebug() << "between dates - dateFrom" <<
                             // dateFrom << " < dateTo" << dateTo;
                             condition = QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) BETWEEN "
-                                    "strftime('%Y-%m-%d','%2') AND "
-                                    "strftime('%Y-%m-%d','%3')")
-                                                .arg(field, dateFrom, dateTo);
+                                    "strftime('%Y-%m-%d',%1.%2) BETWEEN "
+                                    "strftime('%Y-%m-%d','%3') AND "
+                                    "strftime('%Y-%m-%d','%4')")
+                                                .arg(LIBRARY_TABLE, field, dateFrom, dateTo);
                         } else if (dateFrom > dateTo) {
                             // qDebug() << "between dates - dateFrom" <<
                             // dateFrom << " > dateTo" << dateTo;
                             condition = QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) BETWEEN "
-                                    "strftime('%Y-%m-%d','%2') AND "
-                                    "strftime('%Y-%m-%d','%3')")
-                                                .arg(field, dateTo, dateFrom);
+                                    "strftime('%Y-%m-%d',%1.%2) BETWEEN "
+                                    "strftime('%Y-%m-%d','%3') AND "
+                                    "strftime('%Y-%m-%d','%4')")
+                                                .arg(LIBRARY_TABLE, field, dateTo, dateFrom);
 
                         } else if (dateFrom == dateTo) {
                             // qDebug() << "between dates - dateFrom" <<
                             // dateFrom << " == dateTo" << dateTo;
                             condition = QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) = "
-                                    "strftime('%Y-%m-%d','%2')")
-                                                .arg(field, dateFrom);
+                                    "strftime('%Y-%m-%d',%1.%2) = "
+                                    "strftime('%Y-%m-%d','%3')")
+                                                .arg(LIBRARY_TABLE, field, dateFrom);
                         }
                     } else {
                         //  continue;
@@ -162,47 +178,45 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                 if (op == "before") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) < "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field,
+                                    "strftime('%Y-%m-%d',%1.%2) < "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE,
+                                            field,
                                             nowDateStamp
-                                                    .addDays(value.toInt() *
-                                                            -1)
-                                                    .toString(
-                                                            "yyyy-MM-dd"));
+                                                    .addDays(value.toInt() * -1)
+                                                    .toString("yyyy-MM-dd"));
                 } else if (op == "after") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) > "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field,
+                                    "strftime('%Y-%m-%d',%1.%2) > "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE,
+                                            field,
                                             nowDateStamp
-                                                    .addDays(value.toInt() *
-                                                            -1)
-                                                    .toString(
-                                                            "yyyy-MM-dd"));
+                                                    .addDays(value.toInt() * -1)
+                                                    .toString("yyyy-MM-dd"));
                 } else if (op == "last") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) > "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field,
+                                    "strftime('%Y-%m-%d',%1.%2) > "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE,
+                                            field,
                                             nowDateStamp
-                                                    .addDays(((value.toInt()) + 1) *
+                                                    .addDays(((value.toInt()) +
+                                                                     1) *
                                                             -1)
-                                                    .toString(
-                                                            "yyyy-MM-dd"));
+                                                    .toString("yyyy-MM-dd"));
                 } else if (op == "equal to") {
                     condition =
                             QStringLiteral(
-                                    "strftime('%Y-%m-%d',library.%1) = "
-                                    "strftime('%Y-%m-%d','%2')")
-                                    .arg(field,
+                                    "strftime('%Y-%m-%d',%1.%2) = "
+                                    "strftime('%Y-%m-%d','%3')")
+                                    .arg(LIBRARY_TABLE,
+                                            field,
                                             nowDateStamp
-                                                    .addDays(value.toInt() *
-                                                            -1)
-                                                    .toString(
-                                                            "yyyy-MM-dd"));
+                                                    .addDays(value.toInt() * -1)
+                                                    .toString("yyyy-MM-dd"));
                 } else if (op == "between") {
                     if (value.indexOf("|", 0) > 0) {
                         int posBar = value.indexOf("|", 0);
@@ -215,11 +229,12 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                             // qDebug() << "between nrs - nrFrom" << nrFrom << " < nrTo" << nrTo;
                             condition =
                                     QStringLiteral(
-                                            "strftime('%Y-%m-%d',library.%1) "
+                                            "strftime('%Y-%m-%d',%1.%2) "
                                             "BETWEEN "
-                                            "strftime('%Y-%m-%d','%2') AND "
-                                            "strftime('%Y-%m-%d','%3')")
-                                            .arg(field,
+                                            "strftime('%Y-%m-%d','%3') AND "
+                                            "strftime('%Y-%m-%d','%4')")
+                                            .arg(LIBRARY_TABLE,
+                                                    field,
                                                     nowDateStamp
                                                             .addDays(
                                                                     nrTo.toInt() *
@@ -236,11 +251,12 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                             // qDebug() << "between nrs - nrFrom" << nrFrom << " > nrTo" << nrTo;
                             condition =
                                     QStringLiteral(
-                                            "strftime('%Y-%m-%d',library.%1) "
+                                            "strftime('%Y-%m-%d',%1.%2) "
                                             "BETWEEN "
-                                            "strftime('%Y-%m-%d','%2') AND "
-                                            "strftime('%Y-%m-%d','%3')")
-                                            .arg(field,
+                                            "strftime('%Y-%m-%d','%3') AND "
+                                            "strftime('%Y-%m-%d','%4')")
+                                            .arg(LIBRARY_TABLE,
+                                                    field,
                                                     nowDateStamp
                                                             .addDays(
                                                                     nrFrom.toInt() *
@@ -258,9 +274,10 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                             // qDebug() << "between nrs - nrFrom" << nrFrom << " == nrTo" << nrTo;
                             condition =
                                     QStringLiteral(
-                                            "strftime('%Y-%m-%d',library.%1) = "
-                                            "strftime('%Y-%m-%d','%2')")
-                                            .arg(field,
+                                            "strftime('%Y-%m-%d',%1.%2) = "
+                                            "strftime('%Y-%m-%d','%3')")
+                                            .arg(LIBRARY_TABLE,
+                                                    field,
                                                     nowDateStamp
                                                             .addDays(
                                                                     nrFrom.toInt() *
@@ -279,13 +296,13 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
         // fields like numbers -> operator translations
         if (numberFieldOptions.contains(field)) {
             if (op == "less than") {
-                condition = QStringLiteral("library.%1 < %2").arg(field, value);
+                condition = QStringLiteral("%1.%2 < %3").arg(LIBRARY_TABLE, field, value);
             } else if (op == "greater than") {
-                condition = QStringLiteral("library.%1 > %2").arg(field, value);
+                condition = QStringLiteral("%1.%2 > %3").arg(LIBRARY_TABLE, field, value);
             } else if (op == "equal to") {
-                condition = QStringLiteral("library.%1 = %2").arg(field, value);
+                condition = QStringLiteral("%1.%2 = %3").arg(LIBRARY_TABLE, field, value);
             } else if (op == "not equal to") {
-                condition = QStringLiteral("library.%1 <> %2").arg(field, value);
+                condition = QStringLiteral("%1.%2 <> %3").arg(LIBRARY_TABLE, field, value);
             } else if (op == "between") {
                 if (value.indexOf("|", 0) > 0) {
                     int posBar = value.indexOf("|", 0);
@@ -300,19 +317,19 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                         if (sDebug) {
                             qDebug() << "between nrs - nrFrom" << nrFrom << " < nrTo" << nrTo;
                         }
-                        condition = QStringLiteral("library.%1 BETWEEN %2 AND %3")
-                                            .arg(field, nrFrom, nrTo);
+                        condition = QStringLiteral("%1.%2 BETWEEN %3 AND %4")
+                                            .arg(LIBRARY_TABLE, field, nrFrom, nrTo);
                     } else if (nrFrom.toInt() > nrTo.toInt()) {
                         if (sDebug) {
                             qDebug() << "between nrs - nrFrom" << nrFrom << " > nrTo" << nrTo;
                         }
-                        condition = QStringLiteral("library.%1 BETWEEN %2 AND %3")
-                                            .arg(field, nrTo, nrFrom);
+                        condition = QStringLiteral("%1.%2 BETWEEN %3 AND %4")
+                                            .arg(LIBRARY_TABLE, field, nrTo, nrFrom);
                     } else if (nrFrom.toInt() == nrTo.toInt()) {
                         if (sDebug) {
                             qDebug() << "between nrs - nrFrom" << nrFrom << " == nrTo" << nrTo;
                         }
-                        condition = QStringLiteral("library.%1 = %2").arg(field, nrFrom);
+                        condition = QStringLiteral("%1.%2 = %3").arg(LIBRARY_TABLE, field, nrFrom);
                     }
                 }
             } else {
@@ -331,16 +348,22 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                 }
                 if (op == "is") {
                     condition = QStringLiteral(
-                            "library.id IN (SELECT PlaylistTracks.track_id "
-                            "from PlaylistTracks WHERE "
-                            "PlaylistTracks.playlist_id=%1)")
-                                        .arg(playlistId);
+                            "%1.%2 IN (SELECT %3.%4 from %3 WHERE %3.%5=%6)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                playlistId);
                 } else if (op == "is not") {
                     condition = QStringLiteral(
-                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
-                            "from PlaylistTracks WHERE "
-                            "PlaylistTracks.playlist_id=%1)")
-                                        .arg(playlistId);
+                            "%1.%2 NOT IN (SELECT %3.%4 from %3 WHERE %3.%5_id=%6)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                playlistId);
                 } else {
                     // continue; // Skip unrecognized operators
                 }
@@ -357,16 +380,22 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                 }
                 if (op == "is") {
                     condition = QStringLiteral(
-                            "library.id IN (SELECT PlaylistTracks.track_id "
-                            "from PlaylistTracks WHERE "
-                            "PlaylistTracks.playlist_id=%1)")
-                                        .arg(historyId);
+                            "%1.%2 IN (SELECT %3.%4 from %3 WHERE %3.%5=%6)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                historyId);
                 } else if (op == "is not") {
                     condition = QStringLiteral(
-                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
-                            "from PlaylistTracks WHERE "
-                            "PlaylistTracks.playlist_id=%1)")
-                                        .arg(historyId);
+                            "%1.%2 NOT IN (SELECT %3.%4 from %3 WHERE %3.%5=%6)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                historyId);
                 } else {
                     // continue; // Skip unrecognized operators
                 }
@@ -386,7 +415,23 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                             "library.id IN (SELECT crate_tracks.track_id from "
                             "crate_tracks WHERE crate_tracks.crate_id=%1)")
                                         .arg(crateId);
+                    //            condition = QStringLiteral(
+                    //                    "%1.%2 IN (SELECT %3.%4 from %3 WHERE %3.%5=%6)")
+                    //                                .arg(LIBRARY_TABLE,
+                    //                                        LIBRARYTABLE_ID,
+                    //                                        CRATE_TRACKS_TABLE,
+                    //                                        CRATETRACKSTABLE_TRACKID,
+                    //                                        CRATETRACKSTABLE_CRATEID,
+                    //                                        crateId);
                 } else if (op == "is not") {
+                    //            condition = QStringLiteral(
+                    //                    "%1.%2 NOT IN (SELECT %3.%4 from %3 WHERE %3.%5=%6)")
+                    //                                .arg(LIBRARY_TABLE,
+                    //                                        LIBRARYTABLE_ID,
+                    //                                        CRATE_TRACKS_TABLE,
+                    //                                        CRATETRACKSTABLE_TRACKID,
+                    //                                        CRATETRACKSTABLE_CRATEID,
+                    //                                        crateId);
                     condition = QStringLiteral(
                             "library.id NOT IN (SELECT crate_tracks.track_id "
                             "from crate_tracks WHERE crate_tracks.crate_id=%1)")
@@ -407,15 +452,26 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                     condition = QStringLiteral(
                             "library.id IN (SELECT crate_tracks.track_id from "
                             "crate_tracks)");
+                    // condition = QStringLiteral(
+                    //         "%1.%2 IN (SELECT %3.%4 from %3)")
+                    //                     .arg(LIBRARY_TABLE,
+                    //                             LIBRARYTABLE_ID,
+                    //                             CRATE_TRACKS_TABLE,
+                    //                             CRATETRACKSTABLE_TRACKID);
                 }
                 if (op == "is not a member of") {
                     if (sDebug) {
                         qDebug() << "Track -> is NOT a member of: " << value;
                     }
                     condition = QStringLiteral(
-                            "library.id IN (SELECT crate_tracks.track_id from "
+                            "library.id NOT IN (SELECT crate_tracks.track_id from "
                             "crate_tracks)");
-                }
+                    // condition = QStringLiteral(
+                    //         "%1.%2 NOT IN (SELECT %3.%4 from %3)")
+                    //                     .arg(LIBRARY_TABLE,
+                    //                             LIBRARYTABLE_ID,
+                    //                             CRATE_TRACKS_TABLE,
+                    //                             CRATETRACKSTABLE_TRACKID);
             }
             if (value == "all playlists") {
                 if (op == "is a member of") {
@@ -423,22 +479,36 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                         qDebug() << "Track -> is a member of: " << value;
                     }
                     condition = QStringLiteral(
-                            "library.id IN (SELECT PlaylistTracks.track_id "
-                            "FROM PlaylistTracks "
-                            "JOIN Playlists "
-                            "ON PlaylistTracks.playlist_id = Playlists.id "
-                            "WHERE Playlists.hidden = 0)");
+                            "%1.%2 IN (SELECT %3.%4 FROM %3 "
+                            "JOIN %6 "
+                            "  ON %3.%5 = %6.%7 "
+                            "WHERE %6.%8 = 0)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                PLAYLIST_TABLE,
+                                                PLAYLISTTABLE_ID,
+                                                PLAYLISTTABLE_HIDDEN);
                 }
                 if (op == "is not a member of") {
                     if (sDebug) {
                         qDebug() << "Track -> is NOT a member of: " << value;
                     }
                     condition = QStringLiteral(
-                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
-                            "FROM PlaylistTracks "
-                            "JOIN Playlists "
-                            "ON PlaylistTracks.playlist_id = Playlists.id "
-                            "WHERE Playlists.hidden = 0)");
+                            "%1.%2 NOT IN (SELECT %3.%4 FROM %3 "
+                            "JOIN %6 "
+                            "  ON %3.%5 = %6.%7 "
+                            "WHERE %6.%8 = 0)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                PLAYLIST_TABLE,
+                                                PLAYLISTTABLE_ID,
+                                                PLAYLISTTABLE_HIDDEN);
                 }
             }
             if (value == "all historylists") {
@@ -447,11 +517,18 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                         qDebug() << "Track -> is a member of: " << value;
                     }
                     condition = QStringLiteral(
-                            "library.id IN (SELECT PlaylistTracks.track_id "
-                            "FROM PlaylistTracks "
-                            "JOIN Playlists "
-                            "ON PlaylistTracks.playlist_id = Playlists.id "
-                            "WHERE Playlists.hidden = 2)");
+                            "%1.%2 IN (SELECT %3.%4 FROM %3 "
+                            "JOIN %6 "
+                            "  ON %3.%5 = %6.%7 "
+                            "WHERE %6.%8 = 2)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                PLAYLIST_TABLE,
+                                                PLAYLISTTABLE_ID,
+                                                PLAYLISTTABLE_HIDDEN);
                 }
                 if (op == "is not a member of") {
                     if (sDebug) {
@@ -459,11 +536,18 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                     }
 
                     condition = QStringLiteral(
-                            "library.id NOT IN (SELECT PlaylistTracks.track_id "
-                            "FROM PlaylistTracks "
-                            "JOIN Playlists "
-                            "ON PlaylistTracks.playlist_id = Playlists.id "
-                            "WHERE Playlists.hidden = 2)");
+                            "%1.%2 NOT IN (SELECT %3.%4 FROM %3 "
+                            "JOIN %6 "
+                            "  ON %3.%5 = %6.%7 "
+                            "WHERE %6.%8 = 2)")
+                                        .arg(LIBRARY_TABLE,
+                                                LIBRARYTABLE_ID,
+                                                PLAYLIST_TRACKS_TABLE,
+                                                PLAYLISTTRACKSTABLE_TRACKID,
+                                                PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                                PLAYLIST_TABLE,
+                                                PLAYLISTTABLE_ID,
+                                                PLAYLISTTABLE_HIDDEN);
                 }
             }
         }

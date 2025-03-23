@@ -1,7 +1,10 @@
 #include "dlgbasesearchcrateinfo.h"
 
+#include "library/dao/trackschema.h"
 #include "library/trackset/basetracksetfeature.h"
+#include "library/trackset/crate/crateschema.h"
 #include "library/trackset/searchcrate/searchcratefuntions.h"
+// #include "library/trackset/searchcrate/searchcrateschema.h"
 #include "moc_dlgbasesearchcrateinfo.cpp"
 
 // const bool sDebug = false;
@@ -322,27 +325,28 @@ void dlgBaseSearchCrateInfo::populateUI() {
     //    textEditSearchSQL->setToolTip(
 
     QStringList fieldOptions = {"",
-            "artist",
-            "title",
-            "album",
-            "album_artist",
-            "genre",
-            "comment",
-            "composer",
-            "filetype",
-            "key",
-            "year",
-            "datetime_added",
-            "last_played_at",
-            "duration",
-            "bpm",
-            "played",
-            "timesplayed",
-            "rating",
+            LIBRARYTABLE_ARTIST,         // "artist"
+            LIBRARYTABLE_TITLE,          // "title"
+            LIBRARYTABLE_ALBUM,          // "album"
+            LIBRARYTABLE_ALBUMARTIST,    // "album_artist"
+            LIBRARYTABLE_GENRE,          // "genre"
+            LIBRARYTABLE_COMMENT,        // "comment"
+            LIBRARYTABLE_COMPOSER,       // "composer"
+            LIBRARYTABLE_FILETYPE,       // "filetype"
+            LIBRARYTABLE_KEY,            // "key"
+            LIBRARYTABLE_YEAR,           // "year"
+            LIBRARYTABLE_DATETIMEADDED,  // "datetime_added"
+            LIBRARYTABLE_LAST_PLAYED_AT, // "last_played_at"
+            LIBRARYTABLE_DURATION,       // "duration"
+            LIBRARYTABLE_BPM,            // "bpm"
+            LIBRARYTABLE_PLAYED,         // "played"
+            LIBRARYTABLE_TIMESPLAYED,    // "timesplayed"
+            LIBRARYTABLE_RATING,         // "rating"
             "track",
             "playlist",
             "crate",
             "history"};
+
     QStringList operatorOptions = {"",
             "contains",
             "does not contain",
@@ -575,17 +579,26 @@ void dlgBaseSearchCrateInfo::populateUI() {
 
 // narrow possible operator selections based on field selection
 void dlgBaseSearchCrateInfo::onFieldComboBoxChanged() {
-    QStringList stringFieldOptions = {"artist",
-            "title",
-            "album",
-            "album_artist",
-            "genre",
-            "comment",
-            "composer",
-            "filetype",
-            "key"};
-    QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
-    QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    QStringList stringFieldOptions = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ALBUMARTIST,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_COMPOSER,
+            LIBRARYTABLE_FILETYPE,
+            LIBRARYTABLE_KEY};
+    QStringList dateFieldOptions = {
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_DATETIMEADDED,
+            LIBRARYTABLE_LAST_PLAYED_AT};
+    QStringList numberFieldOptions = {
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_PLAYED,
+            LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_RATING};
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     QStringList trackFieldOptions = {"track"};
     QStringList stringOperatorOptions = {"",
@@ -722,16 +735,22 @@ void dlgBaseSearchCrateInfo::onFieldComboBoxChanged() {
 
 // narrow possible operator selections based on field selection
 void dlgBaseSearchCrateInfo::onOperatorComboBoxChanged() {
-    QStringList stringFieldOptions = {"artist",
-            "title",
-            "album",
-            "album_artist",
-            "genre",
-            "comment",
-            "composer",
-            "filetype",
-            "key"};
-    QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    QStringList stringFieldOptions = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ALBUMARTIST,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_COMPOSER,
+            LIBRARYTABLE_FILETYPE,
+            LIBRARYTABLE_KEY};
+    QStringList numberFieldOptions = {
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_PLAYED,
+            LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_RATING};
     QStringList playlistCrateFieldOptions = {"playlist", "crate", "history"};
     QStringList trackFieldOptions = {"track"};
 
@@ -1342,17 +1361,26 @@ void dlgBaseSearchCrateInfo::storeUIIn2Table() {
 bool dlgBaseSearchCrateInfo::validationCheck() {
     storeUIIn2Table();
     textEditValidation->setText(QString(""));
-    QStringList stringFieldOptions = {"artist",
-            "title",
-            "album",
-            "album_artist",
-            "genre",
-            "comment",
-            "composer",
-            "filetype",
-            "key"};
-    QStringList dateFieldOptions = {"year", "datetime_added", "last_played_at"};
-    QStringList numberFieldOptions = {"duration", "bpm", "played", "timesplayed", "rating"};
+    QStringList stringFieldOptions = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ALBUMARTIST,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_COMPOSER,
+            LIBRARYTABLE_FILETYPE,
+            LIBRARYTABLE_KEY};
+    QStringList dateFieldOptions = {
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_DATETIMEADDED,
+            LIBRARYTABLE_LAST_PLAYED_AT};
+    QStringList numberFieldOptions = {
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_PLAYED,
+            LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_RATING};
     QStringList trackFieldOptions = {"track"};
     QStringList playlistCrateFieldOptions = {"", "playlist", "crate", "history"};
     QStringList stringOperatorOptions = {"contains",
@@ -2234,14 +2262,22 @@ QString dlgBaseSearchCrateInfo::buildWhereClause() {
 
     if (!hasConditions) {
         whereClause += QStringLiteral(
-                "library.artist LIKE '%%1%' OR "
-                "library.title LIKE '%%1%' OR "
-                "library.album LIKE '%%1%' OR "
-                "library.album_artist LIKE '%%1%' OR "
-                "library.composer LIKE '%%1%' OR "
-                "library.genre LIKE '%%1%' OR "
-                "library.comment LIKE '%%1%')")
-                               .arg(headerTable[6]);
+                "%1.%2 LIKE '%%9%' OR "
+                "%1.%3 LIKE '%%9%' OR "
+                "%1.%4 LIKE '%%9%' OR "
+                "%1.%5 LIKE '%%9%' OR "
+                "%1.%6 LIKE '%%9%' OR "
+                "%1.%7 LIKE '%%9%' OR "
+                "%1.%8 LIKE '%%9%')")
+                               .arg(LIBRARY_TABLE,
+                                       LIBRARYTABLE_ARTIST,
+                                       LIBRARYTABLE_TITLE,
+                                       LIBRARYTABLE_ALBUM,
+                                       LIBRARYTABLE_ALBUMARTIST,
+                                       LIBRARYTABLE_COMPOSER,
+                                       LIBRARYTABLE_GENRE,
+                                       LIBRARYTABLE_COMMENT,
+                                       headerTable[6]);
     }
 
     if (sDebug) {

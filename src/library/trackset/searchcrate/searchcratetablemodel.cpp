@@ -6,6 +6,7 @@
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crateschema.h"
 #include "library/trackset/searchcrate/searchcrate.h"
 #include "library/trackset/searchcrate/searchcratefuntions.h"
 #include "library/trackset/searchcrate/searchcrateschema.h"
