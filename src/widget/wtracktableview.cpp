@@ -44,11 +44,12 @@ const ConfigKey kVScrollBarPosConfigKey{
 
 } // anonymous namespace
 
-WTrackTableView::WTrackTableView(QWidget* pParent,
+WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        double backgroundColorOpacity)
-        : WLibraryTableView(pParent, pConfig),
+        double backgroundColorOpacity,
+        bool sorting)
+        : WLibraryTableView(parent, pConfig),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
@@ -56,7 +57,7 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_focusBorderColor(Qt::white),
           m_trackPlayedColor(QColor(kDefaultTrackPlayedColor)),
           m_trackMissingColor(QColor(kDefaultTrackMissingColor)),
-          m_sorting(false),
+          m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Connect slots and signals to make the world go 'round.
@@ -2153,15 +2154,6 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     if (sortingChanged) {
         applySortingIfVisible();
     }
-}
-
-void WTrackTableView::slotRandomSorting() {
-    // There's no need to remove the shuffle feature of the Preview column
-    // (and replace it with a dedicated randomize slot to BaseSqltableModel),
-    // so we simply abuse that column.
-    auto previewCol = TrackModel::SortColumnId::Preview;
-    m_pSortColumn->set(static_cast<int>(previewCol));
-    applySortingIfVisible();
 }
 
 bool WTrackTableView::hasFocus() const {
