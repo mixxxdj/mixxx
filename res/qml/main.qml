@@ -19,6 +19,10 @@ ApplicationWindow {
     visible: true
     width: 1920
 
+    onActiveFocusItemChanged: {
+        console.log(activeFocusItem)
+    }
+
     Column {
         id: content
         anchors.fill: parent
