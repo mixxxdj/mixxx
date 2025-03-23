@@ -1,6 +1,5 @@
 #pragma once
 #include <qglobal.h>
-#include <qobject.h>
 
 #include <QColor>
 #include <QObject>

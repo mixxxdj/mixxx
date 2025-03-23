@@ -3,6 +3,7 @@
 #include <qqmlengine.h>
 
 #include <QBuffer>
+#include <QQmlEngine>
 
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlplayerproxy.cpp"
