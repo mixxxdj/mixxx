@@ -25,7 +25,7 @@ constexpr bool kDebug = false;
 SidebarModel::SidebarModel(
         QObject* parent)
         : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0),
+          m_iDefaultSelectedIndex(0), // Tracks / MixxxLibraryFeature
           m_pressedUntilClickedTimer(new QTimer(this)) {
     m_pressedUntilClickedTimer->setSingleShot(true);
     connect(m_pressedUntilClickedTimer,
@@ -110,10 +110,9 @@ QModelIndex SidebarModel::index(int row, int column,
     }
 
     if (parent.isValid()) {
-        /* If we have selected the root of a library feature at position 'row'
-         * its internal pointer is the current sidebar object model
-         * we return its associated childmodel
-         */
+        // If we have selected the root of a library feature at position 'row',
+        // its internal pointer is a pointer to the current sidebarmodel object.
+        // We return its associated childmodel index.
         if (parent.internalPointer() == this) {
             const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->sidebarModel();
             QModelIndex childIndex = childModel->index(row, column);
@@ -124,7 +123,7 @@ QModelIndex SidebarModel::index(int row, int column,
                 return QModelIndex();
             }
         } else {
-            // We have selected an item within the childmodel
+            // We have selected an item within the childmodel.
             // This item has always an internal pointer of (sub)type TreeItem
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
             if (row < pTreeItem->childRows()) {
@@ -146,14 +145,11 @@ QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::getFeatureRootIndex for" << pFeature->title().toString();
     }
-    QModelIndex ind;
-    for (int i = 0; i < m_sFeatures.size(); ++i) {
-        if (m_sFeatures[i] == pFeature) {
-            ind = index(i, 0);
-            break;
-        }
+    int featureRow = m_sFeatures.indexOf(pFeature);
+    VERIFY_OR_DEBUG_ASSERT(featureRow != -1) {
+        return {};
     }
-    return ind;
+    return index(featureRow, 0);
 }
 
 void SidebarModel::clear(const QModelIndex& index) {
@@ -178,42 +174,43 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::parent index=" << index;
     }
-    if (index.isValid()) {
-        // If we have selected the root of a library feature
-        // its internal pointer is the current sidebar object model
-        // A root library feature has no parent and thus we return
-        // an invalid QModelIndex
-        if (index.internalPointer() == this) {
-            return QModelIndex();
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem == nullptr) {
-                return QModelIndex();
-            }
-            TreeItem* pTreeItemParent = pTreeItem->parent();
-            // if we have selected an item at the first level of a childnode
-
-            if (pTreeItemParent) {
-                if (pTreeItemParent->isRoot()) {
-                    LibraryFeature* pFeature = pTreeItem->feature();
-                    for (int i = 0; i < m_sFeatures.size(); ++i) {
-                        if (pFeature == m_sFeatures[i]) {
-                            // create a ModelIndex for parent 'this' having a
-                            // library feature at position 'i'
-                            // `this` is const, but the function expects a
-                            // non-const pointer.
-                            // TODO: Check if we can get rid of this const cast
-                            // somehow.
-                            return createIndex(i, 0, const_cast<SidebarModel*>(this));
-                        }
-                    }
-                }
-                // if we have selected an item at some deeper level of a childnode
-                return createIndex(pTreeItemParent->parentRow(), 0, pTreeItemParent);
-            }
-        }
+    if (!index.isValid()) {
+        return {};
     }
-    return QModelIndex();
+
+    // If we have selected the root of a library feature,
+    // its internal pointer is the current sidebar object model.
+    // A root library feature has no parent and thus we return
+    // an invalid QModelIndex.
+    if (index.internalPointer() == this) {
+        return {};
+    }
+
+    TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem != nullptr) {
+        return {};
+    }
+    TreeItem* pParentItem = pTreeItem->parent();
+    VERIFY_OR_DEBUG_ASSERT(pParentItem != nullptr) {
+        return {};
+    }
+    if (pParentItem->isRoot()) {
+        // If we have selected an item at the first level of a childnode,
+        // Create a ModelIndex for parent 'this' having a
+        // library feature at position 'i'.
+        // `this` is const, but the function expects a
+        // non-const pointer.
+        // TODO: Check if we can get rid of this const cast
+        // somehow.
+        LibraryFeature* pFeature = pTreeItem->feature();
+        int featureRow = m_sFeatures.indexOf(pFeature);
+        VERIFY_OR_DEBUG_ASSERT(featureRow != -1) {
+            return {};
+        }
+        return createIndex(featureRow, 0, const_cast<SidebarModel*>(this));
+    }
+    // If we have selected an item at some deeper level of a childnode
+    return createIndex(pParentItem->parentRow(), 0, pParentItem);
 }
 
 int SidebarModel::rowCount(const QModelIndex& parent) const {
@@ -274,7 +271,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     }
 
     if (index.internalPointer() == this) {
-        //If it points to SidebarModel
+        // If it points to SidebarModel this is a root item.
         switch (role) {
         case Qt::DisplayRole:
             return m_sFeatures[index.row()]->title();
@@ -370,30 +367,35 @@ void SidebarModel::clicked(const QModelIndex& index) {
 /// Invoked by double click and click on tree node expand icons
 void SidebarModel::doubleClicked(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-           return;
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                pFeature->onLazyChildExpandation(index);
-            }
+    if (!index.isValid()) {
+        return;
+    }
+    if (index.internalPointer() == this) {
+        // Index is a root index and QTreeView already did expand it, so ther's
+        // nothing to do for us.
+        return;
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+            return;
         }
+        LibraryFeature* pFeature = pTreeItem->feature();
+        pFeature->onLazyChildExpandation(index);
     }
 }
 
 void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
     stopPressedUntilClickedTimer();
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->onRightClick(globalPos);
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                pFeature->onRightClickChild(globalPos, index);
-            }
+    if (!index.isValid()) {
+        return;
+    }
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->onRightClick(globalPos);
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pTreeItem) {
+            LibraryFeature* pFeature = pTreeItem->feature();
+            pFeature->onRightClickChild(globalPos, index);
         }
     }
 }
@@ -485,19 +487,16 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) con
 
 /// Translates an index from the child models to an index of the sidebar models
 QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
-    /* These method is called from the slot functions below.
-     * QObject::sender() return the object which emitted the signal
-     * handled by the slot functions.
-
-     * For child models, this always the child models itself
-     */
-
-    const QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(model != nullptr) {
+    // These method is called from the slot functions below.
+    // QObject::sender() return the object which emitted the signal
+    // handled by the slot functions.
+    // For child models, this always the child models itself
+    const QAbstractItemModel* pModel = qobject_cast<QAbstractItemModel*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pModel != nullptr) {
         return QModelIndex();
     }
 
-    return translateIndex(index, model);
+    return translateIndex(index, pModel);
 }
 
 QModelIndex SidebarModel::translateIndex(
@@ -518,22 +517,21 @@ QModelIndex SidebarModel::translateIndex(
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    // qDebug() << "slotDataChanged topLeft:" << topLeft;
+    // qDebug() << "            bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
-    //qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
-
+    // qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
     QModelIndex newParent = translateSourceIndex(parent);
     beginInsertRows(newParent, start, end);
 }
 
 void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) {
-    //qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
-
+    // qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
     QModelIndex newParent = translateSourceIndex(parent);
     beginRemoveRows(newParent, start, end);
 }
@@ -551,24 +549,24 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsRemoved" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsRemoved" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
 }
 
 void SidebarModel::slotModelAboutToBeReset() {
+    // qDebug() << "slotModelAboutToBeReset";
     beginResetModel();
 }
 
 void SidebarModel::slotModelReset() {
+    // qDebug() << "slotModelReset";
     endResetModel();
 }
 
-/*
- * Call this slot whenever the title of the feature has changed.
- * See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
- * If selectFeature is true, the feature is selected when the title change occurs.
- */
+// Call this slot whenever the title of the feature has changed.
+// See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
+// If selectFeature is true, the feature is selected when the title change occurs.
 void SidebarModel::slotFeatureIsLoading(LibraryFeature* pFeature, bool selectFeature) {
     featureRenamed(pFeature);
     if (selectFeature) {
@@ -576,9 +574,6 @@ void SidebarModel::slotFeatureIsLoading(LibraryFeature* pFeature, bool selectFea
     }
 }
 
-/* Tobias: This slot is somewhat redundant but I decided
- * to leave it for code readability reasons
- */
 void SidebarModel::slotFeatureLoadingFinished(LibraryFeature* pFeature) {
     featureRenamed(pFeature);
     slotFeatureSelect(pFeature);

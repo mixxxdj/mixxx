@@ -135,8 +135,9 @@ class TreeItem final {
     void initFeatureRecursively(LibraryFeature* pFeature);
 
     // The library feature is inherited from the parent.
-    // For all child items this is just a shortcut to the
-    // library feature of the root item!
+    // For all child items this is done via
+    // insertChildren() -> initFeatureRecursively() and is just
+    // a shortcut to the library feature of the root item!
     LibraryFeature* m_pFeature;
 
     TreeItem* m_pParent;
