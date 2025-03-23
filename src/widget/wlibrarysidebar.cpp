@@ -352,7 +352,7 @@ void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    //qDebug() << "WLibrarySidebar::selectIndex" << index;
+    // qDebug() << "WLibrarySidebar::selectIndex" << index;
     if (!index.isValid()) {
         return;
     }
