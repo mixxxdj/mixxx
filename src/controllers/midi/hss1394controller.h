@@ -67,7 +67,7 @@ class Hss1394Controller : public MidiController {
     }
 
   private slots:
-    int open() override;
+    int open(const QString& resourcePath) override;
     int close() override;
 
   protected:

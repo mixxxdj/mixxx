@@ -17,6 +17,7 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
 namespace allshader {
@@ -32,7 +33,10 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     auto pOpacityNode = std::make_unique<rendergraph::OpacityNode>();
 
     pTopNode->appendChildNode(addRendererNode<WaveformRenderBackground>());
-    pOpacityNode->appendChildNode(addRendererNode<WaveformRendererEndOfTrack>());
+    auto pEndOfTrackRenderer = addRendererNode<WaveformRendererEndOfTrack>();
+    pEndOfTrackRenderer->setEndOfTrackWarningTime(
+            WaveformWidgetFactory::instance()->getEndOfTrackWarningTime());
+    pOpacityNode->appendChildNode(std::move(pEndOfTrackRenderer));
     pOpacityNode->appendChildNode(addRendererNode<WaveformRendererPreroll>());
     m_pWaveformRenderMarkRange = pOpacityNode->appendChildNode(
             addRendererNode<WaveformRenderMarkRange>());

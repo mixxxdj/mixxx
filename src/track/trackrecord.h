@@ -16,17 +16,17 @@ class TrackDAO;
 namespace mixxx {
 
 /// Effect of updating a property with a new value.
-enum class [[nodiscard]] UpdateResult{
-        /// The value has been updated and changed.
-        Updated,
+enum class UpdateResult {
+    /// The value has been updated and changed.
+    Updated,
 
-        /// The value didn't change and has not been updated.
-        Unchanged,
+    /// The value didn't change and has not been updated.
+    Unchanged,
 
-        /// The provided value is invalid or insonsistent with
-        /// any existing value(s) and has been rejected, i.e.
-        /// the current value didn't change either.
-        Rejected,
+    /// The provided value is invalid or insonsistent with
+    /// any existing value(s) and has been rejected, i.e.
+    /// the current value didn't change either.
+    Rejected,
 };
 
 // Properties of tracks that are stored in the database.
@@ -85,7 +85,7 @@ class TrackRecord final {
         return getRating() != kNoRating;
     }
 
-    void setKeys(const Keys& keys);
+    void setKeys(Keys keys);
     void resetKeys() {
         setKeys(Keys());
     }

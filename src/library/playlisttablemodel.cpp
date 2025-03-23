@@ -409,8 +409,9 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
-        // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
+        // Only allow Add to AutoDJ and sorting if we aren't currently showing
+        // the AutoDJ queue.
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist | Capability::Sorting;
     } else {
         // EVE ADDED | Capability::ReceiveDrops for AutoDJ in PreparationWindow
         // Capability::ReceiveDrops |  -> trying to get it working for autodj in prepwin

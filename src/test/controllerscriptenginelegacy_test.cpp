@@ -830,7 +830,7 @@ class MockScreenRender : public ControllerRenderingEngine {
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
-    SETUP_LOG_CAPTURE();
+    LogCaptureGuard logCaptureGuard;
     LegacyControllerMapping::ScreenInfo dummyScreen{
             "",                                                    // identifier
             QSize(0, 0),                                           // size
@@ -865,7 +865,7 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
-    SETUP_LOG_CAPTURE();
+    LogCaptureGuard logCaptureGuard;
     LegacyControllerMapping::ScreenInfo dummyScreen{
             "",                                                    // identifier
             QSize(0, 0),                                           // size

@@ -73,7 +73,7 @@ Hss1394Controller::~Hss1394Controller() {
     }
 }
 
-int Hss1394Controller::open() {
+int Hss1394Controller::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "HSS1394 device" << getName() << "already open";
         return -1;
@@ -129,8 +129,9 @@ int Hss1394Controller::open() {
             qWarning() << "Unable to set SCS.1d platter timer period.";
     }
 
-    setOpen(true);
     startEngine();
+    applyMapping(resourcePath);
+    setOpen(true);
     return 0;
 }
 

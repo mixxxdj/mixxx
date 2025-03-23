@@ -296,6 +296,7 @@ StantonSCS3d.statusResponse = function (data, length) {
     }
     StantonSCS3d.init2();
 }
+StantonSCS3d.incomingData = StantonSCS3d.statusResponse;
 
 StantonSCS3d.shutdown = function () {   // called when the MIDI device is closed
 

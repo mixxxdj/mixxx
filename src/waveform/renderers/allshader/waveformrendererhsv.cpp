@@ -81,7 +81,7 @@ bool WaveformRendererHSV::preprocessInner() {
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(m_pColors->getLowColor(), &h, &s, &v);
+    getHsvF(m_waveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;

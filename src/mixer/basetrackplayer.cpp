@@ -303,7 +303,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
 }
 
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
-    TrackPointer pTrack(Track::newTemporary());
+    TrackPointer pTrack = Track::newTemporary();
     pTrack->setAudioProperties(
             mixxx::kEngineChannelOutputCount,
             mixxx::audio::SampleRate(44100),

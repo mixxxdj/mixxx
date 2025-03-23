@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QWaitCondition>
 #include <map>
 #include <unordered_map>
 
@@ -114,29 +115,24 @@ public:
     QSet<TrackId> getCachedTrackIds() const;
 
   private:
-    friend class GlobalTrackCache;
-
     void lockCache();
 
-protected:
-    GlobalTrackCacheLocker(
-            GlobalTrackCacheLocker&& moveable,
-            GlobalTrackCacheLookupResult lookupResult,
-            TrackPointer&& strongPtr,
-            TrackRef&& trackRef);
-
+  protected:
     GlobalTrackCache* m_pInstance;
 };
 
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
   GlobalTrackCacheResolver(
-          mixxx::FileAccess fileAccess);
+          mixxx::FileAccess fileAccess,
+          bool temporary = false);
   GlobalTrackCacheResolver(
           mixxx::FileAccess fileAccess,
           TrackId trackId);
   GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
+  GlobalTrackCacheResolver() = delete;
   GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
+  ~GlobalTrackCacheResolver() override;
 
   GlobalTrackCacheLookupResult getLookupResult() const {
       return m_lookupResult;
@@ -157,7 +153,6 @@ public:
 
 private:
     friend class GlobalTrackCache;
-    GlobalTrackCacheResolver();
 
     void initLookupResult(
             GlobalTrackCacheLookupResult lookupResult,
@@ -240,10 +235,9 @@ class GlobalTrackCache : public QObject {
     TrackPointer lookupByCanonicalLocation(
             const QString& canonicalLocation);
 
-    /// Lookup the track either by id (primary) or by
-    /// canonical location (secondary). The id of the
-    /// returned track might differ from the requested
-    /// id due to file system aliasing!!
+    /// Lookup the track either first by id or afterwards by canonical location.
+    /// If a track with a different ID and the same canonical location
+    /// is already cached, a nullptr is returned.
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
 
@@ -253,13 +247,19 @@ class GlobalTrackCache : public QObject {
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-            mixxx::FileAccess /*in*/ fileAccess,
-            TrackId /*in*/ trackId);
+            mixxx::FileAccess fileAccess,
+            TrackId trackId);
+
+    void resolveTemporary(
+            GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
+            mixxx::FileAccess fileAccess);
 
     TrackRef initTrackId(
             const TrackPointer& strongPtr,
             const TrackRef& trackRef,
             TrackId trackId);
+
+    void discardIncompleteTrack();
 
     void purgeTrackId(TrackId trackId);
 
@@ -273,11 +273,17 @@ class GlobalTrackCache : public QObject {
     void saveEvictedTrack(Track* pEvictedTrack) const;
 
     // Managed by GlobalTrackCacheLocker
-    mutable QT_RECURSIVE_MUTEX m_mutex;
+    mutable QMutex m_mutex;
 
     GlobalTrackCacheSaver* m_pSaver;
 
     deleteTrackFn_t m_deleteTrackFn;
+
+    // Managed by GlobalTrackCacheResolver.
+    // The track that is currently locked by the asynchronous metadata loader background thread.
+    // m_isTrackCompleted will be signaled once the asynchronous loading has been completed.
+    TrackPointer m_incompleteTrack;
+    QWaitCondition m_isTrackCompleted;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;
