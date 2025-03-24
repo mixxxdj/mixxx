@@ -2794,7 +2794,9 @@ WTrackTableViewHeader::down-arrow {
 WEffectSelector QAbstractScrollArea QScrollBar,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar,
-WSearchLineEdit QAbstractScrollArea QScrollBar {
+WSearchLineEdit QAbstractScrollArea QScrollBar,
+DlgPreferences QAbstractScrollArea QScrollBar,
+#Skin QDialog QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
@@ -2805,7 +2807,9 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
-  WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal {
+  WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal,
+  DlgPreferences QAbstractScrollArea QScrollBar:horizontal,
+  #Skin QDialog QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
@@ -2816,7 +2820,9 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
   WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar:vertical,
-  WSearchLineEdit QAbstractScrollArea QScrollBar:vertical {
+  WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
+  DlgPreferences QAbstractScrollArea QScrollBar:vertical,
+  #Skin QDialog QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -2834,7 +2840,9 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:horizontal,
-  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal {
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal,
+  DlgPreferences QAbstractScrollArea QScrollBar::handle:horizontal,
+  #Skin QDialog QScrollBar::handle:horizontal {
     background-color: #333338;
     min-width: 25px;
   }
@@ -2842,7 +2850,9 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
   WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:vertical,
-  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical {
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical,
+  DlgPreferences QAbstractScrollArea QScrollBar::handle:vertical,
+  #Skin QDialog QScrollBar::handle:vertical {
     background-color: #333338;
     min-height: 25px;
   }
@@ -2857,7 +2867,11 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-page,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-page,
 WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
-WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page {
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page,
+DlgPreferences QAbstractScrollArea QScrollBar::add-page,
+DlgPreferences QAbstractScrollArea QScrollBar::sub-page,
+#Skin QDialog QScrollBar::add-page,
+#Skin QDialog QScrollBar::sub-page {
   min-width: 15px;
   min-height: 15px;
   background-color: #000;
@@ -2873,7 +2887,11 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-line,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-line,
 WSearchLineEdit QAbstractScrollArea QScrollBar::add-line,
-WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line,
+DlgPreferences QAbstractScrollArea QScrollBar::add-line,
+DlgPreferences QAbstractScrollArea QScrollBar::sub-line,
+#Skin QDialog QScrollBar::add-line,
+#Skin QDialog QScrollBar::sub-line {
   width: 0px;
   height: 0px;
   border: 0px;
@@ -2884,7 +2902,9 @@ WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
 WEffectSelector QAbstractScrollArea QScrollBar::corner,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::corner,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::corner,
-WSearchLineEdit QAbstractScrollArea QScrollBar::corner {
+WSearchLineEdit QAbstractScrollArea QScrollBar::corner,
+DlgPreferences QAbstractScrollArea QScrollBar::corner,
+#Skin QDialog QScrollBar::corner {
   border: 0px;
   border: 0px;
   background-color: #1e1e1e;
@@ -3251,3 +3271,677 @@ WSearchLineEdit::indicator:unchecked:selected {
 }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
+
+
+
+/************** styles for Track Properties & Preferences **********************
+*******************************************************************************/
+#Skin QDialog,
+DlgPreferences,
+DlgPreferencePage,
+DlgPrefController {
+  /* This color is overwritten below but we need to set it
+     in order to allow DlgPreferences to update the tree icons
+     and the mapping icons when this stylesheet is (re)applied.
+     Let's pick yellow so we can easily spot widgets where color
+     needs to overwritten. */
+  /* choose a notable color for debugging
+  color: yellow;*/
+  /* use white to brighten link colors in preferences
+     as much as possible (link color is still set by Qt theme somehow ... */
+  color: white;
+}
+
+#Skin QDialog,
+#Skin QDialog QTabWidget::pane,
+DlgPreferences,
+DlgPreferencePage,
+/* child dialogs, eg. confirmations & warnings */
+DlgPreferences QDialog,
+WTrackMenu QDialog,
+DlgPreferences QAbstractScrollArea,
+DlgPreferences QStackedWidget,
+DlgPreferences QTabWidget::pane,
+DlgPreferences QLabel,
+DlgPreferences QCheckBox,
+DlgPreferences QRadioButton,
+DlgPreferences QCheckBox,
+#DlgTrackInfo,
+#DlgTrackInfoMulti,
+#DlgTrackInfo QTabWidget::pane,
+#DlgTrackInfoMulti QTabWidget::pane,
+#DlgTrackInfo QLabel,
+#DlgTrackInfo WStarRating,
+#DlgTrackInfoMulti QLabel,
+#DlgTrackInfoMulti WStarRating {
+  background: #262628; /* without ::pane it's rendered as #323232 */
+  padding: 0px;
+  margin: 0px;
+  }
+  DlgPreferences,
+  #DlgTrackInfo,
+  #DlgTrackInfoMulti {
+    /* we need to set a border to get the bg color */
+    border: 0px solid red;
+  }
+
+#Skin QDialog QTabWidget::pane,
+#Skin QDialog QTabBar::tab:selected,
+#Skin QDialog QGroupBox,
+DlgPreferences QGroupBox,
+DlgPreferences QTabWidget::pane,
+DlgPreferences QTabBar::tab:selected,
+#DlgTrackInfo QGroupBox,
+#DlgTrackInfo QTabWidget::pane,
+#DlgTrackInfoMulti QGroupBox,
+#DlgTrackInfoMulti QTabWidget::pane,
+#DlgTrackInfo QTabBar::tab:selected,
+#DlgTrackInfoMulti QTabBar::tab:selected {
+  background: transparent;
+  border: 1px solid #55555c;
+  border-radius: 1px;
+  }
+  #Skin QDialog QTabWidget::pane,
+  DlgPreferences QTabWidget::pane,
+  #DlgTrackInfo QTabWidget::pane,
+  #DlgTrackInfoMulti QTabWidget::pane {
+    /* eliminate bottom border of tab */
+    top: -1;
+  }
+  DlgAbout QTabWidget::pane {
+    padding: 0px;
+  }
+DlgAbout creditsTab {
+  /* not applied */
+  margin: 0px;
+  padding: 0px;
+  qproperty-layoutMargin: 0;
+  qproperty-layoutMargin: 0 0 0 0;
+  qproperty-layoutSpacing: 0px;
+}
+
+/* the separator lines in some pref pages */
+DlgPreferences #line,
+DlgPreferences #line_2 {
+  border: none;
+  background: #55555c;
+  min-height: 1px;
+  max-height: 1px;
+}
+
+  #Skin QDialog QGroupBox,
+  DlgPreferences QGroupBox {
+    margin-top: 0.6em;
+    padding-top: 0.2em;
+    }
+    /* Push Cancel button up */
+    TrackExportDlg #cancelButton {
+      margin-bottom: 8px;
+    }
+    #Skin QDialog QGroupBox::title,
+    DlgPreferences QGroupBox::title {
+      color: #decec0;
+      /* font family and weight are not applied */
+      font-family: "Open Sans Semibold";
+      font-weight: 500; /* semi-bold */
+      subcontrol-origin: margin;
+      subcontrol-position: top left;
+      padding: 0em 0.2em 0 0;
+      margin: 0px 0px 0px 0em;
+    }
+
+#Skin QDialog QTabBar::tab-bar,
+DlgPreferences QTabBar::tab-bar {
+  bottom: 1px;
+}
+/* unselected tabs */
+#Skin QDialog QTabBar::tab,
+DlgPreferences QTabBar::tab,
+#DlgTrackInfo QTabBar::tab,
+#DlgTrackInfoMulti QTabBar::tab {
+  background-color: #202020;
+  /* fake/restore hidden top border of tab pane */
+  /* don't set a left/right border because these would cut off
+     the bottom border at the left/right, even with radious 0px */
+  border-bottom: 1px solid #55555c;
+  border-radius: 2px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  padding: 4px 10px;
+  }
+  #Skin QDialog QTabBar::tab:selected,
+  DlgPreferences QTabBar::tab:selected,
+  #DlgTrackInfo QTabBar::tab:selected,
+  #DlgTrackInfoMulti QTabBar::tab:selected {
+    color: #decec0;
+    background-color: #262628;
+    border-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+  #Skin QDialog QTabBar::tab:focus,
+  DlgPreferences QTabBar::tab:focus,
+  #DlgTrackInfo QTabBar::tab:focus,
+  #DlgTrackInfoMulti QTabBar::tab:focus {
+    color: white;
+    selection-background-color: blue;
+    outline: nones;
+    border: 1px solid #257b82;
+    border-bottom: 0px;
+  }
+
+
+
+
+#Skin QDialog QTableView, /* Controls & Stats view in DlgDeveloperTols */
+#Skin QDialog QTableView::item,
+#Skin QDialog QTextBrowser, /* Contributor list in DlgAbout */
+#Skin QDialog QTextEdit, /* Log view in DlgDeveloperTols */
+DlgPreferences QTreeWidget,
+DlgPreferences QListView,
+DlgPreferences QTableView,
+/* we need to set this bg otherwise DlgPrefBroadcast
+   would still use the Qt the checkbox/mark. */
+/* TODO Unfortunately this overrides the 'status' colors returned by
+   BroadcastSettingsModel::data() */
+DlgPreferences QTableView::item,
+DlgTagFetcher QTreeWidget,
+DlgTagFetcher QTreeWidget::item,
+WTrackMenu QDialog QListView,
+/* space left of selected child item */
+DlgPreferences QTreeWidget::branch:closed:!has-children:!has-siblings:selected,
+DlgPreferences QTreeWidget::branch:closed:!has-children:has-siblings:selected,
+DlgPreferences QTreeWidget::branch:open:!has-children:!has-siblings:selected,
+DlgPreferences QTreeWidget::branch:open:!has-children:has-siblings:selected {
+  border: 0px solid red;
+  border-image: none;
+  background-color: #202022;
+}
+DlgPreferences QTreeWidget {
+  show-decoration-selected: 0;
+}
+DlgPreferences QTreeWidget::indicator,
+DlgPreferences QTreeWidget::indicator:selected:focus,
+DlgPreferences QTreeWidget::indicator:selected:!focus,
+DlgPreferences QTreeWidget::indicator:!selected:focus,
+DlgPreferences QTreeWidget::indicator:!selected:!focus {
+  outline: none;
+  border: 1px solid red;
+  border-image: none;
+  background: none;
+  background-color: red;
+}
+
+#Skin QDialog QTabBar::tab,
+#Skin QDialog QLabel,
+#Skin QDialog QPushButton,
+#Skin QDialog QCheckBox,
+#Skin QDialog QLineEdit,
+#Skin QDialog QTextBrowser,
+#Skin QDialog QTextEdit,
+DlgPreferences QTabBar::tab,
+#DlgTrackInfo QTabBar::tab,
+#DlgTrackInfoMulti QTabBar::tab,
+#Skin QDialog QTableView,
+#Skin QDialog QHeaderView,
+DlgPreferences QTreeWidget,
+DlgPreferences QListView,
+DlgPreferences QTableView,
+/* we need to set this otherwise DlgPrefBroadcast
+   would still use the Qt the checkbox/mark. */
+DlgPreferences QTableView::item,
+DlgPreferences QHeaderView,
+DlgPreferences QLabel,
+DlgPreferences QCheckBox,
+DlgPreferences QRadioButton,
+DlgPreferences QCheckBox,
+DlgPreferences QLineEdit,
+DlgPreferences QTextEdit,
+DlgPreferences QSpinBox,
+DlgPreferences QDoubleSpinBox,
+DlgPreferences QTimeEdit,
+DlgPreferences QPushButton,
+DlgPreferences QToolButton, /* Library font selector '...' txt */
+DlgPreferences QComboBox,
+DlgTagFetcher QLabel,
+DlgTagFetcher QCheckBox,
+DlgTagFetcher QPushButton,
+DlgTagFetcher QTreeWidget,
+DlgTagFetcher QHeaderView,
+DlgTagFetcher QHeaderView::item,
+WTrackMenu QDialog QLabel,
+WTrackMenu QDialog QPushButton,
+WTrackMenu QDialog QCheckBox,
+WTrackMenu QDialog QListView,
+#DlgTrackInfo QLabel,
+#DlgTrackInfo WStarRating,
+#DlgTrackInfoMulti QLabel,
+#DlgTrackInfoMulti WStarRating,
+#DlgTrackInfo QLineEdit,
+#DlgTrackInfo QPlainTextEdit,
+#DlgTrackInfo QSpinBox,
+#DlgTrackInfo QDoubleSpinBox,
+#DlgTrackInfoMulti QLineEdit,
+#DlgTrackInfoMulti QPlainTextEdit,
+#DlgTrackInfoMulti QSpinBox,
+#DlgTrackInfoMulti QDoubleSpinBox,
+#DlgTrackInfo QPushButton,
+#DlgTrackInfoMulti QPushButton {
+  color: #c2b3a5;
+}
+
+DlgPreferences QCheckBox:disabled,
+DlgPreferences QLineEdit:disabled,
+DlgPreferences QTextEdit:disabled,
+DlgPreferences QSpinBox:disabled,
+DlgPreferences QDoubleSpinBox:disabled,
+DlgPreferences QTimeEdit:disabled,
+DlgPreferences QTableView::item:disabled,
+DlgPreferences QHeaderView:disabled,
+DlgPreferences QHeaderView::item:disabled,
+DlgTagFetcher QCheckBox:disabled,
+#DlgTrackInfo QDoubleSpinBox:disabled,
+#DlgTrackInfo QCheckBox:disabled {
+  color: #666;
+}
+DlgPreferences QTableView::item:selected,
+DlgPreferences QListView::item:selected,
+DlgPreferences QTreeWidget::item:selected,
+DlgTagFetcher QTreeWidget::item:selected {
+  color: white;
+  background-color: #666669;
+  border: 0px;
+  border-image: none;
+  outline: none;
+}
+
+#Skin QDialog QLineEdit,
+DlgPreferences QLineEdit,
+DlgPreferences QTextEdit,
+DlgPreferences QSpinBox,
+DlgPreferences QDoubleSpinBox,
+DlgPreferences QTimeEdit,
+/* these inherit styles from
+      WLibrary QLineEdit,
+      WLibrary QPlainTextEdit,
+      #LibraryBPMSpinBox
+  so override properties as required */
+#DlgTrackInfo QLineEdit,
+#DlgTrackInfo QPlainTextEdit,
+#DlgTrackInfo QSpinBox,
+#DlgTrackInfo QDoubleSpinBox,
+#DlgTrackInfoMulti QLineEdit,
+#DlgTrackInfoMulti QPlainTextEdit,
+#DlgTrackInfoMulti QSpinBox,
+#DlgTrackInfoMulti QDoubleSpinBox {
+  /* Also used for border of CoverArtLabel?? */
+  background-color: #1f1f1f;
+  border: 1px solid #44444b;
+  padding: 2px;
+  }
+  #DlgTrackInfo QPlainTextEdit,
+  #DlgTrackInfoMulti QPlainTextEdit {
+    padding: 0px;
+  }
+  DlgPreferences QLineEdit:focus,
+  DlgPreferences QTextEdit:focus,
+  DlgPreferences QSpinBox:focus,
+  DlgPreferences QDoubleSpinBox:focus,
+  DlgPreferences QTimeEdit:focus,
+  DlgPreferences QCheckBox:focus,
+  DlgTagFetcher QCheckBox:focus,
+  #DlgTrackInfo QLineEdit:focus,
+  #DlgTrackInfo QCheckBox:focus,
+  #DlgTrackInfo QPlainTextEdit:focus,
+  #DlgTrackInfo QDoubleSpinBox:focus,
+  #DlgTrackInfoMulti QCheckBox:focus,
+  #DlgTrackInfoMulti QLineEdit:focus,
+  #DlgTrackInfoMulti QPlainTextEdit:focus,
+  #DlgTrackInfoMulti QDoubleSpinBox:focus {
+    border: 1px solid #257b82;
+  }
+  DlgPreferences QLineEdit:disabled,
+  DlgPreferences QTextEdit:disabled,
+  DlgPreferences QSpinBox:disabled,
+  DlgPreferences QDoubleSpinBox:disabled,
+  DlgPreferences QTimeEdit:disabled,
+  #DlgTrackInfo QDoubleSpinBox:disabled {
+    background-color: #232324;
+  }
+  #DlgTrackInfo QCheckBox:disabled {
+    background-color: #262628;
+  }
+
+WEffectSelector,
+WEffectChainPresetSelector,
+DlgPreferences QComboBox {
+  /* By default (at least on Linux with xfce) there are scroll buttons
+     at the top and bottom of the item view. They are problematic because
+     they have an annoying default style (bright) and when hidden
+     (list at bottom -> top scroll button hidden) they are not hidden
+     completely but some small bar remains.
+  /* this hides them and re-enables vertical scrollbars */
+  combobox-popup: 0;
+  /* side effects:
+     * the view is laid over the combobox but attached at top/bottom,
+       depending on screen space above/below
+     * the view doesn't auto-expand trying to show all items,
+       it defaults to shows 10 items max.
+    Fix: set max. visible items, will be clamped to screen size.
+    (set here or for DlgPreferences QComboBox QAbstractItemView)
+    (equivalent fix in c++: someComboBox->setMaxVisibleItems(100); ) */
+  qproperty-maxVisibleItems: 100;
+}
+
+/* same as WEffectSelector QAbstractItemView etc. */
+DlgPreferences QComboBox QAbstractItemView {
+  selection-color: #fff;
+  selection-background-color: #2c454f;
+  border-radius: 1px;
+  outline: none;
+  border: 1px solid #44444b;
+  padding: 2px;
+  max-height: 16000px;
+}
+
+#DlgTrackInfo WCoverArtLabel,
+#DlgTrackInfoMulti WCoverArtLabel {
+  border: 0px;
+}
+
+#Skin QDialog QPushButton,
+DlgPreferences QPushButton,
+DlgPreferences QToolButton,
+DlgPreferences QComboBox,
+DlgPreferences QComboBox,
+DlgTagFetcher QPushButton,
+WTrackMenu QDialog QPushButton,
+#DlgTrackInfo QPushButton,
+#DlgTrackInfoMulti QPushButton {
+  outline: none;
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
+  background-color: #2f2f32;
+  padding: 2px 4px;
+  }
+
+
+  #Skin QDialog QHeaderView,
+  DlgTagFetcher QHeaderView {
+    background-color: #2f2f32;
+    }
+    DlgTagFetcher QHeaderView::section {}
+    /* same as WTrackTableViewHeader::section */
+
+  DlgPreferences QPushButton:focus,
+  DlgPreferences QToolButton:focus,
+  DlgPreferences QComboBox:focus,
+  DlgTagFetcher QPushButton:focus,
+  #Skin QDialog QPushButton:focus,
+  #DlgTrackInfo QPushButton:focus,
+  #DlgTrackInfoMulti QPushButton:focus {
+    outline: none;
+    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_focus_blue.svg) 2 2 2 2;
+  }
+  DlgPreferences QPushButton:pressed,
+  DlgPreferences QToolButton:pressed,
+  DlgTagFetcher QPushButton:pressed,
+  #Skin QDialog QPushButton:pressed,
+  #DlgTrackInfo QPushButton:pressed,
+  #DlgTrackInfoMulti QPushButton:pressed {
+    outline: none;
+    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
+  }
+  DlgPreferences QPushButton:disabled,
+  DlgPreferences QToolButton:disabled,
+  DlgPreferences QComboBox:disabled,
+  DlgTrackInfo QPushButton:disabled,
+  #Skin QDialog QPushButton:disabled,
+  #DlgTrackInfo QPushButton:disabled,
+  #DlgTrackInfoMulti QPushButton:disabled {
+    background-color: #2a2a2c;
+    color: #666;
+    border-image: url(skins:LateNight/palemoon/buttons/btn__pref_disabled.svg) 2 2 2 2;
+  }
+DlgPreferences QToolButton {
+  /* font selector button is too tall and pushes font/line-height
+     spinboxes apart */
+  padding: 0px;
+}
+
+DlgPreferences QComboBox::drop-down {
+  border: 0px solid green;
+}
+DlgPreferences QComboBox::down-arrow,
+#DlgTrackInfo #btnColorPicker::menu-indicator,
+#DlgTrackInfoMulti #btnColorPicker::menu-indicator {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  image: url(skins:LateNight/palemoon/buttons/btn__fx_selector_down.svg);
+  width: 16px;
+  height: 24px;
+}
+
+#Skin WSearchLineEdit QToolButton {
+  border: 0px;
+  background-color: transparent;
+}
+
+DlgPreferences QSpinBox::up-button,
+DlgPreferences QSpinBox::down-button,
+DlgPreferences QDoubleSpinBox::up-button,
+DlgPreferences QDoubleSpinBox::down-button,
+DlgPreferences QTimeEdit::up-button,
+DlgPreferences QTimeEdit::down-button,
+#DlgTrackInfo QDoubleSpinBox::up-button,
+#DlgTrackInfo QDoubleSpinBox::down-button {
+  border: 0;
+  /*  height: 10px;*/
+  /*  width: 28px;*/
+  margin-right: 3px;
+  }
+  DlgPreferences QSpinBox::up-button,
+  DlgPreferences QDoubleSpinBox::up-button,
+  DlgPreferences QTimeEdit::up-button,
+  #DlgTrackInfo QDoubleSpinBox::up-button {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_spinbox_up.svg) no-repeat;
+  }
+  DlgPreferences QSpinBox::down-button,
+  DlgPreferences QDoubleSpinBox::down-button,
+  DlgPreferences QTimeEdit::down-button,
+  #DlgTrackInfo QDoubleSpinBox::down-button {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_spinbox_down.svg) no-repeat;
+  }
+  /* add disabled icons */
+
+DlgPreferences QCheckBox::indicator,
+DlgPreferences QRadioButton::indicator,
+DlgPreferences QTableView::indicator,
+DlgTagFetcher QCheckBox::indicator,
+#Skin QDialog QCheckBox::indicator,
+#DlgTrackInfo QCheckBox::indicator,
+#DlgTrackInfoMulti QCheckBox::indicator {
+  width: 0.8em;
+  height: 0.8em;
+  margin-top: 0.1em; /* align icon with text */
+  /* this would also shift regular checkboxes */
+  /* subcontrol-position: center center;*/
+  }
+  DlgPreferences QTableView::indicator {
+    /* doesn't center checkbox */
+    text-align: center;
+    subcontrol-origin: margin;
+    subcontrol-position: center center;
+    text-align: center;
+    /* this shifts content but also reveals blue 'selected' bg from Qt theme,
+       visible even if we set bg for ::item:selected */
+    /* margin-left: 10px; */
+    margin: 0px;
+    padding-left: 40px;
+    border: 0px solid blue;
+  }
+
+  DlgPreferences QCheckBox::indicator:unchecked,
+  DlgPreferences QTableView::indicator:unchecked,
+  DlgTrackInfo QCheckBox::indicator:unchecked,
+  DlgTagFetcher QCheckBox::indicator:unchecked,
+  #Skin QDialog QCheckBox::indicator:unchecked,
+  #DlgTrackInfo QCheckBox::indicator:unchecked,
+  #DlgTrackInfoMulti QCheckBox::indicator:unchecked {
+/*    image: url(skins:LateNight/palemoon/buttons/btn__pref_checkbox.svg) no-repeat center center;*/
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_checkbox.svg);
+    }
+    DlgPreferences QCheckBox::indicator:disabled:unchecked,
+    DlgPreferences QTableView::indicator:disabled:unchecked,
+    DlgTrackInfo QCheckBox::indicator:disabled:unchecked,
+    #Skin QDialog QCheckBox::indicator:disabled:unchecked,
+    #DlgTrackInfo QCheckBox::indicator:disabled:unchecked,
+    #DlgTrackInfoMulti QCheckBox::indicator:disabled:unchecked {
+      image: url(skins:LateNight/palemoon/buttons/btn__pref_checkbox_disabled.svg) no-repeat center center;
+    }
+  DlgPreferences QCheckBox::indicator:checked,
+  DlgPreferences QTableView::indicator:checked,
+  DlgTrackInfo QCheckBox::indicator:checked,
+  DlgTagFetcher QCheckBox::indicator:checked,
+  #Skin QDialog QCheckBox::indicator:checked,
+  #DlgTrackInfo QCheckBox::indicator:checked,
+  #DlgTrackInfoMulti QCheckBox::indicator:checked {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_checkmark_blue.svg) no-repeat center center;
+    }
+    DlgPreferences QCheckBox::indicator:disabled:checked,
+    DlgPreferences QTableView::indicator:disabled:checked,
+    DlgTrackInfo QCheckBox::indicator:disabled:checked,
+    #Skin QDialog QCheckBox::indicator:disabled:checked,
+    #DlgTrackInfo QCheckBox::indicator:disabled:checked,
+    #DlgTrackInfoMulti QCheckBox::indicator:disabled:checked {
+      image: url(skins:LateNight/palemoon/buttons/btn__pref_checkmark_grey.svg) no-repeat center center;
+    }
+
+  DlgPreferences QRadioButton::indicator:checked {
+    image: url(skins:LateNight/palemoon/buttons/btn__pref_radio_button_on.svg) center center;
+    }
+    DlgPreferences QRadioButton::indicator:unchecked {
+      image: url(skins:LateNight/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
+    }
+
+/* Clear button in DlgDeveloperTools searchbars */
+#Skin QDialog WSearchLineEdit QToolButton:!focus,
+DlgDeveloperTools WSearchLineEdit QToolButton:!focus {
+  image: url(skins:LateNight/palemoon/buttons/btn__lib_clear_search.svg);
+  }
+  #Skin QDialog WSearchLineEdit QToolButton:focus,
+  DlgDeveloperTools WSearchLineEdit QToolButton:focus {
+    image: url(skins:LateNight/palemoon/buttons/btn__lib_clear_search_focus.svg);
+  }
+
+DlgPreferences QSlider::groove:horizontal {
+  border: 1px solid #2f2f32;
+  border-radius: 2px;
+  background-color: #111115;
+  height: 3px;
+  }
+  DlgPreferences QSlider::groove:focus:horizontal {
+    border: 1px solid #4097BA;
+  }
+  DlgPreferences QSlider::groove:disabled:horizontal {
+    border: 1px solid #2f2f32;
+    border-radius: 2px;
+    background-color: #222228;
+    height: 3px;
+  }
+  DlgPreferences QSlider::sub-page:horizontal {
+    height: 4px;
+    background-color: #77777d;
+    margin: 1px;
+  }
+  DlgPreferences QSlider::sub-page:disabled:horizontal {
+    height: 4px;
+    background-color: #44444b;
+    margin: 1px;
+  }
+  DlgPreferences QSlider::handle:horizontal {
+    height: 18px;
+    width: 12px;
+    border: 1px solid #66666c;
+    border-radius: 2px;
+    background-color: #44444b;
+    /* make handle taller than slider groove */
+    margin: -6px 0px;
+  }
+  DlgPreferences QSlider::handle:focus:horizontal {
+    border: 1px solid #4097BA;
+  }
+
+/* Progress bar in TrackExportDlg and library scanner dialog */
+#Skin QDialog QProgressBar {
+  background-color: #1f1f1f;
+  border: 1px solid #2f2f32;
+  border-radius: 2px;
+  /* padding for the actual bar/chunks */
+  padding: 1px;
+  }
+  #Skin QDialog QProgressBar::chunk {
+    background-color: #4097BA;
+    width: 1px;
+    margin: 0px;
+    padding: 0px;
+    border-radius: 2px;
+  }
+
+
+
+/*********** scrollbars *********************************/
+/* same as WSearchLineEdit QAbstractScrollArea QScrollBar etc. */
+
+
+/* TODO Preferences
+
+  * Pref Broadcasting:
+    * find a way to set the status colors in conn. profile table?
+
+  * dialogs:
+    * style Ok / Yes / No buttons? orange, green, yellow
+
+  * Library: directory list view
+
+  * QComboBox views:
+    * frame
+
+  * Treeview:
+
+  * DlgPrefController
+    * checkboxes in mappings' 'Option' delegate
+
+  * DlgTagFetcher:
+    * progress bar
+
+ */
+/* trying to style link spans, not working */
+DlgPreferences a,
+DlgPreferences a:link,
+DlgPreferences a:hover,
+DlgPreferences a:!visited,
+DlgPreferences a:visited,
+DlgPreferences a:visited:hover,
+DlgPreferencePage a,
+DlgPreferencePage a:link,
+DlgPreferencePage a:hover,
+DlgPreferencePage a:!visited,
+DlgPreferencePage a:visited,
+DlgPreferencePage a:visited:hover,
+DlgPreferencePage QLabel a,
+DlgPreferencePage QLabel a:link,
+DlgPreferencePage QLabel a:hover,
+DlgPreferencePage QLabel a:!visited,
+DlgPreferencePage QLabel a:visited,
+DlgPreferencePage QLabel a:visited:hover {
+  color: white;
+}
+WLibraryTextBrowser a,
+WLibraryTextBrowser a:link,
+WLibraryTextBrowser a:!visited,
+WLibraryTextBrowser a:visited,
+WLibraryTextBrowser a:hover {
+  color: red;
+}
