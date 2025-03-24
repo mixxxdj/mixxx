@@ -14,7 +14,7 @@ Relation::Relation(
         TrackId targetTrackId,
         std::optional<mixxx::audio::FramePos> sourcePosition,
         std::optional<mixxx::audio::FramePos> targetPosition,
-        int bidirectional,
+        bool bidirectional,
         const QString& comment,
         const QString& tag,
         const QDateTime& dateAdded)
@@ -35,7 +35,7 @@ Relation::Relation(
         TrackId targetTrackId,
         std::optional<mixxx::audio::FramePos> sourcePosition,
         std::optional<mixxx::audio::FramePos> targetPosition,
-        int bidirectional,
+        bool bidirectional,
         const QString& comment,
         const QString& tag)
         : m_sourceTrackId(sourceTrackId),

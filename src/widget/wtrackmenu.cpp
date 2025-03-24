@@ -13,6 +13,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
+#include "library/dao/relationdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
@@ -35,6 +36,7 @@
 #include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
+#include "track/relation.h"
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/desktophelper.h"
@@ -210,6 +212,11 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::BPM)) {
         m_pBPMMenu = make_parented<QMenu>(this);
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
+    }
+
+    if (featureIsEnabled(Feature::SetRelation)) {
+        m_pSetRelationMenu = make_parented<QMenu>(this);
+        m_pSetRelationMenu->setTitle(tr("Set Relation"));
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -596,6 +603,41 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotColorPicked);
     }
+
+    if (featureIsEnabled(Feature::SetRelation)) {
+        m_pSetRelationDeckOne = make_parented<QAction>(
+                tr("Set Relation to Deck 1"), m_pSetRelationMenu);
+        connect(m_pSetRelationDeckOne,
+                &QAction::triggered,
+                this,
+                [this]() -> void {
+                    slotAddRelationToDeck(1, false);
+                });
+        m_pSetRelationDeckTwo = make_parented<QAction>(
+                tr("Set Relation to Deck 2"), m_pSetRelationMenu);
+        connect(m_pSetRelationDeckTwo,
+                &QAction::triggered,
+                this,
+                [this]() -> void {
+                    slotAddRelationToDeck(2, false);
+                });
+        m_pSetRelationDeckThree = make_parented<QAction>(
+                tr("Set Relation to Deck 3"), m_pSetRelationMenu);
+        connect(m_pSetRelationDeckThree,
+                &QAction::triggered,
+                this,
+                [this]() -> void {
+                    slotAddRelationToDeck(3, false);
+                });
+        m_pSetRelationDeckFour = make_parented<QAction>(
+                tr("Set Relation to Deck 4"), m_pSetRelationMenu);
+        connect(m_pSetRelationDeckFour,
+                &QAction::triggered,
+                this,
+                [this]() -> void {
+                    slotAddRelationToDeck(4, false);
+                });
+    }
 }
 
 void WTrackMenu::setupActions() {
@@ -604,12 +646,25 @@ void WTrackMenu::setupActions() {
         addMenu(m_pSearchRelatedMenu);
     }
 
+    if (featureIsEnabled(Feature::SetRelation)) {
+        m_pSetRelationMenu->addAction(m_pSetRelationDeckOne);
+        m_pSetRelationMenu->addSeparator();
+        m_pSetRelationMenu->addAction(m_pSetRelationDeckTwo);
+        m_pSetRelationMenu->addSeparator();
+        m_pSetRelationMenu->addAction(m_pSetRelationDeckThree);
+        m_pSetRelationMenu->addSeparator();
+        m_pSetRelationMenu->addAction(m_pSetRelationDeckFour);
+        // addAction(m_SetRelationAtPlayPositionList[i]);
+        addMenu(m_pSetRelationMenu);
+    }
+
     if (featureIsEnabled(Feature::SelectInLibrary)) {
         addAction(m_pSelectInLibraryAct);
     }
 
     if (featureIsEnabled(Feature::SearchRelated) ||
-            featureIsEnabled(Feature::SelectInLibrary)) {
+            featureIsEnabled(Feature::SelectInLibrary) ||
+            featureIsEnabled(Feature::SetRelation)) {
         addSeparator();
     }
 
@@ -1464,6 +1519,47 @@ void WTrackMenu::slotTranslateBeatsHalf() {
         return;
     }
     m_pTrack->trySetBeats(*translatedBeats);
+}
+
+void WTrackMenu::slotAddRelationToDeck(int i, bool atPlayPosition) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
+        return;
+    }
+    TrackId sourceTrackId = m_pTrack->getId();
+    const QString deckGroup = PlayerManager::groupForDeck(i - 1);
+    if (deckGroup.isEmpty()) {
+        return;
+    }
+    TrackPointer pTargetTrack = PlayerInfo::instance().getTrackInfo(deckGroup);
+    if (!pTargetTrack) {
+        return;
+    }
+    TrackId targetTrackId = pTargetTrack->getId();
+    Relation* relation;
+    if (atPlayPosition && !m_deckGroup.isEmpty()) {
+        mixxx::audio::FramePos sourcePosition = mixxx::audio::FramePos(
+                ControlObject::get(ConfigKey(m_deckGroup, "playposition")));
+        mixxx::audio::FramePos targetPosition = mixxx::audio::FramePos(
+                ControlObject::get(ConfigKey(deckGroup, "playposition")));
+        relation = new Relation(
+                sourceTrackId,
+                targetTrackId,
+                sourcePosition,
+                targetPosition,
+                m_bSetRelationBidirectional);
+    } else {
+        relation = new Relation(
+                sourceTrackId,
+                targetTrackId,
+                std::nullopt,
+                std::nullopt,
+                m_bSetRelationBidirectional);
+    }
+    m_pLibrary
+            ->trackCollectionManager()
+            ->internalCollection()
+            ->getRelationDAO()
+            .saveRelation(relation);
 }
 
 void WTrackMenu::slotImportMetadataFromFileTags() {
@@ -2962,6 +3058,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
     case Feature::SelectInLibrary:
+        return m_pTrack != nullptr;
+    case Feature::SetRelation:
         return m_pTrack != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");

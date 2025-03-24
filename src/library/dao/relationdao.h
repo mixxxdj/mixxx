@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "library/dao/dao.h"
+#include "track/relation.h"
 #include "track/trackid.h"
 
 #define RELATIONS_TABLE "relations"

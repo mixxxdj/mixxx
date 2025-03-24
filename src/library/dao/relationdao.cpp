@@ -89,7 +89,7 @@ void RelationDAO::saveRelation(Relation* relation) {
         query.bindValue(":id", relation->getId().toVariant());
     } else {
         // New relation
-        query.prepare(QStringLiteral("INSERT INFO " RELATIONS_TABLE
+        query.prepare(QStringLiteral("INSERT INTO " RELATIONS_TABLE
                                      " (source_track_id, target_track_id, source_position, "
                                      "target_position, bidirectional, comment, tag) VALUES "
                                      "(:source_track_id, :target_track_id, "
@@ -112,9 +112,10 @@ void RelationDAO::saveRelation(Relation* relation) {
     } else {
         query.bindValue(":target_position", QVariant());
     }
-    query.bindValue(":bidirectional", relation->getBidirectional());
+    query.bindValue(":bidirectional", QVariant(relation->getBidirectional()));
     query.bindValue(":comment", relation->getcomment());
     query.bindValue(":tag", relation->getTag());
+    query.bindValue(":datetime_added", relation->getDateAdded());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;

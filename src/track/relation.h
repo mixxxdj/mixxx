@@ -21,7 +21,7 @@ class Relation : public QObject {
             TrackId targetTrackId,
             std::optional<mixxx::audio::FramePos> sourcePosition,
             std::optional<mixxx::audio::FramePos> targetPosition,
-            int bidirectional,
+            bool bidirectional,
             const QString& comment,
             const QString& tag,
             const QDateTime& dateAdded);
@@ -32,7 +32,7 @@ class Relation : public QObject {
             TrackId targetTrackId,
             std::optional<mixxx::audio::FramePos> sourcePosition = std::nullopt,
             std::optional<mixxx::audio::FramePos> targetPosition = std::nullopt,
-            int bidirectional = 0,
+            bool bidirectional = false,
             const QString& comment = QString(),
             const QString& tag = QString());
 
