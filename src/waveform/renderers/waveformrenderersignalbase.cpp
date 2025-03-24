@@ -59,42 +59,37 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
-    if (m_pEQEnabled) {
-        delete m_pEQEnabled;
-    }
-    if (m_pLowFilterControlObject) {
-        delete m_pLowFilterControlObject;
-    }
-    if (m_pMidFilterControlObject) {
-        delete m_pMidFilterControlObject;
-    }
-    if (m_pHighFilterControlObject) {
-        delete m_pHighFilterControlObject;
-    }
-    if (m_pLowKillControlObject) {
-        delete m_pLowKillControlObject;
-    }
-    if (m_pMidKillControlObject) {
-        delete m_pMidKillControlObject;
-    }
-    if (m_pHighKillControlObject) {
-        delete m_pHighKillControlObject;
-    }
 }
 
 bool WaveformRendererSignalBase::init() {
     deleteControls();
 
-    //create controls
-    m_pEQEnabled = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
-    m_pLowFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter1"));
-    m_pMidFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter2"));
-    m_pHighFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter3"));
-    m_pLowKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter1"));
-    m_pMidKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
-    m_pHighKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter3"));
+    if (!m_waveformRenderer->getGroup().isEmpty()) {
+        // create controls
+        m_pEQEnabled.reset(new ControlProxy(
+                m_waveformRenderer->getGroup(), "filterWaveformEnable"));
+        const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
+        m_pLowFilterControlObject.reset(
+                new ControlProxy(effectGroup, QStringLiteral("parameter1")));
+        m_pMidFilterControlObject.reset(
+                new ControlProxy(effectGroup, QStringLiteral("parameter2")));
+        m_pHighFilterControlObject.reset(
+                new ControlProxy(effectGroup, QStringLiteral("parameter3")));
+        m_pLowKillControlObject.reset(new ControlProxy(
+                effectGroup, QStringLiteral("button_parameter1")));
+        m_pMidKillControlObject.reset(new ControlProxy(
+                effectGroup, QStringLiteral("button_parameter2")));
+        m_pHighKillControlObject.reset(new ControlProxy(
+                effectGroup, QStringLiteral("button_parameter3")));
+    } else {
+        m_pEQEnabled.reset();
+        m_pLowFilterControlObject.reset();
+        m_pMidFilterControlObject.reset();
+        m_pHighFilterControlObject.reset();
+        m_pLowKillControlObject.reset();
+        m_pMidKillControlObject.reset();
+        m_pHighKillControlObject.reset();
+    }
 
     return onInit();
 }
@@ -195,7 +190,7 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         CSAMPLE_GAIN lowVisualGain = 1.0, midVisualGain = 1.0, highVisualGain = 1.0;
 
         // Only adjust low/mid/high gains if EQs are enabled.
-        if (m_pEQEnabled->get() > 0.0) {
+        if (m_pEQEnabled && m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
                     m_pMidFilterControlObject &&
                     m_pHighFilterControlObject) {
