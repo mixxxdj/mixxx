@@ -27,12 +27,6 @@ class allshader::WaveformRendererRGB final
     // Virtuals for rendergraph::Node
     void preprocess() override;
 
-  public slots:
-    void setAxesColor(const QColor& axesColor);
-    void setLowColor(const QColor& lowColor);
-    void setMidColor(const QColor& midColor);
-    void setHighColor(const QColor& highColor);
-
   private:
     bool m_isSlipRenderer;
     WaveformRendererSignalBase::Options m_options;

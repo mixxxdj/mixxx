@@ -103,18 +103,23 @@ bool WaveformWidgetRenderer::init() {
         m_truePosSample[type] = -1.0;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(!m_group.isEmpty()) {
-        return false;
+    // It is possible for a renderer to be defined with no group. This usually
+    // indicate that the position and track will be controlled by the owner.
+    // This is used in QML currently.
+    if (!m_group.isEmpty()) {
+        m_pRateRatioCO = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("rate_ratio"));
+        m_pGainControlObject = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("total_gain"));
+        m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("track_samples"));
+
+        m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
     }
 
-    m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
-
-    m_pRateRatioCO = std::make_unique<ControlProxy>(
-            m_group, QStringLiteral("rate_ratio"));
-    m_pGainControlObject = std::make_unique<ControlProxy>(
-            m_group, QStringLiteral("total_gain"));
-    m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
-            m_group, QStringLiteral("track_samples"));
+    VERIFY_OR_DEBUG_ASSERT(m_visualPlayPosition) {
+        return false;
+    }
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
@@ -137,15 +142,17 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
     }
 
     // For a valid track to render we need
-    m_trackSamples = m_pTrackSamplesControlObject->get();
+    m_trackSamples = m_pTrackSamplesControlObject
+            ? m_pTrackSamplesControlObject->get()
+            : m_pTrack->getSampleRate() * m_pTrack->getDuration();
     if (m_trackSamples <= 0) {
         return;
     }
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    double rateRatio = m_pRateRatioCO->get();
+    double rateRatio = m_pRateRatioCO ? m_pRateRatioCO->get() : 1.0;
 
-    m_gain = m_pGainControlObject->get();
+    m_gain = m_pGainControlObject ? m_pGainControlObject->get() : 1.0;
 
     // Compute visual sample to pixel ratio
     // Allow waveform to spread one visual sample across a hundred pixels

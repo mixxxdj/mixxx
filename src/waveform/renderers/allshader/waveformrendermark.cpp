@@ -224,8 +224,12 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
 }
 
 bool allshader::WaveformRenderMark::init() {
-    m_pTimeRemainingControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), "time_remaining");
+    if (!m_waveformRenderer->getGroup().isEmpty()) {
+        m_pTimeRemainingControl = std::make_unique<ControlProxy>(
+                m_waveformRenderer->getGroup(), "time_remaining");
+    } else {
+        m_pTimeRemainingControl.reset();
+    }
     ::WaveformRenderMarkBase::init();
     return true;
 }
@@ -584,7 +588,7 @@ void allshader::WaveformRenderMark::updateUntilMark(
     }
 
     const double endPosition = m_waveformRenderer->getTrackSamples();
-    const double remainingTime = m_pTimeRemainingControl->get();
+    const double remainingTime = m_pTimeRemainingControl ? m_pTimeRemainingControl->get() : 0;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {

@@ -87,6 +87,7 @@ void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF&
 QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
     if (m_dirtyFlag.testFlag(DirtyFlag::Window)) {
         delete node;
+        node = nullptr;
         m_dirtyFlag.setFlag(DirtyFlag::Window, false);
     }
 
@@ -245,7 +246,55 @@ void QmlWaveformDisplay::slotWaveformUpdated() {
 }
 
 QQmlListProperty<QmlWaveformRendererFactory> QmlWaveformDisplay::renderers() {
-    return {this, &m_waveformRenderers};
+    return {this,
+            nullptr,
+            &QmlWaveformDisplay::renderers_append,
+            &QmlWaveformDisplay::renderers_count,
+            &QmlWaveformDisplay::renderers_at,
+            &QmlWaveformDisplay::renderers_clear};
+}
+
+// Static
+void QmlWaveformDisplay::renderers_append(
+        QQmlListProperty<QmlWaveformRendererFactory>* pList,
+        QmlWaveformRendererFactory* value) {
+    QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
+    VERIFY_OR_DEBUG_ASSERT(pWaveform) {
+        return;
+    }
+    pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    pWaveform->m_waveformRenderers.append(value);
+}
+
+// Static
+qsizetype QmlWaveformDisplay::renderers_count(QQmlListProperty<QmlWaveformRendererFactory>* pList) {
+    QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
+    VERIFY_OR_DEBUG_ASSERT(pWaveform) {
+        return 0;
+    }
+    pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    return pWaveform->m_waveformRenderers.count();
+}
+
+// Static
+QmlWaveformRendererFactory* QmlWaveformDisplay::renderers_at(
+        QQmlListProperty<QmlWaveformRendererFactory>* pList, qsizetype index) {
+    VERIFY_OR_DEBUG_ASSERT(pList && pList->object) {
+        return nullptr;
+    }
+    QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
+    pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    return pWaveform->m_waveformRenderers.at(index);
+}
+
+// Static
+void QmlWaveformDisplay::renderers_clear(QQmlListProperty<QmlWaveformRendererFactory>* pList) {
+    QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
+    VERIFY_OR_DEBUG_ASSERT(pWaveform) {
+        return;
+    }
+    pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    return pWaveform->m_waveformRenderers.clear();
 }
 
 } // namespace qml
