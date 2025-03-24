@@ -40,10 +40,12 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void loadMetaData();
     void updateTextQuality();
     void updateTextCompression();
+    void updateTracklistAsComment();
     void saveRecordingFolder();
     void saveMetaData();
     void saveEncoding();
     void saveUseCueFile();
+    void saveTracklistAsComment();
     void saveSplitSize();
 
     // Pointer to config object
