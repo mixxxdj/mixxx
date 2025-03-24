@@ -18,7 +18,7 @@
         <Children>
 
           <Splitter>
-            <ObjectName>LibraryMainSplitter</ObjectName>
+            <ObjectName>LibrarySplitter</ObjectName>
             <Orientation>vertical</Orientation>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,4</SplitSizes>
