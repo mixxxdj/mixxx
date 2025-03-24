@@ -3173,6 +3173,7 @@ target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
 
 # OpenGL
+option(QGLES2 "Use GLES 2.0 (or higher) instead of full OpenGL for UNIX" OFF)
 if(IOS)
   target_link_libraries(mixxx-lib PRIVATE "-framework OpenGLES")
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -3200,6 +3201,9 @@ else()
     )
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
+  if(UNIX AND QGLES2)
+    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
   endif()
   if(APPLE)
     # Restore the previous CMAKE_FIND_FRAMEWORK value
