@@ -102,13 +102,13 @@ void RelationDAO::saveRelation(Relation* relation) {
     query.bindValue(":target_track_id", relation->getTargetTrackId().toVariant());
     if (relation->getSourcePosition().has_value()) {
         query.bindValue(":source_position",
-                relation->getSourcePosition()->toEngineSamplePosMaybeInvalid());
+                relation->getSourcePosition()->toEngineSamplePos());
     } else {
         query.bindValue(":source_position", QVariant());
     }
     if (relation->getTargetPosition().has_value()) {
         query.bindValue(":target_position",
-                relation->getTargetPosition()->toEngineSamplePosMaybeInvalid());
+                relation->getTargetPosition()->toEngineSamplePos());
     } else {
         query.bindValue(":target_position", QVariant());
     }

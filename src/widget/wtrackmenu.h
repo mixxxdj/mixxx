@@ -184,7 +184,7 @@ class WTrackMenu : public QMenu {
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
-    void slotAddRelationToDeck(int i, bool atPlayPosition = false);
+    void slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosition = false);
 
     // Auto DJ
     void slotAddToAutoDJBottom();
@@ -241,6 +241,12 @@ class WTrackMenu : public QMenu {
             QMenu* pParentMenu,
             bool primaryDeck,
             bool enabled = true);
+
+    void generateSetRelationMenu(const QString& group,
+            const QString& label,
+            QMenu* pParentMenu,
+            bool enabled = true,
+            bool atPlayPosition = false);
 
     bool featureIsEnabled(Feature flag) const;
 

@@ -214,6 +214,7 @@ void WTrackMenu::createMenus() {
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
     }
 
+    // MARK
     if (featureIsEnabled(Feature::SetRelation)) {
         m_pSetRelationMenu = make_parented<QMenu>(this);
         m_pSetRelationMenu->setTitle(tr("Set Relation"));
@@ -604,40 +605,52 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotColorPicked);
     }
 
-    if (featureIsEnabled(Feature::SetRelation)) {
-        m_pSetRelationDeckOne = make_parented<QAction>(
-                tr("Set Relation to Deck 1"), m_pSetRelationMenu);
-        connect(m_pSetRelationDeckOne,
-                &QAction::triggered,
-                this,
-                [this]() -> void {
-                    slotAddRelationToDeck(1, false);
-                });
-        m_pSetRelationDeckTwo = make_parented<QAction>(
-                tr("Set Relation to Deck 2"), m_pSetRelationMenu);
-        connect(m_pSetRelationDeckTwo,
-                &QAction::triggered,
-                this,
-                [this]() -> void {
-                    slotAddRelationToDeck(2, false);
-                });
-        m_pSetRelationDeckThree = make_parented<QAction>(
-                tr("Set Relation to Deck 3"), m_pSetRelationMenu);
-        connect(m_pSetRelationDeckThree,
-                &QAction::triggered,
-                this,
-                [this]() -> void {
-                    slotAddRelationToDeck(3, false);
-                });
-        m_pSetRelationDeckFour = make_parented<QAction>(
-                tr("Set Relation to Deck 4"), m_pSetRelationMenu);
-        connect(m_pSetRelationDeckFour,
-                &QAction::triggered,
-                this,
-                [this]() -> void {
-                    slotAddRelationToDeck(4, false);
-                });
-    }
+    // Mark
+    // if (featureIsEnabled(Feature::SetRelation)) {
+    //     int iNumDecks = static_cast<int>(m_pNumDecks.get());
+    //     for (int i = 0; i < iNumDecks; ++i) {
+    //             // PlayerManager::groupForDeck is 0-indexed.
+    //             QString deckGroup = PlayerManager::groupForDeck(i - 1);
+    //             generateTrackLoadMenu(deckGroup,
+    //                 tr("Deck %1").arg(i),
+    //                 getFirstTrackPointer(),
+    //                 m_pDeckMenu,
+    //                 true,
+    //                 deckEnabled);
+    //     }
+    //     m_pSetRelationDeckOne = make_parented<QAction>(
+    //             tr("Set Relation to Deck 1"), m_pSetRelationMenu);
+    //     connect(m_pSetRelationDeckOne,
+    //             &QAction::triggered,
+    //             this,
+    //             [this]() -> void {
+    //                 slotAddRelationToDeck(1, false);
+    //             });
+    //     m_pSetRelationDeckTwo = make_parented<QAction>(
+    //             tr("Set Relation to Deck 2"), m_pSetRelationMenu);
+    //     connect(m_pSetRelationDeckTwo,
+    //             &QAction::triggered,
+    //             this,
+    //             [this]() -> void {
+    //                 slotAddRelationToDeck(2, false);
+    //             });
+    //     m_pSetRelationDeckThree = make_parented<QAction>(
+    //             tr("Set Relation to Deck 3"), m_pSetRelationMenu);
+    //     connect(m_pSetRelationDeckThree,
+    //             &QAction::triggered,
+    //             this,
+    //             [this]() -> void {
+    //                 slotAddRelationToDeck(3, false);
+    //             });
+    //     m_pSetRelationDeckFour = make_parented<QAction>(
+    //             tr("Set Relation to Deck 4"), m_pSetRelationMenu);
+    //     connect(m_pSetRelationDeckFour,
+    //             &QAction::triggered,
+    //             this,
+    //             [this]() -> void {
+    //                 slotAddRelationToDeck(4, false);
+    //             });
+    // }
 }
 
 void WTrackMenu::setupActions() {
@@ -646,15 +659,8 @@ void WTrackMenu::setupActions() {
         addMenu(m_pSearchRelatedMenu);
     }
 
+    // MARK
     if (featureIsEnabled(Feature::SetRelation)) {
-        m_pSetRelationMenu->addAction(m_pSetRelationDeckOne);
-        m_pSetRelationMenu->addSeparator();
-        m_pSetRelationMenu->addAction(m_pSetRelationDeckTwo);
-        m_pSetRelationMenu->addSeparator();
-        m_pSetRelationMenu->addAction(m_pSetRelationDeckThree);
-        m_pSetRelationMenu->addSeparator();
-        m_pSetRelationMenu->addAction(m_pSetRelationDeckFour);
-        // addAction(m_SetRelationAtPlayPositionList[i]);
         addMenu(m_pSetRelationMenu);
     }
 
@@ -987,6 +993,7 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
     }
 }
 
+// Mark: generate loadMenu
 void WTrackMenu::generateTrackLoadMenu(const QString& group,
         const QString& label,
         TrackPointer pTrack,
@@ -1027,6 +1034,20 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
     }
 }
 
+void WTrackMenu::generateSetRelationMenu(const QString& group,
+        const QString& label,
+        QMenu* pParentMenu,
+        bool enabled,
+        bool atPlayPosition) {
+    QAction* pAction = new QAction(label, this);
+    pAction->setEnabled(enabled);
+    pParentMenu->addAction(pAction);
+    connect(pAction,
+            &QAction::triggered,
+            this,
+            [this, group, atPlayPosition] { slotAddRelationToDeck(group, atPlayPosition); });
+}
+
 void WTrackMenu::updateMenus() {
     if (isEmpty()) {
         return;
@@ -1052,6 +1073,33 @@ void WTrackMenu::updateMenus() {
         // TODO Only enable for single track?
     }
 
+    if (featureIsEnabled(Feature::SetRelation)) {
+        int iNumDecks = static_cast<int>(m_pNumDecks.get());
+        m_pSetRelationMenu->clear();
+        m_pSetRelationMenu->setEnabled(singleTrackSelected);
+        for (int i = 1; i <= iNumDecks; ++i) {
+            // PlayerManager::groupForDeck is 0-indexed.
+            QString deckGroup = PlayerManager::groupForDeck(i - 1);
+            TrackPointer pTargetTrack = PlayerInfo::instance().getTrackInfo(deckGroup);
+            if (!pTargetTrack) {
+                continue;
+            }
+            bool deckEnabled = (singleTrackSelected);
+            generateSetRelationMenu(deckGroup,
+                    tr("Deck %1 - %2").arg(i).arg(pTargetTrack->getTitle()),
+                    m_pSetRelationMenu,
+                    deckEnabled,
+                    false);
+            generateSetRelationMenu(deckGroup,
+                    tr("... at playback position"),
+                    m_pSetRelationMenu,
+                    deckEnabled,
+                    true);
+            m_pSetRelationMenu->addSeparator();
+        }
+    }
+
+    // Mark: Load to deck
     if (featureIsEnabled(Feature::LoadTo)) {
         // Enable menus only for single track
         int iNumDecks = static_cast<int>(m_pNumDecks.get());
@@ -1521,12 +1569,12 @@ void WTrackMenu::slotTranslateBeatsHalf() {
     m_pTrack->trySetBeats(*translatedBeats);
 }
 
-void WTrackMenu::slotAddRelationToDeck(int i, bool atPlayPosition) {
+// Mark
+void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosition) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return;
     }
     TrackId sourceTrackId = m_pTrack->getId();
-    const QString deckGroup = PlayerManager::groupForDeck(i - 1);
     if (deckGroup.isEmpty()) {
         return;
     }
