@@ -3436,24 +3436,25 @@ if(QML)
       src/qml/qmlapplication.cpp
       src/qml/qmlautoreload.cpp
       src/qml/qmlbeatsmodel.cpp
-      src/qml/qmlcuesmodel.cpp
-      src/qml/qmlcontrolproxy.cpp
+      src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlconfigproxy.cpp
+      src/qml/qmlcontrolproxy.cpp
+      src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
       src/qml/qmleffectmanifestparametersmodel.cpp
-      src/qml/qmleffectsmanagerproxy.cpp
       src/qml/qmleffectslotproxy.cpp
+      src/qml/qmleffectsmanagerproxy.cpp
       src/qml/qmllibraryproxy.cpp
       src/qml/qmllibrarytracklistmodel.cpp
+      src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
       src/qml/qmlvisibleeffectsmodel.cpp
-      src/qml/qmlchainpresetmodel.cpp
-      src/qml/qmlwaveformoverview.cpp
-      src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlwaveformdisplay.cpp
+      src/qml/qmlwaveformoverview.cpp
       src/qml/qmlwaveformrenderer.cpp
       src/qml/qmlsettingparameter.cpp
+      src/qml/qmltrackproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
