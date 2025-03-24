@@ -453,26 +453,6 @@
            </layout>
           </item>
 
-          <item row="9" column="0">
-           <widget class="QLabel" name="lblTrackColor">
-            <property name="text">
-             <string>Color</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="1" colspan="3">
-           <widget class="QPushButton" name="btnColorPicker">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
