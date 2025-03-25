@@ -48,10 +48,11 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   private:
     void focusSelectedIndex();
+    bool selectFocusedIndex();
     QModelIndex selectedIndex();
 
     void toggleBookmark();
-    void goToNextPrevBookmark(int direction);
+    void goToNextPrevBookmark(int direction, bool activate);
 
     SidebarModel* m_pSidebarModel;
     QBasicTimer m_expandTimer;
