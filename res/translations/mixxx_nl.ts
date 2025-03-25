@@ -5,7 +5,7 @@
         <location filename="../../src/dlgrecording.cpp" line="176"/>
         <source/>
         <comment>The size of the file which has been stored during the current recording in megabytes (MB)</comment>
-        <translation type="unfinished"/>
+		<translation>De grootte van het bestand dat werd opgeslagen tijdens de huidige opnale in megabytes (MB)</translation>
     </message>
 </context>
 <context>
@@ -26,17 +26,17 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="101"/>
         <source>Enable Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Activeer Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="107"/>
         <source>Disable Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>De-activeer Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="114"/>
         <source>Clear Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Wis de Auto DJ wachtrij</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="128"/>
@@ -51,17 +51,17 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="204"/>
         <source>Confirmation Clear</source>
-        <translation type="unfinished"/>
+        <translation>Bevestig het wissen</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="205"/>
         <source>Do you really want to remove all tracks from the Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Wilt u echt alle tracks uit de Auto DJ wachtrij verwijderen?</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="206"/>
         <source>This can not be undone.</source>
-        <translation type="unfinished"/>
+        <translation>Dit can niet ongedaan gemaakt worden</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="388"/>
@@ -801,7 +801,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="194"/>
         <source>Rescans the library when Mixxx is launched.</source>
-        <translation type="unfinished"/>
+        <translation>Scant de bibliotheek opnieuw wanneer Mixxx wordt opgestart</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="241"/>
@@ -851,7 +851,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="339"/>
         <source>Sets the maximum file size of the mixxx.log file in bytes. Use -1 for unlimited. The default is 100 MB as 1e5 or 100000000.</source>
-        <translation type="unfinished"/>
+        <translation>Stelt de maximum grootte in voor een mixxx.log bestand in bytes. Gebruik -1 voor ongelimiteerd. De standaard is 100 MB als 1e5 or 100000000.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="351"/>
@@ -861,7 +861,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="363"/>
         <source>Overrides the default application GUI style. Possible values: %1</source>
-        <translation type="unfinished"/>
+        <translation>Overschrijft de standaard applicatie GUI stijl. Mogelijke waarden: %1</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="374"/>
@@ -2651,13 +2651,13 @@ traceren - Boven + Profileringsberichten</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="536"/>
         <source>Sort hotcues by position</source>
-        <translation type="unfinished"/>
+        <translation>Sorteer hotcues op positie</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="539"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="540"/>
         <source>Sort hotcues by position (remove offsets)</source>
-        <translation type="unfinished"/>
+        <translation>Sorteer hotcues op positie (verwijder de verrekening)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="568"/>
@@ -3512,7 +3512,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controller.cpp" line="55"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Onbekend</translation>
     </message>
 </context>
 <context>
@@ -3899,7 +3899,7 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Mixxx %1.%2 Development Team</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx %1.%2 Ontwikkelingsteam</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="43"/>
@@ -4149,7 +4149,34 @@ Skip Silence Start Full Volume:
 The same as Skip Silence, but starting transitions with a centered
 crossfader, so that the intro starts at full volume.
 </source>
-        <translation type="unfinished"/>
+        <translation>
+
+Volledige Intro + Outro:
+Speel de volledige intro en outro. Gebruik de intro of outro lengte als
+de crossfade tijd, diegene die het kortst is. Indien er geen intro of
+outro gemarkeerd zijn, gebruik de geselecteerde crossfade tijd.
+
+Faden op Outro Start:
+Start het crossfaden aan de outro start. Indeien de outro langer is
+dan de intro, knip dan het einde van de outro af. Gebruik de intro of
+outro lengte als de crossfade tijd, diegene die het kortst is. Indien
+er geen intro of outro gemarkeerd zijn, gebruik de geselecteerde
+crossfade tijd.
+
+Volledige Track:
+Speel de volledige track. Begin het crossfaden van het geselecteerde
+aantal seconden voor het einde van de track. Een negatieve crossfade tijd
+voegt stilte toe tussen de tracks.
+
+Stilte Overslaan:
+Speel de volledige track behalve de stilte aan het begin en einde.
+Begin het crossfaden op het geselecteerde aantal seconden voor het laatste
+geluid.
+
+Stilte Overslaan Begin met Volledig Volume:
+Gelijk aan Stilte Overslaan, maar de overgang wordt gestart met een gecentreerde
+crossfader, zodat de intro met een volledig volume start.
+		</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="177"/>
@@ -4174,7 +4201,7 @@ crossfader, so that the intro starts at full volume.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="185"/>
         <source>Skip Silence Start Full Volume</source>
-        <translation type="unfinished"/>
+        <translation>Stilte Overslaan Begin met Volledig Volume</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="296"/>
@@ -4287,17 +4314,17 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="94"/>
         <source>Use rhythmic channel when analysing stem file</source>
-        <translation type="unfinished"/>
+        <translation>Gebruik ritmisch kanaal bij het analyseren van een stem bestand</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="108"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Uitgeschakeld</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="113"/>
         <source>Enforced</source>
-        <translation type="unfinished"/>
+        <translation>Afgedwongen</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="126"/>
@@ -4482,7 +4509,7 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="493"/>
         <source>The selected control does not exist.&lt;br&gt;This likely a bug. Please report it on the Mixxx bug tracker.&lt;br&gt;&lt;a href=&apos;https://github.com/mixxxdj/mixxx/issues&apos;&gt;https://github.com/mixxxdj/mixxx/issues&lt;/a&gt;&lt;br&gt;&lt;br&gt;You tried to learn: %1,%2</source>
-        <translation type="unfinished"/>
+        <translation>Het geselecteerde besturingselement bestaat niet.&lt;br&gt;Dit is mogelijks een bug. Gelieve het te rapporteren op de Mixxx bug tracker.&lt;br&gt;&lt;a href=&apos;https://github.com/mixxxdj/mixxx/issues&apos;&gt;https://github.com/mixxxdj/mixxx/issues&lt;/a&gt;&lt;br&gt;&lt;br&gt;You tried to learn: %1,%2</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="519"/>
@@ -5175,17 +5202,18 @@ Twee bronverbindingen met dezelfde server die hetzelfde mountpoint hebben, kunne
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="106"/>
         <source>When key colors are enabled, Mixxx will display a color hint
 associated with each key.</source>
-        <translation type="unfinished"/>
+        <translation>Wanneer key kleuren geactiveerd zijn, zal Mixxx een kleuren hint tonen
+die geassocieerd is met elke key.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="110"/>
         <source>Enable Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Activeer Key Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="118"/>
         <source>Key palette</source>
-        <translation type="unfinished"/>
+        <translation>Key palet</translation>
     </message>
 </context>
 <context>
@@ -5318,62 +5346,62 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="116"/>
         <source>Device Info</source>
-        <translation type="unfinished"/>
+        <translation>Apparaat Info:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="134"/>
         <source>Physical Interface:</source>
-        <translation type="unfinished"/>
+        <translation>Fysieke Interface:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="204"/>
         <source>Vendor name:</source>
-        <translation type="unfinished"/>
+        <translation>Naam Leverancier:/></translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="239"/>
         <source>Product name:</source>
-        <translation type="unfinished"/>
+        <translation>Product naam:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="274"/>
         <source>Vendor ID</source>
-        <translation type="unfinished"/>
+        <translation>Leverancier ID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="277"/>
         <source>VID:</source>
-        <translation type="unfinished"/>
+        <translation>VID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="312"/>
         <source>Product ID</source>
-        <translation type="unfinished"/>
+        <translation>Product ID</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="315"/>
         <source>PID:</source>
-        <translation type="unfinished"/>
+        <translation>PID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="350"/>
         <source>Serial number:</source>
-        <translation type="unfinished"/>
+        <translation>Serienummer:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="385"/>
         <source>USB interface number:</source>
-        <translation type="unfinished"/>
+        <translation>USB interface nummer:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="420"/>
         <source>HID Usage-Page:</source>
-        <translation type="unfinished"/>
+        <translation>HID-gebruikpagina:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="455"/>
         <source>HID Usage:</source>
-        <translation type="unfinished"/>
+        <translation>HID-gebruik:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="615"/>
@@ -5451,7 +5479,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="169"/>
         <source>Data protocol:</source>
-        <translation type="unfinished"/>
+        <translation>Gegevensprotocol:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="706"/>
@@ -5461,7 +5489,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="862"/>
         <source>Mapping Settings</source>
-        <translation type="unfinished"/>
+        <translation>Instellingen voor mapping</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="963"/>
@@ -5481,7 +5509,7 @@ Instellingen toepassen en doorgaan?</translation>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="60"/>
         <source>%1 is a virtual controller that allows to use e.g. the &apos;MIDI for light&apos; mapping.&lt;br/&gt;You need to restart Mixxx in order to enable it.&lt;br/&gt;&lt;b&gt;Note:&lt;/b&gt; mappings meant for physical controllers can cause issues and even render the Mixxx GUI unresponsive when being loaded to %1.</source>
         <extracomment>text enclosed in &lt;b&gt; is bold, &lt;br/&gt; is a linebreak %1 is the placehodler for 'MIDI Through Port'</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1 is een virtuele controller die het toestaat om bijvoorbeeld de &apos;MIDI for light&apos; mapping te gebruiken.&lt;br/&gt;U dient Mixxx te herstarten om deze te kunnen gebruiken.&lt;br/&gt;&lt;b&gt;Notitie:&lt;/b&gt; mappings die voor fysieke controllers bestemd zijn, kunnen problemen veroorzaken en er zelfs voor zorgen dat de Mixxx GUI niet meer reageert wanneer ze worden geladen in %1.</source></translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="75"/>
@@ -5524,7 +5552,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="90"/>
         <source>Enable MIDI Through Port</source>
-        <translation type="unfinished"/>
+        <translation>Activeer MIDI-Doorgangspoort</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
@@ -6187,12 +6215,12 @@ U kunt de Tracks ten allen tijde op het scherm slepen en neerzetten om een deck 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="317"/>
         <source>❯</source>
-        <translation type="unfinished"/>
+        <translation>❯</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="337"/>
         <source>❮</source>
-        <translation type="unfinished"/>
+        <translation>❮</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="560"/>
@@ -6349,17 +6377,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="87"/>
         <source>Exclude rhythmic channel when analysing stem file</source>
-        <translation type="unfinished"/>
+        <translation>Sluit het ritmisch kanaal uit bij het analyseren van het stem bestand</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="101"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Uitgeschakeld</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="106"/>
         <source>Enforced</source>
-        <translation type="unfinished"/>
+        <translation>Afgedwongen</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="125"/>
@@ -7009,7 +7037,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="316"/>
         <source>Reset stem controls on track load</source>
-        <translation type="unfinished"/>
+        <translation>Reset stem besuringen bij het laden van een track</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="327"/>
@@ -7316,7 +7344,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="151"/>
         <source>Lossy</source>
-        <translation type="unfinished"/>
+        <translation>Lossy</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="21"/>
@@ -7336,7 +7364,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="136"/>
         <source>Lossless</source>
-        <translation type="unfinished"/>
+        <translation>Lossless</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="117"/>
@@ -7917,7 +7945,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="80"/>
         <source>Top</source>
-        <translation type="unfinished"/>
+        <translation>Top</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="81"/>
@@ -7933,12 +7961,12 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="85"/>
         <source>1/3 of waveform viewer</source>
         <extracomment>options for &quot;Text height limit&quot;</extracomment>
-        <translation type="unfinished"/>
+        <translation>1/3 van de waveform weergave</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="86"/>
         <source>Entire waveform viewer</source>
-        <translation type="unfinished"/>
+        <translation>volledige waveform weergave</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="257"/>
@@ -7971,7 +7999,7 @@ Het DoelVolume is bij benadering en veronderstelt dat Track PreGain en Hoofd Out
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="702"/>
         <source>OpenGL Status</source>
-        <translation type="unfinished"/>
+        <translation>OpenGL Status</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="714"/>
@@ -8126,12 +8154,12 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="525"/>
         <source>Preferred font size</source>
-        <translation type="unfinished"/>
+        <translation>Voorkeur grootte lettertype</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="562"/>
         <source>Text height limit</source>
-        <translation type="unfinished"/>
+        <translation>Limiet tekst hoogte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="492"/>
@@ -8176,13 +8204,13 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="21"/>
         <source>Scrolling Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Scrollende Waveforms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="45"/>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="609"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="76"/>
@@ -8212,7 +8240,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="599"/>
         <source>Overview Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Overzicht Waveform</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="691"/>
@@ -9540,12 +9568,12 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
     <message>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="341"/>
         <source>Change color</source>
-        <translation type="unfinished"/>
+        <translation>Wijzig de kleuren</translation>
     </message>
     <message>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="362"/>
         <source>Choose a new color</source>
-        <translation type="unfinished"/>
+        <translation>Kies een nieuwe kleur</translation>
     </message>
 </context>
 <context>
@@ -9553,18 +9581,18 @@ Dit resulteert vaak in Beat-Grids van hogere kwaliteit, maar zal het niet goed d
     <message>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="405"/>
         <source>Browse...</source>
-        <translation type="unfinished"/>
+        <translation>Blader...</translation>
     </message>
     <message>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="417"/>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="439"/>
         <source>No file selected</source>
-        <translation type="unfinished"/>
+        <translation>Geen bestand geselecteerd</translation>
     </message>
     <message>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="426"/>
         <source>Select a file</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer een bestand</translation>
     </message>
 </context>
 <context>
@@ -10160,7 +10188,7 @@ Wilt u een invoerapparaat selecteren?</translation>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="254"/>
         <source>Mixxx Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx HotCue Kleuren</translation>
     </message>
 </context>
 <context>
@@ -10168,82 +10196,82 @@ Wilt u een invoerapparaat selecteren?</translation>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="274"/>
         <source>Serato DJ Track Metadata Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Serato DJ Track Metadata Hotcue Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="299"/>
         <source>Serato DJ Pro Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Serato DJ Pro Hotcue Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="351"/>
         <source>Rekordbox COLD1 Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Rekordbox COLD1 Hotcue Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="357"/>
         <source>Rekordbox COLD2 Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Rekordbox COLD2 Hotcue Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="364"/>
         <source>Rekordbox COLORFUL Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Rekordbox COLORFUL Hotcue Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="372"/>
         <source>Mixxx Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx Track Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="396"/>
         <source>Rekordbox Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Rekordbox Track Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="410"/>
         <source>Serato DJ Pro Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Serato DJ Pro Track Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="436"/>
         <source>Traktor Pro Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Traktor Pro Track Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="449"/>
         <source>VirtualDJ Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>VirtualDJ Track Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="463"/>
         <source>Mixxx Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx Key Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="481"/>
         <source>Traktor Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Traktor Key Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="498"/>
         <source>Mixed In Key - Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Mixed In Key - Key Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="516"/>
         <source>Protanopia / Protanomaly Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Protanopia / Protanomaly Key Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="535"/>
         <source>Deuteranopia / Deuteranomaly Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Deuteranopia / Deuteranomaly Key Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="553"/>
         <source>Tritanopia / Tritanomaly Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Tritanopia / Tritanomaly Key Kleuren</translation>
     </message>
 </context>
 <context>
@@ -10827,7 +10855,7 @@ Met een breedte van nul, maakt dit het mogelijk handmatig over het gehele vertra
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="87"/>
         <source>The Mixxx Team</source>
-        <translation type="unfinished"/>
+        <translation>Het Mixxx Team</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="89"/>
@@ -10857,12 +10885,12 @@ Met een breedte van nul, maakt dit het mogelijk handmatig over het gehele vertra
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="115"/>
         <source>Gain</source>
-        <translation type="unfinished"/>
+        <translation>Versterking</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="116"/>
         <source>Set the gain of metronome click sound</source>
-        <translation type="unfinished"/>
+        <translation>Stel de versterking van het metronoom klikgeluid in</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autopaneffect.cpp" line="28"/>
@@ -11897,12 +11925,12 @@ en het verwerkt uitgangssignaal auditief zo dicht mogelijk bij elkaar te houden<
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="70"/>
         <source>Ratio (:1)</source>
-        <translation type="unfinished"/>
+        <translation>Verhouding (:1)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="71"/>
         <source>Ratio</source>
-        <translation type="unfinished"/>
+        <translation>Verhouding</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="73"/>
@@ -12603,22 +12631,25 @@ release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="120"/>
         <source>Reading track for fingerprinting failed.</source>
-        <translation type="unfinished"/>
+        <translation>Het lezen van de track voor het maken van een vingerafdruk
+		is mislukt.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="124"/>
         <source>Identifying track through AcoustID</source>
-        <translation type="unfinished"/>
+        <translation>De track aan het identificeren via AcoustID</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="170"/>
         <source>Could not identify track through AcoustID.</source>
-        <translation type="unfinished"/>
+        <translation>De track kon niet geïdentificeerd worden AcoustID
+		</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="308"/>
         <source>Could not find this track in the MusicBrainz database.</source>
-        <translation type="unfinished"/>
+        <translation>Deze track kon iet gevonden worden in de MusicBrainz 
+		database.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="174"/>
@@ -13340,7 +13371,7 @@ release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="51"/>
         <source>Left click and hold allows to preview the position where the play head will jump to on release. Dragging can be aborted with right click.</source>
-        <translation type="unfinished"/>
+        <translation>Links clicken en vasthouden staat toe om de positie voor te beluisteren waar de afspeelunit naar toe zal springen bij het loslaten. Slepen kan worden geannuleerd met een rechterclick.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="85"/>
@@ -13447,7 +13478,7 @@ release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="275"/>
         <source>Show/hide the stem mixing controls section</source>
-        <translation type="unfinished"/>
+        <translation>Toon/verberg het gedeelte met de stem mixing besturingselementen</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="287"/>
@@ -13632,12 +13663,12 @@ release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="562"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="574"/>
         <source>Drag a Hotcue button here to continue playing after releasing the Hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Sleep een hotcue toets hierheen om het afspelen verder te zetten na het loslaten van de Hotcue.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="552"/>
         <source>Hint: Change the default cue mode in Preferences -&gt; Decks.</source>
-        <translation type="unfinished"/>
+        <translation>Tip: Wijzig de standaard cue modus in Voorkeuren -&gt; Decks.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="599"/>
@@ -13667,7 +13698,7 @@ release tijd zorgen voor een pompend effect en/of een vervorming.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="714"/>
         <source>Drag this button onto another Hotcue button to move it there (change its index). If the other hotcue is set, the two are swapped.</source>
-        <translation type="unfinished"/>
+        <translation>Sleep deze toets naar een andere Hotcue toets om deze te verplaatse, (wijzig de index). Wanneer een andere hotcue ingesteld wordt, worden beide omgewisseld.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="728"/>
@@ -13990,42 +14021,42 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1178"/>
         <source>Stem Label</source>
-        <translation type="unfinished"/>
+        <translation>Stem Label</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1179"/>
         <source>Name of the stem stored in the stem file</source>
-        <translation type="unfinished"/>
+        <translation>Naam van de stem die opgeslagen is in het stem bestand</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1180"/>
         <source>Text is displayed in the stem color stored in the stem file</source>
-        <translation type="unfinished"/>
+        <translation>De tekst wordt weergegeven in de kleur die opgeslagen is in het stem bestand</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1181"/>
         <source>this stem color is also used for the waveform of this stem</source>
-        <translation type="unfinished"/>
+        <translation>deze stem kleur wordt ook gebruikt voor de waveform van deze stem</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1184"/>
         <source>Stem Mute</source>
-        <translation type="unfinished"/>
+        <translation>Stem Mute</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1185"/>
         <source>Toggle the stem mute/unmuted</source>
-        <translation type="unfinished"/>
+        <translation>Schekel de stem mute</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1188"/>
         <source>Stem Volume Knob</source>
-        <translation type="unfinished"/>
+        <translation>Stem Volume Knop</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1189"/>
         <source>Adjusts the volume of the stem</source>
-        <translation type="unfinished"/>
+        <translation>Regelt het volume van de stem</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1205"/>
@@ -14762,12 +14793,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="717"/>
         <source>Drag this button onto a Play button while previewing to continue playback after release.</source>
-        <translation type="unfinished"/>
+        <translation>Sleep deze toets naar de afspeeltoets tijdens het voorbeluisteren om het afspelen verder te zetten na het loslaten.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="719"/>
         <source>Dragging with Shift key pressed will not start previewing the hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Slepen met de Shift toets ingedrukt zal het voorbeluisteren van de hotcue niet starten.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="724"/>
@@ -15201,22 +15232,22 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="70"/>
         <source>Replace Existing File?</source>
-        <translation type="unfinished"/>
+        <translation>Bestaand bestand vervangen?</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="71"/>
         <source>&quot;%1&quot; already exists, replace?</source>
-        <translation type="unfinished"/>
+        <translation>&quot;%1&quot; bestaat reeds, vervangen?</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="78"/>
         <source>&amp;Replace</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Vervang<en/translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="81"/>
         <source>Apply to all files</source>
-        <translation type="unfinished"/>
+        <translation>Toepassen op alle bestanden</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="76"/>
@@ -15889,12 +15920,12 @@ Dit kan niet ongedaan gemaakt worden!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="160"/>
         <source>E&amp;xport Library to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
-        <translation type="unfinished"/>
+        <translation>E&amp;xport Bibliotheek naar Engine DJ</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="161"/>
         <source>Export the library to the Engine DJ format</source>
-        <translation type="unfinished"/>
+        <translation>Exporteer de bibliotheek naar het Engine DJ formaat</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="322"/>
@@ -16413,12 +16444,12 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="478"/>
         <source>Sort hotcues by position (remove offsets)</source>
-        <translation type="unfinished"/>
+        <translation>Sorteer de hotcues volgens positie (verwijder de verrekening)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="486"/>
         <source>Sort hotcues by position</source>
-        <translation type="unfinished"/>
+        <translation>Sorteer de hotcues volgens positie</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="496"/>
@@ -16546,7 +16577,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1819"/>
         <source>Undo BPM/beats change of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation>Ongedaan maken van de wijziging in BPM/beats van %n track(s)</translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1863"/>
@@ -16561,7 +16592,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1897"/>
         <source>Setting rating of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation>Instellen ven de beoordeling van %n track(s)</translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1928"/>
@@ -16616,12 +16647,12 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2216"/>
         <source>Sorting hotcues of %n track(s) by position (remove offsets)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Sorteren van hotcues van %n track(s) volgens positie (verwijder verrekening)</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2223"/>
         <source>Sorting hotcues of %n track(s) by position</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Sorteren van hotcues van %n track(s) volgens positie</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="2247"/>
@@ -16793,7 +16824,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2598"/>
         <source>Don&apos;t show again during this session</source>
-        <translation type="unfinished"/>
+        <translation>Niet opnieuw tonen tijdens deze sessie</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2632"/>
@@ -16829,37 +16860,37 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="28"/>
         <source>Load for stem mixing</source>
-        <translation type="unfinished"/>
+        <translation>Laden voor stem mixen</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="35"/>
         <source>Load pre-mixed stereo track</source>
-        <translation type="unfinished"/>
+        <translation>Laadt pre-mixed stereo track</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="46"/>
         <source>Load the &quot;%1&quot; stem</source>
-        <translation type="unfinished"/>
+        <translation>Laadt de &quot;%1&quot; stem</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="62"/>
         <source>Load multiple stem into a stereo deck</source>
-        <translation type="unfinished"/>
+        <translation>Laadt meerdere stems in een stereo deck</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="91"/>
         <source>Select stems to load</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer de te laden stems</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="92"/>
         <source>Release &quot;CTRL&quot; to load the current selection</source>
-        <translation type="unfinished"/>
+        <translation>Laat &quot;CTRL&quot; los om de huidige selectie te laden</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="94"/>
         <source>Use &quot;CTRL&quot; to select multiple stems</source>
-        <translation type="unfinished"/>
+        <translation/>Gebruik &quot;CTRL&quot; om meerdere stems te selecteren</translation>
     </message>
 </context>
 <context>
@@ -16910,7 +16941,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wtracktableviewheader.cpp" line="211"/>
         <source>Shuffle Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Tracks schudden</translation>
     </message>
 </context>
 <context>
@@ -17013,7 +17044,7 @@ Klik op OK om af te sluiten.</translation>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="129"/>
         <source>Export Library to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
-        <translation type="unfinished"/>
+        <translation>Bibliotheek exporteren naar Engine DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="168"/>
@@ -17061,7 +17092,8 @@ Klik op OK om af te sluiten.</translation>
         <source>Failed to export track %1 - %2:
 %3</source>
         <extracomment>%1 is the artist %2 is the title and %3 is the original error message</extracomment>
-        <translation type="unfinished"/>
+        <translation>Exporteren van track %1 - %2:
+%3 is mislukt</translation>
     </message>
 </context>
 <context>
