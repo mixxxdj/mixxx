@@ -82,7 +82,9 @@
                         <ObjectName>SidebarBox</ObjectName>
                         <Layout>vertical</Layout>
                         <Children>
-                          <LibrarySidebar></LibrarySidebar>
+                          <LibrarySidebar>
+                            <BookmarkColor><Variable name="BookmarkColor"/></BookmarkColor>
+                          </LibrarySidebar>
                         </Children>
                       </WidgetGroup>
                       <!--Cover Art-->

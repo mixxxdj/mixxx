@@ -171,6 +171,8 @@
       <SetVariable name="SliderScheme">palemoon</SetVariable>
       <SetVariable name="StyleScheme">palemoon</SetVariable>
 
+      <SetVariable name="BookmarkColor">#ff0000</SetVariable>
+
       <!-- Waveform & Overview colors -->
       <!-- This is a hack to have a grey background in empty decks.
           When a track is loaded the bg gets darker for better contrast -->

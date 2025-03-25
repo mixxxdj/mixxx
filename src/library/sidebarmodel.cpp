@@ -884,3 +884,10 @@ SidebarBookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& index) 
     // qWarning() << " >> created" << bm;
     return bm;
 }
+
+bool SidebarModel::indexIsBookmark(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return false;
+    }
+    return m_bookmarkIndices.contains(index);
+}

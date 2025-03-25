@@ -8,6 +8,7 @@
 #include "widget/wbasewidget.h"
 
 class LibraryFeature;
+class SidebarItemDelegate;
 class SidebarModel;
 class QPoint;
 
@@ -32,6 +33,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     bool isChildIndexSelected(const QModelIndex& index);
     bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
+    void setBookmarkColor(const QColor& color);
+
   public slots:
     void selectIndex(const QModelIndex&);
     void selectChildIndex(const QModelIndex&, bool selectItem = true);
@@ -55,6 +58,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void goToNextPrevBookmark(int direction, bool activate);
 
     SidebarModel* m_pSidebarModel;
+    SidebarItemDelegate* m_pItemDelegate;
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
 };
