@@ -15,28 +15,82 @@ realpath() {
     cd "${OLDPWD}" || exit 1
 }
 
+buildenv_from_download_server() { # 2.6
+    http_code=$(curl -sI -w "%{http_code}" "https://downloads.mixxx.org/dependencies/${1}/macOS/${2}.zip" -o /dev/null)
+    if [ "$http_code" -ne 200 ]; then
+        >&2 echo "Downloading  failed with HTTP status code: $http_code"
+        exit 1
+    fi
+    curl "https://downloads.mixxx.org/dependencies/${1}/macOS/${2}.zip" -o "${3}.zip"
+    OBSERVED_SHA256=$(shasum -a 256 "${3}.zip"|cut -f 1 -d' ')
+    if [[ "$OBSERVED_SHA256" == "$4" ]]; then
+        >&2 echo "Download matched expected SHA256 sum $4"
+        echo "${3}.zip"
+    else
+        >&2 echo "ERROR: Download did not match expected SHA256 checksum!"
+        >&2 echo "Expected $4"
+        >&2 echo "Got $OBSERVED_SHA256"
+        exit 1
+    fi
+}
+
+buildenv_from_gh_release() {
+    part=0
+    trap 'find . -name "mixxx-deps-${1}-${3}-${2}.*" -delete && exit' SIGINT SIGABRT
+    part_uri="https://github.com/acolombier/vcpkg/releases/download/${1}-${2}/mixxx-deps-${1}-${3}-${2}.zip.part0${part}"
+    while true; do
+        http_code=$(curl -sI -w "%{http_code}" "$part_uri" -o /dev/null)
+        if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 302 ]; then
+            if [ "$part" = 0 ]; then
+                >&2 echo "Downloading $part_uri failed with HTTP status code: $http_code"
+                exit 1
+            else
+                break
+            fi
+        fi
+        curl -L "${part_uri}" -o "$(basename "${part_uri}")"
+        part=$(( part + 1))
+        part_uri="https://github.com/acolombier/vcpkg/releases/download/${1}-${2}/mixxx-deps-${1}-${3}-${2}.zip.part0${part}"
+    done
+
+    cat mixxx-deps-"${1}-${3}-${2}".zip.part* > "${4}"
+    find . -name "mixxx-deps-${1}-${3}-${2}.zip.part*" -delete
+
+    expected_sha256=$(curl -L "https://github.com/acolombier/vcpkg/releases/download/${1}-${2}/mixxx-deps-${1}-${3}-${2}.zip.sha256")
+    observed_sha256=$(shasum -a 256 "${4}"|cut -f 1 -d' ')
+
+    if [ "$expected_sha256" = "$observed_sha256" ]; then
+        >&2 echo "Download matched expected SHA256 sum"
+        rm -f "mixxx-deps-${1}-${3}-${2}.sha256"
+    else
+        >&2 echo "ERROR: Download did not match expected SHA256 checksum!"
+        find . -name "mixxx-deps-${1}-${3}-${2}.*" -delete
+        exit 1
+    fi
+}
+
 # some hackery is required to be compatible with both bash and zsh
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
+VCPKG_COMMIT_SHA="d3b6db3"
+BUILDENV_MINOR_VERSION="2.6"
+
 if [ -n "${BUILDENV_ARM64}" ]; then
     VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-    BUILDENV_BRANCH="2.5-rel"
-    BUILDENV_NAME="mixxx-deps-2.5-arm64-osx-min1100-release-40c29ff"
+    BUILDENV_BRANCH_SUFFIX="-rel"
     BUILDENV_SHA256="b76685e77f681baf8fdc5037297b0f16d323a405d09ce276d8844304530278e1"
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
         VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
-        BUILDENV_BRANCH="2.5-rel"
-        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-release-40c29ff"
+        BUILDENV_BRANCH_SUFFIX="-rel"
         BUILDENV_SHA256="a9b7dd2cb9ab00db6d05ac1f05aab933ed0ab2697f71db1a1bad70305befcf1b"
     else
         VCPKG_TARGET_TRIPLET="x64-osx-min1100"
-        BUILDENV_BRANCH="2.5"
-        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-c15790e"
         BUILDENV_SHA256="0252293436efed1b043d5c6ee384a9502ca0ade712eff95b2c0d2199d94598bb"
     fi
 fi
+BUILDENV_NAME="mixxx-deps-${BUILDENV_MINOR_VERSION}-${VCPKG_TARGET_TRIPLET}-${VCPKG_COMMIT_SHA}"
 
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 
@@ -56,22 +110,14 @@ case "$1" in
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
-                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip"
-                http_code=$(curl -sI -w "%{http_code}" "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o /dev/null)
-                if [ "$http_code" -ne 200 ]; then
-                    echo "Downloading  failed with HTTP status code: $http_code"
-                    exit 1
-                fi
-                curl "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
-                OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
-                if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
-                    echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
+                if [ "$BUILDENV_SRC" = "gh" ]; then
+                    echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading from Mixxx's VCPKG repo"
+                    buildenv_from_gh_release "${BUILDENV_MINOR_VERSION}" "${VCPKG_COMMIT_SHA}" "${VCPKG_TARGET_TRIPLET}" "${BUILDENV_PATH}.zip"
                 else
-                    echo "ERROR: Download did not match expected SHA256 checksum!"
-                    echo "Expected $BUILDENV_SHA256"
-                    echo "Got $OBSERVED_SHA256"
-                    exit 1
+                    echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading from Mixxx download server"
+                    buildenv_from_download_server "${BUILDENV_BRANCH}${BUILDENV_BRANCH_SUFFIX}" "${BUILDENV_NAME}" "${BUILDENV_PATH}" "${BUILDENV_SHA256}"
                 fi
+
                 echo ""
                 echo "Extracting ${BUILDENV_NAME}.zip..."
                 unzip "${BUILDENV_PATH}.zip" -d "${BUILDENV_BASEPATH}" && \
