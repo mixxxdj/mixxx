@@ -2652,10 +2652,17 @@ WTrackTableView::item:selected,
   color: #fff;
   background-color: #2c454f;
 }
-WLibrarySidebar::item:selected:focus {
+/*WLibrarySidebar::item:selected:focus {
   outline: none;
 }
-WLibrarySidebar::item:!selected:focus {
+WLibrarySidebar::item:!selected:focus {*/
+WLibrarySidebar::item {
+  /* add a dummy border so item text is not shifted when item is focused */
+  border-left: 1px solid transparent;
+  /* add right border so text is not elided when focus border is added */
+  border-right: 1px solid transparent;
+}
+WLibrarySidebar::item:focus {
   outline: none;
   border: 1px solid white;
 }

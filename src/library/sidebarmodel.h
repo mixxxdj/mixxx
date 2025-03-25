@@ -131,6 +131,8 @@ class SidebarModel : public QAbstractItemModel {
     void toggleBookmarkByIndex(const QModelIndex& selIndex);
     QModelIndex getNextPrevBookmarkIndex(const QModelIndex& selIndex, int direction);
 
+    bool indexIsBookmark(const QModelIndex& index) const;
+
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);

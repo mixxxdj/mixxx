@@ -4,6 +4,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "library/sidebaritemdelegate.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
@@ -14,7 +15,8 @@ constexpr int expand_time = 250;
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
-          m_pSidebarModel(nullptr) {
+          m_pSidebarModel(nullptr),
+          m_pItemDelegate(nullptr) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
@@ -36,6 +38,10 @@ void WLibrarySidebar::setModel(QAbstractItemModel* pModel) {
     DEBUG_ASSERT(pSidebarModel);
     m_pSidebarModel = pSidebarModel;
     QTreeView::setModel(pSidebarModel);
+    // Create the delegate for painting the bookmark indicator
+    DEBUG_ASSERT(m_pItemDelegate == nullptr);
+    m_pItemDelegate = new SidebarItemDelegate(this, pSidebarModel);
+    setItemDelegateForColumn(0, m_pItemDelegate);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
@@ -232,9 +238,15 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     return rootIndex == selIndex;
 }
 
+void WLibrarySidebar::setBookmarkColor(const QColor& color) {
+    if (color.isValid() && m_pItemDelegate) {
+        m_pItemDelegate->setBookmarkColor(color);
+    }
+}
+
 void WLibrarySidebar::toggleBookmark() {
-    const QModelIndex selIndex = selectedIndex();
     // TODO add visual hint, custom qproperty
+    const QModelIndex selIndex = selectedIndex();
     if (!selIndex.isValid()) {
         qWarning() << " ! WLS bookmarkSelectedItem, invalid index" << selIndex;
         return;
