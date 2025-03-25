@@ -111,6 +111,20 @@ function(fatal_error_missing_env)
   endif()
 endfunction()
 
+if(UNIX AND NOT APPLE)
+  execute_process(
+    COMMAND uname -r
+    OUTPUT_VARIABLE UNAME_R
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(UNAME_R MATCHES ".*[Mm]icrosoft.*" OR UNAME_R MATCHES ".*WSL.*")
+    message(
+      FATAL_ERROR
+      "Building on Windows Subsystem for Linux (WSL) is not supported. If you want to build Mixxx from command line on Windows, you need to use the \"x64 Native Tools Command Prompt for VS 2022\"!"
+    )
+  endif()
+endif()
+
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 # Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
@@ -288,10 +302,10 @@ elseif(APPLE)
       )
     else()
       if(QT6)
-        # Minimum macOS version supported by Qt 6
+        # Minimum macOS version supported by Qt 6.5
         set(
           CMAKE_OSX_DEPLOYMENT_TARGET
-          10.15
+          11.0
           CACHE STRING
           "Minimum macOS version the build will be able to run on"
         )
@@ -3159,6 +3173,7 @@ target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
 
 # OpenGL
+option(QGLES2 "Use GLES 2.0 (or higher) instead of full OpenGL for UNIX" OFF)
 if(IOS)
   target_link_libraries(mixxx-lib PRIVATE "-framework OpenGLES")
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -3186,6 +3201,9 @@ else()
     )
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
+  if(UNIX AND QGLES2)
+    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
   endif()
   if(APPLE)
     # Restore the previous CMAKE_FIND_FRAMEWORK value

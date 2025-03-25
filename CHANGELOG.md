@@ -309,6 +309,7 @@
 * Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
+* M-Vave SMC-Mixer: Add controller mapping [#14411](https://github.com/mixxxdj/mixxx/pull/14411)
 * Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
 * Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
 * Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
@@ -343,6 +344,9 @@
 * MIDI controller learning: Make control box search usable [#14260](https://github.com/mixxxdj/mixxx/pull/14260)
 * MIDI controller learning: Don't reload mapping after learn [#14253](https://github.com/mixxxdj/mixxx/pull/14253)
 * MIDI controller learning: Correct skin control for mic/aux section [#14221](https://github.com/mixxxdj/mixxx/pull/14221)
+* MIDI controller learning: Add more cue controls for samplers
+  [#14419](https://github.com/mixxxdj/mixxx/pull/14419)
+* MIDI controller learning: Continue after the maximum learning time is over [#14429](https://github.com/mixxxdj/mixxx/pull/14429)
 * Allow `midino` 0 in `MidiController::makeInputHandler()
   [#14266](https://github.com/mixxxdj/mixxx/pull/14266)
   [#14265](https://github.com/mixxxdj/mixxx/issues/14265)
@@ -399,6 +403,9 @@
   [#14401](https://github.com/mixxxdj/mixxx/pull/14401)
   [#14399](https://github.com/mixxxdj/mixxx/issues/14399)
 * Track Menu: Reset `eject` after moving track file to trash [#14402](https://github.com/mixxxdj/mixxx/pull/14402)
+* Fix AutoDJ "Remove Crate" action
+  [#14426](https://github.com/mixxxdj/mixxx/pull/14426)
+  [#14425](https://github.com/mixxxdj/mixxx/issues/14425)
 
 ### Other Fixes
 

@@ -54,8 +54,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
     QList<TrackRef> getAllTrackRefs(
             const QDir& rootDir) const;
 
@@ -155,15 +153,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
-            const mixxx::FileAccess& fileAccess,
-            bool unremove);
-    TrackPointer addTracksAddFile(
             const QString& filePath,
-            bool unremove) {
-        return addTracksAddFile(
-                mixxx::FileAccess(mixxx::FileInfo(filePath)),
-                unremove);
-    }
+            bool unremove);
     void addTracksFinish(bool rollback = false);
 
     bool updateTrack(const Track& track) const;
