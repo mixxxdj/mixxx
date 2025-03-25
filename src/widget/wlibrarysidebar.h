@@ -47,11 +47,12 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     bool event(QEvent* pEvent) override;
 
   private:
-    void focusSelectedIndex();
+    bool focusSelectedIndex();
+    bool selectFocusedIndex();
     QModelIndex selectedIndex();
 
     void toggleBookmark();
-    void goToNextPrevBookmark(int direction);
+    void goToNextPrevBookmark(int direction, bool activate);
 
     SidebarModel* m_pSidebarModel;
     QBasicTimer m_expandTimer;
