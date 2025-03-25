@@ -181,6 +181,7 @@ class WTrackMenu : public QMenu {
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
 
     // Playlist, crate and relations
+    void slotPopulateRelationMenu();
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
@@ -416,7 +417,7 @@ class WTrackMenu : public QMenu {
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
-    bool m_bSetRelationBidirectional = false;
+    bool m_bSetRelationBidirectional;
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;
