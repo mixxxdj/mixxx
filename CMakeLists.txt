@@ -3063,6 +3063,14 @@ else()
             COMPONENT
             applocal
         )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal)
       endif()
 
       if(QT_VERSION VERSION_LESS 6.8)
@@ -3086,6 +3094,14 @@ else()
         Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal)
+
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+	    install(IMPORTED_RUNTIME_ARTIFACTS
+	      Qt${QT_VERSION_MAJOR}::QuickTemplates2
+	      DESTINATION "${MIXXX_INSTALL_DATADIR}"
+	      COMPONENT applocal)
+	  endif()
 
       install(IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::ShaderTools
