@@ -19,6 +19,6 @@ class LibraryTableModel : public BaseSqlTableModel {
 
     void select() override;
 
-    signals:
-      void updateTrackCount();
+  signals:
+    void updateTrackCount();
 };
