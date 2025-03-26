@@ -2797,8 +2797,17 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+  endif()
+  if(QT_VERSION VERSION_LESS 6.8)
+    # From Qt 6.8 integrated in Qml via QmlMeta
+    list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
+  endif()
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -3042,14 +3051,43 @@ else()
         COMPONENT applocal)
 
       install(IMPORTED_RUNTIME_ARTIFACTS
-        Qt${QT_VERSION_MAJOR}::QuickControls2
-        DESTINATION "${MIXXX_INSTALL_DATADIR}"
-        COMPONENT applocal)
-
-      install(IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::QuickControls2Impl
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal)
+
+      if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2Basic
+            Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
+            Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
+            Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal)
+      endif()
+
+      if(QT_VERSION VERSION_LESS 6.8)
+        # From Qt 6.8 integrated in Qml via QmlMeta
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::QuickLayouts
@@ -3061,15 +3099,13 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal)
 
-      install(IMPORTED_RUNTIME_ARTIFACTS
-        Qt${QT_VERSION_MAJOR}::QuickTemplates2
-        DESTINATION "${MIXXX_INSTALL_DATADIR}"
-        COMPONENT applocal)
-
-      install(IMPORTED_RUNTIME_ARTIFACTS
-        Qt${QT_VERSION_MAJOR}::QmlWorkerScript
-        DESTINATION "${MIXXX_INSTALL_DATADIR}"
-        COMPONENT applocal)
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+	    install(IMPORTED_RUNTIME_ARTIFACTS
+	      Qt${QT_VERSION_MAJOR}::QuickTemplates2
+	      DESTINATION "${MIXXX_INSTALL_DATADIR}"
+	      COMPONENT applocal)
+	  endif()
 
       install(IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::ShaderTools
