@@ -31,6 +31,9 @@ SkinControls::SkinControls()
           m_showMaximizedLibrary(ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")),
                   true,
                   false),
+          m_showPreparationWindow(ConfigKey(kSkinGroup, QStringLiteral("show_preparation_window")),
+                  true,
+                  false),
           m_showMixer(ConfigKey(kSkinGroup, QStringLiteral("show_mixer")),
                   true,
                   true),
@@ -51,6 +54,7 @@ SkinControls::SkinControls()
     m_show4EffectUnits.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showCoverArt.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showMaximizedLibrary.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showPreparationWindow.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showMixer.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showSettings.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showSpinnies.setButtonMode(mixxx::control::ButtonMode::Toggle);
@@ -67,4 +71,6 @@ SkinControls::SkinControls()
             QStringLiteral("[Samplers]"), QStringLiteral("show_samplers")));
     m_showMaximizedLibrary.addAlias(ConfigKey(
             QStringLiteral("[Master]"), QStringLiteral("maximize_library")));
+    m_showPreparationWindow.addAlias(ConfigKey(
+            QStringLiteral("[Master]"), QStringLiteral("show_preparation_window")));
 }
