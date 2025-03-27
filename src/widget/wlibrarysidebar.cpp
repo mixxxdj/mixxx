@@ -232,6 +232,38 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     return rootIndex == selIndex;
 }
 
+void WLibrarySidebar::toggleBookmark() {
+    const QModelIndex selIndex = selectedIndex();
+    // TODO add visual hint, custom qproperty
+    if (!selIndex.isValid()) {
+        qWarning() << " ! WLS bookmarkSelectedItem, invalid index" << selIndex;
+        return;
+    }
+
+    m_pSidebarModel->toggleBookmarkByIndex(selIndex);
+    update();
+}
+
+void WLibrarySidebar::goToNextPrevBookmark(int direction) {
+    // Don't use selectedIndex(). Selected item may not be the focused item, eg.
+    // if we focused a bookmark item without activating it.
+    QModelIndex index = currentIndex();
+    if (!index.isValid()) {
+        qWarning() << " ! WLS goToNextPrevBookmark, invalid index" << index;
+        return;
+    }
+
+    const QModelIndex bookmarkIdx = m_pSidebarModel->getNextPrevBookmarkIndex(index, direction);
+    if (!bookmarkIdx.isValid()) {
+        qWarning() << " ! WLS goToNextPrevBookmark, invalid bookmark" << bookmarkIdx;
+        return;
+    }
+
+    // select, scroll to and activate
+    selectIndex(bookmarkIdx);
+    m_pSidebarModel->clicked(bookmarkIdx);
+}
+
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
 /// sent by LibraryControl
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
@@ -245,6 +277,18 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     }
 
     focusSelectedIndex();
+
+    // Alt + B: un/bookmark selected item
+    // Alt + Up/Down: jump to and activate next/previous bookmarked item
+    if (event->modifiers().testFlag(Qt::AltModifier)) {
+        if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+            goToNextPrevBookmark(event->key() == Qt::Key_Down ? 1 : -1);
+        } else if (event->key() == Qt::Key_B) {
+            toggleBookmark();
+        }
+        // No further Alt, might as well be a system shortcut
+        return;
+    }
 
     switch (event->key()) {
     case Qt::Key_Return:
