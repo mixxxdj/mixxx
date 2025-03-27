@@ -67,7 +67,9 @@ const QString PLAYLISTTABLE_POSITION = QStringLiteral("position");
 const QString PLAYLISTTABLE_HIDDEN = QStringLiteral("hidden");
 const QString PLAYLISTTABLE_DATECREATED = QStringLiteral("date_created");
 const QString PLAYLISTTABLE_DATEMODIFIED = QStringLiteral("date_modified");
+const QString PLAYLISTTABLE_LOCKED = QStringLiteral("locked");
 
+const QString PLAYLISTTRACKSTABLE_ID = QStringLiteral("id");
 const QString PLAYLISTTRACKSTABLE_TRACKID = QStringLiteral("track_id");
 const QString PLAYLISTTRACKSTABLE_POSITION = QStringLiteral("position");
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = QStringLiteral("playlist_id");
