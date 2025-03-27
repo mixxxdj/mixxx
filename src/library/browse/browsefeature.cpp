@@ -218,7 +218,10 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    QString spath = m_pLastRightClickedItem->getData().toString();
+    auto data = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
+    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
+    QString spath = data.toString();
     int index = m_quickLinkList.indexOf(spath);
 
     if (index == -1) {
@@ -276,11 +279,20 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return;
+    }
     TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!(pItem && pItem->getData().isValid())) {
+        return;
+    }
     qDebug() << "BrowseFeature::activateChild " << pItem->getLabel() << " "
              << pItem->getData().toString();
 
     QString path = pItem->getData().toString();
+    if (path.isEmpty()) {
+        return;
+    }
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
         // Clear the tracks view
