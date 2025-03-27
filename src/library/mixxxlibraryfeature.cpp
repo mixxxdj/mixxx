@@ -21,7 +21,6 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
-
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
