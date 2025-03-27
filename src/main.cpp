@@ -9,6 +9,7 @@
 #include <QtDebug>
 #include <QtGlobal>
 #include <cstdio>
+#include <memory>
 #include <stdexcept>
 
 #include "config.h"
@@ -17,7 +18,11 @@
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
 #ifdef MIXXX_USE_QML
+#include "mixer/playermanager.h"
 #include "qml/qmlapplication.h"
+#include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/waveformwidgetfactory.h"
 #endif
 #include "mixxxmainwindow.h"
 #if defined(__WINDOWS__)
@@ -53,16 +58,16 @@ constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
-    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
     int exitCode;
 #ifdef MIXXX_USE_QML
     if (args.isQml()) {
-        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        mixxx::qml::QmlApplication qmlApplication(pApp, args);
         exitCode = pApp->exec();
     } else
 #endif
     {
+        auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.

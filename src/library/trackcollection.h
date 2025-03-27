@@ -90,9 +90,6 @@ class TrackCollection : public QObject,
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
-
   signals:
     // Forwarded signals from LibraryScanner
     void scanTrackAdded(TrackPointer pTrack);

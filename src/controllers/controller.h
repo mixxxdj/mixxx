@@ -3,6 +3,7 @@
 #include <QElapsedTimer>
 
 #include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
@@ -43,10 +44,19 @@ class Controller : public QObject {
     /// the controller (type.)
     virtual QString mappingExtension() = 0;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() = 0;
-    /// WARNING: LegacyControllerMapping is not thread safe!
-    /// Clone the mapping before passing to setMapping for use in the controller polling thread.
     virtual void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) = 0;
+    std::shared_ptr<LegacyControllerMapping> getMapping() {
+        // return the unused mutable copy of the mapping, that can be edited in the GUI thread
+        // and than adopted again via setMapping()
+        return m_pMutableMapping;
+    }
+
+    virtual QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() = 0;
+    virtual QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() = 0;
+#ifdef MIXXX_USE_QML
+    virtual QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() = 0;
+    virtual QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() = 0;
+#endif
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -102,8 +112,6 @@ class Controller : public QObject {
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
-
-    virtual bool applyMapping(const QString& resourcePath);
     virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
@@ -111,6 +119,8 @@ class Controller : public QObject {
     void stopLearning();
 
   protected:
+    virtual bool applyMapping(const QString& resourcePath);
+
     template<typename SpecificMappingType>
         requires(std::is_final_v<SpecificMappingType> == true)
     std::unique_ptr<SpecificMappingType> downcastAndClone(const LegacyControllerMapping* pMapping) {
@@ -158,6 +168,7 @@ class Controller : public QObject {
     const RuntimeLoggingCategory m_logBase;
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
+    std::shared_ptr<LegacyControllerMapping> m_pMutableMapping;
 
   public:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
@@ -166,8 +177,7 @@ class Controller : public QObject {
     virtual bool sendBytes(const QByteArray& data) = 0;
 
   private: // but used by ControllerManager
-
-    virtual int open() = 0;
+    virtual int open(const QString& resourcePath) = 0;
     virtual int close() = 0;
     // Requests that the device poll if it is a polling device. Returns true
     // if events were handled.
