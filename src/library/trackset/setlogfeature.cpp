@@ -164,15 +164,12 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
     Q_UNUSED(globalPos);
     m_lastRightClickedIndex = QModelIndex();
 
-    // Create the right-click menu
-    // QMenu menu(NULL);
-    // menu.addAction(m_pCreatePlaylistAction);
+    // There is no action associated with the root item
     // TODO(DASCHUER) add something like disable logging
-    // menu.exec(globalPos);
 }
 
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
-    //Save the model index so we can get it in the action slots...
+    // Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
     int playlistId = playlistIdFromIndex(index);
@@ -252,7 +249,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             "  GROUP BY Playlists.id")
                                   .arg(m_countsDurationTableName,
                                           QString::number(PlaylistDAO::PLHT_SET_LOG));
-    ;
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
                     " ORDER BY sort_name"));
@@ -358,14 +354,11 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
 
 /// Invoked on startup to create new current playlist and by "Finish current and start new"
 void SetlogFeature::slotGetNewPlaylist() {
-    //qDebug() << "slotGetNewPlaylist() successfully triggered !";
+    // qDebug() << "slotGetNewPlaylist() successfully triggered !";
 
     // create a new playlist for today
-    QString set_log_name_format;
-    QString set_log_name;
-
-    set_log_name = QDate::currentDate().toString(Qt::ISODate);
-    set_log_name_format = set_log_name + " #%1";
+    QString set_log_name = QDate::currentDate().toString(Qt::ISODate);
+    QString set_log_name_format = set_log_name + " #%1";
     int i = 1;
 
     // calculate name of the todays setlog
@@ -373,7 +366,7 @@ void SetlogFeature::slotGetNewPlaylist() {
         set_log_name = set_log_name_format.arg(++i);
     }
 
-    //qDebug() << "Creating session history playlist name:" << set_log_name;
+    // qDebug() << "Creating session history playlist name:" << set_log_name;
     m_currentPlaylistId = m_playlistDao.createPlaylist(
             set_log_name, PlaylistDAO::PLHT_SET_LOG);
 
