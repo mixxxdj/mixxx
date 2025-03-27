@@ -367,6 +367,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     // qDebug() << "Creating session history playlist name:" << set_log_name;
+    int previousPlaylistid = m_currentPlaylistId;
     m_currentPlaylistId = m_playlistDao.createPlaylist(
             set_log_name, PlaylistDAO::PLHT_SET_LOG);
 
@@ -378,10 +379,10 @@ void SetlogFeature::slotGetNewPlaylist() {
         m_recentTracks.clear();
     }
 
-    // reload child model again because the 'added' signal fired by PlaylistDAO
-    // might have triggered slotPlaylistTableChanged() before m_currentPlaylistId was set,
-    // which causes the wrong playlist being decorated as 'current'
-    slotPlaylistTableChanged(m_currentPlaylistId);
+    // Update child model again because the 'added' signal fired by PlaylistDAO
+    // might have triggered slotPlaylistTableChanged() before m_currentPlaylistId
+    // was set, which causes the wrong playlist being decorated as 'current'.
+    slotPlaylistContentOrLockChanged(QSet<int>{previousPlaylistid, m_currentPlaylistId});
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -498,9 +499,11 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
         return;
     }
     if (lock) {
-        qWarning() << "lock all child playlists of" << m_lastRightClickedIndex.data().toString();
+        qDebug() << "SetlogFeature: locking all child playlists of"
+                 << m_lastRightClickedIndex.data().toString();
     } else {
-        qWarning() << "unlock all child playlists of" << m_lastRightClickedIndex.data().toString();
+        qWarning() << "SetlogFeature: unlocking all child playlists of"
+                   << m_lastRightClickedIndex.data().toString();
     }
     TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
     if (!item) {
@@ -653,11 +656,12 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     }
 }
 
-void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "SetlogFeature::slotPlaylistTableChanged() id:" << playlistId;
-    PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type != PlaylistDAO::PLHT_SET_LOG &&
-            type != PlaylistDAO::PLHT_UNKNOWN) { // deleted Playlist
+void SetlogFeature::slotPlaylistTableChanged(int playlistId, PlaylistDAO::HiddenType type) {
+    // qDebug() << "SetlogFeature::slotPlaylistTableChanged() id:" << playlistId << type;
+    // Note: we only care about PLHT_SET_LOG as that's the only relevant type for
+    // rebuilding the tree. Type PLHT_UNKNOWN is only used for YEAR placeholder
+    // playlist and is assigned to items dynamically with YEAR label.
+    if (type != PlaylistDAO::PLHT_SET_LOG) {
         return;
     }
 
@@ -672,7 +676,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
             // a YEAR item was selected
             selectedYearIndexRow = m_lastClickedIndex.row();
         } else if (playlistId == lastClickedPlaylistId &&
-                type == PlaylistDAO::PLHT_UNKNOWN) {
+                m_playlistDao.getHiddenType(lastClickedPlaylistId) == PlaylistDAO::PLHT_UNKNOWN) {
             // selected playlist was deleted, find a sibling.
             // prev/next works here because history playlists are always
             // sorted by date of creation.
