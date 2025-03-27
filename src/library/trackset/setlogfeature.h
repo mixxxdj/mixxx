@@ -21,6 +21,9 @@ class SetlogFeature : public BasePlaylistFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void activatePlaylist(int playlistId) override;
+    bool isItemDataUnique(const QVariant& data) const override {
+        return data != QVariant(m_yearNodeId);
+    }
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
