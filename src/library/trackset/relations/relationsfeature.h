@@ -7,13 +7,11 @@
 #include <QStringListModel>
 #include <QVariant>
 
+#include "control/pollingcontrolproxy.h"
 #include "library/trackset/basetracksetfeature.h"
+#include "library/trackset/relations/relationstablemodel.h"
 
 #define ALL_RELATIONS_NODE "::mixxx_all_relations_node::"
-#define DECK_1_NODE "::mixxx_deck1_relations_node::"
-#define DECK_2_NODE "::mixxx_deck2_relations_node::"
-#define DECK_3_NODE "::mixxx_deck3_relations_node::"
-#define DECK_4_NODE "::mixxx_deck4_relations_node::"
 
 class Library;
 class WLibrarySidebar;
@@ -35,13 +33,25 @@ class RelationsFeature : public BaseTrackSetFeature {
 
   public slots:
     void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   private:
+    bool activateDeckRelations(const QString& deckGroup);
+
     QString getRootViewHtml() const;
-    TreeItem* m_pAllRelationsItem;
-    TreeItem* m_pDeck1RelationsItem;
-    TreeItem* m_pDeck2RelationsItem;
-    TreeItem* m_pDeck3RelationsItem;
-    TreeItem* m_pDeck4RelationsItem;
+    QString getEmptyDeckViewHtml() const;
+
+    QString deckGroupFromIndex(const QModelIndex& index) const;
+    QModelIndex indexFromDeckGroup(const QString& deckGroup) const;
+
+    PollingControlProxy m_pNumDecks;
+    QString m_deckGroup;
+
+    RelationsTableModel m_relationsTableModel;
+
+    QModelIndex m_lastClickedIndex;
+    QModelIndex m_lastRightClickedIndex;
+
+    QList<TreeItem*> m_DeckRelationItemList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

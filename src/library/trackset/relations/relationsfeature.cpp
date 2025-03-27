@@ -9,6 +9,8 @@
 
 #include "library/library.h"
 #include "library/treeitem.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "moc_relationsfeature.cpp"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -16,20 +18,25 @@
 
 namespace {
 
-const QString kViewName = QStringLiteral("RELATIONSHOME");
+const QString kRootViewName = QStringLiteral("RELATIONSHOME");
+const QString kEmptyDeckViewName = QStringLiteral("EMPTYDECK");
+
+const QString kAppGroup = QStringLiteral("[App]");
 
 } // anonymous namespace
 
 RelationsFeature::RelationsFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseTrackSetFeature(pLibrary, pConfig, kViewName, QStringLiteral("relations")) {
+        : BaseTrackSetFeature(pLibrary, pConfig, kRootViewName, QStringLiteral("relations")),
+          m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
+          m_relationsTableModel(this, pLibrary->trackCollectionManager()) {
     // The invisible root item of the child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
 
-    m_pAllRelationsItem = pRootItem->appendChild(tr("All Relations"), ALL_RELATIONS_NODE);
-    m_pDeck1RelationsItem = pRootItem->appendChild(tr("Deck 1", DECK_1_NODE));
-    m_pDeck2RelationsItem = pRootItem->appendChild(tr("Deck 2", DECK_2_NODE));
-    m_pDeck3RelationsItem = pRootItem->appendChild(tr("Deck 3", DECK_3_NODE));
-    m_pDeck4RelationsItem = pRootItem->appendChild(tr("Deck 4", DECK_4_NODE));
+    int iNumDecks = static_cast<int>(m_pNumDecks.get());
+    for (int i = 1; i <= iNumDecks; ++i) {
+        m_DeckRelationItemList.append(pRootItem->appendChild(
+                tr("Deck %1").arg(i), PlayerManager::groupForDeck(i - 1)));
+    }
 
     // initialize the model
     m_pSidebarModel->setRootItem(std::move(pRootItem));
@@ -41,9 +48,15 @@ QVariant RelationsFeature::title() {
 
 void RelationsFeature::bindLibraryWidget(WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    libraryWidget->registerView(kViewName, edit);
+    // Register root view
+    WLibraryTextBrowser* editHome = new WLibraryTextBrowser(libraryWidget);
+    editHome->setHtml(getRootViewHtml());
+    libraryWidget->registerView(kRootViewName, editHome);
+
+    // Register view for empty decks
+    WLibraryTextBrowser* editEmptyDeck = new WLibraryTextBrowser(libraryWidget);
+    editEmptyDeck->setHtml(getEmptyDeckViewHtml());
+    libraryWidget->registerView(kEmptyDeckViewName, editEmptyDeck);
 }
 
 void RelationsFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -55,14 +68,49 @@ TreeItemModel* RelationsFeature::sidebarModel() const {
 }
 
 void RelationsFeature::activate() {
-    emit switchToView(kViewName);
+    emit switchToView(kRootViewName);
+}
+
+QString RelationsFeature::deckGroupFromIndex(const QModelIndex& index) const {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    QString deckGroup = item->getData().toString();
+    return deckGroup;
+}
+
+void RelationsFeature::activateChild(const QModelIndex& index) {
+    QString deckGroup = deckGroupFromIndex(index);
+    m_deckGroup = deckGroup;
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(deckGroup);
+    if (!pTrack) {
+        emit switchToView(kEmptyDeckViewName);
+        return;
+    }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
+    emit saveModelState();
+    m_relationsTableModel.displayTrackTargets(pTrack);
+    emit showTrackModel(&m_relationsTableModel);
+    emit enableCoverArtDisplay(true);
 }
 
 QString RelationsFeature::getRootViewHtml() const {
     QString browseTitle = tr("Relations");
     QString browseSummary = tr(
-            "\"Relations\" allows you to browse all "
-            "relations or those of a track loaded in a specific deck");
+            "Relations allows you to save a relation between two tracks,"
+            " e.g. for particularly epic transitions or notably well-"
+            "sounding mashups.");
+
+    QString html;
+    html.append(QString("<h2>%1</h2>").arg(browseTitle));
+    html.append(QString("<p>%1</p>").arg(browseSummary));
+    return html;
+}
+
+QString RelationsFeature::getEmptyDeckViewHtml() const {
+    QString browseTitle = tr("Selected Deck is Empty");
+    QString browseSummary = tr(
+            "Load a track to the selected deck to see manually set "
+            "relations to the track.");
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(browseTitle));
