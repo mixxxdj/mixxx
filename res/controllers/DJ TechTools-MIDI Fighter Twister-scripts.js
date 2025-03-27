@@ -1,85 +1,167 @@
-var MidiFighterTwister = {
-    init: function() {
-        var cc = 0xB0;
+"use strict";
 
-        function linearize(value) {
-            return Math.pow(value / 4, 0.5) * 127;
+// eslint-disable-next-line no-var
+var MidiFighterTwister;
+(function(MidiFighterTwister) {
+    const scaleHalfPlusOne = function(value) {
+        return (value + 1) / 2 * this.max;
+    };
+
+    const linearize = function(value) {
+        let max = 127;
+        if (this !== undefined && this.max !== undefined) {
+            max = this.max;
+        }
+        return Math.pow(value / 4, 0.5) * max;
+    };
+
+    class Deck extends components.Deck {
+        midiModifier(value) {
+            // All midi values are for the left deck, we only modify them if
+            // we're constructing the right hand deck.
+            if (this.deckNumbers[0] === 1) {
+                return value;
+            }
+
+            // Even controls (ie. the first row) are mirrored to the far right
+            // row, three rows over.
+            if (value % 2 === 0) {
+                return value + 3;
+            }
+            // Odd controls (ie. the second row) are mirrored to the other inner
+            // row, one row over.
+            return value + 1;
         }
 
-        MidiFighterTwister.connections = [
-            engine.makeConnection("[Channel1]", "rate", function(value) {
-                midi.sendShortMsg(cc, 0x04, (value + 1) / 2 * 127);
-            }),
-            engine.makeConnection("[Channel2]", "rate", function(value) {
-                midi.sendShortMsg(cc, 0x07, (value + 1) / 2 * 127);
-            }),
-            engine.makeConnection("[Master]", "crossfader", function(value) {
-                var scaled = (value + 1) / 2 * 127;
-                midi.sendShortMsg(cc, 0x0C, scaled);
-            }),
-            engine.makeConnection("[Channel1]", "pregain", function(value) {
-                midi.sendShortMsg(cc, 0x00, linearize(value));
-            }),
-            engine.makeConnection("[Channel2]", "pregain", function(value) {
-                midi.sendShortMsg(cc, 0x03, linearize(value));
-            }),
-            engine.makeConnection("[Channel1]", "volume", function(value) {
-                midi.sendShortMsg(cc, 0x08, linearize(value) * 2);
-            }),
-            engine.makeConnection("[Channel2]", "volume", function(value) {
-                midi.sendShortMsg(cc, 0x0B, linearize(value) * 2);
-            }),
-            engine.makeConnection("[Channel1]", "pfl", function(value) {
-                midi.sendShortMsg(cc + 1, 0x08, value * 127);
-            }),
-            engine.makeConnection("[Channel2]", "pfl", function(value) {
-                midi.sendShortMsg(cc + 1, 0x0B, value * 127);
-            }),
-            // High EQ
-            engine.makeConnection("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", function(value) {
-                midi.sendShortMsg(cc, 0x01, linearize(value));
-            }),
-            engine.makeConnection("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", function(value) {
-                midi.sendShortMsg(cc, 0x02, linearize(value));
-            }),
-            // Mid EQ
-            engine.makeConnection("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", function(value) {
-                midi.sendShortMsg(cc, 0x05, linearize(value));
-            }),
-            engine.makeConnection("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", function(value) {
-                midi.sendShortMsg(cc, 0x06, linearize(value));
-            }),
-            // Low EQ
-            engine.makeConnection("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", function(value) {
-                midi.sendShortMsg(cc, 0x09, linearize(value));
-            }),
-            engine.makeConnection("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", function(value) {
-                midi.sendShortMsg(cc, 0x0A, linearize(value));
-            }),
-            // Quick Effect Super Knob
-            engine.makeConnection("[QuickEffectRack1_[Channel1]]", "super1", function(value) {
-                midi.sendShortMsg(cc, 0x0D, value * 127);
-            }),
-            engine.makeConnection("[QuickEffectRack1_[Channel2]]", "super1", function(value) {
-                midi.sendShortMsg(cc, 0x0E, value * 127);
-            }),
-        ];
+        constructor(deckNumbers) {
+            super(deckNumbers);
 
-        // Initialize Twister's LED
-        for (var i = 0; i < MidiFighterTwister.connections.length; i++) {
-            MidiFighterTwister.connections[i].trigger();
+            this.rateKnob = new components.Encoder({
+                group: `[Channel${this.deckNumbers[0]}]`,
+                midi: [0xB0, this.midiModifier(0x04)],
+                key: "rate",
+                outValueScale: scaleHalfPlusOne,
+            });
+            this.gainKnob = new components.Encoder({
+                group: `[Channel${this.deckNumbers[0]}]`,
+                midi: [0xB0, this.midiModifier(0x00)],
+                key: "pregain",
+                outValueScale: linearize,
+            });
+            this.volumeKnob = new components.Encoder({
+                group: `[Channel${this.deckNumbers[0]}]`,
+                midi: [0xB0, this.midiModifier(0x08)],
+                key: "volume",
+                outValueScale: function(value) { return linearize(value) * 2; },
+            });
+            this.highKnob = new components.Encoder({
+                group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
+                midi: [0xB0, this.midiModifier(0x01)],
+                key: "parameter3",
+                outValueScale: linearize,
+            });
+            this.midKnob = new components.Encoder({
+                group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
+                midi: [0xB0, this.midiModifier(0x05)],
+                key: "parameter2",
+                outValueScale: linearize,
+            });
+            this.lowKnob = new components.Encoder({
+                group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
+                midi: [0xB0, this.midiModifier(0x09)],
+                key: "parameter1",
+                outValueScale: linearize,
+            });
+            this.superKnob = new components.Encoder({
+                group: `[QuickEffectRack1_[Channel${this.deckNumbers[0]}]]`,
+                midi: [0xB0, this.midiModifier(0x0D)],
+                key: "super1",
+            });
+
+            this.rateButton = new components.Button({
+                group: `[Channel${this.deckNumbers[0]}]`,
+                midi: [0xB1, this.midiModifier(0x04)],
+                key: "rate_set_default",
+            });
+            this.gainButton = new components.Button({
+                group: `[Channel${this.deckNumbers[0]}]`,
+                midi: [0xB1, this.midiModifier(0x00)],
+                key: "pregain_set_default",
+            });
+            // The volume button toggles the headphones, unlike the others which
+            // reset their control.
+            this.pflButton = new components.Button({
+                group: `[Channel${this.deckNumbers[0]}]`,
+                midi: [0xB1, this.midiModifier(0x08)],
+                type: components.Button.prototype.types.toggle,
+                key: "pfl",
+            });
+            this.highButton = new components.Button({
+                group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
+                midi: [0xB1, this.midiModifier(0x01)],
+                key: "parameter3_set_default",
+            });
+            this.midButton = new components.Button({
+                group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
+                midi: [0xB1, this.midiModifier(0x05)],
+                key: "parameter2_set_default",
+            });
+            this.lowButton = new components.Button({
+                group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
+                midi: [0xB1, this.midiModifier(0x09)],
+                key: "parameter1_set_default",
+            });
+            this.superButton = new components.Button({
+                group: `[QuickEffectRack1_[Channel${this.deckNumbers[0]}]]`,
+                midi: [0xB1, this.midiModifier(0x0D)],
+                key: "super1_set_default",
+            });
+        }
+    }
+
+    class Controller extends components.ComponentContainer {
+        constructor() {
+            super({});
+
+            this.leftDeck = new Deck([1, 3]);
+            this.rightDeck = new Deck([2, 4]);
+
+            this.crossfaderKnob = new components.Encoder({
+                group: "[Master]",
+                midi: [0xB0, 0x0C],
+                key: "crossfader",
+                outValueScale: scaleHalfPlusOne,
+            });
+            this.crossfaderButton = new components.Button({
+                group: "[Master]",
+                midi: [0xB1, 0x0C],
+                key: "crossfader_set_default",
+            });
         }
 
-        // Initialize BPM LED
-        midi.sendShortMsg(cc, 0x00, 64)
-        midi.sendShortMsg(cc, 0x03, 64)
-    },
-    shutdown: function() {
-        for (var i = 0; i < MidiFighterTwister.connections.length; i++) {
-            MidiFighterTwister.connections[i].disconnect();
+        toggleDeck(_channel, _control, value, _status, group) {
+            if (value === 0) {
+                // Only toggle on press, don't toggle it again on release.
+                return;
+            }
+            switch (group) {
+            case "[Channel1]":
+                this.leftDeck.toggle();
+                break;
+            case "[Channel2]":
+                this.rightDeck.toggle();
+                break;
+            default:
+                console.log(`invalid group: ${group}`);
+            }
         }
-    },
-    resetSuperKnob: function(channel, control, value, status, group) {
-        engine.setValue(group, "super1", 0.5);
-    },
-}
+    }
+
+    MidiFighterTwister.init = function() {
+        MidiFighterTwister.controller = new Controller();
+    };
+
+    MidiFighterTwister.shutdown = function() {
+        MidiFighterTwister.controller.shutdown();
+    };
+})(MidiFighterTwister || (MidiFighterTwister = {}));
