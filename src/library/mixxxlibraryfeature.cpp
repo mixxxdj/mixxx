@@ -181,7 +181,8 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
 }
 
 void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // store the sidebar widget pointer for later use in onRightClick
+    // store the sidebar widget pointer for later use in onRightClick and
+    // updating track count
     m_pSidebarWidget = pSidebarWidget;
 }
 
