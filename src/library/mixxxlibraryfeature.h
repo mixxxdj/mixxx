@@ -33,9 +33,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     TreeItemModel* sidebarModel() const override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
-#ifdef __ENGINEPRIME__
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
-#endif
 
     bool hasTrackTable() override {
         return true;
@@ -71,6 +69,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     LibraryTableModel* m_pLibraryTableModel;
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
@@ -79,7 +78,5 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
 #ifdef __ENGINEPRIME__
     parented_ptr<QAction> m_pExportLibraryAction;
-
-    QPointer<WLibrarySidebar> m_pSidebarWidget;
 #endif
 };

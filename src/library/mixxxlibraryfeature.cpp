@@ -19,9 +19,7 @@
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
-#ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"
-#endif
 
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
@@ -182,12 +180,10 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
     activate();
 }
 
-#ifdef __ENGINEPRIME__
 void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // store the sidebar widget pointer for later use in onRightClick
     m_pSidebarWidget = pSidebarWidget;
 }
-#endif
 
 void MixxxLibraryFeature::slotUpdateTrackCount() {
     m_trackCount = m_pLibraryTableModel->rowCount();
