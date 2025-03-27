@@ -4,13 +4,22 @@ name: build-checks
 
 on:
   push:
+    branches:
+      - main
+      - "[0-9].[0-9]"
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - labeled
+      - unlabeled
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
 
 jobs:
   build-checks:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ci') && (contains(github.event.pull_request.labels.*.name, 'core') || contains(github.event.pull_request.labels.*.name, 'platform/linux') || github.event_name == 'push') }}
     permissions:
       contents: read #  to fetch code (actions/checkout)
       checks: write #  to create new checks (coverallsapp/github-action)

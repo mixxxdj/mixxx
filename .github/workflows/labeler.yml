@@ -11,18 +11,24 @@ name: "Pull Request Labeler"
 on:
   - pull_request_target
 
-permissions:
-  contents: read
-
 jobs:
   triage:
-    permissions:
-      contents: read # for actions/labeler to determine modified files
-      pull-requests: write # for actions/labeler to add labels to PRs
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/labeler@v5.0.0
+      # Using an app is the recommended way to allow recursive operations.
+      # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
+      # and short lifespan, unlike PAT.
+      # As we are trialing this approach tho, it is fine to play with a PAT and not spend the
+      # extra time setting up an app
+      #
+      # - name: Generate App Token
+      #   id: generate-token-key-pair
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
+      #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
+      - uses: actions/labeler@v5
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          # PAT setup with content:read and pull_request:write
+          repo-token: ${{ secrets.MIXXX_LABELLER_PAT }}
           sync-labels: false
