@@ -161,19 +161,20 @@ void BrowseFeature::slotAddQuickLink() {
         return;
     }
 
-    QVariant vpath = m_pLastRightClickedItem->getData();
+    const QVariant pathData = m_pLastRightClickedItem->getData();
+    DEBUG_ASSERT(pathData.isValid() && pathData.canConvert<QString>());
     m_pLastRightClickedItem = nullptr;
-    QString spath = vpath.toString();
-    QString name = extractNameFromPath(spath);
+    const QString path = pathData.toString();
+    const QString name = extractNameFromPath(path);
 
-    QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
+    const QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     std::vector<std::unique_ptr<TreeItem>> rows;
     // TODO() Use here std::span to get around the heap allocation of
     // std::vector for a single element.
-    rows.push_back(std::make_unique<TreeItem>(name, vpath));
+    rows.push_back(std::make_unique<TreeItem>(name, pathData));
     m_pSidebarModel->insertTreeItemRows(std::move(rows), m_pQuickLinkItem->childRows(), parent);
 
-    m_quickLinkList.append(spath);
+    m_quickLinkList.append(path);
     saveQuickLinks();
 }
 
@@ -181,12 +182,17 @@ void BrowseFeature::slotAddToLibrary() {
     if (!m_pLastRightClickedItem) {
         return;
     }
-    QString spath = m_pLastRightClickedItem->getData().toString();
+    const QVariant pathData = m_pLastRightClickedItem->getData();
+    DEBUG_ASSERT(pathData.isValid() && pathData.canConvert<QString>());
     m_pLastRightClickedItem = nullptr;
-    if (!m_pLibrary->requestAddDir(spath)) {
+    const QString path = pathData.toString();
+    m_pLastRightClickedItem = nullptr;
+    if (!m_pLibrary->requestAddDir(path)) {
         return;
     }
 
+    // TODO Check if this really added a new directory. Ignore if it's a child
+    // of an already watched directory. Notify if it failed for another reason.
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     // strings are dupes from DlgPrefLibrary
@@ -218,17 +224,21 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    QString spath = m_pLastRightClickedItem->getData().toString();
-    int index = m_quickLinkList.indexOf(spath);
-
-    if (index == -1) {
+    const auto data = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
+    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
+    const QString spath = data.toString();
+    int quickLinkIndex = m_quickLinkList.indexOf(spath);
+    if (quickLinkIndex == -1) {
         return;
     }
 
+    // Quick Links' parent is QModelIndex(), so we can call this without parent
+    // and still get the QAbstractItemModel::hasIndex() match.
     QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
-    m_pSidebarModel->removeRow(index, parent);
+    m_pSidebarModel->removeRow(quickLinkIndex, parent);
 
-    m_quickLinkList.removeAt(index);
+    m_quickLinkList.removeAt(quickLinkIndex);
     saveQuickLinks();
 }
 
@@ -238,11 +248,10 @@ void BrowseFeature::slotRefreshDirectoryTree() {
     }
 
     const auto* pItem = m_pLastRightClickedItem;
-    if (!pItem->getData().isValid()) {
-        return;
-    }
-
-    const QString path = pItem->getData().toString();
+    m_pLastRightClickedItem = nullptr;
+    const auto data = pItem->getData();
+    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
+    const QString path = data.toString();
     m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
 
     // Update child items
@@ -276,11 +285,20 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return;
+    }
     TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!(pItem && pItem->getData().isValid())) {
+        return;
+    }
     qDebug() << "BrowseFeature::activateChild " << pItem->getLabel() << " "
              << pItem->getData().toString();
 
     QString path = pItem->getData().toString();
+    if (path.isEmpty()) {
+        return;
+    }
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
         // Clear the tracks view
