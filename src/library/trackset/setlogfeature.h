@@ -40,7 +40,9 @@ class SetlogFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
-    void slotPlaylistTableChanged(int playlistId) override;
+    void slotPlaylistTableChanged(
+            int playlistId,
+            PlaylistDAO::HiddenType type) override;
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
     void slotDeleteAllUnlockedChildPlaylists();
