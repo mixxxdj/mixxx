@@ -87,6 +87,10 @@ class LibraryFeature : public QObject {
     virtual bool hasTrackTable() {
         return false;
     }
+    virtual bool isItemDataUnique(const QVariant& data) const {
+        Q_UNUSED(data);
+        return true;
+    }
 
   protected:
     QStringList getPlaylistFiles() const {

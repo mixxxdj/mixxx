@@ -111,6 +111,7 @@ class TreeItem final {
     const QVariant& getData() const {
         return m_data;
     }
+    bool isDataUniqueInFeature() const;
 
     void setIcon(const QIcon& icon) {
         m_icon = icon;
