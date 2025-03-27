@@ -162,6 +162,7 @@ void BrowseFeature::slotAddQuickLink() {
     }
 
     QVariant vpath = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
 
@@ -181,6 +182,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
+    m_pLastRightClickedItem = nullptr;
     if (!m_pLibrary->requestAddDir(spath)) {
         return;
     }
@@ -223,7 +225,6 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    m_pLastRightClickedItem = nullptr;
     QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     m_pSidebarModel->removeRow(index, parent);
 
@@ -321,7 +322,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         return;
     }
 
-    // Make sure that this is reset when TreeItems are deleted in onLazyChildExpandation()
+    // Make sure that this is reset after use
     m_pLastRightClickedItem = pItem;
 
     QMenu menu(m_pSidebarWidget);
@@ -429,7 +430,6 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         return;
     }
 
-    m_pLastRightClickedItem = nullptr;
     // Before we populate the subtree, we need to delete old subtrees
     m_pSidebarModel->removeRows(0, pItem->childRows(), index);
 
