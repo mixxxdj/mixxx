@@ -374,11 +374,9 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
     }
 }
 
-void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
-            type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
+void PlaylistFeature::slotPlaylistTableChanged(int playlistId, PlaylistDAO::HiddenType type) {
+    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId << type;
+    if (type != PlaylistDAO::PLHT_NOT_HIDDEN) { // not a regular playlist
         return;
     }
 
@@ -426,7 +424,7 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& ne
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
         // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()
         // in order to rebuild the model, not just updateChildModel()
-        slotPlaylistTableChanged(playlistId);
+        slotPlaylistTableChanged(playlistId, PlaylistDAO::PLHT_NOT_HIDDEN);
     }
 }
 

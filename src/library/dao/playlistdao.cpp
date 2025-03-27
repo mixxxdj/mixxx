@@ -88,7 +88,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     int playlistId = query.lastInsertId().toInt();
     // Commit the transaction
     transaction.commit();
-    emit added(playlistId);
+    emit added(playlistId, hidden);
     return playlistId;
 }
 
@@ -197,7 +197,8 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     ScopedTransaction transaction(m_database);
 
     QSet<TrackId> playedTrackIds;
-    if (getHiddenType(playlistId) == PLHT_SET_LOG) {
+    PlaylistDAO::HiddenType type = getHiddenType(playlistId);
+    if (type == PLHT_SET_LOG) {
         const QList<TrackId> trackIds = getTrackIds(playlistId);
 
         // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
@@ -245,7 +246,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
         }
     }
 
-    emit deleted(playlistId);
+    emit deleted(playlistId, type);
     if (!playedTrackIds.isEmpty()) {
         emit tracksRemovedFromPlayedHistory(playedTrackIds);
     }
@@ -259,6 +260,14 @@ bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
 
     qInfo() << "Deleting" << idStringList.size() << "playlists";
 
+    PlaylistDAO::HiddenType type = PlaylistDAO::HiddenType::PLHT_UNKNOWN;
+    // Get playlist type. Assumes playlist batch deletion was invoked
+    // by the same library feature, ie. all are of same type.
+    bool ok = false;
+    int firstId = idStringList.first().toInt(&ok);
+    if (ok) {
+        type = getHiddenType(firstId);
+    }
     // delete tracks assigned to these playlists
     auto deleteTracks = FwdSqlQuery(m_database,
             QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
@@ -274,7 +283,7 @@ bool PlaylistDAO::deletePlaylists(const QStringList& idStringList) {
         return false;
     }
 
-    emit deleted(kInvalidPlaylistId);
+    emit deleted(kInvalidPlaylistId, type);
     return true;
 }
 
