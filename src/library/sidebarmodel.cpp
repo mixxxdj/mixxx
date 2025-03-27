@@ -541,8 +541,9 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(start);
     Q_UNUSED(end);
     // qDebug() << "slotRowsInserted" << parent << start << end;
-    // QModelIndex newParent = translateSourceIndex(parent);
+    QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
+    maybeUpdateBookmarkIndices(newParent);
 }
 
 void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end) {
@@ -604,4 +605,261 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
         }
     }
     emit selectIndex(ind, scrollTo);
+}
+
+void SidebarModel::toggleBookmarkByIndex(const QModelIndex& index) {
+    qWarning() << "   toggleBookmarkByIndex" << index;
+    if (!index.isValid()) {
+        return;
+    }
+
+    SidebarBookmark bookmark = createBookmarkFromIndex(index);
+    if (m_bookmarks.contains(bookmark)) {
+        // Remove bookmark and index
+        m_bookmarks.removeOne(bookmark);
+        qWarning() << "--- removed" << bookmark;
+    } else {
+        m_bookmarks.append(bookmark);
+        qWarning() << "+++ added" << bookmark;
+    }
+    m_bookmarkIndices = sortBookmarksUpdateIndices(&m_bookmarks);
+}
+
+QModelIndexList SidebarModel::sortBookmarksUpdateIndices(QList<SidebarBookmark>* pBookmarks) {
+    // Sort by position in the tree so getNextPrevBookmarkIndex()
+    // switches to bookmark below/above in a predictable manner:
+    // feature row -> child level -> parent row
+    std::sort(pBookmarks->begin(), pBookmarks->end());
+    // Update indices. Only add valid indices -- invalid means the bookmark
+    // wasn't found after last child model update.
+    QModelIndexList newBookmarkIndices;
+    for (const auto& bm : std::as_const(*pBookmarks)) {
+        if (bm.index.isValid()) {
+            newBookmarkIndices.append(bm.index);
+        }
+    }
+    return newBookmarkIndices;
+    qDebug() << "Sidebar bookmarks updated";
+}
+
+QModelIndex SidebarModel::getNextPrevBookmarkIndex(const QModelIndex& currIndex, int direction) {
+    if (!currIndex.isValid() || direction == 0) {
+        qWarning() << "SidebarModel::getNextPrevBookmarkIndex: invalid index "
+                      "or dir == 0"
+                   << currIndex;
+        return {};
+    }
+    if (m_bookmarks.isEmpty()) {
+        qWarning() << "SidebarModel::getNextPrevBookmarkIndex: no bookmarks stored";
+        return {};
+    }
+
+    if (m_bookmarkIndices.size() == 1 && currIndex == m_bookmarkIndices[0]) {
+        // We already have the only bookmark selected.
+        // Return invalid index so the sidebar does not reload the current view.
+        return {};
+    }
+
+    // Do single steps regardless the input.
+    direction = direction > 0 ? 1 : -1;
+
+    int currPos = 0;
+    const SidebarBookmark tempBM = createBookmarkFromIndex(currIndex);
+    if (m_bookmarks.contains(tempBM)) {
+        currPos = m_bookmarks.indexOf(tempBM);
+    } else {
+        // We're not on a bookmark. To get true prev/next (up/down) behavior,
+        // we add tempBM to a clone of m_bookmarks, sort, create index list and
+        // get the position of currIndex.
+        auto tempBookmarks = m_bookmarks;
+        tempBookmarks.append(tempBM);
+        sortBookmarksUpdateIndices(&tempBookmarks);
+        currPos = tempBookmarks.indexOf(tempBM);
+        if (direction > 0 && currPos <= m_bookmarks.size() - 1) {
+            // Not first, subtract 1 so we're in the real m_bookmarks range again.
+            currPos--;
+            // qWarning() << " >> tempPos at end, --:" << bookmarkPos;
+        }
+    }
+    // Now we have a valid start position in the bookmark list.
+    int targetPos = currPos + direction;
+    if (targetPos < 0) {
+        // wrap-around, pick last
+        targetPos = m_bookmarks.size() - 1;
+    } else if (targetPos >= m_bookmarks.size()) {
+        // pick first
+        targetPos = 0;
+    }
+
+    SidebarBookmark targetBM;
+    QModelIndex targetIndex;
+    int maxAttempts = m_bookmarks.size();
+    int attempt = 0;
+    while (!targetIndex.isValid() && attempt < maxAttempts) {
+        targetBM = m_bookmarks[targetPos];
+        // If this is root item we can simply create an index.
+        // Else we look insinde the child model
+        if (targetBM.childLevel == 0) {
+            targetIndex = index(targetBM.featureRow, 0);
+        } else {
+            targetIndex = translateChildIndex(findBookmarkIndex(targetBM));
+        }
+        attempt++;
+        targetPos++;
+        if (targetPos >= maxAttempts) {
+            targetPos = 0; // wrap around
+        }
+    }
+
+    if (targetIndex != targetBM.index) {
+        // Lookup bookmark.
+        // If found, replace with fresh bookmark, ie. update all properties at once.
+        // (just in case the index changed and we didn't notice)
+        // Else just invalidate it's index so we know that we should skip it when
+        // updating the index list.
+        if (targetIndex.isValid()) {
+            targetBM = createBookmarkFromIndex(translateSourceIndex(targetIndex));
+        } else {
+            targetBM.index = QModelIndex();
+        }
+        sortBookmarksUpdateIndices(&m_bookmarks);
+    }
+    return targetIndex;
+}
+
+/// Invoked by rowsInserted(). A range of sidebar indices of a childmodel has been
+/// rebuilt. Some stored indices may now be invalid so we need to reassociate
+/// bookmarks with new indices and update the quick-lookup index list for
+/// Happens when playlists or crates are added/removedm, when a History playlist
+/// has been moved into a YEAR group or when the BrowseFeature tree is rebuilt.
+// TODO(ronso0) Implement some lock/wait mechanism to avoid concurrent access to
+// m_bookmarks/m_bookmarkIndices. Caller is in same thread so QMutex won't work.
+// Reason: previously, deleting a playlist caused both PlaylistFeature and SetlogFeauture
+// to rebuilt their child models, even though only one of them can be affected.
+// This is now fixed, but I didn't check with other features, so can't rule out
+// simultaneous invocations of rowsInserted().
+void SidebarModel::maybeUpdateBookmarkIndices(const QModelIndex& parentIndex) {
+    // qWarning() << "maybeUpdateBookmarkIndices" << parentIndex;
+    if (m_bookmarkIndices.isEmpty()) {
+        return;
+    }
+    // Collect the start parameters for findBookmarkIndex()
+    int featureRow = -1;
+    if (parentIndex.internalPointer() == this) {
+        featureRow = parentIndex.row();
+    } else {
+        const auto* pTreeItem = static_cast<TreeItem*>(parentIndex.internalPointer());
+        VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+            return;
+        }
+        featureRow = m_sFeatures.indexOf(pTreeItem->feature());
+    }
+
+    bool needsUpdate = false;
+    for (auto& bm : m_bookmarks) {
+        if (bm.featureRow != featureRow) {
+            continue;
+        }
+        needsUpdate = true;
+        // Lookup bookmark.
+        // If found, replace with fresh bookmark, ie. update all properties at once.
+        // Else just invalidate it's index so we know that we should skip it when
+        // updating the index list.
+        const auto bmIndex = findBookmarkIndex(bm);
+        if (bmIndex.isValid()) {
+            bm = createBookmarkFromIndex(translateSourceIndex(bmIndex));
+            // qWarning() << "   >> updated" << bm << "in" << pFeature->title().toString();
+        } else {
+            // qWarning() << "   >> no match for" << bm << "in" << pFeature->title().toString();
+            bm.index = QModelIndex();
+        }
+    }
+
+    if (!needsUpdate) {
+        // no hit for affected feature, nothing to do
+        return;
+    }
+
+    // Note: Don't remove missing bookmarks.
+    // BrowseFeature bookmarks may be 'missing' after collapsing and
+    // re-expanding a directory tree one or more levels above a bookmark
+    // because expanding an item only rebuilds the next sublevel, so
+    // bookmarked items on lower levels are simply not there, yet.
+
+    m_bookmarkIndices = sortBookmarksUpdateIndices(&m_bookmarks);
+}
+
+/// Try to find the matching TreeItem in a feature's childmodel.
+/// Return its index when found, else return invalid QModelIndex().
+/// Scans the entire tree recursively, either by item data or label.
+// TODO Do we need to store an index list at all when using match()?
+// Compare performance of list vs. match() for each next/prev move.
+QModelIndex SidebarModel::findBookmarkIndex(const SidebarBookmark& bookmark) {
+    // qWarning() << " findBookmarkIndex" << bookmark;
+    LibraryFeature* pFeature = m_sFeatures[bookmark.featureRow];
+    TreeItemModel* pChildModel = pFeature->sidebarModel();
+    const QModelIndex rootIndex = index(bookmark.featureRow, 0);
+    DEBUG_ASSERT(pChildModel);
+    QModelIndexList results;
+    if (bookmark.data.isValid() && pFeature->isItemDataUnique(bookmark.data)) {
+        // Search for matching data
+        results = pChildModel->match(
+                rootIndex,
+                TreeItemModel::kDataRole,
+                bookmark.data,
+                1,
+                Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
+    } else {
+        // Search for label match.
+        // This covers root items, Tracks Missing/Hidden, AutoDJ Crates
+        // and History's YEAR nodes.
+        results = pChildModel->match(
+                rootIndex,
+                Qt::DisplayRole,
+                bookmark.label,
+                1,
+                Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
+    }
+
+    if (!results.isEmpty()) {
+        return results.front();
+    }
+    return {};
+}
+
+SidebarBookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return {};
+    }
+
+    // qWarning() << " >> getBookmarkFromIndex" << index;
+    SidebarBookmark bookmark;
+    if (index.internalPointer() == this) {
+        LibraryFeature* pFeature = m_sFeatures[index.row()];
+        bookmark = SidebarBookmark(
+                index.row(),
+                0,
+                0,
+                QVariant(),
+                pFeature->title().toString(),
+                index);
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+            return {};
+        }
+        bookmark.featureRow = m_sFeatures.indexOf(pTreeItem->feature());
+        bookmark.childLevel = pTreeItem->childLevel();
+        bookmark.parentRow = pTreeItem->parentRow();
+        const auto& data = pTreeItem->getData();
+        if (data.isValid() && pTreeItem->isDataUniqueInFeature()) {
+            bookmark.data = data;
+        } else {
+            bookmark.label = pTreeItem->getLabel();
+        }
+        bookmark.index = index;
+    }
+    // qWarning() << " >> created" << bookmark;
+    DEBUG_ASSERT(bookmark.isValid());
+    return bookmark;
 }

@@ -7,6 +7,84 @@
 
 class LibraryFeature;
 class QTimer;
+class TreeItem;
+
+struct SidebarBookmark {
+    SidebarBookmark(
+            int row = -1,
+            int cLevel = -1,
+            int pRow = -1,
+            const QVariant& datavar = QVariant(),
+            const QString& sLabel = QString(),
+            const QModelIndex& dIndex = QModelIndex())
+            : featureRow(row),
+              childLevel(cLevel),
+              parentRow(pRow),
+              data(datavar),
+              label(sLabel),
+              index(dIndex) {
+    }
+    bool isValid() {
+        return featureRow >= 0 &&
+                childLevel >= 0 &&
+                parentRow >= 0 &&
+                (data.isValid() || !label.isEmpty()) &&
+                index.isValid();
+    }
+    bool operator==(const SidebarBookmark& other) const {
+        if (featureRow != other.featureRow) {
+            return false;
+        }
+        if (data.isValid() && other.data.isValid()) {
+            return data == other.data;
+        }
+        return label == other.label;
+    }
+    bool operator<(const SidebarBookmark& other) const {
+        if (featureRow == other.featureRow) {
+            if (childLevel == other.childLevel) {
+                return parentRow < other.parentRow;
+            }
+            return childLevel < other.childLevel;
+        }
+        return featureRow < other.featureRow;
+    }
+
+    // Store feature row, child level and row number relative to first parent.
+    // This allows to sort bookmarks by their position in the tree. We need
+    // this because QModelIndex operator<() doesn't work for our multi-level trees.
+    // With the feature row we can also quickly ignore irrelevant items when
+    // searching for a bookmark a rebuilt child model.
+    int featureRow;
+    int childLevel;
+    int parentRow;
+    // The TreeItem data. CrateId, int playlist id or directory path / special
+    // node identifier in BrowseFeature.
+    QVariant data;
+    // For child items that have invalid data (Tracks -> Missing|Hidden and
+    // AutoDJ Crates) or when the LibraryFeature says the data is not unique
+    // (common playlist id of YEAR nodes).
+    QString label;
+    // The associated sidebar index. This is used to build the index lookup list
+    // for getNextPrevBookmarkIndex().
+    // Must be updated when the child model has changed.
+    QModelIndex index;
+};
+
+inline QDebug operator<<(QDebug dbg, const SidebarBookmark& bm) {
+    dbg << "SidebarBookmark" << bm.featureRow << bm.childLevel << bm.parentRow;
+    if (bm.data.isValid()) {
+        if (bm.data.canConvert<QString>()) {
+            dbg << bm.data.toString();
+        } else if (bm.data.canConvert<int>()) {
+            dbg << bm.data.toInt();
+        }
+    }
+    if (!bm.label.isEmpty()) {
+        dbg << bm.label;
+    }
+    return dbg;
+}
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
@@ -49,6 +127,10 @@ class SidebarModel : public QAbstractItemModel {
 
     void clear(const QModelIndex& index);
     void paste(const QModelIndex& index);
+
+    void toggleBookmarkByIndex(const QModelIndex& selIndex);
+    QModelIndex getNextPrevBookmarkIndex(const QModelIndex& selIndex, int direction);
+
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);
@@ -96,7 +178,15 @@ class SidebarModel : public QAbstractItemModel {
 
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
+    QList<SidebarBookmark> m_bookmarks;
+    QModelIndexList m_bookmarkIndices;
 
     void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();
+
+    QModelIndexList sortBookmarksUpdateIndices(QList<SidebarBookmark>* pBookmarks);
+    QModelIndex getBookmarkIndexByPos(int pos);
+    QModelIndex findBookmarkIndex(const SidebarBookmark& bookmark);
+    SidebarBookmark createBookmarkFromIndex(const QModelIndex& index);
+    void maybeUpdateBookmarkIndices(const QModelIndex& index);
 };
