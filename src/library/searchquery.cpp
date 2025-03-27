@@ -95,6 +95,8 @@ QString concatSqlClauses(
         // The component terms need to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
         // always responsible for proper wrapping into parentheses!
+        //        qDebug() << "[SEARCHQUERY] [concatSqlClauses] -> sqlConcatOp = " << sqlConcatOp;
+        //        qDebug() << "[SEARCHQUERY] [concatSqlClauses] -> sqlClauses = " << sqlClauses;
         return QChar('(') +
                 sqlClauses.join(
                         QStringLiteral(") ") + sqlConcatOp + QStringLiteral(" (")) +
@@ -124,6 +126,7 @@ QString AndNode::toSql() const {
             queryFragments << sql;
         }
     }
+    //    qDebug() << "[SEARCHQUERY] [AndNode::toSql()] -> queryFragments = " << queryFragments;
     return concatSqlClauses(queryFragments, "AND");
 }
 
@@ -148,6 +151,7 @@ QString OrNode::toSql() const {
             queryFragments << sql;
         }
     }
+    //    qDebug() << "[SEARCHQUERY] [OrNode::toSql()] -> queryFragments = " << queryFragments;
     return concatSqlClauses(queryFragments, "OR");
 }
 
@@ -163,6 +167,8 @@ QString NotNode::toSql() const {
         // The component term needs to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
         // always responsible for proper wrapping into parentheses!
+        //        qDebug() << "[SEARCHQUERY] [NotNode::toSql()] -> return: "
+        //                 << "NOT (" % sql % ")";
         return "NOT (" % sql % ")";
     }
 }
@@ -224,6 +230,11 @@ QString TextFilterNode::toSql() const {
     QStringList searchClauses;
     for (const auto& sqlColumn : m_sqlColumns) {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
+        //        qDebug() << "[SEARCHQUERY] [TextFilterNode::toSql()] ->
+        //        sqlColumn " << sqlColumn; qDebug() << "[SEARCHQUERY]
+        //        [TextFilterNode::toSql()] -> escapedArgument " <<
+        //        escapedArgument; qDebug() << "[SEARCHQUERY]
+        //        [TextFilterNode::toSql()] -> searchClauses " << searchClauses;
     }
     return concatSqlClauses(searchClauses, "OR");
 }
@@ -410,6 +421,9 @@ QString NumericFilterNode::toSql() const {
                                      .arg(sqlColumn,
                                              QString::number(m_dRangeLow),
                                              QString::number(m_dRangeHigh));
+            //            qDebug() << "[SEARCHQUERY]
+            //            [NumericFilterNode::toSql()] -> searchClauses " <<
+            //            searchClauses;
         }
         return concatSqlClauses(searchClauses, "OR");
     }

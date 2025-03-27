@@ -97,7 +97,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                      << "datetime_added"
                      << "date_added";
 
-    m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
+    m_fieldToSqlColumns["artist"] << "artist"
+                                  << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
     m_fieldToSqlColumns["album"] << "album";
     m_fieldToSqlColumns["title"] << "title";
@@ -169,7 +170,7 @@ SearchQueryParser::TextArgumentResult SearchQueryParser::getTextArgument(QString
 }
 
 void SearchQueryParser::parseTokens(QStringList tokens,
-                                    AndNode* pQuery) const {
+        AndNode* pQuery) const {
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
         if (token.length() == 0) {
@@ -190,11 +191,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 qDebug() << "argument explicit empty";
                 if (field == "crate") {
                     pNode = std::make_unique<NoCrateFilterNode>(
-                          &m_pTrackCollection->crates());
+                            &m_pTrackCollection->crates());
                     qDebug() << pNode->toSql();
                 } else {
                     pNode = std::make_unique<NullOrEmptyTextFilterNode>(
-                          m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
+                            m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
                     qDebug() << pNode->toSql();
                 }
             } else if (!argument.isEmpty()) {
@@ -216,10 +217,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             if (!argument.isEmpty()) {
                 if (argument == kMissingFieldSearchTerm) {
                     pNode = std::make_unique<NullNumericFilterNode>(
-                         m_fieldToSqlColumns[field]);
+                            m_fieldToSqlColumns[field]);
                 } else {
                     pNode = std::make_unique<NumericFilterNode>(
-                         m_fieldToSqlColumns[field], argument);
+                            m_fieldToSqlColumns[field], argument);
                 }
             }
         } else if (specialFilterMatch.hasMatch()) {
@@ -256,7 +257,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                         field == "dateadded") {
                     field = "datetime_added";
                     pNode = std::make_unique<TextFilterNode>(
-                        m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                            m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
                 } else if (field == "bpm") {
                     if (matchMode == StringMatch::Equals) {
                         // restore = operator removed by getTextArgument()
@@ -279,7 +280,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 if (m_searchCrates) {
                     auto gNode = std::make_unique<OrNode>();
                     gNode->addNode(std::make_unique<CrateFilterNode>(
-                                    &m_pTrackCollection->crates(), argument));
+                            &m_pTrackCollection->crates(), argument));
                     gNode->addNode(std::make_unique<TextFilterNode>(
                             m_pTrackCollection->database(), m_queryColumns, argument));
                     pNode = std::move(gNode);
