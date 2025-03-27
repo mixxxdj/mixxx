@@ -48,6 +48,140 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+if(WIN32)
+  string(REPLACE "\\" "/" BUILDENV_BASEPATH "${BUILDENV_BASEPATH}")
+  string(REPLACE "\\" "/" CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}")
+endif()
+
+if(
+  WIN32
+  AND
+    (
+      NOT DEFINED CMAKE_TOOLCHAIN_FILE
+      OR
+        (
+          DEFINED BUILDENV_BASEPATH
+          AND DEFINED BUILDENV_NAME
+          AND
+            NOT
+              CMAKE_TOOLCHAIN_FILE
+                MATCHES
+                "${BUILDENV_BASEPATH}/${BUILDENV_NAME}/scripts/buildsystems/vcpkg.cmake"
+        )
+    )
+)
+  if(NOT DEFINED BUILDENV_BASEPATH)
+    if(DEFINED ENV{BUILDENV_BASEPATH})
+      set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
+    else()
+      set(BUILDENV_BASEPATH "${CMAKE_SOURCE_DIR}/buildenv")
+    endif()
+  endif()
+
+  if(NOT DEFINED BUILDENV_URL)
+    if(DEFINED ENV{BUILDENV_URL})
+      set(BUILDENV_URL "$ENV{BUILDENV_URL}")
+    else()
+      message(STATUS "BUILDENV_URL not specified")
+    endif()
+  endif()
+
+  if(DEFINED BUILDENV_URL)
+    # Extract the filename from the URL
+    get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
+
+    # Remove the extension from the filename
+    # Note, that our buildenv file names contain two dots, e.g. mixxx-deps-2.5-x64-windows-875f13b.zip
+    string(
+      REGEX REPLACE
+      "\\.[^.]*$"
+      ""
+      BUILDENV_NAME
+      "${FILENAME_WITH_EXTENSION}"
+    )
+  else()
+    if(NOT DEFINED BUILDENV_NAME)
+      if(DEFINED ENV{BUILDENV_NAME})
+        set(BUILDENV_NAME "$ENV{BUILDENV_NAME}")
+      else()
+        message(
+          FATAL_ERROR
+          "Neither BUILDENV_URL nor BUILDENV_NAME specified!\nDid you run `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`?"
+        )
+      endif()
+    endif()
+  endif()
+
+  message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}")
+
+  if(IS_DIRECTORY "${BUILDENV_BASEPATH}/${BUILDENV_NAME}")
+    message(
+      STATUS
+      "BUILDENV directory ${BUILDENV_BASEPATH}/${BUILDENV_NAME} exists!"
+    )
+  else()
+    if(NOT DEFINED BUILDENV_URL)
+      message(
+        FATAL_ERROR
+        "Folder ${BUILDENV_BASEPATH}/${BUILDENV_NAME} from BUILDENV_NAME does not exists!\nTry to run `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat` again."
+      )
+    endif()
+    if(NOT DEFINED BUILDENV_SHA256)
+      if(DEFINED ENV{BUILDENV_SHA256})
+        set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
+      else()
+        message(STATUS "BUILDENV_SHA256 not specified")
+      endif()
+    endif()
+
+    if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      message(
+        STATUS
+        "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
+      )
+      file(
+        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+        SHOW_PROGRESS
+        TLS_VERIFY ON
+      )
+    endif()
+
+    if(NOT ${BUILDENV_SHA256} STREQUAL "")
+      message(
+        STATUS
+        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+      )
+      file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
+
+      if(NOT actual_sha256 STREQUAL ${BUILDENV_SHA256})
+        message(
+          FATAL_ERROR
+          "SHA256 checksum mismatch:\nexpected: ${BUILDENV_SHA256}\n     got: ${actual_sha256}"
+        )
+      else()
+        message(STATUS "SHA256 ${BUILDENV_SHA256} is correct!")
+      endif()
+    endif()
+
+    message(
+      STATUS
+      "Unpacking file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+    )
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf "${BUILDENV_NAME}.zip"
+      WORKING_DIRECTORY ${BUILDENV_BASEPATH}
+      RESULT_VARIABLE unpack_result
+    )
+    if(NOT unpack_result EQUAL 0)
+      message(FATAL_ERROR "Failed to unpack ${BUILDENV_NAME}.zip")
+    else()
+      file(REMOVE "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      message(STATUS "Deleted ${BUILDENV_NAME}.zip after successful extraction")
+    endif()
+  endif()
+  set(MIXXX_VCPKG_ROOT "${BUILDENV_BASEPATH}/${BUILDENV_NAME}")
+endif()
+
 # Use this function to throw an error because the build environment is not set
 # up correctly.
 function(fatal_error_missing_env)
@@ -55,12 +189,12 @@ function(fatal_error_missing_env)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
         FATAL_ERROR
-        "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`?"
+        "Did you set the URL for the download of the pre-built build-environment by calling `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`?"
       )
     else()
       message(
         FATAL_ERROR
-        "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat` or `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`(includes Debug)?"
+        "Did you set the URL for the download of the pre-built build-environment by calling `${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat` or `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`(includes Debug)?"
       )
     endif()
   elseif(APPLE AND NOT IOS)
