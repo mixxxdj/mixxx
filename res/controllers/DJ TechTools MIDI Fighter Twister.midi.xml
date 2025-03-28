@@ -277,6 +277,26 @@
         </options>
       </control>
       <control>
+        <group>[Master]</group>
+        <key>MidiFighterTwister.controller.mainGainKnob.input</key>
+        <description>Adjust the main gain.</description>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>MidiFighterTwister.controller.mainGainButton.input</key>
+        <description>Reset the main gain.</description>
+        <status>0xB1</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
         <group>[QuickEffectRack1_[Channel1]]</group>
         <key>MidiFighterTwister.controller.leftDeck.superKnob.input</key>
         <description>Set the decks effect super knob.</description>

@@ -137,6 +137,17 @@ var MidiFighterTwister;
                 midi: [0xB1, 0x0C],
                 key: "crossfader_set_default",
             });
+            this.mainGainKnob = new components.Encoder({
+                group: "[Master]",
+                midi: [0xB0, 0x0F],
+                key: "gain",
+                outValueScale: linearize,
+            });
+            this.mainGainButton = new components.Encoder({
+                group: "[Master]",
+                midi: [0xB1, 0x0F],
+                key: "gain_set_default",
+            });
         }
 
         toggleDeck(_channel, _control, value, _status, group) {
@@ -165,3 +176,5 @@ var MidiFighterTwister;
         MidiFighterTwister.controller.shutdown();
     };
 })(MidiFighterTwister || (MidiFighterTwister = {}));
+
+// vim:expandtab:tabstop=4:shiftwidth=4
