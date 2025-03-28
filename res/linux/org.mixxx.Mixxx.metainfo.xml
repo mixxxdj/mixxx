@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-03-03" timestamp="1741001174">
+    <release version="2.5.1" type="development" date="2025-03-24" timestamp="1742856467">
       <description>
  <p>
   Controller Mappings
@@ -108,13 +108,30 @@
    #14349
   </li>
   <li>
-   Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+   Hercules DJControl Inpulse 300: add toneplay, slicer, and beatmatch functionalities
    #14051
    #14057
   </li>
   <li>
+   Hercules DJControl Inpulse 500: New mapping
+   #14491
+   #14510
+  </li>
+  <li>
+   Hercules DJ Console Mk1: Fix pitch bend buttons
+   #14447
+  </li>
+  <li>
    M-Vave SMC-Mixer: Add controller mapping
    #14411
+   #14448
+   #14457
+   #14458
+  </li>
+  <li>
+   M-Vave SMK-25 II: Piano keyboard mapping
+   #14412
+   #14484
   </li>
   <li>
    Numark NS6II: New mapping
@@ -235,6 +252,10 @@
    #14203
    #14197
   </li>
+  <li>
+   Fix crash due to concurrent access in MidiController
+   #14159
+  </li>
  </ul>
  <p>
   Skins
@@ -319,6 +340,10 @@
    #14399
   </li>
   <li>
+   Track info dialog: fixed cover label (max) size
+   #14418
+  </li>
+  <li>
    Track Menu: Reset
    eject
    after moving track file to trash
@@ -328,6 +353,14 @@
    Fix AutoDJ "Remove Crate" action
    #14426
    #14425
+  </li>
+  <li>
+   Fix scrolling issue with coverart columns visible
+   #13719
+  </li>
+  <li>
+   Developer Tools: multi-word search, no Tab navigation in controls table
+   #14474
   </li>
  </ul>
  <p>
@@ -416,6 +449,14 @@
   <li>
    Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows
    #14228
+  </li>
+  <li>
+   Raise macOS target version to 11 (Qt6.5 requirement).
+   #14440
+  </li>
+  <li>
+   Fail early when building on WSL
+   #14481
   </li>
  </ul>
 </description>
