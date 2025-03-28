@@ -83,6 +83,16 @@ class TreeItem final {
     const QList<TreeItem*>& children() const {
         return m_children;
     }
+    /// Get the tree level of the item. Returns 0 if this is the root.
+    int childLevel() const {
+        int level = 0;
+        TreeItem* pTempItem = const_cast<TreeItem*>(this);
+        while (pTempItem->hasParent()) {
+            level++;
+            pTempItem = pTempItem->parent();
+        }
+        return level;
+    }
 
     TreeItem* appendChild(
             QString label,
@@ -111,6 +121,7 @@ class TreeItem final {
     const QVariant& getData() const {
         return m_data;
     }
+    bool isDataUniqueInFeature() const;
 
     void setIcon(const QIcon& icon) {
         m_icon = icon;
@@ -135,8 +146,9 @@ class TreeItem final {
     void initFeatureRecursively(LibraryFeature* pFeature);
 
     // The library feature is inherited from the parent.
-    // For all child items this is just a shortcut to the
-    // library feature of the root item!
+    // For all child items this is done via
+    // insertChildren() -> initFeatureRecursively() and is just
+    // a shortcut to the library feature of the root item!
     LibraryFeature* m_pFeature;
 
     TreeItem* m_pParent;

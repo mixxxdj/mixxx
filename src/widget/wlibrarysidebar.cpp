@@ -4,6 +4,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "library/sidebaritemdelegate.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
@@ -13,7 +14,9 @@ constexpr int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
-          WBaseWidget(this) {
+          WBaseWidget(this),
+          m_pSidebarModel(nullptr),
+          m_pItemDelegate(nullptr) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
@@ -28,6 +31,17 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+}
+
+void WLibrarySidebar::setModel(QAbstractItemModel* pModel) {
+    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(pModel);
+    DEBUG_ASSERT(pSidebarModel);
+    m_pSidebarModel = pSidebarModel;
+    QTreeView::setModel(pSidebarModel);
+    // Create the delegate for painting the bookmark indicator
+    DEBUG_ASSERT(m_pItemDelegate == nullptr);
+    m_pItemDelegate = new SidebarItemDelegate(this, pSidebarModel);
+    setItemDelegateForColumn(0, m_pItemDelegate);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
@@ -88,29 +102,25 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             // Do nothing.
             event->ignore();
         } else {
-            SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
-            bool accepted = true;
-            if (sidebarModel) {
-                accepted = false;
-                for (const QUrl& url : urls) {
+            bool accepted = false;
+            for (const QUrl& url : urls) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                    QPoint pos = event->position().toPoint();
+                QPoint pos = event->position().toPoint();
 #else
-                    QPoint pos = event->pos();
+                QPoint pos = event->pos();
 #endif
-                    QModelIndex destIndex = indexAt(pos);
-                    if (sidebarModel->dragMoveAccept(destIndex, url)) {
-                        // We only need one URL to be valid for us
-                        // to accept the whole drag...
-                        // Consider that we might have a long list of files,
-                        // checking all will take a lot of time that stalls
-                        // Mixxx and this makes the drop feature useless.
-                        // E.g. you may have tried to drag two MP3's and an EXE,
-                        // the drop is accepted here, but the EXE is filtered
-                        // out later after dropping
-                        accepted = true;
-                        break;
-                    }
+                QModelIndex destIndex = indexAt(pos);
+                if (m_pSidebarModel->dragMoveAccept(destIndex, url)) {
+                    // We only need one URL to be valid for us
+                    // to accept the whole drag...
+                    // Consider that we might have a long list of files,
+                    // checking all will take a lot of time that stalls
+                    // Mixxx and this makes the drop feature useless.
+                    // E.g. you may have tried to drag two MP3's and an EXE,
+                    // the drop is accepted here, but the EXE is filtered
+                    // out later after dropping
+                    accepted = true;
+                    break;
                 }
             }
             if (accepted) {
@@ -152,27 +162,22 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //this->selectionModel()->clear();
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
-            SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
-            if (sidebarModel) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                QPoint pos = event->position().toPoint();
+            QPoint pos = event->position().toPoint();
 #else
-                QPoint pos = event->pos();
+            QPoint pos = event->pos();
 #endif
 
-                QModelIndex destIndex = indexAt(pos);
-                // event->source() will return NULL if something is dropped from
-                // a different application
-                const QList<QUrl> urls = event->mimeData()->urls();
-                if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
-                    event->acceptProposedAction();
-                } else {
-                    event->ignore();
-                }
+            QModelIndex destIndex = indexAt(pos);
+            // event->source() will return NULL if something is dropped from
+            // a different application
+            const QList<QUrl> urls = event->mimeData()->urls();
+            if (m_pSidebarModel->dropAccept(destIndex, urls, event->source())) {
+                event->acceptProposedAction();
+            } else {
+                event->ignore();
             }
         }
-        //emit trackDropped(name);
-        //repaintEverything();
     } else {
         event->ignore();
     }
@@ -200,16 +205,13 @@ void WLibrarySidebar::toggleSelectedItem() {
 
 bool WLibrarySidebar::isLeafNodeSelected() {
     QModelIndex index = selectedIndex();
-    if (index.isValid()) {
-        if(!index.model()->hasChildren(index)) {
-            return true;
-        }
-        const SidebarModel* sidebarModel = qobject_cast<const SidebarModel*>(index.model());
-        if (sidebarModel) {
-            return sidebarModel->hasTrackTable(index);
-        }
+    if (!index.isValid()) {
+        return false;
     }
-    return false;
+    if (!index.model()->hasChildren(index)) {
+        return true;
+    }
+    return m_pSidebarModel->hasTrackTable(index);
 }
 
 bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
@@ -218,12 +220,7 @@ bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
     if (!selIndex.isValid()) {
         return false;
     }
-    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
-        // qDebug() << " >> model() is not SidebarModel";
-        return false;
-    }
-    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    QModelIndex translated = m_pSidebarModel->translateChildIndex(index);
     if (!translated.isValid()) {
         // qDebug() << " >> index can't be translated";
         return false;
@@ -237,12 +234,58 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     if (!selIndex.isValid()) {
         return false;
     }
-    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
-        return false;
-    }
-    const QModelIndex rootIndex = sidebarModel->getFeatureRootIndex(pFeature);
+    const QModelIndex rootIndex = m_pSidebarModel->getFeatureRootIndex(pFeature);
     return rootIndex == selIndex;
+}
+
+void WLibrarySidebar::setBookmarkColor(const QColor& color) {
+    if (color.isValid() && m_pItemDelegate) {
+        m_pItemDelegate->setBookmarkColor(color);
+    }
+}
+
+void WLibrarySidebar::toggleBookmark() {
+    // TODO add visual hint, custom qproperty
+    const QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
+        qWarning() << " ! WLS bookmarkSelectedItem, invalid index" << selIndex;
+        return;
+    }
+
+    m_pSidebarModel->toggleBookmarkByIndex(selIndex);
+    update();
+}
+
+void WLibrarySidebar::goToNextPrevBookmark(int direction, bool activate) {
+    // Don't use selectedIndex(). Selected item may not be the focused item, eg.
+    // if we focused a bookmark item without activating it.
+    QModelIndex index = currentIndex();
+    if (!index.isValid()) {
+        qWarning() << " ! WLS goToNextPrevBookmark, invalid index" << index;
+        return;
+    }
+
+    const QModelIndex bookmarkIdx = m_pSidebarModel->getNextPrevBookmarkIndex(index, direction);
+    if (!bookmarkIdx.isValid()) {
+        qWarning() << " ! WLS goToNextPrevBookmark, invalid bookmark" << bookmarkIdx;
+        return;
+    }
+
+    if (activate) {
+        // select, scroll to and activate
+        selectIndex(bookmarkIdx);
+        m_pSidebarModel->clicked(bookmarkIdx);
+    } else {
+        // just scroll to and highlight (focus)
+        scrollTo(bookmarkIdx);
+        // Use this instead of setCurrentIndex() to keep current selection
+        selectionModel()->setCurrentIndex(bookmarkIdx, QItemSelectionModel::NoUpdate);
+    }
+    // TODO add control [Library],goToSelectedItem ??
+    // Or add wrapper goToItem() that does
+    // * select & activate focused item if it's selected
+    // * expand / collapse
+    // * jump to tracks if double-tapped
 }
 
 /// Invoked by actual keypresses (requires widget focus) and emulated keypresses
@@ -251,17 +294,43 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
     // item is not focused, require second press to perform the desired action.
 
-    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
     QModelIndex selIndex = selectedIndex();
-    if (sidebarModel && selIndex.isValid() && event->matches(QKeySequence::Paste)) {
-        sidebarModel->paste(selIndex);
+    if (selIndex.isValid() && event->matches(QKeySequence::Paste)) {
+        m_pSidebarModel->paste(selIndex);
         return;
     }
 
-    focusSelectedIndex();
+    // Don't focus selection if we receive a modifier-only event, for example
+    // Alt for bookmark actions.
+    //    if (!(event->key() >= Qt::Key_Shift && event->key() <= Qt::Key_Alt) &&
+    //            event->key() != Qt::Key_AltGr) {
+    //        // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
+    //        // avoid returning "khmer vowel sign ie (U+17C0)"
+    //        // TODO move below bookmark actions?
+    //        focusSelectedIndex();
+    //    }
+
+    // Alt + B: un/bookmark selected item
+    // Alt + Up/Down: jump to and activate next/previous bookmarked item
+    // Alt + Shift + Up/Down: only scrollTo and highlight (focus)
+    if (event->modifiers().testFlag(Qt::AltModifier)) {
+        if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+            bool activate = !event->modifiers().testFlag(Qt::ShiftModifier);
+            goToNextPrevBookmark(event->key() == Qt::Key_Down ? 1 : -1, activate);
+        } else if (event->key() == Qt::Key_B) {
+            toggleBookmark();
+        }
+        // No further Alt / Alt+Shift combos, might as well be a system shortcut
+        return;
+    }
 
     switch (event->key()) {
     case Qt::Key_Return:
+        // If the selection is not focused, focus it and scroll to it first.
+        // Happens when going to bookmark with activating it.
+        if (selectFocusedIndex()) {
+            return;
+        }
         toggleSelectedItem();
         return;
     case Qt::Key_Down:
@@ -270,6 +339,11 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_PageUp:
     case Qt::Key_End:
     case Qt::Key_Home: {
+        // If the selection is not focused, focus it and scroll to it first.
+        // Happens when going to bookmark with activating it.
+        if (selectFocusedIndex()) {
+            return;
+        }
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
@@ -347,12 +421,13 @@ void WLibrarySidebar::mousePressEvent(QMouseEvent* event) {
 
 void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
     // Clear the current index, i.e. remove the focus indicator
-    selectionModel()->clearCurrentIndex();
+    // selectionModel()->clearCurrentIndex();
+    focusSelectedIndex();
     QTreeView::focusInEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    //qDebug() << "WLibrarySidebar::selectIndex" << index;
+    // qDebug() << "WLibrarySidebar::selectIndex" << index;
     if (!index.isValid()) {
         return;
     }
@@ -371,18 +446,13 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
 
 /// Selects a child index from a feature and ensures visibility
 void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem) {
-    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
-        qDebug() << "model() is not SidebarModel";
-        return;
-    }
-    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    QModelIndex translated = m_pSidebarModel->translateChildIndex(index);
     if (!translated.isValid()) {
         return;
     }
 
     if (selectItem) {
-        auto* pModel = new QItemSelectionModel(sidebarModel);
+        auto* pModel = new QItemSelectionModel(m_pSidebarModel);
         pModel->select(translated, QItemSelectionModel::Select);
         if (selectionModel()) {
             selectionModel()->deleteLater();
@@ -418,6 +488,22 @@ void WLibrarySidebar::focusSelectedIndex() {
     if (selIndex.isValid() && selIndex != selectionModel()->currentIndex()) {
         setCurrentIndex(selIndex);
     }
+}
+
+bool WLibrarySidebar::selectFocusedIndex() {
+    const QModelIndex selIndex = selectedIndex();
+    const QModelIndex focusIndex = selectionModel()->currentIndex();
+    // qWarning() << " -- selected index:" << selIndex;
+    // qWarning() << " -- focused index: " << focusIndex;
+    if (focusIndex.isValid() && focusIndex != selIndex) {
+        // qWarning() << " -- select focused index, scroll to";
+        scrollTo(focusIndex);
+        selectIndex(focusIndex);
+        emit pressed(focusIndex);
+        return true;
+    }
+    // qWarning() << " -- ! focused index invalid" << focusIndex;
+    return false;
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {
