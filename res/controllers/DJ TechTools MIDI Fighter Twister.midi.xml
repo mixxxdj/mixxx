@@ -7,9 +7,37 @@
     <manual>dj_techtools_midi_fighter_twister</manual>
     <forums>https://mixxx.discourse.group/t/mapping-the-midifighter-twister/16253</forums>
     <devices>
-      <product protocol="midi" vendor_id="0x2580" product_id="0x0007" />
+      <product protocol="midi" vendor_id="0x2580" product_id="0x0007"/>
     </devices>
   </info>
+  <settings>
+    <option variable="defColor" type="enum" label="Default Value/Pushed Color">
+      <value label="Firmware Default" default="true">127</value>
+      <value label="Blue">1</value>
+      <value label="Celeste">32</value>
+      <value label="Teal">40</value>
+      <value label="Green">50</value>
+      <value label="Lime">60</value>
+      <value label="Yellow">66</value>
+      <value label="Orange">74</value>
+      <value label="Red">85</value>
+      <value label="Fuscia">100</value>
+      <value label="Purple">108</value>
+    </option>
+    <option variable="relColor" type="enum" label="Released Color">
+      <value label="Firmware Default" default="true">0</value>
+      <value label="Blue">1</value>
+      <value label="Celeste">32</value>
+      <value label="Teal">40</value>
+      <value label="Green">50</value>
+      <value label="Lime">60</value>
+      <value label="Yellow">66</value>
+      <value label="Orange">74</value>
+      <value label="Red">85</value>
+      <value label="Fuscia">100</value>
+      <value label="Purple">108</value>
+    </option>
+  </settings>
   <controller id="DJ TechTools MIDI Fighter Twister">
     <scriptfiles>
       <file filename="midi-components-0.0.js" functionprefix=""/>

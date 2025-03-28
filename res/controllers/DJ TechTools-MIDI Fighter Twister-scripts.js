@@ -15,6 +15,9 @@ var MidiFighterTwister;
         return Math.pow(value / 4, 0.5) * max;
     };
 
+    components.Button.prototype.on = engine.getSetting("defColor");
+    components.Button.prototype.off = engine.getSetting("relColor");
+
     class Deck extends components.Deck {
         midiModifier(value) {
             // All midi values are for the left deck, we only modify them if
@@ -82,6 +85,13 @@ var MidiFighterTwister;
                 group: `[Channel${this.deckNumbers[0]}]`,
                 midi: [0xB1, this.midiModifier(0x04)],
                 key: "rate_set_default",
+                colorMap: new ColorMapper({
+                    0xCC0000: 3*127/4,
+                    0xCCCC00: 127/2,
+                    0x81CC00: ((127/2)+(127/4))/2,
+                    0x00CC00: 127/4,
+                    0x00CC49: (127/4)/2,
+                }),
             });
             this.gainButton = new components.Button({
                 group: `[Channel${this.deckNumbers[0]}]`,
