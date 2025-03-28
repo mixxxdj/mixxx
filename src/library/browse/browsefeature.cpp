@@ -162,6 +162,7 @@ void BrowseFeature::slotAddQuickLink() {
     }
 
     QVariant vpath = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
 
@@ -181,6 +182,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
+    m_pLastRightClickedItem = nullptr;
     if (!m_pLibrary->requestAddDir(spath)) {
         return;
     }
@@ -216,14 +218,16 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    QString spath = m_pLastRightClickedItem->getData().toString();
+    auto data = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
+    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
+    QString spath = data.toString();
     int index = m_quickLinkList.indexOf(spath);
 
     if (index == -1) {
         return;
     }
 
-    m_pLastRightClickedItem = nullptr;
     QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     m_pSidebarModel->removeRow(index, parent);
 
@@ -275,11 +279,20 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    qDebug() << "BrowseFeature::activateChild " << item->getLabel() << " "
-             << item->getData().toString();
+    if (!index.isValid()) {
+        return;
+    }
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!(pItem && pItem->getData().isValid())) {
+        return;
+    }
+    qDebug() << "BrowseFeature::activateChild " << pItem->getLabel() << " "
+             << pItem->getData().toString();
 
-    QString path = item->getData().toString();
+    QString path = pItem->getData().toString();
+    if (path.isEmpty()) {
+        return;
+    }
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
         // Clear the tracks view
@@ -310,28 +323,30 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!item) {
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pItem) {
         return;
     }
 
-    QString path = item->getData().toString();
+    QString path = pItem->getData().toString();
 
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         return;
     }
 
-    // Make sure that this is reset when TreeItems are deleted in onLazyChildExpandation()
-    m_pLastRightClickedItem = item;
+    // Make sure that this is reset after use
+    m_pLastRightClickedItem = pItem;
 
     QMenu menu(m_pSidebarWidget);
 
-    if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
+    if (pItem->parent()->getData().toString() == QUICK_LINK_NODE) {
         // This is a QuickLink
         menu.addAction(m_pRemoveQuickLinkAction);
         menu.addAction(m_pRefreshDirTreeAction);
         menu.exec(globalPos);
-        onLazyChildExpandation(index);
+        // Don't invoke this now! Might cause a crash after quick link removal, see
+        // onLazyChildExpandation(index);
+        // for details.
         return;
     }
 
@@ -411,27 +426,29 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // After migration to Qt5 the implementation of all LibraryFeatures
     // should be revisited, because I consider these checks only as a
     // temporary workaround.
+    // NOTE(ronso0) Still relevant with 2.5.0 and Qt6. These checks don't seem
+    // to suffice, it would crash after removing a quick link.
+    // Just don't call this after right-clicking a quick link.
     if (!index.isValid()) {
         return;
     }
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!(item && item->getData().isValid())) {
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!(pItem && pItem->getData().isValid())) {
         return;
     }
 
-    qDebug() << "BrowseFeature::onLazyChildExpandation " << item->getLabel()
-             << " " << item->getData();
+    qDebug() << "BrowseFeature::onLazyChildExpandation " << pItem->getLabel()
+             << " " << pItem->getData();
 
-    QString path = item->getData().toString();
+    QString path = pItem->getData().toString();
 
     // If the item is a built-in node, e.g., 'QuickLink' return
     if (path.isEmpty() || path == QUICK_LINK_NODE) {
         return;
     }
 
-    m_pLastRightClickedItem = nullptr;
     // Before we populate the subtree, we need to delete old subtrees
-    m_pSidebarModel->removeRows(0, item->childRows(), index);
+    m_pSidebarModel->removeRows(0, pItem->childRows(), index);
 
     // List of subfolders or drive letters
     std::vector<std::unique_ptr<TreeItem>> folders;
