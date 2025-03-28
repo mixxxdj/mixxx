@@ -50,7 +50,8 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_lilv QUIET lilv-0 lv2)
 endif()
 
-find_path(lilv_INCLUDE_DIR
+find_path(
+  lilv_INCLUDE_DIR
   NAMES lilv/lilv.h
   PATH_SUFFIXES lilv-0
   HINTS ${PC_lilv_INCLUDE_DIRS}
@@ -58,7 +59,8 @@ find_path(lilv_INCLUDE_DIR
 )
 mark_as_advanced(lilv_INCLUDE_DIR)
 
-find_library(lilv_LIBRARY
+find_library(
+  lilv_LIBRARY
   NAMES lilv-0 lilv
   HINTS ${PC_lilv_LIBRARY_DIRS}
   DOC "lilv library"
@@ -83,7 +85,8 @@ if(lilv_FOUND)
 
   if(NOT TARGET lilv::lilv)
     add_library(lilv::lilv UNKNOWN IMPORTED)
-    set_target_properties(lilv::lilv
+    set_target_properties(
+      lilv::lilv
       PROPERTIES
         IMPORTED_LOCATION "${lilv_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_lilv_CFLAGS_OTHER}"
@@ -91,9 +94,14 @@ if(lilv_FOUND)
     )
     is_static_library(lilv_IS_STATIC lilv::lilv)
     if(lilv_IS_STATIC)
-      find_package(sord CONFIG REQUIRED)
-      set_property(TARGET lilv::lilv APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          sord::sord
+      find_package(sord CONFIG)
+      if(NOT sord_FOUND)
+        find_package(sord REQUIRED)
+      endif()
+      set_property(
+        TARGET lilv::lilv
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES sord::sord
       )
     endif()
   endif()
