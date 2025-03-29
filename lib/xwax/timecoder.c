@@ -27,6 +27,7 @@
 #endif
 
 #include "debug.h"
+#include "filters.h"
 #include "timecoder.h"
 #include "timecoder_mk2.h"
 
@@ -353,7 +354,9 @@ static void init_channel(struct timecoder_channel *ch)
     ch->positive = false;
     ch->zero = 0;
 
-    delayline_init(&ch->delayline);
+    delayline_init(&ch->mk2.delayline);
+
+    ch->mk2.rms = INT_MAX/2;
 }
 
 /*
@@ -562,8 +565,12 @@ static void process_sample(struct timecoder *tc,
 {
     if (tc->def->flags & TRAKTOR_MK2) {
         /* Push the samples into the ringbuffer */
-        delayline_push(&tc->primary.delayline, primary);
-        delayline_push(&tc->secondary.delayline, secondary);
+        delayline_push(&tc->primary.mk2.delayline, primary);
+        delayline_push(&tc->secondary.mk2.delayline, secondary);
+
+        /* Compute the smoothed RMS value */
+        tc->primary.mk2.rms = rms(&tc->primary.mk2.rms_filter, primary);
+        tc->secondary.mk2.rms = rms(&tc->secondary.mk2.rms_filter, secondary);
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
