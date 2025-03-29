@@ -1,7 +1,6 @@
 #include "waveform/waveform.h"
 
-#include <qvariant.h>
-
+#include <QVariant>
 #include <QtDebug>
 
 #include "analyzer/constants.h"
