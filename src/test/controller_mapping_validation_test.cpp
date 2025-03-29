@@ -7,6 +7,7 @@
 
 #include "controllers/defs_controllers.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+#include "track/track.h"
 #ifdef MIXXX_USE_QML
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
