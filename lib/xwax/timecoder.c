@@ -51,6 +51,7 @@
 #define SWITCH_PHASE 0x1 /* tone phase difference of 270 (not 90) degrees */
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
+#define TRAKTOR_MK2 0x8 /* use for Traktor MK2 timecode*/
 
 static struct timecode_def timecodes[] = {
     {
@@ -104,6 +105,57 @@ static struct timecode_def timecodes[] = {
         .taps = 0x041040, /* same as side A */
         .length = 2110000,
         .safe = 907000,
+    },
+    {
+        .name = "traktor_mk2_a",
+        .desc = "Traktor Scratch MK2, side A",
+        .resolution = 2500,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0xc6007c63e,
+            .low = 0x3fc00c60f8c1f00
+        },
+        .taps_mk2 = {
+            .high = 0x400000000040,
+            .low = 0x0000010800000001
+        },
+        .length = 1820000,
+        .safe = 1800000,
+    },    
+    {
+        .name = "traktor_mk2_b",
+        .desc = "Traktor Scratch MK2, side B",
+        .resolution = 2500,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0x1ff9f00003,
+            .low = 0xe73ff00f9fe0c7c1
+        },
+        .taps_mk2 = {
+            .high = 0x400000000040,
+            .low = 0x0000010800000001
+        },
+        .length = 2570000,
+        .safe = 2550000,
+    },    
+    {
+        .name = "traktor_mk2_cd",
+        .desc = "Traktor Scratch MK2, CD",
+        .resolution = 3000,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0x7ce73,
+            .low = 0xe0e0fff1fc1cf8c1
+        },
+        .taps_mk2 = {
+            .high = 0x400000000000,
+            .low = 0x1000010800000001
+        },
+        .length = 4500000,
+        .safe = 4495000,
     },
     {
         .name = "mixvibes_v2",
@@ -170,6 +222,24 @@ static inline bits_t lfsr(bits_t code, bits_t taps)
     return xrs & 0x1;
 }
 
+
+static inline mk2bits_t lfsr_mk2(mk2bits_t code, mk2bits_t taps)
+{
+    mk2bits_t taken;
+    mk2bits_t xrs;
+
+    taken = u128_and(code, taps);
+    xrs = U128_ZERO;
+
+    while (u128_neq(taken, U128_ZERO)) {
+        xrs = u128_add(xrs, u128_and(taken, U128_ONE));
+        taken = u128_rshift(taken, 1);
+    }
+
+    return u128_and(xrs, U128_ONE);
+}
+
+
 /*
  * Linear Feedback Shift Register in the forward direction. New values
  * are generated at the least-significant bit.
@@ -185,6 +255,18 @@ static inline bits_t fwd(bits_t current, struct timecode_def *def)
     return (current >> 1) | (l << (def->bits - 1));
 }
 
+
+static inline mk2bits_t fwd_mk2(mk2bits_t current, struct timecode_def *def)
+{
+    mk2bits_t l;
+
+    /* New bits are added at the MSB; shift right by one */
+
+    l = lfsr_mk2(current, u128_or(def->taps_mk2,  U128_ONE));
+    return u128_or(u128_rshift(current, 1), u128_lshift(l, (def->bits - 1)));
+}
+
+
 /*
  * Linear Feedback Shift Register in the reverse direction
  */
@@ -199,6 +281,22 @@ static inline bits_t rev(bits_t current, struct timecode_def *def)
     l = lfsr(current, (def->taps >> 1) | (0x1 << (def->bits - 1)));
     return ((current << 1) & mask) | l;
 }
+
+
+static inline mk2bits_t rev_mk2(mk2bits_t current, struct timecode_def *def)
+{
+    mk2bits_t l, mask;
+
+    /* New bits are added at the LSB; shift left one and mask */
+
+    mask = u128_sub(u128_lshift(U128_ONE,  def->bits), U128_ONE);
+    l = lfsr_mk2(current,
+         u128_or(u128_rshift(def->taps_mk2, 1), 
+         u128_lshift(U128_ONE, (def->bits - 1))));
+
+    return u128_or(u128_and(u128_lshift(current, 1), mask), l);
+}
+
 
 /*
  * Where necessary, build the lookup table required for this timecode
@@ -225,8 +323,8 @@ static int build_lookup(struct timecode_def *def)
     for (n = 0; n < def->length; n++) {
         bits_t next;
 
-        /* timecode must not wrap */
         assert(lut_lookup(&def->lut, current) == (unsigned)-1);
+        /* timecode must not wrap */
         lut_push(&def->lut, current);
 
         /* check symmetry of the lfsr functions */
@@ -240,6 +338,42 @@ static int build_lookup(struct timecode_def *def)
 
     return 0;
 }
+
+
+static int build_lookup_mk2(struct timecode_def *def)
+{
+    unsigned int n;
+    mk2bits_t current, next;
+
+    if (def->lookup)
+        return 0;
+
+    fprintf(stderr, "Building LUT for %d bit %dHz timecode (%s)\n",
+            def->bits, def->resolution, def->desc);
+
+    if (lut_init_mk2(&def->lut_mk2, def->length) == -1)
+        return -1;
+
+    current = def->seed_mk2;
+
+    for (n = 0; n < def->length; n++) {
+
+        /* timecode must not wrap */
+        assert(lut_lookup_mk2(&def->lut_mk2, &current) == (unsigned)-1);
+        lut_push_mk2(&def->lut_mk2, &current);
+
+        /* check symmetry of the lfsr functions */
+        next = fwd_mk2(current, def);
+        assert(u128_eq(rev_mk2(next, def), current));
+
+        current = next;
+    }
+
+    def->lookup = true;
+
+    return 0;
+}
+
 
 /*
  * Find a timecode definition by name
@@ -257,8 +391,13 @@ struct timecode_def* timecoder_find_definition(const char *name)
         if (strcmp(def->name, name) != 0)
             continue;
 
-        if (build_lookup(def) == -1)
-            return NULL;  /* error */
+        if (def->flags & TRAKTOR_MK2) {
+            if (build_lookup_mk2(def) == -1)
+                return NULL;  /* error */
+        } else {
+            if (build_lookup(def) == -1)
+                return NULL;  /* error */
+        }
 
         return def;
     }
@@ -276,8 +415,13 @@ void timecoder_free_lookup(void) {
     for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
         struct timecode_def *def = &timecodes[n];
 
-        if (def->lookup)
-            lut_clear(&def->lut);
+        if (def->flags & TRAKTOR_MK2) {
+            if (def->lookup)
+                lut_clear_mk2(&def->lut_mk2);
+        } else {
+            if (def->lookup)
+                lut_clear(&def->lut);
+        }
     }
 }
 
