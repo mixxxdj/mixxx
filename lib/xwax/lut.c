@@ -28,7 +28,7 @@
 #define HASH_BITS 16
 
 #define HASH(timecode) ((timecode) & ((1 << HASH_BITS) - 1))
-#define NO_SLOT ((unsigned)-1)
+#define NO_SLOT ((slot_no_t)-1)
 
 /* Hash function that takes all 110-bits of the MK2s into account */
 
@@ -130,7 +130,7 @@ void lut_clear_mk2(struct lut_mk2 *lut)
 }
 
 
-void lut_push(struct lut *lut, unsigned int timecode)
+void lut_push(struct lut *lut, bits_t timecode)
 {
     unsigned int hash;
     slot_no_t slot_no;
@@ -166,7 +166,7 @@ void lut_push_mk2(struct lut_mk2 *lut, mk2bits_t *timecode)
 }
 
 
-unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
+slot_no_t lut_lookup(struct lut *lut, bits_t timecode)
 {
     unsigned int hash;
     slot_no_t slot_no;
@@ -182,7 +182,7 @@ unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
         slot_no = slot->next;
     }
 
-    return (unsigned)-1;
+    return (slot_no_t)-1;
 }
 
 
