@@ -629,9 +629,15 @@ signed int timecoder_get_position(struct timecoder *tc, double *when)
     if (tc->valid_counter <= VALID_BITS)
         return -1;
 
-    r = lut_lookup(&tc->def->lut, tc->bitstream);
-    if (r == -1)
-        return -1;
+    if (tc->def->flags & TRAKTOR_MK2) {
+        r = lut_lookup_mk2(&tc->def->lut_mk2, &tc->mk2_bitstream);
+        if (r == -1)
+            return -1;
+    } else {
+        r = lut_lookup(&tc->def->lut, tc->bitstream);
+        if (r == -1)
+            return -1;
+    }
 
     if (r >= 0) {
         // normalize position to milliseconds, not timecode steps -- Owen
