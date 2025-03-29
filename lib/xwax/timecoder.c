@@ -25,6 +25,8 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "debug.h"
 #include "filters.h"
@@ -426,19 +428,33 @@ void timecoder_free_lookup(void) {
     }
 }
 
+
+/*
+ * Initialise filter values for the MK2 demodulation
+ */
+
+static void init_mk2_channel(struct timecoder_channel *ch)
+{
+    ch->mk2.deriv_scaled = INT_MAX/2;
+    ch->mk2.rms_old = INT_MAX/2;
+    ch->mk2.rms = INT_MAX/2;
+    ch->mk2.rms_deriv = 0;
+
+    delayline_init(&ch->mk2.delayline);
+}
+
+
 /*
  * Initialise filter values for one channel
  */
 
-static void init_channel(struct timecoder_channel *ch)
+static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
 {
     ch->positive = false;
     ch->zero = 0;
 
-    delayline_init(&ch->mk2.delayline);
-
-    ch->mk2.rms = INT_MAX/2;
-    ch->mk2.rms_old = INT_MAX/2;
+    if (def->flags & TRAKTOR_MK2)
+        init_mk2_channel(ch);
 }
 
 /*
@@ -460,14 +476,15 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->speed = speed;
 
     tc->dt = 1.0 / sample_rate;
+    tc->sample_rate = sample_rate;
     tc->zero_alpha = tc->dt / (ZERO_RC + tc->dt);
     tc->threshold = ZERO_THRESHOLD;
     if (phono)
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
-    init_channel(&tc->primary);
-    init_channel(&tc->secondary);
+    init_channel(tc->def, &tc->primary);
+    init_channel(tc->def, &tc->secondary);
     pitch_init(&tc->pitch, tc->dt);
 
     tc->ref_level = INT_MAX;
@@ -477,6 +494,9 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->timecode_ticker = 0;
 
     tc->mon = NULL;
+
+    /* Compute the factor the scale up the derivative to the original level */
+    tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
 }
 
 /*
@@ -642,17 +662,38 @@ static void process_bitstream(struct timecoder *tc, signed int m)
  * of a signed int; ie. 32-bit signed.
  */
 
+#define ALPHA_EMA 3e-1
 static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
 
+        /* Compute the discrete derivative */
+        tc->primary.mk2.deriv[0] = derivative(ema(primary, &tc->primary.mk2.ema, ALPHA_EMA), &tc->primary.mk2.deriv[1]);
+        tc->secondary.mk2.deriv[0] = derivative(ema(secondary, &tc->secondary.mk2.ema, ALPHA_EMA), &tc->secondary.mk2.deriv[1]);
+
         /* Compute the smoothed RMS value */
         tc->primary.mk2.rms = rms(primary, &tc->primary.mk2.rms_old);
         tc->secondary.mk2.rms = rms(secondary, &tc->secondary.mk2.rms_old);
 
-        delayline_push(&tc->primary.mk2.delayline, primary);
-        delayline_push(&tc->secondary.mk2.delayline, secondary);
+        /* Compute the smoothed RMS value for the derivative */
+        tc->primary.mk2.rms_deriv = rms(tc->primary.mk2.deriv[0], &tc->primary.mk2.rms_deriv_old);
+        tc->secondary.mk2.rms_deriv = rms(tc->secondary.mk2.deriv[0], &tc->secondary.mk2.rms_deriv_old);
+
+        /* Compute the gain compensation for the derivative*/
+        tc->gain_compensation = (double) tc->secondary.mk2.rms / tc->secondary.mk2.rms_deriv;
+        if (tc->gain_compensation > 30.0) // without this limit pitch becomes too sensitive
+            tc->gain_compensation = 30.0;
+
+        tc->dB = 20 * log10((double) tc->secondary.mk2.rms / INT_MAX);
+
+        /* Compute the scaled derivative */
+        tc->primary.mk2.deriv_scaled = tc->primary.mk2.deriv[0] * tc->gain_compensation;
+        tc->secondary.mk2.deriv_scaled = tc->secondary.mk2.deriv[0] * tc->gain_compensation;
+
+        detect_zero_crossing(&tc->primary, tc->primary.mk2.deriv_scaled, tc->zero_alpha, tc->threshold);
+        detect_zero_crossing(&tc->secondary, tc->secondary.mk2.deriv_scaled, tc->zero_alpha, tc->threshold);
+
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
@@ -696,14 +737,21 @@ static void process_sample(struct timecoder *tc,
     /* If we have crossed the primary channel in the right polarity,
      * it's time to read off a timecode 0 or 1 value */
 
-    if (tc->secondary.swapped &&
-       tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
-    {
-        signed int m;
+    if (tc->def->flags & TRAKTOR_MK2) {
+        if (tc->secondary.swapped)
+        {
+            /* Process MK2 bitstream here */
+        }
+    } else {
+        if (tc->secondary.swapped &&
+           tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
+        {
+            signed int m;
 
-        /* scale to avoid clipping */
-        m = abs(primary / 2 - tc->primary.zero / 2);
-	process_bitstream(tc, m);
+            /* scale to avoid clipping */
+            m = abs(primary / 2 - tc->primary.zero / 2);
+            process_bitstream(tc, m);
+        }
     }
 
     tc->timecode_ticker++;
@@ -763,8 +811,19 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
             secondary = left;
         }
 
-	process_sample(tc, primary, secondary);
-        update_monitor(tc, left, right);
+        if (tc->def->flags & TRAKTOR_MK2) {
+            /* Push the samples into the ringbuffer */
+            delayline_push(&tc->primary.mk2.delayline, primary);
+            delayline_push(&tc->secondary.mk2.delayline, secondary);
+
+            process_sample(tc, primary, secondary);
+
+            /* Display the derivative in the monitor */
+            update_monitor(tc, tc->primary.mk2.deriv_scaled << 1, tc->secondary.mk2.deriv_scaled << 1);
+        } else {
+            process_sample(tc, primary, secondary);
+            update_monitor(tc, left, right);
+        }
 
         pcm += TIMECODER_CHANNELS;
     }

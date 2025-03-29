@@ -76,6 +76,7 @@ struct timecoder {
     /* Precomputed values */
 
     double dt, zero_alpha;
+    int sample_rate;
     signed int threshold;
 
     /* Pitch information */
@@ -91,6 +92,7 @@ struct timecoder {
         timecode; /* corrected timecode */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
+    double dB; /* Decibels to detect phono level */
 
     /* Feedback */
 
@@ -98,7 +100,7 @@ struct timecoder {
     int mon_size, mon_counter;
 
     struct mk2_subcode upper_subcode, lower_subcode;
-    double derivative_scaling_factor; /* Scaling factor for the derivative */
+    double gain_compensation; /* Scaling factor for the derivative */
 };
 
 struct timecode_def* timecoder_find_definition(const char *name);
