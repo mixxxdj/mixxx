@@ -433,6 +433,8 @@ static void init_channel(struct timecoder_channel *ch)
 {
     ch->positive = false;
     ch->zero = 0;
+
+    delayline_init(&ch->delayline);
 }
 
 /*
@@ -639,8 +641,13 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
-    detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
-    detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
+    if (tc->def->flags & TRAKTOR_MK2) {
+        delayline_push(&tc->primary.delayline, primary);
+        delayline_push(&tc->secondary.delayline, secondary);
+    } else {
+        detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
+        detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
+    }
 
     /* If an axis has been crossed, use the direction of the crossing
      * to work out the direction of the vinyl */
