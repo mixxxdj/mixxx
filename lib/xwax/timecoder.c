@@ -27,6 +27,7 @@
 #endif
 
 #include "debug.h"
+#include "filters.h"
 #include "timecoder.h"
 
 #define ZERO_THRESHOLD (128 << 16)
@@ -434,7 +435,10 @@ static void init_channel(struct timecoder_channel *ch)
     ch->positive = false;
     ch->zero = 0;
 
-    delayline_init(&ch->delayline);
+    delayline_init(&ch->mk2.delayline);
+
+    ch->mk2.rms = INT_MAX/2;
+    ch->mk2.rms_old = INT_MAX/2;
 }
 
 /*
@@ -642,8 +646,13 @@ static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
-        delayline_push(&tc->primary.delayline, primary);
-        delayline_push(&tc->secondary.delayline, secondary);
+
+        /* Compute the smoothed RMS value */
+        tc->primary.mk2.rms = rms(primary, &tc->primary.mk2.rms_old);
+        tc->secondary.mk2.rms = rms(secondary, &tc->secondary.mk2.rms_old);
+
+        delayline_push(&tc->primary.mk2.delayline, primary);
+        delayline_push(&tc->secondary.mk2.delayline, secondary);
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);

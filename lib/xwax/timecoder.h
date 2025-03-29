@@ -50,14 +50,23 @@ struct timecode_def {
     struct lut_mk2 lut_mk2; /* MK2 version */
 };
 
+struct timecoder_channel_mk2 {
+    int rms, rms_deriv; /* RMS values for the signal and its derivative */
+    unsigned long long rms_old, rms_deriv_old; /* Last RMS values before taking the square root */
+
+    signed int ema; /* Last value of the exponential moving average filter */
+    signed int deriv[2], deriv_scaled; /* Derivative and its scaled version */
+
+    struct delayline delayline; /* needed for the Traktor MK2 demodulation */
+};
+
 struct timecoder_channel {
     bool positive, /* wave is in positive part of cycle */
 	swapped; /* wave recently swapped polarity */
     signed int zero;
     unsigned int crossing_ticker; /* samples since we last crossed zero */
 
-    struct delayline delayline; /* needed for the Traktor MK2 demodulation */
-
+    struct timecoder_channel_mk2 mk2;
 };
 
 struct timecoder {
@@ -87,6 +96,9 @@ struct timecoder {
 
     unsigned char *mon; /* x-y array */
     int mon_size, mon_counter;
+
+    struct mk2_subcode upper_subcode, lower_subcode;
+    double derivative_scaling_factor; /* Scaling factor for the derivative */
 };
 
 struct timecode_def* timecoder_find_definition(const char *name);
