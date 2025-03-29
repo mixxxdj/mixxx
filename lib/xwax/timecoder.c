@@ -25,6 +25,8 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "debug.h"
 #include "filters.h"
@@ -345,18 +347,37 @@ void timecoder_free_lookup(void) {
     }
 }
 
+
+/*
+ * Initialise filter values for the MK2 demodulation
+ */
+
+static void init_mk2_channel(struct timecoder_channel *ch)
+{
+    ch->mk2.deriv_scaled = INT_MAX/2;
+    ch->mk2.rms = INT_MAX/2;
+    ch->mk2.rms_deriv = 0;
+
+    delayline_init(&ch->mk2.delayline);
+
+    ema_init(&ch->mk2.ema_filter, 3e-1);
+    derivative_init(&ch->mk2.differentiator);
+    rms_init(&ch->mk2.rms_filter, 1e-3);
+    rms_init(&ch->mk2.rms_deriv_filter, 1e-3);
+}
+
+
 /*
  * Initialise filter values for one channel
  */
 
-static void init_channel(struct timecoder_channel *ch)
+static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
 {
     ch->positive = false;
     ch->zero = 0;
 
-    delayline_init(&ch->mk2.delayline);
-
-    ch->mk2.rms = INT_MAX/2;
+    if (def->flags & TRAKTOR_MK2)
+        init_mk2_channel(ch);
 }
 
 /*
@@ -378,14 +399,15 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->speed = speed;
 
     tc->dt = 1.0 / sample_rate;
+    tc->sample_rate = sample_rate;
     tc->zero_alpha = tc->dt / (ZERO_RC + tc->dt);
     tc->threshold = ZERO_THRESHOLD;
     if (phono)
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
-    init_channel(&tc->primary);
-    init_channel(&tc->secondary);
+    init_channel(tc->def, &tc->primary);
+    init_channel(tc->def, &tc->secondary);
     pitch_init(&tc->pitch, tc->dt);
 
     tc->ref_level = INT_MAX;
@@ -395,6 +417,9 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->timecode_ticker = 0;
 
     tc->mon = NULL;
+
+    /* Compute the factor the scale up the derivative to the original level */
+    tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
 }
 
 /*
@@ -564,13 +589,13 @@ static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
-        /* Push the samples into the ringbuffer */
-        delayline_push(&tc->primary.mk2.delayline, primary);
-        delayline_push(&tc->secondary.mk2.delayline, secondary);
+        mk2_process_carrier(tc, primary, secondary);
 
-        /* Compute the smoothed RMS value */
-        tc->primary.mk2.rms = rms(&tc->primary.mk2.rms_filter, primary);
-        tc->secondary.mk2.rms = rms(&tc->secondary.mk2.rms_filter, secondary);
+        detect_zero_crossing(&tc->primary, tc->primary.mk2.deriv_scaled, tc->zero_alpha,
+                tc->threshold);
+        detect_zero_crossing(&tc->secondary, tc->secondary.mk2.deriv_scaled, tc->zero_alpha,
+                tc->threshold);
+
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
@@ -614,14 +639,21 @@ static void process_sample(struct timecoder *tc,
     /* If we have crossed the primary channel in the right polarity,
      * it's time to read off a timecode 0 or 1 value */
 
-    if (tc->secondary.swapped &&
-       tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
-    {
-        signed int m;
+    if (tc->def->flags & TRAKTOR_MK2) {
+        if (tc->secondary.swapped)
+        {
+            /* Process MK2 bitstream here */
+        }
+    } else {
+        if (tc->secondary.swapped &&
+           tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
+        {
+            signed int m;
 
-        /* scale to avoid clipping */
-        m = abs(primary / 2 - tc->primary.zero / 2);
-	process_bitstream(tc, m);
+            /* scale to avoid clipping */
+            m = abs(primary / 2 - tc->primary.zero / 2);
+            process_bitstream(tc, m);
+        }
     }
 
     tc->timecode_ticker++;
@@ -681,8 +713,22 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
             secondary = left;
         }
 
-	process_sample(tc, primary, secondary);
-        update_monitor(tc, left, right);
+        if (tc->def->flags & TRAKTOR_MK2) {
+            process_sample(tc, primary, secondary);
+
+            /* 
+             * Display the derivative in the monitor. Since the signal is not
+             * a perfect ring on the x-y-plane, but jumps up and down a bit,
+             * it looks to small in the scope. Therefore a multiplication by
+             * two is necessary.
+             */
+
+            update_monitor(tc, tc->primary.mk2.deriv_scaled * 2,
+                    tc->secondary.mk2.deriv_scaled * 2);
+        } else {
+            process_sample(tc, primary, secondary);
+            update_monitor(tc, left, right);
+        }
 
         pcm += TIMECODER_CHANNELS;
     }

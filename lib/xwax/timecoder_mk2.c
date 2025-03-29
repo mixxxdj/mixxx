@@ -2,6 +2,7 @@
 #include <debug.h>
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
 
 #include "timecoder_mk2.h"
 
@@ -116,4 +117,60 @@ int build_lookup_mk2(struct timecode_def *def)
     def->lookup = true;
 
     return 0;
+}
+
+/*
+ * Do Traktor-MK2-specific processing of the carrier wave
+ *
+ * Pushes samples into a delayline, computes the derivative, computes RMS
+ * values and scales the derivative back up to the original signal's level.
+ * Afterards the upscaled derivative can by processed by the pitch detection
+ * algorithm.
+ *
+ * NOTE: Ideally the gain compensation should be done in the derivative and lowpass
+ * filter structures by determining the amplitude response. I had this
+ * implemented previously, but chose gain compensation by using the RMS value,
+ * since it is easier to understand for developers not trained in signal
+ * processing. Additionally it's nice to have the dB level at hand.
+ *
+ */
+
+void mk2_process_carrier(struct timecoder *tc, signed int primary, signed int secondary)
+{
+    if (!tc) {
+        errno = -EINVAL;
+        perror(__func__);
+        return;
+    }
+
+    /* Push the samples into the ringbuffer */
+    delayline_push(&tc->primary.mk2.delayline, primary);
+    delayline_push(&tc->secondary.mk2.delayline, secondary);
+
+    /* Compute the discrete derivative */
+    tc->primary.mk2.deriv = derivative(&tc->primary.mk2.differentiator,
+            ema(&tc->primary.mk2.ema_filter, primary));
+    tc->secondary.mk2.deriv = derivative(&tc->secondary.mk2.differentiator,
+            ema(&tc->secondary.mk2.ema_filter, secondary));
+
+    /* Compute the smoothed RMS value */
+    tc->primary.mk2.rms = rms(&tc->primary.mk2.rms_filter, primary);
+    tc->secondary.mk2.rms = rms(&tc->secondary.mk2.rms_filter, secondary);
+
+    /* Compute the smoothed RMS value for the derivative */
+    tc->primary.mk2.rms_deriv = rms(&tc->primary.mk2.rms_deriv_filter, tc->primary.mk2.deriv);
+    tc->secondary.mk2.rms_deriv = rms(&tc->secondary.mk2.rms_deriv_filter, tc->secondary.mk2.deriv);
+
+    /* Compute the gain compensation for the derivative*/
+    tc->gain_compensation = (double)tc->secondary.mk2.rms / tc->secondary.mk2.rms_deriv;
+
+    /* Without this limit pitch becomes too sensitive */
+    if (tc->gain_compensation > 30.0)
+        tc->gain_compensation = 30.0;
+
+    tc->dB = 20 * log10((double)tc->secondary.mk2.rms / INT_MAX);
+
+    /* Compute the scaled derivative */
+    tc->primary.mk2.deriv_scaled = tc->primary.mk2.deriv * tc->gain_compensation;
+    tc->secondary.mk2.deriv_scaled = tc->secondary.mk2.deriv * tc->gain_compensation;
 }
