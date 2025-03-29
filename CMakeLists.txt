@@ -4890,7 +4890,8 @@ if(VINYLCONTROL)
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
-  target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
+  target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c
+    lib/xwax/lut_mk2.c)
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()

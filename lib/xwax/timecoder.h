@@ -23,6 +23,7 @@
 #include <stdbool.h>
 
 #include "lut.h"
+#include "lut_mk2.h"
 #include "pitch.h"
 
 #define TIMECODER_CHANNELS 2

@@ -20,6 +20,8 @@
 #ifndef LUT_H
 #define LUT_H
 
+#include "types.h"
+
 typedef unsigned int slot_no_t;
 typedef unsigned int bits_t;
 
