@@ -22,8 +22,8 @@
 
 /* Values for the filter concluded experimentally */
 
-#define ALPHA (1.0/512)
-#define BETA (ALPHA/256)
+#define ALPHA 1e-3
+#define BETA 1e-6
 
 /* State of the pitch calculation filter */
 
