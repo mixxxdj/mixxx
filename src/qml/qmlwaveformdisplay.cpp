@@ -123,9 +123,11 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 qDebug() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
             }
             auto renderer = pQmlRenderer->create(this);
+#ifndef __STEM__
             VERIFY_OR_DEBUG_ASSERT(renderer.renderer) {
                 continue;
             }
+#endif
             addRenderer(renderer.renderer);
             pTopNode->appendChildNode(std::move(renderer.node));
         }
