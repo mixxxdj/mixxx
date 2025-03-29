@@ -28,6 +28,7 @@
 
 #include "debug.h"
 #include "timecoder.h"
+#include "timecoder_mk2.h"
 
 #define ZERO_THRESHOLD (128 << 16)
 
@@ -51,6 +52,7 @@
 #define SWITCH_PHASE 0x1 /* tone phase difference of 270 (not 90) degrees */
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
+#define TRAKTOR_MK2 0x8 /* use for Traktor MK2 timecode*/
 
 static struct timecode_def timecodes[] = {
     {
@@ -104,6 +106,57 @@ static struct timecode_def timecodes[] = {
         .taps = 0x041040, /* same as side A */
         .length = 2110000,
         .safe = 907000,
+    },
+    {
+        .name = "traktor_mk2_a",
+        .desc = "Traktor Scratch MK2, side A",
+        .resolution = 2500,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0xc6007c63e,
+            .low = 0x3fc00c60f8c1f00
+        },
+        .taps_mk2 = {
+            .high = 0x400000000040,
+            .low = 0x0000010800000001
+        },
+        .length = 1820000,
+        .safe = 1800000,
+    },    
+    {
+        .name = "traktor_mk2_b",
+        .desc = "Traktor Scratch MK2, side B",
+        .resolution = 2500,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0x1ff9f00003,
+            .low = 0xe73ff00f9fe0c7c1
+        },
+        .taps_mk2 = {
+            .high = 0x400000000040,
+            .low = 0x0000010800000001
+        },
+        .length = 2570000,
+        .safe = 2550000,
+    },    
+    {
+        .name = "traktor_mk2_cd",
+        .desc = "Traktor Scratch MK2, CD",
+        .resolution = 3000,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0x7ce73,
+            .low = 0xe0e0fff1fc1cf8c1
+        },
+        .taps_mk2 = {
+            .high = 0x400000000000,
+            .low = 0x1000010800000001
+        },
+        .length = 4500000,
+        .safe = 4495000,
     },
     {
         .name = "mixvibes_v2",
@@ -257,8 +310,13 @@ struct timecode_def* timecoder_find_definition(const char *name)
         if (strcmp(def->name, name) != 0)
             continue;
 
-        if (build_lookup(def) == -1)
-            return NULL;  /* error */
+        if (def->flags & TRAKTOR_MK2) {
+            if (build_lookup_mk2(def) == -1)
+                return NULL;  /* error */
+        } else {
+            if (build_lookup(def) == -1)
+                return NULL;  /* error */
+        }
 
         return def;
     }
@@ -276,8 +334,13 @@ void timecoder_free_lookup(void) {
     for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
         struct timecode_def *def = &timecodes[n];
 
-        if (def->lookup)
-            lut_clear(&def->lut);
+        if (def->flags & TRAKTOR_MK2) {
+            if (def->lookup)
+                lut_clear_mk2(&def->lut_mk2);
+        } else {
+            if (def->lookup)
+                lut_clear(&def->lut);
+        }
     }
 }
 

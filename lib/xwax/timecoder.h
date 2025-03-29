@@ -41,10 +41,13 @@ struct timecode_def {
         flags;
     bits_t seed, /* LFSR value at timecode zero */
         taps; /* central LFSR taps, excluding end taps */
+    mk2bits_t seed_mk2, /* MK2 version */
+        taps_mk2; /* MK2 version */
     unsigned int length, /* in cycles */
         safe; /* last 'safe' timecode number (for auto disconnect) */
     bool lookup; /* true if lut has been generated */
     struct lut lut;
+    struct lut_mk2 lut_mk2; /* MK2 version */
 };
 
 struct timecoder_channel {
@@ -74,6 +77,8 @@ struct timecoder {
     signed int ref_level;
     bits_t bitstream, /* actual bits from the record */
         timecode; /* corrected timecode */
+    mk2bits_t mk2_bitstream, /* Traktor MK2 version */
+        mk2_timecode; /* Traktor MK2 version */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
 
