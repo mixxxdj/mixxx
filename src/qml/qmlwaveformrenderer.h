@@ -19,7 +19,7 @@ class WaveformRenderBeat;
 namespace mixxx {
 namespace qml {
 
-typedef ::WaveformRendererAbstract::PositionSource WaveformRendererPositionSource;
+using WaveformRendererPositionSource = ::WaveformRendererAbstract::PositionSource;
 
 class QmlWaveformRendererFactory : public QObject {
     Q_OBJECT
