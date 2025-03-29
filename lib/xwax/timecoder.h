@@ -71,6 +71,21 @@ struct timecoder_channel {
     struct timecoder_channel_mk2 mk2;
 };
 
+struct mk2_subcode {
+    mk2bits_t bitstream;
+    mk2bits_t timecode;
+    mk2bits_t bit;
+
+    unsigned int valid_counter;
+    signed int avg_reading;
+    signed int avg_slope;
+    bool recent_bit_flip;
+
+    struct delayline readings;
+    struct ema_filter ema_reading;
+    struct ema_filter ema_slope;
+};
+
 struct timecoder {
     struct timecode_def *def;
     double speed;
@@ -103,6 +118,7 @@ struct timecoder {
     unsigned char *mon; /* x-y array */
     int mon_size, mon_counter;
 
+    struct mk2_subcode upper_bitstream, lower_bitstream;
     double gain_compensation; /* Scaling factor for the derivative */
 };
 

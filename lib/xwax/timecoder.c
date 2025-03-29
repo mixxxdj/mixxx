@@ -347,6 +347,23 @@ void timecoder_free_lookup(void) {
     }
 }
 
+/*
+ * Initialise a subcode decoder for the Traktor MK2
+ */
+
+void mk2_subcode_init(struct mk2_subcode *sc)
+{
+    sc->valid_counter = 0;
+    sc->avg_reading = INT_MAX/2;
+    sc->avg_slope = INT_MAX/2;
+    sc->bit = U128_ZERO;
+
+    delayline_init(&sc->readings);
+
+    /* Initialise smoothing filters */
+    ema_init(&sc->ema_reading, 0.01);
+    ema_init(&sc->ema_slope, 0.01);
+}
 
 /*
  * Initialise filter values for the MK2 demodulation
@@ -420,6 +437,9 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 
     /* Compute the factor the scale up the derivative to the original level */
     tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
+
+    mk2_subcode_init(&tc->upper_bitstream);
+    mk2_subcode_init(&tc->lower_bitstream);
 }
 
 /*
@@ -429,6 +449,13 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 void timecoder_clear(struct timecoder *tc)
 {
     assert(tc->mon == NULL);
+
+    if (tc->def->flags & TRAKTOR_MK2) {
+        delayline_init(&tc->primary.mk2.delayline);
+        delayline_init(&tc->secondary.mk2.delayline);
+        delayline_init(&tc->upper_bitstream.readings);
+        delayline_init(&tc->lower_bitstream.readings);
+    }
 }
 
 /*
@@ -642,7 +669,8 @@ static void process_sample(struct timecoder *tc,
     if (tc->def->flags & TRAKTOR_MK2) {
         if (tc->secondary.swapped)
         {
-            /* Process MK2 bitstream here */
+            int reading = *delayline_at(&tc->secondary.mk2.delayline, 3);
+            mk2_process_timecode(tc, reading);
         }
     } else {
         if (tc->secondary.swapped &&
