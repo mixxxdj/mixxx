@@ -11,6 +11,7 @@
 #include <QCoreApplication>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
+#include <QStyleFactory>
 #include <QtGlobal>
 
 #include "config.h"
@@ -357,6 +358,15 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(debugAssertBreak);
     parser.addOption(debugAssertBreakDeprecated);
 
+    const QCommandLineOption styleOption(QStringLiteral("style"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Overrides the default application GUI style. Possible values: %1")
+                              .arg(QStyleFactory::keys().join(QStringLiteral(", ")))
+                    : QString(),
+            QStringLiteral("style"));
+    parser.addOption(styleOption);
+
     const QCommandLineOption helpOption = parser.addHelpOption();
     const QCommandLineOption versionOption = parser.addVersionOption();
 
@@ -505,6 +515,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_useColors = false;
     } else if (parser.value(color).compare(QLatin1String("auto"), Qt::CaseInsensitive) != 0) {
         fputs("Unknown argument for for color.\n", stdout);
+    }
+
+    if (parser.isSet(styleOption)) {
+        m_styleName = parser.value(styleOption);
     }
 
     return true;

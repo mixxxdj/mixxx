@@ -608,7 +608,12 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         // manual resampling or post-processing after decoding.
         const int requestChannels = std::min(
                 static_cast<int>(params.getSignalInfo().getChannelCount()),
-                pavStream->codecpar->ch_layout.nb_channels);
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+                pavStream->codecpar->ch_layout.nb_channels
+#else
+                av_get_channel_layout_nb_channels(pavStream->codecpar->channel_layout)
+#endif
+        );
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
         av_channel_layout_default(&pavCodecContext->ch_layout,
                 requestChannels);
