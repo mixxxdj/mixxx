@@ -428,6 +428,18 @@ void timecoder_free_lookup(void) {
     }
 }
 
+/*
+ * Initialise a subcode decoder for the Traktor MK2
+ */
+
+void mk2_subcode_init(struct mk2_subcode *sc)
+{
+    sc->valid_counter = 0;
+    sc->avg_reading = INT_MAX/2;
+    sc->avg_slope = INT_MAX/2;
+    sc->bit = U128_ZERO;
+    delayline_init(&sc->readings);
+}
 
 /*
  * Initialise filter values for the MK2 demodulation
@@ -497,6 +509,9 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 
     /* Compute the factor the scale up the derivative to the original level */
     tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
+
+    mk2_subcode_init(&tc->upper_subcode);
+    mk2_subcode_init(&tc->lower_subcode);
 }
 
 /*
@@ -506,6 +521,14 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 void timecoder_clear(struct timecoder *tc)
 {
     assert(tc->mon == NULL);
+
+	if (tc->def->flags & TRAKTOR_MK2) {
+		delayline_init(&tc->primary.mk2.delayline);
+		delayline_init(&tc->secondary.mk2.delayline);
+		delayline_init(&tc->upper_subcode.readings);
+		delayline_init(&tc->lower_subcode.readings);
+	}
+
 }
 
 /*
@@ -602,6 +625,122 @@ static inline void update_monitor(struct timecoder *tc, signed int x, signed int
 
     tc->mon[py * size + px] = 0xff; /* white */
 }
+
+
+#define FORWARD_FACTOR 1.5
+#define REVERSE_FACTOR 1.75
+static inline void detect_bit_flip(const int slope[2], int rms, int reading, int avg_reading,
+                                   mk2bits_t *bit, bool *bit_flipped, bool forwards, mk2bits_t one)
+{
+    double threshold;
+
+    if (*bit_flipped == false) {
+        if (forwards) {
+            threshold = rms / FORWARD_FACTOR;
+        } else {
+            threshold = rms / REVERSE_FACTOR;
+            one = u128_not(one);
+        }
+
+        if (u128_eq(*bit, u128_not(one)) && slope[0] > threshold && slope[1] > threshold) {
+            *bit = one;
+            *bit_flipped = true;
+        } else if (u128_eq(*bit, one) && slope[0] < -threshold && slope[1] < -threshold) {
+            *bit = u128_not(one);
+            *bit_flipped = true;
+        }
+    } else {
+        *bit_flipped = false;
+    }
+}
+
+
+static inline bool lfsr_verify(struct timecode_def *def, mk2bits_t *timecode, mk2bits_t *bitstream, 
+        mk2bits_t bit, bool forwards)
+{
+    if (forwards) {
+        *timecode = fwd_mk2(*timecode, def);
+        *bitstream = u128_add(u128_rshift(*bitstream, 1), u128_lshift(bit, (def->bits - 1)));
+    } else {
+        mk2bits_t mask = u128_sub(u128_lshift(U128_ONE, def->bits), U128_ONE);
+        *timecode = rev_mk2(*timecode, def);
+        *bitstream = u128_add(u128_and(u128_lshift(*bitstream, 1), mask), bit);
+    }
+
+    if (u128_eq(*timecode, *bitstream))
+        return true;
+    else
+        return false;
+}
+
+
+inline static void mk2_process_subcode(struct timecoder *tc, struct mk2_subcode *sc, signed int reading)
+{
+        int current_slope[2];
+
+        delayline_push(&sc->readings, reading);
+        sc->avg_reading = ema(reading, &sc->avg_reading, 0.01);
+
+        /* Calculate absolute of average slope */
+        sc->avg_slope =
+                ema(abs(reading - *delayline_at(&sc->readings, 1)),
+                    &sc->avg_slope,
+                    0.01);
+
+        /* Calculate current and last slope */
+        current_slope[0] =  (reading - *delayline_at(&sc->readings, 1));
+        current_slope[1] =  (reading - *delayline_at(&sc->readings, 2));
+
+        /* The bits only change when an offset jump occurs. Else the previous bit is taken  */
+        detect_bit_flip(current_slope, tc->secondary.mk2.rms, reading, sc->avg_reading, &sc->bit,
+                        &sc->recent_bit_flip, tc->forwards, U128(0x0, !tc->secondary.positive));
+        
+        if (lfsr_verify(tc->def, &sc->timecode, &sc->bitstream, sc->bit, tc->forwards)) {
+            (sc->valid_counter)++;
+        } else {
+            sc->timecode = sc->bitstream;
+            sc->valid_counter = 0;
+        }
+}
+
+
+static void mk2_process_bitstream(struct timecoder *tc, signed int reading) {
+
+    /* 
+     * Detect if the offset jumps on upper and lower bitstream
+     */
+    if (tc->secondary.positive)
+        mk2_process_subcode(tc, &tc->upper_subcode, reading);
+    else if (!tc->secondary.positive)
+        mk2_process_subcode(tc, &tc->lower_subcode, reading);
+
+    if (tc->lower_subcode.valid_counter > tc->upper_subcode.valid_counter) {
+        tc->mk2_bitstream = tc->lower_subcode.bitstream;
+        tc->mk2_timecode = tc->lower_subcode.timecode;
+    } else {
+        tc->mk2_bitstream = tc->upper_subcode.bitstream;
+        tc->mk2_timecode = tc->upper_subcode.timecode;
+    }
+
+    if (u128_eq(tc->mk2_timecode, tc->mk2_bitstream)) {
+        tc->valid_counter++;
+    } else {
+        tc->timecode = tc->bitstream;
+        tc->valid_counter = 0;
+    }
+    /* Take note of the last time we read a valid timecode */
+
+    tc->timecode_ticker = 0;
+
+    tc->ref_level -= tc->ref_level / REF_PEAKS_AVG;
+    tc->ref_level += abs((int) (tc->secondary.mk2.rms_deriv * tc->gain_compensation)) / REF_PEAKS_AVG;
+
+    debug("upper.valid_counter: %d, lower.valid_counter %d, forwards: %b\n", */
+           tc->upper.valid_counter,
+           tc->lower.valid_counter,
+           tc->forwards);
+}
+
 
 /*
  * Extract the bitstream from the sample value
@@ -740,7 +879,8 @@ static void process_sample(struct timecoder *tc,
     if (tc->def->flags & TRAKTOR_MK2) {
         if (tc->secondary.swapped)
         {
-            /* Process MK2 bitstream here */
+            int reading = *delayline_at(&tc->secondary.mk2.delayline, 3);
+            mk2_process_bitstream(tc, reading);
         }
     } else {
         if (tc->secondary.swapped &&
@@ -860,7 +1000,7 @@ signed int timecoder_get_position(struct timecoder *tc, double *when)
 
     if (r >= 0) {
         // normalize position to milliseconds, not timecode steps -- Owen
-        r = (double)r * (1000.0 / ((double)tc->def->resolution * tc->speed));
+        r = r * (1000.0 / ((double)tc->def->resolution * tc->speed));
     }
 
     if (when)

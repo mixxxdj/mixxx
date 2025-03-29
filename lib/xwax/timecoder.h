@@ -69,6 +69,19 @@ struct timecoder_channel {
     struct timecoder_channel_mk2 mk2;
 };
 
+struct mk2_subcode {
+    mk2bits_t bitstream;
+    mk2bits_t timecode;
+    mk2bits_t bit;
+
+    unsigned int valid_counter;
+    signed int avg_reading;
+    signed int avg_slope;
+    bool recent_bit_flip;
+
+    struct delayline readings;
+};
+
 struct timecoder {
     struct timecode_def *def;
     double speed;
@@ -90,6 +103,8 @@ struct timecoder {
     signed int ref_level;
     bits_t bitstream, /* actual bits from the record */
         timecode; /* corrected timecode */
+    mk2bits_t mk2_bitstream, /* Traktor MK2 version */
+        mk2_timecode; /* Traktor MK2 version */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
     double dB; /* Decibels to detect phono level */
