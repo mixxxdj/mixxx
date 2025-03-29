@@ -76,6 +76,8 @@ struct timecoder {
     signed int ref_level;
     bits_t bitstream, /* actual bits from the record */
         timecode; /* corrected timecode */
+    mk2bits_t mk2_bitstream, /* Traktor MK2 version */
+        mk2_timecode; /* Traktor MK2 version */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
 
