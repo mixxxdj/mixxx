@@ -279,10 +279,10 @@ qsizetype QmlWaveformDisplay::renderers_count(QQmlListProperty<QmlWaveformRender
 // Static
 QmlWaveformRendererFactory* QmlWaveformDisplay::renderers_at(
         QQmlListProperty<QmlWaveformRendererFactory>* pList, qsizetype index) {
-    QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
-    VERIFY_OR_DEBUG_ASSERT(pWaveform) {
+    VERIFY_OR_DEBUG_ASSERT(pList && pList->object) {
         return nullptr;
     }
+    QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
     pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     return pWaveform->m_waveformRenderers.at(index);
 }

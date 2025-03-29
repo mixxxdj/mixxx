@@ -103,13 +103,16 @@ bool WaveformWidgetRenderer::init() {
         m_truePosSample[type] = -1.0;
     }
 
+    // It is possible for a renderer to be defined with no group. This usually
+    // indicate that the position and track will be controlled by the owner.
+    // This is used in QML currently.
     if (!m_group.isEmpty()) {
-        m_pRateRatioCO.reset(new ControlProxy(
-                m_group, QStringLiteral("rate_ratio")));
-        m_pGainControlObject.reset(new ControlProxy(
-                m_group, QStringLiteral("total_gain")));
-        m_pTrackSamplesControlObject.reset(new ControlProxy(
-                m_group, QStringLiteral("track_samples")));
+        m_pRateRatioCO = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("rate_ratio"));
+        m_pGainControlObject = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("total_gain"));
+        m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("track_samples"));
 
         m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
     }

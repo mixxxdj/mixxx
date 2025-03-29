@@ -41,8 +41,6 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
     }
 
   protected:
-    void deleteControls();
-
     void getGains(float* pAllGain,
             bool applyCompensation,
             float* pLowGain,

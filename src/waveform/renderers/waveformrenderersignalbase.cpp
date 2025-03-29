@@ -54,33 +54,26 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_rgbHighColor_b(0) {
 }
 
-WaveformRendererSignalBase::~WaveformRendererSignalBase() {
-    deleteControls();
-}
-
-void WaveformRendererSignalBase::deleteControls() {
-}
+WaveformRendererSignalBase::~WaveformRendererSignalBase() = default;
 
 bool WaveformRendererSignalBase::init() {
-    deleteControls();
-
     if (!m_waveformRenderer->getGroup().isEmpty()) {
         // create controls
-        m_pEQEnabled.reset(new ControlProxy(
-                m_waveformRenderer->getGroup(), "filterWaveformEnable"));
+        m_pEQEnabled = std::make_unique<ControlProxy>(
+                m_waveformRenderer->getGroup(), "filterWaveformEnable");
         const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
-        m_pLowFilterControlObject.reset(
-                new ControlProxy(effectGroup, QStringLiteral("parameter1")));
-        m_pMidFilterControlObject.reset(
-                new ControlProxy(effectGroup, QStringLiteral("parameter2")));
-        m_pHighFilterControlObject.reset(
-                new ControlProxy(effectGroup, QStringLiteral("parameter3")));
-        m_pLowKillControlObject.reset(new ControlProxy(
-                effectGroup, QStringLiteral("button_parameter1")));
-        m_pMidKillControlObject.reset(new ControlProxy(
-                effectGroup, QStringLiteral("button_parameter2")));
-        m_pHighKillControlObject.reset(new ControlProxy(
-                effectGroup, QStringLiteral("button_parameter3")));
+        m_pLowFilterControlObject = std::make_unique<ControlProxy>(
+                effectGroup, QStringLiteral("parameter1"));
+        m_pMidFilterControlObject = std::make_unique<ControlProxy>(
+                effectGroup, QStringLiteral("parameter2"));
+        m_pHighFilterControlObject = std::make_unique<ControlProxy>(
+                effectGroup, QStringLiteral("parameter3"));
+        m_pLowKillControlObject = std::make_unique<ControlProxy>(
+                effectGroup, QStringLiteral("button_parameter1"));
+        m_pMidKillControlObject = std::make_unique<ControlProxy>(
+                effectGroup, QStringLiteral("button_parameter2"));
+        m_pHighKillControlObject = std::make_unique<ControlProxy>(
+                effectGroup, QStringLiteral("button_parameter3"));
     } else {
         m_pEQEnabled.reset();
         m_pLowFilterControlObject.reset();
