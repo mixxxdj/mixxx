@@ -56,6 +56,8 @@ struct timecoder_channel_mk2 {
     signed int deriv, deriv_scaled; /* Derivative and its scaled version */
 
     struct delayline delayline; /* needed for the Traktor MK2 demodulation */
+    struct ema_filter ema_filter;
+    struct differentiator differentiator;
     struct root_mean_square rms_filter, rms_deriv_filter;
 };
 
@@ -75,6 +77,7 @@ struct timecoder {
     /* Precomputed values */
 
     double dt, zero_alpha;
+    int sample_rate;
     signed int threshold;
 
     /* Pitch information */
@@ -92,11 +95,14 @@ struct timecoder {
         mk2_timecode; /* Traktor MK2 version */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
+    double dB; /* Decibels to detect phono level */
 
     /* Feedback */
 
     unsigned char *mon; /* x-y array */
     int mon_size, mon_counter;
+
+    double gain_compensation; /* Scaling factor for the derivative */
 };
 
 struct timecode_def* timecoder_find_definition(const char *name);
