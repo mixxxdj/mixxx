@@ -38,6 +38,7 @@ repos:
         exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|UTF-8-BOM.txt)$
       - id: check-case-conflict
       - id: check-json
+        exclude: ^(.devcontainer/devcontainer.json)$ # Contains JSON comment, which isn't supported by the hook
       - id: check-merge-conflict
       - id: check-xml
       - id: check-yaml
