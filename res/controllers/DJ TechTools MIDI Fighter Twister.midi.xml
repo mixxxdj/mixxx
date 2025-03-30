@@ -11,6 +11,11 @@
     </devices>
   </info>
   <settings>
+    <option variable="vuMeter" type="boolean" label="Use gain knob as vu meter" default="false">
+      <description>
+        Show instantaneous volume on the 11 segment LEDs around the gain knob instead of the position of the knob.
+      </description>
+    </option>
     <option variable="beatColor" type="enum" label="Beat Indicator Color">
       <description>
         Use the tempo knob LED as a beat indicator when set.

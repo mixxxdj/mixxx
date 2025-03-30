@@ -15,6 +15,10 @@ var MidiFighterTwister;
         return Math.pow(value / 4, 0.5) * max;
     };
 
+    const doubleLinearize = function(value) {
+        return linearize(value) * 2;
+    };
+
     const indicatorConnect = function(color, key) {
         return function() {
             this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
@@ -27,6 +31,21 @@ var MidiFighterTwister;
                         const pregainDef = this.inGetParameter();
                         this.send(pregainDef ? this.on : this.off);
                     }
+                });
+            }
+        };
+    };
+
+    const multiSegConnect = function(enabled, key, scale) {
+        return function() {
+            this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+
+            if (typeof scale !== "function") {
+                scale = this.outValueScale;
+            }
+            if (enabled) {
+                this.connections[1] = engine.makeConnection(this.group, key, (value) => {
+                    this.send(scale(value));
                 });
             }
         };
@@ -67,12 +86,13 @@ var MidiFighterTwister;
                 midi: [0xB0, this.midiModifier(0x00)],
                 key: "pregain",
                 outValueScale: linearize,
+                connect: multiSegConnect(engine.getSetting("vuMeter"), "VuMeter", doubleLinearize),
             });
             this.volumeKnob = new components.Encoder({
                 group: `[Channel${this.deckNumbers[0]}]`,
                 midi: [0xB0, this.midiModifier(0x08)],
                 key: "volume",
-                outValueScale: function(value) { return linearize(value) * 2; },
+                outValueScale: doubleLinearize,
             });
             this.highKnob = new components.Encoder({
                 group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
@@ -165,6 +185,7 @@ var MidiFighterTwister;
                 midi: [0xB0, 0x0F],
                 key: "gain",
                 outValueScale: linearize,
+                connect: multiSegConnect(engine.getSetting("vuMeter"), "VuMeter", doubleLinearize),
             });
             this.mainGainButton = new components.Encoder({
                 group: "[Master]",
