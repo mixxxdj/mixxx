@@ -6,12 +6,19 @@
   outputs = { self, nixpkgs, utils }: utils.lib.eachDefaultSystem (system:
     let
       pkgs = nixpkgs.legacyPackages.${system};
+      qt6Env = with pkgs.qt6; env "qt-custom-${qtbase.version}"
+        [
+          qt5compat
+          qtshadertools
+          qtsvg
+          qtdeclarative
+        ];
     in
     {
       devShell = pkgs.mkShell {
         buildInputs = with pkgs; [
           # Building Mixxx
-          qt6.full
+          qt6Env
           cmake
           chromaprint
           glib
