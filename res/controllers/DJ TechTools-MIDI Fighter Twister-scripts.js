@@ -15,6 +15,22 @@ var MidiFighterTwister;
         return Math.pow(value / 4, 0.5) * max;
     };
 
+    const gainConnect = function() {
+        this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+
+        const peakColor = engine.getSetting("peakColor");
+        if (peakColor !== -1) {
+            this.connections[1] = engine.makeConnection(this.group, "PeakIndicator", (value) => {
+                if (value) {
+                    this.send(peakColor);
+                } else {
+                    const pregainDef = this.inGetParameter();
+                    this.send(pregainDef ? this.on : this.off);
+                }
+            });
+        }
+    };
+
     components.Button.prototype.on = engine.getSetting("defColor");
     components.Button.prototype.off = engine.getSetting("relColor");
 
@@ -90,6 +106,7 @@ var MidiFighterTwister;
                 group: `[Channel${this.deckNumbers[0]}]`,
                 midi: [0xB1, this.midiModifier(0x00)],
                 key: "pregain_set_default",
+                connect: gainConnect,
             });
             // The volume button toggles the headphones, unlike the others which
             // reset their control.
@@ -150,6 +167,7 @@ var MidiFighterTwister;
                 group: "[Master]",
                 midi: [0xB1, 0x0F],
                 key: "gain_set_default",
+                connect: gainConnect,
             });
         }
 

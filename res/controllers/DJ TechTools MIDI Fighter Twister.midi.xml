@@ -11,6 +11,23 @@
     </devices>
   </info>
   <settings>
+    <option variable="peakColor" type="enum" label="Peak Indicator Color">
+      <description>
+        Use the gain knob LED as a peak indicator when set.
+      </description>
+      <value label="Off">-1</value>
+      <value label="Firmware Default">127</value>
+      <value label="Blue">1</value>
+      <value label="Celeste">32</value>
+      <value label="Teal">40</value>
+      <value label="Green">50</value>
+      <value label="Lime">60</value>
+      <value label="Yellow">66</value>
+      <value label="Orange">74</value>
+      <value label="Red" default="true">85</value>
+      <value label="Fuscia">100</value>
+      <value label="Purple">108</value>
+    </option>
     <option variable="defColor" type="enum" label="Default Value/Pushed Color">
       <value label="Firmware Default" default="true">127</value>
       <value label="Blue">1</value>
