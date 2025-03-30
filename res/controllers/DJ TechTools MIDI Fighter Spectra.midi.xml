@@ -27,6 +27,12 @@
       <value label="Pulse on Track Ending" default="true">end_of_track</value>
       <value label="Blink on Beat">beat_active</value>
     </option>
+    <option variable="pulseDeckSelect" type="boolean" default="true" label="Pulse Deck Select on Track Ending">
+      <description>
+        Pulse the appropriate deck selection button on the hotcue layer when the
+        track on that deck is ending.
+      </description>
+    </option>
     <group label="Button Lighting">
       <row orientation="vertical">
         <option variable="deckSelectedColor" type="enum" label="Selected Deck Color">

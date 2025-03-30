@@ -161,9 +161,11 @@ var MidiFighterSpectra;
 
             this.activeDeck = new Deck();
 
-            // Layer selection. Since we're not connecting to any signals, just
-            // have one button and use its input function to set the LEDs.
+            // Since this is a radio button set, just have one button that
+            // handles setting and unsetting all the LEDs.
             this.selectCueDeck = new components.Button({
+                group: "[Channel1]",
+                key: "end_of_track",
                 midi: [0x92, 0x34],
                 input: function(_channel, control, value, _status, group) {
                     MidiFighterSpectra.controller.activeDeck.setCurrentDeck(group);
@@ -174,8 +176,23 @@ var MidiFighterSpectra;
                         midi.sendShortMsg(this.midi[0], this.midi[1] + i, (control === this.midi[1] + i) ? this.on : this.off);
                     }
                 },
+                pulse: function(value, group, _control) {
+                    const deckNum = parseInt(script.channelRegEx.exec(group)[1]);
+                    if (value) {
+                        midi.sendShortMsg(this.midi[0] + 1, this.midi[1] + deckNum - 1, 47);
+                    } else {
+                        midi.sendShortMsg(this.midi[0] - 0xF, this.midi[1] + deckNum - 1, 33);
+                    }
+                },
                 on: engine.getSetting("deckSelectedColor"),
                 off: engine.getSetting("deckUnselectedColor"),
+                connect: function() {
+                    if (engine.getSetting("pulseDeckSelect")) {
+                        for (let i = 0; i < 4; i++) {
+                            this.connections[i] = engine.makeConnection(`[Channel${i + 1}]`, "end_of_track", this.pulse.bind(this));
+                        }
+                    }
+                },
             });
             this.selectCueDeck.output(0x7F, "[Channel1]", 0x34);
         }
