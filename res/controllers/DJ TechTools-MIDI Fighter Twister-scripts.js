@@ -139,25 +139,56 @@ var MidiFighterTwister;
                 type: components.Button.prototype.types.toggle,
                 key: "pfl",
             });
+
+            const shiftFunc = function(newKey, onColor, offColor) {
+                return function() {
+                    this.inKey = newKey;
+                    this.outKey = newKey;
+                    this.type = components.Button.prototype.types.toggle;
+                    this.on = onColor;
+                    this.off = offColor;
+                    this.disconnect();
+                    this.connect();
+                    this.trigger();
+                };
+            };
+            const unshiftFunc = function() {
+                this.inKey = this.key;
+                this.outKey = this.key;
+                this.type = components.Button.prototype.types.push;
+                this.on = components.Button.prototype.on;
+                this.off = components.Button.prototype.off;
+                this.disconnect();
+                this.connect();
+                this.trigger();
+            };
             this.highButton = new components.Button({
                 group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
                 midi: [0xB1, this.midiModifier(0x01)],
                 key: "parameter3_set_default",
+                shift: shiftFunc("button_parameter3", engine.getSetting("eqOnColor"), engine.getSetting("eqOffColor")),
+                unshift: unshiftFunc,
             });
             this.midButton = new components.Button({
                 group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
                 midi: [0xB1, this.midiModifier(0x05)],
                 key: "parameter2_set_default",
+                shift: shiftFunc("button_parameter2", engine.getSetting("eqOnColor"), engine.getSetting("eqOffColor")),
+                unshift: unshiftFunc,
             });
             this.lowButton = new components.Button({
                 group: `[EqualizerRack1_[Channel${this.deckNumbers[0]}]_Effect1]`,
                 midi: [0xB1, this.midiModifier(0x09)],
                 key: "parameter1_set_default",
+                shift: shiftFunc("button_parameter1", engine.getSetting("eqOnColor"), engine.getSetting("eqOffColor")),
+                unshift: unshiftFunc,
             });
             this.superButton = new components.Button({
                 group: `[QuickEffectRack1_[Channel${this.deckNumbers[0]}]]`,
                 midi: [0xB1, this.midiModifier(0x0D)],
                 key: "super1_set_default",
+                shift: shiftFunc("enabled", engine.getSetting("superOnColor"), engine.getSetting("superOffColor")),
+                unshift: unshiftFunc,
             });
         }
     }
