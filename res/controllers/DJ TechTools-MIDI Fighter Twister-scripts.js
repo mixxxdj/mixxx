@@ -23,7 +23,7 @@ var MidiFighterTwister;
         return function() {
             this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
 
-            if (color !== -1) {
+            if (color !== "off") {
                 this.connections[1] = engine.makeConnection(this.group, key, (value) => {
                     if (value) {
                         this.send(color);

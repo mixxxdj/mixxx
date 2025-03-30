@@ -20,7 +20,7 @@
       <description>
         Use the tempo knob LED as a beat indicator when set.
       </description>
-      <value label="Off" default="true">-1</value>
+      <value label="Off" default="true">off</value>
       <value label="Firmware Default">127</value>
       <value label="Blue">1</value>
       <value label="Celeste">32</value>
@@ -37,7 +37,7 @@
       <description>
         Use the gain knob LED as a peak indicator when set.
       </description>
-      <value label="Off">-1</value>
+      <value label="Off">off</value>
       <value label="Firmware Default">127</value>
       <value label="Blue">1</value>
       <value label="Celeste">32</value>
