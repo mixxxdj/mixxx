@@ -174,11 +174,31 @@ var MidiFighterTwister;
                 midi: [0xB0, 0x0C],
                 key: "crossfader",
                 outValueScale: scaleHalfPlusOne,
+                unshift: function() {
+                    this.inKey = "crossfader";
+                    this.outKey = "crossfader";
+                    this.disconnect();
+                    this.connect();
+                    this.trigger();
+                },
+                shift: function() {
+                    this.inKey = "balance";
+                    this.outKey = "balance";
+                    this.disconnect();
+                    this.connect();
+                    this.trigger();
+                },
             });
             this.crossfaderButton = new components.Button({
                 group: "[Master]",
                 midi: [0xB1, 0x0C],
                 key: "crossfader_set_default",
+                unshift: function() {
+                    this.inKey = "crossfader_set_default";
+                },
+                shift: function() {
+                    this.inKey = "balance_set_default";
+                },
             });
             this.mainGainKnob = new components.Encoder({
                 group: "[Master]",
@@ -186,13 +206,41 @@ var MidiFighterTwister;
                 key: "gain",
                 outValueScale: linearize,
                 connect: multiSegConnect(engine.getSetting("vuMeter"), "VuMeter", doubleLinearize),
+                unshift: function() {
+                    this.inKey = "gain";
+                    this.outKey = "gain";
+                    this.disconnect();
+                    this.connect();
+                    this.trigger();
+                },
+                shift: function() {
+                    this.inKey = "headGain";
+                    this.outKey = "headGain";
+                    this.disconnect();
+                    this.connect();
+                    this.trigger();
+                },
             });
             this.mainGainButton = new components.Encoder({
                 group: "[Master]",
                 midi: [0xB1, 0x0F],
                 key: "gain_set_default",
                 connect: indicatorConnect(engine.getSetting("peakColor"), "PeakIndicator"),
+                unshift: function() {
+                    this.inKey = "gain_set_default";
+                },
+                shift: function() {
+                    this.inKey = "headGain_set_default";
+                },
             });
+        }
+
+        toggleShift(_channel, _control, value, _status, _group) {
+            if (value) {
+                this.shift();
+            } else {
+                this.unshift();
+            }
         }
 
         toggleDeck(_channel, _control, value, _status, group) {

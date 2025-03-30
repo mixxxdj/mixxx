@@ -423,6 +423,28 @@
           <script-binding/>
         </options>
       </control>
+
+      <!-- Shift buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 1.</description>
+        <status>0xB3</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 1.</description>
+        <status>0xB3</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
     </controls>
     <outputs/>
   </controller>
