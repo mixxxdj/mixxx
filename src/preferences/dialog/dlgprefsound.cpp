@@ -46,7 +46,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
-          m_loading(false) {
+          m_loading(false),
+          m_configValid(true) {
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -320,6 +321,7 @@ void DlgPrefSound::slotApply() {
                 ConfigValue(static_cast<int>(keylockEngine)));
 
         status = m_pSoundManager->setConfig(m_config);
+        m_configValid = (status == SoundDeviceStatus::Ok);
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
@@ -944,4 +946,8 @@ void DlgPrefSound::checkLatencyCompensation() {
         latencyCompensationSpinBox->setEnabled(false);
         latencyCompensationWarningLabel->hide();
     }
+}
+
+bool DlgPrefSound::okayToClose() const {
+    return m_configValid;
 }
