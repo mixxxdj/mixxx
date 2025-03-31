@@ -83,7 +83,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
-          m_loading(false) {
+          m_loading(false),
+          m_configValid(true) {
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -324,6 +325,12 @@ void DlgPrefSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
+
+    if (m_pSoundManager->getErrorDevice().isNull()) {
+        m_configValid = true;
+    } else {
+        m_configValid = false;
+    }     
 
     m_config.clearInputs();
     m_config.clearOutputs();
@@ -1036,4 +1043,8 @@ void DlgPrefSound::checkLatencyCompensation() {
         latencyCompensationSpinBox->setEnabled(false);
         latencyCompensationWarningLabel->hide();
     }
+}
+
+bool DlgPrefSound::okayToClose() const {
+    return m_configValid;
 }

@@ -421,6 +421,14 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         emit applyPreferences();
         break;
     case QDialogButtonBox::AcceptRole:
+        // Check if all pages are in a valid state before accepting
+        for (const PreferencesPage& page : m_allPages) {
+            if (page.pDlg && !page.pDlg->okayToClose()) {
+                // If any page is not okay to close, switch to it and don't accept
+                switchToPage(page.pTreeItem->text(0), page.pDlg);
+                return;
+            }
+        }
         // Same as Apply but close the dialog
         emit applyPreferences();
         // TODO Unfortunately this will accept() even if DlgPrefSound threw a warning
