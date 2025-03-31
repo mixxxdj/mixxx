@@ -421,8 +421,16 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         emit applyPreferences();
         break;
     case QDialogButtonBox::AcceptRole:
-        // Same as Apply but close the dialog
         emit applyPreferences();
+        // Check if all pages are in a valid state before accepting
+        for (const PreferencesPage& page : std::as_const(m_allPages)) {
+            if (page.pDlg && !page.pDlg->okayToClose()) {
+                // If any page is not okay to close, switch to it and don't accept
+                switchToPage(page.pTreeItem->text(0), page.pDlg);
+                return;
+            }
+        }
+        // Same as Apply but close the dialog
         // TODO Unfortunately this will accept() even if DlgPrefSound threw a warning
         // due to inaccessible device(s) or inapplicable samplerate.
         // https://github.com/mixxxdj/mixxx/issues/6077
@@ -511,6 +519,13 @@ void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* p
     Q_UNUSED(pageTitle);
 #endif
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
+
+    for (const PreferencesPage& page : std::as_const(m_allPages)) {
+        if (page.pDlg == pWidget) {
+            contentsTreeWidget->setCurrentItem(page.pTreeItem);
+            break;
+        }
+    }
 
     QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);
     VERIFY_OR_DEBUG_ASSERT(pButton) {
