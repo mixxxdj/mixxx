@@ -808,6 +808,9 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
                 fileInfo,
                 trackMetadata.getAlbumInfo().getTitle(),
                 coverImage);
+        if (coverImage.isNull()) {
+            qDebug() << "Cover image is null!";  // Debug output
+        }
         trackRecord.setCoverInfo(std::move(guessedCoverInfo));
     }
 
