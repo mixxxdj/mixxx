@@ -200,6 +200,8 @@ var MidiFighterTwister;
             this.leftDeck = new Deck([1, 3]);
             this.rightDeck = new Deck([2, 4]);
 
+            // Layer 1 Controls
+
             this.crossfaderKnob = new components.Encoder({
                 group: "[Master]",
                 midi: [0xB0, 0x0C],
@@ -264,6 +266,86 @@ var MidiFighterTwister;
                     this.inKey = "headGain_set_default";
                 },
             });
+
+            // Layer 2 Controls
+            this.fx = [];
+            this.fx[0] = new components.EffectUnit([1, 3]);
+            this.fx[0].enableButtons[1].midi = [0xB1, 0x11];
+            this.fx[0].enableButtons[2].midi = [0xB1, 0x15];
+            this.fx[0].enableButtons[3].midi = [0xB1, 0x19];
+            this.fx[0].knobs[1].midi = [0xB0, 0x11];
+            this.fx[0].knobs[2].midi = [0xB0, 0x15];
+            this.fx[0].knobs[3].midi = [0xB0, 0x19];
+            this.fx[0].dryWetKnob.midi = [0xB0, 0x1D];
+            this.fx[0].effectFocusButton.midi = [0xB1, 0x1D];
+            this.fx[0].enableOnChannelButtons.addButton("Channel1");
+            this.fx[0].enableOnChannelButtons.addButton("Channel2");
+            this.fx[0].enableOnChannelButtons.addButton("Headphone");
+            this.fx[0].enableOnChannelButtons.Channel1.midi = [0xB1, 0x10];
+            this.fx[0].enableOnChannelButtons.Channel1.shift = function() {
+                this.inKey = "group_[Channel3]_enable";
+                this.outKey = "group_[Channel3]_enable";
+            };
+            this.fx[0].enableOnChannelButtons.Channel1.unshift = function() {
+                this.inKey = "group_[Channel1]_enable";
+                this.outKey = "group_[Channel1]_enable";
+            };
+            this.fx[0].enableOnChannelButtons.Channel2.midi = [0xB1, 0x14];
+            this.fx[0].enableOnChannelButtons.Channel2.shift = function() {
+                this.inKey = "group_[Channel4]_enable";
+                this.outKey = "group_[Channel4]_enable";
+            };
+            this.fx[0].enableOnChannelButtons.Channel2.unshift = function() {
+                this.inKey = "group_[Channel2]_enable";
+                this.outKey = "group_[Channel2]_enable";
+            };
+            this.fx[0].enableOnChannelButtons.Headphone.midi = [0xB1, 0x18];
+            this.fx[0].mixModeButton = new components.Button({
+                group: "[EffectRack1_EffectUnit1]",
+                key: "mix_mode",
+                midi: [0xB1, 0x1C],
+                type: components.Button.prototype.types.toggle,
+            });
+            this.fx[0].init();
+
+            this.fx[1] = new components.EffectUnit([2, 4]);
+            this.fx[1].enableButtons[1].midi = [0xB1, 0x12];
+            this.fx[1].enableButtons[2].midi = [0xB1, 0x16];
+            this.fx[1].enableButtons[3].midi = [0xB1, 0x1A];
+            this.fx[1].knobs[1].midi = [0xB0, 0x12];
+            this.fx[1].knobs[2].midi = [0xB0, 0x16];
+            this.fx[1].knobs[3].midi = [0xB0, 0x1A];
+            this.fx[1].dryWetKnob.midi = [0xB0, 0x1E];
+            this.fx[1].effectFocusButton.midi = [0xB1, 0x1E];
+            this.fx[1].enableOnChannelButtons.addButton("Channel1");
+            this.fx[1].enableOnChannelButtons.addButton("Channel2");
+            this.fx[1].enableOnChannelButtons.addButton("Headphone");
+            this.fx[1].enableOnChannelButtons.Channel1.midi = [0xB1, 0x13];
+            this.fx[1].enableOnChannelButtons.Channel1.shift = function() {
+                this.inKey = "group_[Channel3]_enable";
+                this.outKey = "group_[Channel3]_enable";
+            };
+            this.fx[1].enableOnChannelButtons.Channel1.unshift = function() {
+                this.inKey = "group_[Channel1]_enable";
+                this.outKey = "group_[Channel1]_enable";
+            };
+            this.fx[1].enableOnChannelButtons.Channel2.midi = [0xB1, 0x17];
+            this.fx[1].enableOnChannelButtons.Channel2.shift = function() {
+                this.inKey = "group_[Channel4]_enable";
+                this.outKey = "group_[Channel4]_enable";
+            };
+            this.fx[1].enableOnChannelButtons.Channel2.unshift = function() {
+                this.inKey = "group_[Channel2]_enable";
+                this.outKey = "group_[Channel2]_enable";
+            };
+            this.fx[1].enableOnChannelButtons.Headphone.midi = [0xB1, 0x1B];
+            this.fx[1].mixModeButton = new components.Button({
+                group: "[EffectRack1_EffectUnit2]",
+                key: "mix_mode",
+                midi: [0xB1, 0x1F],
+                type: components.Button.prototype.types.toggle,
+            });
+            this.fx[1].init();
         }
 
         toggleShift(_channel, _control, value, _status, _group) {
@@ -271,6 +353,23 @@ var MidiFighterTwister;
                 this.shift();
             } else {
                 this.unshift();
+            }
+        }
+
+        toggleEffects(_channel, _control, value, _status, group) {
+            if (value === 0) {
+                // Only toggle on press, don't toggle it again on release.
+                return;
+            }
+            switch (group) {
+            case "[Channel1]":
+                this.fx[0].toggle();
+                break;
+            case "[Channel2]":
+                this.fx[1].toggle();
+                break;
+            default:
+                console.log(`invalid group: ${group}`);
             }
         }
 

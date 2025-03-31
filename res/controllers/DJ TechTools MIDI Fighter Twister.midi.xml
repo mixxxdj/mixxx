@@ -139,6 +139,8 @@
       <file functionprefix="MidiFighterTwister" filename="DJ TechTools-MIDI Fighter Twister-scripts.js"/>
     </scriptfiles>
     <controls>
+      <!-- Layer 1: EQ & Mixing -->
+
       <control>
         <group>[Channel1]</group>
         <key>MidiFighterTwister.controller.leftDeck.gainKnob.input</key>
@@ -480,6 +482,243 @@
         </options>
       </control>
 
+      <!-- Layer 2: Effects -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleEffects</key>
+        <status>0xB3</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableOnChannelButtons["Channel1"].input</key>
+        <status>0xB1</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableOnChannelButtons["Channel2"].input</key>
+        <status>0xB1</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableOnChannelButtons["Headphone"].input</key>
+        <status>0xB1</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].mixModeButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableButtons[1].input</key>
+        <status>0xB1</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableButtons[2].input</key>
+        <status>0xB1</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableButtons[3].input</key>
+        <status>0xB1</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].knobs[1].input</key>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].knobs[2].input</key>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].knobs[3].input</key>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].dryWetKnob.input</key>
+        <status>0xB0</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].effectFocusButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleEffects</key>
+        <status>0xB3</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableOnChannelButtons["Channel1"].input</key>
+        <status>0xB1</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableOnChannelButtons["Channel2"].input</key>
+        <status>0xB1</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableOnChannelButtons["Headphone"].input</key>
+        <status>0xB1</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].mixModeButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableButtons[1].input</key>
+        <status>0xB1</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableButtons[2].input</key>
+        <status>0xB1</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableButtons[3].input</key>
+        <status>0xB1</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].knobs[1].input</key>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].knobs[2].input</key>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].knobs[3].input</key>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].dryWetKnob.input</key>
+        <status>0xB0</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].effectFocusButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
       <!-- Shift buttons -->
       <control>
         <group>[Channel1]</group>
@@ -497,6 +736,26 @@
         <description>Shift button for layer 1.</description>
         <status>0xB3</status>
         <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 2.</description>
+        <status>0xB3</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 2.</description>
+        <status>0xB3</status>
+        <midino>0x13</midino>
         <options>
           <script-binding/>
         </options>
