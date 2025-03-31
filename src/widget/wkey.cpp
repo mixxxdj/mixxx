@@ -1,18 +1,25 @@
 #include "widget/wkey.h"
 
+#include <qboxlayout.h>
+#include <qevent.h>
+
 #include "library/library_prefs.h"
 #include "moc_wkey.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/keyutils.h"
+#include "util/color/color.h"
+#include "widget/wlabel.h"
+#include "widget/wwidgetgroup.h"
 
 WKey::WKey(const QString& group, QWidget* pParent)
-        : WLabel(pParent),
+        : WWidgetGroup(pParent),
           m_dOldValue(0),
           m_keyNotation(mixxx::library::prefs::kKeyNotationConfigKey, this),
           m_engineKeyDistance(group,
                   "visual_key_distance",
                   this,
-                  ControlFlag::AllowMissingOrInvalid) {
+                  ControlFlag::AllowMissingOrInvalid),
+          m_keyLabel() {
     setValue(m_dOldValue);
     m_keyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
@@ -26,7 +33,8 @@ void WKey::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WKey::setup(const QDomNode& node, const SkinContext& context) {
-    WLabel::setup(node, context);
+    WWidgetGroup::setup(node, context);
+    m_keyLabel.setup(node, context);
     m_displayCents = context.selectBool(node, "DisplayCents", false);
     m_displayKey = context.selectBool(node, "DisplayKey", true);
 }
@@ -52,9 +60,15 @@ void WKey::setValue(double dValue) {
             }
             keyStr.append(QString(" %1%2c").arg(sign).arg(qAbs(cents_to_display)));
         }
-        setText(keyStr);
+        m_keyLabel.setText(keyStr);
+
+        QColor keyColor = KeyUtils::keyToColor(key);
+        QString colorStr = keyColor.name();
+        QString textColor = Color::chooseContrastColor(keyColor, 140).name();
+        m_keyLabel.setStyleSheet(QString("QLabel { background-color : %1; color : %2 }")
+                                         .arg(colorStr, textColor));
     } else {
-        setText("");
+        m_keyLabel.setText("");
     }
 }
 
