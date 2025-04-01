@@ -364,15 +364,16 @@ void SidebarModel::clicked(const QModelIndex& index) {
     }
 }
 
-/// Invoked by double click and click on tree node expand icons
+/// Invoked by double click on child items, click on tree node expand icons and
+/// when jumping to a child item in a collapsed branch.
 void SidebarModel::doubleClicked(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (!index.isValid()) {
         return;
     }
     if (index.internalPointer() == this) {
-        // Index is a root index and QTreeView already did expand it, so ther's
-        // nothing to do for us.
+        // Index is a root index and QTreeView already did expand it,
+        // so there's nothing to do for us.
         return;
     } else {
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
