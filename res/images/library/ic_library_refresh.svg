@@ -1,0 +1,29 @@
+<svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Mixxx 1.12+ iconset</title>
+  <defs>
+    <linearGradient id="a">
+      <stop stop-color="#f60" offset="0"/>
+      <stop stop-color="#de5800" offset="1"/>
+    </linearGradient>
+    <linearGradient id="c" x1="24.275867" x2="24.27586" y1="17.642313" y2="41.729565" gradientTransform="matrix(-.24166667 0 0 .91334616 36.864262 -8.1135391)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="d" x1="11.862065" x2="102.89655" y1="27.496187" y2="27.496189" gradientTransform="matrix(0 .24166667 .91334616 0 5.884057 5.133334)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="e" x1="16.000013" x2="15.999998" y1="7.7884369" y2="55.962944" gradientTransform="matrix(.12083333 0 0 .45667308 -32.930929 4.4432303)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="i" x1="-34.862213" x2="-34.862213" y1="8.090909" y2="25.09091" gradientTransform="matrix(1.1837392,0,0,1.1603311,43.274306,-33.801567)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="h" x1="24.275867" x2="24.27586" y1="17.642313" y2="41.729565" gradientTransform="matrix(.24166667 0 0 -.91334616 -4.300692 40.113443)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="g" x1="11.862065" x2="102.89655" y1="27.496187" y2="27.496189" gradientTransform="matrix(0 -.24166667 -.91334616 0 26.679513 26.86657)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="f" x1="16.000013" x2="15.999998" y1="7.7884369" y2="55.962944" gradientTransform="matrix(.12083333 0 0 .45667308 -.367359 -27.556674)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="b" x1="-34.862213" x2="-34.862213" y1="8.090909" y2="25.09091" gradientTransform="matrix(1.1837392 0 0 1.1603311 10.665834 -.841705)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+  </defs>
+  <g fill="none" stroke-linecap="round">
+    <g>
+      <path d="m27.997596 14v-8" color="#000000" stroke="url(#c)" stroke-width="4"/>
+      <path d="m27.997596 14h-8" color="#000000" stroke="url(#d)" stroke-width="4"/>
+      <rect transform="scale(-1,1)" x="-29.497597" y="14.5" width="1" height="1" color="#000000" stroke="url(#e)"/>
+    </g>
+    <path transform="scale(1,-1)" d="m6.7312512-19.849756a10.061783 9.8628149 0 0 1 9.1659948-8.123233 10.061783 9.8628149 0 0 1 10.286494 6.711478" color="#000000" stroke="url(#i)" stroke-width="4"/>
+    <path transform="scale(-1,1)" d="m-25.877222 13.110106a10.061783 9.8628149 0 0 1 9.165996-8.1232327 10.061783 9.8628149 0 0 1 10.286493 6.7114787" color="#000000" stroke="url(#b)" stroke-width="4"/>
+    <path d="m4.565974 17.999904v8" color="#000000" stroke="url(#h)" stroke-width="4"/>
+    <path d="m4.565974 17.999904h8" color="#000000" stroke="url(#g)" stroke-width="4"/>
+    <rect transform="scale(1,-1)" x="3.0659733" y="-17.499905" width="1" height="1" color="#000000" stroke="url(#f)"/>
+  </g>
+</svg>
