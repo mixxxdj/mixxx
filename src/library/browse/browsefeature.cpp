@@ -259,7 +259,7 @@ void BrowseFeature::slotRefreshDirectoryTree() {
     m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
 
     // Update child items
-    onLazyChildExpandation(m_pLastRightClickedIndex);
+    onLazyChildExpandation(m_pLastRightClickedIndex, true);
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
@@ -339,7 +339,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     QString path = pItem->getData().toString();
 
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+    if (path == QUICK_LINK_NODE) {
         return;
     }
 
@@ -349,9 +349,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     QMenu menu(m_pSidebarWidget);
 
-    if (pItem->parent()->getData().toString() == QUICK_LINK_NODE ||
-            m_quickLinkList.contains(path)) {
-        // This is a QuickLink or path is in the Quick Link list
+    if (pItem->parent()->getData().toString() == QUICK_LINK_NODE) {
+        // This is a QuickLink
         menu.addAction(m_pRemoveQuickLinkAction);
     } else {
         menu.addAction(m_pAddQuickLinkAction);
@@ -414,9 +413,18 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
 }
 } // namespace
 
-// This is called whenever you double click or use the triangle symbol to expand
-// the subtree. The method will read the subfolders.
-void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
+// The method will read the subfolders and create the tree items.
+// This is called whenever you manually expand the subtree (double click on item
+// or click on the triangle icon) and after programmatic expandation with QTreeView's
+// expand() or scrollTo() (with EnsureVisible hint the latter auto-expands all
+// of the index' parents).
+// enforceRebuild is false by default, currently only slotRefreshDirectoryTree()
+// does enforce. If false and child directories have changed, this will add a
+// Refresh icon to the parent item.
+// Note(ronso0) We could use QFileSystemWatcher and rebuild the tree when subdirectories
+// have been changed, but that doesn't seem to work reliably cross-platform, see
+// Qt bugs for `directoryChanged`.
+void BrowseFeature::onLazyChildExpandation(const QModelIndex& index, bool enforceRebuild) {
     // The selected item might have been removed just before this function
     // is invoked!
     // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
@@ -430,43 +438,98 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // to suffice, it would crash after removing a quick link.
     // Just don't call this after right-clicking a quick link.
     if (!index.isValid()) {
+        qWarning() << "BrowseFeature::onLazyChildExpandation: index invalid" << index;
         return;
     }
     TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
     if (!(pItem && pItem->getData().isValid())) {
+        qWarning() << "BrowseFeature::onLazyChildExpandation: no item or item data invalid";
         return;
     }
 
-    qDebug() << "BrowseFeature::onLazyChildExpandation " << pItem->getLabel()
-             << " " << pItem->getData();
+    qWarning() << "BrowseFeature::onLazyChildExpandation "
+               << pItem->getLabel() << pItem->getData().toString();
 
-    QString path = pItem->getData().toString();
+    const QString path = pItem->getData().toString();
 
     // If the item is a built-in node, e.g., 'QuickLink' return
     if (path.isEmpty() || path == QUICK_LINK_NODE) {
         return;
     }
 
-    // Before we populate the subtree, we need to delete old subtrees
-    m_pSidebarModel->removeRows(0, pItem->childRows(), index);
+    m_pLastRightClickedItem = nullptr;
 
     // List of subfolders or drive letters
     std::vector<std::unique_ptr<TreeItem>> folders;
-
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-#if defined(__LINUX__)
-        // Tell the model to remove the cached 'hasChildren' states of all sub-
-        // directories when we expand the Device node.
-        // This ensures we show the real dir tree. This is relevant when devices
-        // were unmounted, changed and mounted again.
-        m_pSidebarModel->removeChildDirsFromCache(removableDriveRootPaths());
-#endif
         folders = createRemovableDevices();
     } else {
         folders = getChildDirectoryItems(path);
     }
 
+    // Always remove the childrens' `hasChildren` flag.in order to
+    // always show the real state.
+    m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
+
+    // Build the child tree only when there are currently no folders displayed,
+    // eg. on initial expand, or when user click the "Refresh directory tree" action.
+    // If we detect changed child directories, eg. when users un/mounted devices
+    // or renamed, added or removed directories outside Mixxx, we show an icon
+    // on the changed parent item and users can refresh with the menu action.
+    //
+    // Note(ronso0) The reason to avoid needless rebuild of the tree is that,
+    // with SidebarBookmarks, jumping to a bookmark in a collapsed tree would
+    // cause a crash when the tree rebuild triggered by expandation invalidates
+    // the index we are currently using in WLibrarySidebar.
+    // Note: ideally we'd reimplement QTreeView's expand() function and maybe
+    // others, too, in order to allow us to emit different signals for manual
+    // and automatic expandation. Though, this is not an option because all this
+    // is done in QTreeView's private base class and therefore a no-go.
+    int childRows = pItem->childRows();
+    if (!enforceRebuild && childRows > 0) {
+        bool needsUpdate = false;
+        if (childRows == static_cast<int>(folders.size())) {
+            const auto currChildren = pItem->children();
+            for (int i = 0; i < childRows; i++) {
+                if (currChildren[i]->getData() != folders[i].get()->getData()) {
+                    needsUpdate = true;
+                    break;
+                }
+            }
+            if (!needsUpdate) {
+                // Nothing to do.
+                // Also update children's `hasChildren` flag?
+                return;
+            }
+            // Else we found a count or path mismatch and rebuild the tree.
+        } else {
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            // Show a warning icon on the parent item. Users may then use the context
+            // menu -> "Refresh directory tree". Or click the icon??
+            pItem->setIcon(QIcon(QStringLiteral(":/images/library/ic_library_refresh.svg")));
+            return;
+        }
+    }
+
+    pItem->setIcon(QIcon());
+
+    // Before we populate the subtree, we need to delete old subtrees
+    if (childRows > 0) {
+        m_pSidebarModel->removeRows(0, childRows, index);
+    }
+#if defined(__LINUX__)
+    if (path == DEVICE_NODE) {
+        // Tell the model to remove the cached 'hasChildren' states of all sub-
+        // directories when we expand the Device node.
+        // This ensures we show the real dir tree. This is relevant when devices
+        // were unmounted, changed and mounted again.
+        m_pSidebarModel->removeChildDirsFromCache(removableDriveRootPaths());
+    }
+#endif
     if (!folders.empty()) {
         m_pSidebarModel->insertTreeItemRows(std::move(folders), 0, index);
     }
