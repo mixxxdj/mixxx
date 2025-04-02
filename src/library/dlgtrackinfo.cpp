@@ -795,28 +795,16 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
 
     // Pass false to skip cover loading
-    const bool importCover = false;
     const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
-                            &trackMetadata, importCover ? &coverImage : nullptr, resetMissingTagMetadata);
+                            &trackMetadata, nullptr, resetMissingTagMetadata);
 
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
 
     const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
-
-    if (importCover) {  // Import cover only if requested
-        auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-                fileInfo,
-                trackMetadata.getAlbumInfo().getTitle(),
-                coverImage);
-        if (coverImage.isNull()) {
-            qDebug() << "Cover image is null!";  // Debug output
-        }
-        trackRecord.setCoverInfo(std::move(guessedCoverInfo));
-    }
 
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
@@ -838,7 +826,6 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(trackRecord),
             fileInfo.location());
 }
-
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
     if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
