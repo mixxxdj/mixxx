@@ -95,6 +95,7 @@ class SidebarModel : public QAbstractItemModel {
 
     enum Roles {
         IconNameRole = Qt::UserRole + 1,
+        NeedsUpdateRole = Qt::UserRole + 2,
         DataRole,
     };
     Q_ENUM(Roles);
@@ -132,6 +133,7 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex getNextPrevBookmarkIndex(const QModelIndex& selIndex, int direction);
 
     bool indexIsBookmark(const QModelIndex& index) const;
+    void updateItem(const QModelIndex& index);
 
   public slots:
     void pressed(const QModelIndex& index);

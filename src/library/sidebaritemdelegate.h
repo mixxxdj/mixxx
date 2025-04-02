@@ -25,6 +25,11 @@ class SidebarItemDelegate : public QStyledItemDelegate {
         }
     }
 
+    bool editorEvent(QEvent* pEvent,
+            QAbstractItemModel* pModel,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) override;
+
   private:
     SidebarModel* m_pSidebarModel; // shared_ptr?
     QColor m_bookmarkColor;
