@@ -309,6 +309,9 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return pTreeItem->getIcon();
         case SidebarModel::DataRole:
             return pTreeItem->getData();
+        case SidebarModel::NeedsUpdateRole:
+            // True only for BrowseFeature items that need an update
+            return pTreeItem->needsUpdate();
         case SidebarModel::IconNameRole:
             // TODO: Add support for icon names in tree items
         default:
@@ -382,6 +385,20 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
         }
         LibraryFeature* pFeature = pTreeItem->feature();
         pFeature->onLazyChildExpandation(index);
+    }
+}
+
+/// Invoked by click on Refresh icon of BrowseFeature items whose child tree
+/// is outdated. Triggers force-rebuild of the chidl tree.
+void SidebarModel::updateItem(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
+    if (!index.isValid()) {
+        return;
+    }
+    TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+    if (pTreeItem) {
+        LibraryFeature* pFeature = pTreeItem->feature();
+        pFeature->onLazyChildExpandation(index, true /* enforce rebuild */);
     }
 }
 
