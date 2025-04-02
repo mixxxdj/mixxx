@@ -246,17 +246,18 @@ void BrowseFeature::slotRefreshDirectoryTree() {
     if (!m_pLastRightClickedItem) {
         return;
     }
+    if (!m_pLastRightClickedIndex.isValid()) {
+        return;
+    }
 
-    const auto* pItem = m_pLastRightClickedItem;
+    const auto data = m_pLastRightClickedItem->getData();
     m_pLastRightClickedItem = nullptr;
-    const auto data = pItem->getData();
     DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
     const QString path = data.toString();
     m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
 
     // Update child items
-    const QModelIndex index = m_pSidebarModel->index(pItem->parentRow(), 0);
-    onLazyChildExpandation(index);
+    onLazyChildExpandation(m_pLastRightClickedIndex);
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
@@ -342,6 +343,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     // Make sure that this is reset after use
     m_pLastRightClickedItem = pItem;
+    m_pLastRightClickedIndex = index;
 
     QMenu menu(m_pSidebarWidget);
 
