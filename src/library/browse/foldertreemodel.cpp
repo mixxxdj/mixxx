@@ -102,7 +102,9 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // filesystems that do not fully implement readdir such as JFS.
     if (directory == nullptr || (unknown_count == total_count && total_count > 0)) {
         QDir dir(path);
-        QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        // Instead of costly entryInfoList() we use entryList() which doesn't
+        // create a QFileInfo cache (only if sort flag is not set!).
+        const QStringList all = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         has_children = all.count() > 0;
     }
 #endif
