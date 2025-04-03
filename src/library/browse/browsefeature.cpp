@@ -358,7 +358,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     menu.addAction(m_pAddtoLibraryAction);
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
-    onLazyChildExpandation(index);
+    // Don't invoke onLazyChildExpandation(index) now! It might cause a crash
+    // after quick link removal, see comment function for details.
 }
 
 namespace {
@@ -421,6 +422,9 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // After migration to Qt5 the implementation of all LibraryFeatures
     // should be revisited, because I consider these checks only as a
     // temporary workaround.
+    // NOTE(ronso0) Still relevant with 2.5.0 and Qt6. These checks don't seem
+    // to suffice, it would crash after removing a quick link.
+    // Just don't call this after right-clicking a quick link.
     if (!index.isValid()) {
         return;
     }
