@@ -186,6 +186,7 @@ class ControlObject : public QObject {
     void readOnlyHandler(double v);
 
   private:
+    bool m_isExecutingCallback = false;  // Prevents reentrant execution
     ControlObject(ControlObject&&) = delete;
     ControlObject(const ControlObject&) = delete;
     ControlObject& operator=(ControlObject&&) = delete;
