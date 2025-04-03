@@ -24,6 +24,8 @@ const QString kViewName = QStringLiteral("BROWSEHOME");
 
 const QString kQuickLinksSeparator = QStringLiteral("-+-");
 
+const ConfigKey kQuickLinksCfgKey = ConfigKey("[Browse]", "QuickLinks");
+
 #if defined(__LINUX__)
 const QStringList removableDriveRootPaths() {
     QStringList paths;
@@ -514,16 +516,20 @@ QString BrowseFeature::getRootViewHtml() const {
 }
 
 void BrowseFeature::saveQuickLinks() {
-    m_pConfig->set(ConfigKey("[Browse]","QuickLinks"),ConfigValue(
-        m_quickLinkList.join(kQuickLinksSeparator)));
+    m_pConfig->setValue<QString>(kQuickLinksCfgKey,
+            m_quickLinkList.join(kQuickLinksSeparator));
 }
 
 void BrowseFeature::loadQuickLinks() {
-    if (m_pConfig->getValueString(ConfigKey("[Browse]","QuickLinks")).isEmpty()) {
+    if (!m_pConfig->exists(kQuickLinksCfgKey)) {
+        // New profile, create default Quick Links
         m_quickLinkList = getDefaultQuickLinks();
     } else {
-        m_quickLinkList = m_pConfig->getValueString(
-            ConfigKey("[Browse]","QuickLinks")).split(kQuickLinksSeparator);
+        const QString quickLinks = m_pConfig->getValueString(
+                kQuickLinksCfgKey);
+        if (!quickLinks.isEmpty()) {
+            m_quickLinkList = quickLinks.split(kQuickLinksSeparator);
+        }
     }
 }
 
