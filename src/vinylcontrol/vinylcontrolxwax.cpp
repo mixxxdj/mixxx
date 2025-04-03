@@ -673,7 +673,7 @@ double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
     // when passthrough is enabled or is playing in reverse
     if (fabs(m_deltaRelativeDriftAmount) > 1.5 ||
             fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
-            m_passthroughEnabled->get() || reverseButton->toBool() ||
+            m_passthroughEnabled->toBool() || reverseButton->toBool() ||
             scratchPositionEnabled->toBool()) {
         m_relativedDriftAmtMem = m_dDriftAmt;
     }
