@@ -29,7 +29,7 @@ exclude: ^(lib/|src/test/.*data/).*|res/controllers/lodash\.mixxx\.js|src/.*_(an
 minimum_pre_commit_version: 2.21.0
 default_language_version:
   python: python3
-  rust: 1.85.0
+  rust: 1.64.0
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
