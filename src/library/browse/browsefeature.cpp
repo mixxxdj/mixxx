@@ -345,25 +345,16 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     QMenu menu(m_pSidebarWidget);
 
-    if (pItem->parent()->getData().toString() == QUICK_LINK_NODE) {
-        // This is a QuickLink
+    if (pItem->parent()->getData().toString() == QUICK_LINK_NODE ||
+            m_quickLinkList.contains(path)) {
+        // This is a QuickLink or path is in the Quick Link list
         menu.addAction(m_pRemoveQuickLinkAction);
-        menu.addAction(m_pRefreshDirTreeAction);
-        menu.exec(globalPos);
-        onLazyChildExpandation(index);
-        return;
+    } else {
+        menu.addAction(m_pAddQuickLinkAction);
     }
 
-    if (m_quickLinkList.contains(path)) {
-        // Path is in the Quick Link list
-        menu.addAction(m_pRemoveQuickLinkAction);
-        menu.addAction(m_pRefreshDirTreeAction);
-        menu.exec(globalPos);
-        onLazyChildExpandation(index);
-        return;
-    }
-
-    menu.addAction(m_pAddQuickLinkAction);
+    // TODO Check if we already watch this path or a parent and don't show or
+    // disable this action.
     menu.addAction(m_pAddtoLibraryAction);
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
