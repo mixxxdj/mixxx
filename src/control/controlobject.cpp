@@ -44,6 +44,23 @@ ControlObject::~ControlObject() {
     Q_UNUSED(success);
     DEBUG_ASSERT(success);
 }
+void ControlObject::triggerCallback() {
+    if (m_isExecutingCallback) {
+        return;  // Prevent reentrant execution
+    }
+
+    m_isExecutingCallback = true;  // Mark callback as running
+
+    try {
+        if (m_callback) {
+            m_callback();
+        }
+    } catch (const std::exception& e) {
+        qWarning() << "Exception in ControlObject callback:" << e.what();
+    }
+
+    m_isExecutingCallback = false;  // Reset flag after execution
+}
 
 // slot
 void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
