@@ -138,7 +138,7 @@ class VinylControlXwax : public VinylControl {
     // The drift between the vinyl position and the file position from the most
     // recent run of analyzeSamples.
     double m_dDriftAmt;
-    double m_relativedDriftAmtMem;
+    double m_relativeDriftAmtMem;
     double m_deltaRelativeDriftAmount;
 
     // Records the time of the last UI update. Used to prevent hammering the GUI
