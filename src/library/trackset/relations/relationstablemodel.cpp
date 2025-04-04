@@ -50,7 +50,6 @@ void RelationsTableModel::displayTrackTargets(TrackPointer pTrack) {
                                   .arg(trackTableName,
                                           columns.join(','),
                                           trackId.toString());
-    qWarning() << "Executing SQL: " << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
