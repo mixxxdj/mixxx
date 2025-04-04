@@ -830,8 +830,6 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             fileInfo.location());
 }
 
-
-
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
     if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
         updateFromTrack(*m_pLoadedTrack);
