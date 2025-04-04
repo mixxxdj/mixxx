@@ -780,31 +780,34 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     // losing existing metadata or to lose the beat grid by replacing
     // it with a default grid created from an imprecise BPM.
     // See also: https://github.com/mixxxdj/mixxx/issues/10420
-    // In addition we need to preserve all other track properties
+    // In addition, we need to preserve all other track properties
     // that are stored in TrackRecord, which serves as the underlying
     // model for this dialog.
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
-    QImage coverImage;
+
     const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
             mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
-    const auto [importResult, sourceSynchronizedAt] =
-            SoundSourceProxy(m_pLoadedTrack)
-                    .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage, resetMissingTagMetadata);
+
+    constexpr QImage* pNoCoverImport = nullptr;
+
+    // Wrapper function for importing metadata without cover image
+    const auto importTrackMetadata = [&](mixxx::TrackMetadata* metadata) {
+        return SoundSourceProxy(m_pLoadedTrack)
+                .importTrackMetadataAndCoverImage(metadata, pNoCoverImport, resetMissingTagMetadata);
+    };
+
+    const auto [importResult, sourceSynchronizedAt] = importTrackMetadata(&trackMetadata);
+
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
+
     const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
-    auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileInfo,
-            trackMetadata.getAlbumInfo().getTitle(),
-            coverImage);
+
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
             sourceSynchronizedAt);
-    trackRecord.setCoverInfo(
-            std::move(guessedCoverInfo));
 
     QString importedKeyText = trackRecord.getMetadata().getTrackInfo().getKeyText();
     {
@@ -821,12 +824,6 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     replaceTrackRecord(
             std::move(trackRecord),
             fileInfo.location());
-}
-
-void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
-    if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
-        updateFromTrack(*m_pLoadedTrack);
-    }
 }
 
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
