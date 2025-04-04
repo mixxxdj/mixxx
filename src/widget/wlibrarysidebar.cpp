@@ -208,13 +208,19 @@ void WLibrarySidebar::renameSelectedItem() {
 }
 
 void WLibrarySidebar::toggleSelectedItem() {
-    QModelIndex index = selectedIndex();
-    if (index.isValid()) {
-        // Activate the item so its content shows in the main library.
-        emit clicked(index);
-        // Expand or collapse the item as necessary.
-        setExpanded(index, !isExpanded(index));
+    const QModelIndex index = selectedIndex();
+    if (!index.isValid()) {
+        return;
     }
+    // Activate the item so its content shows in the main library.
+    emit clicked(index);
+    // Update child tree of BrowseFeature items with outdated tree
+    if (m_pSidebarModel->indexNeedsUpdate(index)) {
+        m_pSidebarModel->updateItem(index);
+        return;
+    }
+    // Expand or collapse the item as necessary.
+    setExpanded(index, !isExpanded(index));
 }
 
 bool WLibrarySidebar::isLeafNodeSelected() {

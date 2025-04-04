@@ -388,6 +388,14 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
     }
 }
 
+bool SidebarModel::indexNeedsUpdate(const QModelIndex& index) const {
+    const QVariant updateData = data(index, NeedsUpdateRole);
+    if (updateData.isValid() && updateData.canConvert<bool>()) {
+        return updateData.toBool();
+    }
+    return false;
+}
+
 /// Invoked by click on Refresh icon of BrowseFeature items whose child tree
 /// is outdated. Triggers force-rebuild of the chidl tree.
 void SidebarModel::updateItem(const QModelIndex& index) {

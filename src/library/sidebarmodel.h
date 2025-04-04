@@ -133,6 +133,7 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex getNextPrevBookmarkIndex(const QModelIndex& selIndex, int direction);
 
     bool indexIsBookmark(const QModelIndex& index) const;
+    bool indexNeedsUpdate(const QModelIndex& index) const;
     void updateItem(const QModelIndex& index);
 
   public slots:
