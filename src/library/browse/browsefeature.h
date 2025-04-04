@@ -47,7 +47,7 @@ class BrowseFeature : public LibraryFeature {
     void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
-    void onLazyChildExpandation(const QModelIndex& index) override;
+    void onLazyChildExpandation(const QModelIndex& index, bool enforceRebuild = false) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
@@ -77,7 +77,9 @@ class BrowseFeature : public LibraryFeature {
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
     TreeItem* m_pLastRightClickedItem;
+    QModelIndex m_pLastRightClickedIndex;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    bool m_forceUpdate;
 };

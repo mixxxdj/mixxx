@@ -24,6 +24,8 @@ const QString kViewName = QStringLiteral("BROWSEHOME");
 
 const QString kQuickLinksSeparator = QStringLiteral("-+-");
 
+const ConfigKey kQuickLinksCfgKey = ConfigKey("[Browse]", "QuickLinks");
+
 #if defined(__LINUX__)
 const QStringList removableDriveRootPaths() {
     QStringList paths;
@@ -161,18 +163,20 @@ void BrowseFeature::slotAddQuickLink() {
         return;
     }
 
-    QVariant vpath = m_pLastRightClickedItem->getData();
-    QString spath = vpath.toString();
-    QString name = extractNameFromPath(spath);
+    const QVariant pathData = m_pLastRightClickedItem->getData();
+    DEBUG_ASSERT(pathData.isValid() && pathData.canConvert<QString>());
+    m_pLastRightClickedItem = nullptr;
+    const QString path = pathData.toString();
+    const QString name = extractNameFromPath(path);
 
-    QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
+    const QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     std::vector<std::unique_ptr<TreeItem>> rows;
     // TODO() Use here std::span to get around the heap allocation of
     // std::vector for a single element.
-    rows.push_back(std::make_unique<TreeItem>(name, vpath));
+    rows.push_back(std::make_unique<TreeItem>(name, pathData));
     m_pSidebarModel->insertTreeItemRows(std::move(rows), m_pQuickLinkItem->childRows(), parent);
 
-    m_quickLinkList.append(spath);
+    m_quickLinkList.append(path);
     saveQuickLinks();
 }
 
@@ -180,11 +184,17 @@ void BrowseFeature::slotAddToLibrary() {
     if (!m_pLastRightClickedItem) {
         return;
     }
-    QString spath = m_pLastRightClickedItem->getData().toString();
-    if (!m_pLibrary->requestAddDir(spath)) {
+    const QVariant pathData = m_pLastRightClickedItem->getData();
+    DEBUG_ASSERT(pathData.isValid() && pathData.canConvert<QString>());
+    m_pLastRightClickedItem = nullptr;
+    const QString path = pathData.toString();
+    m_pLastRightClickedItem = nullptr;
+    if (!m_pLibrary->requestAddDir(path)) {
         return;
     }
 
+    // TODO Check if this really added a new directory. Ignore if it's a child
+    // of an already watched directory. Notify if it failed for another reason.
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     // strings are dupes from DlgPrefLibrary
@@ -216,18 +226,21 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    QString spath = m_pLastRightClickedItem->getData().toString();
-    int index = m_quickLinkList.indexOf(spath);
-
-    if (index == -1) {
+    const auto data = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
+    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
+    const QString spath = data.toString();
+    int quickLinkIndex = m_quickLinkList.indexOf(spath);
+    if (quickLinkIndex == -1) {
         return;
     }
 
-    m_pLastRightClickedItem = nullptr;
+    // Quick Links' parent is QModelIndex(), so we can call this without parent
+    // and still get the QAbstractItemModel::hasIndex() match.
     QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
-    m_pSidebarModel->removeRow(index, parent);
+    m_pSidebarModel->removeRow(quickLinkIndex, parent);
 
-    m_quickLinkList.removeAt(index);
+    m_quickLinkList.removeAt(quickLinkIndex);
     saveQuickLinks();
 }
 
@@ -235,18 +248,18 @@ void BrowseFeature::slotRefreshDirectoryTree() {
     if (!m_pLastRightClickedItem) {
         return;
     }
-
-    const auto* pItem = m_pLastRightClickedItem;
-    if (!pItem->getData().isValid()) {
+    if (!m_pLastRightClickedIndex.isValid()) {
         return;
     }
 
-    const QString path = pItem->getData().toString();
+    const auto data = m_pLastRightClickedItem->getData();
+    m_pLastRightClickedItem = nullptr;
+    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
+    const QString path = data.toString();
     m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
 
     // Update child items
-    const QModelIndex index = m_pSidebarModel->index(pItem->parentRow(), 0);
-    onLazyChildExpandation(index);
+    onLazyChildExpandation(m_pLastRightClickedIndex, true);
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
@@ -275,11 +288,20 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    qDebug() << "BrowseFeature::activateChild " << item->getLabel() << " "
-             << item->getData().toString();
+    if (!index.isValid()) {
+        return;
+    }
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!(pItem && pItem->getData().isValid())) {
+        return;
+    }
+    qDebug() << "BrowseFeature::activateChild " << pItem->getLabel() << " "
+             << pItem->getData().toString();
 
-    QString path = item->getData().toString();
+    QString path = pItem->getData().toString();
+    if (path.isEmpty()) {
+        return;
+    }
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
         // Clear the tracks view
@@ -310,45 +332,37 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!item) {
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pItem) {
         return;
     }
 
-    QString path = item->getData().toString();
+    QString path = pItem->getData().toString();
 
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+    if (path == QUICK_LINK_NODE) {
         return;
     }
 
-    // Make sure that this is reset when TreeItems are deleted in onLazyChildExpandation()
-    m_pLastRightClickedItem = item;
+    // Make sure that this is reset after use
+    m_pLastRightClickedItem = pItem;
+    m_pLastRightClickedIndex = index;
 
     QMenu menu(m_pSidebarWidget);
 
-    if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
+    if (pItem->parent()->getData().toString() == QUICK_LINK_NODE) {
         // This is a QuickLink
         menu.addAction(m_pRemoveQuickLinkAction);
-        menu.addAction(m_pRefreshDirTreeAction);
-        menu.exec(globalPos);
-        onLazyChildExpandation(index);
-        return;
+    } else {
+        menu.addAction(m_pAddQuickLinkAction);
     }
 
-    if (m_quickLinkList.contains(path)) {
-        // Path is in the Quick Link list
-        menu.addAction(m_pRemoveQuickLinkAction);
-        menu.addAction(m_pRefreshDirTreeAction);
-        menu.exec(globalPos);
-        onLazyChildExpandation(index);
-        return;
-    }
-
-    menu.addAction(m_pAddQuickLinkAction);
+    // TODO Check if we already watch this path or a parent and don't show or
+    // disable this action.
     menu.addAction(m_pAddtoLibraryAction);
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
-    onLazyChildExpandation(index);
+    // Don't invoke onLazyChildExpandation(index) now! It might cause a crash
+    // after quick link removal, see comment function for details.
 }
 
 namespace {
@@ -399,9 +413,18 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
 }
 } // namespace
 
-// This is called whenever you double click or use the triangle symbol to expand
-// the subtree. The method will read the subfolders.
-void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
+// The method will read the subfolders and create the tree items.
+// This is called whenever you manually expand the subtree (double click on item
+// or click on the triangle icon) and after programmatic expandation with QTreeView's
+// expand() or scrollTo() (with EnsureVisible hint the latter auto-expands all
+// of the index' parents).
+// enforceRebuild is false by default, currently only slotRefreshDirectoryTree()
+// does enforce. If false and child directories have changed, this will add a
+// Refresh icon to the parent item.
+// Note(ronso0) We could use QFileSystemWatcher and rebuild the tree when subdirectories
+// have been changed, but that doesn't seem to work reliably cross-platform, see
+// Qt bugs for `directoryChanged`.
+void BrowseFeature::onLazyChildExpandation(const QModelIndex& index, bool enforceRebuild) {
     // The selected item might have been removed just before this function
     // is invoked!
     // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
@@ -411,18 +434,23 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // After migration to Qt5 the implementation of all LibraryFeatures
     // should be revisited, because I consider these checks only as a
     // temporary workaround.
+    // NOTE(ronso0) Still relevant with 2.5.0 and Qt6. These checks don't seem
+    // to suffice, it would crash after removing a quick link.
+    // Just don't call this after right-clicking a quick link.
     if (!index.isValid()) {
+        qWarning() << "BrowseFeature::onLazyChildExpandation: index invalid" << index;
         return;
     }
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!(item && item->getData().isValid())) {
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!(pItem && pItem->getData().isValid())) {
+        qWarning() << "BrowseFeature::onLazyChildExpandation: no item or item data invalid";
         return;
     }
 
-    qDebug() << "BrowseFeature::onLazyChildExpandation " << item->getLabel()
-             << " " << item->getData();
+    qWarning() << "BrowseFeature::onLazyChildExpandation "
+               << pItem->getLabel() << pItem->getData().toString();
 
-    QString path = item->getData().toString();
+    const QString path = pItem->getData().toString();
 
     // If the item is a built-in node, e.g., 'QuickLink' return
     if (path.isEmpty() || path == QUICK_LINK_NODE) {
@@ -430,26 +458,83 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     }
 
     m_pLastRightClickedItem = nullptr;
-    // Before we populate the subtree, we need to delete old subtrees
-    m_pSidebarModel->removeRows(0, item->childRows(), index);
 
     // List of subfolders or drive letters
     std::vector<std::unique_ptr<TreeItem>> folders;
-
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-#if defined(__LINUX__)
-        // Tell the model to remove the cached 'hasChildren' states of all sub-
-        // directories when we expand the Device node.
-        // This ensures we show the real dir tree. This is relevant when devices
-        // were unmounted, changed and mounted again.
-        m_pSidebarModel->removeChildDirsFromCache(removableDriveRootPaths());
-#endif
         folders = createRemovableDevices();
     } else {
         folders = getChildDirectoryItems(path);
     }
 
+    // Always remove the childrens' `hasChildren` flag.in order to
+    // always show the real state.
+    m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
+
+    // Build the child tree only if there are currently no folders displayed,
+    // eg. on initial expand, if user clicked the "Refresh directory tree" action
+    // or left-clicked the Refresh icon.
+    // If we detect changed child directories, eg. when users un/mounted devices
+    // or renamed, added or removed directories outside Mixxx, we show an icon
+    // on the changed parent item and users can refresh with the menu action.
+    //
+    // Note(ronso0) The reason to avoid needless rebuild of the tree is that,
+    // with SidebarBookmarks, jumping to a bookmark in a collapsed tree would
+    // cause a crash when the tree rebuild triggered by expandation invalidates
+    // the index we are currently using in WLibrarySidebar.
+    // Note: ideally we'd reimplement QTreeView's expand() function and maybe
+    // others, too, in order to allow us to emit different signals for manual
+    // and automatic expandation. Though, this is not an option because all this
+    // is done in QTreeView's private base class and therefore a no-go.
+    int childRows = pItem->childRows();
+    if (!enforceRebuild && childRows > 0) {
+        bool needsUpdate = false;
+        if (childRows == static_cast<int>(folders.size())) {
+            const auto currChildren = pItem->children();
+            for (int i = 0; i < childRows; i++) {
+                if (currChildren[i]->getData() != folders[i].get()->getData()) {
+                    needsUpdate = true;
+                    break;
+                }
+            }
+            if (!needsUpdate) {
+                // Nothing to do.
+                // Also update children's `hasChildren` flag?
+                return;
+            }
+            // Else we found a count or path mismatch and rebuild the tree.
+        } else {
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            // Show a warning icon on the parent item. Users may then use the context
+            // menu -> "Refresh directory tree".
+            // Or click the Refresh icon. This is handled by SidebarItemDelegate
+            pItem->setIcon(QIcon(QStringLiteral(":/images/library/ic_library_refresh.svg")));
+            pItem->setNeedsUpdate(true);
+            return;
+        }
+    }
+
+    // Reset `needsUpdate` state
+    pItem->setIcon(QIcon());
+    pItem->setNeedsUpdate(false);
+
+    // Before we populate the subtree, we need to delete old subtrees
+    if (childRows > 0) {
+        m_pSidebarModel->removeRows(0, childRows, index);
+    }
+#if defined(__LINUX__)
+    if (path == DEVICE_NODE) {
+        // Tell the model to remove the cached 'hasChildren' states of all sub-
+        // directories when we expand the Device node.
+        // This ensures we show the real dir tree. This is relevant when devices
+        // were unmounted, changed and mounted again.
+        m_pSidebarModel->removeChildDirsFromCache(removableDriveRootPaths());
+    }
+#endif
     if (!folders.empty()) {
         m_pSidebarModel->insertTreeItemRows(std::move(folders), 0, index);
     }
@@ -499,16 +584,20 @@ QString BrowseFeature::getRootViewHtml() const {
 }
 
 void BrowseFeature::saveQuickLinks() {
-    m_pConfig->set(ConfigKey("[Browse]","QuickLinks"),ConfigValue(
-        m_quickLinkList.join(kQuickLinksSeparator)));
+    m_pConfig->setValue<QString>(kQuickLinksCfgKey,
+            m_quickLinkList.join(kQuickLinksSeparator));
 }
 
 void BrowseFeature::loadQuickLinks() {
-    if (m_pConfig->getValueString(ConfigKey("[Browse]","QuickLinks")).isEmpty()) {
+    if (!m_pConfig->exists(kQuickLinksCfgKey)) {
+        // New profile, create default Quick Links
         m_quickLinkList = getDefaultQuickLinks();
     } else {
-        m_quickLinkList = m_pConfig->getValueString(
-            ConfigKey("[Browse]","QuickLinks")).split(kQuickLinksSeparator);
+        const QString quickLinks = m_pConfig->getValueString(
+                kQuickLinksCfgKey);
+        if (!quickLinks.isEmpty()) {
+            m_quickLinkList = quickLinks.split(kQuickLinksSeparator);
+        }
     }
 }
 

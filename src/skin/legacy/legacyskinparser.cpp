@@ -1682,6 +1682,16 @@ QWidget* LegacySkinParser::parseLibrarySidebar(const QDomElement& node) {
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
     commonWidgetSetup(node, pLibrarySidebar, false);
+    // Set bookmark colors
+    QString bookmarkColorStr;
+    if (m_pContext->hasNodeSelectString(node, "BookmarkColor", &bookmarkColorStr)) {
+        QColor bookmarkColor = QColor(bookmarkColorStr);
+        bookmarkColor = WSkinColor::getCorrectColor(bookmarkColor);
+        if (!bookmarkColor.isValid()) {
+            qWarning() << "Invalid BookmarkColor!";
+        }
+        pLibrarySidebar->setBookmarkColor(bookmarkColor);
+    }
     return pLibrarySidebar;
 }
 
