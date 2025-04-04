@@ -17,6 +17,10 @@ ApplicationWindow {
     color: Theme.backgroundColor
     visible: true
 
+    onActiveFocusItemChanged: {
+        console.log(activeFocusItem)
+    }
+
     Column {
         anchors.fill: parent
 
