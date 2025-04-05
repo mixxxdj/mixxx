@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -377,6 +378,195 @@ static int build_lookup_mk2(struct timecode_def *def)
     return 0;
 }
 
+int set_path(char *path, char *subpath)
+{
+    if (!path || !subpath)
+        return -1;
+
+    const char *confdir = "/.mixxx";
+    const char *home;
+    int size;
+    int len;
+
+    home = getenv("HOME");
+    if (!home)
+        return -1;
+
+    len = strlen(home) + strlen(confdir) + strlen(subpath);
+    size = snprintf(path, len + 1, "%s%s%s", home, confdir, subpath);
+    if (size != len) {
+        perror("snprintf");
+        return -1;
+    }
+
+    return 0;
+}
+
+int lut_store_mk2(struct timecode_def *def)
+{
+    if (!def)
+        return -1;
+
+    struct slot_mk2 *slot;
+    struct stat stats;
+    slot_no_t *hash;
+
+    int i, j, len, hashes;
+    char filename[1024];
+    char path[1024];
+    FILE *fp = NULL;
+    int r = 0;
+    int size;
+
+    if (set_path(path, "/lut"))
+        return -1;
+
+    if (stat(path, &stats)) {
+        if (mkdir(path, 0755)) {
+            perror("mkdir");
+            return -1;
+        }
+    }
+
+    sprintf(filename, "%s%s%s", "/lut/", def->name, ".lut");
+    if (set_path(path, filename))
+        return -1;
+
+    printf("Storing LUT at %s\n", path);
+    fp = fopen(path, "w");
+    if (!fp) {
+        perror("fopen");
+        return -1;
+    }
+
+    for (i = 0; i < def->length; i++) {
+        slot = &def->lut_mk2.slot[i];
+
+        if (!slot) {
+            printf("slot_no: %d doesn't exist'\n", i);
+            r = -1;
+            goto out;
+        }
+        size = fwrite(slot, sizeof(struct slot_mk2), 1, fp);
+
+        if(!size) {
+            perror("fwrite");
+            r = -1;
+            goto out;
+        }
+    }
+
+    hashes = 1 << 16;
+    for (j = 0; j < hashes; j++) {
+        hash = &def->lut_mk2.table[j];
+
+        size = fwrite(hash, sizeof(slot_no_t), 1, fp);
+        if(!size) {
+            perror("fwrite");
+            r = -1;
+            goto out;
+        }
+    }
+
+    size = fwrite(&def->lut_mk2.avail, sizeof(slot_no_t), 1, fp);
+    if(!size) {
+        perror("fwrite");
+        r = -1;
+        goto out;
+    }
+
+out:
+    fclose(fp);
+
+    if (hashes == j && def->length == i)
+        printf("Success: ");
+    else
+        printf("Something went wrong: ");
+
+    printf("Wrote %d hashes and %d slots to disk\n", j, i);
+
+    return r;
+}
+
+int lut_load_mk2(struct timecode_def *def)
+{
+    if (!def)
+        return -1;
+
+    struct slot_mk2 *slot;
+
+    char filename[1024];
+    int i, j, hashes;
+    char path[1024];
+    int r = 0;
+    int size;
+    FILE *fp;
+    int len;
+
+    sprintf(filename, "%s%s%s", "/lut/", def->name, ".lut");
+    if (set_path(path, filename))
+        return -1;
+
+    fp = fopen(path, "r");
+    if (!fp) {
+        printf("LUT for %s not found on disk\n", def->desc);
+        return -1;
+    }
+
+    r = lut_init_mk2(&def->lut_mk2, def->length);
+    if (r) {
+        printf("Couldn't initialise LUT\n");
+        goto out;
+    }
+
+    printf("Loading LUT from %s\n", path);
+    for (i = 0; i < def->length; i++) {
+        slot = &def->lut_mk2.slot[i];
+
+        size = fread(slot, sizeof(struct slot_mk2), 1, fp);
+        if(!size) {
+            perror("fread");
+            r = -1;
+            goto out;
+        }
+    }
+
+    hashes = 1 << 16;
+    for (j = 0; j < hashes; j++) {
+
+        slot_no_t *hash = &def->lut_mk2.table[j];
+
+        size = fread(hash, sizeof(slot_no_t), 1, fp);
+        if(!size) {
+            perror("fread");
+            r = -1;
+            goto out;
+        }
+    }
+
+    size = fread(&def->lut_mk2.avail, sizeof(slot_no_t), 1, fp);
+    if(!size) {
+        perror("fwrite");
+        r = -1;
+    }
+        goto out;
+
+
+out:
+    fclose(fp);
+
+    if (hashes == j && def->length == i) {
+        def->lookup = true;
+        printf("Success: ");
+    } else {
+        printf("Something went wrong: ");
+    }
+
+    printf("Loaded %d slots and %d hashes into memory\n", i, j);
+
+    return r;
+}
+
 
 /*
  * Find a timecode definition by name
@@ -394,12 +584,24 @@ struct timecode_def* timecoder_find_definition(const char *name)
         if (strcmp(def->name, name) != 0)
             continue;
 
-        if (def->flags & TRAKTOR_MK2) {
-            if (build_lookup_mk2(def) == -1)
-                return NULL;  /* error */
-        } else {
-            if (build_lookup(def) == -1)
-                return NULL;  /* error */
+        if (!def->lookup) {
+            if (def->flags & TRAKTOR_MK2) {
+                if (!lut_load_mk2(def))
+                    return def;
+
+                if (build_lookup_mk2(def) == -1)
+                    return NULL;  /* error */
+
+                if(lut_store_mk2(def)) {
+                    timecoder_free_lookup();
+                    printf("Couldn't store LUT on disk\n");
+                    return NULL;
+                }
+
+            } else {
+                if (build_lookup(def) == -1)
+                    return NULL;  /* error */
+            }
         }
 
         return def;
