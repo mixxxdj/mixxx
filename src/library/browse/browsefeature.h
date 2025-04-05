@@ -77,6 +77,7 @@ class BrowseFeature : public LibraryFeature {
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
     TreeItem* m_pLastRightClickedItem;
+    QModelIndex m_pLastRightClickedIndex;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
