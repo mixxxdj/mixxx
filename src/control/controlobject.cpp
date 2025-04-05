@@ -1,119 +1,103 @@
 #include "control/controlobject.h"
 
-#include <QtDebug>
-
-#include "control/control.h"
+#include "control/controlproxy.h"
 #include "moc_controlobject.cpp"
 
 ControlObject::ControlObject()
-        : m_pControl(ControlDoublePrivate::getDefaultControl()) {
-}
+        : m_key("", ""),
+          m_isExecutingCallback(false) {}
 
 ControlObject::ControlObject(const ConfigKey& key,
         bool bIgnoreNops,
         bool bTrack,
         bool bPersist,
         double defaultValue)
-        : m_key(key) {
-    // Don't bother looking up the control if key is invalid. Prevents log spew.
-    if (m_key.isValid()) {
-        m_pControl = ControlDoublePrivate::getControl(m_key,
-                ControlFlag::None,
-                this,
-                bIgnoreNops,
-                bTrack,
-                bPersist,
-                defaultValue);
-    }
+        : m_key(key),
+          m_isExecutingCallback(false) {
+    m_pControl = ControlDoublePrivate::getControl(
+            key, bIgnoreNops, bTrack, bPersist, defaultValue);
 
-    // getControl can fail and return a NULL control even with the create flag.
     if (m_pControl) {
-        connect(m_pControl.data(),
-                &ControlDoublePrivate::valueChanged,
-                this,
-                &ControlObject::privateValueChanged,
-                Qt::DirectConnection);
-    } else {
-        m_pControl = ControlDoublePrivate::getDefaultControl();
+        connect(m_pControl.data(), &ControlDoublePrivate::valueChanged,
+                this, &ControlObject::privateValueChanged);
     }
 }
 
 ControlObject::~ControlObject() {
-    DEBUG_ASSERT(m_pControl);
-    const bool success = m_pControl->resetCreatorCO(this);
-    Q_UNUSED(success);
+    bool success = ControlDoublePrivate::releaseControl(m_key);
     DEBUG_ASSERT(success);
 }
 
-// slot
-void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
-    // Only emit valueChanged() if we did not originate this change.
-    if (pSender != this) {
-        emit valueChanged(dValue);
-    }
-}
-
-// static
 ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flags) {
-    //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, flags);
-    if (pCDP) {
-        return pCDP->getCreatorCO();
-    }
-    return nullptr;
+    Q_UNUSED(flags);
+    return new ControlObject(key);
 }
 
 bool ControlObject::exists(const ConfigKey& key) {
-    return !ControlDoublePrivate::getControl(key, ControlFlag::NoWarnIfMissing).isNull();
+    return ControlDoublePrivate::exists(key);
 }
 
-void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
-    m_pControl->setValueFromMidi(o, v);
-}
-
-double ControlObject::getMidiParameter() const {
-    return m_pControl->getMidiParameter();
-}
-
-// static
 double ControlObject::get(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
-    return pCop ? pCop->get() : 0.0;
+    return ControlDoublePrivate::get(key);
+}
+
+void ControlObject::set(const ConfigKey& key, const double& value) {
+    ControlDoublePrivate::set(key, value);
 }
 
 double ControlObject::getParameter() const {
-    return m_pControl->getParameter();
+    return m_pControl ? m_pControl->getParameter() : 0.0;
 }
 
 double ControlObject::getParameterForValue(double value) const {
-    return m_pControl->getParameterForValue(value);
+    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
-double ControlObject::getParameterForMidi(double midiParameter) const {
-    return m_pControl->getParameterForMidi(midiParameter);
+double ControlObject::getParameterForMidi(double midiValue) const {
+    return m_pControl ? m_pControl->getParameterForMidi(midiValue) : 0.0;
 }
 
 void ControlObject::setParameter(double v) {
-    m_pControl->setParameter(v, this);
+    if (m_pControl) m_pControl->setParameter(v);
 }
 
 void ControlObject::setParameterFrom(double v, QObject* pSender) {
-    m_pControl->setParameter(v, pSender);
-}
-
-// static
-void ControlObject::set(const ConfigKey& key, const double& value) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
-    if (pCop) {
-        pCop->set(value, nullptr);
-    }
+    if (m_pControl) m_pControl->setParameterFrom(v, pSender);
 }
 
 void ControlObject::setReadOnly() {
-    connectValueChangeRequest(this, &ControlObject::readOnlyHandler,
-                              Qt::DirectConnection);
+    if (m_pControl) {
+        m_pControl->connectValueChangeRequest(this, &ControlObject::readOnlyHandler);
+    }
+}
+
+void ControlObject::privateValueChanged(double value, QObject* pSetter) {
+    Q_UNUSED(pSetter);
+    emit valueChanged(value);
 }
 
 void ControlObject::readOnlyHandler(double v) {
-    qWarning() << m_key << "is read-only. Ignoring set of value:" << v;
+    Q_UNUSED(v);
+}
+
+void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
+    Q_UNUSED(o);
+    setParameter(v);
+}
+
+double ControlObject::getMidiParameter() const {
+    return getParameter();
+}
+
+void ControlObject::triggerCallback() {
+    if (m_isExecutingCallback) {
+        return;
+    }
+    m_isExecutingCallback = true;
+
+    if (m_pControl) {
+        m_pControl->set(m_pControl->get(), this);
+    }
+
+    m_isExecutingCallback = false;
 }
