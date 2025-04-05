@@ -63,7 +63,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dLastTrackSelectPos(0.0),
           m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
-          m_relativeDriftAmtMem(0.0),
+          m_initialRelativeDriftAmt(0.0),
           m_deltaRelativeDriftAmount(0.0),
           m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
@@ -675,10 +675,10 @@ double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
             std::fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
             m_passthroughEnabled->toBool() || reverseButton->toBool() ||
             m_scratchPositionEnabled->toBool()) {
-        m_relativeDriftAmtMem = m_dDriftAmt;
+        m_initialRelativeDriftAmt = m_dDriftAmt;
     }
 
-    return m_dDriftAmt - m_relativeDriftAmtMem;
+    return m_dDriftAmt - m_initialRelativeDriftAmt;
 }
 
 void VinylControlXwax::enableRecordEndMode() {
