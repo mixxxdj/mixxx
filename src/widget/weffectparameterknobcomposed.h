@@ -2,8 +2,10 @@
 
 #include "effects/defs.h"
 #include "widget/wknobcomposed.h"
+#include "widget/weffectknobparametername.h"  // Forward declaration for label widget to avoid circular dependency.
 
 class EffectsManager;
+class WEffectKnobParameterName; // Forward declare WEffectKnobParameterName to allow usage in setLabelPointer().
 
 // This is used for effect parameter knobs with dynamic
 // tooltips, if the knob value is displayed by rotating a
@@ -22,10 +24,18 @@ class WEffectParameterKnobComposed : public WKnobComposed {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
+    // Connecting the knob with its label.
+    // Allow linking a label widget to this knob so it can be used as a fallback
+    // in the tooltip when parameter info is unavailable.
+    void setLabelPointer(WEffectKnobParameterName* pLabel) {
+        m_pLabel = pLabel;
+    }
+    void mousePressEvent(QMouseEvent* e) override;
   private slots:
     void parameterUpdated();
 
   private:
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
+    WEffectKnobParameterName* m_pLabel = nullptr;   //Pointer to associated label. Pointer to the associated label widget (if available). Used for fallback tooltip when parameter data is missing.
 };
