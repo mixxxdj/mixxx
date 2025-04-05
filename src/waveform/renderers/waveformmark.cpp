@@ -126,15 +126,15 @@ WaveformMark::WaveformMark(const QString& group,
         m_showUntilNext = isShowUntilNextPositionControl(positionControl);
     }
 
-    if (!positionControl.isEmpty()) {
+    if (!positionControl.isEmpty() && !group.isEmpty()) {
         m_pPositionCO = std::make_unique<ControlProxy>(group, positionControl);
     }
-    if (!endPositionControl.isEmpty()) {
+    if (!endPositionControl.isEmpty() && !group.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
         m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
     }
 
-    if (!visibilityControl.isEmpty()) {
+    if (!visibilityControl.isEmpty() && !group.isEmpty()) {
         ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
         m_pVisibleCO = std::make_unique<ControlProxy>(key);
     }
