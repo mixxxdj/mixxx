@@ -2,30 +2,38 @@
 
 #include <QObject>
 #include <QEvent>
+#include <QSharedPointer>
+#include <functional>
 
 #include "preferences/usersettings.h"
 #include "controllers/midi/midimessage.h"
-#include "control/control.h"
+
+// Forward declarations
+class ControlDoublePrivate;
+class ConfigKey;
+
+enum class ControlFlag {
+    None = 0
+    // Add more flags here if needed later
+};
 
 class ControlObject : public QObject {
     Q_OBJECT
 
   public:
     ControlObject();
-
     ControlObject(const ConfigKey& key,
                   bool bIgnoreNops = true,
                   bool bTrack = false,
                   bool bPersist = false,
                   double defaultValue = 0.0);
-
     virtual ~ControlObject();
 
-    static ControlObject* getControl(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
+    static ControlObject* getControl(const ConfigKey& key, ControlFlag flag = ControlFlag::None);
     static ControlObject* getControl(const QString& group,
                                      const QString& item,
-                                     ControlFlags flags = ControlFlag::None) {
-        return getControl(ConfigKey(group, item), flags);
+                                     ControlFlag flag = ControlFlag::None) {
+        return getControl(ConfigKey(group, item), flag);
     }
 
     static bool exists(const ConfigKey& key);
@@ -39,11 +47,13 @@ class ControlObject : public QObject {
     void setKbdRepeatable(bool enable);
     bool getKbdRepeatable() const;
 
-    void addAlias(const ConfigKey& aliasKey) const;
-
+    void addAlias(const ConfigKey& aliasKey);
     ConfigKey getKey() const;
 
-    double get() const;
+    double get() const {
+        return m_pControl ? m_pControl->get() : defaultValue();
+    }
+
     bool toBool() const;
     static double get(const ConfigKey& key);
     static bool toBool(const ConfigKey& key);
@@ -70,14 +80,18 @@ class ControlObject : public QObject {
     }
 
     void setReadOnly();
-    void triggerCallback();  // Public declaration
+
+    void triggerCallback() {
+        if (m_callback) {
+            m_callback();
+        }
+    }
+
+    virtual void setValueFromMidi(MidiOpCode o, double v);
+    virtual double getMidiParameter() const;
 
   signals:
     void valueChanged(double);
-
-  public:
-    virtual void setValueFromMidi(MidiOpCode o, double v);
-    virtual double getMidiParameter() const;
 
   protected:
     ConfigKey m_key;
@@ -89,6 +103,7 @@ class ControlObject : public QObject {
 
   private:
     bool m_isExecutingCallback = false;
+    std::function<void()> m_callback;
 
     ControlObject(ControlObject&&) = delete;
     ControlObject(const ControlObject&) = delete;
@@ -98,6 +113,4 @@ class ControlObject : public QObject {
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
-
-    std::function<void()> m_callback;  // Optional callback
 };
