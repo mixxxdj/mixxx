@@ -24,6 +24,7 @@
 
 #include "lut.h"
 #include "pitch.h"
+#include "delayline.h"
 
 #define TIMECODER_CHANNELS 2
 
@@ -40,10 +41,23 @@ struct timecode_def {
         flags;
     bits_t seed, /* LFSR value at timecode zero */
         taps; /* central LFSR taps, excluding end taps */
+    mk2bits_t seed_mk2, /* MK2 version */
+        taps_mk2; /* MK2 version */
     unsigned int length, /* in cycles */
         safe; /* last 'safe' timecode number (for auto disconnect) */
     bool lookup; /* true if lut has been generated */
     struct lut lut;
+    struct lut_mk2 lut_mk2; /* MK2 version */
+};
+
+struct timecoder_channel_mk2 {
+    int rms, rms_deriv; /* RMS values for the signal and its derivative */
+    unsigned long long rms_old, rms_deriv_old; /* Last RMS values before taking the square root */
+
+    signed int ema; /* Last value of the exponential moving average filter */
+    signed int deriv[2], deriv_scaled; /* Derivative and its scaled version */
+
+    struct delayline delayline; /* needed for the Traktor MK2 demodulation */
 };
 
 struct timecoder_channel {
@@ -51,6 +65,21 @@ struct timecoder_channel {
 	swapped; /* wave recently swapped polarity */
     signed int zero;
     unsigned int crossing_ticker; /* samples since we last crossed zero */
+
+    struct timecoder_channel_mk2 mk2;
+};
+
+struct mk2_subcode {
+    mk2bits_t bitstream;
+    mk2bits_t timecode;
+    mk2bits_t bit;
+
+    unsigned int valid_counter;
+    signed int avg_reading;
+    signed int avg_slope;
+    bool recent_bit_flip;
+
+    struct delayline readings;
 };
 
 struct timecoder {
@@ -60,6 +89,7 @@ struct timecoder {
     /* Precomputed values */
 
     double dt, zero_alpha;
+    int sample_rate;
     signed int threshold;
 
     /* Pitch information */
@@ -73,13 +103,19 @@ struct timecoder {
     signed int ref_level;
     bits_t bitstream, /* actual bits from the record */
         timecode; /* corrected timecode */
+    mk2bits_t mk2_bitstream, /* Traktor MK2 version */
+        mk2_timecode; /* Traktor MK2 version */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
+    double dB; /* Decibels to detect phono level */
 
     /* Feedback */
 
     unsigned char *mon; /* x-y array */
     int mon_size, mon_counter;
+
+    struct mk2_subcode upper_subcode, lower_subcode;
+    double gain_compensation; /* Scaling factor for the derivative */
 };
 
 struct timecode_def* timecoder_find_definition(const char *name);
