@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -398,13 +399,173 @@ static int build_lookup_mk2(struct timecode_def *def)
 }
 
 
+/* 
+ * Caches the generated LUT on the disk.
+ * This is only necessary for the Traktor MK2, since the size of their hash
+ * tables is quite large.
+ */
+
+int lut_store_mk2(struct timecode_def *def, const char *lut_dir_path)
+{
+    if (!def || !lut_dir_path)
+        return -1;
+
+    struct slot_mk2 *slot;
+    struct stat stats;
+    slot_no_t *hash;
+
+    int i, j, len, hashes;
+    char path[1024];
+    FILE *fp = NULL;
+    int r = 0;
+    int size;
+
+    sprintf(path, "%s/%s%s", lut_dir_path, def->name, ".lut");
+
+    fprintf(stdout, "Storing LUT at %s\n", path);
+    fp = fopen(path, "wb");
+    if (!fp) {
+        perror("fopen");
+        return -1;
+    }
+
+    for (i = 0; i < def->length; i++) {
+        slot = &def->lut_mk2.slot[i];
+
+        if (!slot) {
+            printf("slot_no: %d doesn't exist'\n", i);
+            r = -1;
+            goto out;
+        }
+        size = fwrite(slot, sizeof(struct slot_mk2), 1, fp);
+
+        if (!size) {
+            perror("fwrite");
+            r = -1;
+            goto out;
+        }
+    }
+
+    hashes = 1 << 16;
+    for (j = 0; j < hashes; j++) {
+        hash = &def->lut_mk2.table[j];
+
+        size = fwrite(hash, sizeof(slot_no_t), 1, fp);
+        if (!size) {
+            perror("fwrite");
+            r = -1;
+            goto out;
+        }
+    }
+
+    size = fwrite(&def->lut_mk2.avail, sizeof(slot_no_t), 1, fp);
+    if (!size) {
+        perror("fwrite");
+        r = -1;
+        goto out;
+    }
+
+out:
+    fclose(fp);
+
+    if (hashes != j || def->length != i)
+        fprintf(stderr, "Something went wrong: ");
+
+    fprintf(stderr, "Wrote %d hashes and %d slots to disk\n", j, i);
+
+    return r;
+}
+
+
+/* 
+ * Loads the stored LUT from the disk.
+ * This is only necessary for the Traktor MK2, since the size of their hash
+ * tables is quite large.
+ */
+
+int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
+{
+    if (!def || !lut_dir_path)
+        return -1;
+
+    struct slot_mk2 *slot;
+
+    char path[1024];
+    int i, j, hashes;
+    int r = 0;
+    int size;
+    FILE *fp;
+    int len;
+
+    sprintf(path, "%s/%s%s", lut_dir_path, def->name, ".lut");
+
+    fprintf(stdout, "Loading LUT from %s\n", path);
+    fp = fopen(path, "rb");
+    if (!fp) {
+        fprintf(stderr, "LUT for %s not found on disk\n", def->desc);
+        return -1;
+    }
+
+    r = lut_init_mk2(&def->lut_mk2, def->length);
+    if (r) {
+        fprintf(stderr, "Couldn't initialise LUT\n");
+        goto out;
+    }
+
+    fprintf(stdout, "Loading LUT from %s\n", path);
+    for (i = 0; i < def->length; i++) {
+        slot = &def->lut_mk2.slot[i];
+
+        size = fread(slot, sizeof(struct slot_mk2), 1, fp);
+        if (!size) {
+            perror("fread");
+            r = -1;
+            goto out;
+        }
+    }
+
+    hashes = 1 << 16;
+    for (j = 0; j < hashes; j++) {
+
+        slot_no_t *hash = &def->lut_mk2.table[j];
+
+        size = fread(hash, sizeof(slot_no_t), 1, fp);
+        if (!size) {
+            perror("fread");
+            r = -1;
+            goto out;
+        }
+    }
+
+    size = fread(&def->lut_mk2.avail, sizeof(slot_no_t), 1, fp);
+    if (!size) {
+        perror("fwrite");
+        r = -1;
+    }
+        goto out;
+
+
+out:
+    fclose(fp);
+
+    if (hashes == j && def->length == i)
+        def->lookup = true;
+    else
+        fprintf(stderr, "Something went wrong: ");
+
+    fprintf(stderr, "Loaded %d hashes and %d slots from disk\n", j, i);
+
+    return r;
+}
+
+
 /*
  * Find a timecode definition by name
  *
  * Return: pointer to timecode definition, or NULL if not available
  */
 
-struct timecode_def* timecoder_find_definition(const char *name)
+struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path)
 {
     unsigned int n;
 
@@ -414,12 +575,24 @@ struct timecode_def* timecoder_find_definition(const char *name)
         if (strcmp(def->name, name) != 0)
             continue;
 
-        if (def->flags & TRAKTOR_MK2) {
-            if (build_lookup_mk2(def) == -1)
-                return NULL;  /* error */
-        } else {
-            if (build_lookup(def) == -1)
-                return NULL;  /* error */
+        if (!def->lookup) {
+            if (def->flags & TRAKTOR_MK2) {
+                if (!lut_load_mk2(def, lut_dir_path))
+                    return def;
+
+                if (build_lookup_mk2(def) == -1)
+                    return NULL;  /* error */
+
+                if (lut_store_mk2(def, lut_dir_path)) {
+                    timecoder_free_lookup();
+                    fprintf(stderr, "Couldn't store LUT on disk\n");
+                    return NULL;
+                }
+
+            } else {
+                if (build_lookup(def) == -1)
+                    return NULL;  /* error */
+            }
         }
 
         return def;
