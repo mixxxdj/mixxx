@@ -14,13 +14,13 @@ class ConfigKey;
 
 enum class ControlFlag {
     None = 0
-    // Add more flags here if needed later
+    // Future flags can be added here
 };
 
 class ControlObject : public QObject {
     Q_OBJECT
 
-  public:
+public:
     ControlObject();
     ControlObject(const ConfigKey& key,
                   bool bIgnoreNops = true,
@@ -51,7 +51,7 @@ class ControlObject : public QObject {
     ConfigKey getKey() const;
 
     double get() const {
-        return m_pControl ? m_pControl->get() : defaultValue();
+        return m_pControl ? m_pControl->get() : m_defaultValue;
     }
 
     bool toBool() const;
@@ -65,7 +65,7 @@ class ControlObject : public QObject {
 
     void reset();
     void setDefaultValue(double dValue);
-    double defaultValue() const;
+    double defaultValue() const { return m_defaultValue; }
 
     virtual double getParameter() const;
     virtual double getParameterForValue(double value) const;
@@ -90,18 +90,19 @@ class ControlObject : public QObject {
     virtual void setValueFromMidi(MidiOpCode o, double v);
     virtual double getMidiParameter() const;
 
-  signals:
+signals:
     void valueChanged(double);
 
-  protected:
+protected:
     ConfigKey m_key;
     QSharedPointer<ControlDoublePrivate> m_pControl;
 
-  private slots:
+private slots:
     void privateValueChanged(double value, QObject* pSetter);
     void readOnlyHandler(double v);
 
-  private:
+private:
+    double m_defaultValue = 0.0;
     bool m_isExecutingCallback = false;
     std::function<void()> m_callback;
 
