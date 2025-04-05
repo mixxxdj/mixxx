@@ -1010,6 +1010,10 @@
    #14057
   </li>
   <li>
+   M-Vave SMC-Mixer: Add controller mapping
+   #14411
+  </li>
+  <li>
    Numark NS6II: New mapping
    #11075
   </li>
@@ -1089,6 +1093,14 @@
   <li>
    MIDI controller learning: Correct skin control for mic/aux section
    #14221
+  </li>
+  <li>
+   MIDI controller learning: Add more cue controls for samplers
+   #14419
+  </li>
+  <li>
+   MIDI controller learning: Continue after the maximum learning time is over
+   #14429
   </li>
   <li>
    Allow
@@ -1208,6 +1220,11 @@
    eject
    after moving track file to trash
    #14402
+  </li>
+  <li>
+   Fix AutoDJ "Remove Crate" action
+   #14426
+   #14425
   </li>
  </ul>
  <p>

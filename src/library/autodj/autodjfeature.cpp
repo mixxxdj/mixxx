@@ -121,9 +121,11 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &QAction::triggered,
             this,
             &AutoDJFeature::slotClearQueue);
-
-    // Create context-menu items to allow crates to be added to, and removed
-    // from, the auto-DJ queue.
+    // Create context menu item to allow crates to be removed from AutoDJ sources.
+    // onRightClickChild() gets the clicked crate's id form the sidebar model and
+    // assigns it to this action's data.
+    // In slotRemoveCrateFromAutoDj() we retrieve the CrateId data and finally
+    // remove the crate from sources in removeCrateFromAutoDj().
     m_pRemoveCrateFromAutoDjAction =
             make_parented<QAction>(tr("Remove Crate as Track Source"), this);
     m_pRemoveCrateFromAutoDjAction->setShortcut(removeKeySequence);
@@ -265,13 +267,13 @@ void AutoDJFeature::slotClearQueue() {
     clear();
 }
 
-// Add a crate to the auto-DJ queue.
+// Add a crate to the AutoDJ sources
 void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
     m_pTrackCollection->updateAutoDjCrate(crateId, true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
-    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data().value<CrateId>());
+    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data());
     removeCrateFromAutoDj(crateId);
 }
 
