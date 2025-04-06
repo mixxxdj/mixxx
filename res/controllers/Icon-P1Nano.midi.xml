@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5" schemaVersion="1">
+  <info>
+    <name>Icon P1-Nano MIDI 1</name>
+    <author>Sam Whited</author>
+    <description>MIDI mapping for the Icon P1-Nano controller and D-5 display.</description>
+    <forums>https://mixxx.discourse.group/t/icon-pro-audio-p1-nano/31630</forums>
+    <manual>icon_p1_nano</manual>
+    <devices>
+      <product protocol="midi" vendor_id="0x1d03" product_id="0x0806"/>
+    </devices>
+  </info>
+  <settings>
+    <option default="false" variable="disableVuMeters" type="boolean" label="Disable VuMeters">
+      <description>Disables showing the vumeter</description>
+    </option>
+    <option default="false" variable="disableTimeDisplay" type="boolean" label="Disable Timecode Display">
+      <description>Disables the 7-segment timecode display</description>
+    </option>
+    <option default="false" variable="enableBPMBlink" type="boolean" label="Blink record arm button on beat">
+      <description>Blink the record arm LED on the beat</description>
+    </option>
+  </settings>
+  <controller id="icon-p1nano">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" functionprefix=""/>
+      <file filename="Icon-P1Nano-scripts.js" functionprefix="P1Nano"/>
+    </scriptfiles>
+    <controls>
+      <!-- Virtual faders -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.fader[0].input</key>
+        <description>Virtual fader 1.</description>
+        <status>0xE0</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>P1Nano.controller.fader[1].input</key>
+        <description>Virtual fader 2.</description>
+        <status>0xE1</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>P1Nano.controller.fader[2].input</key>
+        <description>Virtual fader 3.</description>
+        <status>0xE2</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>P1Nano.controller.fader[3].input</key>
+        <description>Virtual fader 4.</description>
+        <status>0xE3</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>P1Nano.controller.fader[4].input</key>
+        <description>Virtual fader 9.</description>
+        <status>0xE8</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Knobs -->
+      <control>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[0].input</key>
+        <description>Knob 1.</description>
+        <status>0xB0</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[1].input</key>
+        <description>Knob 2.</description>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[2].input</key>
+        <description>Knob 3.</description>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[3].input</key>
+        <description>Knob 4.</description>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.knobPress[0].input</key>
+        <description>Knob button 1.</description>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.knobPress[1].input</key>
+        <description>Knob button 2.</description>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.knobPress[2].input</key>
+        <description>Knob button 3.</description>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.knobPress[3].input</key>
+        <description>Knob button 4.</description>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Transport Buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.loopButton.input</key>
+        <description>Loop transport button.</description>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.backButton.input</key>
+        <description>Rewind transport button.</description>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.forwardButton.input</key>
+        <description>Fast forward transport button.</description>
+        <status>0x90</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.cueButton.input</key>
+        <description>Pause transport button (used for Cue).</description>
+        <status>0x90</status>
+        <midino>0x5D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.playButton.input</key>
+        <description>Play transport button.</description>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Recording]</group>
+        <key>P1Nano.controller.recordButton.input</key>
+        <description>Record transport button.</description>
+        <status>0x90</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Deck Selection -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.deckSelectInput</key>
+        <description>Deck 3 (volume) selected on controller.</description>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>P1Nano.controller.deckSelectInput</key>
+        <description>Deck 1 (volume) selected on controller.</description>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>P1Nano.controller.deckSelectInput</key>
+        <description>Deck 2 (volume) selected on controller.</description>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>P1Nano.controller.deckSelectInput</key>
+        <description>Deck 4 (volume) selected on controller.</description>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Navigation -->
+      <control>
+        <group>[Library]</group>
+        <key>P1Nano.controller.jogUp.input</key>
+        <description>Jogwheel move mode up.</description>
+        <status>0x90</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>P1Nano.controller.jogDown.input</key>
+        <description>Jogwheel move mode down.</description>
+        <status>0x90</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>P1Nano.controller.jogLeft.input</key>
+        <description>Jogwheel move mode left.</description>
+        <status>0x90</status>
+        <midino>0x62</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>P1Nano.controller.jogRight.input</key>
+        <description>Jogwheel move mode right.</description>
+        <status>0x90</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>P1Nano.controller.focusMode.input</key>
+        <description>Jogwheel focus/zoom side up/down or left/right button.</description>
+        <status>0x90</status>
+        <midino>0x64</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>P1Nano.controller.jogButton.input</key>
+        <description>Jogwheel press.</description>
+        <status>0x90</status>
+        <midino>0x65</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Flip/shift button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.shiftButton.input</key>
+        <description>Flip button.</description>
+        <status>0x90</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Channel Mapped Buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.muteButton[0].input</key>
+        <description>"M" button.</description>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>P1Nano.controller.muteButton[1].input</key>
+        <description>"M" button.</description>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>P1Nano.controller.muteButton[2].input</key>
+        <description>"M" button.</description>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>P1Nano.controller.muteButton[3].input</key>
+        <description>"M" button.</description>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.soloButton[0].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>P1Nano.controller.soloButton[1].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>P1Nano.controller.soloButton[2].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>P1Nano.controller.soloButton[3].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.recordButton[0].input</key>
+        <description>Record button.</description>
+        <status>0x90</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>P1Nano.controller.recordButton[1].input</key>
+        <description>Record button.</description>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>P1Nano.controller.recordButton[2].input</key>
+        <description>Record button.</description>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>P1Nano.controller.recordButton[3].input</key>
+        <description>Record button.</description>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.jogWheel.inputWheel</key>
+        <description>Jog wheel.</description>
+        <status>0xB0</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Touch Screen Buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.tapTempoButton.input</key>
+        <description>Tap Tempo</description>
+        <status>0x90</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Custom layer 1: intro, outro, hotcues -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.introStartBtn.input</key>
+        <description>Intro Start</description>
+        <status>0x91</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.introEndBtn.input</key>
+        <description>Intro End</description>
+        <status>0x91</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.outroStartBtn.input</key>
+        <description>Outro Start</description>
+        <status>0x91</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.outroEndBtn.input</key>
+        <description>Outro End</description>
+        <status>0x91</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[0].input</key>
+        <description>Hotcue 1</description>
+        <status>0x92</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[1].input</key>
+        <description>Hotcue 2</description>
+        <status>0x92</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[2].input</key>
+        <description>Hotcue 3</description>
+        <status>0x92</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[3].input</key>
+        <description>Hotcue 4</description>
+        <status>0x92</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[4].input</key>
+        <description>Hotcue 5</description>
+        <status>0x92</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[5].input</key>
+        <description>Hotcue 6</description>
+        <status>0x92</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[6].input</key>
+        <description>Hotcue 7</description>
+        <status>0x92</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[7].input</key>
+        <description>Hotcue 8</description>
+        <status>0x92</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[8].input</key>
+        <description>Hotcue 9</description>
+        <status>0x92</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[9].input</key>
+        <description>Hotcue 10</description>
+        <status>0x92</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[10].input</key>
+        <description>Hotcue 11</description>
+        <status>0x92</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.hotcues[11].input</key>
+        <description>Hotcue 12</description>
+        <status>0x92</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Layer 2: samplers -->
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[0].input</key>
+        <description>Sampler 1</description>
+        <status>0x93</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[1].input</key>
+        <description>Sampler 2</description>
+        <status>0x93</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[2].input</key>
+        <description>Sampler 3</description>
+        <status>0x93</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[3].input</key>
+        <description>Sampler 4</description>
+        <status>0x93</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[4].input</key>
+        <description>Sampler 5</description>
+        <status>0x93</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[5].input</key>
+        <description>Sampler 6</description>
+        <status>0x93</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[6].input</key>
+        <description>Sampler 7</description>
+        <status>0x93</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[7].input</key>
+        <description>Sampler 8</description>
+        <status>0x93</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[8].input</key>
+        <description>Sampler 9</description>
+        <status>0x93</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[9].input</key>
+        <description>Sampler 10</description>
+        <status>0x93</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[10].input</key>
+        <description>Sampler 11</description>
+        <status>0x93</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[11].input</key>
+        <description>Sampler 12</description>
+        <status>0x93</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[12].input</key>
+        <description>Sampler 13</description>
+        <status>0x93</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[13].input</key>
+        <description>Sampler 14</description>
+        <status>0x93</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[14].input</key>
+        <description>Sampler 15</description>
+        <status>0x93</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.activeDeck.touchScreen.samplers[15].input</key>
+        <description>Sampler 16</description>
+        <status>0x93</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+    </controls>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>
