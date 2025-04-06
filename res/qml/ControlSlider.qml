@@ -2,7 +2,7 @@ import "." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 
-Skin.Slider {
+Skin.Fader {
     property alias group: control.group
     property alias key: control.key
 

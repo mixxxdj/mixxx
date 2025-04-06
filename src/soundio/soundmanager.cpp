@@ -1,10 +1,12 @@
 #include "soundio/soundmanager.h"
 
 #include <portaudio.h>
+#include <qthread.h>
 
 #include <QLibrary>
 #include <QThread>
 #include <QtGlobal>
+#include <chrono>
 #include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
@@ -158,14 +160,21 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         }
     }
 
-    if (closed && sleepAfterClosing) {
 #ifdef __LINUX__
+    if (closed && sleepAfterClosing) {
         // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
         // its resources as well
-        QThread::sleep(kSleepSecondsAfterClosingDevice);
-#endif
+        QTimer::singleShot(
+                std::chrono::seconds(kSleepSecondsAfterClosingDevice),
+                this,
+                &SoundManager::completeDevicesClosing);
     }
+#else
+    completeDevicesClosing();
+#endif
+}
 
+void SoundManager::completeDevicesClosing() {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
@@ -199,6 +208,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
+    emit devicesClosed();
 }
 
 void SoundManager::clearDeviceList(bool sleepAfterClosing) {
