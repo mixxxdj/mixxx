@@ -88,7 +88,7 @@ void RelationsFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_relationsTableModel.displayTrackTargets(pTrack);
+    m_relationsTableModel.displayRelatedTracks(pTrack);
     emit showTrackModel(&m_relationsTableModel);
     emit enableCoverArtDisplay(true);
 }

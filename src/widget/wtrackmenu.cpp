@@ -116,7 +116,6 @@ WTrackMenu::WTrackMenu(
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
-          m_bSetRelationBidirectional(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
     // Warn if any of the chosen features depend on a TrackModel
@@ -1501,35 +1500,26 @@ void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosi
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return;
     }
-    TrackId sourceTrackId = m_pTrack->getId();
-    if (deckGroup.isEmpty()) {
-        return;
-    }
     TrackPointer pTargetTrack = PlayerInfo::instance().getTrackInfo(deckGroup);
     if (!pTargetTrack) {
         return;
     }
-    TrackId targetTrackId = pTargetTrack->getId();
-    Relation* relation;
+    TrackPair tracks = {
+            m_pTrack->getId(),
+            pTargetTrack->getId()};
+    PositionPair positions;
     if (atPlayPosition && !m_deckGroup.isEmpty()) {
-        mixxx::audio::FramePos sourcePosition = mixxx::audio::FramePos(
-                ControlObject::get(ConfigKey(m_deckGroup, "playposition")));
-        mixxx::audio::FramePos targetPosition = mixxx::audio::FramePos(
-                ControlObject::get(ConfigKey(deckGroup, "playposition")));
-        relation = new Relation(
-                sourceTrackId,
-                targetTrackId,
-                sourcePosition,
-                targetPosition,
-                m_bSetRelationBidirectional);
+        positions = {
+                mixxx::audio::FramePos(
+                        ControlObject::get(ConfigKey(m_deckGroup, "playposition"))),
+                mixxx::audio::FramePos(
+                        ControlObject::get(ConfigKey(deckGroup, "playposition")))};
     } else {
-        relation = new Relation(
-                sourceTrackId,
-                targetTrackId,
-                std::nullopt,
-                std::nullopt,
-                m_bSetRelationBidirectional);
+        positions = {std::nullopt, std::nullopt};
     }
+    Relation* relation = new Relation(
+            tracks,
+            positions);
     m_pLibrary
             ->trackCollectionManager()
             ->internalCollection()
@@ -1628,15 +1618,6 @@ void WTrackMenu::slotPopulateRelationMenu() {
     if (!menuEnabled) {
         return;
     }
-    auto pAction = make_parented<QWidgetAction>(m_pSetRelationMenu);
-    auto pCheckBox = make_parented<QCheckBox>(tr("Bidirectional"), m_pSetRelationMenu);
-    pCheckBox->setChecked(m_bSetRelationBidirectional);
-    pAction->setDefaultWidget(pCheckBox.get());
-    connect(pCheckBox.get(),
-            &QCheckBox::toggled,
-            this,
-            [this](bool checked) { m_bSetRelationBidirectional = checked; });
-    m_pSetRelationMenu->addAction(pAction.get());
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {

@@ -8,6 +8,9 @@
 #include "audio/frame.h"
 #include "track/track.h"
 
+using TrackPair = std::array<TrackId, 2>;
+using PositionPair = std::array<std::optional<mixxx::audio::FramePos>, 2>;
+
 class Relation : public QObject {
     Q_OBJECT
 
@@ -17,53 +20,27 @@ class Relation : public QObject {
     /// Load entity from database
     Relation(
             DbId id,
-            TrackId sourceTrackId,
-            TrackId targetTrackId,
-            std::optional<mixxx::audio::FramePos> sourcePosition,
-            std::optional<mixxx::audio::FramePos> targetPosition,
-            bool bidirectional,
+            TrackPair tracks,
+            PositionPair positions,
             const QString& comment,
-            const QString& tag,
             const QDateTime& dateAdded);
 
     /// Initialize new relation
     Relation(
-            TrackId sourceTrackId,
-            TrackId targetTrackId,
-            std::optional<mixxx::audio::FramePos> sourcePosition = std::nullopt,
-            std::optional<mixxx::audio::FramePos> targetPosition = std::nullopt,
-            bool bidirectional = false,
-            const QString& comment = QString(),
-            const QString& tag = QString());
+            TrackPair tracks,
+            PositionPair = {std::nullopt, std::nullopt},
+            const QString& comment = QString());
 
     ~Relation() override = default;
 
     DbId getId() const;
-
-    TrackId getSourceTrackId() const;
-    void setSourceTrackId(TrackId trackId);
-
-    TrackId getTargetTrackId() const;
-    void setTargetTrackId(TrackId trackId);
-
-    std::optional<mixxx::audio::FramePos> getSourcePosition() const;
-    void setSourcePosition(mixxx::audio::FramePos);
-    void clearSourcePosition();
-
-    std::optional<mixxx::audio::FramePos> getTargetPosition() const;
-    void setTargetPosition(mixxx::audio::FramePos);
-    void clearTargetPosition();
-
-    bool getBidirectional() const;
-    void setBidirectional(bool);
-
-    QString getcomment() const;
+    TrackPair getTracks() const;
+    void setTracks(TrackPair);
+    PositionPair getPositions() const;
+    void setPositions(PositionPair);
+    QString getComment() const;
     void setComment(const QString&);
-
-    QString getTag() const;
-    void setTag(const QString&);
-
-    QDateTime getDateAdded();
+    QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime&);
 
   signals:
@@ -73,13 +50,9 @@ class Relation : public QObject {
     void setId(DbId dbId);
 
     DbId m_dbId;
-    TrackId m_sourceTrackId;
-    TrackId m_targetTrackId;
-    std::optional<mixxx::audio::FramePos> m_sourcePosition;
-    std::optional<mixxx::audio::FramePos> m_targetPosition;
-    bool m_bBidirectional;
+    TrackPair m_tracks;
+    PositionPair m_positions;
     QString m_comment;
-    QString m_tag;
     QDateTime m_dateAdded;
 
     friend class RelationDAO;

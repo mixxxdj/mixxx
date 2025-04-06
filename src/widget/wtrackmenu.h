@@ -417,8 +417,6 @@ class WTrackMenu : public QMenu {
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
-    bool m_bSetRelationBidirectional;
-
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;
 

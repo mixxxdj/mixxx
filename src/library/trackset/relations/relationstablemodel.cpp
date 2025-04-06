@@ -4,9 +4,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "mixer/playerinfo.h"
 #include "moc_relationstablemodel.cpp"
-#include "track/track.h"
 
 namespace {
 
@@ -23,7 +21,7 @@ RelationsTableModel::RelationsTableModel(
                   "mixxx.db.model.relations") {
 }
 
-void RelationsTableModel::displayTrackTargets(TrackPointer pTrack) {
+void RelationsTableModel::displayRelatedTracks(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
@@ -44,9 +42,8 @@ void RelationsTableModel::displayTrackTargets(TrackPointer pTrack) {
             "SELECT %2 "
             "FROM library "
             "INNER JOIN relations r "
-            "ON (r.source_track_id = %3 AND library.id = r.target_track_id) "
-            "OR (r.target_track_id = %3 AND r.bidirectional = 1 AND library.id "
-            "= r.source_track_id)")
+            "ON (r.track_a = %3 AND library.id = r.track_b) "
+            "OR (r.track_b = %3 AND library.id = r.track_a)")
                                   .arg(trackTableName,
                                           columns.join(','),
                                           trackId.toString());

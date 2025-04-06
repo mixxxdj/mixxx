@@ -10,7 +10,7 @@ class RelationsTableModel final : public TrackSetTableModel {
             TrackCollectionManager* pTrackCollectionManager);
     ~RelationsTableModel() final = default;
 
-    void displayTrackTargets(TrackPointer pTrack);
+    void displayRelatedTracks(TrackPointer pTrack);
     TrackPointer selectedTrack() const {
         return m_pTrack;
     }

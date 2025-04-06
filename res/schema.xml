@@ -591,11 +591,10 @@ reapplying those migrations.
     <sql>
       CREATE TABLE IF NOT EXISTS relations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        source_track_id INTEGER NOT NULL REFERENCES library(id),
-        target_track_id INTEGER NOT NULL REFERENCES library(id),
-        source_position INTEGER DEFAULT NULL,
-        target_position INTEGER DEFAULT NULL,
-        bidirectional INTEGER DEFAULT 0,
+        track_a INTEGER NOT NULL REFERENCES library(id),
+        track_b INTEGER NOT NULL REFERENCES library(id),
+        position_a INTEGER DEFAULT NULL,
+        position_b INTEGER DEFAULT NULL,
         comment varchar(256),
         tag varchar(60),
         datetime_added DEFAULT CURRENT_TIMESTAMP
