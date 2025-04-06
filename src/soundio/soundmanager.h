@@ -107,9 +107,14 @@ class SoundManager : public QObject {
 
     void processUnderflowHappened(SINT framesPerBuffer);
 
+    UserSettingsPointer userSettings() const {
+        return m_pConfig;
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
+    void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
 

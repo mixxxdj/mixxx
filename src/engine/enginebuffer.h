@@ -89,6 +89,7 @@ class EngineBuffer : public EngineObject {
         RubberBandFiner = 2,
 #endif
     };
+    Q_ENUM(KeylockEngine);
 
     // intended for iteration over the KeylockEngine enum
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
