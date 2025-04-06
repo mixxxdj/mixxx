@@ -46,6 +46,7 @@
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
         <Effect><Variable name="Effect"/></Effect>
         <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+        <Alignment>center</Alignment>
         <Elide>right</Elide>
       </EffectParameterName>
 
