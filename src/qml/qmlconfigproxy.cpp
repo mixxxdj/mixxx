@@ -15,6 +15,7 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
 
 const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString k3DHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 
 } // namespace
 
@@ -40,6 +41,16 @@ int QmlConfigProxy::getMultiSamplingLevel() {
     return static_cast<int>(m_pConfig->getValue(
             ConfigKey(kPreferencesGroup, kMultiSamplingKey),
             mixxx::preferences::MultiSamplingMode::Disabled));
+}
+
+bool QmlConfigProxy::useAcceleration() {
+    if (!m_pConfig->exists(
+                ConfigKey(kPreferencesGroup, k3DHardwareAccelerationKey))) {
+        // TODO: detect whether QML currently run with 3D acceleration. QSGRendererInterface?
+        return false;
+    }
+    return m_pConfig->getValue<bool>(
+            ConfigKey(kPreferencesGroup, k3DHardwareAccelerationKey));
 }
 
 // static
