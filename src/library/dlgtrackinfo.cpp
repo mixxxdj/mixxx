@@ -784,7 +784,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     // losing existing metadata or to lose the beat grid by replacing
     // it with a default grid created from an imprecise BPM.
     // See also: https://github.com/mixxxdj/mixxx/issues/10420
-    // In addition we need to preserve all other track properties
+    // In addition, we need to preserve all other track properties
     // that are stored in TrackRecord, which serves as the underlying
     // model for this dialog.
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
