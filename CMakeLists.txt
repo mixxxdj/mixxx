@@ -3452,6 +3452,7 @@ if(QML)
       src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlwaveformdisplay.cpp
       src/qml/qmlwaveformrenderer.cpp
+      src/qml/qmlsettingparameter.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
