@@ -24,6 +24,12 @@ Rectangle {
     property var newConnection: null
     readonly property var mode: modeChoice.selected == "simple" ? AudioRouter.Mode.Simple : modeChoice.selected == "legacy" ? AudioRouter.Mode.Legacy : AudioRouter.Mode.Advanced
 
+    property int hiddenConnections: 2
+
+    onModeChanged: {
+        updateHiddenConnectionCount()
+    }
+
     property var manager: Mixxx.SoundManager
 
     property Component connectionEdge: Qt.createComponent("AudioConnection.qml")
@@ -38,6 +44,17 @@ Rectangle {
 
     property var inputs: new Object()
     property var outputs: new Object()
+
+    function updateHiddenConnectionCount() {
+        root.hiddenConnections = 0
+        if (root.mode == AudioRouter.Mode.Simple) {
+            for (let connection of root.connections) {
+                if (connection.source?.advanced || connection.sink?.advanced) {
+                    root.hiddenConnections += 1
+                }
+            }
+        }
+    }
 
     function generateDeviceList(devices, existing) {
         let cards = {}
@@ -56,7 +73,7 @@ Rectangle {
 
             cards[cardName].gateways[hw ? hw[1] : deviceName] = {
                 name: deviceName.replace(hwAlsa, ""),
-                node: existing[cardName]?.gateways?.[hw ? hw[1] : deviceName]?.node ?? null,
+                node: existing[cardName] ? .gateways ? .[hw ? hw[1] : deviceName] ? .node ?? null,
                 address: hw ? hw[1] : null,
                 device: device,
                 channels: device.channelCount
@@ -100,6 +117,7 @@ Rectangle {
     ]
 
     function addExistingConnection(node, connections) {
+        if (!connections) return;
         for (let connection of connections) {
             let typeDef = audioTypeMap[connection.type]
             let source = root.system[typeDef.entity].gateways[typeDef.channel][connection.index].edgeItem
@@ -113,6 +131,7 @@ Rectangle {
             root.connections.add(connectionItem)
             node.channelAssignation[availableEdge] = connection.channelGroup / 2
         }
+        root.updateHiddenConnectionCount()
     }
 
     function loadConnections() {
@@ -257,7 +276,7 @@ Rectangle {
                     width: ListView.view.width
 
                     name: modelData
-                    group: "input"
+                    group: "external"
                     gateways: {
                         let channels = []
                         let maxChannelPerInput = 8 / root.inputs[modelData].channelCount;
@@ -268,7 +287,8 @@ Rectangle {
                                         name: item.name,
                                         address: item.address,
                                         channels: [channel, channel+1],
-                                                   type: "source"
+                                                   type: "source",
+                                                   advanced: true
                                                    });
                                                    }
                                                    
@@ -280,6 +300,7 @@ Rectangle {
                         }
                         return channels;
                     }
+                    advanced: root.mode == AudioRouter.Mode.Advanced
 
                     onGatewayReady: (address, node) => {
                         root.registerInputEdge(modelData, address, node)
@@ -327,9 +348,15 @@ Rectangle {
                     id: modeChoice
                     options: [
                               "simple",
-                              "advanced",
+                              !root.hiddenConnections ? "advanced" : "advanced (!)",
                               "legacy"
                     ]
+                    onOptionsChanged: {
+                        if (modeChoice.selected.startsWith("advanced")) {
+                            modeChoice.selected = options[1]
+                        }
+                    }
+                    tooltips: !root.hiddenConnections ? [] : [null, `${root.hiddenConnections} connection${root.hiddenConnections > 1 ? 's' : ''} hidden\nUse the advanced mode to view them`, null]
                 }
             }
             Item {
@@ -406,7 +433,7 @@ Rectangle {
                     width: ListView.view.width
 
                     name: modelData
-                    group: "output"
+                    group: "external"
                     gateways: {
                         let channels = []
                         let maxChannelPerOutput = 8 / root.outputs[modelData].channelCount;
@@ -473,17 +500,8 @@ Rectangle {
             x: root.width / (root.mode == AudioRouter.Mode.Advanced ? 4 : 5)
             y: (root.height / 5) * (1 + index) - implicitHeight / 2
 
-            readonly property list<var> advancedGateways: [{
-                    name: "Output",
-                    type: "source"
-                }, {
-                    name: "Vinyl Control",
-                    type: "sink"
-                }
-            ]
-
             name: `Deck ${index+1}`
-            group: "core"
+            group: "internal"
             gateways: [{
                        name: "Output",
                        type: "source",
@@ -527,7 +545,7 @@ Rectangle {
         y: Math.max(root.height / 16 , root.height / (root.mode == AudioRouter.Mode.Advanced ? 3 : 2) - implicitHeight / 2)
 
         name: "Mixer"
-        group: "core"
+        group: "internal"
 
         advanced: root.mode == AudioRouter.Mode.Advanced
 
@@ -542,7 +560,15 @@ Rectangle {
                 name: "Booth",
                 type: "source"
             }, {
-                name: "Bus",
+                name: "Left Bus",
+                type: "source",
+                advanced: true
+            },  {
+                name: "Center Bus",
+                type: "source",
+                advanced: true
+            },  {
+                name: "Right Bus",
                 type: "source",
                 advanced: true
             }, {
@@ -594,11 +620,17 @@ Rectangle {
                     gateways: {}
                 }
             }
+            let nodeIdxOffset = 0
+            if (address.endsWith(" Bus")) {
+                nodeIdxOffset = address.startsWith("Left ") ? 0 : address.startsWith("Right ") ? 2 : 1
+                address = "Bus"
+            }
+            console.log("register", address, nodeIdxOffset)
             if (!root.system["Mixer"].gateways[address]) {
                 root.system["Mixer"].gateways[address] = []
             }
             for (let nodeIdx = 0; nodeIdx < node.count; nodeIdx++) {
-                root.system["Mixer"].gateways[address][nodeIdx] = node.itemAt(nodeIdx)
+                root.system["Mixer"].gateways[address][nodeIdxOffset + nodeIdx] = node.itemAt(nodeIdx)
             }
         }
     }
@@ -623,19 +655,32 @@ Rectangle {
         y: root.height / 5 * 4 - implicitHeight / 2
 
         name: "Record/Broadcast"
-        group: "core"
+        group: "internal"
         metaType: "sink"
 
         handleSink.vertical: true
 
         gateways: [{
-                   name: "Additional input",
+                   name: "Alternative input",
                    type: "sink"
                    }
         ]
+        property var alternativeConnection: null
+        readonly property bool hasAlternativeConnection: alternativeConnection && alternativeConnection.ready
 
-        onConnect: (point) => root.entityOnConnect(point)
-        onDisconnect: (point) => root.entityOnDisconnect(point)
+        onConnect: (point) => {
+            if (root.newConnection != null) {
+                record.alternativeConnection = root.newConnection
+            }
+            root.entityOnConnect(point)
+            if (root.newConnection != null) {
+                record.alternativeConnection = root.newConnection
+            }
+        }
+        onDisconnect: (point) => {
+            record.alternativeConnection = null
+            root.entityOnDisconnect(point)
+        }
 
         onGatewayReady: (address, node) => {
             if (!root.system["Record"]) {
@@ -652,7 +697,8 @@ Rectangle {
     }
 
     AudioConnection {
-        visible: root.mode == AudioRouter.Mode.Advanced
+        visible: root.mode == AudioRouter.Mode.Advanced && !record.hasAlternativeConnection
+
         router: root
         source: mixer.handleSource
         sink: record.handleSink

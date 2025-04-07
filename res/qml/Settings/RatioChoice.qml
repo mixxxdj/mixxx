@@ -17,6 +17,10 @@ Item {
     property real maxWidth: 0
     property bool normalizedWidth: true
 
+    onTooltipsChanged: {
+        popup.close()
+    }
+
     FontMetrics {
         id: fontMetrics
         font.pixelSize: 14

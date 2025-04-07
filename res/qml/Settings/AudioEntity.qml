@@ -160,6 +160,7 @@ Item {
                         Rectangle {
                             id: edge
                             property var entity: root
+                            property var advanced: node.advanced
                             property int instance: index / (node.channels.length/2)
                             property string type: node.type
                             property string group: root.group

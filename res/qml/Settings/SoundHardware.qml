@@ -87,7 +87,10 @@ Mixxx.SettingGroup {
                         case "Booth":
                             type = 2;
                             break;
-                        case "Bus":
+                        case "Left Bus":
+                        case "Center Bus":
+                        case "Right Bus":
+                            index = connection.source.address.startsWith("Left") ? 0 : connection.source.address.startsWith("Right") ? 2 : 1;
                             type = 3;
                             break;
                         default:
