@@ -950,6 +950,7 @@
       <attribute name="title">
        <string>Screens preview</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayoutScreens"/>
      </widget>
      <widget class="QWidget" name="inputMappingsTab">
       <property name="sizePolicy">
