@@ -1,5 +1,3 @@
-import "." as Skin
-import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -60,7 +58,7 @@ Item {
                         anchors.fill: parent
                         color: root.selected == modelData ? Theme.accentColor : 'transparent'
                         radius: height / 2
-                        id: content
+                        id: contentOption
                         Text {
                             text: modelData
                             color: Theme.white
@@ -79,7 +77,7 @@ Item {
                             onEntered: {
                                 if (!root.tooltips[index]) return;
                                 popup.tooltip = root.tooltips[index] || ""
-                                popup.x = Qt.binding(function() { return content.mapToItem(root, 0, 0).x + content.width / 2 - popup.width / 2; })
+                                popup.x = Qt.binding(function() { return contentOption.mapToItem(root, 0, 0).x + contentOption.width / 2 - popup.width / 2; })
                                 popup.open()
                             }
                             onExited: {
@@ -89,7 +87,7 @@ Item {
                     }
                     InnerShadow {
                         visible: root.selected == modelData
-                        id: bottomInnerEffect
+                        id: bottomOptionInnerEffect
                         anchors.fill: parent
                         radius: 8
                         samples: 32
@@ -97,11 +95,11 @@ Item {
                         horizontalOffset: -1
                         verticalOffset: -1
                         color: "#0E2A54"
-                        source: content
+                        source: contentOption
                     }
                     InnerShadow {
                         visible: root.selected == modelData
-                        id: topInnerEffect
+                        id: topOptionInnerEffect
                         anchors.fill: parent
                         radius: 8
                         samples: 32
@@ -109,7 +107,7 @@ Item {
                         horizontalOffset: 1
                         verticalOffset: 1
                         color: "#0E2A54"
-                        source: bottomInnerEffect
+                        source: bottomOptionInnerEffect
                     }
                 }
             }

@@ -20,28 +20,23 @@ AbstractButton {
             when: root.pressed
 
             PropertyChanges {
-                target: backgroundImage
-                color: root.checked ? "#3a60be" : root.backgroundColor
+                backgroundImage.color: root.checked ? "#3a60be" : root.backgroundColor
             }
 
             PropertyChanges {
-                target: label
-                color: root.pressedColor
+                label.color: root.pressedColor
             }
 
             PropertyChanges {
-                target: bottomInnerEffect
-                color: '#353535'
+                bottomInnerEffect.color: '#353535'
             }
 
             PropertyChanges {
-                target: topInnerEffect
-                color: '#353535'
+                topInnerEffect.color: '#353535'
             }
 
             PropertyChanges {
-                target: labelGlow
-                visible: true
+                labelGlow.visible: true
             }
 
         },
@@ -50,28 +45,23 @@ AbstractButton {
             when: (root.highlight || root.checked) && !root.pressed
 
             PropertyChanges {
-                target: backgroundImage
-                color: "#2D4EA1"
+                backgroundImage.color: "#2D4EA1"
             }
 
             PropertyChanges {
-                target: label
-                color: root.activeColor
+                label.color: root.activeColor
             }
 
             PropertyChanges {
-                target: bottomInnerEffect
-                color: '#353535'
+                bottomInnerEffect.color: '#353535'
             }
 
             PropertyChanges {
-                target: topInnerEffect
-                color: '#353535'
+                topInnerEffect.color: '#353535'
             }
 
             PropertyChanges {
-                target: labelGlow
-                visible: true
+                labelGlow.visible: true
             }
 
         },
@@ -80,13 +70,11 @@ AbstractButton {
             when: !root.checked && !root.highlight && !root.pressed
 
             PropertyChanges {
-                target: label
-                color: root.normalColor
+                label.color: root.normalColor
             }
 
             PropertyChanges {
-                target: labelGlow
-                visible: false
+                labelGlow.visible: false
             }
         }
     ]

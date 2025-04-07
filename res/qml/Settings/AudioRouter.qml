@@ -1,11 +1,7 @@
-import "." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick 2
-import QtQuick.Controls
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import "../Theme"
-import ".." as Skin
 
 Rectangle {
     id: root
@@ -149,7 +145,7 @@ Rectangle {
                 if (!connections) continue;
                 if (node) {
                     addExistingConnection(node, connections)
-                } else if (connections) {
+                } else if (connections.length) {
                     root.outputs[device].gateways[address].delayedConnections = connections
                 }
             }
@@ -165,7 +161,7 @@ Rectangle {
                 if (!connections) continue;
                 if (node) {
                     addExistingConnection(node, connections)
-                } else if (connections) {
+                } else if (connections.length) {
                     root.inputs[device].gateways[address].delayedConnections = connections
                 }
             }
@@ -271,7 +267,7 @@ Rectangle {
                 reuseItems: false
                 spacing: 15
                 delegate: AudioEntity {
-                    id: entity
+                    id: inputEntity
                     required property var modelData
                     width: ListView.view.width
 
@@ -311,19 +307,19 @@ Rectangle {
                     Connections {
                         target: inputList
                         function onContentYChanged() {
-                            entity.scrolled()
+                            inputEntity.scrolled()
                         }
                         function onXChanged() {
-                            entity.scrolled()
+                            inputEntity.scrolled()
                         }
                         function onYChanged() {
-                            entity.scrolled()
+                            inputEntity.scrolled()
                         }
                         function onWidthChanged() {
-                            entity.scrolled()
+                            inputEntity.scrolled()
                         }
                         function onHeightChanged() {
-                            entity.scrolled()
+                            inputEntity.scrolled()
                         }
                     }
                 }
@@ -333,7 +329,6 @@ Rectangle {
             visible: root.mode == AudioRouter.Mode.Advanced
             Layout.fillHeight: true
             Layout.preferredWidth: 1
-            width: 1
             color: '#626262'
         }
         ColumnLayout {
@@ -400,7 +395,6 @@ Rectangle {
             visible: root.mode != AudioRouter.Mode.Legacy
             Layout.fillHeight: true
             Layout.preferredWidth: 1
-            width: 1
             color: '#626262'
         }
 
@@ -428,7 +422,7 @@ Rectangle {
                 spacing: 15
                 cacheBuffer: Math.max(0, contentHeight) // Disable lazy loading to make sure all item are loaded and can be bounded to connection
                 delegate: AudioEntity {
-                    id: entity
+                    id: outputEntity
                     required property var modelData
                     width: ListView.view.width
 
@@ -466,19 +460,19 @@ Rectangle {
                     Connections {
                         target: outputList
                         function onContentYChanged() {
-                            entity.scrolled()
+                            outputEntity.scrolled()
                         }
                         function onXChanged() {
-                            entity.scrolled()
+                            outputEntity.scrolled()
                         }
                         function onYChanged() {
-                            entity.scrolled()
+                            outputEntity.scrolled()
                         }
                         function onWidthChanged() {
-                            entity.scrolled()
+                            outputEntity.scrolled()
                         }
                         function onHeightChanged() {
-                            entity.scrolled()
+                            outputEntity.scrolled()
                         }
                     }
                 }

@@ -225,9 +225,8 @@ Item {
                                     when: (!edge.connection && node.required) || (edge.connection && edge.connection.state == "warning")
 
                                     PropertyChanges {
-                                        target: edge
-                                        width: 15
-                                        color: Theme.warningColor
+                                        edge.width: 15
+                                        edge.color: Theme.warningColor
                                     }
                                 },
                                 State {
@@ -235,8 +234,7 @@ Item {
                                     when: edge.connection && !edge.connection.visible
 
                                     PropertyChanges {
-                                        target: channel
-                                        opacity: 0.5
+                                        channel.opacity: 0.5
                                     }
                                 },
                                 State {
@@ -244,9 +242,8 @@ Item {
                                     when: edge.connection && !edge.connection.existing || edge.connecting
 
                                     PropertyChanges {
-                                        target: edge
-                                        width: 15
-                                        color: Theme.accentColor
+                                        edge.width: 15
+                                        edge.color: Theme.accentColor
                                     }
                                 }
                             ]

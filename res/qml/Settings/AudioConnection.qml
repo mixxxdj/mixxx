@@ -32,13 +32,11 @@ Item {
             when: root.flags
 
             PropertyChanges {
-                target: line
-                strokeColor: Theme.warningColor
+                line.strokeColor: Theme.warningColor
             }
 
             PropertyChanges {
-                target: root
-                z: 50
+                root.z: 50
             }
         },
         State {
@@ -46,8 +44,7 @@ Item {
             when: root.system
 
             PropertyChanges {
-                target: line
-                strokeColor: Theme.darkGray2
+                line.strokeColor: Theme.darkGray2
             }
         },
         State {
@@ -55,12 +52,7 @@ Item {
             when: root.existing
 
             PropertyChanges {
-                target: line
-                strokeColor: Theme.midGray
-            }
-
-            PropertyChanges {
-                target: root
+                line.strokeColor: Theme.midGray
             }
         },
         State {
@@ -68,13 +60,11 @@ Item {
             when: root.sink === undefined
 
             PropertyChanges {
-                target: line
-                strokeColor: Theme.accentColor
+                line.strokeColor: Theme.accentColor
             }
 
             PropertyChanges {
-                target: root
-                z: 50
+                root.z: 50
             }
         },
         State {
@@ -82,8 +72,7 @@ Item {
             when: root.sink != undefined && !root.existing
 
             PropertyChanges {
-                target: line
-                strokeColor: Theme.accentColor
+                line.strokeColor: Theme.accentColor
             }
         }
     ]
