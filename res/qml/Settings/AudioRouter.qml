@@ -291,7 +291,7 @@ Rectangle {
                                                    advanced: true
                                                    });
                                                    }
-                                                   
+
                             if (channel < item.channels) {
                                 let start = channels[channels.length-1].channels[0]
                                 let channelPicker = [...Array(item.channels - start)]
@@ -447,7 +447,7 @@ Rectangle {
                                                    type: "sink"
                                                    });
                                                    }
-                                                   
+
                             if (channel < item.channels) {
                                 let start = channels[channels.length-1].channels[0]
                                 let channelPicker = [...Array(item.channels - start)]
