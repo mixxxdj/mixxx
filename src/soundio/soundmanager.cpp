@@ -150,13 +150,19 @@ QList<QString> SoundManager::getHostAPIList() const {
 void SoundManager::closeDevices(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::closeDevices()";
 
+#ifdef __LINUX__
     bool closed = false;
+#else
+    Q_UNUSED(sleepAfterClosing);
+#endif
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
             pDevice->close();
+#ifdef __LINUX__
             closed = true;
+#endif
         }
     }
 
