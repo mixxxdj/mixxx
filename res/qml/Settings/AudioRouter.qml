@@ -49,7 +49,6 @@ Rectangle {
         root.hiddenConnections = 0
         if (root.mode == AudioRouter.Mode.Simple) {
             for (let connection of root.connections) {
-                console.log("advanced?", connection.source?.advanced, connection.sink?.advanced)
                 if (connection.source?.advanced || connection.sink?.advanced) {
                     root.hiddenConnections += 1
                 }
@@ -74,7 +73,7 @@ Rectangle {
 
             cards[cardName].gateways[hw ? hw[1] : deviceName] = {
                 name: deviceName.replace(hwAlsa, ""),
-                node: existing[cardName] ? .gateways ? .[hw ? hw[1] : deviceName] ? .node ?? null,
+                node: existing[cardName]?.gateways?.[hw ? hw[1] : deviceName]?.node ?? null,
                 address: hw ? hw[1] : null,
                 device: device,
                 channels: device.channelCount
