@@ -253,16 +253,21 @@ DlgPrefController::DlgPrefController(
     connect(this,
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
-            &ControllerManager::slotApplyMapping,
-            Qt::BlockingQueuedConnection);
-    // Wait until the mapping has been cloned in the controller thread
-    // and we can continue to edit our copy
+            &ControllerManager::slotApplyMapping);
 
     // Update GUI
     connect(m_pControllerManager.get(),
             &ControllerManager::mappingApplied,
             this,
             &DlgPrefController::enableWizardAndIOTabs);
+
+    connect(m_pControllerManager.get(),
+            &ControllerManager::mappingApplied,
+            this,
+            [this](bool) {
+                // shortcut for creating and assigning required I/O table models
+                showMapping(m_pMapping);
+            });
 #ifdef MIXXX_USE_QML
     if (CmdlineArgs::Instance()
                     .getControllerPreviewScreens()) {
@@ -368,8 +373,6 @@ void DlgPrefController::showLearningWizard() {
     if (!m_pMapping) {
         m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
         emit applyMapping(m_pController, m_pMapping, true);
-        // shortcut for creating and assigning required I/O table models
-        showMapping(m_pMapping);
     }
 
     // Note that DlgControllerLearning is set to delete itself on close using
