@@ -23,6 +23,7 @@ class AutoGainControlGroupState : public EffectState {
             double releaseParamMs);
 
     CSAMPLE state;
+    CSAMPLE state2;
     double attackCoeff;
     double releaseCoeff;
 
@@ -50,6 +51,11 @@ class AutoGainControlEffect : public EffectProcessorImpl<AutoGainControlGroupSta
             const GroupFeatureState& groupFeatures) override;
 
   private:
+    enum class AutoMakeUp {
+        AutoMakeUpOff = 0,
+        AutoMakeUpOn = 1,
+    };
+
     QString debugString() const {
         return getId();
     }
@@ -57,8 +63,10 @@ class AutoGainControlEffect : public EffectProcessorImpl<AutoGainControlGroupSta
     EngineEffectParameterPointer m_pThreshold;
     EngineEffectParameterPointer m_pTarget;
     EngineEffectParameterPointer m_pGain;
+    EngineEffectParameterPointer m_pKnee;
     EngineEffectParameterPointer m_pAttack;
     EngineEffectParameterPointer m_pRelease;
+    EngineEffectParameterPointer m_pAutoMakeUp;
 
     DISALLOW_COPY_AND_ASSIGN(AutoGainControlEffect);
 

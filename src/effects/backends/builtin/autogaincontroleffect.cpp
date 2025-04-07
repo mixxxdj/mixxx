@@ -4,7 +4,7 @@
 
 namespace {
 constexpr double defaultAttackMs = 1;
-constexpr double defaultReleaseMs = 250;
+constexpr double defaultReleaseMs = 500;
 constexpr double defaultThresholdDB = -40;
 constexpr double defaultTargetDB = -5;
 constexpr double defaultGainDB = 20;
@@ -30,6 +30,21 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     pManifest->setDescription("Auto Gain Control (AGC) effect");
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.0);
+
+    EffectManifestParameterPointer autoMakeUp = pManifest->addParameter();
+    autoMakeUp->setId("automakeup");
+    autoMakeUp->setName(QObject::tr("Auto Makeup Gain"));
+    autoMakeUp->setShortName(QObject::tr("Makeup"));
+    autoMakeUp->setDescription(QObject::tr(
+            "The Auto Makeup button enables automatic gain adjustment to keep "
+            "the input signal \nand the processed output signal as close as "
+            "possible in perceived loudness"));
+    autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    autoMakeUp->setRange(0, 1, 1);
+    autoMakeUp->appendStep(qMakePair(
+            QObject::tr("Off"), static_cast<int>(AutoMakeUp::AutoMakeUpOff)));
+    autoMakeUp->appendStep(qMakePair(
+            QObject::tr("On"), static_cast<int>(AutoMakeUp::AutoMakeUpOn)));
 
     EffectManifestParameterPointer threshold = pManifest->addParameter();
     threshold->setId("threshold");
@@ -65,6 +80,17 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setRange(1, defaultGainDB, 40);
 
+    EffectManifestParameterPointer knee = pManifest->addParameter();
+    knee->setId("knee");
+    knee->setName(QObject::tr("Knee (dB)"));
+    knee->setShortName(QObject::tr("Knee"));
+    knee->setDescription(QObject::tr(
+            "The Knee knob is used to achieve a rounder compression curve"));
+    knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    knee->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
+    knee->setNeutralPointOnScale(0);
+    knee->setRange(0.0, 5.0, 24);
+
     EffectManifestParameterPointer attack = pManifest->addParameter();
     attack->setId("attack");
     attack->setName(QObject::tr("Attack (ms)"));
@@ -95,6 +121,7 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
 
 void AutoGainControlGroupState::clear(const mixxx::EngineParameters& engineParameters) {
     state = CSAMPLE_ONE;
+    state2 = CSAMPLE_ZERO;
     attackCoeff = calculateBallistics(defaultAttackMs, engineParameters);
     releaseCoeff = calculateBallistics(defaultReleaseMs, engineParameters);
 
@@ -133,8 +160,10 @@ void AutoGainControlEffect::loadEngineEffectParameters(
     m_pThreshold = parameters.value("threshold");
     m_pTarget = parameters.value("target");
     m_pGain = parameters.value("gain");
+    m_pKnee = parameters.value("knee");
     m_pAttack = parameters.value("attack");
     m_pRelease = parameters.value("release");
+    m_pAutoMakeUp = parameters.value("automakeup");
 }
 
 void AutoGainControlEffect::processChannel(
@@ -162,12 +191,13 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
     CSAMPLE threshold = db2ratio(m_pThreshold->value());
     CSAMPLE target = db2ratio(m_pTarget->value());
     CSAMPLE_GAIN maxGain = db2ratio(m_pGain->value());
-    double kneeDB = 5.0; // TODO
+    double kneeDB = m_pKnee->value();
     double thresholdDB = m_pThreshold->value();
     double targetLevelDB = m_pTarget->value();
     double maxGainDB = m_pGain->value();
 
     CSAMPLE state = pState->state;
+    // CSAMPLE state2 = pState->state2;
 
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
@@ -179,11 +209,19 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
             continue;
         }
 
+        if (maxSample > state) {
+            state = pState->attackCoeff * state + (1 - pState->attackCoeff) * maxSample;
+        } else {
+            state = pState->releaseCoeff * state + (1 - pState->releaseCoeff) * maxSample;
+        }
+
         // TODO поменять местами определение attack/release и вычисление gain
         // (как в изначальном нашем варианте из файлика)
+        // bool attack = maxSample > state2;
+        // state2 = maxSample;
 
         // Конвертируем текущее значение в dB
-        double inputLevelDB = ratio2db(maxSample);
+        double inputLevelDB = ratio2db(state);
 
         // Рассчитываем необходимый гейн
         double desiredGainDB = 0.0;
@@ -230,15 +268,27 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
         // else {
         //     gain = target / threshold;
         // }
-
-        if (gain < state) {
-            state = pState->attackCoeff * (state - gain) + gain;
-        } else {
-            state = pState->releaseCoeff * (state - gain) + gain;
+        /*
+        if (m_pAutoMakeUp->toInt() == static_cast<int>(AutoMakeUp::AutoMakeUpOn)) {
+            if (attack && gain < state) {
+                state = pState->attackCoeff * (state - gain) + gain;
+            }
+            else {
+                state = pState->releaseCoeff * (state - gain) + gain;
+            }
         }
+        else {
+            if (gain < state) {
+                state = pState->attackCoeff * (state - gain) + gain;
+            }
+            else {
+                state = pState->releaseCoeff * (state - gain) + gain;
+            }
+        }*/
 
-        pOutput[i] = pInput[i] * state;
-        pOutput[i + 1] = pInput[i + 1] * state;
+        pOutput[i] = pInput[i] * gain;
+        pOutput[i + 1] = pInput[i + 1] * gain;
     }
     pState->state = state;
+    // pState->state2 = state2;
 }
