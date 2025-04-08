@@ -22,7 +22,7 @@ class AutoGainControlGroupState : public EffectState {
             double attackParamMs,
             double releaseParamMs);
 
-    CSAMPLE state;
+    double state;
     double attackCoeff;
     double releaseCoeff;
 

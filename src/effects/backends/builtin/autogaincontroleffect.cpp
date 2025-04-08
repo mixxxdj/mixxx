@@ -1,7 +1,5 @@
 #include "effects/backends/builtin/autogaincontroleffect.h"
 
-#include <cmath>
-
 #include "util/math.h"
 
 namespace {
@@ -185,7 +183,7 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
     double upperKneeDB = thresholdDB + 0.5 * kneeDB;
     double lowerKneeDB = thresholdDB - 0.5 * kneeDB;
 
-    CSAMPLE state = pState->state;
+    double state = pState->state;
 
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
@@ -216,7 +214,7 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
 
         desiredGainDB = std::min(desiredGainDB, maxGainDB);
 
-        CSAMPLE_GAIN gain = db2ratio(desiredGainDB);
+        CSAMPLE_GAIN gain = static_cast<CSAMPLE>(db2ratio(desiredGainDB));
 
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
