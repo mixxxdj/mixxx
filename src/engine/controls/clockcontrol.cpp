@@ -1,5 +1,7 @@
 #include "engine/controls/clockcontrol.h"
 
+#include <cmath>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -18,6 +20,12 @@ constexpr double kSignificiantRateThreshold =
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pCOBeatActive(std::make_unique<ControlObject>(ConfigKey(group, "beat_active"))),
+          m_pCOBeatActiveTempo_0_5(std::make_unique<ControlObject>(ConfigKey(group, "beat_active_0_5"))),
+          m_pCOBeatActiveTempo_0_666(std::make_unique<ControlObject>(ConfigKey(group, "beat_active_0_666"))),
+          m_pCOBeatActiveTempo_0_75(std::make_unique<ControlObject>(ConfigKey(group, "beat_active_0_75"))),
+          m_pCOBeatActiveTempo_1_25(std::make_unique<ControlObject>(ConfigKey(group, "beat_active_1_25"))),
+          m_pCOBeatActiveTempo_1_333(std::make_unique<ControlObject>(ConfigKey(group, "beat_active_1_333"))),
+          m_pCOBeatActiveTempo_1_5(std::make_unique<ControlObject>(ConfigKey(group, "beat_active_1_5"))),
           m_pLoopEnabled(std::make_unique<ControlProxy>(group, "loop_enabled", this)),
           m_pLoopStartPosition(std::make_unique<ControlProxy>(group, "loop_start_position", this)),
           m_pLoopEndPosition(std::make_unique<ControlProxy>(group, "loop_end_position", this)),
@@ -29,6 +37,25 @@ ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
           m_internalState(StateMachine::outsideIndicationArea) {
     m_pCOBeatActive->setReadOnly();
     m_pCOBeatActive->forceSet(0.0);
+    
+    // initialize fractional tempo beat active controls
+    m_pCOBeatActiveTempo_0_5->setReadOnly();
+    m_pCOBeatActiveTempo_0_5->forceSet(0.0);
+    
+    m_pCOBeatActiveTempo_0_666->setReadOnly();
+    m_pCOBeatActiveTempo_0_666->forceSet(0.0);
+    
+    m_pCOBeatActiveTempo_0_75->setReadOnly();
+    m_pCOBeatActiveTempo_0_75->forceSet(0.0);
+    
+    m_pCOBeatActiveTempo_1_25->setReadOnly();
+    m_pCOBeatActiveTempo_1_25->forceSet(0.0);
+    
+    m_pCOBeatActiveTempo_1_333->setReadOnly();
+    m_pCOBeatActiveTempo_1_333->forceSet(0.0);
+    
+    m_pCOBeatActiveTempo_1_5->setReadOnly();
+    m_pCOBeatActiveTempo_1_5->forceSet(0.0);
 }
 
 ClockControl::~ClockControl() = default;
@@ -45,7 +72,56 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
 void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // Clear on-beat control
     m_pCOBeatActive->forceSet(0.0);
+    
+    // Clear fractional tempo beat active controls
+    m_pCOBeatActiveTempo_0_5->forceSet(0.0);
+    m_pCOBeatActiveTempo_0_666->forceSet(0.0);
+    m_pCOBeatActiveTempo_0_75->forceSet(0.0);
+    m_pCOBeatActiveTempo_1_25->forceSet(0.0);
+    m_pCOBeatActiveTempo_1_333->forceSet(0.0);
+    m_pCOBeatActiveTempo_1_5->forceSet(0.0);
+    
     m_pBeats = pBeats;
+}
+
+void ClockControl::updateFractionalTempoIndicator(double dRate,
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos trackStartPosition,
+        mixxx::audio::FrameDiff_t beatLength,
+        double tempoRatio,
+        std::unique_ptr<ControlObject>& pCOBeatActive) {
+    
+    // calculate the scaled beat length
+    mixxx::audio::FrameDiff_t scaledBeatLength = beatLength / tempoRatio;
+    
+    // calculate the position within the scaled beat pattern
+    // this ensures the phase starts from the beginning of the track
+    mixxx::audio::FrameDiff_t positionOffset = currentPosition - trackStartPosition;
+    mixxx::audio::FrameDiff_t positionInPattern = std::fmod(positionOffset, scaledBeatLength);
+    
+    // calculate the blink interval for this tempo
+    mixxx::audio::FrameDiff_t blinkIntervalFrames = scaledBeatLength * kBlinkInterval;
+    
+    // determine if we're in the active region of the beat
+    if (dRate > 0.0) {
+        if (m_lastPlayDirectionWasForwards) {
+            // forward playing, check if we're in the active region at the start of the beat
+            if (positionInPattern < blinkIntervalFrames) {
+                pCOBeatActive->forceSet(1.0);
+            } else {
+                pCOBeatActive->forceSet(0.0);
+            }
+        }
+    } else if (dRate < 0.0) {
+        if (!m_lastPlayDirectionWasForwards) {
+            // reverse playing, check if we're in the active region at the end of the beat
+            if ((scaledBeatLength - positionInPattern) < blinkIntervalFrames) {
+                pCOBeatActive->forceSet(2.0);
+            } else {
+                pCOBeatActive->forceSet(0.0);
+            }
+        }
+    }
 }
 
 void ClockControl::updateIndicators(const double dRate,
@@ -70,6 +146,14 @@ void ClockControl::updateIndicators(const double dRate,
     if ((dRate == 0.0) && (m_internalState != StateMachine::outsideIndicationArea)) {
         m_internalState = StateMachine::outsideIndicationArea;
         m_pCOBeatActive->forceSet(0.0);
+        
+        // reset fractional tempo beat active controls
+        m_pCOBeatActiveTempo_0_5->forceSet(0.0);
+        m_pCOBeatActiveTempo_0_666->forceSet(0.0);
+        m_pCOBeatActiveTempo_0_75->forceSet(0.0);
+        m_pCOBeatActiveTempo_1_25->forceSet(0.0);
+        m_pCOBeatActiveTempo_1_333->forceSet(0.0);
+        m_pCOBeatActiveTempo_1_5->forceSet(0.0);
     }
 
     mixxx::audio::FramePos prevIndicatorPosition;
@@ -202,5 +286,23 @@ void ClockControl::updateIndicators(const double dRate,
         }
         m_lastPlayDirectionWasForwards = false;
     }
+
     m_lastEvaluatedPosition = currentPosition;
+    
+    // Update fractional tempo beat indicators if we have valid beat information
+    if (pBeats && prevIndicatorPosition.isValid() && nextIndicatorPosition.isValid()) {
+        // calculate the beat length
+        mixxx::audio::FrameDiff_t beatLength = nextIndicatorPosition - prevIndicatorPosition;
+        
+        // get track start position
+        mixxx::audio::FramePos trackStartPosition = mixxx::audio::kStartFramePos;
+        
+        // update each fractional tempo indicator
+        updateFractionalTempoIndicator(dRate, currentPosition, trackStartPosition, beatLength, 0.5, m_pCOBeatActiveTempo_0_5);
+        updateFractionalTempoIndicator(dRate, currentPosition, trackStartPosition, beatLength, 0.666, m_pCOBeatActiveTempo_0_666);
+        updateFractionalTempoIndicator(dRate, currentPosition, trackStartPosition, beatLength, 0.75, m_pCOBeatActiveTempo_0_75);
+        updateFractionalTempoIndicator(dRate, currentPosition, trackStartPosition, beatLength, 1.25, m_pCOBeatActiveTempo_1_25);
+        updateFractionalTempoIndicator(dRate, currentPosition, trackStartPosition, beatLength, 1.333, m_pCOBeatActiveTempo_1_333);
+        updateFractionalTempoIndicator(dRate, currentPosition, trackStartPosition, beatLength, 1.5, m_pCOBeatActiveTempo_1_5);
+    }
 }
