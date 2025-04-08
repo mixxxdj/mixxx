@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/autogaincontroleffect.h"
 
+#include <cmath>
+
 #include "util/math.h"
 
 namespace {
@@ -30,21 +32,6 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     pManifest->setDescription("Auto Gain Control (AGC) effect");
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.0);
-
-    EffectManifestParameterPointer autoMakeUp = pManifest->addParameter();
-    autoMakeUp->setId("automakeup");
-    autoMakeUp->setName(QObject::tr("Auto Makeup Gain"));
-    autoMakeUp->setShortName(QObject::tr("Makeup"));
-    autoMakeUp->setDescription(QObject::tr(
-            "The Auto Makeup button enables automatic gain adjustment to keep "
-            "the input signal \nand the processed output signal as close as "
-            "possible in perceived loudness"));
-    autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-    autoMakeUp->setRange(0, 1, 1);
-    autoMakeUp->appendStep(qMakePair(
-            QObject::tr("Off"), static_cast<int>(AutoMakeUp::AutoMakeUpOff)));
-    autoMakeUp->appendStep(qMakePair(
-            QObject::tr("On"), static_cast<int>(AutoMakeUp::AutoMakeUpOn)));
 
     EffectManifestParameterPointer threshold = pManifest->addParameter();
     threshold->setId("threshold");
@@ -121,7 +108,6 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
 
 void AutoGainControlGroupState::clear(const mixxx::EngineParameters& engineParameters) {
     state = CSAMPLE_ONE;
-    state2 = CSAMPLE_ZERO;
     attackCoeff = calculateBallistics(defaultAttackMs, engineParameters);
     releaseCoeff = calculateBallistics(defaultReleaseMs, engineParameters);
 
@@ -163,7 +149,6 @@ void AutoGainControlEffect::loadEngineEffectParameters(
     m_pKnee = parameters.value("knee");
     m_pAttack = parameters.value("attack");
     m_pRelease = parameters.value("release");
-    m_pAutoMakeUp = parameters.value("automakeup");
 }
 
 void AutoGainControlEffect::processChannel(
@@ -191,13 +176,13 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
     CSAMPLE threshold = db2ratio(m_pThreshold->value());
     CSAMPLE target = db2ratio(m_pTarget->value());
     CSAMPLE_GAIN maxGain = db2ratio(m_pGain->value());
+    CSAMPLE_GAIN knee = db2ratio(m_pKnee->value());
     double kneeDB = m_pKnee->value();
     double thresholdDB = m_pThreshold->value();
     double targetLevelDB = m_pTarget->value();
     double maxGainDB = m_pGain->value();
 
     CSAMPLE state = pState->state;
-    // CSAMPLE state2 = pState->state2;
 
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
@@ -215,11 +200,7 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
             state = pState->releaseCoeff * state + (1 - pState->releaseCoeff) * maxSample;
         }
 
-        // TODO поменять местами определение attack/release и вычисление gain
-        // (как в изначальном нашем варианте из файлика)
-        // bool attack = maxSample > state2;
-        // state2 = maxSample;
-
+        /*
         // Конвертируем текущее значение в dB
         double inputLevelDB = ratio2db(state);
 
@@ -246,6 +227,25 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
 
         // Переводим нужный гейн в амплитудный коэффициент
         CSAMPLE_GAIN gain = db2ratio(desiredGainDB);
+        */
+
+        CSAMPLE_GAIN kneeHalf = sqrt(knee);
+        CSAMPLE upperKnee = threshold * kneeHalf;
+        CSAMPLE lowerKnee = threshold / kneeHalf;
+        CSAMPLE_GAIN desiredGain;
+
+        if (state > upperKnee) {
+            desiredGain = target / state;
+        } else if (state < lowerKnee) {
+            desiredGain = CSAMPLE_GAIN_ONE;
+        } else {
+            CSAMPLE kneePosition = (state - lowerKnee) / (upperKnee - lowerKnee);
+            desiredGain = pow(state / lowerKnee,
+                    (targetLevelDB - thresholdDB - 0.5 * kneeDB) / kneeDB);
+        }
+
+        CSAMPLE_GAIN gain = std::min(desiredGain, maxGain);
+
         // if (maxSample > threshold) {
         //     gain = target / maxSample;
         //     if (gain > maxGain) {
@@ -290,5 +290,4 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
         pOutput[i + 1] = pInput[i + 1] * gain;
     }
     pState->state = state;
-    // pState->state2 = state2;
 }
