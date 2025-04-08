@@ -10,6 +10,7 @@ constexpr double defaultReleaseMs = 500;
 constexpr double defaultThresholdDB = -40;
 constexpr double defaultTargetDB = -5;
 constexpr double defaultGainDB = 20;
+constexpr double defaultKneeDB = 10;
 
 double calculateBallistics(double paramMs, const mixxx::EngineParameters& engineParameters) {
     return exp(-1000.0 / (paramMs * engineParameters.sampleRate()));
@@ -29,7 +30,9 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     pManifest->setShortName(QObject::tr("AGC"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription("Auto Gain Control (AGC) effect");
+    pManifest->setDescription(
+            "Auto Gain Control (AGC) automatically adjusts the gain of an "
+            "audio signal to maintain a consistent output level.");
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.0);
 
@@ -72,11 +75,13 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     knee->setName(QObject::tr("Knee (dB)"));
     knee->setShortName(QObject::tr("Knee"));
     knee->setDescription(QObject::tr(
-            "The Knee knob is used to achieve a rounder compression curve"));
+            "The Knee knob defines the range around the Threshold where gain "
+            "changes are applied gradually,\nensuring smooth transitions and "
+            "avoiding abrupt level shifts."));
     knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     knee->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     knee->setNeutralPointOnScale(0);
-    knee->setRange(0.0, 5.0, 24);
+    knee->setRange(0.0, defaultKneeDB, 24);
 
     EffectManifestParameterPointer attack = pManifest->addParameter();
     attack->setId("attack");
@@ -173,14 +178,12 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
         const mixxx::EngineParameters& engineParameters,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput) {
-    CSAMPLE threshold = db2ratio(m_pThreshold->value());
-    CSAMPLE target = db2ratio(m_pTarget->value());
-    CSAMPLE_GAIN maxGain = db2ratio(m_pGain->value());
-    CSAMPLE_GAIN knee = db2ratio(m_pKnee->value());
-    double kneeDB = m_pKnee->value();
     double thresholdDB = m_pThreshold->value();
     double targetLevelDB = m_pTarget->value();
     double maxGainDB = m_pGain->value();
+    double kneeDB = m_pKnee->value();
+    double upperKneeDB = thresholdDB + 0.5 * kneeDB;
+    double lowerKneeDB = thresholdDB - 0.5 * kneeDB;
 
     CSAMPLE state = pState->state;
 
@@ -200,91 +203,20 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
             state = pState->releaseCoeff * state + (1 - pState->releaseCoeff) * maxSample;
         }
 
-        /*
-        // Конвертируем текущее значение в dB
         double inputLevelDB = ratio2db(state);
-
-        // Рассчитываем необходимый гейн
-        double desiredGainDB = 0.0;
-
-        double upperKnee = thresholdDB + 0.5 * kneeDB;
-        double lowerKnee = thresholdDB - 0.5 * kneeDB;
-
-        if (inputLevelDB > upperKnee) {
-            // Если уровень выше верхней границы "Knee", рассчитываем гейн как обычно
+        double desiredGainDB;
+        if (inputLevelDB > upperKneeDB) {
             desiredGainDB = targetLevelDB - inputLevelDB;
-        } else if (inputLevelDB < lowerKnee) {
-            // Если уровень ниже нижней границы "Knee", гейн равен 0
+        } else if (inputLevelDB < lowerKneeDB) {
             desiredGainDB = 0.0;
         } else {
-            // Если сигнал находится внутри зоны "Knee", применяем плавный переход гейна
-            double kneePosition = (inputLevelDB - lowerKnee) / kneeDB;
-            desiredGainDB = (targetLevelDB - upperKnee) * kneePosition;
+            double kneePosition = (inputLevelDB - lowerKneeDB) / kneeDB;
+            desiredGainDB = (targetLevelDB - upperKneeDB) * kneePosition;
         }
 
-        // Применяем ограничение на максимальный гейн
         desiredGainDB = std::min(desiredGainDB, maxGainDB);
 
-        // Переводим нужный гейн в амплитудный коэффициент
         CSAMPLE_GAIN gain = db2ratio(desiredGainDB);
-        */
-
-        CSAMPLE_GAIN kneeHalf = sqrt(knee);
-        CSAMPLE upperKnee = threshold * kneeHalf;
-        CSAMPLE lowerKnee = threshold / kneeHalf;
-        CSAMPLE_GAIN desiredGain;
-
-        if (state > upperKnee) {
-            desiredGain = target / state;
-        } else if (state < lowerKnee) {
-            desiredGain = CSAMPLE_GAIN_ONE;
-        } else {
-            CSAMPLE kneePosition = (state - lowerKnee) / (upperKnee - lowerKnee);
-            desiredGain = pow(state / lowerKnee,
-                    (targetLevelDB - thresholdDB - 0.5 * kneeDB) / kneeDB);
-        }
-
-        CSAMPLE_GAIN gain = std::min(desiredGain, maxGain);
-
-        // if (maxSample > threshold) {
-        //     gain = target / maxSample;
-        //     if (gain > maxGain) {
-        //         gain = maxGain;
-        //     }
-        // } else {
-        //     gain = CSAMPLE_GAIN_ONE;
-        // }
-
-        // TODO: maxGain!
-        // TODO: threshold doesn't work if signal is lower!
-        // CSAMPLE_GAIN gain = target / state;
-        // if (gain > maxGain) {
-        //     gain = maxGain;
-        // }
-        //  == another:
-        // if (state > threshold) {
-        //     gain = target / state;
-        // }
-        // else {
-        //     gain = target / threshold;
-        // }
-        /*
-        if (m_pAutoMakeUp->toInt() == static_cast<int>(AutoMakeUp::AutoMakeUpOn)) {
-            if (attack && gain < state) {
-                state = pState->attackCoeff * (state - gain) + gain;
-            }
-            else {
-                state = pState->releaseCoeff * (state - gain) + gain;
-            }
-        }
-        else {
-            if (gain < state) {
-                state = pState->attackCoeff * (state - gain) + gain;
-            }
-            else {
-                state = pState->releaseCoeff * (state - gain) + gain;
-            }
-        }*/
 
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
