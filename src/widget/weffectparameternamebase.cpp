@@ -20,8 +20,8 @@ WEffectParameterNameBase::WEffectParameterNameBase(
         QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
           m_pEffectsManager(pEffectsManager),
-          m_widthHint(0),
-          m_parameterUpdated(false) {
+          m_parameterUpdated(false),
+          m_widthHint(0) {
     setAcceptDrops(true);
     setCursor(Qt::OpenHandCursor);
     parameterUpdated();
@@ -97,9 +97,14 @@ void WEffectParameterNameBase::parameterUpdated() {
                           metrics.size(0, m_text).width()) +
             2 * frameWidth();
     setText(m_text);
-    // valueChanged() is also emitted after a new parameter has been loaded.
+    // valueChanged() is also emitted after a new parameter has been loaded if
+    // that is linked to the Meta knob.
     // We set a flag in order to not show the value in that case.
-    if (isVisible()) {
+    // Though only suppress it for those knobs! For unlinked knobs it would
+    // prevent showing the value on first click.
+    EffectKnobParameterSlot* paramKnob =
+            qobject_cast<EffectKnobParameterSlot*>(m_pParameterSlot.data());
+    if (isVisible() && paramKnob && paramKnob->isLinkedToMetaKnob()) {
         m_parameterUpdated = true;
     }
 }
