@@ -64,12 +64,12 @@ void ITunesDAO::initialize(const QSqlDatabase& database) {
     m_insertPlaylistTrackQuery.prepare(QStringLiteral(
             "INSERT INTO %1 (playlist_id, track_id, "
             "position) VALUES (:playlist_id, :track_id, :position)")
-                                               .arg(ITUNES_PLAYLIST_TRACKS_TABLE));
+                    .arg(ITUNES_PLAYLIST_TRACKS_TABLE));
 
     m_applyPathMappingQuery.prepare(QStringLiteral(
             "UPDATE %1 SET location = replace( location, "
             ":itunes_path, :mixxx_path )")
-                                            .arg(ITUNES_LIBRARY_TABLE));
+                    .arg(ITUNES_LIBRARY_TABLE));
 
     m_isDatabaseInitialized = true;
 }
