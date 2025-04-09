@@ -101,8 +101,6 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             false);
     m_pITunesTrackModel = new ITunesTrackModel(this,
             m_pLibrary->trackCollectionManager(),
-            "mixxx.db.model.itunes",
-            ITUNES_LIBRARY_TABLE,
             m_trackSource);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this,
             m_pLibrary->trackCollectionManager(),

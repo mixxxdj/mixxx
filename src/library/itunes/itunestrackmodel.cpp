@@ -2,6 +2,7 @@
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/basetrackcache.h"
+#include "library/itunes/itunesschema.h"
 #ifdef __IOS_ITUNES_LIBRARY__
 #include "library/itunes/itunesiostrackresolver.h"
 #endif
@@ -18,7 +19,7 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
         : BaseExternalTrackModel(parent,
                   pTrackCollectionManager,
                   "mixxx.db.model.itunes",
-                  "itunes_library",
+                  ITUNES_LIBRARY_TABLE,
                   trackSource) {
 }
 
