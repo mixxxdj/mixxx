@@ -1368,6 +1368,8 @@ add_library(
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
+  src/preferences/dialog/dlgprefremotecontrol.ui
+  src/preferences/dialog/dlgprefremotecontrol.cpp
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
   src/preferences/replaygainsettings.cpp
@@ -1619,6 +1621,7 @@ add_library(
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
+
 set(MIXXX_COMMON_PRECOMPILED_HEADER src/util/assert.h)
 set(
   MIXXX_LIB_PRECOMPILED_HEADER
@@ -4823,6 +4826,17 @@ if(WAVPACK)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
+
+
+#remote control dependencies
+add_subdirectory(
+        "${CMAKE_SOURCE_DIR}/lib/QtWebApp" 
+)
+
+add_dependencies(mixxx-lib qtwebapp)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/QtWebApp/)
+target_sources(mixxx-lib PRIVATE src/remote/remote.cpp)
+target_link_libraries(mixxx-lib PRIVATE qtwebapp)
 
 target_precompile_headers(
   mixxx-lib

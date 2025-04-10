@@ -1,0 +1,10 @@
+PROJECT_NAME           = QtWebApp
+OUTPUT_DIRECTORY       = doc
+JAVADOC_AUTOBRIEF      = YES
+QUIET                  = YES
+INPUT                  = templateengine logging httpserver doc/mainpage.dox
+INPUT_ENCODING         = UTF-8
+RECURSIVE              = YES
+SOURCE_BROWSER         = YES
+GENERATE_TREEVIEW      = YES
+GENERATE_LATEX         = NO

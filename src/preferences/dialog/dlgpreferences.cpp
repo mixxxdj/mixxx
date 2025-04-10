@@ -47,6 +47,8 @@
 #include "util/darkappearance.h"
 #endif
 
+#include "preferences/dialog/dlgprefremotecontrol.h"
+
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
@@ -236,6 +238,12 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_modplug.svg");
 #endif // __MODPLUG__
 
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRemoteControl(this,m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Remote Control"),
+            "ic_preferences_modplug.svg");
+        
     // Find accept and apply buttons
     const auto buttons = buttonBox->buttons();
     for (QAbstractButton* button : buttons) {

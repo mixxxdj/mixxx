@@ -20,6 +20,7 @@
 #include "util/color/rgbcolor.h"
 #include "util/fileinfo.h"
 #include "util/math.h"
+#include "remote/remote.h"
 
 // When linking Qt statically, the Q_IMPORT_PLUGIN is needed for each linked plugin.
 // https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins

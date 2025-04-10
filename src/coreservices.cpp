@@ -354,7 +354,7 @@ void CoreServices::initialize(QApplication* pApp) {
             &PlayerInfo::currentPlayingDeckChanged,
             m_pScreensaverManager.get(),
             &ScreensaverManager::slotCurrentPlayingDeckChanged);
-
+  
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
     Clipboard::createInstance();
@@ -483,6 +483,8 @@ void CoreServices::initialize(QApplication* pApp) {
         }
     }
 
+    m_pRemoteControl = std::make_shared<RemoteControl>(pConfig,m_pTrackCollectionManager.get());
+    
     m_isInitialized = true;
 
 #ifdef MIXXX_USE_QML
