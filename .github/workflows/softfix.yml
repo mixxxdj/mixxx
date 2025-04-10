@@ -31,6 +31,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Softfix
         if: steps.check-maintainer.outputs.result == 'true'
-        uses: daschuer/softfix@v3
+        uses: daschuer/softfix@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
