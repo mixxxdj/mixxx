@@ -27,25 +27,23 @@ function login(password){
     }
 }
 
-function checkauth(sessionid){
+function checkauth(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     xmlhttp.open("POST", "/rcontrol",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.responseType = 'text';
     xmlhttp.send(JSON.stringify(
         [
-            {"sessionid": sessionid},
+            {"sessionid": readCookie("sessionid")},
         ]
     ));
 
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            if(resp){
-                var resp=JSON.parse(xmlhttp.responseText);
-                for(var i=0; i<resp.length; ++i){
-                    if(!resp[i].logintime){
-                        window.location.replace("/login.html"); 
-                    }
+            var resp=JSON.parse(xmlhttp.responseText);
+            for(var i=0; i<resp.length; ++i){
+                if(resp[i].error=="wrong sessionid"){
+                    window.location.replace("/login.html");
                 }
             }
         }

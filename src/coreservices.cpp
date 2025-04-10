@@ -471,7 +471,7 @@ void CoreServices::initialize(QApplication* pApp) {
         }
     }
 
-    m_pRemoteControl = std::make_shared<RemoteControl>(pConfig,m_pLibrary.get());
+    m_pRemoteControl = std::make_shared<RemoteControl>(pConfig,m_pTrackCollectionManager.get());
     
     m_isInitialized = true;
 }
