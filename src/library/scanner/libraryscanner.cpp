@@ -220,6 +220,11 @@ void LibraryScanner::slotStartScan() {
     // verified.
     m_libraryHashDao.invalidateAllDirectories();
 
+    // Make sure that `directory` in in track_locations table is indeed a
+    // directory path. This works around / removes residues of a bug where tracks
+    // are falsely marked missing because `directory` == `location`.
+    m_trackDao.cleanupTrackLocationsDirectory();
+
     // Mark all the tracks in the library as needing verification of their
     // existence. (ie. we want to check they're still on your hard drive where
     // we think they are)

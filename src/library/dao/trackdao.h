@@ -179,6 +179,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Scanning related calls.
     void markTrackLocationsAsVerified(const QStringList& locations) const;
     void markTracksInDirectoriesAsVerified(const QStringList& directories) const;
+    void cleanupTrackLocationsDirectory() const;
     void invalidateTrackLocationsInLibrary() const;
     void markUnverifiedTracksAsDeleted();
 
