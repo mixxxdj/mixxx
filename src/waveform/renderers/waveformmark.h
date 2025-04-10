@@ -1,40 +1,73 @@
 #pragma once
-
 #include <QDomNode>
 #include <QImage>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/cue.h"
-#include "util/memory.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;
-class WaveformSignalColors;
+class QOpenGLTexture;
 
-class WOverview;
+namespace allshader {
+class WaveformRenderMark;
+} // namespace allshader
 
 class WaveformMark {
   public:
+    class Graphics {
+      public:
+        // To indicate that the image for the mark needs to be regenerated,
+        // when the text, color, breadth or level are changed.
+        bool m_obsolete{};
+    };
+
     WaveformMark(
             const QString& group,
             const QDomNode& node,
             const SkinContext& context,
+            int priority,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
+
+    WaveformMark(
+            const QString& group,
+            QString positionControl,
+            const QString& visibilityControl,
+            const QString& textColor,
+            const QString& markAlign,
+            const QString& text,
+            const QString& pixmapPath,
+            const QString& iconPath,
+            QColor color,
+            int priority,
+            int hotCue = Cue::kNoHotCue,
+            const WaveformSignalColors& signalColors = {});
+    ~WaveformMark();
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
-    int getHotCue() const { return m_iHotCue; };
+    float getOffset() const {
+        return m_offset;
+    }
 
-    //The m_pPositionCO related function
+    int getHotCue() const {
+        return m_iHotCue;
+    };
+    int getPriority() const {
+        return m_iPriority;
+    };
+
+    // The m_pPositionCO related function
     bool isValid() const {
         return m_pPositionCO && m_pPositionCO->valid();
     }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
         m_pPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     };
@@ -48,10 +81,17 @@ class WaveformMark {
         return m_pPositionCO->get();
     }
     double getSampleEndPosition() const {
-        if (m_pEndPositionCO) {
-            return m_pEndPositionCO->get();
+        if (!m_pEndPositionCO ||
+                // A hotcue may have an end position although it isn't a saved
+                // loop anymore. This happens when the user changes the cue
+                // type. However, we persist the end position if the user wants
+                // to restore the cue to a saved loop
+                (m_pTypeCO &&
+                        static_cast<mixxx::CueType>(m_pTypeCO->get()) !=
+                                mixxx::CueType::Loop)) {
+            return Cue::kNoPosition;
         }
-        return Cue::kNoPosition;
+        return m_pEndPositionCO->get();
     }
     QString getItem() const {
         return m_pPositionCO->getKey().item;
@@ -67,67 +107,129 @@ class WaveformMark {
         }
         return m_pVisibleCO->toBool();
     }
+    bool isShowUntilNext() const {
+        return m_showUntilNext;
+    }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
         m_pVisibleCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     }
 
+    void setText(const QString& text) {
+        if (m_text != text) {
+            m_text = text;
+            setNeedsImageUpdate();
+        }
+    }
+
     // Sets the appropriate mark colors based on the base color
     void setBaseColor(QColor baseColor, int dimBrightThreshold);
+
     QColor fillColor() const {
         return m_fillColor;
     }
+
     QColor borderColor() const {
         return m_borderColor;
     }
+
     QColor labelColor() const {
         return m_labelColor;
     }
 
+    void setNeedsImageUpdate() {
+        if (m_pGraphics) {
+            m_pGraphics->m_obsolete = true;
+        }
+    }
+
+    bool needsImageUpdate() const {
+        return !m_pGraphics || m_pGraphics->m_obsolete;
+    }
+
+    void setBreadth(float breadth) {
+        if (m_breadth != breadth) {
+            m_breadth = breadth;
+            setNeedsImageUpdate();
+        }
+    }
+
+    void setLevel(int level) {
+        if (m_level != level) {
+            m_level = level;
+            setNeedsImageUpdate();
+        }
+    }
+
+    // Check if a point (in image coordinates) lies on the line
+    bool lineHovered(QPoint point, Qt::Orientation orientation) const;
     // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
+
+    QImage generateImage(float devicePixelRatio);
 
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
+    QString m_iconPath;
 
     float m_linePosition;
+    float m_offset;
+    float m_breadth;
+
+    // When there are overlapping marks, level is increased for each overlapping mark,
+    // so that we can draw them at different positions: The marks at the top go lower
+    // when the level increased, the marks at the bottom higher.
+    int m_level;
 
     WaveformMarkLabel m_label;
 
   private:
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
+    std::unique_ptr<ControlProxy> m_pTypeCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+
+    std::unique_ptr<Graphics> m_pGraphics;
+
+    int m_iPriority;
     int m_iHotCue;
-    QImage m_image;
+
+    // Whether this marker is used in the show beats/time until next marker display.
+    bool m_showUntilNext;
 
     QColor m_fillColor;
     QColor m_borderColor;
     QColor m_labelColor;
 
     friend class WaveformRenderMark;
+    friend class WaveformRenderMarkBase;
+    friend class allshader::WaveformRenderMark;
 };
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
-inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
-    double leftPosition = lhs->getSamplePosition();
-    int leftHotcue = lhs->getHotCue();
-    double rightPosition = rhs->getSamplePosition();
-    int rightHotcue = rhs->getHotCue();
-    if (leftPosition == rightPosition) {
-        // Sort WaveformMarks without hotcues before those with hotcues;
-        // if both have hotcues, sort numerically by hotcue number.
-        if (leftHotcue == Cue::kNoHotCue && rightHotcue != Cue::kNoHotCue) {
-            return true;
-        } else if (leftHotcue != Cue::kNoHotCue && rightHotcue == Cue::kNoHotCue) {
-            return false;
-        } else {
-            return leftHotcue < rightHotcue;
-        }
+// This class provides an immutable sortkey for the WaveformMark using sample
+// position and hotcue number. IMPORTANT: The Mark's position may be changed after
+// a key's creation, and those updates will not be reflected in these sortkeys.
+// Currently they are used to render marks on the Overview, a situation where
+// temporarily incorrect sort order is acceptable.
+class WaveformMarkSortKey {
+  public:
+    WaveformMarkSortKey(double samplePosition, int priority)
+            : m_samplePosition(samplePosition),
+              m_priority(priority) {
     }
-    return leftPosition < rightPosition;
-}
+
+    bool operator<(const WaveformMarkSortKey& other) const {
+        return m_samplePosition == other.m_samplePosition
+                ? m_priority < other.m_priority
+                : m_samplePosition < other.m_samplePosition;
+    }
+
+  private:
+    double m_samplePosition;
+    int m_priority;
+};

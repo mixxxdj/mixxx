@@ -2,10 +2,12 @@
 #include <QTemporaryFile>
 #include <QtDebug>
 
+#include "analyzer/analyzersilence.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "test/soundsourceproviderregistration.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
@@ -55,6 +57,10 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
 #endif
                 << "-png.mp3"
                 << "-vbr.mp3"
+#ifdef __STEM__
+                << ".stem.mp4"
+                << ".stem.m4a"
+#endif
                 << ".ogg"
                 << ".opus"
                 << ".wav"
@@ -62,7 +68,7 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
                 << ".wv";
 
         QStringList supportedFileNameSuffixes;
-        for (const auto& fileNameSuffix : qAsConst(availableFileNameSuffixes)) {
+        for (const auto& fileNameSuffix : std::as_const(availableFileNameSuffixes)) {
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
@@ -95,8 +101,8 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
         mixxx::AudioSource::OpenParams openParams;
-        const auto channelCount = mixxx::audio::ChannelCount(2);
-        openParams.setChannelCount(mixxx::audio::ChannelCount(2));
+        const auto channelCount = mixxx::audio::ChannelCount::stereo();
+        openParams.setChannelCount(channelCount);
         auto pAudioSource = proxy.openAudioSource(openParams);
         if (pAudioSource) {
             if (pAudioSource->getSignalInfo().getChannelCount() != channelCount) {
@@ -119,8 +125,8 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
             const CSAMPLE* actual,
             const char* errorMessage) {
         for (SINT i = 0; i < size; ++i) {
-            EXPECT_NEAR(expected[i], actual[i],
-                    kMaxDecodingError) << errorMessage;
+            EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
+                    << "i=" << i << " " << errorMessage;
         }
     }
 
@@ -290,8 +296,12 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
             getTestDir().filePath(QStringLiteral("id3-test-data/TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded,
-            proxy.importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first);
+            proxy.importTrackMetadataAndCoverImage(
+                         &trackMetadata, nullptr, resetMissingTagMetadata)
+                    .first);
     EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());
@@ -743,6 +753,134 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
     }
 }
 
+TEST_F(SoundSourceProxyTest, firstSoundTest) {
+    constexpr SINT kReadFrameCount = 2000;
+
+    struct RefFirstSound {
+        QString path;
+        SINT firstSoundSample;
+    };
+
+    RefFirstSound refs[] = {{QStringLiteral("cover-test.aiff"), 1166},
+            {QStringLiteral("cover-test-alac.caf"), 1166},
+            {QStringLiteral("cover-test.flac"), 1166},
+            {QStringLiteral("cover-test-itunes-12.3.0-aac.m4a"),
+#if defined(__WINDOWS__) || defined(__FAAD__)
+                    1390}, // Media Foundation 10.0.17763.2989
+                           // Media Foundation 10.0.20348.1
+                           // Nero FAAD2 2.64
+#else
+                    1166}, // FFmpeg 4.2.7-0ubuntu0.1
+                           // FFmpeg 4.4.2-0ubuntu0.22.04.1
+                           // FFmpeg 5.1.2 windows
+                           // CoreAudio Version 11.7.8 (Build 20G1351)
+                           // CoreAusio Version 12.6.7 (Build 21G651)
+#endif
+            // 1168 FFmpeg 4.2.7-0ubuntu0.1
+
+            {QStringLiteral("cover-test-ffmpeg-aac.m4a"),
+#if defined(__WINDOWS__)
+                    3160}, // Media Foundation 10.0.17763.2989
+                           // Media Foundation 10.0.20348.1
+#else
+                    1112}, // FFmpeg 4.2.7-0ubuntu0.1
+                           // FFmpeg 4.4.2-0ubuntu0.22.04.1
+                           // FFmpeg 5.1.2 windows
+                           // CoreAudio Version 11.7.8 (Build 20G1351)
+                           // CoreAusio Version 12.6.7 (Build 21G651)
+                           // Nero FAAD2 2.64
+#endif
+
+            {QStringLiteral("cover-test-itunes-12.7.0-alac.m4a"), 1166},
+            {QStringLiteral("cover-test-png.mp3"),
+#if defined(__LINUX__)
+                    1752}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_64BIT
+#elif defined(__WINDOWS__)
+                    1752}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
+#else
+                                    0}, // CoreAudio Version 11.7.8 (Build 20G1351)
+#endif
+
+            {QStringLiteral("cover-test-vbr.mp3"),
+#if defined(__LINUX__) || defined(__WINDOWS__)
+                    3376}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_64BIT
+#else
+                    2318}, // CoreAudio Version 11.7.8 (Build 20G1351)
+#endif
+            // 3326 MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
+            // No offset compared to FPM_64BIT builds but rounding differences
+            // https://github.com/mixxxdj/mixxx/issues/11888
+            // 1166 FFmpeg
+
+            {QStringLiteral("cover-test.ogg"), 1166},
+#ifdef __STEM__
+            {QStringLiteral("cover-test.stem.mp4"), 1166},
+            {QStringLiteral("cover-test.stem.m4a"), 1166},
+#endif
+            {QStringLiteral("cover-test.opus"), 1268},
+            {QStringLiteral("cover-test.wav"), 1166},
+            {QStringLiteral("cover-test.wav"), 1166},
+            {QStringLiteral("cover-test.wv"), 1166}};
+
+    for (const auto& ref : refs) {
+        QString filePath = getTestDir().filePath(
+                QStringLiteral("id3-test-data/") +
+                ref.path);
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+        const auto fileUrl = QUrl::fromLocalFile(filePath);
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
+            mixxx::AudioSourcePointer pContReadSource = openAudioSource(
+                    filePath,
+                    providerRegistration.getProvider());
+
+            // Obtaining an AudioSource may fail for unsupported file formats,
+            // even if the corresponding file extension is supported, e.g.
+            // AAC vs. ALAC in .m4a files
+            if (!pContReadSource) {
+                // skip test file
+                continue;
+            }
+            mixxx::SampleBuffer contReadData(
+                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+
+            SINT contFrameIndex = pContReadSource->frameIndexMin();
+            while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
+                const auto readFrameIndexRange =
+                        mixxx::IndexRange::forward(contFrameIndex, kReadFrameCount);
+                // Read next chunk of frames for Cont source without seeking
+                const auto contSampleFrames =
+                        pContReadSource->readSampleFrames(
+                                mixxx::WritableSampleFrames(
+                                        readFrameIndexRange,
+                                        mixxx::SampleBuffer::WritableSlice(contReadData)));
+                ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
+                ASSERT_TRUE(contSampleFrames.frameIndexRange().isSubrangeOf(readFrameIndexRange));
+                ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
+                contFrameIndex += contSampleFrames.frameLength();
+
+                const SINT sampleCount =
+                        pContReadSource->getSignalInfo().frames2samples(
+                                contSampleFrames.frameLength());
+
+                auto samples = std::span<const CSAMPLE>(&contReadData[0], sampleCount);
+
+                const SINT firstSoundSample = AnalyzerSilence::findFirstSoundInChunk(samples);
+                if (firstSoundSample < static_cast<SINT>(samples.size())) {
+                    EXPECT_EQ(firstSoundSample, ref.firstSoundSample)
+                            << filePath.toStdString() << " "
+                            << providerRegistration.getProvider()
+                                       ->getDisplayName()
+                                       .toStdString();
+                    break;
+                }
+            }
+            break;
+        }
+    }
+}
+
 TEST_F(SoundSourceProxyTest, getTypeFromFile) {
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());
@@ -800,6 +938,20 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(missingFileWithUppercaseSuffix))));
 }
+
+#ifdef __STEM__
+TEST_F(SoundSourceProxyTest, getTypeFromMissingNIStemFile) {
+    const QFileInfo missingFileWithUppercaseSuffix(
+            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.stem.mp4")));
+
+    ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
+
+    // The missing file doesn't contains a STEM atom, so it is considered like a standard mp4
+    EXPECT_STREQ(qPrintable("mp4"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(missingFileWithUppercaseSuffix))));
+}
+#endif
 
 TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
     QTemporaryDir tempDir;
@@ -891,7 +1043,7 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         QStringLiteral("ac3"),
         QStringLiteral("aiff"),
         // Test fails for file type "caf" supported by SoundSourceSndfile
-        //QStringLiteral("caf"),
+        // QStringLiteral("caf"),
         QStringLiteral("flac"),
         QStringLiteral("it"),
         QStringLiteral("m4a"),
@@ -909,10 +1061,14 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         QStringLiteral("mp4"),
         QStringLiteral("ogg"),
         // Test fails for file type "okt" supported by SoundSourceModPlug
-        //QStringLiteral("okt"),
+        // QStringLiteral("okt"),
         QStringLiteral("opus"),
         QStringLiteral("s3m"),
         QStringLiteral("stm"),
+#ifdef __STEM__
+        QStringLiteral("stem.mp4"),
+        QStringLiteral("stem.m4a"),
+#endif
         QStringLiteral("wav"),
         QStringLiteral("wma"),
         QStringLiteral("wv"),
@@ -938,5 +1094,34 @@ TEST_F(SoundSourceProxyTest, fileSuffixWithDifferingType) {
     for (const auto& [fileSuffix, fileType] : fileSuffixesWithDifferingTypes) {
         EXPECT_EQ(SoundSourceProxy::isFileTypeSupported(fileType),
                 SoundSourceProxy::isFileSuffixSupported(fileSuffix));
+    }
+}
+
+TEST_F(SoundSourceProxyTest, freeModeGarbage) {
+    // Try to load a file with an insane bitrate in the garbage before the real frame.
+    QString filePath = getTestDir().filePath(
+            QStringLiteral("id3-test-data/free_mode_garbage.mp3"));
+    ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+    const auto fileUrl = QUrl::fromLocalFile(filePath);
+    const auto providerRegistrations =
+            SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+    for (const auto& providerRegistration : providerRegistrations) {
+        mixxx::AudioSourcePointer pContReadSource = openAudioSource(
+                filePath,
+                providerRegistration.getProvider());
+        ASSERT_TRUE(pContReadSource != nullptr);
+        break;
+    }
+}
+
+TEST_F(SoundSourceProxyTest, taglibStringToEnumFileType) {
+    const QStringList fileTypes = SoundSourceProxy::getSupportedFileTypes();
+    for (const auto& fileType : fileTypes) {
+        qDebug() << fileType;
+        if (fileType != "okt" &&     // Oktalyzer
+                fileType != "stm") { // "Scream Tracker";
+            ASSERT_NE(mixxx::taglib::stringToEnumFileType(fileType),
+                    mixxx::taglib::FileType::Unknown);
+        }
     }
 }

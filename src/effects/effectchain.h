@@ -1,30 +1,24 @@
 #pragma once
 
-#include <QDomDocument>
 #include <QList>
-#include <QMap>
 #include <QObject>
-#include <QSignalMapper>
+#include <memory>
 
-#include "control/controlobject.h"
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
-#include "effects/presets/effectchainpreset.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "util/memory.h"
 
+class ControlObject;
 class ControlPushButton;
 class ControlEncoder;
-class EffectChain;
 class EffectsManager;
-class EffectProcessor;
 class EngineEffectChain;
 
 /// EffectChain is the main thread representation of an effect chain.
 /// EffectChain owns the ControlObjects for the routing switches that assign
 /// chains to process audio inputs (decks, microphones, auxiliary inputs,
-/// master mix). EffectChain also owns the ControlObject for the superknob
+/// main mix). EffectChain also owns the ControlObject for the superknob
 /// which manipulates the metaknob of each EffectSlot in the chain.
 ///
 /// EffectChains are created and destroyed by EffectsManager during Mixxx
@@ -77,6 +71,12 @@ class EffectChain : public QObject {
     }
 
     virtual void loadChainPreset(EffectChainPresetPointer pPreset);
+
+    bool isEmpty();
+
+    bool isEmptyPlaceholderPresetLoaded();
+
+    void loadEmptyNamelessPreset();
 
   public slots:
     void slotControlClear(double value);
@@ -141,7 +141,7 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlNextChainPreset;
     std::unique_ptr<ControlPushButton> m_pControlPrevChainPreset;
 
-    void setControlLoadedPresetIndex(uint index);
+    void setControlLoadedPresetIndex(int index);
 
     // These COs do not affect how the effects are processed;
     // they are defined here for skins and controller mappings to communicate

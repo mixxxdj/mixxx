@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQml 2.12
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
@@ -17,19 +17,19 @@ Item {
     property alias foreground: foreground.data
     property real min: 0
     property real max: 1
-    property real wheelStepSize: (root.max - root.min) / 10
+    property real wheelStepSize: (root.max - root.min) / 100
     property real angle: 130
     property bool arc: false
     property int arcStart: Knob.Center
     property real arcRadius: width / 2
     readonly property real arcStartValue: {
         switch (arcStart) {
-        case Knob.ArcStart.Minimum:
-            return min;
-        case Knob.ArcStart.Maximum:
-            return max;
-        default:
-            return valueCenter;
+            case Knob.ArcStart.Minimum:
+                return min;
+            case Knob.ArcStart.Maximum:
+                return max;
+            default:
+                return valueCenter;
         }
     }
     property real arcOffsetX: 0
@@ -63,6 +63,13 @@ Item {
         anchors.fill: parent
         antialiasing: true
         visible: root.arc
+        // Enable smooth curves. For QtQuick Shapes, this currently only works
+        // by enabling multisampling, so we use 4xMSAA here.
+        //
+        // See https://www.qt.io/blog/2017/07/07/let-there-be-shapes for details.
+        property int multiSamplingLevel: Mixxx.Config.getMultiSamplingLevel()
+        layer.enabled: multiSamplingLevel > 1
+        layer.samples: multiSamplingLevel
 
         ShapePath {
             id: arcPath
@@ -79,9 +86,7 @@ Item {
                 centerX: root.width / 2 + root.arcOffsetX
                 centerY: root.width / 2 + root.arcOffsetY
             }
-
         }
-
     }
 
     DragHandler {
@@ -144,5 +149,4 @@ Item {
         property: "value"
         value: wheelHandler.value
     }
-
 }

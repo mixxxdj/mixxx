@@ -1,8 +1,10 @@
+#include "controllers/delegates/midiopcodedelegate.h"
+
 #include <QComboBox>
 
-#include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_midiopcodedelegate.cpp"
 
 MidiOpCodeDelegate::MidiOpCodeDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {
@@ -24,7 +26,7 @@ QWidget* MidiOpCodeDelegate::createEditor(QWidget* parent,
     choices.append(MidiOpCode::ControlChange);
     choices.append(MidiOpCode::PitchBendChange);
 
-    for (const MidiOpCode choice : qAsConst(choices)) {
+    for (const MidiOpCode choice : std::as_const(choices)) {
         pComboBox->addItem(MidiUtils::opCodeToTranslatedString(choice),
                 static_cast<uint8_t>(choice));
     }

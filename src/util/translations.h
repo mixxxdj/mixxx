@@ -44,6 +44,14 @@ class Translations {
             }
             QLocale::setDefault(customLocale);
         }
+#if defined(__APPLE__) && (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+        else {
+            // Workaround https://github.com/mixxxdj/mixxx/issues/11195 and
+            // QTBUG-90971 fixed in Qt 6.2
+            const auto sysLocale = QLocale::system();
+            QLocale::setDefault(QLocale(sysLocale.language(), sysLocale.country()));
+        }
+#endif
 
         // Constructs a QLocale object initialized with the default locale. If
         // no default locale was set using setDefault(), this locale will be
@@ -62,15 +70,20 @@ class Translations {
         // English translation file and the fact that we don't ship a
         // mixxx_en.qm.
         if (locale.language() == QLocale::English &&
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                (locale.territory() == QLocale::UnitedStates ||
+                        locale.territory() == QLocale::AnyCountry)
+#else
                 (locale.country() == QLocale::UnitedStates ||
-                        locale.country() == QLocale::AnyCountry)) {
+                        locale.country() == QLocale::AnyCountry)
+#endif
+        ) {
             qDebug() << "Skipping loading of translations because the locale is 'en' or 'en_US'.";
             return;
         }
-
         // Load Qt translations for this locale from the system translation
         // path. This is the lowest precedence QTranslator.
-        installTranslations(pApp,
+        bool qtFound = installTranslations(pApp,
                 locale,
                 QStringLiteral("qt"),
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -78,13 +91,13 @@ class Translations {
 #else
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath),
 #endif
-                true);
+                false);
 
-        // Load Qt translations for this locale from the Mixxx translations
-        // folder.
-        // Depending on the OS, this might not be necessary, so we don't warn
-        // on failure here.
-        installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath, false);
+        if (!qtFound) {
+            // Alternative, load Qt translations for this locale from the Mixxx translations
+            // folder.
+            installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath, true);
+        }
 
         // Load Mixxx specific translations for this locale from the Mixxx
         // translations folder.
@@ -102,17 +115,19 @@ class Translations {
         const bool success = pTranslator->load(
                 locale, translation, QStringLiteral("_"), translationsPath);
         if (!success) {
-            ((warnOnFailure) ? qWarning() : qDebug())
-                    << "Failed to load" << translation << "translations for locale"
-                    << locale.name()
-                    << "from" << translationsPath;
+            if (warnOnFailure) {
+                qWarning()
+                        << "Failed to load" << translation << "translations for locale"
+                        << locale.name()
+                        << "from" << translationsPath;
+            }
             delete pTranslator;
             return false;
         }
 
         qDebug() << "Loaded" << translation << "translations for locale"
                  << locale.name()
-                 << "from" << translationsPath;
+                 << "from" << pTranslator->filePath();
         pApp->installTranslator(pTranslator);
         return true;
     }

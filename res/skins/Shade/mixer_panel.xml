@@ -121,9 +121,10 @@
                 </Connection>
               </PushButton>
               <!-- Play -->
-              <PushButton>
+              <PlayButton>
                 <TooltipId>play_cue_set</TooltipId>
                 <Pos>11,200</Pos>
+                <Group>[Channel1]</Group>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -147,7 +148,7 @@
                   <ConfigKey>[Channel1],play_latched</ConfigKey>
                   <ConnectValueFromWidget>false</ConnectValueFromWidget>
                 </Connection>
-              </PushButton>
+              </PlayButton>
 
               <!-- Play deck 2 -->
               <!-- Play indicator, blinks depending on Cue mode -->
@@ -185,9 +186,10 @@
                 </Connection>
               </PushButton>
               <!-- Play -->
-              <PushButton>
+              <PlayButton>
                 <TooltipId>play_cue_set</TooltipId>
                 <Pos>203,200</Pos>
+                <Group>[Channel2]</Group>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -211,7 +213,7 @@
                   <ConfigKey>[Channel2],play_latched</ConfigKey>
                   <ConnectValueFromWidget>false</ConnectValueFromWidget>
                 </Connection>
-              </PushButton>
+              </PlayButton>
 
               <!--
               **********************************************
@@ -496,21 +498,30 @@
               Text- Clock display
               **********************************************
               -->
-              <Time>
-                <TooltipId>time</TooltipId>
+              <WidgetGroup>
+                <Pos>101,14</Pos>
+                <Size>50f,14f</Size>
+                <Layout>horizontal</Layout>
                 <Style>
-                  QLabel {
-                    font-size: 10px;
-                    font-weight: bold;
-                    background-color: transparent;
-                    color: #191F24;
-                    text-align:center;
+                  WWidgetGroup {
+                    align: center;
                   }
                 </Style>
-                <Pos>113,14</Pos>
-                <CustomFormat>hh:mm</CustomFormat>
-                <ShowSeconds>false</ShowSeconds>
-              </Time>
+                <Children>
+                  <Time>
+                    <TooltipId>time</TooltipId>
+                    <Style>
+                      QLabel {
+                        font-size: 10px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        text-align:center;
+                      }
+                    </Style>
+                  </Time>
+                </Children>
+              </WidgetGroup>
 
               <StatusLight>
                 <Pos>113,27</Pos>
@@ -518,26 +529,30 @@
                 <PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
                 <PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
                 <Connection>
-                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <ConfigKey>[App],audio_latency_overload</ConfigKey>
                 </Connection>
               </StatusLight>
 
-              <VuMeter>
+              <WidgetGroup>
                 <Pos>113,28</Pos>
-                <Style>WVuMeter { background-color: #626f87; }</Style>
-                <TooltipId>audio_latency_usage</TooltipId>
-                <MinimumSize>26,1</MinimumSize>
-                <MaximumSize>26,1</MaximumSize>
-                <PathVu>audio_latency/audio_latency_usage.png</PathVu>
-                <PeakHoldSize>26</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>1</PeakFallStep>
-                <Horizontal>true</Horizontal>
-                <Connection>
-                  <ConfigKey>[Master],audio_latency_usage</ConfigKey>
-                </Connection>
-              </VuMeter>
+                <Size>26,2</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>audio_latency_usage</TooltipId>
+                    <PathVu>skin:/audio_latency/audio_latency_usage.png</PathVu>
+                    <PathBack>skin:/audio_latency/audio_latency_usage_back.png</PathBack>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>1000</PeakHoldTime>
+                    <PeakFallTime>100</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
 
               <PushButton>
                 <NumberStates>5</NumberStates>
@@ -636,11 +651,11 @@
 
               <!--
               **********************************************
-              RotaryFader- Master gain & balance
+              RotaryFader- Main gain & balance
               **********************************************
               -->
               <Knob>
-                <TooltipId>master_gain</TooltipId>
+                <TooltipId>main_gain</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>151,15</Pos>
@@ -828,101 +843,124 @@
               Visual - Volume level display
               **********************************************
               -->
-              <VuMeter>
-                <TooltipId>channel_VuMeter</TooltipId>
-                <PathVu>skin:/style/volume_display_over.png</PathVu>
-                <PathBack>skin:/style/volume_display.png</PathBack>
+              <WidgetGroup>
                 <Pos>107,76</Pos>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Channel1],VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
-              <VuMeter>
-                <TooltipId>channel_VuMeter</TooltipId>
-                <PathVu>skin:/style/volume_display_over.png</PathVu>
-                <PathBack>skin:/style/volume_display.png</PathBack>
+                <Size>5f,81f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>channel_VuMeter</TooltipId>
+                    <PathVu>skin:/style/volume_display_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display.png</PathBack>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Channel>1</Channel>
+                    <Connection>
+                      <ConfigKey>[Channel1],vu_meter</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
                 <Pos>143,76</Pos>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Channel2],VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
-
-              <VuMeter>
-                <TooltipId>master_VuMeterL</TooltipId>
-                <PathVu>skin:/style/volume_display_master_over.png</PathVu>
-                <PathBack>skin:/style/volume_display_master.png</PathBack>
+                <Size>5f,81f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>channel_VuMeter</TooltipId>
+                    <PathVu>skin:/style/volume_display_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display.png</PathBack>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Channel2],vu_meter</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
                 <Pos>122,76</Pos>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Master],VuMeterL</ConfigKey>
-                </Connection>
-              </VuMeter>
-              <VuMeter>
-                <TooltipId>master_VuMeterR</TooltipId>
-                <PathVu>skin:/style/volume_display_master_over.png</PathVu>
-                <PathBack>skin:/style/volume_display_master.png</PathBack>
+                <Size>5f,81f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>main_VuMeterL</TooltipId>
+                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_main.png</PathBack>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Main],vu_meter_left</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
                 <Pos>128,76</Pos>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Master],VuMeterR</ConfigKey>
-                </Connection>
-              </VuMeter>
-
+                <Size>5f,81f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>main_VuMeterR</TooltipId>
+                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_main.png</PathBack>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Main],vu_meter_right</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
               <!--
               **********************************************
               Visual- Volume peak indicator
               **********************************************
               -->
               <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
+                <TooltipId>channel_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>107,57</Pos>
                 <Connection>
-                  <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+                  <ConfigKey>[Channel1],peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
+                <TooltipId>channel_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>143,57</Pos>
                 <Connection>
-                  <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+                  <ConfigKey>[Channel2],peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>master_PeakIndicatorL</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_master.png</PathBack>
+                <TooltipId>main_peak_indicator_left</TooltipId>
+                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                  <ConfigKey>[Main],peak_indicator_left</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>master_PeakIndicatorR</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_master.png</PathBack>
+                <TooltipId>main_peak_indicator_right</TooltipId>
+                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                  <ConfigKey>[Main],peak_indicator_right</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>

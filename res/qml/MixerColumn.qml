@@ -27,7 +27,6 @@ Item {
             key: "pregain"
             color: Theme.gainKnobColor
         }
-
     }
 
     Item {
@@ -44,7 +43,7 @@ Item {
             width: 4
             height: parent.height - 40
             group: root.group
-            key: "VuMeterL"
+            key: "vu_meter_left"
         }
 
         Skin.VuMeter {
@@ -53,7 +52,7 @@ Item {
             width: 4
             height: parent.height - 40
             group: root.group
-            key: "VuMeterR"
+            key: "vu_meter_right"
         }
 
         Skin.ControlSlider {
@@ -65,7 +64,6 @@ Item {
             barColor: Theme.volumeSliderBarColor
             bg: Theme.imgVolumeSliderBackground
         }
-
     }
 
     Skin.ControlButton {
@@ -80,5 +78,4 @@ Item {
         activeColor: Theme.pflActiveButtonColor
         toggleable: true
     }
-
 }

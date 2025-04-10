@@ -4,20 +4,19 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <algorithm>
 #include <djinterop/djinterop.hpp>
-#include <string>
 
 #include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "moc_dlglibraryexport.cpp"
 
-namespace el = djinterop::enginelibrary;
+namespace e = djinterop::engine;
 
 namespace mixxx {
 
@@ -34,7 +33,7 @@ void populateCrates(
     pListWidget->clear();
     while (crates.populateNext(&crate)) {
         auto pItem = std::make_unique<QListWidgetItem>(crate.getName());
-        pItem->setData(Qt::UserRole, crate.getId().value());
+        pItem->setData(Qt::UserRole, crate.getId().toVariant());
         pListWidget->addItem(pItem.release());
     }
 }
@@ -48,11 +47,11 @@ DlgLibraryExport::DlgLibraryExport(
           m_pConfig{pConfig},
           m_pTrackCollectionManager{pTrackCollectionManager} {
     // Selectable list of crates from the Mixxx library.
-    m_pCratesList = make_parented<QListWidget>();
+    m_pCratesList = make_parented<QListWidget>(this);
     m_pCratesList->setSelectionMode(QListWidget::ExtendedSelection);
 
     // Read-only text fields showing key directories for export.
-    m_pExportDirectoryTextField = make_parented<QLineEdit>();
+    m_pExportDirectoryTextField = make_parented<QLineEdit>(this);
     m_pExportDirectoryTextField->setReadOnly(true);
 
     // Remember the last export directory, or use documents as a fallback.
@@ -67,56 +66,56 @@ DlgLibraryExport::DlgLibraryExport(
 
     m_pExportDirectoryTextField->setText(lastExportDirectory);
 
-    m_pVersionCombo = make_parented<QComboBox>();
+    m_pVersionCombo = make_parented<QComboBox>(this);
     m_pVersionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
-    m_pExistingDatabaseLabel = make_parented<QLabel>();
+    m_pExistingDatabaseLabel = make_parented<QLabel>(this);
     m_pExistingDatabaseLabel->setWordWrap(true);
 
     // Radio buttons to allow choice between exporting the whole music library
     // or just tracks in a selection of crates.
-    m_pWholeLibraryRadio = make_parented<QRadioButton>(tr("Entire music library"));
+    m_pWholeLibraryRadio = make_parented<QRadioButton>(tr("Entire music library"), this);
     m_pWholeLibraryRadio->setChecked(true);
     m_pCratesList->setEnabled(false);
     connect(m_pWholeLibraryRadio,
             &QRadioButton::clicked,
             this,
             [this]() { m_pCratesList->setEnabled(false); });
-    m_pCratesRadio = make_parented<QRadioButton>(tr("Selected crates"));
+    m_pCratesRadio = make_parented<QRadioButton>(tr("Selected crates"), this);
     connect(m_pCratesRadio,
             &QRadioButton::clicked,
             this,
             [this]() { m_pCratesList->setEnabled(true); });
 
     // Button to allow ability to browse for the export directory.
-    auto pExportDirBrowseButton = make_parented<QPushButton>(tr("Browse"));
+    auto pExportDirBrowseButton = make_parented<QPushButton>(tr("Browse"), this);
     connect(pExportDirBrowseButton,
             &QPushButton::clicked,
             this,
             &DlgLibraryExport::browseExportDirectory);
-    auto pExportDirLayout = make_parented<QHBoxLayout>();
+    auto pExportDirLayout = make_parented<QHBoxLayout>(this);
     pExportDirLayout->addWidget(m_pExportDirectoryTextField);
     pExportDirLayout->addWidget(pExportDirBrowseButton);
 
-    auto pFormLayout = make_parented<QFormLayout>();
+    auto pFormLayout = make_parented<QFormLayout>(this);
     pFormLayout->addRow(tr("Export directory"), pExportDirLayout);
     pFormLayout->addRow(tr("Database version"), m_pVersionCombo);
     pFormLayout->addRow(m_pExistingDatabaseLabel);
 
     // Buttons to begin the export or cancel.
-    auto pExportButton = make_parented<QPushButton>(tr("Export"));
+    auto pExportButton = make_parented<QPushButton>(tr("Export"), this);
     pExportButton->setDefault(true);
     connect(pExportButton, &QPushButton::clicked, this, &DlgLibraryExport::exportRequested);
-    auto pCancelButton = make_parented<QPushButton>(tr("Cancel"));
+    auto pCancelButton = make_parented<QPushButton>(tr("Cancel"), this);
     connect(pCancelButton, &QPushButton::clicked, this, &QDialog::reject);
 
     // Arrange action buttons at bottom of dialog.
-    auto pButtonBarLayout = make_parented<QHBoxLayout>();
+    auto pButtonBarLayout = make_parented<QHBoxLayout>(this);
     pButtonBarLayout->addStretch(1);
     pButtonBarLayout->addWidget(pExportButton);
     pButtonBarLayout->addWidget(pCancelButton);
 
-    auto pLayout = make_parented<QGridLayout>();
+    auto pLayout = make_parented<QGridLayout>(this);
     pLayout->setColumnStretch(0, 1);
     pLayout->setColumnStretch(1, 2);
     pLayout->addWidget(m_pWholeLibraryRadio, 0, 0);
@@ -126,7 +125,8 @@ DlgLibraryExport::DlgLibraryExport(
     pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
 
     setLayout(pLayout);
-    setWindowTitle(tr("Export Library to Engine Prime"));
+    //: "Engine DJ" must not be translated
+    setWindowTitle(tr("Export Library to Engine DJ"));
 
     show();
     raise();
@@ -152,8 +152,8 @@ void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
     m_pCratesList->setEnabled(true);
     for (auto i = 0; i < m_pCratesList->count(); ++i) {
         auto* pItem = m_pCratesList->item(i);
-        const auto currCrateId = pItem->data(Qt::UserRole).toInt();
-        if (currCrateId == crateId->value()) {
+        const auto currCrateId = CrateId(pItem->data(Qt::UserRole));
+        if (currCrateId == crateId) {
             m_pCratesList->setCurrentItem(pItem);
             return;
         }
@@ -192,24 +192,24 @@ void DlgLibraryExport::exportRequested() {
 
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
     const auto databaseDirectory = baseExportDirectory.filePath(
-            el::default_database_dir_name);
+            e::default_database_dir_name);
     const auto musicDirectory = baseExportDirectory.filePath(kDefaultMixxxExportDirName);
 
     // Work out what version was requested.
     // If there is an existing database, the version does not matter.
     int versionIndex = m_pVersionCombo->currentData().toInt();
-    djinterop::semantic_version exportVersion =
-            versionIndex == -1 ? el::version_latest_firmware : el::all_versions[versionIndex];
+    e::engine_schema exportSchemaVersion =
+            versionIndex == -1 ? e::latest_schema : e::supported_schemas[versionIndex];
 
     // Construct a request to export the library/crates.
     auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
     pRequest->engineLibraryDbDir.setPath(databaseDirectory);
     pRequest->musicFilesDir.setPath(musicDirectory);
-    pRequest->exportVersion = exportVersion;
+    pRequest->exportSchemaVersion = exportSchemaVersion;
     if (m_pCratesList->isEnabled()) {
         const auto selectedItems = m_pCratesList->selectedItems();
         for (auto* pItem : selectedItems) {
-            CrateId id{pItem->data(Qt::UserRole).value<int>()};
+            CrateId id{pItem->data(Qt::UserRole)};
             pRequest->crateIdsToExport.insert(id);
         }
     }
@@ -221,56 +221,42 @@ void DlgLibraryExport::exportRequested() {
 void DlgLibraryExport::checkExistingDatabase() {
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
     const auto databaseDirectory = baseExportDirectory.filePath(
-            el::default_database_dir_name);
+            e::default_database_dir_name);
 
     try {
         // See if an EL DB exists in the chosen dir already.
-        bool exists = el::database_exists(databaseDirectory.toStdString());
+        bool exists = e::database_exists(databaseDirectory.toStdString());
         if (!exists) {
             // The user can freely choose a schema version for their new database.
             m_pExistingDatabaseLabel->setText("");
             m_pVersionCombo->clear();
             m_pVersionCombo->setEnabled(true);
-            int versionIndex = 0;
-            for (const djinterop::semantic_version& version : el::all_versions) {
+            for (int versionIndex = 0;
+                    versionIndex < static_cast<int>(e::supported_schemas.size());
+                    ++versionIndex) {
+                e::engine_schema schemaVersion = e::supported_schemas[versionIndex];
                 m_pVersionCombo->insertItem(0,
-                        QString::fromStdString(el::version_name(version)),
+                        QString::fromStdString(to_application_version_string(schemaVersion)),
                         QVariant{versionIndex});
-                if (version == el::version_latest_firmware) {
+                if (schemaVersion == e::latest_schema) {
                     // Latest firmware version is the default selection.
                     m_pVersionCombo->setCurrentIndex(0);
                 }
-
-                ++versionIndex;
             }
             return;
         }
 
-        // Find out version of the existing database, and set the displayed
-        // version widget accordingly.  Changing the schema version of existing
-        // databases is not currently supported.
-        djinterop::database db = el::load_database(databaseDirectory.toStdString());
-        const auto version = db.version();
-
-        const auto result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
-        if (result == el::all_versions.end()) {
-            // Unknown database version.
-            m_pExistingDatabaseLabel->setText(
-                    tr("A database already exists in the chosen directory, "
-                       "but it is of an unsupported version. Export is not "
-                       "guaranteed to succeed in this situation."));
-            m_pVersionCombo->clear();
-            m_pVersionCombo->setEnabled(false);
-        } else {
-            int versionIndex = std::distance(el::all_versions.begin(), result);
-            m_pExistingDatabaseLabel->setText(
-                    tr("A database already exists in the chosen directory. "
-                       "Exported tracks will be added into this database."));
-            m_pVersionCombo->clear();
-            m_pVersionCombo->insertItem(
-                    0, QString::fromStdString(el::version_name(version)), QVariant{versionIndex});
-            m_pVersionCombo->setEnabled(false);
-        }
+        // Load the existing database, and set the displayed version widget
+        // accordingly.  Changing the schema version of existing databases is
+        // not currently supported.
+        djinterop::database db = e::load_database(databaseDirectory.toStdString());
+        m_pExistingDatabaseLabel->setText(
+                tr("A database already exists in the chosen directory. "
+                   "Exported tracks will be added into this database."));
+        m_pVersionCombo->clear();
+        m_pVersionCombo->insertItem(
+                0, QString::fromStdString(db.version_name()), QVariant{-1});
+        m_pVersionCombo->setEnabled(false);
 
     } catch (std::exception& e) {
         Q_UNUSED(e);

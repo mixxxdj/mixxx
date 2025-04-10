@@ -1,8 +1,9 @@
 #include "mixer/microphone.h"
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginemicrophone.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "moc_microphone.cpp"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -11,15 +12,17 @@ Microphone::Microphone(PlayerManager* pParent,
         const QString& group,
         int index,
         SoundManager* pSoundManager,
-        EngineMaster* pEngine,
+        EngineMixer* pEngine,
         EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
-    EngineMicrophone* pMicrophone =
-            new EngineMicrophone(channelGroup, pEffectsManager);
-    pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
-    pSoundManager->registerInput(micInput, pMicrophone);
+    auto pMicrophone = std::make_unique<EngineMicrophone>(channelGroup, pEffectsManager);
+    AudioInput micInput = AudioInput(AudioPathType::Microphone,
+            0,
+            mixxx::audio::ChannelCount::stereo(),
+            index);
+    pSoundManager->registerInput(micInput, pMicrophone.get());
+    pEngine->addChannel(std::move(pMicrophone));
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
     m_pTalkoverEnabled = make_parented<ControlProxy>(group, "talkover", this);

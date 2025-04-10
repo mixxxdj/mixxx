@@ -1,9 +1,11 @@
 #include "widget/wcombobox.h"
 
+#include <QDomNode>
+#include <QEvent>
 #include <QIcon>
-#include <QtDebug>
 
 #include "moc_wcombobox.cpp"
+#include "skin/legacy/skincontext.h"
 
 WComboBox::WComboBox(QWidget* pParent)
         : QComboBox(pParent),
@@ -25,8 +27,10 @@ void WComboBox::setup(const QDomNode& node, const SkinContext& context) {
                 QString icon = context.selectString(state, "Icon");
                 addItem(QIcon(icon), text, QVariant(iState));
             } else {
-                SKIN_WARNING(state, context)
-                        << "WComboBox ignoring <State> without <Number> node.";
+                SKIN_WARNING(state,
+                        context,
+                        QStringLiteral("WComboBox ignoring <State> without "
+                                       "<Number> node."));
             }
         }
         state = state.nextSibling();

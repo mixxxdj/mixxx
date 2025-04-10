@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Dummy Device (Screens)</name>
+        <author>A. Colombier</author>
+        <description>Dummy device screens</description>
+        <devices>
+            <product protocol="hid" vendor_id="0xdead" product_id="0xbeaf" />
+        </devices>
+    </info>
+    <settings>
+        <group label="Cosmetic">
+            <row orientation="vertical">
+                <option
+                    variable="theme"
+                    type="enum"
+                    label="Theme use for the screen">
+                    <description>
+                        The theme used for the screens
+                    </description>
+                    <value label="Classic" default="true">stock</value>
+                    <value label="Advanced">advanced</value>
+                </option>
+               <option
+                   variable="idleBackground"
+                   type="file"
+                   pattern="Images (*.png *.gif *.jpg)"
+                   label="Idle deck background">
+                   <description>
+                       The background used for empty decks
+                   </description>
+               </option>
+               <option
+                   variable="accentColor"
+                   type="color"
+                   default="orange"
+                   label="Accent color">
+                   <description>
+                       The background used for empty decks
+                   </description>
+               </option>
+                <option
+                    variable="deckA"
+                    type="enum"
+                    label="Deck A">
+                    <value color="#FF0000" label="Red">red</value>
+                    <value color="#FF5E00" label="Carrot">carrot</value>
+                    <value color="#FF7800" label="Orange">orange</value>
+                    <value color="#FF9200" label="Honey">honey</value>
+                    <value color="#FFFF00" label="Yellow">yellow</value>
+                    <value color="#81FF00" label="Lime">lime</value>
+                    <value color="#00FF00" label="Green">green</value>
+                    <value color="#00FF49" label="Aqua">aqua</value>
+                    <value color="#00FFFF" label="Celeste">celeste</value>
+                    <value color="#0091FF" label="Sky">sky</value>
+                    <value color="#0000FF" label="Blue">blue</value>
+                    <value color="#FF00FF" label="Purple">purple</value>
+                    <value color="#FF0091" label="Fuscia">fuscia</value>
+                    <value color="#FF0079" label="Magenta">magenta</value>
+                    <value color="#FF477E" label="Azalea">azalea</value>
+                    <value color="#FF4761" label="Salmon">salmon</value>
+                    <value color="#FFFFFF" label="White">white</value>
+                </option>
+            </row>
+         </group>
+    </settings>
+    <controller id="DummyDevice">
+        <screens>
+            <screen identifier="main" width="480" height="360" targetFps="20" pixelType="RBGA" splashoff="500" />
+            <screen identifier="jog" width="128" height="128" targetFps="5" pixelType="RBGA" />
+        </screens>
+        <scriptfiles>
+            <file filename="DummyDeviceDefaultScreen.qml" />
+        </scriptfiles>
+        <qmllibraries>
+        </qmllibraries>
+    </controller>
+</MixxxControllerPreset>

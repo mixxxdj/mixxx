@@ -3,9 +3,7 @@
 #include <QDialog>
 #include <QFile>
 #include <QSortFilterProxyModel>
-#include <QTimerEvent>
 
-#include "control/controlobject.h"
 #include "control/controlsortfiltermodel.h"
 #include "dialog/ui_dlgdevelopertoolsdlg.h"
 #include "preferences/usersettings.h"

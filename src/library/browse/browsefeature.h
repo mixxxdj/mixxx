@@ -1,19 +1,16 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QSortFilterProxyModel>
 #include <QObject>
-#include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QPoint>
+#include <QPointer>
+#include <QSortFilterProxyModel>
 #include <QString>
+#include <QStringListModel>
+#include <QVariant>
 
-#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
-#include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
+#include "preferences/usersettings.h"
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
@@ -21,6 +18,8 @@
 class Library;
 class TrackCollection;
 class WLibrarySidebar;
+class QModelIndex;
+class FolderTreeModel;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
@@ -28,7 +27,7 @@ class BrowseFeature : public LibraryFeature {
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             RecordingManager* pRecordingManager);
-    virtual ~BrowseFeature();
+    ~BrowseFeature() override;
 
     QVariant title() override;
 
@@ -38,10 +37,13 @@ class BrowseFeature : public LibraryFeature {
 
     TreeItemModel* sidebarModel() const override;
 
+    void releaseBrowseThread();
+
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
+    void slotRefreshDirectoryTree();
     void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
@@ -58,6 +60,7 @@ class BrowseFeature : public LibraryFeature {
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
+    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
 
@@ -69,6 +72,10 @@ class BrowseFeature : public LibraryFeature {
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
+    QAction* m_pRefreshDirTreeAction;
+
+    // Caution: Make sure this is reset whenever the library tree is updated,
+    // so that the internalPointer() does not become dangling
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;

@@ -373,10 +373,10 @@ TraktorS4MK2.registerOutputPackets = function() {
 
 
 
-    Output1.addOutput("[Channel1]", "PeakIndicator", 0x0F, "B");
-    Output1.addOutput("[Channel2]", "PeakIndicator", 0x17, "B");
-    Output1.addOutput("[Channel3]", "PeakIndicator", 0x07, "B");
-    Output1.addOutput("[Channel4]", "PeakIndicator", 0x1F, "B");
+    Output1.addOutput("[Channel1]", "peak_indicator", 0x0F, "B");
+    Output1.addOutput("[Channel2]", "peak_indicator", 0x17, "B");
+    Output1.addOutput("[Channel3]", "peak_indicator", 0x07, "B");
+    Output1.addOutput("[Channel4]", "peak_indicator", 0x1F, "B");
 
     Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
     Output1.addOutput("[Master]", "!quantize", 0x31, "B");
@@ -466,8 +466,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     Output3.addOutput("[Channel2]", "pfl", 0x19, "B");
     Output3.addOutput("[Channel4]", "pfl", 0x1A, "B");
 
-    Output3.addOutput("[Master]", "PeakIndicatorL", 0x3B, "B");
-    Output3.addOutput("[Master]", "PeakIndicatorR", 0x3C, "B");
+    Output3.addOutput("[Main]", "peak_indicator_left", 0x3B, "B");
+    Output3.addOutput("[Main]", "peak_indicator_right", 0x3C, "B");
 
     Output3.addOutput("deck1", "!deckLight", 0x13, "B");
     Output3.addOutput("deck1", "LoadSelectedTrack", 0x14, "B");
@@ -525,12 +525,12 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkChannelOutput("[Channel2]", "track_samples", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[Channel3]", "track_samples", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[Channel4]", "track_samples", TraktorS4MK2.outputChannelCallback);
-    TraktorS4MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel3]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel4]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel1]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel2]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel3]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel4]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "peak_indicator_right", TraktorS4MK2.outputChannelCallbackDark);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS4MK2.outputChannelCallback);
@@ -571,10 +571,10 @@ TraktorS4MK2.registerOutputPackets = function() {
     engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
 
     // VU meters get special attention
-    engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel2]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel3]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel4]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel1]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel2]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel3]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel4]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
 
     engine.connectControl("[Channel1]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
     engine.connectControl("[Channel2]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
@@ -679,7 +679,7 @@ TraktorS4MK2.lightDeck = function(group) {
 };
 
 TraktorS4MK2.pointlessLightShow = function() {
-    var packets = [Object(), Object(), Object()];
+    const packets = [[], [], []];
 
     packets[0].length = 52;
     packets[1].length = 62;
@@ -708,6 +708,9 @@ TraktorS4MK2.pointlessLightShow = function() {
 };
 
 TraktorS4MK2.init = function(id) {
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
     TraktorS4MK2.pointlessLightShow();
     TraktorS4MK2.registerInputPackets();
     TraktorS4MK2.registerOutputPackets();
@@ -763,11 +766,11 @@ TraktorS4MK2.debugLights = function() {
 
     for (i = 0; i < 3; i++) {
         var ok = true;
-        var splitted = data_strings[i].split(/\s+/);
-        HIDDebug("i" + i + " " + splitted);
-        data[i].length = splitted.length;
-        for (j = 0; j < splitted.length; j++) {
-            var byte_str = splitted[j];
+        var split = data_strings[i].split(/\s+/);
+        HIDDebug("i" + i + " " + split);
+        data[i].length = split.length;
+        for (j = 0; j < split.length; j++) {
+            var byte_str = split[j];
             if (byte_str.length !== 2) {
                 ok = false;
                 HIDDebug("not two characters?? " + byte_str);
@@ -875,28 +878,28 @@ TraktorS4MK2.longMessageCallback = function(packet, data) {
 // on the state of the deck switches.
 TraktorS4MK2.getGroupFromButton = function(name) {
     //HIDDebug("deckswitch status " + this.controller.left_deck_C + " " + this.controller.right_deck_D);
-    splitted = name.split(".");
-    if (splitted.length !== 2) {
+    split = name.split(".");
+    if (split.length !== 2) {
         HIDDebug("Traktor S4MK2: Tried to set from simple packet but not exactly one period in name: " + name);
         return;
     }
 
-    if (splitted[0][0] === "[") {
-        return splitted[0];
-    } else if (splitted[0] === "deck1") {
+    if (split[0][0] === "[") {
+        return split[0];
+    } else if (split[0] === "deck1") {
         if (TraktorS4MK2.controller.left_deck_C) {
             return "[Channel3]";
         } else {
             return "[Channel1]";
         }
-    } else if (splitted[0] === "deck2") {
+    } else if (split[0] === "deck2") {
         if (TraktorS4MK2.controller.right_deck_D) {
             return "[Channel4]";
         } else {
             return "[Channel2]";
         }
     } else {
-        HIDDebug("Traktor S4MK2: Unrecognized packet group: " + splitted[0]);
+        HIDDebug("Traktor S4MK2: Unrecognized packet group: " + split[0]);
         return "";
     }
 };
@@ -935,8 +938,8 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
 };
 
 TraktorS4MK2.loadTrackHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "eject", field.value);
     } else {
@@ -947,8 +950,8 @@ TraktorS4MK2.loadTrackHandler = function(field) {
 TraktorS4MK2.syncEnabledHandler = function(field) {
     var now = Date.now();
 
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     // If shifted, just toggle.
     // TODO(later version): actually make this enable explicit master.
     if (TraktorS4MK2.controller.shift_pressed[group]) {
@@ -979,8 +982,8 @@ TraktorS4MK2.syncEnabledHandler = function(field) {
 };
 
 TraktorS4MK2.cueHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         if (TraktorS4MK2.ShiftCueButtonAction === "REWIND") {
             if (field.value === 0) {
@@ -1002,8 +1005,8 @@ TraktorS4MK2.playHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         var locked = engine.getValue(field.group, "keylock");
         engine.setValue(field.group, "keylock", !locked);
@@ -1060,7 +1063,7 @@ TraktorS4MK2.jogTouchHandler = function(field) {
             TraktorS4MK2.finishJogTouch(field.group);
         } else {
             TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] = engine.beginTimer(
-                inertiaTime, "TraktorS4MK2.finishJogTouch(\"" + field.group + "\")", true);
+                inertiaTime, () => { TraktorS4MK2.finishJogTouch(field.group); }, true);
         }
     }
 };
@@ -1092,7 +1095,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
         } else {
             // Check again soon.
             TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = engine.beginTimer(
-                100, "TraktorS4MK2.finishJogTouch(\"" + group + "\")", true);
+                100, () => { TraktorS4MK2.finishJogTouch(group); }, true);
         }
     }
 };
@@ -1239,8 +1242,8 @@ TraktorS4MK2.snapHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    library_maximized = engine.getValue("[Master]", "maximize_library");
-    engine.setValue("[Master]", "maximize_library", !library_maximized);
+    library_maximized = engine.getValue("[Skin]", "show_maximized_library");
+    engine.setValue("[Skin]", "show_maximized_library", !library_maximized);
 };
 
 TraktorS4MK2.FXButtonHandler = function(field) {
@@ -1310,8 +1313,8 @@ TraktorS4MK2.callbackPregain = function(field) {
 
 TraktorS4MK2.callbackLoopMove = function(field) {
     // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     prev_loopmove = TraktorS4MK2.controller.prev_loopmove[group];
     TraktorS4MK2.controller.prev_loopmove[group] = field.value;
     var delta = 0;
@@ -1342,8 +1345,8 @@ TraktorS4MK2.callbackLoopMove = function(field) {
 };
 
 TraktorS4MK2.loopActivateHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "reloop_andstop", field.value);
     } else {
@@ -1378,7 +1381,7 @@ TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character) {
     //   6        2
     //   |        |
     //    -- 7 --
-    //  Where the numbers respresent each segment of the display
+    //  Where the numbers represent each segment of the display
     //  and the dot before it is 0 (but this is dealt with in displayCharLoopDot)
 
     var numArray = {
@@ -1422,8 +1425,8 @@ TraktorS4MK2.displayCharLoopDot = function(deck, charPos, on) {
 };
 
 TraktorS4MK2.callbackLoopSize = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     prev_loopsize = TraktorS4MK2.controller.prev_loopsize[group];
     TraktorS4MK2.controller.prev_loopsize[group] = field.value;
     var delta = 0;
@@ -1453,8 +1456,8 @@ TraktorS4MK2.callbackLoopSize = function(field) {
 };
 
 TraktorS4MK2.loopSetHandler = function(field) {
-    var splitted = field.id.split(".");
-    var group = splitted[0];
+    var split = field.id.split(".");
+    var group = split[0];
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "pitch_adjust_set_default", field.value);
     } else {

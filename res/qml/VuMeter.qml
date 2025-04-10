@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
@@ -34,7 +34,6 @@ Rectangle {
             height: control.parameter * (parent.height - 2 * anchors.margins)
             radius: width / 2
         }
-
     }
 
     Rectangle {
@@ -69,9 +68,7 @@ Rectangle {
                 position: 1
                 color: Theme.green
             }
-
         }
-
     }
 
     OpacityMask {
@@ -79,5 +76,4 @@ Rectangle {
         source: meterGradient
         maskSource: meterMask
     }
-
 }

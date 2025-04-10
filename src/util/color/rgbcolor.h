@@ -238,5 +238,6 @@ inline QDebug operator<<(QDebug dbg, const RgbColor::optional_t& optionalColor) 
 
 } // namespace mixxx
 
+Q_DECLARE_TYPEINFO(mixxx::RgbColor, Q_MOVABLE_TYPE);
 Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(std::optional<mixxx::RgbColor>)

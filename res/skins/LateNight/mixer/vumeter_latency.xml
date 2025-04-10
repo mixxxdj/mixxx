@@ -17,8 +17,8 @@
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <MinimumSize>64,4</MinimumSize>
         <MaximumSize>64,4</MaximumSize>
-        <PathVu>skin:/<Variable name="StyleScheme"/>/style/vumeter_latency_over.png</PathVu>
-        <PathBack>skin:/<Variable name="StyleScheme"/>/style/vumeter_latency_bg.png</PathBack>
+        <PathVu>skins:LateNight/<Variable name="StyleScheme"/>/style/vumeter_latency_over.png</PathVu>
+        <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/vumeter_latency_bg.png</PathBack>
         <Horizontal>true</Horizontal>
         <PeakHoldSize>5</PeakHoldSize>
         <PeakHoldTime>1000</PeakHoldTime>

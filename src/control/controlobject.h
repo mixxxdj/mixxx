@@ -33,6 +33,9 @@ class ControlObject : public QObject {
         return getControl(key, flags);
     }
 
+    // Checks whether a ControlObject exists or not
+    static bool exists(const ConfigKey& key);
+
     QString name() const {
         return m_pControl ?  m_pControl->name() : QString();
     }
@@ -51,6 +54,20 @@ class ControlObject : public QObject {
         if (m_pControl) {
             m_pControl->setDescription(description);
         }
+    }
+
+    void setKbdRepeatable(bool enable) {
+        if (m_pControl) {
+            m_pControl->setKbdRepeatable(enable);
+        }
+    }
+
+    bool getKbdRepeatable() const {
+        return m_pControl ? m_pControl->getKbdRepeatable() : false;
+    }
+
+    void addAlias(const ConfigKey& aliasKey) const {
+        ControlDoublePrivate::insertAlias(aliasKey, m_key);
     }
 
     // Return the key of the object

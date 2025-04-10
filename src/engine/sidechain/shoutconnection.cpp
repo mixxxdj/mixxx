@@ -1,3 +1,7 @@
+#include "engine/sidechain/shoutconnection.h"
+
+#include <QRegularExpression>
+#include <QTextCodec>
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
@@ -6,23 +10,15 @@
 #include <unistd.h>
 #endif
 
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
-#include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
-#include "engine/sidechain/shoutconnection.h"
+#include "errordialoghandler.h"
 #include "mixer/playerinfo.h"
 #include "moc_shoutconnection.cpp"
 #include "preferences/usersettings.h"
@@ -58,8 +54,8 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_pConfig(pConfig),
           m_pProfile(profile),
           m_encoder(nullptr),
-          m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate", this)),
-          m_pBroadcastEnabled(new ControlProxy(BROADCAST_PREF_KEY, "enabled", this)),
+          m_mainSamplerate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
+          m_broadcastEnabled(BROADCAST_PREF_KEY, "enabled"),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -100,7 +96,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 #ifdef SHOUT_TLS
     // Libshout defaults to SHOUT_TLS_AUTO if build with SHOUT_TLS
     // Sometimes autodetection fails, resulting into no metadata send
-    // https://bugs.launchpad.net/mixxx/+bug/1817395
+    // https://github.com/mixxxdj/mixxx/issues/9599
     if (shout_set_tls(m_pShout, SHOUT_TLS_DISABLED) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting tls mode:"),
                 shout_get_error(m_pShout));
@@ -109,8 +105,6 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 }
 
 ShoutConnection::~ShoutConnection() {
-    delete m_pMasterSamplerate;
-
     if (m_pShoutMetaData) {
         shout_metadata_free(m_pShoutMetaData);
     }
@@ -144,7 +138,7 @@ bool ShoutConnection::isConnected() {
 // Only called when applying settings while broadcasting is active
 void ShoutConnection::applySettings() {
     // Do nothing if profile or Live Broadcasting is disabled
-    if (!m_pBroadcastEnabled->toBool() || !m_pProfile->getEnabled()) {
+    if (!m_broadcastEnabled.toBool() || !m_pProfile->getEnabled()) {
         return;
     }
 
@@ -398,23 +392,23 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    auto masterSamplerate = mixxx::audio::SampleRate::fromDouble(m_pMasterSamplerate->get());
-    VERIFY_OR_DEBUG_ASSERT(masterSamplerate.isValid()) {
-        qWarning() << "Invalid sample rate!" << masterSamplerate;
+    auto mainSamplerate = mixxx::audio::SampleRate::fromDouble(m_mainSamplerate.get());
+    VERIFY_OR_DEBUG_ASSERT(mainSamplerate.isValid()) {
+        qWarning() << "Invalid sample rate!" << mainSamplerate;
         return;
     }
 
-    if (m_format_is_ov && masterSamplerate == 96000) {
+    if (m_format_is_ov && mainSamplerate == 96000) {
         errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample rate or switch "
                        "to a different encoding."),
-                    tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
+                    tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
                        "information."));
         return;
     }
 
 #ifdef __OPUS__
-    if (m_format_is_opus && masterSamplerate != EncoderOpus::getMasterSamplerate()) {
+    if (m_format_is_opus && mainSamplerate != EncoderOpus::getMainSampleRate()) {
         errorDialog(
             EncoderOpus::getInvalidSamplerateMessage(),
             tr("Unsupported sample rate")
@@ -465,7 +459,7 @@ void ShoutConnection::updateFromPreferences() {
     QString userErrorMsg;
     int ret = -1;
     if (m_encoder) {
-        ret = m_encoder->initEncoder(masterSamplerate, &userErrorMsg);
+        ret = m_encoder->initEncoder(mainSamplerate, &userErrorMsg);
     }
 
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
@@ -613,6 +607,12 @@ bool ShoutConnection::processConnect() {
             kLogger.warning()
                     << "processConnect() socket error."
                     << "Is socket already in use?";
+        } else if (timeout >= kConnectRetries) {
+            // Not translated, because shout_get_error() returns also English only
+            m_lastErrorStr = QStringLiteral("Connection establishment time-out");
+            kLogger.warning()
+                    << "processConnect() error:"
+                    << m_iShoutStatus << m_lastErrorStr;
         } else if (m_pProfile->getEnabled()) {
             m_lastErrorStr = shout_get_error(m_pShout);
             kLogger.warning()
@@ -700,7 +700,7 @@ int ShoutConnection::filelen() {
     return 0;
 }
 
-bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
+bool ShoutConnection::writeSingle(const unsigned char* data, std::size_t len) {
     setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
@@ -725,7 +725,7 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
     return true;
 }
 
-void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+void ShoutConnection::process(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     setFunctionCode(4);
     if (!m_pProfile->getEnabled()) {
         return;
@@ -744,9 +744,9 @@ void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     const EncoderPointer pEncoder = m_encoder;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && pEncoder) {
+    if (bufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        pEncoder->encodeBuffer(pBuffer, iBufferSize);
+        pEncoder->encodeBuffer(pBuffer, bufferSize);
         // the encoded frames are received by the write() callback.
     }
 
@@ -1019,10 +1019,9 @@ void ShoutConnection::run() {
 
     while(true) {
         // Stop the thread if broadcasting is turned off
-        if (!m_pProfile->getEnabled()
-                || !m_pBroadcastEnabled->toBool()
-                || getStatus() == BroadcastProfile::STATUS_FAILURE
-                || getStatus() == BroadcastProfile::STATUS_UNCONNECTED) {
+        if (!m_pProfile->getEnabled() || !m_broadcastEnabled.toBool() ||
+                getStatus() == BroadcastProfile::STATUS_FAILURE ||
+                getStatus() == BroadcastProfile::STATUS_UNCONNECTED) {
             m_threadWaiting = false;
             kLogger.debug() << "run: Connection disabled or failed. Disconnecting";
             if(processDisconnect()) {

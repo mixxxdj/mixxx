@@ -201,7 +201,7 @@ StantonSCS1d.init2 = function () {
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     StantonSCS1d.state["Oldknob"]=1;
     // Set active deck to last available so the below will switch to #1.
-    StantonSCS1d.deck = engine.getValue("[Master]","num_decks");
+    StantonSCS1d.deck = engine.getValue("[App]", "num_decks");
     // Set the default platter mode for this last deck
     if (!StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"])
         StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.platterMode["default"];
@@ -284,6 +284,7 @@ StantonSCS1d.inboundSysex = function (data, length) {
         }
     }
 }
+StantonSCS1d.incomingData = StantonSCS1d.inboundSysex;
 
 StantonSCS1d.checkInSetup = function () {
   if (StantonSCS1d.inSetup) print ("StantonSCS1d: In setup mode, ignoring command.");
@@ -791,7 +792,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
             StantonSCS1d.newPlatterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
 
         // Supports n-decks
-        if (StantonSCS1d.deck == engine.getValue("[Master]","num_decks")) StantonSCS1d.deck=1;
+        if (StantonSCS1d.deck == engine.getValue("[App]", "num_decks")) StantonSCS1d.deck=1;
         else StantonSCS1d.deck++;
 
         if (StantonSCS1d.debug) print("StantonSCS1d: Switching to deck "+StantonSCS1d.deck);
@@ -832,7 +833,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
         if (!StantonSCS1d.fastDeckChange) {
             if (StantonSCS1d.timer["deckChange"] != -1) engine.stopTimer(StantonSCS1d.timer["deckChange"]);
             StantonSCS1d.state["flashes"] = 0;  // initialize number of flashes
-            StantonSCS1d.timer["deckChange"] = engine.beginTimer(60,"StantonSCS1d.deckChangeFlash("+channel+","+value+")");
+            StantonSCS1d.timer["deckChange"] = engine.beginTimer(60, () => { StantonSCS1d.deckChangeFlash(channel, value); }); 
             return;
         }
         // No flashy lights
@@ -1698,7 +1699,7 @@ StantonSCS1d.loopEnabled = function (value) {
     if (value>0 && StantonSCS1d.timer["loop"]==-1) {
         if (!StantonSCS1d.loopActive[StantonSCS1d.deck] ||
             StantonSCS1d.loopActive[StantonSCS1d.deck]==-1) StantonSCS1d.activateLoop(1);
-        StantonSCS1d.timer["loop"] = engine.beginTimer(500,"StantonSCS1d.loopFlash()");
+        StantonSCS1d.timer["loop"] = engine.beginTimer(500, StantonSCS1d.loopFlash);
     }
 
     if (value<=0 && StantonSCS1d.timer["loop"]!=-1) {
@@ -2041,7 +2042,7 @@ StantonSCS1d.circleBars = function (value) {
         if (trackTimeRemaining<=30 && trackTimeRemaining>15) {   // If <30s left, flash slowly
             if (StantonSCS1d.timer["30s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS1d.timer["30s-d"+deck] = engine.beginTimer(500,"StantonSCS1d.circleFlash("+deck+")");
+                StantonSCS1d.timer["30s-d"+deck] = engine.beginTimer(500, () => { StantonSCS1d.circleFlash(deck); });
                 if (StantonSCS1d.timer["15s-d"+deck] != -1) {
                     // Stop the 15s timer if it was running
                     engine.stopTimer(StantonSCS1d.timer["15s-d"+deck]);
@@ -2051,7 +2052,7 @@ StantonSCS1d.circleBars = function (value) {
         } else if (trackTimeRemaining<=15 && trackTimeRemaining>0) { // If <15s left, flash quickly
             if (StantonSCS1d.timer["15s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS1d.timer["15s-d"+deck] = engine.beginTimer(125,"StantonSCS1d.circleFlash("+deck+")");
+                StantonSCS1d.timer["15s-d"+deck] = engine.beginTimer(125, () => { StantonSCS1d.circleFlash(deck); });
                 if (StantonSCS1d.timer["30s-d"+deck] != -1) {
                     // Stop the 30s timer if it was running
                     engine.stopTimer(StantonSCS1d.timer["30s-d"+deck]);

@@ -208,7 +208,7 @@ MiniMixxx.EncoderModeJog = class extends MiniMixxx.Mode {
 
         let midiColor = this.loopColor;
         if (engine.getValue(this.channel, "loop_enabled") === 0) {
-            midiColor = MiniMixxx.vuMeterColor(engine.getValue(this.channel, "VuMeter"));
+            midiColor = MiniMixxx.vuMeterColor(engine.getValue(this.channel, "vu_meter"));
         }
 
         // Angles between 0 and .4 and .6 and 1.0 are in the indicator so no output.
@@ -255,8 +255,8 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         this.showGain = false;
         engine.makeConnection(this.channel, "pregain", this.pregainIndicator.bind(this));
         engine.makeConnection(this.channel, "pfl", this.pflIndicator.bind(this));
-        engine.makeUnbufferedConnection(this.channel, "VuMeter", this.vuIndicator.bind(this));
-        engine.makeConnection(this.channel, "PeakIndicator", this.peakIndicator.bind(this));
+        engine.makeUnbufferedConnection(this.channel, "vu_meter", this.vuIndicator.bind(this));
+        engine.makeConnection(this.channel, "peak_indicator", this.peakIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue(this.channel, "pregain", engine.getValue(this.channel, "pregain") + velo / 50.0);
@@ -278,7 +278,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         }
 
         let color = MiniMixxx.vuMeterColor(value);
-        color = engine.getValue(this.channel, "PeakIndicator") > 0 ? MiniMixxx.PeakColor : color;
+        color = engine.getValue(this.channel, "peak_indicator") > 0 ? MiniMixxx.PeakColor : color;
         const midiValue = value * 127.0;
         midi.sendShortMsg(0xBF, this.idx, color);
         midi.sendShortMsg(0xB0, this.idx, midiValue);
@@ -287,7 +287,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         if (this !== this.parent.activeMode || this.showGain) {
             return;
         }
-        this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
+        this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
     }
     pregainIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -297,10 +297,10 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
             engine.stopTimer(this.idleTimer);
         }
         this.showGain = true;
-        this.idleTimer = engine.beginTimer(1000, function() {
+        this.idleTimer = engine.beginTimer(1000, () => {
             this.showGain = false;
-            this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
-        }.bind(this), true);
+            this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
+        }, true);
         midi.sendShortMsg(0xBF, this.idx, this.color);
         midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
     }
@@ -312,7 +312,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         midi.sendShortMsg(0x90, this.idx, color);
     }
     setLights() {
-        this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
+        this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
         this.pflIndicator(engine.getValue(this.channel, "pfl"));
     }
 };
@@ -966,13 +966,13 @@ MiniMixxx.ButtonModeSync = class extends MiniMixxx.ButtonMode {
             if (engine.getValue(this.channel, "sync_enabled") === 0) {
                 engine.setValue(this.channel, "sync_enabled", 1);
                 // Start timer to measure how long button is pressed
-                this.syncPressedTimer = engine.beginTimer(300, function() {
+                this.syncPressedTimer = engine.beginTimer(300, () => {
                     engine.setValue(this.channel, "sync_enabled", 1);
                     // Reset sync button timer state if active
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }.bind(this), true);
+                }, true);
             } else {
                 // Deactivate sync lock
                 // LED is turned off by the callback handler for sync_enabled
@@ -1426,7 +1426,7 @@ MiniMixxx.Controller = class {
             this.buttons[name].activeMode.setLights();
         }
 
-        this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.guiTickHandler.bind(this));
+        this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", this.guiTickHandler.bind(this));
     }
 
 
@@ -1494,6 +1494,10 @@ MiniMixxx.Controller = class {
 };
 
 MiniMixxx.init = function(_id) {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     this.kontrol = new MiniMixxx.Controller();
 
     console.log("MiniMixxx: Init done!");

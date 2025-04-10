@@ -1,6 +1,8 @@
 #include "effects/backends/builtin/threebandbiquadeqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/defs.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 
 namespace {
@@ -96,11 +98,8 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
             engineParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
 }
 
-ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
-}
-
 void ThreeBandBiquadEQEffectGroupState::setFilters(
-        int sampleRate, double lowFreqCorner, double highFreqCorner) {
+        mixxx::audio::SampleRate sampleRate, double lowFreqCorner, double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);
@@ -119,9 +118,9 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
             sampleRate, highCenter / 2, kQKillShelve, m_oldHighCut);
 }
 
-ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect() {
-    m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect()
+        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
+          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
 }
 
 void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
@@ -134,9 +133,6 @@ void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
     m_pKillHigh = parameters.value("killHigh");
 }
 
-ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
-}
-
 void ThreeBandBiquadEQEffect::processChannel(
         ThreeBandBiquadEQEffectGroupState* pState,
         const CSAMPLE* pInput,
@@ -147,10 +143,10 @@ void ThreeBandBiquadEQEffect::processChannel(
     Q_UNUSED(groupFeatures);
 
     if (pState->m_oldSampleRate != engineParameters.sampleRate() ||
-            (pState->m_loFreqCorner != m_pLoFreqCorner->get()) ||
-            (pState->m_highFreqCorner != m_pHiFreqCorner->get())) {
-        pState->m_loFreqCorner = m_pLoFreqCorner->get();
-        pState->m_highFreqCorner = m_pHiFreqCorner->get();
+            (pState->m_loFreqCorner != m_pLoFreqCorner.get()) ||
+            (pState->m_highFreqCorner != m_pHiFreqCorner.get())) {
+        pState->m_loFreqCorner = m_pLoFreqCorner.get();
+        pState->m_highFreqCorner = m_pHiFreqCorner.get();
         pState->m_oldSampleRate = engineParameters.sampleRate();
         pState->setFilters(engineParameters.sampleRate(),
                 pState->m_loFreqCorner,
@@ -355,7 +351,9 @@ void ThreeBandBiquadEQEffect::processChannel(
     }
 
     if (activeFilters == 0) {
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        }
     }
 
     if (enableState == EffectEnableState::Disabling) {

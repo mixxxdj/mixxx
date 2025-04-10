@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QString>
 #include <QtDebug>
-#include <QtSql>
 
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
@@ -283,7 +282,7 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
                     .isValid());
 
     QList<RelocatedTrack> relocatedTracks =
-            dao.relocateDirectory(oldDirPath, newDirPath);
+            dao.relocateDirectory(oldDirPath, newDirPath).second;
     EXPECT_EQ(2, relocatedTracks.size());
 
     const QList<mixxx::FileInfo> newDirs = dao.loadAllDirectories();

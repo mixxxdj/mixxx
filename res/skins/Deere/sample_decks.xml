@@ -40,7 +40,7 @@
 
   <WidgetGroup>
     <Connection>
-      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <ConfigKey>[Skin],show_samplers</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
     <Layout>vertical</Layout>
@@ -50,7 +50,7 @@
     <SizePolicy>me,f</SizePolicy>
     <Children>
 
-      <WidgetStack currentpage="[Skin],sampler_row_current" persist="true">
+      <WidgetStack currentpage="[Skin],sampler_rows" persist="true">
         <ObjectName>SampleDecksContainer</ObjectName>
         <NextControl>[Skin],sampler_row_next</NextControl>
         <PrevControl>[Skin],sampler_row_prev</PrevControl>

@@ -1,4 +1,4 @@
-#include <engine/sidechain/networkinputstreamworker.h>
+#include "engine/sidechain/networkinputstreamworker.h"
 
 NetworkInputStreamWorker::NetworkInputStreamWorker() {
 }

@@ -31,15 +31,18 @@
                 <Layout>stacked</Layout>
                 <Size>57f,-1me</Size>
                 <Children>
-                  <!-- In order to make the bpm display tappable, we use an old-style
-                  widget group and put the bpm pushbutton on top of the display. -->
+                  <!-- invisible Tempo/BPM tap button on top of BPM display -->
                   <PushButton>
-                    <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                    <TooltipId>tempo_tap_bpm_tap_visual_bpm</TooltipId>
                     <ObjectName>BpmTap</ObjectName>
                     <Size>57f,-1me</Size>
                     <NumberStates>1</NumberStates>
                     <Connection>
+                      <ConfigKey><Variable name="Group"/>,tempo_tap</ConfigKey>
+                    </Connection>
+                    <Connection>
                       <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
                   <WidgetGroup><!-- BPM + rate -->
@@ -51,6 +54,7 @@
                         <ObjectName>BpmText</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>57f,22f</Size>
+                        <Alignment>center</Alignment>
                         <NumberOfDigits>2</NumberOfDigits>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
@@ -59,6 +63,7 @@
                       <NumberRate>
                         <TooltipId>rate_display</TooltipId>
                         <ObjectName>RateText</ObjectName>
+                        <Alignment>center</Alignment>
                         <Channel><Variable name="ChanNum" /></Channel>
                         <NumberOfDigits>2</NumberOfDigits>
                       </NumberRate>
@@ -134,8 +139,8 @@
                         <Size>40f,119f</Size>
                         <Pos>5,2</Pos>
                         <TooltipId>rate</TooltipId>
-                        <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
-                        <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
                         <Horizontal>false</Horizontal>
                         <BarWidth><Variable name="BarWidth"/></BarWidth>
                         <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
@@ -177,7 +182,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_perm_up_rate_perm_up_small</SetVariable>
                         <SetVariable name="ObjectName">RatePermUp</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -185,7 +190,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_perm_up_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
                         <SetVariable name="ObjectName">RateTempUp</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -193,7 +198,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_up_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
                         <SetVariable name="ObjectName">RateTempDown</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -201,7 +206,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_down_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_perm_down_rate_perm_down_small</SetVariable>
                         <SetVariable name="ObjectName">RatePermDown</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -220,7 +225,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_perm_down_rate_perm_down_small</SetVariable>
                         <SetVariable name="ObjectName">RatePermDown</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -228,7 +233,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_perm_down_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
                         <SetVariable name="ObjectName">RateTempDownRev</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -236,7 +241,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_down_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
                         <SetVariable name="ObjectName">RateTempUpRev</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -244,7 +249,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_up_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:/controls/button_1state_right.xml">
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">rate_perm_up_rate_perm_up_small</SetVariable>
                         <SetVariable name="ObjectName">RatePermUp</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>

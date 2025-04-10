@@ -1,15 +1,13 @@
 #pragma once
 
-#include <QPaintEvent>
-#include <QWidget>
 #include <QString>
-#include <QDomNode>
-#include <QPixmap>
 #include <QVector>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "skin/legacy/skincontext.h"
+
+class QDomNode;
+class SkinContext;
 
 /// A general purpose status light for indicating boolean events.
 class WStatusLight : public WWidget  {

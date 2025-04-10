@@ -66,4 +66,14 @@ class MidiUtils {
     static QString formatSysexMessage(const QString& controllerName,
                               const QByteArray& data,
                               mixxx::Duration timestamp = mixxx::Duration::fromMillis(0));
+
+    template<class... Ts>
+    struct overloaded : Ts... {
+        using Ts::operator()...;
+    };
+#if __cplusplus < 202002L || defined(__clang__)
+    // explicit deduction guide (not needed as of C++20)
+    template<class... Ts>
+    overloaded(Ts...) -> overloaded<Ts...>;
+#endif
 };

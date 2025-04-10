@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QAtomicInteger>
 #include <QSemaphore>
 #include <QThread>
 #include <map>
 
-#include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
+#include "controllers/hid/hidioglobaloutputreportfifo.h"
 #include "controllers/hid/hidiooutputreport.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
+#include "util/runtimeloggingcategory.h"
 
 enum class HidIoThreadState {
     Initialized,
@@ -44,7 +44,7 @@ class HidIoThread : public QThread {
 
     void updateCachedOutputReportData(quint8 reportID,
             const QByteArray& reportData,
-            bool resendUnchangedReport);
+            bool useNonSkippingFIFO);
     QByteArray getInputReport(quint8 reportID);
     void sendFeatureReport(quint8 reportID, const QByteArray& reportData);
     QByteArray getFeatureReport(quint8 reportID);
@@ -79,6 +79,7 @@ class HidIoThread : public QThread {
     unsigned char m_pPollData[kNumBuffers][kBufferSize];
     int m_lastPollSize;
     int m_pollingBufferIndex;
+    bool m_hidReadErrorLogged;
 
     /// Must be locked when a operation changes the size of the m_outputReports map,
     /// or when modify the m_outputReportIterator
@@ -91,6 +92,8 @@ class HidIoThread : public QThread {
     /// No other modifications to the map are done, until destruction of this class.
     OutputReportMap m_outputReports;
     OutputReportMap::iterator m_outputReportIterator;
+
+    HidIoGlobalOutputReportFifo m_globalOutputReportFifo;
 
     /// State of the HidIoThread lifecycle
     QAtomicInt m_state;

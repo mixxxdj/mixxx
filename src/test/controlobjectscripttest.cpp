@@ -1,10 +1,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
 
 using ::testing::_;
 using ::testing::DoubleEq;
@@ -198,7 +199,8 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValueMulti) {
 }
 
 TEST_F(ControlObjectScriptTest, CompressingProxyMultiConnection) {
-    // Check that slotValueChanged callback is called 1 time if multiple connections exist forthe same slot
+    // Check that slotValueChanged callback is called 1 time if multiple
+    // connections exist for the same slot
     EXPECT_CALL(*coScript1, slotValueChanged(32.0, _))
             .Times(1)
             .WillOnce(Return());
@@ -217,7 +219,8 @@ TEST_F(ControlObjectScriptTest, CompressingProxyMultiConnection) {
 }
 
 TEST_F(ControlObjectScriptTest, QueuedFallbackMultiConnection) {
-    // Check that slotValueChanged callback is called 1 time if multiple connections exist forthe same slot
+    // Check that slotValueChanged callback is called 1 time if multiple
+    // connections exist for the same slot
     EXPECT_CALL(*coScript1, slotValueChanged(62.0, _))
             .Times(1)
             .WillOnce(Return());

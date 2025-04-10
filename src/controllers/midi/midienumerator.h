@@ -1,19 +1,12 @@
-/**
-* @file midienumerator.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 7 Feb 2012
-* @brief Base class handling discovery and enumeration of DJ controllers that use the MIDI protocol.
-*
-* This class handles discovery and enumeration of MIDI DJ controllers and
-*   must be inherited by a class that implements it on some API.
-*/
-
-#ifndef MIDIENUMERATOR_H
-#define MIDIENUMERATOR_H
+#pragma once
 
 #include "controllers/controllerenumerator.h"
-#include "controllers/midi/midicontroller.h"
 
+/// @brief Base class handling discovery and enumeration of DJ controllers that
+/// use the MIDI protocol.
+///
+/// This class handles discovery and enumeration of MIDI DJ controllers and
+///   must be inherited by a class that implements it on some API.
 class MidiEnumerator : public ControllerEnumerator {
     Q_OBJECT
   public:
@@ -22,5 +15,3 @@ class MidiEnumerator : public ControllerEnumerator {
 
     virtual QList<Controller*> queryDevices() = 0;
 };
-
-#endif

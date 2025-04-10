@@ -37,23 +37,26 @@ VestaxVCI400.ModeEnum = {
  * Called when the MIDI device is opened for set up
  */
 VestaxVCI400.init = function (id) {
-   engine.setValue("[Master]", "num_decks", 4);
-   //Initialize controls and their default values here
-   VestaxVCI400.Decks.A.init();
-   VestaxVCI400.Decks.B.init();
-   VestaxVCI400.Decks.C.init();
-   VestaxVCI400.Decks.D.init();
+    engine.setValue("[App]", "num_decks", 4);
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+    //Initialize controls and their default values here
+    VestaxVCI400.Decks.A.init();
+    VestaxVCI400.Decks.B.init();
+    VestaxVCI400.Decks.C.init();
+    VestaxVCI400.Decks.D.init();
 
-   //Connect vu meters
-   // No need if using the sound card
-   engine.connectControl("[Master]","VuMeterL", "VestaxVCI400.onMasterVuMeterLChanged");
-   engine.connectControl("[Master]","VuMeterR", "VestaxVCI400.onMasterVuMeterRChanged");
+    //Connect vu meters
+    // No need if using the sound card
+    engine.connectControl("[Main]", "vu_meter_left", "VestaxVCI400.onMasterVuMeterLChanged");
+    engine.connectControl("[Main]", "vu_meter_right", "VestaxVCI400.onMasterVuMeterRChanged");
 
-   //Reset VU meters
-   if (VestaxVCI400.enableMasterVu) {
-       midi.sendShortMsg("0xbe", 43, 0);
-       midi.sendShortMsg("0xbe", 44, 0);
-   }
+    //Reset VU meters
+    if (VestaxVCI400.enableMasterVu) {
+        midi.sendShortMsg("0xbe", 43, 0);
+        midi.sendShortMsg("0xbe", 44, 0);
+    }
 };
 
 /*
@@ -457,7 +460,7 @@ VestaxVCI400.Deck.prototype.clearLights = function() {
 VestaxVCI400.Deck.prototype.init = function() {
     this.clearLights();
     //Connect controls
-    engine.connectControl(this.group,"VuMeter", "VestaxVCI400.Decks."+this.deckIdentifier+".onVuMeterChanged");
+    engine.connectControl(this.group,"vu_meter", "VestaxVCI400.Decks."+this.deckIdentifier+".onVuMeterChanged");
 
     engine.connectControl(this.group,"hotcue_1_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue1Changed");
     engine.connectControl(this.group,"hotcue_2_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue2Changed");
@@ -621,7 +624,7 @@ VestaxVCI400.Deck.prototype.onWheelTouch = function(value) {
             this.finishWheelTouch();
         } else {
             this.wheelTouchInertiaTimer = engine.beginTimer(
-                    inertiaTime, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+                    inertiaTime, () => { VestaxVCI400.Decks[this.deckIdentifier].finishWheelTouch(); }, true);
         }
     }
 };
@@ -631,7 +634,7 @@ VestaxVCI400.Deck.prototype.finishWheelTouch = function() {
     if (this.vinylActive) {
         // Vinyl button still being pressed, don't disable scratch mode yet.
         this.wheelTouchInertiaTimer = engine.beginTimer(
-                100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+                100, () => { VestaxVCI400.Decks[this.deckIdentifier].finishWheelTouch(); }, true);
         return;
     }
     var play = engine.getValue(this.group, "play");
@@ -648,7 +651,7 @@ VestaxVCI400.Deck.prototype.finishWheelTouch = function() {
         } else {
             // Check again soon.
             this.wheelTouchInertiaTimer = engine.beginTimer(
-                    100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+                    100, () => { VestaxVCI400.Decks[this.deckIdentifier].finishWheelTouch(); }, true);
         }
     }
 };

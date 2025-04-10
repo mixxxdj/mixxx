@@ -7,6 +7,7 @@
 #include <QStringRef>
 #include <cstring>
 #include <cwchar>
+#include <limits>
 
 #include "util/assert.h"
 
@@ -35,55 +36,64 @@ class StringCollator {
 /// A nullptr-safe variant of the corresponding standard C function.
 ///
 /// Treats nullptr like an empty string and returns 0.
-inline std::size_t strnlen(
+/// The c11 strnlen_s() is not available on all targets
+inline std::size_t strnlen_s(
         const char* str,
-        std::size_t len) {
+        std::size_t maxlen) {
     if (str == nullptr) {
         return 0;
     }
-    // Invoke the global function
-    return ::strnlen(str, len);
+    // Invoke the global function and benefit from SIMD implementations
+    return ::strnlen(str, maxlen);
 }
 
 /// A nullptr-safe variant of the corresponding standard C function.
 ///
 /// Treats nullptr like an empty string and returns 0.
-inline std::size_t wcsnlen(
+/// The c11 wcsnlen_s is not available on all targets
+/// and wcsnlen() is not available on OpenBSD
+inline std::size_t wcsnlen_s(
         const wchar_t* wcs,
-        std::size_t len) {
+        std::size_t maxlen) {
     if (wcs == nullptr) {
         return 0;
     }
-    // Invoke the global function
-    return ::wcsnlen(wcs, len);
+#if !defined(__BSD__) || defined(__USE_XOPEN2K8)
+    // Invoke the global function SIMD implementations
+    return ::wcsnlen(wcs, maxlen);
+#else
+    std::size_t n;
+    for (n = 0; n < maxlen; n++) {
+        if (!wcs[n]) {
+            break;
+        }
+    }
+    return n;
+#endif
 }
 
-/// Convert a wide-character C string to QString.
+/// @brief Convert a wide-character C string to QString.
 ///
-/// We cannot use Qts wchar_t functions, since they may work or not
-/// depending on the '/Zc:wchar_t-' build flag in the Qt configs
-/// on Windows build.
-///
-/// See also: QString::fromWCharArray()
+/// @param wcs wchar_t c-string
+/// @param maxLen maximum length of the string in case `wcs` is not null-terminated
 inline QString convertWCStringToQString(
         const wchar_t* wcs,
-        std::size_t len) {
-    if (!wcs) {
-        DEBUG_ASSERT(len == 0);
-        return QString();
+        std::size_t maxLen) {
+    // ensure we don't "overflow" from the `static_cast<int>`
+    DEBUG_ASSERT(maxLen <= std::numeric_limits<int>::max());
+    return QString::fromWCharArray(wcs, static_cast<int>(wcsnlen_s(wcs, maxLen)));
+}
+
+/// Remove trailing spaces from the specified string.
+inline QString removeTrailingWhitespaces(QString str) {
+    auto it = str.crbegin();
+    while (it != str.crend() && it->isSpace()) {
+        ++it;
     }
-    DEBUG_ASSERT(wcsnlen(wcs, len) == len);
-    const auto ilen = static_cast<int>(len);
-    DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
-    switch (sizeof(wchar_t)) {
-    case sizeof(char16_t):
-        return QString::fromUtf16(reinterpret_cast<const char16_t*>(wcs), ilen);
-    case sizeof(char32_t):
-        return QString::fromUcs4(reinterpret_cast<const char32_t*>(wcs), ilen);
-    default:
-        DEBUG_ASSERT(!"unsupported character type");
-        return QString();
+    if (it != str.crbegin()) {
+        str.resize(std::distance(it, str.crend()));
     }
+    return str;
 }
 
 } // namespace mixxx

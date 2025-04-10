@@ -1,16 +1,17 @@
 #pragma once
 
 #include <QMutex>
-#include <QSemaphore>
 #include <QString>
-#include <QThread>
-#include <QtDebug>
 
+#include "audio/frame.h"
+#include "audio/types.h"
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "track/track_decl.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -98,11 +99,16 @@ class CachingReaderWorker : public EngineWorker {
     // Construct a CachingReader with the given group.
     CachingReaderWorker(const QString& group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
-            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
+            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO,
+            mixxx::audio::ChannelCount maxSupportedChannel);
     ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
+#ifdef __STEM__
+    void newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask);
+#else
     void newTrack(TrackPointer pTrack);
+#endif
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
@@ -113,10 +119,19 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void trackLoaded(TrackPointer pTrack,
+            mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
+            mixxx::audio::FramePos numFrame);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
+#ifdef __STEM__
+    struct NewTrackRequest {
+        TrackPointer track;
+        mixxx::StemChannelSelection stemMask;
+    };
+#endif
     const QString m_group;
     QString m_tag;
 
@@ -129,7 +144,11 @@ class CachingReaderWorker : public EngineWorker {
     // lock to touch.
     QMutex m_newTrackMutex;
     QAtomicInt m_newTrackAvailable;
+#ifdef __STEM__
+    NewTrackRequest m_pNewTrack;
+#else
     TrackPointer m_pNewTrack;
+#endif
 
     void discardAllPendingRequests();
 
@@ -142,17 +161,29 @@ class CachingReaderWorker : public EngineWorker {
     void unloadTrack();
 
     /// Internal method to load a track. Emits trackLoaded when finished.
+#ifdef __STEM__
+    void loadTrack(const TrackPointer& pTrack, mixxx::StemChannelSelection stemMask);
+#else
     void loadTrack(const TrackPointer& pTrack);
+#endif
 
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
 
+    void verifyFirstSound(const CachingReaderChunk* pChunk,
+            mixxx::audio::ChannelCount channelCount);
+
     // The current audio source of the track loaded
     mixxx::AudioSourcePointer m_pAudioSource;
+
+    mixxx::audio::FramePos m_firstSoundFrameToVerify;
 
     // Temporary buffer for reading samples from all channels
     // before conversion to a stereo signal.
     mixxx::SampleBuffer m_tempReadBuffer;
+
+    // The maximum number of channel that this reader can support
+    mixxx::audio::ChannelCount m_maxSupportedChannel;
 
     QAtomicInt m_stop;
 };

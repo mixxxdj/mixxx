@@ -1,5 +1,6 @@
 #include "widget/weffectparameterknob.h"
 
+#include "effects/effectparameterslotbase.h"
 #include "moc_weffectparameterknob.cpp"
 #include "widget/effectwidgetutils.h"
 
@@ -12,7 +13,7 @@ void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& contex
     m_pEffectParameterSlot = EffectWidgetUtils::getParameterSlotFromNode(
             node, context, pEffectSlot);
     VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
-        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
+        SKIN_WARNING(node, context, QStringLiteral("Could not find effect parameter slot"));
         return;
     }
     connect(m_pEffectParameterSlot.data(),
@@ -24,7 +25,7 @@ void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& contex
 
 void WEffectParameterKnob::parameterUpdated() {
     if (m_pEffectParameterSlot->isLoaded()) {
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 m_pEffectParameterSlot->name(),
                 m_pEffectParameterSlot->description()));
     } else {

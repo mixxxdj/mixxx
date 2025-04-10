@@ -24,7 +24,7 @@ BehringerBCD2000.shutdown = function () {
 
    BehringerBCD2000.reset();
 
-   // Reenable jog acceleration
+   // Re-enable jog acceleration
    if (!BehringerBCD2000.UseAcceleration)
       midi.sendShortMsg(0xB0, 0x63, 0x7F);
 };

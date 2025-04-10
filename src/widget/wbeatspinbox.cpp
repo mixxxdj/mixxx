@@ -1,17 +1,17 @@
 #include "widget/wbeatspinbox.h"
 
-#include <QLineEdit>
+#include <QKeyEvent>
 #include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "library/library_decl.h"
 #include "moc_wbeatspinbox.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 
 namespace {
 const QRegularExpression kBlockListRegex(QStringLiteral("[^0-9.,/ ]"));
-}
+} // namespace
 
 WBeatSpinBox::WBeatSpinBox(QWidget* parent,
         const ConfigKey& configKey,
@@ -54,25 +54,14 @@ void WBeatSpinBox::stepBy(int steps) {
     QString temp = text();
     int cursorPos = lineEdit()->cursorPosition();
     if (validate(temp, cursorPos) == QValidator::Acceptable) {
-        double editValue = valueFromText(temp);
-        newValue = editValue * pow(2, steps);
-        if (newValue < minimum() || newValue > maximum()) {
-            // don't clamp the value here to not fall out of a measure
-            newValue = editValue;
-        }
+        newValue = valueFromText(temp) * pow(2, steps);
     } else {
         // here we have an unacceptable edit, going back to the old value first
         newValue = oldValue;
     }
     // Do not call QDoubleSpinBox::setValue directly in case
     // the new value of the ControlObject needs to be confirmed.
-    // Curiously, m_valueControl.set() does not cause slotControlValueChanged
-    // to execute for beatjump_size, so call QDoubleSpinBox::setValue in this function.
     m_valueControl.set(newValue);
-    double coValue = m_valueControl.get();
-    if (coValue != value()) {
-        setValue(coValue);
-    }
     selectAll();
 }
 
@@ -297,17 +286,16 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
 }
 
 void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
-    // By default, Return & Enter keys apply current value.
-    // Here, Return, Enter and Escape apply and move focus to tracks table.
+    // By default, Return & Enter keys apply the current value.
+    // Additionally, move focus back to the previously focused library widget.
     if (pEvent->key() == Qt::Key_Return ||
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {
         QDoubleSpinBox::keyPressEvent(pEvent);
-        ControlObject::set(ConfigKey("[Library]", "focused_widget"),
-                static_cast<double>(FocusWidget::TracksTable));
+        ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    return QDoubleSpinBox::keyPressEvent(pEvent);
+    QDoubleSpinBox::keyPressEvent(pEvent);
 }
 
 bool WBeatLineEdit::event(QEvent* pEvent) {

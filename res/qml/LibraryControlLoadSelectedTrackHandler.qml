@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 
 /// Usually, this component shouldn't be an (visual) `Item` and use something
@@ -34,5 +34,4 @@ Item {
             root.loadTrackRequested(true);
         }
     }
-
 }

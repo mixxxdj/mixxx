@@ -30,6 +30,9 @@
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
+        <SlipBorderOutlineColor>#f08c00</SlipBorderOutlineColor>
+        <SlipBorderTopOutlineSize>10</SlipBorderTopOutlineSize>
+        <SlipBorderBottomOutlineSize>10</SlipBorderBottomOutlineSize>
         <AxesColor></AxesColor>
         <Align></Align>
         <DefaultMark>

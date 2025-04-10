@@ -17,8 +17,8 @@
             <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:/mixer/mixer_2decks.xml"/>
-              <Template src="skin:/mixer/mixer_4decks.xml"/>
+              <Template src="skins:LateNight/mixer/mixer_2decks.xml"/>
+              <Template src="skins:LateNight/mixer/mixer_4decks.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
@@ -26,14 +26,14 @@
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:/mixer/mixer_main_headphone.xml"/>
+          <Template src="skins:LateNight/mixer/mixer_main_headphone.xml"/>
 
         </Children>
       </WidgetGroup><!-- MixerContainer -->
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
@@ -53,7 +53,7 @@
             <ObjectName>CompactDecksCenterSpacer</ObjectName>
           </WidgetGroup>
 
-          <Template src="skin:/mixer/vumeters_compact.xml"/>
+          <Template src="skins:LateNight/mixer/vumeters_compact.xml"/>
 
         </Children>
         <Connection>
@@ -64,7 +64,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>

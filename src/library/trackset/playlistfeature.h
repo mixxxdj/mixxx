@@ -1,19 +1,15 @@
 #pragma once
 
-#include <QIcon>
 #include <QModelIndex>
 #include <QObject>
-#include <QPoint>
-#include <QPointer>
 #include <QUrl>
 #include <QVariant>
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
-class TrackCollection;
 class TreeItem;
-class WLibrarySidebar;
+class QPoint;
 
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -37,15 +33,17 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
+    void slotShufflePlaylist();
 
   protected:
-    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
 
   private:
     QString getRootViewHtml() const override;
+
+    QAction* m_pShufflePlaylistAction;
 };

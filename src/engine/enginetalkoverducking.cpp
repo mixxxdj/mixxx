@@ -1,5 +1,6 @@
 #include "engine/enginetalkoverducking.h"
 
+#include "control/controllinpotmeter.h"
 #include "control/controlproxy.h"
 #include "moc_enginetalkoverducking.cpp"
 
@@ -14,9 +15,10 @@ EngineTalkoverDucking::EngineTalkoverDucking(
         : EngineSideChainCompressor(group),
           m_pConfig(pConfig),
           m_group(group) {
-    m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
-    m_pMasterSampleRate->connectValueChanged(this, &EngineTalkoverDucking::slotSampleRateChanged,
-                                             Qt::DirectConnection);
+    m_pSampleRate = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("samplerate"), this);
+    m_pSampleRate->connectValueChanged(this,
+            &EngineTalkoverDucking::slotSampleRateChanged,
+            Qt::DirectConnection);
 
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
@@ -31,12 +33,11 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     setParameters(
             kDuckThreshold,
             static_cast<CSAMPLE>(m_pDuckStrength->get()),
-            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2));
+            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
+            static_cast<unsigned int>(m_pSampleRate->get() / 2));
 
     m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
-    m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
-    m_pTalkoverDucking->setStates(3);
+    m_pTalkoverDucking->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pTalkoverDucking->set(
             m_pConfig->getValue<double>(
                 ConfigKey(m_group, "duckMode"), AUTO));
@@ -64,8 +65,8 @@ void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
     setParameters(kDuckThreshold,
             static_cast<CSAMPLE>(strength),
-            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2));
+            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
+            static_cast<unsigned int>(m_pSampleRate->get() / 2));
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
 

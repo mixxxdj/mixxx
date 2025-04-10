@@ -1,16 +1,17 @@
 #include "track/taglib/trackmetadata_id3v2.h"
 
-#include <taglib/attachedpictureframe.h>
-#include <taglib/commentsframe.h>
-#include <taglib/generalencapsulatedobjectframe.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/unknownframe.h>
+#include <attachedpictureframe.h>
+#include <commentsframe.h>
+#include <generalencapsulatedobjectframe.h>
+#include <textidentificationframe.h>
+#include <unknownframe.h>
 
 #include <array>
 #if defined(__EXTRA_METADATA__)
-#include <taglib/uniquefileidentifierframe.h>
+#include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
@@ -109,7 +110,7 @@ T* downcastFrame(TagLib::ID3v2::Frame* pFrame) {
     DEBUG_ASSERT(pFrame);
     // We need to use a safe dynamic_cast at runtime instead of an unsafe
     // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    // See also: https://github.com/mixxxdj/mixxx/issues/9325
     auto* pDowncastFrame = dynamic_cast<T*>(pFrame);
     VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
         // This should only happen when reading corrupt or malformed files
@@ -122,7 +123,7 @@ template<typename T>
 const T* downcastFrame(const TagLib::ID3v2::Frame* pFrame) {
     // We need to use a safe dynamic_cast at runtime instead of an unsafe
     // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    // See also: https://github.com/mixxxdj/mixxx/issues/9325
     const auto* pDowncastFrame = dynamic_cast<const T*>(pFrame);
     VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
         // This should only happen when reading corrupt or malformed files
@@ -382,10 +383,9 @@ void writeTextIdentificationFrame(
         auto pFrame =
                 std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
         pFrame->setText(toTString(text));
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // pTag takes the ownership of pFrame
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -414,10 +414,9 @@ void writeUserTextIdentificationFrame(
                     std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(toTString(text));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // pTag takes the ownership of pFrame
+            pTag->addFrame(pFrame.release());
         }
     }
 }
@@ -488,10 +487,9 @@ void writeCommentsFrame(
                     std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(text);
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // pTag takes the ownership of pFrame
+            pTag->addFrame(pFrame.release());
         }
     }
     // Cleanup: Remove non-standard comment frames to avoid redundant and
@@ -576,10 +574,9 @@ void writeGeneralEncapsulatedObjectFrame(
         pFrame->setDescription(toTString(description));
         pFrame->setObject(toTByteVector(data));
         pFrame->setMimeType(mimeType);
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // pTag takes the ownership of pFrame
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -669,7 +666,8 @@ bool importCoverImageFromTag(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::ID3v2::Tag& tag) {
+        const TagLib::ID3v2::Tag& tag,
+        bool resetMissingTagMetadata) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -687,7 +685,7 @@ void importTrackMetadataFromTag(
     // description (see below). If no such CommentsFrame exists TagLib
     // arbitrarily picks the first one with a description that it finds,
     // e.g. "iTunNORM" or "iTunPGAP" with unexpected results for the user.
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1742617
+    // See also: https://github.com/mixxxdj/mixxx/issues/9074
     taglib::importTrackMetadataFromTag(
             pTrackMetadata,
             tag,
@@ -711,13 +709,13 @@ void importTrackMetadataFromTag(
                 readFirstUserTextIdentificationFrame(
                         tag,
                         QStringLiteral("COMMENT"));
-        if (!comment.isNull()) {
+        if (!comment.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setComment(comment);
         }
     }
 
     const TagLib::ID3v2::FrameList albumArtistFrames(tag.frameListMap()["TPE2"]);
-    if (!albumArtistFrames.isEmpty()) {
+    if (!albumArtistFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setArtist(
                 firstNonEmptyFrameToQString(albumArtistFrames));
     }
@@ -733,7 +731,7 @@ void importTrackMetadataFromTag(
     }
 
     const TagLib::ID3v2::FrameList composerFrames(tag.frameListMap()["TCOM"]);
-    if (!composerFrames.isEmpty()) {
+    if (!composerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setComposer(
                 firstNonEmptyFrameToQString(composerFrames));
     }
@@ -751,16 +749,16 @@ void importTrackMetadataFromTag(
     // if it ends up in the wrong track properties.
     // The code must be consistent with the corresponding write function!
     // FIXME: Revisit this decision before enabling the code.
-    if (!appleGroupingFrames.isEmpty()) {
+    if (!appleGroupingFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setGrouping(
                 firstNonEmptyFrameToQString(appleGroupingFrames));
     }
-    if (!traditionalGroupingFrames.isEmpty()) {
+    if (!traditionalGroupingFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setWork(
                 firstNonEmptyFrameToQString(traditionalGroupingFrames));
     }
     const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
-    if (!movementFrames.isEmpty()) {
+    if (!movementFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMovement(
                 firstNonEmptyFrameToQString(movementFrames));
     }
@@ -774,7 +772,7 @@ void importTrackMetadataFromTag(
     const QString traditionalGrouping = firstNonEmptyFrameToQString(traditionalGroupingFrames);
     if (appleGroupingFrames.isEmpty()) {
         // Fallback
-        if (!traditionalGroupingFrames.isEmpty()) {
+        if (!traditionalGroupingFrames.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setGrouping(traditionalGrouping);
         }
     } else {
@@ -817,7 +815,7 @@ void importTrackMetadataFromTag(
                 }
             }
         }
-        if (!year.isEmpty()) {
+        if (!year.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setYear(year);
         }
     }
@@ -832,6 +830,9 @@ void importTrackMetadataFromTag(
                 &trackTotal);
         pTrackMetadata->refTrackInfo().setTrackNumber(trackNumber);
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setTrackNumber(QString{});
+        pTrackMetadata->refTrackInfo().setTrackTotal(QString{});
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -845,13 +846,17 @@ void importTrackMetadataFromTag(
                 &discTotal);
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setDiscNumber(QString{});
+        pTrackMetadata->refTrackInfo().setDiscTotal(QString{});
     }
 #endif // __EXTRA_METADATA__
 
     const TagLib::ID3v2::FrameList bpmFrames(tag.frameListMap()["TBPM"]);
-    if (!bpmFrames.isEmpty()) {
+    if (!bpmFrames.isEmpty() || resetMissingTagMetadata) {
         parseBpm(pTrackMetadata,
-                firstNonEmptyFrameToQString(bpmFrames));
+                firstNonEmptyFrameToQString(bpmFrames),
+                resetMissingTagMetadata);
         if (pTrackMetadata->getTrackInfo().getBpm().isValid()) {
             double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
             // Some software use (or used) to write decimated values without comma,
@@ -896,8 +901,8 @@ void importTrackMetadataFromTag(
     }
 
     const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
-    if (!keyFrames.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setKey(
+    if (!keyFrames.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setKeyText(
                 firstNonEmptyFrameToQString(keyFrames));
     }
 
@@ -905,15 +910,15 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_GAIN"));
-    if (!trackGain.isEmpty()) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (!trackGain.isEmpty() || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_TRACK_PEAK"));
-    if (!trackPeak.isEmpty()) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (!trackPeak.isEmpty() || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -921,126 +926,126 @@ void importTrackMetadataFromTag(
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_GAIN"));
-    if (!albumGain.isEmpty()) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (!albumGain.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("REPLAYGAIN_ALBUM_PEAK"));
-    if (!albumPeak.isEmpty()) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (!albumPeak.isEmpty() || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Artist Id"));
-    if (!trackArtistId.isNull()) {
+    if (!trackArtistId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QByteArray trackRecordingId =
             readFirstUniqueFileIdentifierFrame(
                     tag,
                     kMusicBrainzOwner);
-    if (!trackRecordingId.isEmpty()) {
+    if (!trackRecordingId.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Release Track Id"));
-    if (!trackReleaseId.isNull()) {
+    if (!trackReleaseId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Work Id"));
-    if (!trackWorkId.isNull()) {
+    if (!trackWorkId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Album Artist Id"));
-    if (!albumArtistId.isNull()) {
+    if (!albumArtistId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
     }
     QString albumReleaseId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Album Id"));
-    if (!albumReleaseId.isNull()) {
+    if (!albumReleaseId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
     QString albumReleaseGroupId =
             readFirstUserTextIdentificationFrame(
                     tag,
                     QStringLiteral("MusicBrainz Release Group Id"));
-    if (!albumReleaseGroupId.isNull()) {
+    if (!albumReleaseGroupId.isNull() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     const TagLib::ID3v2::FrameList conductorFrames(tag.frameListMap()["TPE3"]);
-    if (!conductorFrames.isEmpty()) {
+    if (!conductorFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setConductor(
                 firstNonEmptyFrameToQString(conductorFrames));
     }
     const TagLib::ID3v2::FrameList isrcFrames(tag.frameListMap()["TSRC"]);
-    if (!isrcFrames.isEmpty()) {
+    if (!isrcFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setISRC(
                 firstNonEmptyFrameToQString(isrcFrames));
     }
     const TagLib::ID3v2::FrameList languageFrames(tag.frameListMap()["TLAN"]);
-    if (!languageFrames.isEmpty()) {
+    if (!languageFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLanguage(
                 firstNonEmptyFrameToQString(languageFrames));
     }
     const TagLib::ID3v2::FrameList lyricistFrames(tag.frameListMap()["TEXT"]);
-    if (!lyricistFrames.isEmpty()) {
+    if (!lyricistFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLyricist(
                 firstNonEmptyFrameToQString(lyricistFrames));
     }
     if (tag.header()->majorVersion() >= 4) {
         const TagLib::ID3v2::FrameList moodFrames(tag.frameListMap()["TMOO"]);
-        if (!moodFrames.isEmpty()) {
+        if (!moodFrames.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setMood(
                     firstNonEmptyFrameToQString(moodFrames));
         }
     }
     const TagLib::ID3v2::FrameList copyrightFrames(tag.frameListMap()["TCOP"]);
-    if (!copyrightFrames.isEmpty()) {
+    if (!copyrightFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setCopyright(
                 firstNonEmptyFrameToQString(copyrightFrames));
     }
     const TagLib::ID3v2::FrameList licenseFrames(tag.frameListMap()["WCOP"]);
-    if (!licenseFrames.isEmpty()) {
+    if (!licenseFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setLicense(
                 firstNonEmptyFrameToQString(licenseFrames));
     }
     const TagLib::ID3v2::FrameList recordLabelFrames(tag.frameListMap()["TPUB"]);
-    if (!recordLabelFrames.isEmpty()) {
+    if (!recordLabelFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(
                 firstNonEmptyFrameToQString(recordLabelFrames));
     }
     const TagLib::ID3v2::FrameList remixerFrames(tag.frameListMap()["TPE4"]);
-    if (!remixerFrames.isEmpty()) {
+    if (!remixerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(
                 firstNonEmptyFrameToQString(remixerFrames));
     }
     const TagLib::ID3v2::FrameList subtitleFrames(tag.frameListMap()["TIT3"]);
-    if (!subtitleFrames.isEmpty()) {
+    if (!subtitleFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setSubtitle(
                 firstNonEmptyFrameToQString(subtitleFrames));
     }
     const TagLib::ID3v2::FrameList encoderFrames(tag.frameListMap()["TENC"]);
-    if (!encoderFrames.isEmpty()) {
+    if (!encoderFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoder(
                 firstNonEmptyFrameToQString(encoderFrames));
     }
     const TagLib::ID3v2::FrameList encoderSettingsFrames(tag.frameListMap()["TSSE"]);
-    if (!encoderSettingsFrames.isEmpty()) {
+    if (!encoderSettingsFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(
                 firstNonEmptyFrameToQString(encoderSettingsFrames));
     }
@@ -1052,21 +1057,21 @@ void importTrackMetadataFromTag(
                     tag,
                     kFrameDescriptionSeratoBeatGrid);
     if (!seratoBeatGrid.isEmpty()) {
-        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MP3);
+        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MPEG);
     }
     const QByteArray seratoMarkers =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers);
     if (!seratoMarkers.isEmpty()) {
-        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MP3);
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MPEG);
     }
     const QByteArray seratoMarkers2 =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers2);
     if (!seratoMarkers2.isEmpty()) {
-        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MP3);
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MPEG);
     }
 }
 
@@ -1209,7 +1214,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     writeTextIdentificationFrame(
             pTag,
             "TKEY",
-            trackMetadata.getTrackInfo().getKey());
+            trackMetadata.getTrackInfo().getKeyText());
 
     writeUserTextIdentificationFrame(
             pTag,
@@ -1337,15 +1342,15 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoBeatGrid,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers2,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MPEG));
     }
 
     return true;

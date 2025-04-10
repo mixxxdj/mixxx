@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -39,11 +39,8 @@ Popup {
                         root.close();
                     }
                 }
-
             }
-
         }
-
     }
 
     Skin.Button {
@@ -65,7 +62,6 @@ Popup {
             to: 1
             duration: 100
         }
-
     }
 
     exit: Transition {
@@ -75,7 +71,6 @@ Popup {
             to: 0
             duration: 100
         }
-
     }
 
     background: BorderImage {
@@ -92,7 +87,5 @@ Popup {
             right: 20
             bottom: 10
         }
-
     }
-
 }

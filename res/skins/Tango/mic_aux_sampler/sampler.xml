@@ -17,7 +17,7 @@ Variables:
       <WidgetGroup>
         <Layout>stacked</Layout>
         <Children>
-          <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+          <Template src="skins:Tango/controls/button_2state_right_display.xml">
             <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
@@ -28,7 +28,7 @@ Variables:
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
           </Template>
           <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
@@ -38,7 +38,7 @@ Variables:
             <ObjectName>SamplerCover</ObjectName>
             <Size>34f,34f</Size>
             <Group><Variable name="group"/></Group>
-            <DefaultCover>skin:../Tango/graphics/blank_1x1.svg</DefaultCover>
+            <DefaultCover>skins:Tango/graphics/blank_1x1.svg</DefaultCover>
           </CoverArt>
         </Children>
       </WidgetGroup>
@@ -90,8 +90,8 @@ Variables:
                   <KnobComposed>
                     <TooltipId>pregain</TooltipId>
                     <Size>24f,20f</Size>
-                    <Knob>skin:../Tango/knobs_sliders/knob_tiny_red.svg</Knob>
-                    <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                    <Knob>skins:Tango/knobs_sliders/knob_tiny_red.svg</Knob>
+                    <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
                     <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                     <KnobCenterYOffset>1.364</KnobCenterYOffset>
@@ -112,7 +112,7 @@ Variables:
                 <Property>durationTextSeconds</Property>
               </TrackProperty>
 
-              <Template src="skin:../Tango/controls/button_3state.xml">
+              <Template src="skins:Tango/controls/button_3state.xml">
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="ObjectName">SamplerButton</SetVariable>
                 <SetVariable name="Size">16f,16f</SetVariable>
@@ -124,7 +124,7 @@ Variables:
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/controls/button_1state_right.xml">
+              <Template src="skins:Tango/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
                 <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
                 <SetVariable name="Size">18f,18f</SetVariable>
@@ -225,8 +225,8 @@ Variables:
 
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-                  <Template src="skin:../Tango/mixer/vumeter_mini.xml">
-                    <SetVariable name="Size">6f,1me</SetVariable>
+                  <Template src="skins:Tango/mixer/vumeter_mini.xml">
+                    <SetVariable name="Size">4f,36f</SetVariable>
                   </Template>
 
                 </Children>
@@ -239,8 +239,8 @@ Variables:
             <ObjectName>SamplerPitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
             <Size>20f,54f</Size>
-            <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/pitch_sampler_handle.svg</Handle>
-            <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/pitch_sampler_scale.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/pitch_sampler_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/pitch_sampler_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>
@@ -266,8 +266,8 @@ Variables:
               <KnobComposed>
                 <TooltipId>pregain</TooltipId>
                 <Size>24f,20f</Size>
-                <Knob>skin:../Tango/knobs_sliders/knob_tiny_red.svg</Knob>
-                <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <Knob>skins:Tango/knobs_sliders/knob_tiny_red.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>1.364</KnobCenterYOffset>
@@ -283,8 +283,8 @@ Variables:
             <Layout>stacked</Layout>
             <Children>
               <!-- Greyed out if no headphone device is configured -->
-              <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">20f,20f</SetVariable>
@@ -297,7 +297,7 @@ Variables:
 
           <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="TooltipId">repeat</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">16f,16f</SetVariable>
@@ -306,7 +306,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_1state.xml">
+          <Template src="skins:Tango/controls/button_1state.xml">
             <SetVariable name="TooltipId">eject</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">14f,16f</SetVariable>
@@ -315,7 +315,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="TooltipId">keylock</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">14f,16f</SetVariable>
@@ -324,7 +324,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_3state.xml">
+          <Template src="skins:Tango/controls/button_3state.xml">
             <SetVariable name="TooltipId">orientation</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">16f,16f</SetVariable>
@@ -336,7 +336,7 @@ Variables:
 
           <WidgetGroup><Size>1min,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/button_1state_right.xml">
+          <Template src="skins:Tango/controls/button_1state_right.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
             <SetVariable name="Size">18f,18f</SetVariable>
@@ -350,7 +350,7 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Sampler Buttons -->
 
-      <Template src="skin:../Tango/decks/hotcues_sampler_preview.xml"/>
+      <Template src="skins:Tango/decks/hotcues_sampler_preview.xml"/>
 
     </Children>
     <Connection>

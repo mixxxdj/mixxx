@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <QModelIndex>
-
 #include "track/trackiterator.h"
 
 class TrackCollectionManager;

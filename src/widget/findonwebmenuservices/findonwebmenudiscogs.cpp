@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QUrlQuery>
 
+#include "moc_findonwebmenudiscogs.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 
@@ -28,17 +29,17 @@ const QUrl composeDiscogsUrl(const QString& serviceDefaultUrl,
 }
 } //namespace
 
-FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& track) {
+FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();
-    auto pDiscogsMenu = make_parented<QMenu>(pFindOnWebMenu);
-    pDiscogsMenu->setTitle(kServiceTitle);
-    pFindOnWebMenu->addMenu(pDiscogsMenu);
+    setTitle(kServiceTitle);
+    pFindOnWebMenu->addMenu(this);
     addSeparator();
     if (!artist.isEmpty()) {
         const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
-        addActionToServiceMenu(pDiscogsMenu,
+        addActionToServiceMenu(
                 composeActionText(tr("Artist"), artist),
                 discogsUrlArtist);
     }
@@ -47,14 +48,14 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
             const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl discogsUrlArtistWithTrackTitle = composeDiscogsUrl(
                     kSearchUrl, artistWithTrackTitle, kQueryTypeRelease);
-            addActionToServiceMenu(pDiscogsMenu,
+            addActionToServiceMenu(
                     composeActionText(
                             tr("Artist + Title"), artistWithTrackTitle),
                     discogsUrlArtistWithTrackTitle);
         }
         const QUrl discogsUrlTrackTitle =
                 composeDiscogsUrl(kSearchUrl, trackTitle, kQueryTypeRelease);
-        addActionToServiceMenu(pDiscogsMenu,
+        addActionToServiceMenu(
                 composeActionText(tr("Title"), trackTitle),
                 discogsUrlTrackTitle);
     }
@@ -63,12 +64,12 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
             const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl discogsUrlArtistWithAlbum = composeDiscogsUrl(
                     kSearchUrl, artistWithAlbum, kQueryTypeRelease);
-            addActionToServiceMenu(pDiscogsMenu,
+            addActionToServiceMenu(
                     composeActionText(tr("Artist + Album"), artistWithAlbum),
                     discogsUrlArtistWithAlbum);
         } else {
             const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
-            addActionToServiceMenu(pDiscogsMenu,
+            addActionToServiceMenu(
                     composeActionText(tr("Album"), album),
                     discogsUrlAlbum);
         }

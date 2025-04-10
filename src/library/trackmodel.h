@@ -4,7 +4,6 @@
 #include <QList>
 #include <QUrl>
 #include <QVector>
-#include <QtSql>
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
@@ -25,7 +24,8 @@ class TrackModel {
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
-              m_eDefaultSortOrder(Qt::AscendingOrder) {
+              m_eDefaultSortOrder(Qt::AscendingOrder),
+              m_confirmHideRemoveTracks(true) {
     }
     virtual ~TrackModel() {}
 
@@ -51,6 +51,8 @@ class TrackModel {
         RemoveCrate = 1u << 15u,
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
+        Properties = 1u << 18u,
+        Sorting = 1u << 19u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -91,6 +93,7 @@ class TrackModel {
         SampleRate = 29,
         Color = 30,
         LastPlayedAt = 31,
+        PlaylistDateTimeAdded = 32,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -126,6 +129,15 @@ class TrackModel {
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
+    virtual int getTrackRowByPosition(int position) const {
+        Q_UNUSED(position);
+        return -1;
+    }
+
+    virtual const QList<int> getSelectedPositions(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+        return {};
+    }
 
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
@@ -137,6 +149,16 @@ class TrackModel {
 
     virtual void removeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
+    }
+    virtual void cutTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
+    virtual void copyTracks(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+    }
+    virtual QList<int> pasteTracks(const QModelIndex& index) {
+        Q_UNUSED(index);
+        return QList<int>();
     }
     virtual void hideTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
@@ -150,6 +172,14 @@ class TrackModel {
     virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
         Q_UNUSED(index);
         Q_UNUSED(locations);
+        return 0;
+    }
+    virtual int addTracksWithTrackIds(const QModelIndex& index,
+            const QList<TrackId>& tracks,
+            int* pOutInsertionPos) {
+        Q_UNUSED(index);
+        Q_UNUSED(tracks);
+        Q_UNUSED(pOutInsertionPos);
         return 0;
     }
     virtual void moveTrack(const QModelIndex& sourceIndex,
@@ -215,8 +245,14 @@ class TrackModel {
 
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key
-    /// @param baseOnly return only a identifier for the whole subsystem
     virtual QString modelKey(bool noSearch) const = 0;
+
+    virtual bool getRequireConfirmationToHideRemoveTracks() {
+        return m_confirmHideRemoveTracks;
+    }
+    virtual void setRequireConfirmationToHideRemoveTracks(bool require) {
+        m_confirmHideRemoveTracks = require;
+    }
 
     virtual bool updateTrackGenre(
             Track* pTrack,
@@ -233,5 +269,6 @@ class TrackModel {
     QList<int> m_emptyColumns;
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
+    bool m_confirmHideRemoveTracks;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackModel::Capabilities)

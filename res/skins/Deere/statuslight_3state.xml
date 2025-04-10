@@ -7,7 +7,7 @@
     0 = disconnected / off
     1 = connecting / enabling
     2 = connected / enabled
-    https://bugs.launchpad.net/mixxx/+bug/664610
+    https://github.com/mixxxdj/mixxx/issues/5603
   Variables:
     ObjectName: The object name.
     Size: the button size.

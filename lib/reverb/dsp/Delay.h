@@ -32,6 +32,8 @@
 #ifndef _DSP_DELAY_H_
 #define _DSP_DELAY_H_
 
+#include <cstring> // for memset
+
 #include "util.h"
 #include "FPTruncateMode.h"
 
@@ -102,12 +104,9 @@ class Delay
 				sample_t x2 = (*this) [n + 2];
 
 				/* sample_t (32bit) quicker than double here */
-				sample_t a =
-						(3 * (x0 - x1) - x_1 + x2) * .5;
-				sample_t b =
-						2 * x1 + x_1 - (5 * x0 + x2) * .5;
-				sample_t c =
-						(x1 - x_1) * .5;
+				sample_t a = (3 * (x0 - x1) - x_1 + x2) * .5f;
+				sample_t b = 2 * x1 + x_1 - (5 * x0 + x2) * .5f;
+				sample_t c = (x1 - x_1) * .5f;
 
 				return x0 + (((a * f) + b) * f + c) * f;
 			}
@@ -122,7 +121,7 @@ class MovingAverage
 		void init (uint n)
 			{
 				this->Delay::init (n);
-				over_n = 1. / n;
+				over_n = 1.f / n;
 				/* adjust write pointer so we have a full history of zeros */
 				write = (write + size + 1) & size;
 				state = 0;

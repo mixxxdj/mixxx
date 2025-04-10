@@ -1,9 +1,10 @@
 #include "library/export/libraryexporter.h"
 
 #include <QProgressDialog>
-#include <QThreadPool>
 
 #include "library/export/engineprimeexportjob.h"
+#include "library/export/engineprimeexportrequest.h"
+#include "moc_libraryexporter.cpp"
 #include "util/parented_ptr.h"
 
 namespace mixxx {
@@ -63,9 +64,7 @@ void LibraryExporter::beginEnginePrimeExport(
             &EnginePrimeExportJob::failed,
             this,
             [](const QString& message) {
-                QMessageBox::critical(nullptr,
-                        tr("Export Failed"),
-                        QString{tr("Export failed: %1")}.arg(message));
+                QMessageBox::critical(nullptr, tr("Export Failed"), message);
             });
 
     // Construct a dialog to monitor job progress and offer cancellation.

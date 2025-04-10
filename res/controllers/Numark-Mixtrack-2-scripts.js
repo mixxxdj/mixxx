@@ -104,6 +104,10 @@ NumarkMixTrackII.init = function(id) {   // called when the MIDI device is opene
 
     NumarkMixTrackII.turnOffAllLeds();
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     NumarkMixTrackII.updateDirectoryAndFileLeds();
 }
 
@@ -179,14 +183,14 @@ NumarkMixTrackII.jogWheel = function(channel, control, value, status, group) {
             if (NumarkMixTrackII.scratch_timer[deck - 1] != -1) {
                 engine.stopTimer(NumarkMixTrackII.scratch_timer[deck - 1]);
             }
-            NumarkMixTrackII.scratch_timer[deck - 1] = engine.beginTimer(20, "NumarkMixTrackII.jogWheelStopScratch(" + deck + ")", true);
+            NumarkMixTrackII.scratch_timer[deck - 1] = engine.beginTimer(20, () => NumarkMixTrackII.jogWheelStopScratch(deck), true);
         }
-    } else { // en stop hace scratch siempre
+    } else {
         if (!NumarkMixTrackII.touch[deck - 1]) {
             if (NumarkMixTrackII.scratch_timer[deck - 1] != -1) {
                 engine.stopTimer(NumarkMixTrackII.scratch_timer[deck - 1]);
             }
-            NumarkMixTrackII.scratch_timer[deck - 1] = engine.beginTimer(20, "NumarkMixTrackII.jogWheelStopScratch(" + deck + ")", true);
+            NumarkMixTrackII.scratch_timer[deck - 1] = engine.beginTimer(20, () => NumarkMixTrackII.jogWheelStopScratch(deck), true);
         }
     }
 
@@ -221,9 +225,8 @@ NumarkMixTrackII.wheelTouch = function(channel, control, value, status, group){
             engine.stopTimer(NumarkMixTrackII.scratch_timer[deck - 1]);
         }
 
-        NumarkMixTrackII.scratch_timer[deck - 1] = engine.beginTimer(20, "NumarkMixTrackII.jogWheelStopScratch(" + deck + ")", true);
+        NumarkMixTrackII.scratch_timer[deck - 1] = engine.beginTimer(20, () => NumarkMixTrackII.jogWheelStopScratch(deck), true);
     } else {
-        // si esta en play y el modo scratch desactivado, al presionar el touch no hace nada
         if (!NumarkMixTrackII.scratch_mode[deck - 1] && engine.getValue(group, "play")) {
             return;
         }

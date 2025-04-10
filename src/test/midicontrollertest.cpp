@@ -8,6 +8,7 @@
 #include "controllers/midi/midicontroller.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "test/mixxxtest.h"
 #include "util/time.h"
 
@@ -16,15 +17,49 @@ class MockMidiController : public MidiController {
     explicit MockMidiController()
             : MidiController("test") {
     }
-    ~MockMidiController() override { }
+    ~MockMidiController() override {
+    }
 
-    MOCK_METHOD0(open, int());
+    MOCK_METHOD1(open, int(const QString& resourcePath));
     MOCK_METHOD0(close, int());
-    MOCK_METHOD3(sendShortMsg, void(unsigned char status,
-                                    unsigned char byte1,
-                                    unsigned char byte2));
-    MOCK_METHOD1(sendBytes, void(const QByteArray& data));
+    MOCK_METHOD3(sendShortMsg,
+            void(unsigned char status,
+                    unsigned char byte1,
+                    unsigned char byte2));
+    MOCK_METHOD1(sendBytes, bool(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
+
+    QString getVendorString() const override {
+        static const QString manufacturer = "Test Manufacturer";
+        return manufacturer;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+
+    QString getProductString() const override {
+        static const QString product = "Test Product";
+        return product;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+
+    QString getSerialNumber() const override {
+        static const QString serialNumber = "123456789";
+        return serialNumber;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
 };
 
 class MidiControllerTest : public MixxxTest {
@@ -32,6 +67,8 @@ class MidiControllerTest : public MixxxTest {
     void SetUp() override {
         m_pController.reset(new MockMidiController());
         m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
+        m_pController->startEngine();
+        m_pController->m_pScriptEngineLegacy->initialize();
     }
 
     void addMapping(const MidiInputMapping& mapping) {
@@ -49,6 +86,18 @@ class MidiControllerTest : public MixxxTest {
                 MidiUtils::statusFromOpCodeAndChannel(opcode, channel),
                 control,
                 value);
+    }
+
+    bool evaluateAndAssert(const QString& code) {
+        return m_pController->m_pScriptEngineLegacy->jsEngine()->evaluate(code).isError();
+    }
+
+    int getInputMappingCount() {
+        return m_pController->m_pMapping->getInputMappings().count();
+    }
+
+    void shutdownController() {
+        m_pController->m_pScriptEngineLegacy->shutdown();
     }
 
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
@@ -74,7 +123,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOff) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -103,7 +152,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -140,7 +189,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOpt
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): This behavior is broken!
 
@@ -177,7 +226,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOpt
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): This behavior is broken!
 
@@ -225,7 +274,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushCC) {
                     control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MidiOpCode::ControlChange, channel, control, 0x7F);
@@ -245,7 +294,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
     // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -260,7 +309,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -280,7 +329,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
     // (NOTE_ON, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -290,7 +339,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -310,7 +359,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
     // push button.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -328,7 +377,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): If the intended behavior of the button MIDI option is to
     // make a toggle MIDI button act like a push button then this isn't
@@ -350,7 +399,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
     // button rather than a momentary push button.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -368,7 +417,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): If the intended behavior of switch MIDI option is to make a
     // toggle MIDI button act like a toggle button then this isn't working. The
@@ -406,7 +455,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
     // as (CC, 0x7f) for press and (CC, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -417,7 +466,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
                     control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MidiOpCode::ControlChange, channel, control, 0x7F);
@@ -449,7 +498,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
                     control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive a 0, MIDI parameter should map to the min value.
     receivedShortMessage(MidiOpCode::ControlChange, channel, control, 0x00);
@@ -495,7 +544,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
                     msb_control),
             msb,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // If kMinValue or kMaxValue are such that the middle value is 0 then the
     // set(0) commands below allow us to hide failures.
@@ -575,7 +624,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
                     0xFF),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive a 0x0000, MIDI parameter should map to the min value.
     receivedShortMessage(MidiOpCode::PitchBendChange, channel, 0x00, 0x00);
@@ -595,4 +644,49 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     // LSB by 1 is greater than the middle value.
     receivedShortMessage(MidiOpCode::PitchBendChange, channel, 0x01, 0x40);
     EXPECT_LT(kMiddleValue, potmeter.get());
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_BindHandler) {
+    constexpr double kMinValue = -1234.5;
+    constexpr double kMaxValue = 678.9;
+    ControlPotmeter potmeter(ConfigKey("[Channel1]", "test_pot"), kMinValue, kMaxValue);
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
+    evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {"
+            "engine.setParameter('[Channel1]', 'test_pot', value);"
+            "})");
+    EXPECT_EQ(getInputMappingCount(), 1);
+    receivedShortMessage(0x90, 0x43, 0x00);
+    EXPECT_DOUBLE_EQ(potmeter.get(), kMinValue);
+    receivedShortMessage(0x90, 0x43, 0x7F);
+    EXPECT_DOUBLE_EQ(potmeter.get(), kMaxValue);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ControllerShutdownSlot) {
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
+    evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {})");
+    EXPECT_EQ(getInputMappingCount(), 1);
+    shutdownController();
+    EXPECT_EQ(getInputMappingCount(), 0);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ErrorWhenControlIsTooLarge) {
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
+    bool isError = evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x80, (channel, control, value, status) => {})");
+    ASSERT_TRUE(isError);
+    EXPECT_EQ(getInputMappingCount(), 0);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ErrorWhenStatusIsTooSmall) {
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
+    bool isError = evaluateAndAssert(
+            "midi.makeInputHandler(0x7F, 0x00, (channel, control, value, status) => {})");
+    ASSERT_TRUE(isError);
+    EXPECT_EQ(getInputMappingCount(), 0);
 }

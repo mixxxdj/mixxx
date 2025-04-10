@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QTime>
-
-#include "vinylcontrol.h"
-
 class SteadyPitch {
     public:
         SteadyPitch(double threshold, bool assumeSteady);

@@ -1,9 +1,6 @@
 #include "analyzer/plugins/buffering_utils.h"
 
 #include "util/math.h"
-#include "util/sample.h"
-
-#include <string.h>
 
 namespace mixxx {
 
@@ -15,7 +12,7 @@ bool DownmixAndOverlapHelper::initialize(size_t windowSize,
     m_windowSize = windowSize;
     m_stepSize = stepSize;
     // make sure the first frame is centered into the fft window. This makes sure
-    // that the result is significant starting fom the first step.
+    // that the result is significant starting from the first step.
     m_bufferWritePosition = windowSize / 2;
     return m_windowSize > 0 && m_stepSize > 0 &&
             m_stepSize <= m_windowSize && callback;

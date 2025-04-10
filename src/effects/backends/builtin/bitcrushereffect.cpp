@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/bitcrushereffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 
 // static
@@ -54,10 +56,6 @@ void BitCrusherEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pBitDepthParameter = parameters.value("bit_depth");
     m_pDownsampleParameter = parameters.value("downsample");
-}
-
-BitCrusherEffect::~BitCrusherEffect() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void BitCrusherEffect::processChannel(

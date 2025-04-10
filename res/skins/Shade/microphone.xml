@@ -11,12 +11,12 @@
       **********************************************
       -->
       <StatusLight>
-        <TooltipId>microphone_PeakIndicator</TooltipId>
+        <TooltipId>microphone_peak_indicator</TooltipId>
         <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
         <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
         <Pos>82,6</Pos>
         <Connection>
-          <ConfigKey>[Microphone<Variable name="micnum"/>],PeakIndicator</ConfigKey>
+          <ConfigKey>[Microphone<Variable name="micnum"/>],peak_indicator</ConfigKey>
         </Connection>
       </StatusLight>
 
@@ -25,19 +25,25 @@
       Visual - Volume level display
       **********************************************
       -->
-      <VuMeter>
-        <TooltipId>microphone_VuMeter</TooltipId>
-        <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
-        <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+      <WidgetGroup>
         <Pos>82,14</Pos>
-        <PeakHoldSize>5</PeakHoldSize>
-        <PeakHoldTime>500</PeakHoldTime>
-        <PeakFallTime>50</PeakFallTime>
-        <PeakFallStep>2</PeakFallStep>
-        <Connection>
-          <ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
-        </Connection>
-      </VuMeter>
+        <Size>5f,35f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <VuMeter>
+            <TooltipId>microphone_VuMeter</TooltipId>
+            <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
+            <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],vu_meter</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup>
 
       <!--
       **********************************************

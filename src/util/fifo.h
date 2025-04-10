@@ -10,9 +10,8 @@ class FIFO {
   public:
     explicit FIFO(int size)
             : m_data(roundUpToPowerOf2(size)) {
-        size = roundUpToPowerOf2(size);
         // If we can't represent the next higher power of 2 then bail.
-        if (size < 0) {
+        if (m_data.size() == 0) {
             return;
         }
         PaUtil_InitializeRingBuffer(&m_ringBuffer,

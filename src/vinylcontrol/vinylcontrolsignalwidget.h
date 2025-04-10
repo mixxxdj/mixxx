@@ -1,20 +1,12 @@
-/*
- * vinylcontrolsignalwidget.h
- *
- *  Created on: 5-Jul-2008
- *      Author: asantoni
- */
-
 #pragma once
 
 #include <QImage>
-#include <QPaintEvent>
-#include <QPainter>
-#include <QTimerEvent>
 #include <QWidget>
 #include <vector>
 
 #include "vinylcontrol/vinylsignalquality.h"
+
+class QPaintEvent;
 
 class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListener {
     Q_OBJECT

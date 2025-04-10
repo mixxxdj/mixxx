@@ -1,10 +1,11 @@
 #include <stdint.h>
 
+#include <memory>
+
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
 
 std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {
     stream << mapping.key.key << static_cast<uint16_t>(mapping.options);
@@ -29,7 +30,7 @@ class LearningUtilsTest : public MixxxTest {
         for (const MidiInputMapping& mapping : haystack) {
             if (mapping.key == needle.key &&
                     mapping.options == needle.options &&
-                    mapping.control == needle.control) {
+                    std::get<ConfigKey>(mapping.control) == std::get<ConfigKey>(needle.control)) {
                 return true;
             }
         }

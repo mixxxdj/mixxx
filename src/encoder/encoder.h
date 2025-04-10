@@ -1,38 +1,35 @@
 #pragma once
 
-#include "audio/types.h"
-#include "encoder/encodercallback.h"
+#include <memory>
+
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encodersettings.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 #include "util/types.h"
+
+class EncoderCallback;
+
+namespace mixxx {
+namespace audio {
+class SampleRate;
+} // namespace audio
+} // namespace mixxx
 
 class Encoder {
   public:
-        class Format {
-            public:
-              Format(const QString& labelIn,
-                      const QString& nameIn,
-                      bool losslessIn,
-                      const QString& fileExtIn)
-                      : label(labelIn),
-                        internalName(nameIn),
-                        lossless(losslessIn),
-                        fileExtension(fileExtIn) {
-              }
-            QString label;
-            QString internalName;
-            bool lossless;
-            QString fileExtension;
-        };
+    struct Format {
+        QString label;
+        QString internalName;
+        bool lossless;
+        QString fileExtension;
+    };
 
     Encoder() {}
     virtual ~Encoder() = default;
 
     virtual int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
-    virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
+    virtual void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used
     // by EngineRecord, ShoutConnection does something different.
     virtual void updateMetaData(const QString& artist, const QString& title, const QString& album) = 0;

@@ -10,7 +10,7 @@
 #include "util/compatibility/qhash.h"
 
 // ChannelHandle defines a unique identifier for channels of audio in the engine
-// (e.g. headphone output, master output, deck 1, microphone 3). Previously we
+// (e.g. headphone output, main output, deck 1, microphone 3). Previously we
 // used the group string of the channel in the engine to uniquely identify it
 // and key associative containers (e.g. QMap, QHash) but the downside to this is
 // that we waste a lot of callback time hashing and re-hashing the strings.
@@ -23,7 +23,7 @@
 // (since the keys are numbered [0, num_channels]).
 
 /// A wrapper around an integer handle. Used to uniquely identify and refer to
-/// channels (headphone output, master output, deck 1, microphone 4, etc.) while
+/// channels (headphone output, main output, deck 1, microphone 4, etc.) while
 /// avoiding slow QString comparisons incurred when using the group.
 ///
 /// A helper class, ChannelHandleFactory, keeps a running count of handles that
@@ -38,6 +38,10 @@ class ChannelHandle {
     }
 
     inline int handle() const {
+        return m_iHandle;
+    }
+
+    operator int() const {
         return m_iHandle;
     }
 
@@ -65,6 +69,10 @@ inline bool operator<(const ChannelHandle& h1, const ChannelHandle& h2) {
 
 inline bool operator==(const ChannelHandle& h1, const ChannelHandle& h2) {
     return h1.handle() == h2.handle();
+}
+
+inline bool operator==(const int& i, const ChannelHandle& h2) {
+    return i == h2.handle();
 }
 
 inline bool operator!=(const ChannelHandle& h1, const ChannelHandle& h2) {
@@ -122,11 +130,11 @@ inline qhash_seed_t qHash(
     return qHash(handleGroup.handle(), seed);
 }
 
-// A helper class used by EngineMaster to assign ChannelHandles to channel group
+// A helper class used by EngineMixer to assign ChannelHandles to channel group
 // strings. Warning: ChannelHandles produced by different ChannelHandleFactory
 // objects are not compatible and will produce incorrect results when compared,
 // stored in the same container, etc. In practice we only use one instance in
-// EngineMaster.
+// EngineMixer.
 class ChannelHandleFactory {
   public:
     ChannelHandleFactory() : m_iNextHandle(0) {
@@ -174,14 +182,14 @@ class ChannelHandleMap {
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
 
     ChannelHandleMap()
-            : m_dummy{} {
+            : m_dummy() {
     }
 
     const T& at(const ChannelHandle& handle) const {
         if (!handle.valid()) {
             return m_dummy;
         }
-        return m_data.at(handle.handle());
+        return m_data.at(handle);
     }
 
     void insert(const ChannelHandle& handle, const T& value) {
@@ -189,22 +197,28 @@ class ChannelHandleMap {
             return;
         }
 
-        int iHandle = handle.handle();
-        maybeExpand(iHandle + 1);
-        m_data[iHandle] = value;
+        maybeExpand(static_cast<int>(handle) + 1);
+        m_data[handle] = value;
     }
 
     T& operator[](const ChannelHandle& handle) {
         if (!handle.valid()) {
             return m_dummy;
         }
-        int iHandle = handle.handle();
-        maybeExpand(iHandle + 1);
-        return m_data[iHandle];
+        maybeExpand(static_cast<int>(handle) + 1);
+        return m_data[handle];
     }
 
     void clear() {
         m_data.clear();
+    }
+
+    int size() const {
+        return m_data.size();
+    }
+
+    bool isEmpty() {
+        return m_data.isEmpty();
     }
 
     typename container_type::iterator begin() {
@@ -233,7 +247,7 @@ class ChannelHandleMap {
         } else {
             // We need to initialize simple types ourselves
             while (m_data.size() < iSize) {
-                m_data.append({});
+                m_data.append(T());
             }
         }
     }

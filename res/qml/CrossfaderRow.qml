@@ -42,7 +42,6 @@ Item {
 
         Skin.MicrophoneDuckingPanel {
         }
-
     }
 
     Skin.SectionBackground {
@@ -68,7 +67,6 @@ Item {
             fg: Theme.imgCrossfaderHandle
             bg: Theme.imgCrossfaderBackground
         }
-
     }
 
     Row {
@@ -100,7 +98,5 @@ Item {
             layoutDirection: Qt.RightToLeft
             unitNumber: 4
         }
-
     }
-
 }

@@ -1,24 +1,22 @@
 #include "library/export/engineprimeexportjob.h"
 
 #include <QHash>
-#include <QMetaMethod>
 #include <QStringList>
-#include <QtGlobal>
 #include <array>
-#include <chrono>
 #include <cstdint>
-#include <djinterop/djinterop.hpp>
 #include <memory>
 #include <stdexcept>
 
+#include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
+#include "moc_engineprimeexportjob.cpp"
 #include "track/track.h"
-#include "util/optional.h"
 #include "util/thread_affinity.h"
 #include "waveform/waveformfactory.h"
 
-namespace el = djinterop::enginelibrary;
+namespace e = djinterop::engine;
 
 namespace mixxx {
 
@@ -93,8 +91,7 @@ QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
     // chance of filename clashes, and to keep things simple, we will prefix
     // the destination files with the DB track identifier.
     mixxx::FileInfo srcFileInfo = pTrack->getFileInfo();
-    const auto trackId = pTrack->getId().value();
-    QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
+    QString dstFilename = pTrack->getId().toString() + " - " + srcFileInfo.fileName();
     QString dstPath = pRequest->musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
             srcFileInfo.lastModified() > QFileInfo{dstPath}.lastModified()) {
@@ -142,7 +139,7 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
 
     int numBeatsToCue = pBeats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
     const auto firstBarAlignedBeatPlayPos = pBeats->findNBeatsFromPosition(
-            cueBeatPlayPos, numBeatsToCue & ~0x3);
+            cueBeatPlayPos, -1 * (numBeatsToCue & ~0x3));
     if (!firstBarAlignedBeatPlayPos.isValid()) {
         return false;
     }
@@ -163,12 +160,14 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
     std::vector<djinterop::beatgrid_marker> beatgrid{
             {0, firstBarAlignedBeatPlayPos.value()},
             {numBeats, lastBeatPlayPos.value()}};
-    beatgrid = el::normalize_beatgrid(std::move(beatgrid), frameCount);
+    beatgrid = e::normalize_beatgrid(std::move(beatgrid), frameCount);
     pBeatgrid->assign(std::begin(beatgrid), std::end(beatgrid));
     return true;
 }
 
-void exportMetadata(djinterop::database* pDatabase,
+void exportMetadata(
+        djinterop::database* pDatabase,
+        const e::engine_schema& dbSchemaVersion,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
         const Waveform* pWaveform,
@@ -182,12 +181,11 @@ void exportMetadata(djinterop::database* pDatabase,
             : djinterop::track_snapshot{};
     snapshot.relative_path = relativePath.toStdString();
 
-    // Note that the Engine Prime format has the scope for recording meta-data
-    // about whether track was imported from an external database.  However,
-    // that meta-data only extends as far as other Engine Prime databases,
-    // which Mixxx is not.  So we do not set any import information on the
-    // exported track.
     snapshot.track_number = pTrack->getTrackNumber().toInt();
+    if (snapshot.track_number == 0) {
+        snapshot.track_number = std::nullopt;
+    }
+
     snapshot.duration = std::chrono::milliseconds{
             static_cast<int64_t>(1000 * pTrack->getDuration())};
     snapshot.bpm = pTrack->getBpm();
@@ -199,46 +197,32 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.comment = pTrack->getComment().toStdString();
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());
-    int64_t lastModifiedMillisSinceEpoch = 0;
-    const QDateTime fileLastModified = pTrack->getFileInfo().lastModified();
-    if (fileLastModified.isValid()) {
-        // Only defined if valid
-        lastModifiedMillisSinceEpoch = fileLastModified.toMSecsSinceEpoch();
-    }
-    std::chrono::system_clock::time_point lastModifiedAt{
-            std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
-    snapshot.last_modified_at = lastModifiedAt;
-    snapshot.last_accessed_at = lastModifiedAt;
     snapshot.bitrate = pTrack->getBitrate();
     snapshot.rating = pTrack->getRating() * 20; // note rating is in range 0-100
     snapshot.file_bytes = pTrack->getFileInfo().sizeInBytes();
 
     // Frames used interchangeably with "samples" here.
     const auto frameCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
-    snapshot.sampling = djinterop::sampling_info{
-            static_cast<double>(pTrack->getSampleRate()), frameCount};
+    snapshot.sample_count = frameCount;
+    snapshot.sample_rate = pTrack->getSampleRate();
 
-    // Set track loudness.
-    // Note that the djinterop API method for setting loudness may be revised
-    // in future, as more is discovered about the exact meaning of the loudness
-    // field in the Engine Library format.  Make the assumption for now that
-    // ReplayGain ratio is an appropriate value to set, which has been validated
-    // by basic experimental testing.
-    snapshot.average_loudness = pTrack->getReplayGain().getRatio();
+    // Track loudness controls how the waveforms are scaled on Engine players.
+    // However, getting it wrong and accidentally scaling a waveform beyond a sensible maximum
+    // can result in no waveform being shown at all.  In order to be safe, no loudness information
+    // is exported, resulting in waveforms being displayed as-is.
+    snapshot.average_loudness = 0;
 
     // Set main cue-point.
     mixxx::audio::FramePos cuePlayPos = pTrack->getMainCuePosition();
     const auto cuePlayPosValue = cuePlayPos.isValid() ? cuePlayPos.value() : 0;
-    snapshot.default_main_cue = cuePlayPosValue;
-    snapshot.adjusted_main_cue = cuePlayPosValue;
+    snapshot.main_cue = cuePlayPosValue;
 
     // Fill in beat grid.
     BeatsPointer beats = pTrack->getBeats();
     if (beats != nullptr) {
         std::vector<djinterop::beatgrid_marker> beatgrid;
         if (tryGetBeatgrid(beats, cuePlayPos, frameCount, &beatgrid)) {
-            snapshot.default_beatgrid = beatgrid;
-            snapshot.adjusted_beatgrid = beatgrid;
+            snapshot.beatgrid = beatgrid;
         } else {
             qWarning() << "Beats data exists but is invalid for track"
                        << pTrack->getId() << "("
@@ -252,7 +236,7 @@ void exportMetadata(djinterop::database* pDatabase,
     // Note that any existing hot cues on the track are kept in place, if Mixxx
     // does not have a hot cue at that location.
     const auto cues = pTrack->getCuePoints();
-    snapshot.hot_cues.fill(djinterop::stdx::nullopt);
+    snapshot.hot_cues.resize(kMaxHotCues);
     for (const CuePointer& pCue : cues) {
         // We are only interested in hot cues.
         if (pCue->getType() != CueType::HotCue) {
@@ -262,7 +246,7 @@ void exportMetadata(djinterop::database* pDatabase,
         int hotCueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
         if (hotCueIndex < 0 || hotCueIndex >= kMaxHotCues) {
             qInfo() << "Skipping hot cue" << hotCueIndex
-                    << "as the Engine Prime format only supports at most"
+                    << "as the Engine DJ format only supports at most"
                     << kMaxHotCues << "hot cues.";
             continue;
         }
@@ -292,27 +276,20 @@ void exportMetadata(djinterop::database* pDatabase,
         snapshot.hot_cues[hotCueIndex] = hotCue;
     }
 
-    // Note that Mixxx does not support pre-calculated stored loops, but it will
-    // remember the position of a single ad-hoc loop between track loads.
-    // However, since this single ad-hoc loop is likely to be different in use
-    // from a set of stored loops (and is easily overwritten), we do not export
-    // it to the external database here.
-    //
-    // TODO: This comment above is wrong, it does support saved loops now.
-    //
-    // Note also that the loops on any existing track are not modified here.
+    // TODO (mr-smidge): Export saved loops.
 
     // Write waveform.
-    // Note that writing a single waveform will automatically calculate an
-    // overview waveform too.
     if (pWaveform) {
-        int64_t samplesPerEntry =
-                el::required_waveform_samples_per_entry(pTrack->getSampleRate());
-        int64_t externalWaveformSize = (frameCount + samplesPerEntry - 1) / samplesPerEntry;
+        djinterop::waveform_extents extents = dbSchemaVersion >=
+                        djinterop::engine::engine_schema::schema_2_18_0
+                ? e::calculate_overview_waveform_extents(
+                          frameCount, pTrack->getSampleRate())
+                : e::calculate_high_resolution_waveform_extents(
+                          frameCount, pTrack->getSampleRate());
         std::vector<djinterop::waveform_entry> externalWaveform;
-        externalWaveform.reserve(externalWaveformSize);
-        for (int64_t i = 0; i < externalWaveformSize; ++i) {
-            int64_t j = pWaveform->getDataSize() * i / externalWaveformSize;
+        externalWaveform.reserve(extents.size);
+        for (uint64_t i = 0; i < extents.size; ++i) {
+            uint64_t j = pWaveform->getDataSize() * i / extents.size;
             externalWaveform.push_back({{pWaveform->getLow(j), kDefaultWaveformOpacity},
                     {pWaveform->getMid(j), kDefaultWaveformOpacity},
                     {pWaveform->getHigh(j), kDefaultWaveformOpacity}});
@@ -339,6 +316,7 @@ void exportMetadata(djinterop::database* pDatabase,
 void exportTrack(
         const QSharedPointer<EnginePrimeExportRequest> pRequest,
         djinterop::database* pDatabase,
+        const e::engine_schema& dbSchemaVersion,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         const TrackPointer pTrack,
         const Waveform* pWaveform) {
@@ -355,6 +333,7 @@ void exportTrack(
 
     // Export meta-data.
     exportMetadata(pDatabase,
+            dbSchemaVersion,
             pMixxxToEnginePrimeTrackIdMap,
             pTrack,
             pWaveform,
@@ -366,8 +345,13 @@ void exportCrate(
         const QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
         const Crate& crate,
         const QList<TrackId>& trackIds) {
-    // Create a new crate as a sub-crate of the top-level Mixxx crate.
-    auto extCrate = pExtRootCrate->create_sub_crate(crate.getName().toStdString());
+    // Create a new crate as a sub-crate of the top-level Mixxx crate, if one
+    // does not already exist.
+    auto crateName = crate.getName().toStdString();
+    const auto optionalExtCrate = pExtRootCrate->sub_crate_by_name(crateName);
+    auto extCrate = optionalExtCrate
+            ? *optionalExtCrate
+            : pExtRootCrate->create_sub_crate(crateName);
 
     // Loop through all track ids in this crate and add.
     for (const auto& trackId : trackIds) {
@@ -393,6 +377,10 @@ EnginePrimeExportJob::EnginePrimeExportJob(
         moveToThread(m_pTrackCollectionManager->thread());
     }
 }
+
+// out-of-line declaration because we can't generate dtor in
+// header with unique_ptr's of incomplete types.
+EnginePrimeExportJob::~EnginePrimeExportJob() = default;
 
 void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
@@ -520,12 +508,18 @@ void EnginePrimeExportJob::run() {
 
     // Ensure that the database exists, creating an empty one if not.
     std::unique_ptr<djinterop::database> pDb;
+    e::engine_schema dbSchemaVersion;
     try {
         bool created;
-        pDb = std::make_unique<djinterop::database>(el::create_or_load_database(
+        pDb = std::make_unique<djinterop::database>(e::create_or_load_database(
                 m_pRequest->engineLibraryDbDir.path().toStdString(),
-                m_pRequest->exportVersion,
-                created));
+                m_pRequest->exportSchemaVersion,
+                created,
+                dbSchemaVersion));
+
+        if (!created) {
+            dbSchemaVersion = m_pRequest->exportSchemaVersion;
+        }
     } catch (std::exception& e) {
         qWarning() << "Failed to create/load database:" << e.what();
         m_lastErrorMessage = e.what();
@@ -539,7 +533,7 @@ void EnginePrimeExportJob::run() {
     // We will build up a map from Mixxx track id to EL track id during export.
     QHash<TrackId, int64_t> mixxxToEnginePrimeTrackIdMap;
 
-    for (const auto& trackRef : qAsConst(m_trackRefs)) {
+    for (const auto& trackRef : std::as_const(m_trackRefs)) {
         // Load each track.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -556,19 +550,24 @@ void EnginePrimeExportJob::run() {
 
         DEBUG_ASSERT(m_pLastLoadedTrack != nullptr);
 
-        qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().value()
+        qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().toString()
                 << "at" << m_pLastLoadedTrack->getFileInfo().location() << "...";
         try {
             exportTrack(m_pRequest,
                     pDb.get(),
+                    dbSchemaVersion,
                     &mixxxToEnginePrimeTrackIdMap,
                     m_pLastLoadedTrack,
                     m_pLastLoadedWaveform.get());
         } catch (std::exception& e) {
             qWarning() << "Failed to export track"
-                       << m_pLastLoadedTrack->getId().value() << ":"
+                       << m_pLastLoadedTrack->getId().toString() << ":"
                        << e.what();
-            m_lastErrorMessage = e.what();
+            //: %1 is the artist %2 is the title and %3 is the original error message
+            m_lastErrorMessage = tr("Failed to export track %1 - %2:\n%3")
+                                         .arg(m_pLastLoadedTrack->getArtist(),
+                                                 m_pLastLoadedTrack->getTitle(),
+                                                 e.what());
             emit failed(m_lastErrorMessage);
             return;
         }
@@ -596,7 +595,7 @@ void EnginePrimeExportJob::run() {
     }
 
     // Add each track to the root crate, even if it also belongs to others.
-    for (const TrackRef& trackRef : qAsConst(m_trackRefs)) {
+    for (const TrackRef& trackRef : std::as_const(m_trackRefs)) {
         if (!mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
             qInfo() << "Not adding track" << trackRef.getId()
                     << "to any crates, as it was not exported";
@@ -620,7 +619,7 @@ void EnginePrimeExportJob::run() {
     emit jobProgress(currProgress);
 
     // Export all Mixxx crates
-    for (const CrateId& crateId : qAsConst(m_crateIds)) {
+    for (const CrateId& crateId : std::as_const(m_crateIds)) {
         // Load the current crate.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -635,7 +634,7 @@ void EnginePrimeExportJob::run() {
             return;
         }
 
-        qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().value() << "...";
+        qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().toString() << "...";
         try {
             exportCrate(
                     pExtRootCrate.get(),
@@ -643,7 +642,7 @@ void EnginePrimeExportJob::run() {
                     m_lastLoadedCrate,
                     m_lastLoadedCrateTrackIds);
         } catch (std::exception& e) {
-            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
+            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().toString()
                        << ":" << e.what();
             m_lastErrorMessage = e.what();
             emit failed(m_lastErrorMessage);
@@ -654,7 +653,7 @@ void EnginePrimeExportJob::run() {
         emit jobProgress(currProgress);
     }
 
-    qInfo() << "Engine Prime Export Job completed successfully";
+    qInfo() << "Engine DJ Export Job completed successfully";
     emit completed(m_trackRefs.size(), m_crateIds.size());
 }
 

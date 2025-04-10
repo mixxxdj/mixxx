@@ -1,9 +1,13 @@
 #pragma once
 
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#include <QObject>
+#endif
 #include <QPointer>
 #include <memory>
 
 #include "util/assert.h"
+#include "util/parented_ptr.h"
 
 // Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
 // Objects which both derive from QObject AND have a parent object, have their lifetime governed by
@@ -25,15 +29,17 @@ class parented_ptr final {
 
     explicit parented_ptr(T* t) noexcept
             : m_ptr{t} {
-    }
-
-    ~parented_ptr() noexcept {
         DEBUG_ASSERT(!m_ptr || static_cast<const QObject*>(m_ptr)->parent());
     }
 
-    // Delete copy constructor and copy assignment operator
+    // explicitly generate trivial destructor (since decltype(m_ptr) is not a class type)
+    ~parented_ptr() noexcept = default;
+
+    // Rule of 5
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
+    parented_ptr(const parented_ptr<T>&& other) = delete;
+    parented_ptr& operator=(const parented_ptr<T>&& other) = delete;
 
     // If U* is convertible to T* then parented_ptr<U> is convertible to parented_ptr<T>
     template<
@@ -93,7 +99,11 @@ class parented_ptr final {
     friend class parented_ptr;
 };
 
+template<typename... Args>
+concept AnyIsQObject = (... || std::is_convertible_v<Args, QObject*>);
+
 template<typename T, typename... Args>
+    requires(std::is_base_of_v<QObject, T> && AnyIsQObject<Args...>)
 inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
 }

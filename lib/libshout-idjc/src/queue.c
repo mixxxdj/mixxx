@@ -63,7 +63,7 @@ int shout_queue_data(shout_queue_t *queue, const unsigned char *data, size_t len
 
         plen = len > SHOUT_BUFSIZE - buf->len ? SHOUT_BUFSIZE - buf->len : len;
         memcpy(buf->data + buf->len, data, plen);
-        buf->len += plen;
+        buf->len += (unsigned int)(plen);
         data += plen;
         len -= plen;
         queue->len += plen;
@@ -143,5 +143,5 @@ ssize_t shout_queue_collect(shout_buf_t *queue, char **buf)
         pos += node->len;
     }
 
-    return len;
+    return (ssize_t)len;
 }

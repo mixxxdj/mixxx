@@ -1,5 +1,8 @@
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
 
 namespace {
@@ -80,7 +83,7 @@ LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
     SampleUtil::free(m_pBuf);
 }
 
-void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
+void LoudnessContourEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate, double gain) {
     m_low->setFrequencyCorners(
             sampleRate, kLoPeakFreq, kLoPleakQ, gain);
     m_high->setFrequencyCorners(
@@ -93,9 +96,6 @@ void LoudnessContourEffect::loadEngineEffectParameters(
     m_pUseGain = parameters.value("useGain");
 }
 
-LoudnessContourEffect::~LoudnessContourEffect() {
-}
-
 void LoudnessContourEffect::processChannel(
         LoudnessContourEffectGroupState* pState,
         const CSAMPLE* pInput,
@@ -103,15 +103,13 @@ void LoudnessContourEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
     double filterGainDb = pState->m_oldFilterGainDb;
     auto gain = static_cast<CSAMPLE_GAIN>(pState->m_oldGain);
 
     if (enableState != EffectEnableState::Disabling) {
-        bool useGain = m_pUseGain->toBool() && groupFeatures.has_gain;
+        bool useGain = m_pUseGain->toBool() && groupFeatures.gain.has_value();
         double loudness = m_pLoudness->value();
-        double gainKnob = groupFeatures.gain;
+        double gainKnob = groupFeatures.gain.value_or(1.0);
 
         filterGainDb = loudness;
 
@@ -128,7 +126,7 @@ void LoudnessContourEffect::processChannel(
                 gainKnob = math_clamp(gainKnob, 0.03, 1.0); // Limit at 0 .. -30 dB
                 double gainKnobDb = ratio2db(gainKnob);
                 filterGainDb = loudness * gainKnobDb / kMaxLoGain;
-                gain = 1; // No need for adjust gain because master gain follows
+                gain = 1; // No need for adjust gain because main gain follows
             } else {
                 filterGainDb = -loudness;
                 // compensate filter boost to avoid clipping
@@ -141,7 +139,9 @@ void LoudnessContourEffect::processChannel(
     if (filterGainDb == 0) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        }
     } else {
         pState->m_low->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         pState->m_high->process(pOutput, pState->m_pBuf, engineParameters.samplesPerBuffer());

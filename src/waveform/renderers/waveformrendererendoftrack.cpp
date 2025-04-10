@@ -1,18 +1,12 @@
-#include <QDomNode>
-#include <QPaintEvent>
+#include "waveformrendererendoftrack.h"
+
 #include <QPainter>
 
-#include "waveformrendererendoftrack.h"
-#include "waveformwidgetrenderer.h"
-
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
-
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-
 #include "util/painterscope.h"
-#include "util/timer.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
 
 namespace {
 
@@ -46,7 +40,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
     m_color = QColor(200, 25, 20);
     const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
-        m_color.setNamedColor(endOfTrackColorName);
+        m_color = QColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
     }
     m_pen = QPen(QBrush(m_color), 2.5 * scaleFactor());
@@ -63,7 +57,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         return;
     }
 
-    //ScopedTimer t("WaveformRendererEndOfTrack::draw");
+    // ScopedTimer t(QStringLiteral("WaveformRendererEndOfTrack::draw"));
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 

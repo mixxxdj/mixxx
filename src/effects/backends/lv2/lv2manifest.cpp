@@ -3,7 +3,12 @@
 #include "effects/backends/effectmanifestparameter.h"
 #include "util/fpclassify.h"
 
-LV2Manifest::LV2Manifest(const LilvPlugin* plug,
+namespace {
+constexpr bool lv2ParamDebug = true;
+} // namespace
+
+LV2Manifest::LV2Manifest(LilvWorld* world,
+        const LilvPlugin* plug,
         QHash<QString, LilvNode*>& properties)
         : EffectManifest(),
           m_minimum(lilv_plugin_get_num_ports(plug)),
@@ -47,6 +52,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
+        // Does this detect a knob/slider parameter?
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
                 !lilv_port_has_property(
                         m_pLV2plugin, port, properties["enumeration_port"]) &&
@@ -60,29 +66,59 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
-            QString paramName = lilv_node_as_string(info);
-            param->setName(paramName);
+            param->setName(lilv_node_as_string(info));
             lilv_node_free(info);
 
             const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
-            QString symbol = lilv_node_as_string(node);
-            param->setId(symbol);
+            param->setId(lilv_node_as_string(node));
             // node must not be freed here, it is owned by port
 
-            param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+            EffectManifestParameter::UnitsHint unitsHint =
+                    EffectManifestParameter::UnitsHint::Unknown;
+            LilvNodes* units = lilv_port_get_value(m_pLV2plugin, port, properties["unit"]);
+            if (lilv_nodes_size(units) > 0) {
+                LilvNode* unit = lilv_nodes_get_first(units);
+                // If this is a unit symbol URI, e.g. http://lv2plug.in/ns/extensions/units#ms
+                if (lilv_node_is_uri(unit)) {
+                    QString unitStr = lilv_node_as_uri(unit);
+                    // that starts with the 'units' prefix, isolate the identifier
+                    if (unitStr.startsWith(lilv_node_as_string(properties["unit_prefix"]))) {
+                        unitsHint = param->lv2UnitToUnitsHint(
+                                unitStr.remove(lilv_node_as_string(properties["unit_prefix"])));
+                    }
+                } else { // Try to extract the custom unit symbol string
+                    LilvNode* customUnit =
+                            lilv_world_get(world, unit, properties["unit_symbol"], nullptr);
+                    if (customUnit) {
+                        // Accepted custom units needs to be 'whitelisted' in
+                        // EffectManifestParameter::lv2UnitToUnitsHint and added to
+                        // EffectManifestParameter::unitsHintStringHash
+                        unitsHint = param->lv2UnitToUnitsHint(
+                                lilv_node_as_string(customUnit));
+                        if (lv2ParamDebug &&
+                                unitsHint == EffectManifestParameter::UnitsHint::Unknown &&
+                                !param->ignoreCustomUnit(lilv_node_as_string(customUnit))) {
+                            qDebug().nospace()
+                                    << "LV2Manifest: plugin \""
+                                    << lilv_node_as_string(lilv_plugin_get_name(
+                                               m_pLV2plugin))
+                                    << "\" has custom unit \""
+                                    << lilv_node_as_string(customUnit)
+                                    << "\" for parameter " << param->name();
+                        }
+                    }
+                }
+            }
+            param->setUnitsHint(unitsHint);
+            lilv_nodes_free(units);
+
             if (util_isnan(m_default[i]) || m_default[i] < m_minimum[i] ||
                     m_default[i] > m_maximum[i]) {
                 m_default[i] = m_minimum[i];
             }
             param->setRange(m_minimum[i], m_default[i], m_maximum[i]);
 
-            // Set the appropriate Hints
-            if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-            } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
-                buildEnumerationOptions(port, param);
-                param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-            } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
+            if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 param->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
             } else {
                 param->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
@@ -102,13 +138,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
-            QString paramName = lilv_node_as_string(info);
-            param->setName(paramName);
+            param->setName(lilv_node_as_string(info));
             lilv_node_free(info);
 
             const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
-            QString symbol = lilv_node_as_string(node);
-            param->setId(symbol);
+            param->setId(lilv_node_as_string(node));
             // info must not be freed here, it is owned by port
 
             param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
@@ -181,9 +215,8 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
         const LilvScalePoint* option = lilv_scale_points_get(options, iterator);
         const LilvNode* description = lilv_scale_point_get_label(option);
         const LilvNode* value = lilv_scale_point_get_value(option);
-        QString strDescription(lilv_node_as_string(description));
 
-        param->appendStep(qMakePair(strDescription,
+        param->appendStep(qMakePair(QString(lilv_node_as_string(description)),
                 static_cast<double>(lilv_node_as_float(value))));
     }
 

@@ -5,9 +5,7 @@
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/sync/enginesync.h"
 #include "moc_internalclock.cpp"
-#include "preferences/usersettings.h"
 #include "util/logger.h"
 #include "util/math.h"
 
@@ -46,12 +44,10 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
 
     m_pSyncLeaderEnabled.reset(
             new ControlPushButton(ConfigKey(m_group, "sync_leader")));
-    m_pSyncLeaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncLeaderEnabled->setStates(3);
+    m_pSyncLeaderEnabled->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &InternalClock::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
-    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "sync_master"),
-            ConfigKey(m_group, "sync_leader"));
+    m_pSyncLeaderEnabled->addAlias(ConfigKey(m_group, QStringLiteral("sync_master")));
 }
 
 InternalClock::~InternalClock() {
@@ -214,13 +210,13 @@ void InternalClock::updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx:
     updateLeaderBeatDistance(oldBeatDistance);
 }
 
-void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
-void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     updateBeatLength(sampleRate, getBpm());
 
     // stereo samples, so divide by 2

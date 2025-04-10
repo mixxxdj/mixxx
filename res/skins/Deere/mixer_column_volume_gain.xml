@@ -30,7 +30,7 @@
         <MinimumSize>40,50</MinimumSize>
         <MaximumSize>40,150</MaximumSize>
         <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-        <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
+        <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
         <Horizontal>false</Horizontal>
         <Connection>
           <ConfigKey><Variable name="group"/>,volume</ConfigKey>

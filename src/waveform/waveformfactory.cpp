@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 #include "waveform/waveformfactory.h"
 #include "waveform/waveform.h"
 
@@ -21,7 +19,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
     }
 
     if (version == WAVEFORM_4_VERSION) {
-        // Used in Mixxx 1.12 beta, suffers Bug lp:1406389
+        // Used in Mixxx 1.12 beta, suffers Bug #7776
         return VC_REMOVE;
     }
 
@@ -31,9 +29,17 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
     }
 
     if (version == WAVEFORM_3_VERSION) {
-        // Used in Mixxx 1.11 beta, suffers Bug lp:1087425
+        // Used in Mixxx 1.11 beta, suffers Bug #6748
         return VC_REMOVE;
     }
+
+#ifdef __STEM__
+    if (version == WAVEFORM_6_0_VERSION) {
+        // Used in Mixxx 2.6 beta, introducing stem data but later replaced with
+        // the signal scale removal
+        return VC_REMOVE;
+    }
+#endif
 
     // possible a future version
     return VC_KEEP;
@@ -47,7 +53,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
     }
 
     if (version == WAVEFORMSUMMARY_4_VERSION) {
-        // Used in Mixxx 1.12 beta, suffers Bug lp:1406389
+        // Used in Mixxx 1.12 beta, suffers Bug #7776
         return VC_REMOVE;
     }
 
@@ -57,7 +63,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
     }
 
     if (version == WAVEFORMSUMMARY_3_VERSION) {
-        // Used in Mixxx 1.11 beta, suffers Bug lp:1086965
+        // Used in Mixxx 1.11 beta, suffers Bug #6744
         return VC_REMOVE;
     }
 

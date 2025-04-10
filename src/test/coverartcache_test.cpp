@@ -13,10 +13,13 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
     void loadCoverFromMetadata(const QString& trackLocation) {
         QImage img;
+        // Both resetMissingTagMetadata = false/true have the same effect
+        constexpr auto resetMissingTagMetadata = false;
         SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
                 mixxx::FileAccess(mixxx::FileInfo(trackLocation)),
                 nullptr,
-                &img);
+                &img,
+                resetMissingTagMetadata);
         ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
@@ -26,10 +29,8 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_TRUE(res.coverInfoUpdated);
+        res = CoverArtCache::loadCover(TrackPointer(), info, 0);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
-        EXPECT_EQ(CoverImageUtils::calculateDigest(img), res.coverArt.imageDigest());
         EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
 
@@ -46,10 +47,8 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
+        res = CoverArtCache::loadCover(TrackPointer(), info, 0);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
-        EXPECT_EQ(CoverImageUtils::calculateDigest(img), res.coverArt.imageDigest());
         EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };

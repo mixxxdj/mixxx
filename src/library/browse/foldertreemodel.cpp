@@ -3,14 +3,10 @@
 #include <Shellapi.h>
 #include <Shlobj.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <dirent.h>
-#include <unistd.h>
-#include <errno.h>
 #endif
 
-#include <QFileInfo>
+#include <QFileInfoList>
 
 #include "library/browse/browsefeature.h"
 #include "library/browse/foldertreemodel.h"
@@ -24,20 +20,18 @@ FolderTreeModel::FolderTreeModel(QObject *parent)
 FolderTreeModel::~FolderTreeModel() {
 }
 
-/* A tree model of the filesystem should be initialized lazy.
- * It will take the universe to iterate over all files over filesystem
- * hasChildren() returns true if a folder has subfolders although
- * we do not know the precise number of subfolders.
- *
- * Note that BrowseFeature inserts folder trees dynamically and rowCount()
- * is only called if necessary.
- */
+// A tree model of the filesystem should be initialized lazy.
+// It will take the universe to iterate over all files over filesystem
+// hasChildren() returns true if a folder has subfolders although
+// we do not know the precise number of subfolders.
+//
+// Note that BrowseFeature inserts folder trees dynamically and rowCount()
+// is only called if necessary.
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
     TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
-    /* Usually the child count is 0 because we do lazy initialization
-     * However, for, buid-in items such as 'Quick Links' there exist
-     * child items at init time
-     */
+    // Usually the child count is 0 because we do lazy initialization
+    // However, for, buid-in items such as 'Quick Links' there exist
+    // child items at init time
     if (item->getData().toString() == QUICK_LINK_NODE) {
         return true;
     }
@@ -60,18 +54,15 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // Acquire a security token for the path.
     const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
-    /*
-     *  The following code is too expensive, general and SLOW since
-     *  QDIR::EntryInfoList returns a full QFileInfolist
-     *
-     *
-     *  QDir dir(item->getData().toString());
-     *  QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-     *  return (all.count() > 0);
-     *
-     *  We can benefit from low-level filesystem APIs, i.e.,
-     *  Windows API or SystemCalls
-     */
+    // The following code is too expensive, general and SLOW since
+    // QDIR::EntryInfoList returns a full QFileInfolist
+    //
+    // QDir dir(item->getData().toString());
+    // QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    // return (all.count() > 0);
+    //
+    // We can benefit from low-level filesystem APIs, i.e.,
+    // Windows API or SystemCalls
 
     bool has_children = false;
 
@@ -88,8 +79,8 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // http://stackoverflow.com/questions/2579948/checking-if-subfolders-exist-linux
 
     std::string dot("."), dotdot("..");
-    QByteArray ba = QFile::encodeName(path);
-    DIR *directory = opendir(ba);
+    QByteArray byteArray = QFile::encodeName(path);
+    DIR* directory = opendir(byteArray);
     int unknown_count = 0;
     int total_count = 0;
     if (directory != nullptr) {
@@ -119,4 +110,39 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // Cache and return the result
     m_directoryCache[path] = has_children;
     return has_children;
+}
+
+void FolderTreeModel::removeChildDirsFromCache(const QStringList& rootPaths) {
+    // PerformanceTimer time;
+    // const auto start = time.elapsed();
+    if (rootPaths.isEmpty()) {
+        return;
+    }
+
+    // Just a quick check that prevents iterating the cache pointlessly
+    for (const auto& rootPath : rootPaths) {
+        VERIFY_OR_DEBUG_ASSERT(!rootPath.isEmpty()) {
+            // List contains at least one non-empty path
+            break;
+        }
+    }
+
+    // int checked = 0;
+    // int removed = 0;
+    QHashIterator<QString, bool> it(m_directoryCache);
+    while (it.hasNext()) {
+        it.next();
+        // checked++;
+        const QString cachedPath = it.key();
+        for (const auto& rootPath : rootPaths) {
+            if (!rootPath.isEmpty() && cachedPath.startsWith(rootPath)) {
+                m_directoryCache.remove(cachedPath);
+                // removed++;
+            }
+        }
+    }
+
+    // qWarning() << "     checked:" << checked << "| removed:" << removed;
+    // qWarning() << "     elapsed:" << mixxx::Duration(time.elapsed() -
+    // start).debugMicrosWithUnit();
 }

@@ -1,17 +1,10 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
-
 
 class BansheePlaylistModel;
 
@@ -19,20 +12,20 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
     BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~BansheeFeature();
+    ~BansheeFeature() override;
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
 
-    virtual QVariant title();
+    QVariant title() override;
 
-    virtual TreeItemModel* sidebarModel() const;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
-    virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
+    void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) override;
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     parented_ptr<TreeItemModel> m_pSidebarModel;
@@ -48,6 +41,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
 
     static QString m_databaseFile;

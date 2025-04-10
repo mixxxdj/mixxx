@@ -1,27 +1,24 @@
 #include "widget/wcoverart.h"
 
-#include <QAction>
-#include <QApplication>
-#include <QBitmap>
-#include <QIcon>
-#include <QLabel>
 #include <QStyleOption>
 #include <QStylePainter>
 
-#include "control/controlobject.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "mixer/basetrackplayer.h"
 #include "moc_wcoverart.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     UserSettingsPointer pConfig,
-                     const QString& group,
-                     BaseTrackPlayer* pPlayer)
+        UserSettingsPointer pConfig,
+        const QString& group,
+        BaseTrackPlayer* pPlayer)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
@@ -29,7 +26,7 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_pPlayer(pPlayer),
-          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer)) {
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer, m_pMenu)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
@@ -65,7 +62,7 @@ void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     QColor bgc(255,255,255);
     QString bgColorStr;
     if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
-        bgc.setNamedColor(bgColorStr);
+        bgc = QColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -75,7 +72,7 @@ void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     QColor m_fgc(0,0,0);
     QString fgColorStr;
     if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
-        m_fgc.setNamedColor(fgColorStr);
+        m_fgc = QColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
@@ -149,18 +146,14 @@ void WCoverArt::slotTrackCoverArtUpdated() {
 }
 
 void WCoverArt::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+        const QPixmap& pixmap) {
     if (!m_bEnable) {
         return;
     }
 
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_lastRequestedCover = coverInfo;
@@ -237,21 +230,23 @@ void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
-void WCoverArt::contextMenuEvent(QContextMenuEvent* event) {
-    event->accept();
+void WCoverArt::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
     if (m_loadedTrack) {
         m_pMenu->setCoverArt(m_lastRequestedCover);
-        m_pMenu->popup(event->globalPos());
+        m_pMenu->popup(pEvent->globalPos());
     }
 }
 
-void WCoverArt::mousePressEvent(QMouseEvent* event) {
+void WCoverArt::mousePressEvent(QMouseEvent* pEvent) {
     if (!m_bEnable) {
         return;
     }
 
-    if (event->button() == Qt::LeftButton) {
-        event->accept();
+    DragAndDropHelper::mousePressed(pEvent);
+
+    if (pEvent->buttons() == Qt::LeftButton) {
+        pEvent->accept();
         // do nothing if left button is pressed,
         // wait for button release
         m_clickTimer.setSingleShot(true);
@@ -259,12 +254,13 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
+void WCoverArt::mouseReleaseEvent(QMouseEvent* pEvent) {
     if (!m_bEnable) {
         return;
     }
 
-    if (event->button() == Qt::LeftButton && m_loadedTrack &&
+    if (pEvent->button() == Qt::LeftButton &&
+            m_loadedTrack &&
             m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
@@ -278,29 +274,29 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
     } // else it was a long leftclick or a right click that's already been processed
 }
 
-void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if ((event->buttons().testFlag(Qt::LeftButton)) && m_loadedTrack) {
+void WCoverArt::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (m_loadedTrack && DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }
 
-void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
+void WCoverArt::dragEnterEvent(QDragEnterEvent* pEvent) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
     if (!m_group.isEmpty()) {
-        DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+        DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
     } else {
-        event->ignore();
+        pEvent->ignore();
     }
 }
 
-void WCoverArt::dropEvent(QDropEvent *event) {
+void WCoverArt::dropEvent(QDropEvent* pEvent) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
     if (!m_group.isEmpty()) {
-        DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+        DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
     } else {
-        event->ignore();
+        pEvent->ignore();
     }
 }
 

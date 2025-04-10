@@ -43,9 +43,12 @@
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 
-#include "basics.h"
-
 #include "Reverb.h"
+
+#include <cmath>
+#include "basics.h"
+#include "dsp/FPTruncateMode.h"
+
 //#include "Descriptor.h"
 
 #if 0

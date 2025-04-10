@@ -12,7 +12,7 @@ Description:
         <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../Tango/controls/skin_settings_button_sampler_rows.xml">
+          <Template src="skins:Tango/controls/skin_settings_button_sampler_rows.xml">
             <SetVariable name="current">1</SetVariable>
             <SetVariable name="next">2</SetVariable>
             <SetVariable name="prev">2</SetVariable>
@@ -24,7 +24,7 @@ Description:
         <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../Tango/controls/skin_settings_button_sampler_rows.xml">
+          <Template src="skins:Tango/controls/skin_settings_button_sampler_rows.xml">
             <SetVariable name="current">2</SetVariable>
             <SetVariable name="next">1</SetVariable>
             <SetVariable name="prev">1</SetVariable>

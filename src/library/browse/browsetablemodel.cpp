@@ -1,23 +1,21 @@
 #include "library/browse/browsetablemodel.h"
 
 #include <QMessageBox>
-#include <QMetaType>
+#include <QMimeData>
 #include <QStringList>
-#include <QTableView>
 #include <QUrl>
-#include <QtConcurrentRun>
-#include <QtSql>
 
-#include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "library/previewbuttondelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_browsetablemodel.cpp"
+#include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "util/clipboard.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -77,18 +75,16 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     listAppendOrReplaceAt(&headerLabels, COLUMN_FILE_CREATION_TIME, tr("File Created"));
     listAppendOrReplaceAt(&headerLabels, COLUMN_REPLAYGAIN, tr("ReplayGain"));
 
-    addSearchColumn(COLUMN_FILENAME);
-    addSearchColumn(COLUMN_ARTIST);
-    addSearchColumn(COLUMN_ALBUM);
-    addSearchColumn(COLUMN_TITLE);
-    addSearchColumn(COLUMN_GENRE);
-    addSearchColumn(COLUMN_COMPOSER);
-    addSearchColumn(COLUMN_KEY);
-    addSearchColumn(COLUMN_COMMENT);
-    addSearchColumn(COLUMN_ALBUMARTIST);
-    addSearchColumn(COLUMN_GROUPING);
-    addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
-    addSearchColumn(COLUMN_FILE_CREATION_TIME);
+    m_searchColumns = {
+            COLUMN_FILENAME,
+            COLUMN_ARTIST,
+            COLUMN_ALBUM,
+            COLUMN_TITLE,
+            COLUMN_GENRE,
+            COLUMN_COMPOSER,
+            COLUMN_COMMENT,
+            COLUMN_ALBUMARTIST,
+            COLUMN_GROUPING};
 
     setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
 
@@ -205,11 +201,11 @@ const QList<int>& BrowseTableModel::searchColumns() const {
     return m_searchColumns;
 }
 
-void BrowseTableModel::addSearchColumn(int index) {
-    m_searchColumns.push_back(index);
-}
-
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
+    VERIFY_OR_DEBUG_ASSERT(m_pBrowseThread) {
+        return;
+    }
+
     if (path.info().hasLocation() && path.info().isDir()) {
         m_currentDirectory = path.info().location();
     } else {
@@ -283,6 +279,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
         return CoverInfo();
     }
 }
+
 const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
@@ -317,6 +314,20 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
 }
 
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
+}
+
+void BrowseTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+
+    // TODO Investigate if we can also implement cut and paste (via QFile
+    // operations) so mixxx could manage files in the filesystem, rather than
+    // having to go switch between mixxx and the system file browser.
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList&) {
@@ -378,7 +389,8 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
 }
 
 QString BrowseTableModel::modelKey(bool noSearch) const {
-    // Browse feature does currently not support searching.
+    // Searching is handled by the proxy model, so if there is an active search
+    // modelkey is composed there, too.
     Q_UNUSED(noSearch);
     return QStringLiteral("browse:") + m_currentDirectory;
 }
@@ -392,6 +404,12 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
 
     int column = index.column();
 
+#ifdef Q_OS_IOS
+    // Make items non-editable on iOS by default, since tapping any track will
+    // otherwise trigger the on-screen keyboard (even if they cannot actually
+    // be edited).
+    return defaultFlags;
+#else
     switch (column) {
     case COLUMN_FILENAME:
     case COLUMN_BITRATE:
@@ -406,6 +424,7 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
         // editable
         return defaultFlags | Qt::ItemIsEditable;
     }
+#endif
 }
 
 bool BrowseTableModel::setData(
@@ -533,3 +552,10 @@ bool BrowseTableModel::updateTrackMood(
     return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
 }
 #endif // __EXTRA_METADATA__
+
+void BrowseTableModel::releaseBrowseThread() {
+    // The shared browse thread is stopped in the destructor
+    // if this is the last reference. All references must be reset before
+    // the library is destructed.
+    m_pBrowseThread.reset();
+}

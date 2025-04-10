@@ -26,7 +26,7 @@ Variables:
         <Size>66f,20f</Size>
         <Children>
           <!-- invisible, clickable Overlay to toggle Effect -->
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
             <SetVariable name="ObjectName">FxToggleButton</SetVariable>
             <SetVariable name="Size">66f,20f</SetVariable>
@@ -50,7 +50,7 @@ Variables:
           </WidgetGroup>
 
            <!-- Colored background to communicate the Effect's ON/OFF status -->
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="ObjectName">FxToggleButtonUnderlay</SetVariable>
             <SetVariable name="Size">66f,20f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>

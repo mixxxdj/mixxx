@@ -1,6 +1,13 @@
 #include "sources/soundsourceffmpeg.h"
 
-#include <mutex>
+extern "C" {
+
+#include <libavutil/avutil.h>
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+#include <libavutil/channel_layout.h>
+#endif
+
+} // extern "C"
 
 #include "util/logger.h"
 #include "util/sample.h"
@@ -15,9 +22,9 @@ namespace {
 
 // FFmpeg constants
 
-constexpr AVSampleFormat kavSampleFormat = AV_SAMPLE_FMT_FLT;
-
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
 constexpr uint64_t kavChannelLayoutUndefined = 0;
+#endif
 
 constexpr int64_t kavStreamDefaultStartTime = 0;
 
@@ -36,19 +43,6 @@ constexpr FrameCount kDefaultFrameBufferCapacity = 48000;
 
 constexpr FrameCount kMinFrameBufferCapacity = kDefaultFrameBufferCapacity;
 
-inline FrameCount frameBufferCapacityForStream(
-        const AVStream& avStream) {
-    DEBUG_ASSERT(kMinFrameBufferCapacity <= kDefaultFrameBufferCapacity);
-    if (avStream.codecpar->frame_size > 0) {
-        return math_max(
-                static_cast<FrameCount>(
-                        avStream.codecpar->frame_size *
-                        kavMaxDecodedFramesPerPacket),
-                kMinFrameBufferCapacity);
-    }
-    return kDefaultFrameBufferCapacity;
-}
-
 // "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
 // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
 // "It must also be assumed that without an explicit value, the playback
@@ -57,45 +51,11 @@ inline FrameCount frameBufferCapacityForStream(
 // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
 constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 
-// Use 0-based sample frame indexing
-constexpr SINT kMinFrameIndex = 0;
-
 constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
 const Logger kLogger("SoundSourceFFmpeg");
 
-std::once_flag initFFmpegLibFlag;
-
-// FFmpeg API Changes:
-// https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
-
-// This function must be called once during startup.
-void initFFmpegLib() {
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
-    av_register_all();
-#endif
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 10, 100)
-    avcodec_register_all();
-#endif
-}
-
-inline int64_t getStreamChannelLayout(const AVStream& avStream) {
-    auto channel_layout = avStream.codecpar->channel_layout;
-    if (channel_layout == kavChannelLayoutUndefined) {
-        // Workaround: FFmpeg sometimes fails to determine the channel
-        // layout, e.g. for a mono WAV files with a single channel!
-        channel_layout = av_get_default_channel_layout(avStream.codecpar->channels);
-        kLogger.info()
-                << "Unknown channel layout -> using default layout"
-                << channel_layout
-                << "for"
-                << avStream.codecpar->channels
-                << "channel(s)";
-    }
-    return channel_layout;
-}
-
-inline int64_t getStreamStartTime(const AVStream& avStream) {
+int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
@@ -108,7 +68,7 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
             // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
             // start_time of 0. Unfortunately, this special case cannot be
             // detected and compensated.
-            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderFrameDelayAAC);
+            start_time = kavStreamDecoderFrameDelayAAC;
             break;
         }
         default:
@@ -120,7 +80,6 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
                 << start_time;
 #endif
     }
-    DEBUG_ASSERT(start_time != AV_NOPTS_VALUE);
     return start_time;
 }
 
@@ -136,32 +95,111 @@ inline int64_t getStreamEndTime(const AVStream& avStream) {
 
 inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
     DEBUG_ASSERT(pts != AV_NOPTS_VALUE);
-    // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
-    return kMinFrameIndex +
-            av_rescale_q(
-                    pts - getStreamStartTime(avStream),
-                    avStream.time_base,
-                    av_make_q(1, avStream.codecpar->sample_rate));
+    // getStreamStartTime(avStream) -> 1st audible frame at FrameIndex 0
+    return av_rescale_q(
+            pts - getStreamStartTime(avStream),
+            avStream.time_base,
+            av_make_q(1, avStream.codecpar->sample_rate));
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
     // Inverse mapping of convertStreamTimeToFrameIndex()
     return getStreamStartTime(avStream) +
             av_rescale_q(
-                    frameIndex - kMinFrameIndex,
+                    frameIndex,
                     av_make_q(1, avStream.codecpar->sample_rate),
                     avStream.time_base);
 }
 
-IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
-    const auto frameIndexRange = IndexRange::between(
-            convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)),
-            convertStreamTimeToFrameIndex(avStream, getStreamEndTime(avStream)));
-    DEBUG_ASSERT(frameIndexRange.orientation() != IndexRange::Orientation::Backward);
-    return frameIndexRange;
+#if VERBOSE_DEBUG_LOG
+inline void avTrace(const QString& preamble, const AVPacket& avPacket) {
+    kLogger.debug()
+            << preamble
+            << "{ stream_index" << avPacket.stream_index
+            << "| pos" << avPacket.pos
+            << "| size" << avPacket.size
+            << "| dst" << avPacket.dts
+            << "| pts" << avPacket.pts
+            << "| duration" << avPacket.duration
+            << '}';
 }
 
-SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
+inline void avTrace(const QString& preamble, const AVFrame& avFrame) {
+    kLogger.debug()
+            << preamble
+            << "{ channels" << avFrame.channels
+            << "| channel_layout" << avFrame.channel_layout
+            << "| format" << avFrame.format
+            << "| sample_rate" << avFrame.sample_rate
+            << "| pkt_dts" << avFrame.pkt_dts
+            << "| pkt_duration" << avFrame.pkt_duration
+            << "| pts" << avFrame.pts
+            << "| nb_samples" << avFrame.nb_samples
+            << '}';
+}
+#endif // VERBOSE_DEBUG_LOG
+
+} // anonymous namespace
+
+// FFmpeg API Changes:
+// https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
+
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+// Static
+void SoundSourceFFmpeg::initChannelLayoutFromStream(
+        AVChannelLayout* pUninitializedChannelLayout,
+        const AVStream& avStream) {
+    if (avStream.codecpar->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
+        // Workaround: FFmpeg sometimes fails to determine the channel
+        // layout, e.g. for a mono WAV files with a single channel!
+        av_channel_layout_default(pUninitializedChannelLayout,
+                avStream.codecpar->ch_layout.nb_channels);
+        kLogger.info()
+                << "Unknown channel layout -> using default layout"
+                << pUninitializedChannelLayout->order
+                << "for"
+                << avStream.codecpar->ch_layout.nb_channels
+                << "channel(s)";
+    } else {
+        av_channel_layout_default(pUninitializedChannelLayout, 0);
+        av_channel_layout_copy(pUninitializedChannelLayout, &avStream.codecpar->ch_layout);
+    }
+}
+#else
+// Static
+int64_t SoundSourceFFmpeg::getStreamChannelLayout(const AVStream& avStream) {
+    auto channel_layout = avStream.codecpar->channel_layout;
+    if (channel_layout == kavChannelLayoutUndefined) {
+        // Workaround: FFmpeg sometimes fails to determine the channel
+        // layout, e.g. for a mono WAV files with a single channel!
+        channel_layout = av_get_default_channel_layout(avStream.codecpar->channels);
+        kLogger.info()
+                << "Unknown channel layout -> using default layout"
+                << channel_layout
+                << "for"
+                << avStream.codecpar->channels
+                << "channel(s)";
+    }
+    return channel_layout;
+}
+#endif
+
+// Static
+FrameCount SoundSourceFFmpeg::frameBufferCapacityForStream(
+        const AVStream& avStream) {
+    DEBUG_ASSERT(kMinFrameBufferCapacity <= kDefaultFrameBufferCapacity);
+    if (avStream.codecpar->frame_size > 0) {
+        return math_max(
+                static_cast<FrameCount>(
+                        avStream.codecpar->frame_size *
+                        kavMaxDecodedFramesPerPacket),
+                kMinFrameBufferCapacity);
+    }
+    return kDefaultFrameBufferCapacity;
+}
+
+// Static
+SINT SoundSourceFFmpeg::getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     // Stream might not provide an appropriate value that is
     // sufficient for sample accurate decoding
     const SINT defaultSeekPrerollFrameCount =
@@ -184,9 +222,14 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
         // the risk for drop outs when jumping to a new position within
         // the file. Audible drop outs are considered more harmful than
         // slight deviations from the exact signal!
-        DEBUG_ASSERT(avStream.codecpar->channels <= 2);
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+        auto numChannels = avStream.codecpar->ch_layout.nb_channels;
+#else
+        auto numChannels = avStream.codecpar->channels;
+#endif
+        DEBUG_ASSERT(numChannels <= 2);
         const SINT mp3SeekPrerollFrameCount =
-                9 * (kMaxSamplesPerMP3Frame / avStream.codecpar->channels);
+                9 * (kMaxSamplesPerMP3Frame / numChannels);
         return math_max(mp3SeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
     case AV_CODEC_ID_AAC:
@@ -199,7 +242,34 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     }
 }
 
-inline QString formatErrorString(int errnum) {
+// Static
+IndexRange SoundSourceFFmpeg::getStreamFrameIndexRange(const AVStream& avStream) {
+    const auto frameIndexRange = IndexRange::between(
+            convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)),
+            convertStreamTimeToFrameIndex(avStream, getStreamEndTime(avStream)));
+    DEBUG_ASSERT(frameIndexRange.orientation() != IndexRange::Orientation::Backward);
+    return frameIndexRange;
+}
+
+// Static
+bool SoundSourceFFmpeg::openDecodingContext(
+        AVCodecContext* pavCodecContext) {
+    DEBUG_ASSERT(pavCodecContext != nullptr);
+
+    const int avcodec_open2_result =
+            avcodec_open2(pavCodecContext, pavCodecContext->codec, nullptr);
+    if (avcodec_open2_result != 0) {
+        DEBUG_ASSERT(avcodec_open2_result < 0);
+        kLogger.warning().noquote()
+                << "avcodec_open2() failed:"
+                << SoundSourceFFmpeg::formatErrorString(avcodec_open2_result);
+        return false;
+    }
+    return true;
+}
+
+// Static
+QString SoundSourceFFmpeg::formatErrorString(int errnum) {
     // Allocate a static buffer on the stack and initialize it
     // with a `\0` terminator for extra safety if av_strerror()
     // unexpectedly fails and does nothing.
@@ -211,35 +281,8 @@ inline QString formatErrorString(int errnum) {
     return QString::fromLocal8Bit(errbuf);
 }
 
-#if VERBOSE_DEBUG_LOG
-inline void avTrace(const char* preamble, const AVPacket& avPacket) {
-    kLogger.debug()
-            << preamble
-            << "{ stream_index" << avPacket.stream_index
-            << "| pos" << avPacket.pos
-            << "| size" << avPacket.size
-            << "| dst" << avPacket.dts
-            << "| pts" << avPacket.pts
-            << "| duration" << avPacket.duration
-            << '}';
-}
-
-inline void avTrace(const char* preamble, const AVFrame& avFrame) {
-    kLogger.debug()
-            << preamble
-            << "{ channels" << avFrame.channels
-            << "| channel_layout" << avFrame.channel_layout
-            << "| format" << avFrame.format
-            << "| sample_rate" << avFrame.sample_rate
-            << "| pkt_dts" << avFrame.pkt_dts
-            << "| pkt_duration" << avFrame.pkt_duration
-            << "| pts" << avFrame.pts
-            << "| nb_samples" << avFrame.nb_samples
-            << '}';
-}
-#endif // VERBOSE_DEBUG_LOG
-
-AVFormatContext* openInputFile(
+// Static
+AVFormatContext* SoundSourceFFmpeg::openInputFile(
         const QString& fileName) {
     // Will be allocated implicitly when opening the input file
     AVFormatContext* pavInputFormatContext = nullptr;
@@ -247,7 +290,7 @@ AVFormatContext* openInputFile(
     // Open input file and allocate/initialize AVFormatContext
     const int avformat_open_input_result =
             avformat_open_input(
-                    &pavInputFormatContext, fileName.toLocal8Bit().constData(), nullptr, nullptr);
+                    &pavInputFormatContext, fileName.toUtf8().constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
         DEBUG_ASSERT(avformat_open_input_result < 0);
         kLogger.warning().noquote()
@@ -257,23 +300,6 @@ AVFormatContext* openInputFile(
     }
     return pavInputFormatContext;
 }
-
-bool openDecodingContext(
-        AVCodecContext* pavCodecContext) {
-    DEBUG_ASSERT(pavCodecContext != nullptr);
-
-    const int avcodec_open2_result = avcodec_open2(pavCodecContext, pavCodecContext->codec, nullptr);
-    if (avcodec_open2_result != 0) {
-        DEBUG_ASSERT(avcodec_open2_result < 0);
-        kLogger.warning().noquote()
-                << "avcodec_open2() failed:"
-                << formatErrorString(avcodec_open2_result);
-        return false;
-    }
-    return true;
-}
-
-} // anonymous namespace
 
 void SoundSourceFFmpeg::InputAVFormatContextPtr::take(
         AVFormatContext** ppavInputFormatContext) {
@@ -340,23 +366,14 @@ void SoundSourceFFmpeg::SwrContextPtr::close() {
 
 const QString SoundSourceProviderFFmpeg::kDisplayName = QStringLiteral("FFmpeg");
 
-SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
-    std::call_once(initFFmpegLibFlag, initFFmpegLib);
-}
-
 QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
     QStringList list;
     QStringList disabledInputFormats;
 
     // Collect all supported formats (whitelist)
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
-    AVInputFormat* pavInputFormat = nullptr;
-    while ((pavInputFormat = av_iformat_next(pavInputFormat))) {
-#else
     const AVInputFormat* pavInputFormat = nullptr;
     void* pOpaqueInputFormatIterator = nullptr;
     while ((pavInputFormat = av_demuxer_iterate(&pOpaqueInputFormatIterator))) {
-#endif
         if (pavInputFormat->flags | AVFMT_SEEK_TO_PTS) {
             ///////////////////////////////////////////////////////////
             // Whitelist of tested codecs (including variants)
@@ -374,14 +391,13 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                     !strcmp(pavInputFormat->name, "m4v")) {
                 list.append("mp4");
                 continue;
-            } else if (!strcmp(pavInputFormat->name,
-                               "mov,mp4,m4a,3gp,3g2,mj2")) {
-                list.append("mov");
+            } else if (!strcmp(pavInputFormat->name, "mov,mp4,m4a,3gp,3g2,mj2")) {
+                list.append("mov"); // QuickTime File Format video/quicktime
                 list.append("mp4");
                 list.append("m4a");
-                list.append("3gp");
-                list.append("3g2");
-                list.append("mj2");
+                list.append("3gp"); // 3GPP file format audio/3gpp
+                list.append("3g2"); // 3GPP2 file format audio/3gpp2
+                list.append("mj2"); // Motion JPEG 2000 video/mj2
                 continue;
             } else if (!strcmp(pavInputFormat->name, "opus") ||
                     !strcmp(pavInputFormat->name, "libopus")) {
@@ -410,7 +426,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 continue;
             } else if (!strcmp(pavInputFormat->name, "wma") ||
                     !strcmp(pavInputFormat->name, "xwma")) {
-                list.append("wma");
+                list.append("wma"); // Windows Media Audio audio/x-ms-wma
                 continue;
             */
                 ///////////////////////////////////////////////////////////
@@ -418,22 +434,22 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 ///////////////////////////////////////////////////////////
                 /*
             } else if (!strcmp(pavInputFormat->name, "ac3")) {
-                list.append("ac3");
+                list.append("ac3"); // AC-3 Compressed Audio (Dolby Digital), Revision A audio/ac3
                 continue;
             } else if (!strcmp(pavInputFormat->name, "caf")) {
-                list.append("caf");
+                list.append("caf"); // Apple Lossless
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpc")) {
-                list.append("mpc");
+                list.append("mpc"); // Musepack encoded audio audio/musepack
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpeg")) {
                 list.append("mpeg");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tak")) {
-                list.append("tak");
+                list.append("tak"); // Tom's lossless Audio Kompressor audio/x-tak
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tta")) {
-                list.append("tta");
+                list.append("tta"); // True Audio, version 2
                 continue;
             */
             }
@@ -461,20 +477,33 @@ SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
     return SoundSourceProviderPriority::Lowest;
 }
 
+QString SoundSourceProviderFFmpeg::getVersionString() const {
+    return QString::fromUtf8(av_version_info());
+}
+
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
         : SoundSource(url),
           m_pavStream(nullptr),
-          m_pavPacket(av_packet_alloc()),
           m_pavDecodedFrame(nullptr),
+          m_seekPrerollFrameCount(0),
+          m_pavPacket(av_packet_alloc()),
           m_pavResampledFrame(nullptr),
-          m_seekPrerollFrameCount(0) {
+          m_avutilVersion(avutil_version()) {
     DEBUG_ASSERT(m_pavPacket);
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    av_channel_layout_default(&m_avStreamChannelLayout, 0);
+    av_channel_layout_default(&m_avResampledChannelLayout, 0);
+#endif
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     close();
     av_packet_free(&m_pavPacket);
     DEBUG_ASSERT(!m_pavPacket);
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    av_channel_layout_uninit(&m_avStreamChannelLayout);
+    av_channel_layout_uninit(&m_avResampledChannelLayout);
+#endif
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
@@ -517,11 +546,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     // Find the best stream
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59, 0, 100)
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(59, 0, 100) // FFmpeg 5.0
+    const AVCodec* pDecoder = nullptr;
+#else
     // https://github.com/FFmpeg/FFmpeg/blob/dd17c86aa11feae2b86de054dd0679cc5f88ebab/doc/APIchanges#L175
     AVCodec* pDecoder = nullptr;
-#else
-    const AVCodec* pDecoder = nullptr;
 #endif
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
@@ -571,19 +600,27 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return SoundSource::OpenResult::Aborted;
     }
 
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 18, 100)
-    // Align the time base of the context with that of the selected stream
-    av_codec_set_pkt_timebase(pavCodecContext, pavStream->time_base);
-#endif
-
     // Request output format
-    pavCodecContext->request_sample_fmt = kavSampleFormat;
+    pavCodecContext->request_sample_fmt = s_avSampleFormat;
     if (params.getSignalInfo().getChannelCount().isValid()) {
         // A dedicated number of channels for the output signal
         // has been requested. Forward this to FFmpeg to avoid
         // manual resampling or post-processing after decoding.
+        const int requestChannels = std::min(
+                static_cast<int>(params.getSignalInfo().getChannelCount()),
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+                pavStream->codecpar->ch_layout.nb_channels
+#else
+                av_get_channel_layout_nb_channels(pavStream->codecpar->channel_layout)
+#endif
+        );
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+        av_channel_layout_default(&pavCodecContext->ch_layout,
+                requestChannels);
+#else
         pavCodecContext->request_channel_layout =
-                av_get_default_channel_layout(params.getSignalInfo().getChannelCount());
+                av_get_default_channel_layout(requestChannels);
+#endif
     }
 
     // Open decoding context
@@ -597,6 +634,10 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     m_pavStream = pavStream;
 
     if (kLogger.debugEnabled()) {
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+        AVChannelLayout fixedChannelLayout;
+        initChannelLayoutFromStream(&fixedChannelLayout, *m_pavStream);
+#endif
         kLogger.debug()
                 << "AVStream"
                 << "{ index" << m_pavStream->index
@@ -607,9 +648,15 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << "| nb_frames" << m_pavStream->nb_frames
                 << "| codec_type" << m_pavStream->codecpar->codec_type
                 << "| codec_id" << m_pavStream->codecpar->codec_id
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+                << "| ch_layout.nb_channels" << m_pavStream->codecpar->ch_layout.nb_channels
+                << "| ch_layout.order" << m_pavStream->codecpar->ch_layout.order
+                << "| ch_layout.order (fixed)" << fixedChannelLayout.order
+#else
                 << "| channels" << m_pavStream->codecpar->channels
                 << "| channel_layout" << m_pavStream->codecpar->channel_layout
                 << "| channel_layout (fixed)" << getStreamChannelLayout(*m_pavStream)
+#endif
                 << "| format" << m_pavStream->codecpar->format
                 << "| sample_rate" << m_pavStream->codecpar->sample_rate
                 << "| bit_rate" << m_pavStream->codecpar->bit_rate
@@ -618,6 +665,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << "| initial_padding" << m_pavStream->codecpar->initial_padding
                 << "| trailing_padding" << m_pavStream->codecpar->trailing_padding
                 << '}';
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+        av_channel_layout_uninit(&fixedChannelLayout);
+#endif
     }
 
     audio::ChannelCount channelCount;
@@ -665,11 +715,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     // Decoding MP3/AAC files manually into WAV using the ffmpeg CLI and
     // comparing the audio data revealed that we need to map the nominal
-    // range of the stream onto our internal range starting at kMinFrameIndex.
+    // range of the stream onto our internal range starting at FrameIndex 0.
     // See also the discussion regarding cue point shift/offset:
     // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/Cue.20shift.2Foffset
     const auto frameIndexRange = IndexRange::forward(
-            kMinFrameIndex,
+            0,
             streamFrameIndexRange.length());
     if (!initFrameIndexRangeOnce(frameIndexRange)) {
         kLogger.warning()
@@ -702,10 +752,17 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 bool SoundSourceFFmpeg::initResampling(
         audio::ChannelCount* pResampledChannelCount,
         audio::SampleRate* pResampledSampleRate) {
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    AVChannelLayout avStreamChannelLayout;
+    initChannelLayoutFromStream(&avStreamChannelLayout, *m_pavStream);
+    const auto streamChannelCount =
+            audio::ChannelCount(m_pavStream->codecpar->ch_layout.nb_channels);
+#else
     const auto avStreamChannelLayout =
             getStreamChannelLayout(*m_pavStream);
     const auto streamChannelCount =
             audio::ChannelCount(m_pavStream->codecpar->channels);
+#endif
     // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
     // channels like upsampling a mono to stereo signal breaks various
     // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
@@ -715,12 +772,17 @@ bool SoundSourceFFmpeg::initResampling(
     // how to handle this later.
     const auto resampledChannelCount =
             /*config.getSignalInfo().getChannelCount().isValid() ? config.getSignalInfo().getChannelCount() :*/ streamChannelCount;
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    AVChannelLayout avResampledChannelLayout;
+    av_channel_layout_default(&avResampledChannelLayout, resampledChannelCount);
+#else
     const auto avResampledChannelLayout =
             av_get_default_channel_layout(resampledChannelCount);
+#endif
     const auto avStreamSampleFormat =
             m_pavCodecContext->sample_fmt;
     const auto avResampledSampleFormat =
-            kavSampleFormat;
+            s_avSampleFormat;
     // NOTE(uklotzde): We prefer not to change adjust sample rate here, because
     // all the frame calculations while decoding use the frame information
     // from the underlying stream! We only need resampling for up-/downsampling
@@ -729,16 +791,46 @@ bool SoundSourceFFmpeg::initResampling(
     const auto streamSampleRate =
             audio::SampleRate(m_pavStream->codecpar->sample_rate);
     const auto resampledSampleRate = streamSampleRate;
-    if ((resampledChannelCount != streamChannelCount) ||
+    if (
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+            av_channel_layout_compare(&avResampledChannelLayout, &avStreamChannelLayout) != 0 ||
+#else
+            (resampledChannelCount != streamChannelCount) ||
             (avResampledChannelLayout != avStreamChannelLayout) ||
+#endif
             (avResampledSampleFormat != avStreamSampleFormat)) {
 #if VERBOSE_DEBUG_LOG
         kLogger.debug()
                 << "Decoded stream needs to be resampled"
                 << ": channel count =" << resampledChannelCount
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+                << "| channel layout order =" << avResampledChannelLayout.order
+#else
                 << "| channel layout =" << avResampledChannelLayout
+#endif
                 << "| sample format =" << av_get_sample_fmt_name(avResampledSampleFormat);
 #endif
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+        SwrContext* pSwrContext = nullptr;
+        if (swr_alloc_set_opts2(
+                    &pSwrContext,
+                    &avResampledChannelLayout,
+                    avResampledSampleFormat,
+                    resampledSampleRate,
+                    &avStreamChannelLayout,
+                    avStreamSampleFormat,
+                    streamSampleRate,
+                    0,
+                    nullptr) != 0) {
+            kLogger.warning()
+                    << "Failed to allocate resampling context";
+            m_pSwrContext = SwrContextPtr();
+            av_channel_layout_uninit(&avStreamChannelLayout);
+            av_channel_layout_uninit(&avResampledChannelLayout);
+            return false;
+        }
+        m_pSwrContext = SwrContextPtr(pSwrContext);
+#else
         m_pSwrContext = SwrContextPtr(swr_alloc_set_opts(
                 nullptr,
                 avResampledChannelLayout,
@@ -754,20 +846,32 @@ bool SoundSourceFFmpeg::initResampling(
                     << "Failed to allocate resampling context";
             return false;
         }
+#endif
         const auto swr_init_result =
                 swr_init(m_pSwrContext);
         if (swr_init_result < 0) {
             kLogger.warning().noquote()
                     << "swr_init() failed:"
                     << formatErrorString(swr_init_result);
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+            av_channel_layout_uninit(&avStreamChannelLayout);
+            av_channel_layout_uninit(&avResampledChannelLayout);
+#endif
             return false;
         }
         DEBUG_ASSERT(!m_pavResampledFrame);
         m_pavResampledFrame = av_frame_alloc();
     }
     // Finish initialization
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    av_channel_layout_copy(&m_avStreamChannelLayout, &avStreamChannelLayout);
+    av_channel_layout_uninit(&avStreamChannelLayout);
+    av_channel_layout_copy(&m_avResampledChannelLayout, &avResampledChannelLayout);
+    av_channel_layout_uninit(&avResampledChannelLayout);
+#else
     m_avStreamChannelLayout = avStreamChannelLayout;
     m_avResampledChannelLayout = avResampledChannelLayout;
+#endif
     // Write output parameters
     DEBUG_ASSERT(pResampledChannelCount);
     *pResampledChannelCount = resampledChannelCount;
@@ -815,7 +919,7 @@ SINT readNextPacket(
             } else {
                 kLogger.warning().noquote()
                         << "av_read_frame() failed:"
-                        << formatErrorString(av_read_frame_result);
+                        << SoundSourceFFmpeg::formatErrorString(av_read_frame_result);
                 return ReadAheadFrameBuffer::kInvalidFrameIndex;
             }
         }
@@ -849,14 +953,13 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     // Need to seek to a new position before continue reading. For
     // sample accurate decoding the actual seek position must be
     // placed BEFORE the position where reading continues.
-    auto seekIndex =
-            math_max(kMinFrameIndex, startIndex - m_seekPrerollFrameCount);
+    // At the beginning of the stream, this is a negative position.
+    auto seekIndex = startIndex - m_seekPrerollFrameCount;
+
     // Seek to codec frame boundaries if the frame size is fixed and known
     if (m_pavStream->codecpar->frame_size > 0) {
-        seekIndex -=
-                (seekIndex - kMinFrameIndex) % m_pavCodecContext->frame_size;
+        seekIndex -= seekIndex % m_pavCodecContext->frame_size;
     }
-    DEBUG_ASSERT(seekIndex >= kMinFrameIndex);
     DEBUG_ASSERT(seekIndex <= startIndex);
 
     if (m_frameBuffer.tryContinueReadingFrom(seekIndex)) {
@@ -950,13 +1053,21 @@ bool SoundSourceFFmpeg::consumeNextAVPacket(
 const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
     if (m_pSwrContext) {
         // Decoded frame must be resampled before reading
-        m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
         m_pavResampledFrame->sample_rate = getSignalInfo().getSampleRate();
-        m_pavResampledFrame->format = kavSampleFormat;
+        m_pavResampledFrame->format = s_avSampleFormat;
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+        av_channel_layout_copy(&m_pavResampledFrame->ch_layout, &m_avResampledChannelLayout);
+        if (m_pavDecodedFrame->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
+            // Sometimes the channel layout is undefined.
+            av_channel_layout_copy(&m_pavDecodedFrame->ch_layout, &m_avStreamChannelLayout);
+        }
+#else
+        m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
         if (m_pavDecodedFrame->channel_layout == kavChannelLayoutUndefined) {
             // Sometimes the channel layout is undefined.
             m_pavDecodedFrame->channel_layout = m_avStreamChannelLayout;
         }
+#endif
 #if VERBOSE_DEBUG_LOG
         avTrace("Resampling decoded frame", *m_pavDecodedFrame);
 #endif
@@ -1065,24 +1176,26 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 }
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
-                auto streamFrameIndex =
+                SINT streamFrameIndex =
                         convertStreamTimeToFrameIndex(
                                 *m_pavStream, m_pavDecodedFrame->pts);
-                // Only audible samples are counted, i.e. any inaudible aka
-                // "priming" samples are not included in nb_samples!
-                // https://bugs.launchpad.net/mixxx/+bug/1934785
-                if (streamFrameIndex < kMinFrameIndex) {
+
+                if (m_avutilVersion >= AV_VERSION_INT(56, 52, 100)) {
+                    // From ffmpeg 4.4 only audible samples are counted, i.e. any inaudible aka
+                    // "priming" samples are not included in nb_samples!
+                    // https://github.com/mixxxdj/mixxx/issues/10464
+                    if (streamFrameIndex < 0) {
 #if VERBOSE_DEBUG_LOG
-                    const auto inaudibleFrameCountUntilStartOfStream =
-                            kMinFrameIndex - streamFrameIndex;
-                    kLogger.debug()
-                            << "Skipping"
-                            << inaudibleFrameCountUntilStartOfStream
-                            << "inaudible sample frames before the start of the stream";
+                        const auto inaudibleFrameCountUntilStartOfStream = -streamFrameIndex;
+                        kLogger.debug()
+                                << "Skipping"
+                                << inaudibleFrameCountUntilStartOfStream
+                                << "inaudible sample frames before the start of the stream";
 #endif
-                    streamFrameIndex = kMinFrameIndex;
+                        streamFrameIndex = 0;
+                    }
                 }
-                DEBUG_ASSERT(streamFrameIndex >= kMinFrameIndex);
+
                 decodedFrameRange = IndexRange::forward(
                         streamFrameIndex,
                         decodedFrameCount);

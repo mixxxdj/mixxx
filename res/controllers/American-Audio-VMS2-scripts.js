@@ -323,7 +323,7 @@ VMS2.playlight = function(value, group, control) {
         deck.Buttons.Pause.setLed(LedState.on);
         // start a fancy blink timer
         deck.switchPlaylightOff = true;
-        deck.playTimer = engine.beginTimer(500,"VMS2.playlightflash(\""+group+"\")");
+        deck.playTimer = engine.beginTimer(500,()=>VMS2.playlightflash(group));
     }
 };
 

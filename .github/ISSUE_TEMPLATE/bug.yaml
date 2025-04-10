@@ -1,0 +1,28 @@
+name: 🐛 Bug Report
+description: |
+  Describe your problem here.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Tell us what happens and what should happen instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of Mixxx are you running?
+      placeholder: 2.3.4, 2.4.0, ...
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: What operating system (and distribution if you're on Linux) are you running?
+      placeholder: Windows 11, macOS Big Sur, Ubuntu 22.04, ...

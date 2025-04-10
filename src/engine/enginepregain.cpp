@@ -1,23 +1,21 @@
 #include "engine/enginepregain.h"
 
-#include <QtDebug>
-
 #include "control/controlaudiotaperpot.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "control/controlpushbutton.h"
-#include "preferences/usersettings.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "moc_enginepregain.cpp"
 #include "util/math.h"
 #include "util/sample.h"
 
 namespace {
 
 // Bends the speed to gain curve for a natural vinyl sound
-constexpr float kSpeedGainMultiplier = 4.0f;
+constexpr CSAMPLE_GAIN kSpeedGainMultiplier = 4.0f;
 // -1 dB to not risk any clipping even for lossy track that may have samples above 1.0
-constexpr float kMaxTotalGainBySpeed = 0.9f;
+constexpr CSAMPLE_GAIN kMaxTotalGainBySpeed = 0.9f;
 // value to normalize gain to 1 at speed one
-const float kSpeedOneDiv = std::log10((1 * kSpeedGainMultiplier) + 1);
+const CSAMPLE_GAIN kSpeedOneDiv = std::log10((1 * kSpeedGainMultiplier) + 1);
 } // anonymous namespace
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = nullptr;
@@ -25,8 +23,8 @@ ControlPotmeter* EnginePregain::s_pDefaultBoost = nullptr;
 ControlObject* EnginePregain::s_pEnableReplayGain = nullptr;
 
 EnginePregain::EnginePregain(const QString& group)
-        : m_dSpeed(1.0),
-          m_dOldSpeed(1.0),
+        : m_dSpeed(0.0),
+          m_dOldSpeed(0.0),
           m_dNonScratchSpeed(1.0),
           m_scratching(false),
           m_fPrevGain(1.0),
@@ -66,7 +64,7 @@ void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
     m_scratching = scratching;
 }
 
-void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
+void EnginePregain::process(CSAMPLE* pInOut, const std::size_t bufferSize) {
     const auto fReplayGain = static_cast<CSAMPLE_GAIN>(m_pCOReplayGain->get());
     CSAMPLE_GAIN fReplayGainCorrection;
     if (!s_pEnableReplayGain->toBool() || m_pPassthroughEnabled->toBool()) {
@@ -77,7 +75,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         fReplayGainCorrection = 1; // We expect a replaygain leveled input
     } else if (fReplayGain == 0) {
         // use predicted replaygain
-        fReplayGainCorrection = (float)s_pDefaultBoost->get();
+        fReplayGainCorrection = static_cast<CSAMPLE_GAIN>(s_pDefaultBoost->get());
         // We prepare for smoothfading to ReplayGain suggested gain
         // if ReplayGain value changes or ReplayGain is enabled
         m_bSmoothFade = true;
@@ -90,17 +88,17 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         // full process for one second.
         // So we need to alter gain each time ::process is called.
 
-        const float fullReplayGainBoost =
-                fReplayGain * static_cast<float>(s_pReplayGainBoost->get());
+        const CSAMPLE_GAIN fullReplayGainBoost =
+                fReplayGain * static_cast<CSAMPLE_GAIN>(s_pReplayGainBoost->get());
 
         // This means that a ReplayGain value has been calculated after the
         // track has been loaded
-        constexpr float kFadeSeconds = 1.0;
+        constexpr float kFadeSeconds = 1.0f;
 
         if (m_bSmoothFade) {
             float seconds = static_cast<float>(m_timer.elapsed().toDoubleSeconds());
-            if (seconds < kFadeSeconds) {
-                // Fade smoothly
+            if (seconds < kFadeSeconds && m_dSpeed != 0.0 && m_dOldSpeed != 0.0) {
+                // Fade smoothly if not stopped, stopping or starting
                 const float fadeFrac = seconds / kFadeSeconds;
                 fReplayGainCorrection = m_fPrevGain * (1.0f - fadeFrac) +
                         fadeFrac * fullReplayGainBoost;
@@ -117,7 +115,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    CSAMPLE_GAIN totalGain = (CSAMPLE_GAIN)m_pPotmeterPregain->get() *
+    auto totalGain = static_cast<CSAMPLE_GAIN>(m_pPotmeterPregain->get()) *
             math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
@@ -150,19 +148,20 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
-        SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, iBufferSize / 2);
-        SampleUtil::applyRampingGain(&pInOut[iBufferSize / 2], 0, totalGain, iBufferSize / 2);
+        SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, bufferSize / 2);
+        SampleUtil::applyRampingGain(&pInOut[bufferSize / 2], 0, totalGain, bufferSize / 2);
     } else if (totalGain != m_fPrevGain) {
-        // Prevent sound wave discontinuities by interpolating from old to new gain.
-        SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
+        // Prevent sound wave discontinuities by interpolating from old to new gain
+        // if not stopped or starting
+        // This handles also the ramping of play (from speed 0) and pause (to speed 0)
+        SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, bufferSize);
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
-        SampleUtil::applyGain(pInOut, totalGain, iBufferSize);
+        SampleUtil::applyGain(pInOut, totalGain, bufferSize);
     }
     m_fPrevGain = totalGain;
 }
 
 void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->gain = m_pPotmeterPregain->get();
-    pGroupFeatures->has_gain = true;
 }

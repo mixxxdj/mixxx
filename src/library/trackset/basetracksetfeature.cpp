@@ -1,5 +1,6 @@
 #include "library/trackset/basetracksetfeature.h"
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "moc_basetracksetfeature.cpp"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
@@ -10,6 +11,10 @@ BaseTrackSetFeature::BaseTrackSetFeature(
         : LibraryFeature(pLibrary, pConfig, iconName),
           m_rootViewName(rootViewName),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
+}
+
+void BaseTrackSetFeature::pasteChild(const QModelIndex&) {
+    emit pasteFromSidebar();
 }
 
 void BaseTrackSetFeature::activate() {

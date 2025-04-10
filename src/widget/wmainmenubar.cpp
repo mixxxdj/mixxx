@@ -1,19 +1,24 @@
 #include "widget/wmainmenubar.h"
 
+#ifndef __APPLE__
+#include <QApplication>
+#include <QWindow>
+#endif
 #include <QUrl>
 
 #include "config.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "mixer/playermanager.h"
 #include "moc_wmainmenubar.cpp"
 #include "util/cmdlineargs.h"
+#include "util/desktophelper.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
 
 constexpr int kMaxLoadToDeckActions = 4;
+const QString kSkinGroup = QStringLiteral("[Skin]");
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -81,6 +86,9 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
 void WMainMenuBar::initialize() {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pFileMenu);
+#endif
 
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -129,10 +137,16 @@ void WMainMenuBar::initialize() {
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pLibraryMenu);
+#endif
 
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
     auto* pLibraryRescan = new QAction(rescanTitle, this);
+    pLibraryRescan->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_Rescan"),
+            tr("Ctrl+Shift+L"))));
     pLibraryRescan->setStatusTip(rescanText);
     pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
     pLibraryRescan->setCheckable(false);
@@ -142,9 +156,10 @@ void WMainMenuBar::initialize() {
     pLibraryMenu->addAction(pLibraryRescan);
 
 #ifdef __ENGINEPRIME__
-    QString exportTitle = tr("E&xport Library to Engine Prime");
-    QString exportText = tr("Export the library to the Engine Prime format");
-    auto pLibraryExport = new QAction(exportTitle, this);
+    //: "Engine DJ" must not be translated
+    QString exportTitle = tr("E&xport Library to Engine DJ");
+    QString exportText = tr("Export the library to the Engine DJ format");
+    auto* pLibraryExport = new QAction(exportTitle, this);
     pLibraryExport->setStatusTip(exportText);
     pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
     pLibraryExport->setCheckable(false);
@@ -187,10 +202,37 @@ void WMainMenuBar::initialize() {
     // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
-    // https://bugs.launchpad.net/mixxx/+bug/1534292
+    // https://github.com/mixxxdj/mixxx/issues/8442
     QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
     QMenu* pViewMenu = new QMenu(tr("&View"), this);
+    connectMenuToSlotShowMenuBar(pViewMenu);
+#endif
+
+#ifndef __APPLE__
+    // Show menu bar
+    QString showMenuBarTitle = tr("Auto-hide menu bar");
+    QString showMenuBarText = tr("Auto-hide the main menu bar when it's not used.");
+    auto* pViewAutoHideMenuBar = new QAction(showMenuBarTitle, this);
+    pViewAutoHideMenuBar->setCheckable(true);
+    pViewAutoHideMenuBar->setStatusTip(showMenuBarText);
+    pViewAutoHideMenuBar->setWhatsThis(buildWhatsThis(showMenuBarTitle, showMenuBarText));
+    connect(pViewAutoHideMenuBar,
+            &QAction::triggered,
+            this,
+            &WMainMenuBar::slotAutoHideMenuBarToggled);
+    // update checked state from config each time the menu is shown
+    connect(pViewMenu,
+            &QMenu::aboutToShow,
+            this,
+            [this, pViewAutoHideMenuBar]() {
+                bool autoHide = m_pConfig->getValue<bool>(
+                        ConfigKey("[Config]", "hide_menubar"), false);
+                pViewAutoHideMenuBar->setChecked(autoHide);
+            });
+    pViewMenu->addAction(pViewAutoHideMenuBar);
+
+    pViewMenu->addSeparator();
 #endif
 
     // Skin Settings Menu
@@ -206,7 +248,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+1", "Menubar|View|Show Skin Settings"))));
     pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
     pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
-    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    createVisibilityControl(pViewShowSkinSettings,
+            ConfigKey(kSkinGroup, QStringLiteral("show_settings")));
     pViewMenu->addAction(pViewShowSkinSettings);
 
     // Microphone Section
@@ -221,7 +264,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
     pViewShowMicrophone->setStatusTip(showMicrophoneText);
     pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
-    createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
+    createVisibilityControl(pViewShowMicrophone,
+            ConfigKey(kSkinGroup, QStringLiteral("show_microphones")));
     pViewMenu->addAction(pViewShowMicrophone);
 
 #ifdef __VINYLCONTROL__
@@ -236,7 +280,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     pViewVinylControl->setStatusTip(showVinylControlText);
     pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+    createVisibilityControl(pViewVinylControl,
+            ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")));
     pViewMenu->addAction(pViewVinylControl);
 #endif
 
@@ -251,7 +296,8 @@ void WMainMenuBar::initialize() {
                 tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
-    createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    createVisibilityControl(pViewShowPreviewDeck,
+            ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")));
     pViewMenu->addAction(pViewShowPreviewDeck);
 
 
@@ -266,9 +312,25 @@ void WMainMenuBar::initialize() {
                 tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
     pViewShowCoverArt->setStatusTip(showCoverArtText);
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
-    createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
+    createVisibilityControl(pViewShowCoverArt,
+            ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")));
     pViewMenu->addAction(pViewShowCoverArt);
 
+    //: menu title
+    QString keywheelTitle = tr("Show Keywheel");
+    //: tooltip text
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                    tr("F12", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
+    pViewMenu->addAction(m_pViewKeywheel);
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
@@ -281,7 +343,8 @@ void WMainMenuBar::initialize() {
                 tr("Space", "Menubar|View|Maximize Library"))));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    createVisibilityControl(pViewMaximizeLibrary,
+            ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
     pViewMenu->addSeparator();
@@ -302,7 +365,7 @@ void WMainMenuBar::initialize() {
     // key sequence to Mixxx for some reason.
     // Both adding an empty key sequence or the same sequence twice can render
     // the fullscreen shortcut nonfunctional.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474  PR #3011
+    // https://github.com/mixxxdj/mixxx/issues/10005  PR #3011
     if (!osShortcut.isEmpty() && !shortcuts.contains(osShortcut)) {
         shortcuts << osShortcut;
     }
@@ -324,6 +387,9 @@ void WMainMenuBar::initialize() {
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pOptionsMenu);
+#endif
 
 #ifdef __VINYLCONTROL__
     QMenu* pVinylControlMenu = new QMenu(tr("&Vinyl Control"), this);
@@ -443,6 +509,9 @@ void WMainMenuBar::initialize() {
     // DEVELOPER MENU
     if (CmdlineArgs::Instance().getDeveloper()) {
         QMenu* pDeveloperMenu = new QMenu(tr("&Developer"), this);
+#ifndef __APPLE__
+        connectMenuToSlotShowMenuBar(pDeveloperMenu);
+#endif
 
         QString reloadSkinTitle = tr("&Reload Skin");
         QString reloadSkinText = tr("Reload the skin");
@@ -544,6 +613,9 @@ void WMainMenuBar::initialize() {
 
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pHelpMenu);
+#endif
 
     QString externalLinkSuffix;
 #ifndef __APPLE__
@@ -553,30 +625,15 @@ void WMainMenuBar::initialize() {
     externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
 #endif
 
-    //: menu title
-    QString keywheelTitle = tr("Show Keywheel");
-    //: tooltip text
-    QString keywheelText = tr("Show keywheel");
-    m_pViewKeywheel = new QAction(keywheelTitle, this);
-    m_pViewKeywheel->setCheckable(true);
-    m_pViewKeywheel->setShortcut(
-            QKeySequence(m_pKbdConfig->getValue(
-                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
-                    tr("F12", "Menubar|View|Show Keywheel"))));
-    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
-    m_pViewKeywheel->setStatusTip(keywheelText);
-    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
-    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
-    pHelpMenu->addAction(m_pViewKeywheel);
-
     // Community Support
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     auto* pHelpSupport = new QAction(supportTitle, this);
     pHelpSupport->setStatusTip(supportText);
     pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
-    connect(pHelpSupport, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
+    connect(pHelpSupport, &QAction::triggered, this, [this] {
+        slotVisitUrl(QUrl(MIXXX_SUPPORT_URL));
+    });
     pHelpMenu->addAction(pHelpSupport);
 
     // User Manual
@@ -591,7 +648,7 @@ void WMainMenuBar::initialize() {
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
     connect(pHelpManual, &QAction::triggered, this, [this, manualUrl] {
-        slotVisitUrl(manualUrl.toString());
+        slotVisitUrl(manualUrl);
     });
     pHelpMenu->addAction(pHelpManual);
 
@@ -611,9 +668,22 @@ void WMainMenuBar::initialize() {
             &QAction::triggered,
             this,
             [this, keyboardShortcutsUrl] {
-                slotVisitUrl(keyboardShortcutsUrl.toString());
+                slotVisitUrl(keyboardShortcutsUrl);
             });
     pHelpMenu->addAction(pHelpKbdShortcuts);
+
+    // User Settings Directory
+    const QString& settingsDirPath = m_pConfig->getSettingsPath();
+    QString settingsDirTitle = tr("&Settings directory");
+    QString settingsDirText = tr("Open the Mixxx user settings directory.");
+    auto* pHelpSettingsDir = new QAction(settingsDirTitle, this);
+    pHelpSettingsDir->setMenuRole(QAction::NoRole);
+    pHelpSettingsDir->setStatusTip(settingsDirText);
+    pHelpSettingsDir->setWhatsThis(buildWhatsThis(settingsDirTitle, settingsDirText));
+    connect(pHelpSettingsDir, &QAction::triggered, this, [this, settingsDirPath] {
+        slotVisitUrl(QUrl::fromLocalFile(settingsDirPath));
+    });
+    pHelpMenu->addAction(pHelpSettingsDir);
 
     // Translate This Application
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
@@ -621,8 +691,9 @@ void WMainMenuBar::initialize() {
     auto* pHelpTranslation = new QAction(translateTitle, this);
     pHelpTranslation->setStatusTip(translateText);
     pHelpTranslation->setWhatsThis(buildWhatsThis(translateTitle, translateText));
-    connect(pHelpTranslation, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
+    connect(pHelpTranslation, &QAction::triggered, this, [this] {
+        slotVisitUrl(QUrl(MIXXX_TRANSLATION_URL));
+    });
     pHelpMenu->addAction(pHelpTranslation);
 
     pHelpMenu->addSeparator();
@@ -637,6 +708,32 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+
+#ifndef __APPLE__
+    // Watch focus changes to hide the menubar as soon as all menus are closed,
+    // e.g. when an action was triggered or when all menus are closed by pressing
+    // Escape or clicking anywhere else
+    connect(qApp,
+            &QApplication::focusWindowChanged,
+            this,
+            [this]() {
+                if (!isNativeMenuBar() && height() > 0 && !activeAction()) {
+                    hideMenuBar();
+                }
+            });
+    // ... and when the focus widget changes (main window or dialogs)
+    connect(qApp,
+            // This would work, too, but unfortunately this is also emitted on
+            // leaveEvent of WStarRating in the library.
+            // &QApplication::focusObjectChanged,
+            &QApplication::focusChanged,
+            this,
+            [this]() {
+                if (!isNativeMenuBar() && height() > 0 && !activeAction()) {
+                    hideMenuBar();
+                }
+            });
+#endif
 }
 
 void WMainMenuBar::onKeywheelChange(int state) {
@@ -677,8 +774,90 @@ void WMainMenuBar::onDeveloperToolsHidden() {
 }
 
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
+#ifndef __APPLE__
+    // always try to hide the menubar when we switched
+    hideMenuBar();
+#endif
     emit internalFullScreenStateChange(fullscreen);
 }
+
+#ifndef __APPLE__
+void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
+    // If a menu hotkey like Alt+F(ile) is pressed while the menubar is hidden,
+    // show the menubar and open the requested menu. See showMenuBar() for details.
+
+    // NOTE(ronso0) Test with xfwm4 and other window managers if you change this
+    // code or think you found alternative ways to toggle the menubar!
+    // In Gnome for example, when highlighting (pressed Alt only) or activating
+    // menus (Alt combos), the menubar receives focusIn events (even while it is
+    // hidden), and focusOut events respectively when closing menus. Hence we
+    // could simply show/hide the menubar in QMenuBar::focusInEvent() and focusoutEvent().
+    // However, with xfwm4 for example, menus are activated directly, i.e. the
+    // menubar doesn't receive focus change events.
+    connect(pMenu,
+            &QMenu::aboutToShow,
+            this,
+            [this]() {
+                if (!isNativeMenuBar() && height() <= 0) {
+                    showMenuBar();
+                }
+            });
+}
+
+void WMainMenuBar::slotToggleMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+
+    if (height() > 0) {
+        hideMenuBar();
+    } else {
+        showMenuBar();
+    }
+}
+
+void WMainMenuBar::showMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+    // Note: the resulting resizeEvent() calls QMenuBarPrivate::updateGeometries
+    // which resets currentAction() to nullptr. So in case the menubar is shown
+    // in response to a specific menu hotkey (Alt-F), or pressing Alt opens the
+    // first menu (File) (depends on OS / window manager), the current action
+    // will be reset to null and menus can't be switched with Left/Right keys
+    // anymore, i.e. we'd be stuck in the triggered menu.
+    // Workaround: reselect the active action after unhiding. It can be none,
+    // user-requested (hotkey) or auto-selected (first menu's first action).
+    QAction* pAct = activeAction();
+    setMinimumHeight(sizeHint().height());
+    // If there was a menu selected before, reselect that.
+    // Note: with nullptr this would be a no-op. Though, even if no menu is
+    // selected, hovering a menu would instantly open that (no click required).
+    if (pAct) {
+        setActiveAction(pAct);
+    }
+    // TODO Alternatively, activate the first menu?
+    // setActiveAction(pAct ? pAct : actions().first());
+}
+
+void WMainMenuBar::hideMenuBar() {
+    if (isNativeMenuBar()) {
+        return;
+    }
+    if (m_pConfig->getValue<bool>(ConfigKey("[Config]", "hide_menubar"), false)) {
+        // don't use setHidden(true) because Alt hotkeys wouldn't work anymore
+        setFixedHeight(0);
+    }
+}
+
+void WMainMenuBar::slotAutoHideMenuBarToggled(bool autoHide) {
+    m_pConfig->setValue(ConfigKey("[Config]", "hide_menubar"), autoHide ? 1 : 0);
+    // Just in case it was hidden after toggling the menu action
+    if (!autoHide) {
+        showMenuBar();
+    }
+}
+#endif
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
     VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {
@@ -708,8 +887,8 @@ void WMainMenuBar::slotDeveloperDebugger(bool toggle) {
                    ConfigValue(toggle ? 1 : 0));
 }
 
-void WMainMenuBar::slotVisitUrl(const QString& url) {
-    QDesktopServices::openUrl(QUrl(url));
+void WMainMenuBar::slotVisitUrl(const QUrl& url) {
+    mixxx::DesktopHelper::openUrl(url);
 }
 
 void WMainMenuBar::createVisibilityControl(QAction* pAction,
@@ -719,6 +898,14 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             &WMainMenuBar::internalOnNewSkinLoaded,
             pConnection,
             &VisibilityControlConnection::slotReconnectControl);
+#ifdef __LINUX__
+    // reconnect when menu bar was recreated after toggling fullscreen
+    // so all hotkeys and menu actions continue to work
+    connect(this,
+            &WMainMenuBar::internalFullScreenStateChange,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
+#endif
     connect(this,
             &WMainMenuBar::internalOnNewSkinAboutToLoad,
             pConnection,
@@ -727,11 +914,11 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
     int deck = 0;
-    for (QAction* pVinylControlEnabled : qAsConst(m_vinylControlEnabledActions)) {
+    for (QAction* pVinylControlEnabled : std::as_const(m_vinylControlEnabledActions)) {
         pVinylControlEnabled->setVisible(deck++ < decks);
     }
     deck = 0;
-    for (QAction* pLoadToDeck : qAsConst(m_loadToDeckActions)) {
+    for (QAction* pLoadToDeck : std::as_const(m_loadToDeckActions)) {
         pLoadToDeck->setVisible(deck++ < decks);
     }
 }

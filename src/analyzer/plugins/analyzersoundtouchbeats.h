@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "analyzer/plugins/analyzerplugin.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 namespace soundtouch {
@@ -30,7 +30,7 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
     }
 
     bool initialize(mixxx::audio::SampleRate sampleRate) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     bool finalize() override;
 
     bool supportsBeatTracking() const override {

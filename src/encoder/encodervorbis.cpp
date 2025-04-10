@@ -1,8 +1,12 @@
+#include "encoder/encodervorbis.h"
+
 #include <stdlib.h> // needed for random num gen
-#include <time.h> // needed for random num gen
+#include <time.h>   // needed for random num gen
+#include <vorbis/vorbisenc.h>
+
 #include <QtDebug>
 
-#include "encoder/encodervorbis.h"
+#include "audio/types.h"
 #include "encoder/encodercallback.h"
 
 // Automatic thresholds for switching the encoder to mono
@@ -129,25 +133,25 @@ void EncoderVorbis::writePage() {
     }
 }
 
-void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
-    float **buffer = vorbis_analysis_buffer(&m_vdsp, size);
+void EncoderVorbis::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
+    float** buffer = vorbis_analysis_buffer(&m_vdsp, static_cast<int>(bufferSize));
 
     // Deinterleave samples. We use normalized floats in the engine [-1.0, 1.0]
     // and libvorbis expects samples in the range [-1.0, 1.0] so no conversion
     // is required.
     if (m_channels == 2) {
-        for (int i = 0; i < size/2; ++i) {
+        for (std::size_t i = 0; i < bufferSize / 2; ++i) {
             buffer[0][i] = samples[i*2];
             buffer[1][i] = samples[i*2+1];
         }
     }
     else {
-        for (int i = 0; i < size/2; ++i) {
+        for (std::size_t i = 0; i < bufferSize / 2; ++i) {
             buffer[0][i] = (samples[i*2] + samples[i*2+1]) / 2.f;
         }
     }
     /** encodes audio **/
-    vorbis_analysis_wrote(&m_vdsp, size/2);
+    vorbis_analysis_wrote(&m_vdsp, static_cast<int>(bufferSize) / 2);
     /** writes the OGG page and sends it to file or stream **/
     writePage();
 }

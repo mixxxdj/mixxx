@@ -1,14 +1,16 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QMimeType>
 
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
-#include "util/sandbox.h"
 
 namespace mixxx {
 
 class FileAccess;
+class FileInfo;
 
 } // namespace mixxx
 
@@ -100,9 +102,10 @@ class SoundSourceProxy {
     /// while reading.
     static std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
     importTrackMetadataAndCoverImageFromFile(
-            mixxx::FileAccess trackFileAccess,
+            const mixxx::FileAccess& trackFileAccess,
             mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage);
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata);
 
     /// Import both track metadata and/or the cover image of the
     /// captured track object from the corresponding file.
@@ -117,7 +120,8 @@ class SoundSourceProxy {
     std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
     importTrackMetadataAndCoverImage(
             mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage) const;
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata) const;
 
     /// Controls which (metadata/coverart) and how tags are (re-)imported from
     /// audio files when creating a SoundSourceProxy.
@@ -199,6 +203,7 @@ class SoundSourceProxy {
     static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
+    FRIEND_TEST(TrackMetadataExportTest, keepWithespaceKey);
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             const SyncTrackMetadataParams& syncParams);

@@ -50,7 +50,7 @@ void MappingInfoEnumerator::loadSupportedMappings() {
     m_hidMappings.clear();
     m_bulkMappings.clear();
 
-    for (const QString& dirPath : qAsConst(m_controllerDirPaths)) {
+    for (const QString& dirPath : std::as_const(m_controllerDirPaths)) {
         QDirIterator it(dirPath);
         while (it.hasNext()) {
             it.next();

@@ -24,13 +24,13 @@ Variables:
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/waveform.xml">
+              <Template src="skins:Tango/waveform.xml">
                 <SetVariable name="chanNum">1</SetVariable>
                 <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
                 <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/waveform.xml">
+              <Template src="skins:Tango/waveform.xml">
                 <SetVariable name="chanNum">2</SetVariable>
                 <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
                 <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -42,13 +42,13 @@ Variables:
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/waveform.xml">
+              <Template src="skins:Tango/waveform.xml">
                 <SetVariable name="chanNum">3</SetVariable>
                 <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
                 <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/waveform.xml">
+              <Template src="skins:Tango/waveform.xml">
                 <SetVariable name="chanNum">4</SetVariable>
                 <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
                 <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -64,7 +64,7 @@ Variables:
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
-      <Template src="skin:../Tango/controls/button_2state_persist.xml">
+      <Template src="skins:Tango/controls/button_2state_persist.xml">
         <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
         <SetVariable name="Size">14f,22me</SetVariable>
         <SetVariable name="ConfigKey">[Tango],beatgrid_buttons</SetVariable>

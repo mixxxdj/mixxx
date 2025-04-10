@@ -1,11 +1,17 @@
 #include <gtest/gtest.h>
 
 #include <QTest>
+#include <gsl/pointers>
 
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
+#include "effects/effectsmanager.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
+#include "library/coverartcache.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
@@ -15,6 +21,9 @@
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 
 namespace {
 
@@ -26,6 +35,12 @@ void deleteTrack(Track* pTrack) {
     // no main event loop
     delete pTrack;
 };
+
+void waitForTrackToBeLoaded(Deck* pDeck) {
+    while (!pDeck->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
+        QTest::qSleep(100); // millis
+    }
+}
 
 } // namespace
 
@@ -42,7 +57,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         // but it does a lot of local disk / settings setup.
         auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
-        m_pEngine = std::make_shared<EngineMaster>(
+        m_pEngine = std::make_shared<EngineMixer>(
                 m_pConfig,
                 "[Master]",
                 m_pEffectsManager.get(),
@@ -50,7 +65,10 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 true);
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
-        m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+        m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
+
+        CoverArtCache::createInstance();
+
         m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
                 m_pSoundManager.get(),
                 m_pEffectsManager.get(),
@@ -81,6 +99,14 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 m_pRecordingManager.get());
 
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+        RubberBandWorkerPool::createInstance();
+    }
+
+    void TearDown() override {
+        CoverArtCache::destroy();
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::destroy();
+#endif
     }
 
     ~PlayerManagerTest() {
@@ -104,7 +130,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
 
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
-    std::shared_ptr<EngineMaster> m_pEngine;
+    std::shared_ptr<EngineMixer> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
     std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;
@@ -123,23 +149,34 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
-    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
-        QTest::qSleep(100); // millis
-    }
+    waitForTrackToBeLoaded(deck1);
+    // make sure eject does not trigger 'unreplace':
+    // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck1->slotEjectTrack(1.0);
 
     // Load another track.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Ejecting in an empty deck loads the last-ejected track.
     auto deck2 = m_pPlayerManager->getDeck(2);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
+    // make sure eject does not trigger 'unreplace'
+    QTest::qSleep(kUnreplaceDelay); // millis
     deck2->slotEjectTrack(2.0);
     ASSERT_NE(nullptr, deck2->getLoadedTrack());
     ASSERT_EQ(testId1, deck2->getLoadedTrack()->getId());
@@ -154,26 +191,32 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
-    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
-        QTest::qSleep(100); // millis
-    }
+    waitForTrackToBeLoaded(deck1);
 
     // Load another track, replacing the first, causing it to be unloaded.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
-    while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
-        QTest::qSleep(100); // millis
-    }
+    waitForTrackToBeLoaded(deck1);
 
     // Ejecting in an empty deck loads the last-ejected track.
     auto deck2 = m_pPlayerManager->getDeck(2);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
+    // make sure eject does not trigger 'unreplace'
+    QTest::qSleep(kUnreplaceDelay);
     deck2->slotEjectTrack(1.0);
     ASSERT_NE(nullptr, deck2->getLoadedTrack());
     ASSERT_EQ(testId1, deck2->getLoadedTrack()->getId());
@@ -181,11 +224,56 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
 
 TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     // Save an invalid trackid in playermanager.
-    auto pTrack = Track::newDummy(getTestDir().filePath(kTrackLocationTest1), TrackId(10));
+    auto pTrack = Track::newDummy(
+            getTestDir().filePath(kTrackLocationTest1), TrackId(QVariant(10)));
     ASSERT_NE(nullptr, pTrack);
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
     auto deck1 = m_pPlayerManager->getDeck(1);
     // Does nothing -- no crash.
+    // make sure eject does not trigger 'unreplace'
+    QTest::qSleep(kUnreplaceDelay);
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
+}
+
+TEST_F(PlayerManagerTest, UnReplaceTest) {
+    // Trigger eject twice within 500 ms to undo track replacement
+    auto deck1 = m_pPlayerManager->getDeck(1);
+    // Load a track
+    TrackPointer pTrack1 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest1));
+    ASSERT_NE(nullptr, pTrack1);
+    TrackId testId1 = pTrack1->getId();
+    ASSERT_TRUE(testId1.isValid());
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    m_pEngine->process(1024);
+    waitForTrackToBeLoaded(deck1);
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+
+    // Load another track.
+    TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
+    ASSERT_NE(nullptr, pTrack2);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    m_pEngine->process(1024);
+    waitForTrackToBeLoaded(deck1);
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+
+    // Eject. Make sure eject does not trigger 'unreplace':
+    // sleep for longer than 500 ms 'unreplace' period so this is not registered as double-click
+    QTest::qSleep(kUnreplaceDelay); // millis
+    deck1->slotEjectTrack(1.0);
+    ASSERT_EQ(nullptr, deck1->getLoadedTrack());
+
+    // Eject again, assume this is reached faster than 500 ms after first eject
+    deck1->slotEjectTrack(1.0);
+    // First track should be reloaded
+    ASSERT_NE(nullptr, deck1->getLoadedTrack());
+    ASSERT_EQ(testId1, deck1->getLoadedTrack()->getId());
 }

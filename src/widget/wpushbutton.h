@@ -1,27 +1,27 @@
 #pragma once
 
-#include <QFocusEvent>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QString>
 #include <QTimer>
 #include <QVector>
+#include <memory>
 
-#include "control/controlpushbutton.h"
-#include "skin/legacy/skincontext.h"
+#include "control/controlbuttonmode.h"
 #include "util/fpclassify.h"
-#include "widget/controlwidgetconnection.h"
+#include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WPushButton : public WWidget {
     Q_OBJECT
   public:
     explicit WPushButton(QWidget* pParent = nullptr);
     // Used by WPushButtonTest.
-    WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
-                ControlPushButton::ButtonMode rightButtonMode);
+    WPushButton(QWidget* pParent,
+            mixxx::control::ButtonMode leftButtonMode,
+            mixxx::control::ButtonMode rightButtonMode);
 
     Q_PROPERTY(bool pressed READ isPressed);
 
@@ -64,15 +64,16 @@ class WPushButton : public WWidget {
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
+  private slots:
+    void updateSlot();
+
   protected:
     bool event(QEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
-    void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
-  protected:
     virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget
@@ -89,10 +90,14 @@ class WPushButton : public WWidget {
             Paintable::DrawMode mode,
             double scaleFactor);
 
+    void paintOnDevice(QPaintDevice* pd, int idx);
+
     // True, if the button is currently pressed
     bool m_bPressed;
     // True, if the button is pointer is above button
     bool m_bHovered;
+    // Set true by WHotcueButton while it's being dragged
+    bool m_dragging;
 
     // Array of associated pixmaps
     int m_iNoStates;
@@ -105,8 +110,30 @@ class WPushButton : public WWidget {
     PaintablePointer m_pPixmapBack;
 
     // short click toggle button long click push button
-    ControlPushButton::ButtonMode m_leftButtonMode;
-    ControlPushButton::ButtonMode m_rightButtonMode;
+    mixxx::control::ButtonMode m_leftButtonMode;
+    mixxx::control::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
     QVector<int> m_align;
+
+    // Animates long press latching by storing the off state of the
+    // WPushButton in a pixmap and gradually (from left to right)
+    // drawing less of the off state on top of the on state, to
+    // give a visual indication that the long press latching is in
+    // progress.
+    class LongPressLatching {
+      public:
+        LongPressLatching(WPushButton* pButton);
+        void paint(QPainter* p);
+        void start();
+        void stop();
+
+      private:
+        WPushButton* m_pButton;
+        QPixmap m_preLongPressPixmap;
+        PerformanceTimer m_sinceStart;
+        QTimer m_animTimer;
+    };
+
+    // Only assigned for WPushButtons that use long press latching
+    std::unique_ptr<LongPressLatching> m_pLongPressLatching;
 };

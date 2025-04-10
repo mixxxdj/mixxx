@@ -2,13 +2,14 @@
 
 #include <QObject>
 
-#include "preferences/settingsmanager.h"
-#include "preferences/usersettings.h"
-#include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/shoutconnection.h"
+#include "preferences/broadcastsettings.h"
+#include "preferences/usersettings.h"
 
 class SoundManager;
 class ControlPushButton;
+class EngineNetworkStream;
+class SettingsManager;
 
 class BroadcastManager : public QObject {
     Q_OBJECT

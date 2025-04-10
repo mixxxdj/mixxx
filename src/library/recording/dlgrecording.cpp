@@ -1,14 +1,12 @@
 #include "library/recording/dlgrecording.h"
 
-
-#include "control/controlobject.h"
-#include "library/trackcollectionmanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "moc_dlgrecording.cpp"
+#include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
-#include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
-#include "widget/wwidget.h"
 
 DlgRecording::DlgRecording(
         WLibrary* parent,
@@ -23,10 +21,9 @@ DlgRecording::DlgRecording(
                           this,
                           pConfig,
                           pLibrary,
-                          parent->getTrackTableBackgroundColorOpacity(),
-                          true)),
+                          parent->getTrackTableBackgroundColorOpacity())),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
-          m_proxyModel(&m_browseModel),
+          m_proxyModel(&m_browseModel, true),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
@@ -124,30 +121,6 @@ void DlgRecording::onSearch(const QString& text) {
 
 void DlgRecording::slotRestoreSearch() {
     emit restoreSearch(currentSearch());
-}
-
-void DlgRecording::activateSelectedTrack() {
-    m_pTrackTableView->activateSelectedTrack();
-}
-
-void DlgRecording::slotAddToAutoDJBottom() {
-    m_pTrackTableView->slotAddToAutoDJBottom();
-}
-
-void DlgRecording::slotAddToAutoDJTop() {
-    m_pTrackTableView->slotAddToAutoDJTop();
-}
-
-void DlgRecording::slotAddToAutoDJReplace() {
-    m_pTrackTableView->slotAddToAutoDJReplace();
-}
-
-void DlgRecording::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgRecording::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
 }
 
 void DlgRecording::slotRecButtonClicked(bool toggle) {

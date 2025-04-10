@@ -2,15 +2,13 @@
 
 #include <QAtomicInt>
 #include <QThread>
+#include <optional>
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
-#include "util/duration.h"
 
 struct libusb_device_handle;
 struct libusb_context;
-struct libusb_device_descriptor;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
@@ -44,14 +42,45 @@ class BulkController : public Controller {
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::USB_BULK_TRANSFER;
+    }
+
+    QString getVendorString() const override {
+        return m_manufacturer;
+    }
+    QString getProductString() const override {
+        return m_product;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return m_vendorId;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return m_productId;
+    }
+    QString getSerialNumber() const override {
+        return m_sUID;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_interfaceNumber;
+    }
+
     bool isMappable() const override {
-        if (!m_pMapping) {
-            return false;
-        }
-        return m_pMapping->isMappable();
+        // On raw USB transfer level, there isn't any information about mappable controls
+        return false;
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
@@ -59,14 +88,13 @@ class BulkController : public Controller {
   protected:
     void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
-    int open() override;
+  private:
+    int open(const QString& resourcePath) override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
     bool matchProductInfo(const ProductInfo& product);
 
@@ -75,14 +103,16 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short vendor_id;
-    unsigned short product_id;
-    unsigned char in_epaddr;
-    unsigned char out_epaddr;
-    QString manufacturer;
-    QString product;
+    std::uint16_t m_vendorId;
+    std::uint16_t m_productId;
+    std::uint8_t m_inEndpointAddr;
+    std::uint8_t m_outEndpointAddr;
+    std::optional<std::uint8_t> m_interfaceNumber;
+
+    QString m_manufacturer;
+    QString m_product;
 
     QString m_sUID;
     BulkReader* m_pReader;
-    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

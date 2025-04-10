@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QDomDocument>
-#include <QEvent>
 #include <QSvgWidget>
 
 #include "dialog/ui_dlgkeywheel.h"
@@ -27,7 +26,6 @@ class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {
     bool isHiddenNotation(KeyUtils::KeyNotation notation);
     KeyUtils::KeyNotation m_notation;
     QDomDocument m_domDocument;
-    QSvgWidget* m_wheel;
     const UserSettingsPointer m_pConfig;
     bool m_resized{false};
 };

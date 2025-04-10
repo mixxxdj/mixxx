@@ -1,4 +1,4 @@
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import "Theme"
 
@@ -21,9 +21,9 @@ Item {
             }
             onFocusWidgetChanged: {
                 switch (focusWidget) {
-                case FocusedWidgetControl.WidgetKind.LibraryView:
-                    listView.forceActiveFocus();
-                    break;
+                    case FocusedWidgetControl.WidgetKind.LibraryView:
+                        listView.forceActiveFocus();
+                        break;
                 }
             }
         }
@@ -71,10 +71,10 @@ Item {
             model: Mixxx.Library.model
             Keys.onPressed: (event) => {
                 switch (event.key) {
-                case Qt.Key_Enter:
-                case Qt.Key_Return:
-                    listView.loadSelectedTrackIntoNextAvailableDeck(false);
-                    break;
+                    case Qt.Key_Enter:
+                        case Qt.Key_Return:
+                            listView.loadSelectedTrackIntoNextAvailableDeck(false);
+                        break;
                 }
             }
 
@@ -98,9 +98,7 @@ Item {
                         ColorAnimation {
                             duration: listView.highlightMoveDuration
                         }
-
                     }
-
                 }
 
                 Image {
@@ -125,12 +123,11 @@ Item {
                         listView.forceActiveFocus();
                         listView.currentIndex = itemDlgt.index;
                         parent.grabToImage((result) => {
-                            dragItem.Drag.imageSource = result.url;
+                                dragItem.Drag.imageSource = result.url;
                         });
                     }
                     onDoubleClicked: listView.loadSelectedTrackIntoNextAvailableDeck(false)
                 }
-
             }
 
             highlight: Rectangle {
@@ -138,9 +135,6 @@ Item {
                 border.width: 1
                 color: "transparent"
             }
-
         }
-
     }
-
 }

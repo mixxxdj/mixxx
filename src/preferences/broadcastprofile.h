@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QString>
 
-#include "preferences/usersettings.h"
-
 class BroadcastProfile;
 typedef QSharedPointer<BroadcastProfile> BroadcastProfilePtr;
 Q_DECLARE_METATYPE(BroadcastProfilePtr)

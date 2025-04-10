@@ -2,25 +2,26 @@
 
 #include <QAtomicInteger>
 #include <QList>
-#include <QQueue>
 #include <QSet>
 #include <QSharedPointer>
 #include <QThread>
-#include <QWaitCondition>
 #include <memory>
 
-#include "library/export/engineprimeexportrequest.h"
-#include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateid.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "track/trackid.h"
 #include "track/trackref.h"
 
+class TrackCollectionManager;
+class Waveform;
+
 namespace mixxx {
 
-/// The Engine Prime export job performs the work of exporting the Mixxx
-/// library to an external Engine Prime (also known as "Engine Library")
+struct EnginePrimeExportRequest;
+
+/// The Engine DJ export job performs the work of exporting the Mixxx
+/// library to an external Engine DJ (also known as "Engine Library")
 /// database, using the libdjinterop library, in accordance with the export
 /// request with which it is constructed.
 class EnginePrimeExportJob : public QThread {
@@ -30,6 +31,8 @@ class EnginePrimeExportJob : public QThread {
             QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
             QSharedPointer<EnginePrimeExportRequest> pRequest);
+
+    ~EnginePrimeExportJob() override;
 
     /// Run the export job.
     void run() override;

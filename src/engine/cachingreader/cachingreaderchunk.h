@@ -15,25 +15,32 @@
 // and the worker.
 class CachingReaderChunk {
 public:
-    static const mixxx::audio::ChannelCount kChannels;
-    static const SINT kFrames;
-    static const SINT kSamples;
+  // One chunk should contain 1/2 - 1/4th of a second of audio.
+  // 8192 frames contain about 170 ms of audio at 48 kHz, which
+  // is well above (hopefully) the latencies people are seeing.
+  // At 10 ms latency one chunk is enough for 17 callbacks.
+  // Additionally the chunk size should be a power of 2 for
+  // easier memory alignment.
+  // TODO(XXX): The optimum value of the "constant" kFrames depends
+  // on the properties of the AudioSource as the remarks above suggest!
+  static constexpr SINT kFrames = 8192; // ~ 170 ms at 48 kHz
 
-    // Converts frames to samples
-    inline static SINT frames2samples(SINT frames) {
-        return frames * kChannels;
-    }
+  // Converts frames to samples
+  static constexpr SINT frames2samples(
+          SINT frames, mixxx::audio::ChannelCount channelCount) noexcept {
+      return frames * channelCount;
+  }
     // Converts samples to frames
-    inline static SINT samples2frames(SINT samples) {
-        DEBUG_ASSERT(0 == (samples % kChannels));
-        return samples / kChannels;
-    }
+  static SINT samples2frames(SINT samples, mixxx::audio::ChannelCount channelCount) {
+      DEBUG_ASSERT(0 == (samples % channelCount));
+      return samples / channelCount;
+  }
 
     // Returns the corresponding chunk index for a frame index
-    inline static SINT indexForFrame(
+    static SINT indexForFrame(
             /*const mixxx::AudioSourcePointer& pAudioSource,*/
             SINT frameIndex) {
-        //DEBUG_ASSERT(pAudioSource->frameIndexRange().contains(frameIndex));
+        // DEBUG_ASSERT(pAudioSource->frameIndexRange().contains(frameIndex));
         const SINT frameIndexOffset = frameIndex /*- pAudioSource->frameIndexMin()*/;
         return frameIndexOffset / kFrames;
     }
@@ -42,7 +49,7 @@ public:
     CachingReaderChunk(const CachingReaderChunk&) = delete;
     CachingReaderChunk(CachingReaderChunk&&) = delete;
 
-    SINT getIndex() const {
+    SINT getIndex() const noexcept {
         return m_index;
     }
 
@@ -56,22 +63,23 @@ public:
             const mixxx::AudioSourcePointer& pAudioSource,
             mixxx::SampleBuffer::WritableSlice tempOutputBuffer);
 
-    mixxx::IndexRange readBufferedSampleFrames(
-            CSAMPLE* sampleBuffer,
+    mixxx::IndexRange readBufferedSampleFrames(CSAMPLE* sampleBuffer,
+            mixxx::audio::ChannelCount channelCount,
             const mixxx::IndexRange& frameIndexRange) const;
     mixxx::IndexRange readBufferedSampleFramesReverse(
             CSAMPLE* reverseSampleBuffer,
+            mixxx::audio::ChannelCount channelCount,
             const mixxx::IndexRange& frameIndexRange) const;
 
-protected:
+  protected:
     explicit CachingReaderChunk(
             mixxx::SampleBuffer::WritableSlice sampleBuffer);
     virtual ~CachingReaderChunk() = default;
 
     void init(SINT index);
 
-private:
-    SINT frameIndexOffset() const {
+  private:
+    SINT frameIndexOffset() const noexcept {
         return m_index * kFrames;
     }
 
@@ -88,22 +96,22 @@ private:
 // the worker thread is in control.
 class CachingReaderChunkForOwner: public CachingReaderChunk {
 public:
-    explicit CachingReaderChunkForOwner(
-            mixxx::SampleBuffer::WritableSlice sampleBuffer);
-    ~CachingReaderChunkForOwner() override = default;
+  explicit CachingReaderChunkForOwner(
+          mixxx::SampleBuffer::WritableSlice sampleBuffer);
+  ~CachingReaderChunkForOwner() override = default;
 
-    void init(SINT index);
-    void free();
+  void init(SINT index);
+  void free();
 
-    enum State {
-        FREE,
-        READY,
-        READ_PENDING
-    };
+  enum State {
+      FREE,
+      READY,
+      READ_PENDING
+  };
 
-    State getState() const {
+  State getState() const noexcept {
         return m_state;
-    }
+  }
 
     // The state is controlled by the cache as the owner of each chunk!
     void giveToWorker() {
@@ -136,8 +144,8 @@ public:
             CachingReaderChunkForOwner** ppTail);
 
 private:
-    State m_state;
+  State m_state;
 
-    CachingReaderChunkForOwner* m_pPrev; // previous item in double-linked list
-    CachingReaderChunkForOwner* m_pNext; // next item in double-linked list
+  CachingReaderChunkForOwner* m_pPrev; // previous item in double-linked list
+  CachingReaderChunkForOwner* m_pNext; // next item in double-linked list
 };

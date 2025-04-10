@@ -5,5 +5,5 @@ classname MixxxPlugin
 typeinfo mixxx-lib.qmltypes
 import QtQuick
 prefer :/mixxx.org/imports/Mixxx/
-MathUtils 0.0 res/qml/Mixxx/MathUtils.mjs
-PlayerDropArea 0.0 res/qml/Mixxx/PlayerDropArea.qml
+MathUtils 1.0 res/qml/Mixxx/MathUtils.mjs
+PlayerDropArea 1.0 res/qml/Mixxx/PlayerDropArea.qml

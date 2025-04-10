@@ -2,13 +2,10 @@
 
 #include <QObject>
 #include <QString>
-#include <QVariant>
 
-#include "control/controlobject.h"
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
 
-class ControlObject;
 class ControlPushButton;
 
 /// Refer to EffectParameterSlotBase for documentation
@@ -16,7 +13,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
     EffectButtonParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
-    virtual ~EffectButtonParameterSlot();
+    ~EffectButtonParameterSlot() override;
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
         return QString("button_parameter%1").arg(iParameterSlotNumber + 1);
@@ -34,7 +31,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     }
 
     // Control exposed to the rest of Mixxx
-    ControlPushButton* m_pControlValue;
+    std::unique_ptr<ControlPushButton> m_pControlValue;
 
     DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);
 };

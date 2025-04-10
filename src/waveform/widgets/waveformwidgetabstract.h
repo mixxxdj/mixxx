@@ -1,17 +1,19 @@
 #pragma once
 
 #include <QString>
-#include <QWidget>
 
 #include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/widgets/waveformwidgetcategory.h"
 #include "waveformwidgettype.h"
 
 class VSyncThread;
+class QWidget;
+class WGLWidget;
 
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we
-// can't do it here because QWidget and QGLWidget are both QWidgets so they
+// can't do it here because QWidget and WGLWidget are both QWidgets so they
 // already have a common QWidget base class (ambiguous polymorphism)
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
@@ -24,6 +26,10 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     bool isValid() const { return (m_widget && m_initSuccess); }
     QWidget* getWidget() { return m_widget; }
+
+    virtual WGLWidget* getGLWidget() {
+        return nullptr;
+    }
 
     void hold();
     void release();

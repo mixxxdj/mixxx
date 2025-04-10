@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QMetaMethod>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QUrl>
 
 #include "util/assert.h"
 #include "util/qt.h"
+
+class QNetworkAccessManager;
 
 namespace mixxx {
 
@@ -59,15 +59,20 @@ class NetworkTask : public QObject {
 
   public:
     static constexpr int kNoTimeout = 0;
+    static constexpr int kNoStartDelay = 0;
 
     /// Start a new task by sending a network request.
     ///
     /// timeoutMillis <= 0: No timeout (unlimited)
-    /// timeoutMillis > 0: Implicitly aborted after timeout expired
+    /// timeoutMillis > 0:  Implicitly aborted after timeout expired
+    ///
+    /// delayMillis <= 0: Send request immediately
+    /// delayMillis > 0:  Send request after a delay, e.g. for rate limiting subsequent requests
     ///
     /// This function is thread-safe and could be invoked from any thread.
     void invokeStart(
-            int timeoutMillis = kNoTimeout);
+            int timeoutMillis = kNoTimeout,
+            int delayMillis = kNoStartDelay);
 
     /// Cancel the task by aborting the pending network request.
     ///
@@ -75,8 +80,11 @@ class NetworkTask : public QObject {
     void invokeAbort();
 
   public slots:
+    /// See also: invokeStart()
     virtual void slotStart(
-            int timeoutMillis) = 0;
+            int timeoutMillis = kNoTimeout,
+            int delayMillis = kNoStartDelay) = 0;
+    /// See also: invokeAbort()
     virtual void slotAbort() = 0;
 
   signals:

@@ -23,7 +23,6 @@ Item {
             width: root.width / 2
             unitNumber: 2
         }
-
     }
 
     Skin.SectionBackground {
@@ -39,5 +38,4 @@ Item {
         anchors.left: parent.horizontalCenter
         anchors.right: parent.right
     }
-
 }

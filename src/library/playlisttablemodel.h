@@ -1,16 +1,19 @@
 #pragma once
 
-#include "library/basesqltablemodel.h"
 #include "library/trackset/tracksettablemodel.h"
+#include "util/duration.h"
 
 class PlaylistTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:
-    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool keepDeletedTracks = false);
+    PlaylistTableModel(QObject* parent,
+            TrackCollectionManager* pTrackCollectionManager,
+            const char* settingsNamespace,
+            bool keepHiddenTracks = false);
     ~PlaylistTableModel() final = default;
 
-    void setTableModel(int playlistId = -1);
+    void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
@@ -25,8 +28,14 @@ class PlaylistTableModel final : public TrackSetTableModel {
     /// This function should only be used by AUTODJ
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    int addTracksWithTrackIds(const QModelIndex& index,
+            const QList<TrackId>& trackIds,
+            int* pOutInsertionPos) final;
     bool isLocked() final;
+
+    /// Get the total duration of all tracks referenced by the given model indices
+    mixxx::Duration getTotalDuration(const QModelIndexList& indices);
+    const QList<int> getSelectedPositions(const QModelIndexList& indices) const override;
 
     Capabilities getCapabilities() const final;
 
@@ -35,9 +44,13 @@ class PlaylistTableModel final : public TrackSetTableModel {
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
 
+  signals:
+    void firstTrackChanged();
+
   private:
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
-    bool m_keepDeletedTracks;
+    bool m_keepHiddenTracks;
+    QHash<int, QString> m_searchTexts;
 };

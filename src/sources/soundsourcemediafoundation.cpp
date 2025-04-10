@@ -67,6 +67,39 @@ SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl
     return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
 }
 
+QString SoundSourceProviderMediaFoundation::getVersionString() const {
+    HMODULE mfModule = GetModuleHandle(L"mfplat.dll");
+    VERIFY_OR_DEBUG_ASSERT(mfModule) {
+        return QString();
+    }
+    wchar_t dllPath[MAX_PATH];
+    DWORD pathLength = GetModuleFileName(mfModule, dllPath, MAX_PATH);
+    DWORD versionInfoSize = GetFileVersionInfoSize(dllPath, nullptr);
+    VERIFY_OR_DEBUG_ASSERT(versionInfoSize > 0) {
+        qWarning() << "failed to read" << dllPath << "error:" << GetLastError();
+        return QString();
+    }
+    QVarLengthArray<BYTE> info(static_cast<int>(versionInfoSize));
+    if (GetFileVersionInfo(dllPath, 0, versionInfoSize, info.data())) {
+        UINT size = 0;
+        VS_FIXEDFILEINFO* pVerInfo = nullptr;
+        if (VerQueryValue(info.data(), L"\\", reinterpret_cast<LPVOID*>(&pVerInfo), &size) &&
+                pVerInfo != nullptr &&
+                size >= sizeof(VS_FIXEDFILEINFO)) {
+            return QStringLiteral("%1.%2.%3.%4")
+                    .arg(QString::number(HIWORD(pVerInfo->dwProductVersionMS)),
+                            QString::number(
+                                    LOWORD(pVerInfo->dwProductVersionMS)),
+                            QString::number(
+                                    HIWORD(pVerInfo->dwProductVersionLS)),
+                            QString::number(
+                                    LOWORD(pVerInfo->dwProductVersionLS)));
+        }
+    }
+    qWarning() << "failed to read version from" << dllPath << "error:" << GetLastError();
+    return QString();
+}
+
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSource(url),
           m_hrCoInitialize(E_FAIL),
@@ -372,7 +405,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
         // TODO: Fix debug assertion in else arm. It has been commented
         // out deliberately to prevent crashes in debug builds.
-        // https://bugs.launchpad.net/mixxx/+bug/1899242
+        // https://github.com/mixxxdj/mixxx/issues/10160
         if (m_currentFrameIndex == kUnknownFrameIndex) {
             // Unknown position after seeking
             m_currentFrameIndex = readerFrameIndex;
@@ -620,7 +653,8 @@ bool configureMediaType(
     }
     kLogger.debug() << "Number of channels in input stream" << numChannels;
     if (params.getSignalInfo().getChannelCount().isValid()) {
-        numChannels = params.getSignalInfo().getChannelCount();
+        numChannels = std::min(params.getSignalInfo().getChannelCount(),
+                mixxx::kMaxEngineChannelInputCount);
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {

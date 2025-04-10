@@ -30,7 +30,7 @@ void WEffectParameterBase::parameterUpdated() {
         } else {
             setText(m_pEffectParameterSlot->name());
         }
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 m_pEffectParameterSlot->name(),
                 m_pEffectParameterSlot->description()));
     } else {

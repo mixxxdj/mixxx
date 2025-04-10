@@ -1,7 +1,5 @@
 #include "track/serato/beatgrid.h"
 
-#include <QtEndian>
-
 #include "util/logger.h"
 
 namespace {
@@ -176,7 +174,7 @@ bool SeratoBeatGrid::parse(SeratoBeatGrid* seratoBeatGrid,
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoBeatGrid, data);
     case taglib::FileType::MP4:
@@ -365,7 +363,7 @@ bool SeratoBeatGrid::parseBase64Encoded(
 
 QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
@@ -458,7 +456,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         }
     }
 
-    nonTerminalMarkers.reserve(markers.size());
+    nonTerminalMarkers.reserve(static_cast<int>(markers.size()));
     std::transform(markers.cbegin(),
             markers.cend(),
             std::back_inserter(nonTerminalMarkers),

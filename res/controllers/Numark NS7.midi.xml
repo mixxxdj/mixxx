@@ -561,7 +561,7 @@
 			</output>
 			<output>
 			    <group>[Master]</group>
-			    <key>VuMeter</key>
+			    <key>vu_meter</key>
 			    <status>0xB0</status>
 			    <midino>0x36</midino>
 			</output>

@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QtDebug>
 
+#include "errordialoghandler.h"
+#include "library/basesqltablemodel.h"
 #include "library/parser.h"
 
 namespace {
@@ -41,29 +43,46 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
 
         QList<QList<QString>> tokens = tokenize(bytes, ',');
 
-        // detect Location column
-        int locationColumnIndex = -1;
-        if (tokens.size()) {
-            for (int i = 0; i < tokens[0].size(); ++i) {
-                if (tokens[0][i] == QObject::tr("Location")) {
-                    locationColumnIndex = i;
-                    break;
-                }
+        const auto detect_location_column =
+                [&](const auto& tokens_list,
+                        auto predicate) -> std::optional<std::size_t> {
+            const auto it = std::find_if(std::begin(tokens_list), std::end(tokens_list), predicate);
+            return (it != std::end(tokens_list))
+                    ? static_cast<std::size_t>(std::distance(std::begin(tokens_list), it))
+                    : std::optional<std::size_t>{};
+        };
+        if (!tokens.isEmpty()) {
+            std::optional<std::size_t> locationColumnIndex = detect_location_column(
+                    tokens[0],
+                    [&](auto i) { return i == QObject::tr("Location"); });
+            if ((!locationColumnIndex.has_value()) && tokens.size() > 1) {
+                // Last resort, find column with valid path in first row
+                // This happens in case of csv files in a different language,
+                // where the column name is not "Location" If the first row
+                // contains a valid path separator, we assume this is the location column.
+                // - Linux & macOS: Only / is a valid path separator
+                // - Windows: / and \ are valid path separators
+                // This is independent of the existence of the file referred in
+                // the first row, as it's only used for the column detection,
+                // and other rows might contain paths to existing files
+                locationColumnIndex = detect_location_column(tokens[1],
+                        [&](auto i) {
+#ifdef Q_OS_WIN
+                            return (i.contains(QChar('\\')) || i.contains(QChar('/')));
+                        });
+#else
+                            return i.contains(QChar('/'));
+                        });
+#endif
             }
-            if (locationColumnIndex < 0 && tokens.size() > 1) {
-                // Last resort, find column with path separators
-                // This happens in case of csv files in a different language
-                for (int i = 0; i < tokens[1].size(); ++i) {
-                    if (tokens[1][i].contains(QDir::separator())) {
-                        locationColumnIndex = i;
-                        break;
-                    }
-                }
-            }
-            if (locationColumnIndex >= 0) {
+            if (locationColumnIndex.has_value()) {
                 for (int row = 1; row < tokens.size(); ++row) {
-                    if (locationColumnIndex < tokens[row].size()) {
-                        locations.append(tokens[row][locationColumnIndex]);
+                    if (locationColumnIndex.has_value() &&
+                            locationColumnIndex.value() <
+                                    static_cast<std::size_t>(
+                                            tokens[row].size())) {
+                        locations.append(tokens[row][static_cast<int>(
+                                locationColumnIndex.value())]);
                     }
                 }
             } else {
@@ -73,6 +92,11 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
         }
         file.close();
     }
+
+    qDebug() << "ParserCsv::parse() failed"
+             << playlistFile
+             << file.errorString();
+
     return locations;
 }
 
@@ -133,9 +157,13 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(nullptr,
-                QObject::tr("Playlist Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str);
+        ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
+        ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
+        props->setDetails(file.errorString());
+        pDialogHandler->requestErrorDialog(props);
         return false;
     }
     //Base folder of file
@@ -224,7 +252,7 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
                 QObject::tr("Readable text Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str);
+                QObject::tr("Could not create file") + " " + file_str + "\n" + file.errorString());
         return false;
     }
 

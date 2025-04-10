@@ -5,7 +5,7 @@
 
 #include "effects/effectchain.h"
 #include "effects/effectslot.h"
-#include "qml/qmleffectmanifestparametersmodel.h"
+#include "moc_qmleffectslotproxy.cpp"
 
 namespace mixxx {
 namespace qml {

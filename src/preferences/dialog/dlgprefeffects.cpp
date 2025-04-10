@@ -1,14 +1,19 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include <QDropEvent>
+#include <QFocusEvent>
 #include <QMimeData>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectsbackend.h"
 #include "effects/effectsmanager.h"
+#include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/visibleeffectslist.h"
 #include "moc_dlgprefeffects.cpp"
 #include "preferences/effectchainpresetlistmodel.h"
+#include "preferences/effectmanifesttablemodel.h"
+
+class EffectsManager;
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -31,6 +36,17 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
             hiddenEffectsTableView, m_pBackendManager);
     hiddenEffectsTableView->setModel(m_pHiddenEffectsModel);
     setupManifestTableView(hiddenEffectsTableView);
+
+    updateHideUnhideButtons();
+    // TODO Use only one button, set text/icon depending on focused list view?
+    connect(hideButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefEffects::slotHideUnhideEffect);
+    connect(unhideButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefEffects::slotHideUnhideEffect);
 
     setupChainListView(chainListView);
     setupChainListView(quickEffectListView);
@@ -86,9 +102,9 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
     //TODO: prevent drops of duplicate items
     pListView->setDefaultDropAction(Qt::CopyAction);
     connect(pListView->selectionModel(),
-            &QItemSelectionModel::currentRowChanged,
+            &QItemSelectionModel::selectionChanged,
             this,
-            &DlgPrefEffects::slotChainPresetSelected);
+            &DlgPrefEffects::slotChainPresetSelectionChanged);
     pListView->installEventFilter(this);
 }
 
@@ -108,9 +124,11 @@ void DlgPrefEffects::slotUpdate() {
         hiddenEffects.removeAll(pManifest);
     }
     m_pHiddenEffectsModel->setList(hiddenEffects);
+    updateHideUnhideButtons();
 
     // No chain preset is selected when the preferences are opened
-    clearChainInfoDisableButtons();
+    clearChainInfo();
+    updateChainPresetButtons(0);
 
     loadChainPresetLists();
 
@@ -129,7 +147,7 @@ void DlgPrefEffects::slotApply() {
 }
 
 void DlgPrefEffects::saveChainPresetLists() {
-    auto pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
+    auto* pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
     m_pChainPresetManager->setPresetOrder(pModel->stringList());
 
     pModel = dynamic_cast<EffectChainPresetListModel*>(quickEffectListView->model());
@@ -151,25 +169,51 @@ void DlgPrefEffects::clearEffectInfo() {
     effectType->clear();
 }
 
-void DlgPrefEffects::clearChainInfoDisableButtons() {
+void DlgPrefEffects::clearChainInfo() {
     for (int i = 0; i < m_effectsLabels.size(); ++i) {
         m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
     }
-    chainPresetExportButton->setEnabled(false);
-    chainPresetRenameButton->setEnabled(false);
-    chainPresetDeleteButton->setEnabled(false);
+}
+
+void DlgPrefEffects::updateChainPresetButtons(int selectedIndices) {
+    // Allow Delete and Export of multiple presets
+    chainPresetDeleteButton->setEnabled(selectedIndices > 0);
+    chainPresetExportButton->setEnabled(selectedIndices > 0);
+    // Enable Rename only for one preset
+    chainPresetRenameButton->setEnabled(selectedIndices == 1);
+}
+
+void DlgPrefEffects::updateHideUnhideButtons(const QModelIndex& selected) {
+    if (!selected.isValid() || m_pFocusedEffectList == nullptr) {
+        hideButton->setEnabled(false);
+        unhideButton->setEnabled(false);
+        return;
+    }
+    bool enableHide = m_pFocusedEffectList == visibleEffectsTableView;
+    hideButton->setEnabled(enableHide);
+    unhideButton->setEnabled(!enableHide);
 }
 
 void DlgPrefEffects::loadChainPresetLists() {
     QStringList chainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
+        // Don't show the empty '---' preset.
+        // After pushing the changed preferences list back to the preset manager
+        // it is re-added to the base list.
+        if (pChainPreset->name() == kNoEffectString) {
+            continue;
+        }
         chainPresetNames << pChainPreset->name();
     }
-    auto pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
+    auto* pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
     pModel->setStringList(chainPresetNames);
 
     QStringList quickEffectChainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getQuickEffectPresetsSorted()) {
+        // Same here, don't show the empty '---' preset.
+        if (pChainPreset->name() == kNoEffectString) {
+            continue;
+        }
         quickEffectChainPresetNames << pChainPreset->name();
     }
     pModel = dynamic_cast<EffectChainPresetListModel*>(quickEffectListView->model());
@@ -181,9 +225,10 @@ void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
     // in eventFilter()
     if (!selected.isValid()) {
         clearEffectInfo();
+        updateHideUnhideButtons();
         return;
     }
-    auto pModel = static_cast<const EffectManifestTableModel*>(selected.model());
+    const auto* pModel = static_cast<const EffectManifestTableModel*>(selected.model());
     VERIFY_OR_DEBUG_ASSERT(pModel) {
         return;
     }
@@ -197,51 +242,99 @@ void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
     effectDescription->setText(pManifest->description());
     effectVersion->setText(pManifest->version());
     effectType->setText(EffectsBackend::translatedBackendName(pManifest->backendType()));
+    updateHideUnhideButtons(selected);
 }
 
-void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
+void DlgPrefEffects::slotHideUnhideEffect() {
+    auto* pSourceList = m_pFocusedEffectList;
+    auto* pTargetList = unfocusedEffectList();
+    VERIFY_OR_DEBUG_ASSERT(pSourceList && pTargetList) {
+        return;
+    }
+    auto* pSelectionModel = pSourceList->selectionModel();
+    if (!pSelectionModel || pSelectionModel->selectedRows().size() != 1) {
+        return;
+    }
+    auto* pSourceModel = static_cast<EffectManifestTableModel*>(pSourceList->model());
+    VERIFY_OR_DEBUG_ASSERT(pSourceModel) {
+        return;
+    }
+    auto* pTargetModel = static_cast<EffectManifestTableModel*>(pTargetList->model());
+    VERIFY_OR_DEBUG_ASSERT(pTargetModel) {
+        return;
+    }
+    QModelIndex selIdx = pSelectionModel->selectedRows().first();
+    EffectManifestPointer pManifest = pSourceModel->getList().at(selIdx.row());
+    VERIFY_OR_DEBUG_ASSERT(pManifest) {
+        return;
+    }
+
+    // We emulate a drag drop to move the effect
+    QMimeData* mimeData = new QMimeData;
+    mimeData->setText(pManifest->uniqueId());
+    // Append the selected effect to the target list
+    if (!pTargetModel->dropMimeData(mimeData)) {
+        return;
+    }
+    // Note the added item so we can remove it if necessary
+    QModelIndex pMovedEffect = pTargetModel->index(pTargetModel->rowCount() - 1, 0);
+    DEBUG_ASSERT(pMovedEffect.isValid());
+
+    if (!pSourceModel->removeRows(selIdx.row(), 1, selIdx.parent())) {
+        // If removing failed, undo add to target list
+        pTargetModel->removeRows(pMovedEffect.row(), 1, pMovedEffect.parent());
+        return;
+    }
+    // Make sure the Type column is stretched to accommodate "Built-in" in case
+    // the view was last updated with LV2 effects only.
+    pTargetList->resizeColumnToContents(0);
+}
+
+void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selected) {
+    Q_UNUSED(selected);
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
+    auto* pSelModel = m_pFocusedChainList->selectionModel();
+    auto selIndices = pSelModel->selectedIndexes();
+
+    updateChainPresetButtons(selIndices.count());
+
     // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
     // in eventFilter()
-    if (!selected.isValid() ||
-            m_pFocusedChainList->selectionModel()->selectedRows(0).count() > 1) {
-        clearChainInfoDisableButtons();
+    if (selIndices.count() != 1) {
+        clearChainInfo();
         return;
     }
 
-    QString chainPresetName = selected.model()->data(selected).toString();
+    QString chainPresetName = selIndices.first().data().toString();
     EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(chainPresetName);
     if (pChainPreset == nullptr || pChainPreset->isEmpty()) {
         return;
     }
 
     for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        EffectManifestPointer pManifest;
         if (i < pChainPreset->effectPresets().size()) {
             EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
             if (!pEffectPreset->isEmpty()) {
-                QString displayName =
-                        m_pBackendManager->getDisplayNameForEffectPreset(
-                                pEffectPreset);
-                // Code uses 0-indexed numbers; users see 1 indexed numbers
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
-            } else {
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
+                pManifest = m_pBackendManager->getManifest(pEffectPreset);
             }
+        }
+        if (pManifest) {
+            QString displayName = pManifest->name();
+            // Code uses 0-indexed numbers; users see 1 indexed numbers
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
         } else {
             m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
         }
     }
-
-    chainPresetExportButton->setEnabled(true);
-    chainPresetRenameButton->setEnabled(true);
-    chainPresetDeleteButton->setEnabled(true);
 }
 
 void DlgPrefEffects::slotImportPreset() {
-    m_pChainPresetManager->importPreset();
-    loadChainPresetLists();
+    if (m_pChainPresetManager->importPreset()) {
+        loadChainPresetLists();
+    }
 }
 
 void DlgPrefEffects::slotExportPreset() {
@@ -260,12 +353,17 @@ void DlgPrefEffects::slotRenamePreset() {
         return;
     }
     saveChainPresetLists();
+    bool presetsRenamed = false;
     const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
     for (const auto& index : selectedIndices) {
         const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
-        m_pChainPresetManager->renamePreset(selectedPresetName);
+        if (m_pChainPresetManager->renamePreset(selectedPresetName)) {
+            presetsRenamed = true;
+        }
     }
-    loadChainPresetLists();
+    if (presetsRenamed) {
+        loadChainPresetLists();
+    }
 }
 
 void DlgPrefEffects::slotDeletePreset() {
@@ -275,7 +373,7 @@ void DlgPrefEffects::slotDeletePreset() {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
-    auto pFocusedModel = dynamic_cast<EffectChainPresetListModel*>(
+    auto* pFocusedModel = dynamic_cast<EffectChainPresetListModel*>(
             m_pFocusedChainList->model());
     QStringList focusedChainStringList = pFocusedModel->stringList();
 
@@ -283,10 +381,11 @@ void DlgPrefEffects::slotDeletePreset() {
     VERIFY_OR_DEBUG_ASSERT(pUnfocusedChainList) {
         return;
     }
-    auto pUnfocusedModel = dynamic_cast<EffectChainPresetListModel*>(
+    auto* pUnfocusedModel = dynamic_cast<EffectChainPresetListModel*>(
             pUnfocusedChainList->model());
     auto unfocusedChainStringList = pUnfocusedModel->stringList();
 
+    bool updateAndSavePresetLists = false;
     const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
     for (const auto& index : selectedIndices) {
         QString selectedPresetName =
@@ -294,18 +393,22 @@ void DlgPrefEffects::slotDeletePreset() {
         if (!unfocusedChainStringList.contains(selectedPresetName)) {
             if (m_pChainPresetManager->deletePreset(selectedPresetName)) {
                 focusedChainStringList.removeAll(selectedPresetName);
+                updateAndSavePresetLists = true;
             }
         } else {
             focusedChainStringList.removeAll(selectedPresetName);
+            updateAndSavePresetLists = true;
         }
     }
 
-    pFocusedModel->setStringList(focusedChainStringList);
-    saveChainPresetLists();
+    if (updateAndSavePresetLists) {
+        pFocusedModel->setStringList(focusedChainStringList);
+        saveChainPresetLists();
+    }
 }
 
-bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
-    if (event->type() == QEvent::FocusIn) {
+bool DlgPrefEffects::eventFilter(QObject* pObj, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::FocusIn) {
         // Allow selection only in either of the effects/chains lists at a time
         // to clarify which effect/chain the info below refers to.
         // The method to update the info box for the new selection is the same
@@ -313,36 +416,57 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
         // * clear selection in adjacent view
         // * restore previous selection (select first item if none was selected)
         //   which updates the info box via 'currentRowChanged' signals
-        auto pChainList = dynamic_cast<QListView*>(object);
-        auto pEffectList = dynamic_cast<QTableView*>(object);
+        auto* pChainList = qobject_cast<QListView*>(pObj);
+        auto* pEffectList = qobject_cast<QTableView*>(pObj);
+        // Restore previous selection only if focus was changed with keyboard.
+        // For mouse clicks, that procedure would select the wrong index.
+        QFocusEvent* focEv = static_cast<QFocusEvent*>(pEvent);
+        bool keyboardFocusIn = false;
+        if (focEv->reason() == Qt::TabFocusReason ||
+                focEv->reason() == Qt::BacktabFocusReason) {
+            keyboardFocusIn = true;
+        }
 
         if (pChainList) {
             m_pFocusedChainList = pChainList;
             unfocusedChainList()->selectionModel()->clearSelection();
-            QModelIndex currIndex = m_pFocusedChainList->selectionModel()->currentIndex();
-            if (!currIndex.isValid()) {
-                currIndex = m_pFocusedChainList->model()->index(0, 0);
+            if (keyboardFocusIn) {
+                QModelIndex currIndex = m_pFocusedChainList->selectionModel()->currentIndex();
+                if (!currIndex.isValid()) {
+                    currIndex = m_pFocusedChainList->model()->index(0, 0);
+                }
+                m_pFocusedChainList->selectionModel()->clearCurrentIndex();
+                m_pFocusedChainList->selectionModel()->setCurrentIndex(
+                        currIndex,
+                        QItemSelectionModel::ClearAndSelect);
             }
-            m_pFocusedChainList->selectionModel()->clearCurrentIndex();
-            m_pFocusedChainList->selectionModel()->setCurrentIndex(
-                    currIndex,
-                    QItemSelectionModel::ClearAndSelect);
-            return true;
         } else if (pEffectList) {
             m_pFocusedEffectList = pEffectList;
             unfocusedEffectList()->selectionModel()->clearSelection();
-            QModelIndex currIndex = m_pFocusedEffectList->currentIndex();
-            if (!currIndex.isValid()) {
-                currIndex = pEffectList->model()->index(0, 0);
+            if (keyboardFocusIn) {
+                QModelIndex currIndex = m_pFocusedEffectList->currentIndex();
+                if (!currIndex.isValid()) {
+                    currIndex = pEffectList->model()->index(0, 0);
+                }
+                pEffectList->selectionModel()->clearCurrentIndex();
+                pEffectList->selectRow(currIndex.row());
             }
-            pEffectList->selectionModel()->clearCurrentIndex();
-            pEffectList->selectRow(currIndex.row());
-            return true;
-        } else {
-            return false;
+        }
+    } else if (pEvent->type() == QEvent::KeyPress &&
+            m_pFocusedEffectList &&
+            pObj == m_pFocusedEffectList) {
+        // Left/Right key in focused effect list trigger Hide/Unhide:
+        // only Right is allowed in the left view, only Left in the right view,
+        // matching the enabled state of the GUI buttons.
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(pEvent);
+        if ((pKE->key() == Qt::Key_Left &&
+                    m_pFocusedEffectList == hiddenEffectsTableView) ||
+                (pKE->key() == Qt::Key_Right &&
+                        m_pFocusedEffectList == visibleEffectsTableView)) {
+            slotHideUnhideEffect();
         }
     }
-    return false;
+    return DlgPreferencePage::eventFilter(pObj, pEvent);
 }
 
 QListView* DlgPrefEffects::unfocusedChainList() {

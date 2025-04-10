@@ -1,7 +1,6 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
@@ -85,6 +84,20 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
         }
     }
     return false;
+}
+
+QStringList PlayerInfo::getPlayerGroupsWithTracksLoaded(const TrackPointerList& tracks) const {
+    const auto locker = lockMutex(&m_mutex);
+    QStringList groups;
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        TrackPointer pLoadedTrack = it.value();
+        if (pLoadedTrack && tracks.contains(pLoadedTrack)) {
+            groups.append(it.key());
+        }
+    }
+    return groups;
 }
 
 QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {

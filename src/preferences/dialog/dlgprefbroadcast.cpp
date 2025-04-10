@@ -1,27 +1,19 @@
-#include <QtDebug>
-#include <QInputDialog>
-#include <QMetaMethod>
-#include <QMetaProperty>
-#include <QAbstractItemDelegate>
-#include <QMessageBox>
-#include <QHeaderView>
+#include "preferences/dialog/dlgprefbroadcast.h"
 
-// shout.h checks for WIN32 to see if we are on Windows
-#ifdef WIN64
-#define WIN32
-#endif
+#include <QHeaderView>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QtDebug>
+
 // this is needed to define SHOUT_META_* macros used in version guard
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"
 #include "moc_dlgprefbroadcast.cpp"
-#include "preferences/dialog/dlgprefbroadcast.h"
+#include "preferences/broadcastsettingsmodel.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
 
@@ -129,6 +121,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      }
 
      // Encoding format combobox
+     connect(comboBoxEncodingFormat,
+             QOverload<int>::of(&QComboBox::currentIndexChanged),
+             this,
+             [this]() {
+                 ogg_dynamicupdate->setEnabled(
+                         comboBoxEncodingFormat->currentData() == ENCODING_OGG);
+             });
      comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
      comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
@@ -147,17 +146,31 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
      connect(checkBoxEnableReconnect,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
      connect(checkBoxLimitReconnects,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
      connect(enableCustomMetadata,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
+
+     setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {
@@ -279,15 +292,30 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnDisconnectAll->setEnabled(enabled);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxEnableReconnectChanged(Qt::CheckState state) {
+    widgetReconnectControls->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {
     widgetReconnectControls->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(Qt::CheckState state) {
+    spinBoxMaximumRetries->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(int value) {
     spinBoxMaximumRetries->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::enableCustomMetadataChanged(Qt::CheckState state) {
+    const bool value = (state == Qt::Checked);
+#else
 void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
+#endif
     custom_artist->setEnabled(value);
     custom_title->setEnabled(value);
 }
@@ -507,6 +535,7 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // OGG "dynamicupdate" checkbox
+    ogg_dynamicupdate->setEnabled(profile->getFormat() == ENCODING_OGG);
     ogg_dynamicupdate->setChecked(profile->getOggDynamicUpdate());
 }
 

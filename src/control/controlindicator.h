@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "util/parented_ptr.h"
 
 /// This type of control is used for blinking buttons such as the "play" or
@@ -34,7 +35,7 @@ class ControlIndicator : public ControlObject {
     };
 
   private:
-    enum BlinkValue m_blinkValue;
+    std::atomic<BlinkValue> m_blinkValue;
     parented_ptr<ControlProxy> m_pCOIndicator250millis;
     parented_ptr<ControlProxy> m_pCOIndicator500millis;
 };

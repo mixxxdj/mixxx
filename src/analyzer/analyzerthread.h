@@ -1,16 +1,18 @@
 #pragma once
 
+#include <memory>
+#include <optional>
 #include <vector>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/analyzerprogress.h"
+#include "analyzer/analyzertrack.h"
 #include "preferences/usersettings.h"
 #include "rigtorp/SPSCQueue.h"
 #include "sources/audiosource.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
 #include "util/samplebuffer.h"
 #include "util/workerthread.h"
@@ -75,7 +77,7 @@ class AnalyzerThread : public WorkerThread {
     // with state Idle has been received to avoid overwriting
     // a previously sent track that has not been received by the
     // worker thread, yet.
-    bool submitNextTrack(TrackPointer nextTrack);
+    bool submitNextTrack(const AnalyzerTrack& nextTrack);
 
   signals:
     // Use a single signal for progress updates to ensure that all signals
@@ -108,7 +110,7 @@ class AnalyzerThread : public WorkerThread {
     // safely exchanging data between two threads.
     // NOTE(uklotzde, 2018-01-04): Ideally we would use std::atomic<TrackPointer>,
     // for this purpose, which will become available in C++20.
-    rigtorp::SPSCQueue<TrackPointer> m_nextTrack;
+    rigtorp::SPSCQueue<AnalyzerTrack> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
@@ -118,7 +120,7 @@ class AnalyzerThread : public WorkerThread {
 
     mixxx::SampleBuffer m_sampleBuffer;
 
-    TrackPointer m_currentTrack;
+    std::optional<AnalyzerTrack> m_currentTrack;
 
     AnalyzerThreadState m_emittedState;
 

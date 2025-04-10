@@ -3,11 +3,11 @@
 #include <QList>
 #include <QString>
 
+#include "audio/types.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/engineeffectsdelay.h"
 #include "engine/effects/message.h"
 #include "util/class.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
@@ -40,12 +40,10 @@ class EngineEffectChain final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            const unsigned int numSamples,
-            const unsigned int sampleRate,
-            const GroupFeatureState& groupFeatures);
-
-    /// called from main thread
-    void deleteStatesForInputChannel(const ChannelHandle channel);
+            const std::size_t numSamples,
+            const mixxx::audio::SampleRate sampleRate,
+            const GroupFeatureState& groupFeatures,
+            bool fadeout);
 
   private:
     struct ChannelStatus {
@@ -64,14 +62,8 @@ class EngineEffectChain final : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForInputChannel(ChannelHandle inputHandle,
-            EffectStatesMapArray* statesForEffectsInChain);
+    bool enableForInputChannel(ChannelHandle inputHandle);
     bool disableForInputChannel(ChannelHandle inputHandle);
-
-    // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
-    // handle.
-    ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle);
 
     QString m_group;
     EffectEnableState m_enableState;
@@ -81,6 +73,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
     mixxx::SampleBuffer m_buffer1;
     mixxx::SampleBuffer m_buffer2;
     ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_chainStatusForChannelMatrix;
+    EngineEffectsDelay m_effectsDelay;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

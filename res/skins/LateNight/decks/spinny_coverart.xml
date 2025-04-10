@@ -20,10 +20,10 @@
                 <SizePolicy>me,me</SizePolicy>
                 <MinimumSize>40,40</MinimumSize>
                 <Group><Variable name="Group"/></Group>
-                <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
-                <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
-                <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
+                <PathBackground scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
+                <PathForeground>skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
+                <PathGhost>skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
                 <ShowCoverControl>[Skin],show_coverart</ShowCoverControl>
               </Spinny>
             </Children>
@@ -54,7 +54,7 @@
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>40,40</MinimumSize>
                     <Group><Variable name="Group"/></Group>
-                    <DefaultCover>skin:/<Variable name="StyleScheme"/>/style/cover_default.svg</DefaultCover>
+                    <DefaultCover>skins:LateNight/<Variable name="StyleScheme"/>/style/cover_default.svg</DefaultCover>
                   </CoverArt>
                 </Children>
               </WidgetGroup>

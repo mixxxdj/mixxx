@@ -1,32 +1,52 @@
 #include "util/file.h"
 
 #include <QFileDialog>
+#include <QRegExp> // required for 'indexIn(QString &str, int pos)
 #include <QRegularExpression>
+
+#include "util/assert.h"
 
 namespace {
 
 const QRegularExpression kExtractExtensionRegex(R"(\(\*\.(.*)\)$)");
+// extract all extensions from the file filters string "Abc (*.m3u);;Cbx (*.pls)..."
+// lazy match doesn't work here unfortunately "(\(\*\.(.*?)\))"
+const QRegExp kFileFilterRegex(R"(\(\*\.(.[^\)]*)\))");
 
 } //anonymous namespace
 
 QString filePathWithSelectedExtension(const QString& fileLocationInput,
-        const QString& fileFilter) {
+        const QString& selectedFileFilter,
+        const QString& fileFilters) {
     if (fileLocationInput.isEmpty()) {
         return {};
     }
     QString fileLocation = fileLocationInput;
-    if (fileFilter.isEmpty()) {
+    if (selectedFileFilter.isEmpty()) {
         return fileLocation;
     }
 
     // Extract 'ext' from QFileDialog file filter string 'Funky type (*.ext)'
-    const auto extMatch = kExtractExtensionRegex.match(fileFilter);
+    const auto extMatch = kExtractExtensionRegex.match(selectedFileFilter);
     const QString ext = extMatch.captured(1);
-    if (ext.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!ext.isEmpty()) {
         return fileLocation;
     }
     const QFileInfo fileName(fileLocation);
-    if (!ext.isEmpty() && fileName.suffix() != ext) {
+    if (fileName.suffix().isEmpty()) {
+        fileLocation += QChar('.') + ext;
+    } else if (fileName.suffix() != ext) {
+        // Check if fileLocation ends with any of the available extensions
+        int pos = 0;
+        // Extract all extensions from the filter list
+        while ((pos = kFileFilterRegex.indexIn(fileFilters, pos)) != -1) {
+            if (ext == kFileFilterRegex.cap(1)) {
+                // If it matches chop the current extension incl. dot and break
+                fileLocation.chop(ext.length() + 1);
+                break;
+            }
+            pos += kFileFilterRegex.matchedLength();
+        }
         fileLocation.append(".").append(ext);
     }
     return fileLocation;
@@ -54,7 +74,8 @@ QString getFilePathWithVerifiedExtensionFromFileDialog(
         }
         const QString fileLocationAdjusted = filePathWithSelectedExtension(
                 fileLocation,
-                selectedFileFilter);
+                selectedFileFilter,
+                fileFilters);
         // If the file path has the selected suffix we can assume the user either
         // selected a new file or already confirmed overwriting an existing file.
         // Return the file path. Also when the adjusted file path does not exist yet.

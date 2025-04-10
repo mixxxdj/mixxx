@@ -1,3 +1,45 @@
+mixxx (2.4.2-1~focal) focal; urgency=medium
+
+  * Build of 2.4.2
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 26 Nov 2024 23:29:32 +0000
+
+mixxx (2.4.1-1~focal) focal; urgency=medium
+
+  * Build of 2.4.1
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Wed, 08 May 2024 21:39:18 +0000
+
+mixxx (2.4.0-1~focal) focal; urgency=medium
+
+  * Build of 2.4.0
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Thu, 15 Feb 2024 23:55:01 +0000
+
+mixxx (2.3.6-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.6
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 15 Aug 2023 06:18:14 +0000
+
+mixxx (2.3.5-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.5
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Wed, 10 May 2023 20:28:25 +0000
+
+mixxx (2.3.4-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.4
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Fri, 03 Mar 2023 15:00:16 +0000
+
+mixxx (2.3.3-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.3
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 21 Jun 2022 21:24:47 +0000
+
 mixxx (2.3.2-1~bionic) bionic; urgency=medium
 
   * Build of 2.3.2

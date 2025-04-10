@@ -1,13 +1,13 @@
 #pragma once
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "widget/wbasewidget.h"
-#include "skin/legacy/skincontext.h"
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 
-class ControlProxy;
+#include "control/controlproxy.h"
+#include "widget/wbasewidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     Q_OBJECT

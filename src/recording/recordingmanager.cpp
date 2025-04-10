@@ -1,14 +1,13 @@
 #include "recording/recordingmanager.h"
 
+#include <QDateTime>
 #include <QDir>
 #include <QMessageBox>
 #include <QMutex>
 #include <QStorageInfo>
-#include <climits>
 
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
@@ -17,7 +16,7 @@
 
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
-RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
+RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine)
         : m_pConfig(pConfig),
           m_recordingDir(""),
           m_recording_base_file(""),
@@ -31,13 +30,13 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
           m_iNumberSplits(0),
           m_secondsRecorded(0),
           m_secondsRecordedSplit(0) {
-    m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
-    connect(m_pToggleRecording,
+    m_pToggleRecording = std::make_unique<ControlPushButton>(
+            ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
+    connect(m_pToggleRecording.get(),
             &ControlPushButton::valueChanged,
             this,
             &RecordingManager::slotToggleRecording);
-    m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
-    m_recReady = new ControlProxy(m_recReadyCO->getKey(), this);
+    m_pCoRecStatus = std::make_unique<ControlObject>(ConfigKey(RECORDING_PREF_KEY, "status"));
 
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
@@ -60,13 +59,6 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
                 &RecordingManager::slotDurationRecorded);
         pSidechain->addSideChainWorker(pEngineRecord);
     }
-}
-
-RecordingManager::~RecordingManager() {
-    qDebug() << "Delete RecordingManager";
-
-    delete m_recReadyCO;
-    delete m_pToggleRecording;
 }
 
 QString RecordingManager::formatDateTimeForFilename(const QDateTime& dateTime) const {
@@ -142,7 +134,7 @@ void RecordingManager::startRecording() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), ConfigValue(m_recording_base_file + QStringLiteral(".cue")));
 
-    m_recReady->set(RECORD_READY);
+    m_pCoRecStatus->set(RECORD_READY);
 }
 
 void RecordingManager::splitContinueRecording()
@@ -165,12 +157,12 @@ void RecordingManager::splitContinueRecording()
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), ConfigValue(new_base_filename + QStringLiteral(".cue")));
     m_recordingFile = QFileInfo(m_recordingLocation).fileName();
 
-    m_recReady->set(RECORD_SPLIT_CONTINUE);
+    m_pCoRecStatus->set(RECORD_SPLIT_CONTINUE);
 }
 
 void RecordingManager::stopRecording() {
     qDebug() << "Recording stopped";
-    m_recReady->set(RECORD_OFF);
+    m_pCoRecStatus->set(RECORD_OFF);
     m_recordingFile = "";
     m_recordingLocation = "";
     m_iNumberOfBytesRecorded = 0;
@@ -186,7 +178,10 @@ void RecordingManager::setRecordingDir() {
         if (recordDir.mkpath(recordDir.absolutePath())) {
             qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
-            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            // Using qt_error_string() since QDir has not yet a wrapper for error strings.
+            // https://bugreports.qt.io/browse/QTBUG-1483
+            qDebug() << "Failed to create folder" << recordDir.absolutePath()
+                     << "for recordings:" << qt_error_string();
         }
     }
     m_recordingDir = recordDir.absolutePath();
@@ -214,9 +209,9 @@ void RecordingManager::slotDurationRecorded(quint64 duration) {
 
 // Copy from the implementation in enginerecord.cpp
 QString RecordingManager::getRecordedDurationStr(unsigned int duration) {
-    return QString("%1:%2")
-                 .arg(duration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(duration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(duration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(duration % 60, 2, 10, QChar('0')); // seconds
 }
 
 // Only called when recording is active.
@@ -267,7 +262,7 @@ void RecordingManager::warnFreespace() {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Low Disk Space Warning"));
-    props->setText(tr("There is less than 1 GiB of useable space in the recording folder"));
+    props->setText(tr("There is less than 1 GiB of usable space in the recording folder"));
     props->setKey("RecordingManager::warnFreespace");   // To prevent multiple windows for the same error
 
     props->addButton(QMessageBox::Ok);
@@ -330,7 +325,7 @@ quint64 RecordingManager::getFileSplitSize() {
     } else if (fileSizeStr == SPLIT_120MIN) {
         return SIZE_4GB; //Ignore size limit. use time limit
     } else {
-        return SIZE_650MB;
+        return SIZE_4GB; // default
     }
 }
 

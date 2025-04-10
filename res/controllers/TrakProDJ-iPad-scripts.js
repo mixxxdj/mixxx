@@ -188,10 +188,10 @@ TrakProDJ.jog_enable = function(deck) {
     if (!ctrl.timer) {
         if (TrakProDJ.use_scratch) {
             print(group + ' enable scratch');
-            ctrl.timer = engine.beginTimer(20,"TrakProDJ.jog_scratch_timer(deck)");
+            ctrl.timer = engine.beginTimer(20, () => { TrakProDJ.jog_scratch_timer(deck); });
         } else {
             print(group + ' enable rate bend');
-            ctrl.timer = engine.beginTimer(20,"TrakProDJ.jog_rate_timer(deck)");
+            ctrl.timer = engine.beginTimer(20, () => { TrakProDJ.jog_rate_timer(deck); });
         }
     }
     if (TrakProDJ.use_scratch) {

@@ -5,7 +5,7 @@ Description:
 Variables:
   ObjectName        : object name
   ToolTipID         : standard Tooltip from mixxx db
-    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
   Size              : button size
   state_X_text      : label text for state X
   state_X_pressed   : background graphic for pressed state X
@@ -22,8 +22,8 @@ Variables:
     <NumberStates>1</NumberStates>
     <State>
       <Number>0</Number>
-      <Pressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
     </State>
     <Connection>
       <ConfigKey persist="true"><Variable name="group"/>,<Variable name="Control"/></ConfigKey>

@@ -1,5 +1,15 @@
+#if defined(_MSC_VER)
+#pragma warning(push)
+// https://github.com/taglib/taglib/issues/1185
+// warning C4251: 'TagLib::FileName::m_wname': class
+// 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t>>'
+// needs to have dll-interface to be used by clients of class 'TagLib::FileName'
+#pragma warning(disable : 4251)
+#endif
+
 #include "track/taglib/trackmetadata_mp4.h"
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
@@ -122,7 +132,8 @@ bool importCoverImageFromTag(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::MP4::Tag& tag) {
+        const TagLib::MP4::Tag& tag,
+        bool resetMissingTagMetadata) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -132,22 +143,22 @@ void importTrackMetadataFromTag(
             tag);
 
     QString albumArtist;
-    if (readAtom(tag, "aART", &albumArtist)) {
+    if (readAtom(tag, "aART", &albumArtist) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setArtist(albumArtist);
     }
 
     QString composer;
-    if (readAtom(tag, "\251wrt", &composer)) {
+    if (readAtom(tag, "\251wrt", &composer) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setComposer(composer);
     }
 
     QString grouping;
-    if (readAtom(tag, "\251grp", &grouping)) {
+    if (readAtom(tag, "\251grp", &grouping) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setGrouping(grouping);
     }
 
     QString year;
-    if (readAtom(tag, "\251day", &year)) {
+    if (readAtom(tag, "\251day", &year) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setYear(year);
     }
 
@@ -161,6 +172,9 @@ void importTrackMetadataFromTag(
         trackNumbers.toStrings(&trackNumber, &trackTotal);
         pTrackMetadata->refTrackInfo().setTrackNumber(trackNumber);
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setTrackNumber(QString{});
+        pTrackMetadata->refTrackInfo().setTrackTotal(QString{});
     }
 
 #if defined(__EXTRA_METADATA__)
@@ -174,6 +188,9 @@ void importTrackMetadataFromTag(
         discNumbers.toStrings(&discNumber, &discTotal);
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setDiscNumber(QString{});
+        pTrackMetadata->refTrackInfo().setDiscTotal(QString{});
     }
 #endif // __EXTRA_METADATA__
 
@@ -184,120 +201,150 @@ void importTrackMetadataFromTag(
         // If this field contains a valid value the integer
         // BPM value that might have been read before is
         // overwritten.
-        parseBpm(pTrackMetadata, bpm);
+        parseBpm(pTrackMetadata, bpm, resetMissingTagMetadata);
     } else if (tag.contains("tmpo")) {
         // Read the BPM as an integer value.
         const TagLib::MP4::Item tmpoItem = tag.item("tmpo");
         double bpmValue = tmpoItem.toInt();
         if (Bpm::isValidValue(bpmValue)) {
             pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        } else if (resetMissingTagMetadata) {
+            pTrackMetadata->refTrackInfo().setBpm(Bpm{});
         }
+    } else if (resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setBpm(Bpm{});
     }
 
-    QString key;
-    if (readAtom(tag, kAtomKeyInitialKey, &key) ||         // preferred (conforms to MixedInKey, Serato, Traktor)
-            readAtom(tag, kAtomKeyAlternativeKey, &key)) { // alternative (conforms to Rapid Evolution)
-        pTrackMetadata->refTrackInfo().setKey(key);
+    QString keyText;
+    if (readAtom(tag,
+                kAtomKeyInitialKey,
+                &keyText) || // preferred (conforms to MixedInKey, Serato, Traktor)
+            readAtom(tag,
+                    kAtomKeyAlternativeKey,
+                    &keyText) || // alternative (conforms to Rapid Evolution)
+            resetMissingTagMetadata) {
+        pTrackMetadata->refTrackInfo().setKeyText(keyText);
     }
 
     QString trackGain;
-    if (readAtom(tag, kAtomKeyReplayGainTrackGain, &trackGain)) {
-        parseTrackGain(pTrackMetadata, trackGain);
+    if (readAtom(tag, kAtomKeyReplayGainTrackGain, &trackGain) || resetMissingTagMetadata) {
+        parseTrackGain(pTrackMetadata, trackGain, resetMissingTagMetadata);
     }
     QString trackPeak;
-    if (readAtom(tag, kAtomKeyReplayGainTrackPeak, &trackPeak)) {
-        parseTrackPeak(pTrackMetadata, trackPeak);
+    if (readAtom(tag, kAtomKeyReplayGainTrackPeak, &trackPeak) || resetMissingTagMetadata) {
+        parseTrackPeak(pTrackMetadata, trackPeak, resetMissingTagMetadata);
     }
 
 #if defined(__EXTRA_METADATA__)
     QString albumGain;
-    if (readAtom(tag, kAtomKeyReplayGainAlbumGain, &albumGain)) {
-        parseAlbumGain(pTrackMetadata, albumGain);
+    if (readAtom(tag, kAtomKeyReplayGainAlbumGain, &albumGain) || resetMissingTagMetadata) {
+        parseAlbumGain(pTrackMetadata, albumGain, resetMissingTagMetadata);
     }
     QString albumPeak;
-    if (readAtom(tag, kAtomKeyReplayGainAlbumPeak, &albumPeak)) {
-        parseAlbumPeak(pTrackMetadata, albumPeak);
+    if (readAtom(tag, kAtomKeyReplayGainAlbumPeak, &albumPeak) || resetMissingTagMetadata) {
+        parseAlbumPeak(pTrackMetadata, albumPeak, resetMissingTagMetadata);
     }
 
     QString trackArtistId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Artist Id", &trackArtistId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Artist Id",
+                &trackArtistId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QString trackRecordingId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Track Id", &trackRecordingId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Track Id",
+                &trackRecordingId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Release Track Id", &trackReleaseId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Release Track Id",
+                &trackReleaseId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Work Id", &trackWorkId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Work Id",
+                &trackWorkId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Album Artist Id", &albumArtistId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Album Artist Id",
+                &albumArtistId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
     }
     QString albumReleaseId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Album Id", &albumReleaseId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Album Id",
+                &albumReleaseId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
     QString albumReleaseGroupId;
-    if (readAtom(tag, "----:com.apple.iTunes:MusicBrainz Release Group Id", &albumReleaseGroupId)) {
+    if (readAtom(tag,
+                "----:com.apple.iTunes:MusicBrainz Release Group Id",
+                &albumReleaseGroupId) ||
+            resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     QString conductor;
-    if (readAtom(tag, "----:com.apple.iTunes:CONDUCTOR", &conductor)) {
+    if (readAtom(tag, "----:com.apple.iTunes:CONDUCTOR", &conductor) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setConductor(conductor);
     }
     QString isrc;
-    if (readAtom(tag, "----:com.apple.iTunes:ISRC", &isrc)) {
+    if (readAtom(tag, "----:com.apple.iTunes:ISRC", &isrc) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setISRC(isrc);
     }
     QString language;
-    if (readAtom(tag, "----:com.apple.iTunes:LANGUAGE", &language)) {
+    if (readAtom(tag, "----:com.apple.iTunes:LANGUAGE", &language) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLanguage(language);
     }
     QString lyricist;
-    if (readAtom(tag, "----:com.apple.iTunes:LYRICIST", &lyricist)) {
+    if (readAtom(tag, "----:com.apple.iTunes:LYRICIST", &lyricist) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setLyricist(lyricist);
     }
     QString mood;
-    if (readAtom(tag, "----:com.apple.iTunes:MOOD", &mood)) {
+    if (readAtom(tag, "----:com.apple.iTunes:MOOD", &mood) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMood(mood);
     }
     QString copyright;
-    if (readAtom(tag, "cprt", &copyright)) {
+    if (readAtom(tag, "cprt", &copyright) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setCopyright(copyright);
     }
     QString license;
-    if (readAtom(tag, "----:com.apple.iTunes:LICENSE", &license)) {
+    if (readAtom(tag, "----:com.apple.iTunes:LICENSE", &license) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setLicense(license);
     }
     QString recordLabel;
-    if (readAtom(tag, "----:com.apple.iTunes:LABEL", &recordLabel)) {
+    if (readAtom(tag, "----:com.apple.iTunes:LABEL", &recordLabel) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(recordLabel);
     }
     QString remixer;
-    if (readAtom(tag, "----:com.apple.iTunes:REMIXER", &remixer)) {
+    if (readAtom(tag, "----:com.apple.iTunes:REMIXER", &remixer) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(remixer);
     }
     QString subtitle;
-    if (readAtom(tag, "----:com.apple.iTunes:SUBTITLE", &subtitle)) {
+    if (readAtom(tag, "----:com.apple.iTunes:SUBTITLE", &subtitle) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setSubtitle(subtitle);
     }
     QString encoder;
-    if (readAtom(tag, "\251too", &encoder)) {
+    if (readAtom(tag, "\251too", &encoder) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setEncoder(encoder);
     }
     QString work;
-    if (readAtom(tag, "\251wrk", &work)) {
+    if (readAtom(tag, "\251wrk", &work) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setWork(work);
     }
     QString movement;
-    if (readAtom(tag, "\251mvn", &movement)) {
+    if (readAtom(tag, "\251mvn", &movement) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setMovement(movement);
     }
 #endif // __EXTRA_METADATA__
@@ -387,10 +434,10 @@ bool exportTrackMetadataIntoTag(
     }
     writeAtom(pTag, kAtomKeyBpm, toTString(formatBpm(trackMetadata)));
 
-    const TagLib::String key =
-            toTString(trackMetadata.getTrackInfo().getKey());
-    writeAtom(pTag, kAtomKeyInitialKey, key);      // preferred
-    updateAtom(pTag, kAtomKeyAlternativeKey, key); // alternative
+    const TagLib::String keyText =
+            toTString(trackMetadata.getTrackInfo().getKeyText());
+    writeAtom(pTag, kAtomKeyInitialKey, keyText);      // preferred
+    updateAtom(pTag, kAtomKeyAlternativeKey, keyText); // alternative
 
     writeAtom(pTag, kAtomKeyReplayGainTrackGain, toTString(formatTrackGain(trackMetadata)));
     writeAtom(pTag, kAtomKeyReplayGainTrackPeak, toTString(formatTrackPeak(trackMetadata)));
@@ -470,3 +517,7 @@ bool exportTrackMetadataIntoTag(
 } // namespace taglib
 
 } // namespace mixxx
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

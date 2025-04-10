@@ -30,7 +30,7 @@
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
 #FxSlotsExpanded, #FxSlotsCollapsed,
@@ -63,7 +63,7 @@ WStarRating {
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
@@ -85,6 +85,9 @@ WLibrary,
   }
 
 
+WTrackProperty:hover,
+WTrackProperty:hover[selected="false"],
+WTrackProperty:hover[selected="true"],
 #BpmTapContainer:hover {
   background-color: #151517;
   border-radius: 1px;
@@ -93,14 +96,14 @@ WLibrary,
    border: 1px solid #7d350d;
   }
 
-/* borders of embedded regions like deck buttons & Master mixer */
+/* borders of embedded regions like deck buttons & Main mixer */
 #WaveformBox1,
 #WaveformBox2,
 #WaveformBox3,
 #WaveformBox4,
 #DeckRow_5_LoopCuesTransport,
 #DeckRow_5_LoopCuesTransportCompact,
-#MasterControls, #HeadphoneControls,
+#MainControls, #HeadphoneControls,
 #FxParametersBg,
 #SamplerHotcues,
 WSearchLineEdit,
@@ -126,10 +129,10 @@ WSearchLineEdit,
   /* some get a background image */
   #DeckRow_5_LoopCuesTransport,
   #DeckRow_5_LoopCuesTransportCompact,
-  #MasterControls, #HeadphoneControls,
+  #MainControls, #HeadphoneControls,
   #FxParametersBg,
   #SamplerHotcues {
-    background-image: url(skin:/classic/style/background_tile.png);
+    background-image: url(skins:LateNight/classic/style/background_tile.png);
   }
 
 #FxParametersFocusBg {
@@ -180,13 +183,29 @@ WSearchLineEdit,
   }
 
 #VuMeterBox,
-#VuMeterBoxMaster,
-#VuMeterBoxMasterSingle,
+#VuMeterBoxMain,
+#VuMeterBoxMainSingle,
 #LatencyMeterBox {
   background-color: #040404;
-}
+  }
+  #LatencyMeterBox[highlight="0"] {
+    border: 1px solid #040404;
+  }
+  #LatencyMeterBox[highlight="1"] {
+    border: 1px solid red;
+  }
 
-#VuMasterCover {
+#BeatgridControls,
+#StemControls {
+  border-top: 1px solid #222;
+  border-left: 1px solid #222;
+  border-bottom: 1px solid #111;
+  border-right: 1px solid #111;
+  border-radius: 2px;
+  background-color: #171717;
+  }
+
+#VuMainCover {
   background-color: rgba(21, 21, 21, 150);
 }
 
@@ -204,6 +223,16 @@ WSearchLineEdit,
 }
 #SkinSettingsMixerToggle {
   background-color: rgba(15, 15, 15, 255);
+}
+
+/* Cover for the beatgrid edit buttons in the waveform container
+   and the CurPos button in the deck settings near the overview.
+   Hue has to match the bg color of the buttons want to we cover */
+#BeatEditCover {
+  background-color: rgba(21, 21, 23, 180);
+}
+#BeatEditCoverDecks {
+  background-color: rgba(30, 30, 30, 180);
 }
 
 /**** ToolBar *******************************/
@@ -226,14 +255,14 @@ WSearchLineEdit,
 
 #DeckRateSeparator,
 #DeckRateSeparatorCompact,
-#MasterMixerSeparator,
+#MainMixerSeparator,
 #SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #MasterMixerSeparator {
+  #MainMixerSeparator {
     min-width: 0px;
     max-width: 0px;
   }
@@ -247,7 +276,7 @@ WSearchLineEdit,
     min-width: 1px;
     max-width: 1px;
     margin: 2px 1px;
-    image: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/style/fx_separator.svg) no-repeat center center;
   }
   #FxSlotSeparatorH {
     min-height: 2px;
@@ -277,15 +306,14 @@ WLibrary {
   }
   #SearchLineBox {
   padding-right: 2px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
   }
 
 #LibExpandBox {
-  border-width: 1px 0px 1px 0px;
-  border-radius: 0px;
-  padding: 0px 0px 2px 4px;
+  border-width: 1px 0px 1px 1px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  padding: 0px 0px 2px 0px;
+  margin-left: 4px;
 }
 
 #SidebarBox {
@@ -348,7 +376,7 @@ WLibrary {
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #FxRackFillerR,
@@ -601,18 +629,18 @@ WLibrary {
 
   WBeatSpinBox {
     border-width: 2px 19px 2px 2px;
-    border-image: url(skin:/classic/buttons/spinbox_elevated_border.svg) 2 19 2 2;
+    border-image: url(skins:LateNight/classic/buttons/spinbox_elevated_border.svg) 2 19 2 2;
     margin: 1px 0px 0px 1px;
     padding: 0px -17px 2px 1px;
     background-color: #0f0f0f;
     }
     WBeatSpinBox:focus {
-      border-image: url(skin:/classic/buttons/spinbox_elevated_border_focus.svg) 2 19 2 2;
+      border-image: url(skins:LateNight/classic/buttons/spinbox_elevated_border_focus.svg) 2 19 2 2;
     }
 
   #spinBoxTransition {
     border-width: 3px 19px 2px 3px;
-    border-image: url(skin:/classic/buttons/spinbox_embedded_border.svg) 3 19 2 3;
+    border-image: url(skins:LateNight/classic/buttons/spinbox_embedded_border.svg) 3 19 2 3;
     width: 24px;
     height: 19px;
     padding: 0px -15px 0px 0px;
@@ -620,7 +648,7 @@ WLibrary {
     background-color: #0f0f0f;
     }
     #spinBoxTransition:focus {
-      border-image: url(skin:/classic/buttons/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
+      border-image: url(skins:LateNight/classic/buttons/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
     }
 
   WBeatSpinBox::up-button,
@@ -637,11 +665,11 @@ WLibrary {
     #spinBoxTransition::up-button {
       height: 11px;
       subcontrol-position: top right;
-      image: url(skin:/classic/buttons/spinbox_up.svg) no-repeat;
+      image: url(skins:LateNight/classic/buttons/spinbox_up.svg) no-repeat;
       }
       WBeatSpinBox::up-button:pressed,
       #spinBoxTransition::up-button:pressed {
-        image: url(skin:/classic/buttons/spinbox_up_pressed.svg) no-repeat;
+        image: url(skins:LateNight/classic/buttons/spinbox_up_pressed.svg) no-repeat;
       }
       WBeatSpinBox::up-button {
         margin: -1px 0px 0px 0px;
@@ -653,11 +681,11 @@ WLibrary {
     #spinBoxTransition::down-button {
       height: 11px;
       subcontrol-position: bottom right;
-      image: url(skin:/classic/buttons/spinbox_down.svg) no-repeat;
+      image: url(skins:LateNight/classic/buttons/spinbox_down.svg) no-repeat;
       }
       WBeatSpinBox::down-button:pressed,
       #spinBoxTransition::down-button:pressed {
-        image: url(skin:/classic/buttons/spinbox_down_pressed.svg) no-repeat;
+        image: url(skins:LateNight/classic/buttons/spinbox_down_pressed.svg) no-repeat;
       }
       WBeatSpinBox::down-button {
         margin: 0px 0px -2px 0px;
@@ -669,6 +697,10 @@ WLibrary {
 
 
 /************** Mixer *********************************************************/
+
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #cf9200;
+}
 
 #MixerDecks {
   padding: 2px 6px 2px 6px;
@@ -711,14 +743,14 @@ WLibrary {
       background-color: #262626;
     }
 
-#MixerMasterHeadphone {
+#MixerMainHeadphone {
   margin: 2px 2px 2px 0px;
   }
-  #MasterControls {
+  #MainControls {
     padding: 2px;
     margin-bottom: 2px;
   }
-  #MasterHeadphoneSeparator {
+  #MainHeadphoneSeparator {
     min-height: 0px;
     max-height: 0px;
     }
@@ -736,14 +768,14 @@ WLibrary {
 #VuMeterChannel_4Decks {
   margin: 6px 0px 6px 11px;
 }
-#VuMeterMaster_2Decks {
+#VuMeterMain_2Decks {
   margin: 0px 0px 2px 0px;
 }
-#VuMeterMaster_4Decks {
+#VuMeterMain_4Decks {
   margin: 5px 0px;
 }
 
-#VuMeterMaster_Compact {
+#VuMeterMain_Compact {
   margin-right: 4px;
   margin-left: 4px;
   padding: 0px 5px;
@@ -794,7 +826,9 @@ WLibrary {
   }
 
 WEffectChainPresetButton::menu-indicator {
-  image: url(skin:/classic/buttons/btn__fx_settings.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__fx_settings.svg) no-repeat center center;
+  width: 18px;
+  height: 18px;
 }
 
 #DryWetKnob,
@@ -869,13 +903,15 @@ WEffectSelector,
   #fadeModeCombobox::down-arrow,
   /* Arrow size is set in C++ to match the library font size */
   WSearchLineEdit::down-arrow {
-    image: url(skin:/classic/buttons/btn__fx_selector_down.svg);
+    image: url(skins:LateNight/classic/buttons/btn__fx_selector_down.svg);
+    width: 16px;
+    height: 24px;
     }
     WEffectSelector::down-arrow:hover,
     WEffectChainPresetSelector::down-arrow:hover,
     #fadeModeCombobox::down-arrow:hover,
     WSearchLineEdit::down-arrow:hover {
-      image: url(skin:/classic/buttons/btn__fx_selector_down_pressed.svg);
+      image: url(skins:LateNight/classic/buttons/btn__fx_selector_down_pressed.svg);
     }
 
 
@@ -1090,10 +1126,10 @@ WSearchLineEdit QAbstractScrollArea,
 #SkinSettingsLabelButton,
 #SkinSettingsNumToggleHeader[displayValue="1"],
 WSearchLineEdit,
+WTrackTableView,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
-WTrackTableView,
-WTrackTableView::indicator,
+#LibraryPlayedCheckbox::item,
 WLibraryTextBrowser,
 WLibrarySidebar,
 #LibraryFeatureControls QLabel,
@@ -1101,11 +1137,14 @@ WLibrarySidebar,
 QToolTip,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 WCoverArtMenu,
@@ -1114,7 +1153,12 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #f0bb2b;
+}
   #SkinSettingsNumToggleHeader[displayValue="0"] {
     color: #b9901f;
   }
@@ -1183,7 +1227,8 @@ WBeatSpinBox, #spinBoxTransition,
 #MainMenu::item,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"], /* off */
+#VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
@@ -1194,7 +1239,9 @@ WBeatSpinBox, #spinBoxTransition,
   color: #d2d2d1;
   }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #PassthroughButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
@@ -1219,17 +1266,13 @@ QPushButton#pushButtonRecording:checked {
   color: #999;
 }
 
-#MixerMasterHeadphone WLabel,
+#MixerMainHeadphone WLabel,
 #FxKnobLabel,
 #FxButtonLabel {
   padding: 0px;
   background-color: #151515;
 }
 
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel {
-  color: #d09300;
-}
   #SkinSettingsButton,
   #SkinSettingsNumToggle,
   #SkinSettingsText {
@@ -1265,7 +1308,7 @@ WOverview #PassthroughLabel {
 #FxAssignButtons WPushButton[displayValue="0"] {
   outline: none;
   border-width: 2px 2px 2px 1px;
-  border-image: url(skin:/classic/buttons/btn_embedded_grid.svg) 2 2 2 1;
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
   /* Active */
   #VinylCueButton[displayValue="1"],
@@ -1276,10 +1319,10 @@ WOverview #PassthroughLabel {
   #FxAssignButtons WPushButton[displayValue="1"] {
     outline: none;
     border-width: 2px 2px 2px 1px;
-    border-image: url(skin:/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
+    border-image: url(skins:LateNight/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 WPushButton#FxAssignButton1[displayValue="0"],
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #SyncDeck[displayValue="0"],
@@ -1290,9 +1333,11 @@ WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable {
   border-width: 2px;
-  border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-WPushButton#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"],
+WPushButton#VinylStatus[displayValue="3"],
 WPushButton#FxAssignButton1[displayValue="1"],
 #KeyMatchReset[pressed="true"],
 #GuiToggleButton[displayValue="1"],
@@ -1312,15 +1357,15 @@ QPushButton#pushButtonRecording:checked,
 WEffectSelector:!editable:on,
 #fadeModeCombobox:!editable:on {
   border-width: 2px;
-  border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
   #KeyUp {
     border-width: 1px 2px 0px 2px;
-    border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 1 2 12 2;
+    border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 1 2 12 2;
     }
   #KeyDown {
     border-width: 0px 2px 1px 2px;
-    border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 12 2 1 2;
+    border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 12 2 1 2;
     }
 
 /* Library controls in AutoDJ etc. */
@@ -1332,10 +1377,11 @@ WEffectSelector:!editable:on,
 WEffectSelector[highlight="1"] {  /*
   background-color: #6AAF04;
   color: #000;
-  border-image: url(skin:/classic/buttons/btn_embedded_effectselector_active.svg) 2 2 2 2;  */
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_effectselector_active.svg) 2 2 2 2;  */
 }
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
+#StemControls WPushButton, WPushButton#StemControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
@@ -1343,7 +1389,7 @@ WPushButton#PlayIndicator,
 WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
-WPushButton#RateControls WPushButton,
+#RateControls WPushButton,
 WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
@@ -1380,11 +1426,12 @@ WPushButton#LibExpand,
 
 /* top-level buttons in transport, fx, micaux and others */
 #BeatgridControls WPushButton[displayValue="0"],
-#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton,
 #PlayCueMini WPushButton[displayValue="0"],
 WPushButton#CueDeck[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
 WPushButton#LoopActivate[displayValue="0"],
+WPushButton#StemMuteButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
@@ -1404,7 +1451,8 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 WPushButton#GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 WPushButton#BroadcastButton[displayValue="0"],
-WPushButton#SkinSettingsToggle[displayValue="0"] {
+WPushButton#SkinSettingsToggle[displayValue="0"],
+WCueMenuPopup QPushButton {
   background-color: #262626;
 }
 
@@ -1428,7 +1476,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #KeyControls WPushButton[pressed="true"],
-#LoopControls WPushButton[value="1"],
+#LoopControls WPushButton[pressed="true"],
 #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
 #EQKillButtonBox WPushButton[displayValue="1"],
@@ -1447,12 +1495,17 @@ QPushButton#pushButtonRecording:checked {
     border-radius: 0px;
   }
 
+/* Orange for Stem Ch Mute buttons */
+WPushButton#StemMuteButton{
+  background-color: #db7700;
+}
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
 WPushButton#QuickEffectButton[displayValue="1"],
 #FxAssignButton1[displayValue="1"],
 #FxAssignButton2[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #659f08;
 }
@@ -1479,14 +1532,15 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #888;
 }
 
+/* pink for error / warning*/
 #BroadcastButton[displayValue="3"],
-#BroadcastButton[displayValue="4"] {
-  /* pink */
+#BroadcastButton[displayValue="4"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
 /* Golden */
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"], /* blinks when the needle reaches the end of the record */
 #PassthroughButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -1588,421 +1642,491 @@ WPushButton#FxExpand[displayValue="0"],
 WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
+#StemControlsToggle,
 #SamplerControlsMini WPushButton,
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"],
+WPushButton#BpmLockToggle[value="1"] {
   background-color: transparent;
 }
 
 /************** Button icons **************************************************/
 
 #PlayDeck {
-  image: url(skin:/classic/buttons/btn__play_deck.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__play_deck.svg) no-repeat center center;
 }
 
 #PlayDeckMini[value="0"] {
-  image: url(skin:/classic/buttons/btn__play_deck_mini.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__play_deck_mini.svg) no-repeat center center;
   }
   #PlayDeckMini[value="1"] {
-    image: url(skin:/classic/buttons/btn__pause_deck_mini.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__pause_deck_mini.svg) no-repeat center center;
   }
 #PlaySampler[value="0"],
 #PlayPreview[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__play_sampler.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__play_sampler.svg) no-repeat center center;
   }
   #PlaySampler[value="1"],
   #PlayPreview[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__pause_sampler.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__pause_sampler.svg) no-repeat center center;
   }
 
 #CueDeck {
-  image: url(skin:/classic/buttons/btn__cue_deck.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__cue_deck.svg) no-repeat center center;
 }
 
 #Reverse {
-  image: url(skin:/classic/buttons/btn__reverse.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__reverse.svg) no-repeat center center;
 }
 
 #Hotcue1 WPushButton {
-  image: url(skin:/classic/buttons/btn__1.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__1.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton {
-    image: url(skin:/classic/buttons/btn__2.svg) no-repeat center center;
+  #Hotcue1 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__1_loop.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton {
-    image: url(skin:/classic/buttons/btn__3.svg) no-repeat center center;
+#Hotcue2 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__2.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton {
-    image: url(skin:/classic/buttons/btn__4.svg) no-repeat center center;
+  #Hotcue2 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__2_loop.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton {
-    image: url(skin:/classic/buttons/btn__5.svg) no-repeat center center;
+#Hotcue3 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__3.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton {
-    image: url(skin:/classic/buttons/btn__6.svg) no-repeat center center;
+  #Hotcue3 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__3_loop.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton {
-    image: url(skin:/classic/buttons/btn__7.svg) no-repeat center center;
+#Hotcue4 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__4.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton {
-    image: url(skin:/classic/buttons/btn__8.svg) no-repeat center center;
+  #Hotcue4 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__4_loop.svg) no-repeat center center;
+  }
+#Hotcue5 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__5.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__5_loop.svg) no-repeat center center;
+  }
+#Hotcue6 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__6.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__6_loop.svg) no-repeat center center;
+  }
+#Hotcue7 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__7.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__7_loop.svg) no-repeat center center;
+  }
+#Hotcue8 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__8.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__8_loop.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton {
-  image: url(skin:/classic/buttons/btn__intro_start.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__intro_start.svg) no-repeat center center;
   }
   #SpecialCueButton_intro_end WPushButton {
-    image: url(skin:/classic/buttons/btn__intro_end.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__intro_end.svg) no-repeat center center;
   }
   #SpecialCueButton_outro_start WPushButton {
-    image: url(skin:/classic/buttons/btn__outro_start.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__outro_start.svg) no-repeat center center;
   }
   #SpecialCueButton_outro_end WPushButton {
-    image: url(skin:/classic/buttons/btn__outro_end.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__outro_end.svg) no-repeat center center;
   }
 
 #LoopActivate {
-  image: url(skin:/classic/buttons/btn__loop.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__loop.svg) no-repeat center center;
 }
 #Reloop {
-  image: url(skin:/classic/buttons/btn__reloop.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__reloop.svg) no-repeat center center;
 }
 
 #LoopIn {
-  image: url(skin:/classic/buttons/btn__loop_in.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__loop_in.svg) no-repeat center center;
 }
 #LoopOut {
-  image: url(skin:/classic/buttons/btn__loop_out.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__loop_out.svg) no-repeat center center;
 }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__loop_anchor_end.svg) no-repeat center center;
+  }
 
 #JumpForward {
-  image: url(skin:/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
 }
 #JumpBack {
-  image: url(skin:/classic/buttons/btn__beatjump_left.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__beatjump_left.svg) no-repeat center center;
 }
 
 /* Key buttons */
 #KeyMatchReset {
-  image: url(skin:/classic/buttons/btn__key_match.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__key_match.svg) no-repeat center center;
 }
 
 #KeyUp {
-  image: url(skin:/classic/buttons/btn__key_up.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__key_up.svg) no-repeat center center;
 }
 
 #KeyDown {
-  image: url(skin:/classic/buttons/btn__key_down.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__key_down.svg) no-repeat center center;
 }
 
 /* Rate buttons */
 #SyncDeck {
-  image: url(skin:/classic/buttons/btn__sync_deck.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__sync_deck.svg) no-repeat center center;
   }
 
 #SyncLeader[value="0"] {
-  image: url(skin:/classic/buttons/btn__sync_leader.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__sync_leader.svg) no-repeat center center;
   }
   #SyncLeader[value="1"],
   #SyncLeader[value="2"] {
-    image: url(skin:/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
   }
 
   #SyncSampler {
-    image: url(skin:/classic/buttons/btn__sync_sampler.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__sync_sampler.svg) no-repeat center center;
     }
 
   #RatePermUp {
-    image: url(skin:/classic/buttons/btn__plus.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__plus.svg) no-repeat center center;
   }
 
   #RatePermDown {
-    image: url(skin:/classic/buttons/btn__minus.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__minus.svg) no-repeat center center;
   }
 
   #RateTempUp {
-    image: url(skin:/classic/buttons/btn__arrow_right_up.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__arrow_right_up.svg) no-repeat center center;
   }
   #RateTempDown {
-    image: url(skin:/classic/buttons/btn__arrow_left_down.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__arrow_left_down.svg) no-repeat center center;
   }
 
   #RateTempUpRev {
-    image: url(skin:/classic/buttons/btn__arrow_right_down.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__arrow_right_down.svg) no-repeat center center;
   }
 
   #RateTempDownRev {
-    image: url(skin:/classic/buttons/btn__arrow_left_up.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__arrow_left_up.svg) no-repeat center center;
   }
 
 /* Mixer buttons */
 #PflButton {
-  image: url(skin:/classic/buttons/btn__pfl.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__pfl.svg) no-repeat center center;
+}
+
+#StemMuteButton[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_mute.svg) no-repeat center center;
 }
 
 #QuickEffectButton[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__star.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__star.svg) no-repeat center center;
 }
 
 /* EQ Kill button icons H / M / L */
 #EQKillButton_High[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__eq_kill_high.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__eq_kill_high.svg) no-repeat center center;
 }
 #EQKillButton_Mid[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__eq_kill_mid.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__eq_kill_mid.svg) no-repeat center center;
 }
 #EQKillButton_Low[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__eq_kill_low.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__eq_kill_low.svg) no-repeat center center;
 }
 
 #SplitCue[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__split.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__split.svg) no-repeat center center;
   }
   #SplitCue[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__split_active.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__split_active.svg) no-repeat center center;
   }
 
 #FxExpand[value="0"],
 #LibExpand[value="0"] {
-  image: url(skin:/classic/buttons/btn__expand.svg) no-repeat left center;
+  image: url(skins:LateNight/classic/buttons/btn__expand.svg) no-repeat left center;
   }
   #FxExpand[value="1"],
   #LibExpand[value="1"] {
-    image: url(skin:/classic/buttons/btn__collapse.svg) no-repeat left center;
+    image: url(skins:LateNight/classic/buttons/btn__collapse.svg) no-repeat left center;
   }
 #SamplerExpand[value="0"] {
-  image: url(skin:/classic/buttons/btn__expand_dim.svg) no-repeat left center;
+  image: url(skins:LateNight/classic/buttons/btn__expand_dim.svg) no-repeat left center;
   }
   #SamplerExpand[value="1"] {
-    image: url(skin:/classic/buttons/btn__collapse_dim.svg) no-repeat left center;
+    image: url(skins:LateNight/classic/buttons/btn__collapse_dim.svg) no-repeat left center;
   }
 
 #MixModeButton[value="0"] {
-  image: url(skin:/classic/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
   }
   #MixModeButton[value="1"] {
-    image: url(skin:/classic/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
   }
 
 #FxToggleButton[value="0"] {
-  image: url(skin:/classic/buttons/btn__fx_toggle.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__fx_toggle.svg) no-repeat center center;
   }
   #FxToggleButton[value="1"] {
-    image: url(skin:/classic/buttons/btn__fx_toggle_active.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__fx_toggle_active.svg) no-repeat center center;
   }
 
 #FxFocusButton[value="0"] {
-  image: url(skin:/classic/buttons/btn__fx_focus.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__fx_focus.svg) no-repeat center center;
   }
   #FxFocusButton[value="1"] {
-    image: url(skin:/classic/buttons/btn__fx_focus_active.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__fx_focus_active.svg) no-repeat center center;
   }
 
 /* deck controls for decks 1-4 and samplers */
 #CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__beat_curpos.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__beat_curpos.svg) no-repeat center center;
   }
   #CurposButton12[value="1"] {
-    image: url(skin:/classic/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
   }
   #CurposButton34[value="1"] {
-    image: url(skin:/classic/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
   }
 
   #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__eject.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__eject.svg) no-repeat center center;
     }
     #EjectButton12[value="1"] {
-      image: url(skin:/classic/buttons/btn__eject_active_12.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__eject_active_12.svg) no-repeat center center;
     }
     #EjectButton34[value="1"] {
-      image: url(skin:/classic/buttons/btn__eject_active_34.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__eject_active_34.svg) no-repeat center center;
     }
 
   #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__repeat.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__repeat.svg) no-repeat center center;
     }
     #RepeatButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__repeat_active_12.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__repeat_active_12.svg) no-repeat center center;
     }
     #RepeatButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__repeat_active_34.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__repeat_active_34.svg) no-repeat center center;
     }
 
   #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__quantize.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__quantize.svg) no-repeat center center;
     }
     #QuantizeButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__quantize_active_12.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__quantize_active_12.svg) no-repeat center center;
     }
     #QuantizeButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__quantize_active_34.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__quantize_active_34.svg) no-repeat center center;
     }
 
   #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__slip.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__slip.svg) no-repeat center center;
     }
     #SlipmodeButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__slip_active_12.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__slip_active_12.svg) no-repeat center center;
     }
     #SlipmodeButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__slip_active_34.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__slip_active_34.svg) no-repeat center center;
     }
 
   #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__keylock.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__keylock.svg) no-repeat center center;
     }
     #KeylockButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__keylock_active_12.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__keylock_active_12.svg) no-repeat center center;
     }
     #KeylockButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__keylock_active_34.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__keylock_active_34.svg) no-repeat center center;
     }
 
 #BeatgridControlsToggle[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
   }
   #BeatgridControlsToggle[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
+
+#StemControlsToggle[displayValue="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__stem_controls_expand.svg) no-repeat center center;
+  }
+  #StemControlsToggle[displayValue="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
+  }
+
+  #BpmLockToggle[value="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_locked.svg);
+    }
+  #BpmLockToggle[value="0"] {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_unlocked.svg);
+    }
+  #Undo[value="0"] {
+    image: url(skins:LateNight/classic/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/classic/buttons/btn__undo_active.svg) no-repeat center center;
+    }
   #BeatCurposLarge {
-    image: url(skin:/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;
     }
     #BeatsEarlier {
-      image: url(skin:/classic/buttons/btn__beats_earlier.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__beats_earlier.svg) no-repeat center center;
     }
     #BeatsLater {
-      image: url(skin:/classic/buttons/btn__beats_later.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__beats_later.svg) no-repeat center center;
     }
     #BeatsSlower {
-      image: url(skin:/classic/buttons/btn__beats_slower.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__beats_slower.svg) no-repeat center center;
     }
     #BeatsFaster {
-      image: url(skin:/classic/buttons/btn__beats_faster.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__beats_faster.svg) no-repeat center center;
     }
     #HotcuesEarlier {
-      image: url(skin:/classic/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
     }
     #HotcuesLater {
-      image: url(skin:/classic/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
+      image: url(skins:LateNight/classic/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
     }
 
 #MicTalk {
-  image: url(skin:/classic/buttons/btn__mic_talk.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__mic_talk.svg) no-repeat center center;
 }
 
 #AuxPlay {
-  image: url(skin:/classic/buttons/btn__aux_play.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__aux_play.svg) no-repeat center center;
 }
 
 #MicAuxAdd {
-  image: url(skin:/classic/buttons/btn__plus_flat.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__plus_flat.svg) no-repeat center center;
 }
 
 #MicDucking[value="0"] {
-  image: url(skin:/classic/buttons/btn__mic_duck_off.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__mic_duck_off.svg) no-repeat center center;
   }
   #MicDucking[value="1"] {
-    image: url(skin:/classic/buttons/btn__mic_duck_auto.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__mic_duck_auto.svg) no-repeat center center;
   }
   #MicDucking[value="2"] {
-    image: url(skin:/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
 #RecDot[highlight="0"] {
-  image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__rec_dot.svg) no-repeat center center;
   }
   #RecDot[highlight="1"],
   #RecDot[highlight="2"] {
-    image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
 #BroadcastButton[displayValue="0"] {
   /* for some reason the alignment isn't rescpected, so the icons
     have to be sized like available area (button size - margin) */
-  image: url(skin:/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
+  image: url(skins:LateNight/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
   }
   #BroadcastButton[displayValue="1"],
   #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
   #BroadcastButton[displayValue="4"] {
-    image: url(skin:/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
+    image: url(skins:LateNight/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
   }
 
 #SkinSettingsToggle[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__settings_off.svg) no-repeat left top;
+  image: url(skins:LateNight/classic/buttons/btn__settings_off.svg) no-repeat left top;
   }
   #SkinSettingsToggle[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__settings_on.svg) no-repeat left top;
+    image: url(skins:LateNight/classic/buttons/btn__settings_on.svg) no-repeat left top;
   }
 
 #ToolbarLogo {
-  image: url(skin:/classic/style/mixxx_logo_small.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/style/mixxx_logo_small.svg) no-repeat center center;
 }
 #ToolbarSeparator {
-  image: url(skin:/classic/style/toolbar_separator.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/style/toolbar_separator.svg) no-repeat center center;
   margin: 0px 3px;
 }
 
 /* Search bar Clear button */
 WSearchLineEdit QToolButton:!focus {
-  image: url(skin:/classic/buttons/btn__lib_clear_search.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_clear_search.svg);
   }
   WSearchLineEdit QToolButton:focus {
-    image: url(skin:/classic/buttons/btn__lib_clear_search_focus.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_clear_search_focus.svg);
   }
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ:!checked {
-  image: url(skin:/classic/buttons/btn__autodj_enable_off.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_enable_off.svg) no-repeat center center;
   }
   QPushButton#pushButtonAutoDJ:checked {
-    image: url(skin:/classic/buttons/btn__autodj_enable_on.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__autodj_enable_on.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/classic/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/classic/buttons/btn__autodj_fade.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__autodj_fade.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/classic/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/classic/buttons/btn__autodj_skip.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__autodj_skip.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonShuffle:enabled {
-  image: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonAddRandomTrack:enabled {
-  image: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonRepeatPlaylist:!checked {
-  image: url(skin:/classic/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
   }
   QPushButton#pushButtonRepeatPlaylist:checked {
-    image: url(skin:/classic/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
+    image: url(skins:LateNight/classic/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {  /*
-  padding: 3px 6px; */
-  qproperty-icon: url(skin:/classic/buttons/btn__delete.svg);
+#CueDeleteButton,
+#CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
   width: 24px;
   height: 42px;
   border-width: 2px;
-  border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  /* has no effect
-  padding: 0px; */
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+}
+#CueDeleteButton {
+  image: url(skins:LateNight/classic/buttons/btn__delete.svg);
+}
+#CueSavedLoopButton {
+  image: url(skins:LateNight/classic/buttons/btn__loop.svg);
+}
+#CueDeleteButton:pressed,
+#CueSavedLoopButton:pressed,
+#CueSavedLoopButton:checked {
+  background-color: #db0000;
+  outline: none;
 }
 
 #CueLabelEdit {
@@ -2062,15 +2186,23 @@ WLibraryTextBrowser:focus {
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #fff;
   background-color: #5e4507;
+}
+WLibrarySidebar::item:selected:focus {
+  outline: none;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
 }
 
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
@@ -2078,20 +2210,27 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
 }
 
 WLibrarySidebar {
   show-decoration-selected: 0;
-}
-WLibrarySidebar,
-WLibrarySidebar::item:focus {
   outline: none;
 }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
-#LibraryBPMSpinBox {
+WLibrary QPlainTextEdit,
+#LibraryBPMSpinBox,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor,
+WTrackProperty[selected="true"] {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;
@@ -2102,10 +2241,10 @@ WLibrary QLineEdit,
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/classic/buttons/btn__lib_bpm_locked_orange.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_bpm_locked_orange.svg);
 }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/classic/buttons/btn__lib_bpm_unlocked_grey.svg);
+  image: url(skins:LateNight/classic/buttons/btn__lib_bpm_unlocked_grey.svg);
 }
 /* BPM value */
 #LibraryBPMButton::item {
@@ -2122,11 +2261,17 @@ WLibrary QLineEdit,
     background-color: #382904;
     }
     #LibraryBPMSpinBox::up-button {
-      image: url(skin:/classic/buttons/btn__lib_bpm_up.svg) no-repeat;
+      image: url(skins:LateNight/classic/buttons/btn__lib_bpm_up.svg) no-repeat;
     }
     #LibraryBPMSpinBox::down-button {
-      image: url(skin:/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
+      image: url(skins:LateNight/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
     }
+#LibraryPlayedCheckbox::indicator:checked {
+  image: url(skins:LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
+}
+#LibraryPlayedCheckbox::indicator:unchecked {
+  image: url(skins:LateNight/classic/buttons/btn__lib_checkbox.svg);
+}
 
 WCueMenuPopup QPushButton:focus {
   outline: none;
@@ -2140,10 +2285,10 @@ WCueMenuPopup QPushButton:focus {
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
-    image: url(skin:/classic/buttons/btn__lib_preview_play.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_preview_play.svg);
     }
   #LibraryPreviewButton:checked {
-    image: url(skin:/classic/buttons/btn__lib_preview_pause.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_preview_pause.svg);
     }
 
 
@@ -2162,6 +2307,9 @@ WTrackTableViewHeader {
       stop:1 #111);
   }
   WTrackTableViewHeader::section {
+    /* Workaround Qt bug that causes space being reserved for invisible sort indicators.
+       For details see style-plaemon.qss */
+    padding-right: -0.95em;
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
@@ -2175,10 +2323,10 @@ WTrackTableViewHeader {
       stop:1 rgba(17,17,17,190));
     }
     WTrackTableViewHeader::up-arrow {
-      image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
+      image: url(skins:LateNight/classic/buttons/btn__lib_sort_up.svg);
       }
     WTrackTableViewHeader::down-arrow {
-      image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
+      image: url(skins:LateNight/classic/buttons/btn__lib_sort_down.svg);
     }
 
 
@@ -2320,73 +2468,71 @@ WSearchLineEdit {
 
 #WaveformSplitter::handle,
 #SidebarCoverSplitter::handle {
-    image: url(skin:/classic/style/splitter_handle_horizontal.png); /*
-    border-top: 1px solid #000; */
+    image: url(skins:LateNight/classic/style/splitter_handle_horizontal.png);
   }
   #WaveformSplitter::handle:pressed,
-  #WaveformSplitter::handle:hover,
-  #SidebarCoverSplitter::handle:pressed,
-  #SidebarCoverSplitter::handle:hover {
-    image: url(skin:/classic/style/splitter_handle_horizontal_pressed.png);
+  #SidebarCoverSplitter::handle:pressed {
+    image: url(skins:LateNight/classic/style/splitter_handle_horizontal_pressed.png);
   }
   #WaveformSplitter::handle:vertical,
   #SidebarCoverSplitter::handle:vertical {
-  height: 9px;
-}
+    height: 9px;
+  }
 
 /* LibrarySplitter
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
 #LibrarySplitter::handle {
-  image: url(skin:/classic/style/splitter_handle_vertical.png);
-  background-color: #1e1e1e;
-}
-#LibrarySplitter::handle:pressed,
-#LibrarySplitter::handle:hover {
-  image: url(skin:/classic/style/splitter_handle_vertical_pressed.png);
-}
-#LibrarySplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
   height: 6px;
-}
+  image: url(skins:LateNight/classic/style/splitter_handle_vertical.png);
+  background-color: #1e1e1e;
+  }
+  #LibrarySplitter::handle:pressed {
+    image: url(skins:LateNight/classic/style/splitter_handle_vertical_pressed.png);
+  }
 /************ splitters ***********************/
 
 
 /************ Library feature controls / tree view / table view *************/
-WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/classic/buttons/btn__lib_radio_button_on_yellow.svg) center center;
-}
 
-WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/classic/buttons/btn__lib_radio_button_off.svg) center center;
-}
+/* Additional space */
+#LibraryFeatureControls QRadioButton {
+  margin: 2px 3px 2px 3px;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:checked {
+    image: url(skins:LateNight/classic/buttons/btn__lib_radio_button_on_yellow.svg) center center;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:unchecked {
+    image: url(skins:LateNight/classic/buttons/btn__lib_radio_button_off.svg) center center;
+  }
 
 /* triangle for closed/opened branches in treeview */
 /* closed */
 WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
 WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
-/*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+/*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; #6040 */
   border-image: none;
-  image: url(skin:/classic/style/library_branch_closed.svg);
+  image: url(skins:LateNight/classic/style/library_branch_closed.svg);
   }
   /* closed, selected */
   WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_closed_selected.svg);
+    image: url(skins:LateNight/classic/style/library_branch_closed_selected.svg);
     background-color: #5e4507;
   }
 /* open */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(skin:/classic/style/library_branch_open.svg);
+  image: url(skins:LateNight/classic/style/library_branch_open.svg);
   }
   /* open, selected */
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_open_selected.svg);
+    image: url(skins:LateNight/classic/style/library_branch_open_selected.svg);
     background-color: #5e4507;
     }
   /* space left of selected child item */
@@ -2411,6 +2557,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2433,7 +2580,8 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+/*WTrackTableViewHeader QMenu::item,*/
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -2441,8 +2589,11 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
 WCueMenuPopup,
@@ -2474,12 +2625,17 @@ WEffectSelector,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectChainPresetSelector:item:selected,
@@ -2495,9 +2651,20 @@ WSearchLineEdit::item:selected,
 #SkinSettingsMixerToggle[hover="true"],
 #SkinSettingsLabelButton[hover="true"] {
   background-color: #5E4507;
-  color: white;
+  color: #fff;
   /* remove OS focus indicator */
   outline: none;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #fff;
+    selection-background-color: #5E4507;
+    border-radius: 1px;
+    border: 0px;
+    outline: none;
   }
   /* checked item */
   WEffectSelector::item:checked,
@@ -2521,49 +2688,43 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled {
+WLibraryTextBrowser QMenu::item:disabled,
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
   color: #494949;
 }
 
 #MainMenu QMenu::indicator:checked,
 #MainMenu QMenu::indicator:checked:selected {
-  image: url(skin:/classic/buttons/btn__menu_checkbox_checked.svg);
+  image: url(skins:LateNight/classic/buttons/btn__menu_checkbox_checked.svg);
   }
   #MainMenu QMenu::indicator:unchecked,
   #MainMenu QMenu::indicator:unchecked:selected {
-    image: url(skin:/classic/buttons/btn__menu_checkbox.svg);
+    image: url(skins:LateNight/classic/buttons/btn__menu_checkbox.svg);
   }
 
   WLibrarySidebar QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
   #fadeModeCombobox::indicator:checked {
-    image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_checkmark_orange.svg);
     }
     WEffectSelector::indicator:checked,
     WEffectChainPresetSelector::indicator:checked,
     #fadeModeCombobox::indicator:checked {
-      width: 13px;
-      height: 13px;
       margin-left: 8px;
     }
-  /* disabled menu item and checkbox */
-  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    background-color: #222;
-  }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
-    image: url(skin:/classic/buttons/btn__lib_checkmark_grey.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_checkmark_grey.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    image: url(skin:/classic/buttons/btn__lib_checkmark_indeterminate_orange.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_checkmark_indeterminate_orange.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
-    image: url(skin:/classic/buttons/btn__lib_checkmark_indeterminate_grey.svg);
+    image: url(skins:LateNight/classic/buttons/btn__lib_checkmark_indeterminate_grey.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
   WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {
@@ -2573,22 +2734,13 @@ QLineEdit QMenu::item:disabled {
   #MainMenu QMenu::right-arrow,
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow {
-    image: url(skin:/classic/style/menu_arrow_yellow.svg);
+    image: url(skins:LateNight/classic/style/menu_arrow_yellow.svg);
     }
   #MainMenu QMenu::right-arrow:selected,
   WTrackMenu::right-arrow:selected,
   WTrackMenu QMenu::right-arrow:selected {
-    image: url(skin:/classic/style/menu_arrow_white.svg);
+    image: url(skins:LateNight/classic/style/menu_arrow_white.svg);
   }
-
-/* This is the only way to select the 'Played' checkbox.
-  Note that this also selects the BPM lock. */
-  WTrackTableView::indicator:checked {
-    image: url(skin:/classic/buttons/btn__lib_checkbox_checked.svg);
-    }
-  WTrackTableView::indicator:unchecked {
-    image: url(skin:/classic/buttons/btn__lib_checkbox.svg);
-    }
 
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
@@ -2597,6 +2749,7 @@ QLineEdit QMenu::item:disabled {
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator,
   WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
@@ -2607,8 +2760,8 @@ QLineEdit QMenu::item:disabled {
   selected, unchecked items would have a checkmark */
 WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu::indicator:unchecked,
-WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
+WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator:unchecked,

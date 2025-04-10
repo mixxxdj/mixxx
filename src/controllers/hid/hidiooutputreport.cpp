@@ -2,21 +2,21 @@
 
 #include <hidapi.h>
 
-#include "controllers/defs_controllers.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
+#include "util/cmdlineargs.h"
 #include "util/compatibility/qbytearray.h"
+#include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
-#include "util/trace.h"
 
 namespace {
 constexpr int kReportIdSize = 1;
-constexpr int kMaxHidErrorMessageSize = 512;
+constexpr size_t kMaxHidErrorMessageSize = 512;
 } // namespace
 
 HidIoOutputReport::HidIoOutputReport(
         const quint8& reportId, const unsigned int& reportDataSize)
         : m_reportId(reportId),
+          m_hidWriteErrorLogged(false),
           m_possiblyUnsentDataCached(false),
           m_lastCachedDataSize(0) {
     // First byte must always contain the ReportID - also after swapping, therefore initialize both arrays
@@ -27,9 +27,8 @@ HidIoOutputReport::HidIoOutputReport(
 }
 
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
-        const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput,
-        bool resendUnchangedReport) {
+        bool useNonSkippingFIFO) {
     auto cacheLock = lockMutex(&m_cachedDataMutex);
 
     if (!m_lastCachedDataSize) {
@@ -37,25 +36,32 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
         m_lastCachedDataSize = data.size();
 
     } else {
-        if (m_possiblyUnsentDataCached) {
+        if (CmdlineArgs::Instance()
+                        .getControllerDebug() &&
+                m_possiblyUnsentDataCached && !useNonSkippingFIFO) {
             qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
-                               << "Skipped superseded OutputReport"
-                               << deviceInfo.formatName() << "serial #"
-                               << deviceInfo.serialNumber() << "(Report ID"
-                               << m_reportId << ")";
+                               << "skipped superseded OutputReport data for ReportID"
+                               << m_reportId;
         }
 
         // The size of an HID report is defined in a HID device and can't vary at runtime
         if (m_lastCachedDataSize != data.size()) {
-            qCWarning(logOutput) << "Size of report (with Report ID"
-                                 << m_reportId << ") changed from"
-                                 << m_lastCachedDataSize
-                                 << "to" << data.size() << "for"
-                                 << deviceInfo.formatName() << "serial #"
-                                 << deviceInfo.serialNumber()
-                                 << "- This indicates a bug in the mapping code!";
+            qCWarning(logOutput)
+                    << "Size of OutputReport ( with ReportID" << m_reportId
+                    << ") changed from" << m_lastCachedDataSize << "to"
+                    << data.size()
+                    << "- This indicates a bug in the mapping code!";
             m_lastCachedDataSize = data.size();
         }
+    }
+
+    // m_possiblyUnsentDataCached must be set while m_cachedDataMutex is locked
+    // This step covers the case that data for the report are cached in skipping mode,
+    // succeed by a non-skipping send of the same report
+    if (useNonSkippingFIFO) {
+        m_possiblyUnsentDataCached = false;
+        m_lastSentData.clear();
+        return;
     }
 
     // Deep copy with reusing the already allocated heap memory
@@ -66,12 +72,10 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
             data.constData(),
             data.size());
     m_possiblyUnsentDataCached = true;
-    m_resendUnchangedReport = resendUnchangedReport;
 }
 
 bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         hid_device* pHidDevice,
-        const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 
@@ -82,7 +86,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         return false;
     }
 
-    if (!(m_resendUnchangedReport || m_lastSentData.compare(m_cachedData))) {
+    if (!m_lastSentData.compare(m_cachedData)) {
         // An HID OutputReport can contain only HID OutputItems.
         // HID OutputItems are defined to represent the state of one or more similar controls or LEDs.
         // Only HID Feature items may be attributes of other items.
@@ -95,11 +99,13 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
 
         cacheLock.unlock();
 
-        qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
-                           << " Skipped identical Output Report for"
-                           << deviceInfo.formatName() << "serial #"
-                           << deviceInfo.serialNumber() << "(Report ID"
-                           << m_reportId << ")";
+        if (CmdlineArgs::Instance()
+                        .getControllerDebug()) {
+            qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
+                               << "Skipped sending identical OutputReport data "
+                                  "from cache for ReportID"
+                               << m_reportId;
+        }
 
         // Return with false, to signal the caller, that no time consuming IO operation was necessary
         return false;
@@ -123,10 +129,20 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
             reinterpret_cast<const unsigned char*>(m_lastSentData.constData()),
             m_lastSentData.size());
     if (result == -1) {
-        qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
-                             << mixxx::convertWCStringToQString(
-                                        hid_error(pHidDevice),
-                                        kMaxHidErrorMessageSize);
+        if (!m_hidWriteErrorLogged) {
+            qCWarning(logOutput)
+                    << "Unable to send data to device :"
+                    << mixxx::convertWCStringToQString(
+                               hid_error(pHidDevice), kMaxHidErrorMessageSize)
+                    << "Note that, this message is only logged once and may "
+                       "not appear again until all hid_writee errors have "
+                       "disappeared.";
+
+            // Stop logging error messages if every hid_write() fails to avoid large log files
+            m_hidWriteErrorLogged = true;
+        }
+    } else {
+        m_hidWriteErrorLogged = false;
     }
 
     hidDeviceLock.unlock();
@@ -146,11 +162,14 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         return true;
     }
 
-    qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
-                       << result << "bytes sent to" << deviceInfo.formatName()
-                       << "serial #" << deviceInfo.serialNumber()
-                       << "(including report ID of" << m_reportId << ") - Needed: "
-                       << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
+    if (CmdlineArgs::Instance()
+                    .getControllerDebug()) {
+        qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
+                           << result << "bytes ( including ReportID of"
+                           << static_cast<quint8>(m_reportId)
+                           << ") sent from skipping cache - Needed:"
+                           << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
+    }
 
     // Return with true, to signal the caller, that the time consuming hid_write operation was executed
     return true;

@@ -5,7 +5,7 @@ Container for all the effect units
 <Template>
   <WidgetGroup>
     <Connection>
-      <ConfigKey>[EffectRack1],show</ConfigKey>
+      <ConfigKey>[Skin],show_effectrack</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
     <Layout>vertical</Layout>

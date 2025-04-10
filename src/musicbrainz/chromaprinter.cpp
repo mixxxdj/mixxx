@@ -57,7 +57,7 @@ QString calcFingerprint(
     SampleUtil::convertFloat32ToS16(
             &fingerprintSamples[0],
             sampleBuffer.data(),
-            fingerprintSamples.size());
+            static_cast<SINT>(fingerprintSamples.size()));
 
     qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 
@@ -119,7 +119,7 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     if (!pAudioSource) {
         qDebug()
                 << "Failed to open file for fingerprinting"
-                << pTrack->getFileInfo();
+                << pTrack->getLocation();
         return QString();
     }
 

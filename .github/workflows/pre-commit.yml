@@ -6,53 +6,82 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
 jobs:
   pre-commit:
     name: Detecting code style issues
     runs-on: ubuntu-latest
     # The Dockerfile for this container can be found at:
     # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20210923
+    container: holzhaus/mixxx-ci:20220930
     steps:
-    - name: "Check out repository"
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 2
+      - name: "Check out repository"
+        uses: actions/checkout@v4.2.2
+        with:
+          # Unfortunately we need the whole history and can't use a shallow clone
+          # because the Appstream Metadata hook parses the history to find the
+          # latest changelog modification date. Otherwise, `fetch-depth: 2` would
+          # suffice.
+          fetch-depth: 0
 
-    - name: "Detect code style issues (push)"
-      uses: pre-commit/action@v3.0.0
-      if: github.event_name == 'push'
-      # There are too many files in the repo that have formatting issues. We'll
-      # disable these checks for now when pushing directly (but still run these
-      # on Pull Requests!).
-      env:
-        SKIP: clang-format,eslint,no-commit-to-branch
+      - name: "Add GitHub workspace as a safe directory"
+        # Without this, git commands will fail due to mismatching permissions in
+        # the container. See actions/runner#2033 for details.
+        #
+        # The actions/checkout action should already take care of this thanks to
+        # commit actions/checkout@55fd82fc42c0cdd6f1f480dd23f60636a42f6f5c, but
+        # it seems like that's not working properly.
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git config --global --list
 
-    - name: "Detect code style issues (pull_request)"
-      uses: pre-commit/action@v3.0.0
-      if: github.event_name == 'pull_request'
-      env:
-        SKIP: no-commit-to-branch
-      with:
-        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
-        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-        extra_args: --from-ref HEAD^1 --to-ref HEAD
+      - name: "Detect code style issues (push)"
+        uses: pre-commit/action@v3.0.1
+        if: github.event_name == 'push'
+        # There are too many files in the repo that have formatting issues. We'll
+        # disable these checks for now when pushing directly (but still run these
+        # on Pull Requests!).
+        env:
+          SKIP: clang-format,eslint,no-commit-to-branch
 
-    - name: "Generate patch file"
-      if: failure()
-      run: |
-        git diff-index -p HEAD > "${PATCH_FILE}"
-        [ -s "${PATCH_FILE}" ] && echo "UPLOAD_PATCH_FILE=${PATCH_FILE}" >> "${GITHUB_ENV}"
-      env:
-        PATCH_FILE: pre-commit.patch
+      - name: "Detect code style issues (pull_request)"
+        uses: pre-commit/action@v3.0.1
+        if: github.event_name == 'pull_request'
+        env:
+          SKIP: no-commit-to-branch
+          # https://github.com/paleite/eslint-plugin-diff?tab=readme-ov-file#ci-setup
+          ESLINT_PLUGIN_DIFF_COMMIT: ${{ github.event.pull_request.base.ref }}
+        with:
+          # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
+          # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
+          extra_args: --from-ref HEAD^1 --to-ref HEAD
 
-    - name: "Upload patch artifact"
-      if: failure() && env.UPLOAD_PATCH_FILE != null
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.UPLOAD_PATCH_FILE }}
-        path: ${{ env.UPLOAD_PATCH_FILE }}
+      - name: "Generate patch file"
+        if: failure()
+        run: |
+          git diff-index -p HEAD > "${PATCH_FILE}"
+          [ -s "${PATCH_FILE}" ] && echo "UPLOAD_PATCH_FILE=${PATCH_FILE}" >> "${GITHUB_ENV}"
+        shell: bash
+        env:
+          PATCH_FILE: pre-commit.patch
 
-    # AppStream metadata has been generated/updated by a pre-commit hook
-    - name: "Validate AppStream metadata"
-      run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml
+      - name: "Upload patch artifact"
+        if: failure() && env.UPLOAD_PATCH_FILE != null
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ env.UPLOAD_PATCH_FILE }}
+          path: ${{ env.UPLOAD_PATCH_FILE }}
+
+      - name: "Upload pre-commit.log"
+        if: failure() && env.UPLOAD_PATCH_FILE == null
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: pre-commit.log
+          path: /github/home/.cache/pre-commit/pre-commit.log
+
+      # AppStream metadata has been generated/updated by a pre-commit hook
+      - name: "Validate AppStream metadata"
+        if: runner.os == 'Linux'
+        run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml

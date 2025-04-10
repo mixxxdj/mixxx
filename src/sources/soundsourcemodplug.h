@@ -15,8 +15,8 @@ namespace mixxx {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug final : public SoundSource {
   public:
-    static constexpr int kChannelCount = 2;
-    static constexpr int kSampleRate = 44100;
+    static constexpr auto kChannelCount = mixxx::audio::ChannelCount::stereo();
+    static constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
     static constexpr int kBitsPerSample = 16;
 
     // apply settings for decoding
@@ -28,7 +28,8 @@ class SoundSourceModPlug final : public SoundSource {
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
 
     void close() override;
 

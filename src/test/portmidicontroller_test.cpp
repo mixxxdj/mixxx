@@ -66,14 +66,19 @@ class PortMidiControllerTest : public MixxxTest {
     PortMidiControllerTest()
             : m_mockInput(new MockPortMidiDevice(&m_inputDeviceInfo, 0)),
               m_mockOutput(new MockPortMidiDevice(&m_outputDeviceInfo, 0)) {
-        m_inputDeviceInfo.name = "Test Input Device";
-        m_inputDeviceInfo.interf = "Test";
+        // PmDeviceInfo::name is non const since portmidi 2.0.1
+        // We maintain the memory here in place of Pm_GetDeviceInfo()
+        char inputDeviceName[] = "Test Input Device";
+        char outputDeviceName[] = "Test Output Device";
+        constexpr const char interf[] = "Test";
+        m_inputDeviceInfo.name = inputDeviceName;
+        m_inputDeviceInfo.interf = interf;
         m_inputDeviceInfo.input = 1;
         m_inputDeviceInfo.output = 0;
         m_inputDeviceInfo.opened = 0;
 
-        m_outputDeviceInfo.name = "Test Output Device";
-        m_outputDeviceInfo.interf = "Test";
+        m_outputDeviceInfo.name = outputDeviceName;
+        m_outputDeviceInfo.interf = interf;
         m_outputDeviceInfo.input = 0;
         m_outputDeviceInfo.output = 1;
         m_outputDeviceInfo.opened = 0;
@@ -85,7 +90,7 @@ class PortMidiControllerTest : public MixxxTest {
     }
 
     void openDevice() {
-        m_pController->open();
+        m_pController->open({});
     }
 
     void closeDevice() {

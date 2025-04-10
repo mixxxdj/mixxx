@@ -291,9 +291,12 @@ class SyncTrackMetadataTest : public LibraryTest {
 
         // Reimport metadata from the file
         mixxx::TrackMetadata importedTrackMetadata;
+        // TODO: Test both use cases, i.e. also with resetMissingTagMetadata = true.
+        // Currently this option is disabled and not configurable in the UI.
+        constexpr auto resetMissingTagMetadata = false;
         auto [importResult, sourceSynchronizedAt] =
                 SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
-                        &importedTrackMetadata, nullptr);
+                        &importedTrackMetadata, nullptr, resetMissingTagMetadata);
         EXPECT_EQ(expectedImportResult, importResult);
 
         if (syncTrackMetadata) {

@@ -1,13 +1,12 @@
 #include "widget/wlibrarysidebar.h"
 
-#include <QFileInfo>
 #include <QHeaderView>
-#include <QMimeData>
 #include <QUrl>
 #include <QtDebug>
 
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
+#include "util/defs.h"
 #include "util/dnd.h"
 
 constexpr int expand_time = 250;
@@ -33,12 +32,18 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
-    QModelIndex clickedItem = indexAt(event->pos());
-    emit rightClicked(event->globalPos(), clickedItem);
+    QModelIndex clickedIndex = indexAt(event->pos());
+    if (!clickedIndex.isValid()) {
+        return;
+    }
+    // Use this instead of setCurrentIndex() to keep current selection
+    selectionModel()->setCurrentIndex(clickedIndex, QItemSelectionModel::NoUpdate);
+    event->accept();
+    emit rightClicked(event->globalPos(), clickedIndex);
     //}
 }
 
-// Drag enter event, happens when a dragged item enters the track sources view
+/// Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
@@ -57,7 +62,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     //QTreeView::dragEnterEvent(event);
 }
 
-// Drag move event, happens when a dragged item hovers over the track sources view...
+/// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
@@ -97,10 +102,12 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
-                        // consider we have a long list of valid files, checking all will
-                        // take a lot of time that stales Mixxx and this makes the drop feature useless
-                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
-                        // but the EXE is sorted out later after dropping
+                        // Consider that we might have a long list of files,
+                        // checking all will take a lot of time that stalls
+                        // Mixxx and this makes the drop feature useless.
+                        // E.g. you may have tried to drag two MP3's and an EXE,
+                        // the drop is accepted here, but the EXE is filtered
+                        // out later after dropping
                         accepted = true;
                         break;
                     }
@@ -171,21 +178,29 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
     }
 }
 
+void WLibrarySidebar::renameSelectedItem() {
+    // Rename crate or playlist (internal, external, history)
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
+        return;
+    }
+    emit renameItem(selIndex);
+    return;
+}
+
 void WLibrarySidebar::toggleSelectedItem() {
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
-    if (selectedIndices.size() > 0) {
-        QModelIndex index = selectedIndices.at(0);
+    QModelIndex index = selectedIndex();
+    if (index.isValid()) {
         // Activate the item so its content shows in the main library.
-        emit pressed(index);
+        emit clicked(index);
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
     }
 }
 
 bool WLibrarySidebar::isLeafNodeSelected() {
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
-    if (selectedIndices.size() > 0) {
-        QModelIndex index = selectedIndices.at(0);
+    QModelIndex index = selectedIndex();
+    if (index.isValid()) {
         if(!index.model()->hasChildren(index)) {
             return true;
         }
@@ -197,7 +212,54 @@ bool WLibrarySidebar::isLeafNodeSelected() {
     return false;
 }
 
+bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
+    // qDebug() << "WLibrarySidebar::isChildIndexSelected" << index;
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
+        return false;
+    }
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        // qDebug() << " >> model() is not SidebarModel";
+        return false;
+    }
+    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    if (!translated.isValid()) {
+        // qDebug() << " >> index can't be translated";
+        return false;
+    }
+    return translated == selIndex;
+}
+
+bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
+    // qDebug() << "WLibrarySidebar::isFeatureRootIndexSelected";
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
+        return false;
+    }
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        return false;
+    }
+    const QModelIndex rootIndex = sidebarModel->getFeatureRootIndex(pFeature);
+    return rootIndex == selIndex;
+}
+
+/// Invoked by actual keypresses (requires widget focus) and emulated keypresses
+/// sent by LibraryControl
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
+    // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
+    // item is not focused, require second press to perform the desired action.
+
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    QModelIndex selIndex = selectedIndex();
+    if (sidebarModel && selIndex.isValid() && event->matches(QKeySequence::Paste)) {
+        sidebarModel->paste(selIndex);
+        return;
+    }
+
+    focusSelectedIndex();
+
     switch (event->key()) {
     case Qt::Key_Return:
         toggleSelectedItem();
@@ -212,29 +274,32 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
         // item to save us from having to push "Enter".
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
+        QModelIndex selIndex = selectedIndex();
+        if (!selIndex.isValid()) {
             return;
         }
-        QModelIndex selIndex = selectedIndices.first();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
-            return;
-        }
+        // Ensure the new selection is visible even if it was already selected/
+        // focused, like when the topmost item was selected but out of sight and
+        // we pressed Up, Home or PageUp.
+        scrollTo(selIndex);
         emit pressed(selIndex);
         return;
     }
+    case Qt::Key_Right: {
+        if (event->modifiers() & Qt::ControlModifier) {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        } else {
+            QTreeView::keyPressEvent(event);
+        }
+        return;
+    }
     case Qt::Key_Left: {
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
-        }
         // If an expanded item is selected let QTreeView collapse it
-        QModelIndex selIndex = selectedIndices.first();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        QModelIndex selIndex = selectedIndex();
+        if (!selIndex.isValid()) {
             return;
         }
+        // collapse knot
         if (isExpanded(selIndex)) {
             QTreeView::keyPressEvent(event);
             return;
@@ -251,9 +316,39 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // Focus tracks table
         emit setLibraryFocus(FocusWidget::TracksTable);
         return;
+    case kRenameSidebarItemShortcutKey: { // F2
+        renameSelectedItem();
+        return;
+    }
+    case kHideRemoveShortcutKey: { // Del (macOS: Cmd+Backspace)
+        // Delete crate or playlist (internal, external, history)
+        if (event->modifiers() != kHideRemoveShortcutModifier) {
+            return;
+        }
+        QModelIndex selIndex = selectedIndex();
+        if (!selIndex.isValid()) {
+            return;
+        }
+        emit deleteItem(selIndex);
+        return;
+    }
     default:
         QTreeView::keyPressEvent(event);
     }
+}
+
+void WLibrarySidebar::mousePressEvent(QMouseEvent* event) {
+    // handle right click only in contextMenuEvent() to not select the clicked index
+    if (event->buttons().testFlag(Qt::RightButton)) {
+        return;
+    }
+    QTreeView::mousePressEvent(event);
+}
+
+void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
+    // Clear the current index, i.e. remove the focus indicator
+    selectionModel()->clearCurrentIndex();
+    QTreeView::focusInEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
@@ -302,6 +397,27 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
         parentIndex = parentIndex.parent();
     }
     scrollTo(translated, EnsureVisible);
+}
+
+QModelIndex WLibrarySidebar::selectedIndex() {
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (selectedIndices.isEmpty()) {
+        return QModelIndex();
+    }
+    QModelIndex selIndex = selectedIndices.first();
+    DEBUG_ASSERT(selIndex.isValid());
+    return selIndex;
+}
+
+/// Refocus the selected item after right-click
+void WLibrarySidebar::focusSelectedIndex() {
+    // After the context menu was activated (and closed, with or without clicking
+    // an action), the currentIndex is the right-clicked item.
+    // If if the currentIndex is not selected, make the selection the currentIndex
+    QModelIndex selIndex = selectedIndex();
+    if (selIndex.isValid() && selIndex != selectionModel()->currentIndex()) {
+        setCurrentIndex(selIndex);
+    }
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {

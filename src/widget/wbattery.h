@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QList>
-#include <QPixmap>
 #include <QScopedPointer>
 #include <QVector>
 
-#include "skin/legacy/skincontext.h"
-#include "widget/wlabel.h"
+#include "widget/paintable.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
-#include "util/battery/battery.h"
+
+class SkinContext;
+class QDomNode;
+class PixmapSource;
+class Battery;
 
 class WBattery : public WWidget {
     Q_OBJECT

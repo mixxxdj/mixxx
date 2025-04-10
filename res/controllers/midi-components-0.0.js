@@ -27,11 +27,12 @@
  */
 
 (function(global) {
+    const NO_TIMER = 0;
     const Component = function(options) {
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -176,6 +177,9 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
+        triggerOnRelease: false,
+        isLongPressed: false,
+        longPressTimer: NO_TIMER,
         isPress: function(channel, control, value, _status) {
             return value > 0;
         },
@@ -190,17 +194,19 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
-                        this.longPressTimer = 0;
-                    }.bind(this), true);
+                        this.longPressTimer = NO_TIMER;
+                    }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
+                    } else if (this.triggerOnRelease) {
+                        this.trigger();
                     }
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                     this.isLongPressed = false;
                 }
@@ -255,17 +261,17 @@
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
-                            this.longPressTimer = 0;
-                        }.bind(this), true);
+                            this.longPressTimer = NO_TIMER;
+                        }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
                 } else {
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                 }
             };
@@ -298,7 +304,7 @@
             this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
-        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.outKey = "hotcue_" + this.number + "_status";
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
@@ -363,7 +369,12 @@
             return;
         }
         this.volumeByVelocity = options.volumeByVelocity;
-        this.number = options.number;
+        const samNum = options.number;
+        if (engine.getValue("[App]", "num_samplers") < samNum) {
+            console.warn("Mapping tried to connect to non-existent sampler.");
+            engine.setValue("[App]", "num_samplers", samNum);
+        }
+        this.number = samNum;
         this.group = "[Sampler" + this.number + "]";
         Button.call(this, options);
     };
@@ -448,6 +459,7 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
+        softTakeover: true,
         input: function(channel, control, value, _status, _group) {
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
@@ -475,8 +487,7 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
-                this.input(channel, control, value, status, group);
+                this.input(channel, control, (value << 7) + (this._firstLSB ? this._firstLSB : 0), status, group);
             }
             this.MSB = value;
         },
@@ -489,7 +500,7 @@
             }
         },
         connect: function() {
-            if (this.firstValueReceived && !this.relative) {
+            if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
@@ -645,6 +656,10 @@
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
         },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         */
         applyLayer: function(newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
@@ -655,7 +670,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            Object.assign(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -727,35 +742,65 @@
     });
 
     const JogWheelBasic = function(options) {
+        if (options.deck !== undefined && options.group !== undefined) {
+            console.warn(
+                "options.deck and option.group are both set; " +
+                "options.deck will take priority"
+            );
+        }
+
+        const deck = options.deck;
+        const group = script.deckFromGroup(options.group);
+        delete options.deck;
+        delete options.group;
+
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+        this._deck = undefined;
 
-        if (!_.isInteger(this.deck)) {
-            console.warn("missing scratch deck");
-            return;
+        Object.defineProperties(this, {
+            deck: {
+                get: () => this._deck,
+                set: (value) => {
+                    if (Number.isInteger(value) && value > 0) {
+                        this._deck = value;
+                        this.reset();
+                    }
+                },
+            },
+            group: {
+                get: () => `[Channel${deck}]`,
+                set: value => {
+                    const deck = script.deckFromGroup(value);
+                    if (deck > 0) {
+                        this._deck = deck;
+                        this.reset();
+                    }
+                },
+            }
+        });
+
+        this.deck = deck;
+
+        if (!this.deck) {
+            this.group = group;  // try setting deck from group
         }
-        if (this.deck <= 0) {
-            console.warn("invalid deck number: " + this.deck);
-            return;
-        }
-        if (!_.isInteger(this.wheelResolution)) {
+
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
-        if (this.group === undefined) {
-            this.group = "[Channel" + this.deck + "]";
-        }
+
         this.inKey = "jog";
     };
 
@@ -767,6 +812,10 @@
             return value < 0x40 ? value : value - (this.max + 1);
         },
         inputWheel: function(_channel, _control, value, _status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
             value = this.inValueScale(value);
             if (engine.isScratching(this.deck)) {
                 engine.scratchTick(this.deck, value);
@@ -775,6 +824,10 @@
             }
         },
         inputTouch: function(channel, control, value, status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
             if (this.isPress(channel, control, value, status) && this.vinylMode) {
                 engine.scratchEnable(this.deck,
                     this.wheelResolution,
@@ -785,6 +838,11 @@
                 engine.scratchDisable(this.deck);
             }
         },
+        input: function(_channel, control, _value, status, _group) {
+            throw "Called wrong input handler for " + status + ": " + control + ".\n" +
+                "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
+        },
+        reset() {},
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
@@ -1120,8 +1178,6 @@
 
         this.effectFocusButton = new Button({
             group: this.group,
-            longPressed: false,
-            longPressTimer: 0,
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
             startEffectFocusChooseMode: function() {
@@ -1147,9 +1203,10 @@
                 this.input = function(channel, control, value, status, _group) {
                     const showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                            this.startEffectFocusChooseMode.bind(this),
-                            true);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
+                            this.startEffectFocusChooseMode();
+                            this.longPressTimer = NO_TIMER;
+                        }, true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -1159,8 +1216,9 @@
                             this.pressedWhenParametersHidden = true;
                         }
                     } else {
-                        if (this.longPressTimer) {
+                        if (this.longPressTimer !== NO_TIMER) {
                             engine.stopTimer(this.longPressTimer);
+                            this.longPressTimer = NO_TIMER;
                         }
 
                         if (eu.focusChooseModeActive) {

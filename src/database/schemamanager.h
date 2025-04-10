@@ -1,9 +1,8 @@
 #pragma once
 
-#include <QSqlDatabase>
-
-#include "preferences/usersettings.h"
 #include "library/dao/settingsdao.h"
+
+class QSqlDatabase;
 
 /// The SchemaManager reads the database schema from the schemaFile
 /// (res/schema.xml) and is responsible for checking compatibility as well as

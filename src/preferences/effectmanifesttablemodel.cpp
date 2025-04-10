@@ -2,8 +2,10 @@
 
 #include <QMimeData>
 
+#include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectsbackend.h"
 #include "effects/backends/effectsbackendmanager.h"
+#include "moc_effectmanifesttablemodel.cpp"
 
 namespace {
 const int kColumnType = 0;
@@ -28,7 +30,7 @@ void EffectManifestTableModel::setList(const QList<EffectManifestPointer>& newLi
 
 int EffectManifestTableModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    return m_manifests.count();
+    return m_manifests.size();
 }
 
 int EffectManifestTableModel::columnCount(const QModelIndex& parent) const {
@@ -123,9 +125,11 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
         return false;
     }
     if (row == -1) {
-        row = parent.row();
+        if (parent.isValid()) {
+            row = parent.row();
+        }
         // Dropping onto an empty model or dropping past the end of a model
-        if (parent.row() == -1) {
+        if (row == -1) {
             row = m_manifests.size();
         }
     }
@@ -146,8 +150,17 @@ Qt::DropActions EffectManifestTableModel::supportedDropActions() const {
 }
 
 bool EffectManifestTableModel::removeRows(int row, int count, const QModelIndex& parent) {
-    Q_UNUSED(parent);
-    beginRemoveRows(QModelIndex(), row, row + count - 1);
+    if (count == 0) {
+        // nothing to do
+        return true;
+    }
+    VERIFY_OR_DEBUG_ASSERT(count > 0 && row >= 0 &&
+            row + count <= m_manifests.size()) {
+        // If this is violated, Mixxx will crash with a qt_assert()
+        // https://github.com/mixxxdj/mixxx/issues/11454
+        return false;
+    }
+    beginRemoveRows(parent, row, row + count - 1);
     for (int i = row; i < row + count; i++) {
         // QList shrinks and reassigns indices after each removal,
         // so keep removing at the index of the first row removed.

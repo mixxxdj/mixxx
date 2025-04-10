@@ -1,11 +1,12 @@
 #include "widget/controlwidgetconnection.h"
 
 #include <QStyle>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "moc_controlwidgetconnection.cpp"
 #include "util/assert.h"
-#include "util/debug.h"
+#include "util/parented_ptr.h"
 #include "util/valuetransformer.h"
 #include "widget/wbasewidget.h"
 
@@ -34,12 +35,15 @@ QMetaProperty propertyFromWidget(const QWidget* pWidget, const QString& name) {
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,
         const ConfigKey& key,
-        ValueTransformer* pTransformer)
-        : m_pWidget(pBaseWidget),
-          m_pValueTransformer(pTransformer) {
-    m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
+        std::unique_ptr<ValueTransformer> pTransformer)
+        : QObject(),
+          m_pWidget(pBaseWidget),
+          m_pControl(make_parented<ControlProxy>(key, this, ControlFlag::NoAssertIfMissing)),
+          m_pValueTransformer(std::move(pTransformer)) {
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
+
+ControlWidgetConnection::~ControlWidgetConnection() = default;
 
 void ControlWidgetConnection::setControlParameter(double parameter) {
     if (m_pValueTransformer != nullptr) {
@@ -65,13 +69,17 @@ double ControlWidgetConnection::getControlParameterForValue(double value) const 
 }
 
 ControlParameterWidgetConnection::ControlParameterWidgetConnection(
-        WBaseWidget* pBaseWidget, const ConfigKey& key,
-        ValueTransformer* pTransformer, DirectionOption directionOption,
+        WBaseWidget* pBaseWidget,
+        const ConfigKey& key,
+        std::unique_ptr<ValueTransformer> pTransformer,
+        DirectionOption directionOption,
         EmitOption emitOption)
-        : ControlWidgetConnection(pBaseWidget, key, pTransformer),
+        : ControlWidgetConnection(pBaseWidget, key, std::move(pTransformer)),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
 }
+
+ControlParameterWidgetConnection::~ControlParameterWidgetConnection() = default;
 
 void ControlParameterWidgetConnection::Init() {
     slotControlValueChanged(m_pControl->get());
@@ -121,14 +129,16 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget,
         const ConfigKey& key,
-        ValueTransformer* pTransformer,
+        std::unique_ptr<ValueTransformer> pTransformer,
         const QString& propertyName)
-        : ControlWidgetConnection(pBaseWidget, key, pTransformer),
+        : ControlWidgetConnection(pBaseWidget, key, std::move(pTransformer)),
           m_propertyName(propertyName),
           m_property(propertyFromWidget(pBaseWidget->toQWidget(), propertyName)) {
     // Initial update to synchronize the property in all the sub widgets
     slotControlValueChanged(m_pControl->get());
 }
+
+ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() = default;
 
 QString ControlWidgetPropertyConnection::toDebugString() const {
     const ConfigKey& key = getKey();
@@ -179,9 +189,6 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
 
     m_propertyValue = vParameter;
 
-    // According to http://stackoverflow.com/a/3822243 this is the least
-    // expensive way to restyle just this widget.
-    pWidget->style()->unpolish(pWidget);
     pWidget->style()->polish(pWidget);
 
     // These calls don't always trigger the repaint, so call it explicitly.

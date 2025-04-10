@@ -31,7 +31,7 @@
 						<Layout>horizontal</Layout>
 						<Children>
 							<PushButton>
-								<TooltipId>show_samplers</TooltipId>
+								<TooltipId>expand_samplers</TooltipId>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -158,7 +158,7 @@
 						<BackPath>style/style_bg_sampler_right.png</BackPath>
 						<Children>
 							<PushButton>
-								<TooltipId>show_samplers</TooltipId>
+								<TooltipId>expand_samplers</TooltipId>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -262,7 +262,7 @@
 		</WidgetGroup>
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[Samplers],show_samplers</ConfigKey>
+		    <ConfigKey>[Skin],show_samplers</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 		  </Connection>
 		</WidgetGroup>

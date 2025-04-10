@@ -44,6 +44,8 @@ class Stat {
         }
     }
 
+    // TODO make this an enum class for improved typesafety and issues with
+    // ambiguous overloads.
     enum ComputeTypes {
         NONE            = 0x0000,
         // O(1) in time and space.
@@ -74,7 +76,7 @@ class Stat {
         // Used for marking stats recorded in BASE mode.
         STATS_BASE        = 0x1000,
     };
-    typedef int ComputeFlags;
+    Q_DECLARE_FLAGS(ComputeFlags, ComputeTypes);
 
     static Experiment::Mode modeFromFlags(ComputeFlags flags) {
         if (flags & Stat::STATS_EXPERIMENT) {
@@ -131,6 +133,8 @@ class Stat {
                       Stat::ComputeFlags,
                       double) = delete;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Stat::ComputeFlags);
 
 QDebug operator<<(QDebug dbg, const Stat &stat);
 

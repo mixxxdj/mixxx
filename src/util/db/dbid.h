@@ -22,35 +22,23 @@
 // not add any additional state (= member variables). Inheritance is
 // only needed for type-safety.
 class DbId {
-protected:
-public:
-    // Alias for the corresponding native type. It keeps the
-    // implementation of this class flexible if we ever gonna
-    // need to change it from 'int' to 'long' or any other type.
-    typedef int value_type;
+  protected:
+  public:
+    constexpr DbId()
+            : m_value(kInvalidValue) {
+    }
+    explicit DbId(const QVariant& variant)
+            : m_value(valueOf(variant)) {
+    }
 
-    DbId()
-        : m_value(kInvalidValue) {
-        DEBUG_ASSERT(!isValid());
-    }
-    explicit DbId(value_type value)
-        : m_value(value) {
-        DEBUG_ASSERT(isValid() || (kInvalidValue == m_value));
-    }
-    explicit DbId(QVariant variant)
-        : DbId(valueOf(std::move(variant))) {
-    }
+    DbId(int) = delete;
 
     bool isValid() const {
         return isValidValue(m_value);
     }
 
-    value_type value() const {
-        return m_value;
-    }
-
     std::size_t hash() const {
-        return std::hash<value_type>()(m_value);
+        return std::hash<int>()(m_value);
     }
 
     typedef std::function<std::size_t (const DbId& dbid)> hash_fun_t;
@@ -100,6 +88,18 @@ public:
         return debug << dbId.m_value;
     }
 
+    friend QDataStream& operator<<(QDataStream& out, const DbId& dbId) {
+        // explicit cast as recommended by Qt docs
+        return out << static_cast<quint32>(dbId.m_value);
+    }
+
+    friend QDataStream& operator>>(QDataStream& in, DbId& dbId) {
+        quint32 v;
+        in >> v;
+        dbId.m_value = v;
+        return in;
+    }
+
     friend qhash_seed_t qHash(
             const DbId& dbId,
             qhash_seed_t seed = 0) {
@@ -107,7 +107,7 @@ public:
     }
 
 private:
-  static constexpr value_type kInvalidValue = -1;
+  static constexpr int kInvalidValue = -1;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   static const QMetaType kVariantType;
@@ -115,13 +115,22 @@ private:
     static const QVariant::Type kVariantType;
 #endif
 
-    static bool isValidValue(value_type value) {
+  static bool isValidValue(int value) {
         return 0 <= value;
-    }
+  }
 
-    static value_type valueOf(QVariant /*pass-by-value*/ variant);
+  static int valueOf(const QVariant& variant) {
+        bool ok;
+        int value = variant.toInt(&ok);
+        if (ok && isValidValue(value)) {
+            return value;
+        }
+        qCritical() << "Invalid database identifier value:"
+                    << variant;
+        return kInvalidValue;
+  }
 
-    value_type m_value;
+  int m_value;
 };
 
 Q_DECLARE_TYPEINFO(DbId, Q_MOVABLE_TYPE);

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QDir>
-
 #include "library/scanner/scannertask.h"
 #include "util/fileaccess.h"
 

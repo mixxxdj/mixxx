@@ -2,7 +2,7 @@ From 945947d856710ba7aeadc985734ef991efdaa437 Mon Sep 17 00:00:00 2001
 From: Owen Williams <owilliams@mixxx.org>
 Date: Sun, 2 Jan 2022 02:16:51 +0100
 Subject: [PATCH 5/5] Fix traktor math issues for timecoder bad values
- (lp:788630)
+ (#5908)
 
 ---
  timecoder.c | 5 +++++

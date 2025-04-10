@@ -24,7 +24,7 @@
  * Jogwheel: Normally (when the Scratch button for the deck is not lit), the jogwheels will "nudge" the playing track, speeding it up or slowing it down slightly.
  * Pressing the Scratch button will toggle the scratch mode. In scratch mode, the jogwheels will "scratch" the playing track but only while you are touching them (because the jogwheels are touch-sensitive).
  *
- * Sel(ect) buttons: I didn't know what to do with these buttons so I left them undefined.
+ * SEL buttons: I didn't know what to do with these buttons so I left them undefined.
  *
  **/
 
@@ -168,7 +168,7 @@ firstmix.preview = function (channel, control, value, status, group) {
         engine.setValue("[Sampler4]", "volume", 0);
         engine.setValue("[Sampler4]", "pfl", 1);
         engine.setValue("[Sampler4]", "LoadSelectedTrack", 1);
-        engine.beginTimer(250,"engine.setValue(\"[Sampler4]\", \"play\", 1)",true); // I had to add a delay because this wouldn't work otherwise
+        engine.beginTimer(250, () => engine.setValue("[Sampler4]", "play", 1),true); // I had to add a delay because this wouldn't work otherwise
         firstmix.setLED(firstmix.leds[0]["preview"], 0x7f);
         firstmix.previewButton = true;
     }

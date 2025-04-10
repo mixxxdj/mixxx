@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iterator>
+#include <unordered_map>
 #include <vector>
 
 #include "audio/frame.h"
@@ -59,24 +60,29 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
     }
 
     DEBUG_ASSERT(n > 0);
-    const int beatOffset = m_beatOffset + n;
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+    const auto origValue = m_value;
+#endif
 
-    // Detect integer overflow
-    if (beatOffset < m_beatOffset) {
-        qWarning() << "Beats: Iterator would go out of possible range, capping "
-                      "at latest possible position.";
+    // Detect integer overflow in `m_beatOffset + n`
+    const int maxBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
+    if (m_beatOffset > maxBeatOffset - n) {
+        qDebug() << "Beats: Iterator" << m_beatOffset << "+" << n
+                 << "would go out of possible range, capping at latest possible position.";
         m_it = m_beats->m_markers.cend();
-        m_beatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
+        m_beatOffset = maxBeatOffset;
         updateValue();
+        DEBUG_ASSERT(m_value >= origValue);
         return *this;
     }
 
-    m_beatOffset = beatOffset;
+    m_beatOffset += n;
     while (m_it != m_beats->m_markers.cend() && m_beatOffset >= m_it->beatsTillNextMarker()) {
         m_beatOffset -= m_it->beatsTillNextMarker();
         m_it++;
     }
     updateValue();
+    DEBUG_ASSERT(m_value > origValue);
     return *this;
 }
 
@@ -102,24 +108,29 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
     }
 
     DEBUG_ASSERT(n > 0);
-    const int beatOffset = m_beatOffset - n;
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+    const auto origValue = m_value;
+#endif
 
     // Detect integer overflow
-    if (beatOffset > m_beatOffset) {
-        qWarning() << "Beats: Iterator would go out of possible range, capping "
-                      "at earliest possible position.";
+    const int minBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();
+    if (m_beatOffset < minBeatOffset + n) {
+        qDebug() << "Beats Iterator" << m_beatOffset << "-" << n
+                 << "would go out of possible range, capping at earliest possible position.";
         m_it = m_beats->m_markers.cbegin();
-        m_beatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();
+        m_beatOffset = minBeatOffset;
         updateValue();
+        DEBUG_ASSERT(m_value <= origValue);
         return *this;
     }
 
-    m_beatOffset = beatOffset;
+    m_beatOffset -= n;
     while (m_it != m_beats->m_markers.cbegin() && m_beatOffset < 0) {
         m_it--;
         m_beatOffset += m_it->beatsTillNextMarker();
     }
     updateValue();
+    DEBUG_ASSERT(m_value < origValue);
     return *this;
 }
 
@@ -289,9 +300,9 @@ mixxx::BeatsPointer Beats::fromBeatGridByteArray(
         bpm = Bpm(grid.bpm().bpm());
     } else if (byteArray.size() == sizeof(BeatGridV1Data)) {
         // Legacy fallback for BeatGrid-1.0
-        const auto blob = reinterpret_cast<const BeatGridV1Data*>(byteArray.constData());
-        position = mixxx::audio::FramePos(blob->firstBeat);
-        bpm = mixxx::Bpm(blob->bpm);
+        const auto* pBlob = reinterpret_cast<const BeatGridV1Data*>(byteArray.constData());
+        position = mixxx::audio::FramePos(pBlob->firstBeat);
+        bpm = mixxx::Bpm(pBlob->bpm);
     }
 
     if (position.isValid() && bpm.isValid()) {
@@ -416,26 +427,35 @@ bool Beats::findPrevNextBeats(audio::FramePos position,
     return true;
 }
 
+// Find the next beat at or after the position
 Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     DEBUG_ASSERT(isValid());
     auto it = cfirstmarker();
-    if (position > m_lastMarkerPosition) {
+
+    auto previousIfNeeded = [](Beats::ConstIterator it, audio::FramePos position) {
+        // In positive direction the minimum step width of a double increases.
+        // This may lead to tiny floating point errors that make `std::ceil`
+        // round up and makes us end up one beat too late.
+        //
+        // Likewise, in negative direction, we can also end up one beat to
+        // late if position is very close to a beat.
+        //
+        // This works around that issue by going back to the previous
+        // beat if necessary.
+        auto previousBeatIt = it - 1;
+        return (*previousBeatIt >= position) ? previousBeatIt : it;
+    };
+
+    audio::FrameDiff_t diff = position - m_lastMarkerPosition;
+    if (diff > 0) {
         DEBUG_ASSERT(*clastmarker() == m_lastMarkerPosition);
         // Lookup position is after the last marker position
-        const double n = std::ceil((position - m_lastMarkerPosition) / lastBeatLengthFrames());
+        const double n = std::ceil(diff / lastBeatLengthFrames());
         if (n >= static_cast<double>(std::numeric_limits<int>::max())) {
             return cend();
         }
         it = clastmarker() + static_cast<int>(n);
-
-        // In some rare cases there may be extremely tiny floating point errors
-        // that make `std::ceil` round up and makes us end up one beat too
-        // late. This works around that issue by going back to the previous
-        // beat if necessary.
-        auto previousBeatIt = it - 1;
-        if (*previousBeatIt >= position) {
-            it = previousBeatIt;
-        }
+        it = previousIfNeeded(it, position);
     } else if (position < *it) {
         // Lookup position is before the first marker position
         const double n = std::floor((*it - position) / firstBeatLengthFrames());
@@ -443,12 +463,12 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
             return cbegin();
         }
         it -= static_cast<int>(n);
+        it = previousIfNeeded(it, position);
     } else {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
     DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
-    DEBUG_ASSERT(it == cbegin() || it == cend() ||
-            *it - position < std::prev(it).beatLengthFrames());
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
     return it;
 }
 
@@ -608,6 +628,20 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
 
     const auto lastMarkerPosition = m_lastMarkerPosition + offsetFrames;
     return BeatsPointer(new Beats(markers,
+            lastMarkerPosition.toLowerFrameBoundary(),
+            m_lastMarkerBpm,
+            m_sampleRate,
+            m_subVersion));
+}
+
+std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
+    if (!hasConstantTempo()) {
+        return std::nullopt;
+    }
+    const mixxx::audio::FrameDiff_t lastOffsetFrames =
+            xBeats * m_sampleRate.value() * 60.0 / m_lastMarkerBpm.value();
+    const auto lastMarkerPosition = m_lastMarkerPosition + lastOffsetFrames;
+    return BeatsPointer(new Beats(m_markers,
             lastMarkerPosition.toLowerFrameBoundary(),
             m_lastMarkerBpm,
             m_sampleRate,

@@ -48,7 +48,11 @@ class CueControlTest : public BaseSignalPathTest {
     }
 
     void unloadTrack() {
-        m_pMixerDeck1->slotLoadTrack(TrackPointer(), false);
+        m_pMixerDeck1->slotLoadTrack(TrackPointer(),
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
     }
 
     mixxx::audio::FramePos getCurrentFramePos() {
@@ -190,7 +194,7 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const double beatLengthFrames = (60.0 * sampleRate / bpm);
 
@@ -370,7 +374,7 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(1.8 * beatLengthFrames);
@@ -403,14 +407,14 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
 }
 
 TEST_F(CueControlTest, SeekOnSetCueCDJ) {
-    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
+    // Regression test for https://github.com/mixxxdj/mixxx/issues/10551
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     m_pQuantizeEnabled->set(1);
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(10 * beatLengthFrames);
@@ -433,14 +437,14 @@ TEST_F(CueControlTest, SeekOnSetCueCDJ) {
 }
 
 TEST_F(CueControlTest, SeekOnSetCuePlay) {
-    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
+    // Regression test for https://github.com/mixxxdj/mixxx/issues/10551
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     m_pQuantizeEnabled->set(1);
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(10 * beatLengthFrames);

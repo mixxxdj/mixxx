@@ -7,7 +7,8 @@
 class PerGroupEffectChain : public EffectChain {
     Q_OBJECT
   public:
-    PerGroupEffectChain(const QString& group,
+    PerGroupEffectChain(
+            const ChannelHandleAndGroup& handleGroup,
             const QString& chainSlotGroup,
             SignalProcessingStage stage,
             EffectsManager* pEffectsManager,

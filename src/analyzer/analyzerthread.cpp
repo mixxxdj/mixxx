@@ -9,7 +9,6 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-#include "engine/engine.h"
 #include "library/dao/analysisdao.h"
 #include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
@@ -18,7 +17,6 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
-#include "util/timer.h"
 
 namespace {
 
@@ -123,30 +121,38 @@ void AnalyzerThread::doRun() {
     m_lastBusyProgressEmittedTimer.start();
 
     mixxx::AudioSource::OpenParams openParams;
-    openParams.setChannelCount(mixxx::kAnalysisChannels);
+    openParams.setChannelCount(mixxx::kAnalysisMaxChannels);
 
     while (awaitWorkItemsFetched()) {
-        DEBUG_ASSERT(m_currentTrack);
-        kLogger.debug() << "Analyzing" << m_currentTrack->getFileInfo();
+        DEBUG_ASSERT(m_currentTrack.has_value());
+        kLogger.debug() << "Analyzing" << m_currentTrack->getTrack()->getLocation();
 
         // Get the audio
-        const auto audioSource =
-                SoundSourceProxy(m_currentTrack).openAudioSource(openParams);
+        mixxx::AudioSourcePointer audioSource =
+                SoundSourceProxy(m_currentTrack->getTrack()).openAudioSource(openParams);
         if (!audioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << m_currentTrack->getFileInfo();
+                    << m_currentTrack->getTrack()->getLocation();
             emitDoneProgress(kAnalyzerProgressUnknown);
             continue;
+        }
+
+        // If we have a non-even multi channel audio source (mono or )
+        if (audioSource->getSignalInfo().getChannelCount() % mixxx::kAnalysisChannels) {
+            audioSource = std::make_shared<mixxx::AudioSourceStereoProxy>(
+                    audioSource,
+                    mixxx::kAnalysisFramesPerChunk);
         }
 
         bool processTrack = false;
         for (auto&& analyzer : m_analyzers) {
             // Make sure not to short-circuit initialize(...)
             if (analyzer.initialize(
-                        m_currentTrack,
+                        *m_currentTrack,
                         audioSource->getSignalInfo().getSampleRate(),
-                        audioSource->frameLength() * mixxx::kAnalysisChannels)) {
+                        audioSource->getSignalInfo().getChannelCount(),
+                        audioSource->frameLength())) {
                 processTrack = true;
             }
         }
@@ -164,7 +170,7 @@ void AnalyzerThread::doRun() {
                 emitBusyProgress(kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto&& analyzer : m_analyzers) {
-                    analyzer.finish(m_currentTrack);
+                    analyzer.finish(*m_currentTrack);
                 }
                 emitDoneProgress(kAnalyzerProgressDone);
             } else {
@@ -187,11 +193,10 @@ void AnalyzerThread::doRun() {
     emitProgress(AnalyzerThreadState::Exit);
 }
 
-bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
-    DEBUG_ASSERT(nextTrack);
+bool AnalyzerThread::submitNextTrack(const AnalyzerTrack& nextTrack) {
     kLogger.debug()
             << "Enqueueing next track"
-            << nextTrack->getId();
+            << nextTrack.getTrack()->getId();
     if (m_nextTrack.try_emplace(std::move(nextTrack))) {
         // Ensure that the submitted track gets processed eventually
         // by waking the worker thread up after adding a new task to
@@ -204,14 +209,14 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
 }
 
 WorkerThread::TryFetchWorkItemsResult AnalyzerThread::tryFetchWorkItems() {
-    DEBUG_ASSERT(!m_currentTrack);
-    TrackPointer* pFront = m_nextTrack.front();
+    DEBUG_ASSERT(!m_currentTrack.has_value());
+    AnalyzerTrack* pFront = m_nextTrack.front();
     if (pFront) {
         m_currentTrack = *pFront;
         m_nextTrack.pop();
         kLogger.debug()
                 << "Dequeued next track"
-                << m_currentTrack->getId();
+                << m_currentTrack->getTrack()->getId();
         return TryFetchWorkItemsResult::Ready;
     } else {
         emitProgress(AnalyzerThreadState::Idle);
@@ -221,14 +226,10 @@ WorkerThread::TryFetchWorkItemsResult AnalyzerThread::tryFetchWorkItems() {
 
 AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const mixxx::AudioSourcePointer& audioSource) {
-    DEBUG_ASSERT(m_currentTrack);
+    DEBUG_ASSERT(m_currentTrack.has_value());
 
-    mixxx::AudioSourceStereoProxy audioSourceProxy(
-            audioSource,
-            mixxx::kAnalysisFramesPerChunk);
     DEBUG_ASSERT(
-            audioSourceProxy.getSignalInfo().getChannelCount() ==
-            mixxx::kAnalysisChannels);
+            0 == audioSource->getSignalInfo().getChannelCount() % mixxx::kAnalysisChannels);
 
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
@@ -250,7 +251,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
         // Request the next chunk of audio data
         const auto readableSampleFrames =
-                audioSourceProxy.readSampleFrames(
+                audioSource->readSampleFrames(
                         mixxx::WritableSampleFrames(
                                 chunkFrameRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
@@ -263,17 +264,17 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
         // Shrink the original range of the current chunks to the actual available
         // range.
-        chunkFrameRange = intersect(chunkFrameRange, audioSourceProxy.frameIndexRange());
+        chunkFrameRange = intersect(chunkFrameRange, audioSource->frameIndexRange());
         // The audio data that has just been read should still fit into the adjusted
         // chunk range.
         DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(chunkFrameRange));
 
         // We also need to adjust the remaining frame range for the next requests.
-        remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
+        remainingFrameRange = intersect(remainingFrameRange, audioSource->frameIndexRange());
         // Currently the range will never grow, but lets also account for this case
         // that might become relevant in the future.
         VERIFY_OR_DEBUG_ASSERT(remainingFrameRange.empty() ||
-                remainingFrameRange.end() == audioSourceProxy.frameIndexRange().end()) {
+                remainingFrameRange.end() == audioSource->frameIndexRange().end()) {
             if (chunkFrameRange.length() < mixxx::kAnalysisFramesPerChunk) {
                 // If we have read an incomplete chunk while the range has grown
                 // we need to discard the read results and re-read the current
@@ -282,13 +283,13 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                 remainingFrameRange.growFront(chunkFrameRange.length());
                 continue;
             }
-            DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());
+            DEBUG_ASSERT(remainingFrameRange.end() < audioSource->frameIndexRange().end());
             kLogger.warning()
                     << "Unexpected growth of the audio source while reading"
                     << mixxx::IndexRange::forward(
-                            remainingFrameRange.end(), audioSourceProxy.frameIndexRange().end());
+                               remainingFrameRange.end(), audioSource->frameIndexRange().end());
             remainingFrameRange.growBack(
-                    audioSourceProxy.frameIndexRange().end() - remainingFrameRange.end());
+                    audioSource->frameIndexRange().end() - remainingFrameRange.end());
         }
 
         sleepWhileSuspended();
@@ -311,8 +312,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 3rd step: Update & emit progress
         if (audioSource->frameLength() > 0) {
             const double frameProgress =
-                    double(audioSource->frameLength() - remainingFrameRange.length()) /
-                    double(audioSource->frameLength());
+                    static_cast<double>(audioSource->frameLength() - remainingFrameRange.length()) /
+                    audioSource->frameLength();
             // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
                     math_min(kAnalyzerProgressFinalizing,
@@ -331,7 +332,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 }
 
 void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
-    DEBUG_ASSERT(m_currentTrack);
+    DEBUG_ASSERT(m_currentTrack.has_value());
     if ((m_emittedState == AnalyzerThreadState::Busy) &&
             (m_lastBusyProgressEmittedTimer.elapsed() < kBusyProgressInhibitDuration)) {
         // Don't emit progress signal while still busy and the
@@ -341,18 +342,18 @@ void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
         return;
     }
     m_lastBusyProgressEmittedTimer.restart();
-    emitProgress(AnalyzerThreadState::Busy, m_currentTrack->getId(), busyProgress);
+    emitProgress(AnalyzerThreadState::Busy, m_currentTrack->getTrack()->getId(), busyProgress);
     DEBUG_ASSERT(m_emittedState == AnalyzerThreadState::Busy);
 }
 
 void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
-    DEBUG_ASSERT(m_currentTrack);
+    DEBUG_ASSERT(m_currentTrack.has_value());
     // Release all references of the track before emitting the signal
     // to ensure that the last reference is not dropped in this worker
     // thread that might trigger database actions! The TrackAnalysisScheduler
     // must store a TrackPointer until receiving the Done signal.
-    TrackId trackId = m_currentTrack->getId();
-    m_currentTrack->analysisFinished();
+    TrackId trackId = m_currentTrack->getTrack()->getId();
+    m_currentTrack->getTrack()->analysisFinished();
     m_currentTrack.reset();
     emitProgress(AnalyzerThreadState::Done, trackId, doneProgress);
 }
@@ -363,8 +364,8 @@ void AnalyzerThread::emitProgress(AnalyzerThreadState state) {
 }
 
 void AnalyzerThread::emitProgress(AnalyzerThreadState state, TrackId trackId, AnalyzerProgress trackProgress) {
-    DEBUG_ASSERT(!m_currentTrack || (state == AnalyzerThreadState::Busy));
-    DEBUG_ASSERT(!m_currentTrack || (m_currentTrack->getId() == trackId));
+    DEBUG_ASSERT(!m_currentTrack.has_value() || (state == AnalyzerThreadState::Busy));
+    DEBUG_ASSERT(!m_currentTrack.has_value() || (m_currentTrack->getTrack()->getId() == trackId));
     DEBUG_ASSERT(trackId.isValid() || (trackProgress == kAnalyzerProgressUnknown));
     m_emittedState = state;
     emit progress(m_id, m_emittedState, trackId, trackProgress);

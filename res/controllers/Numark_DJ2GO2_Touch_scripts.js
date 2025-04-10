@@ -1,8 +1,12 @@
 var DJ2GO2Touch = {};
-DJ2GO2Touch.ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+DJ2GO2Touch.ControllerStatusSysex = [0xF0, 0x00, 0x01, 0x3F, 0x3C, 0x48, 0xF7];
 DJ2GO2Touch.padsPerDeck = 4;
+DJ2GO2Touch.samplerCount = 2 * DJ2GO2Touch.padsPerDeck;
 
 DJ2GO2Touch.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < DJ2GO2Touch.samplerCount) {
+        engine.setValue("[App]", "num_samplers", DJ2GO2Touch.samplerCount);
+    }
     DJ2GO2Touch.leftDeck = new DJ2GO2Touch.Deck([1], 0);
     DJ2GO2Touch.rightDeck = new DJ2GO2Touch.Deck([2], 1);
     midi.sendSysexMsg(DJ2GO2Touch.ControllerStatusSysex, DJ2GO2Touch.ControllerStatusSysex.length);
@@ -47,24 +51,6 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
     }
 });
 
-DJ2GO2Touch.masterGain = new components.Pot({
-    midi: [0xBF, 0x0A],
-    group: "[Master]",
-    key: "gain"
-});
-
-DJ2GO2Touch.cueGain = new components.Pot({
-    midi: [0xBF, 0x0C],
-    group: "[Master]",
-    key: "headGain"
-});
-
-DJ2GO2Touch.crossfader = new components.Pot({
-    midi: [0xBF, 0x08],
-    group: "[Master]",
-    key: "crossfader"
-});
-
 DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
     this.playButton = new components.PlayButton([0x90 + midiChannel, 0x00]);
@@ -94,7 +80,8 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     this.tempoFader = new components.Pot({
         group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
         midi: [0xB0 + midiChannel, 0x09],
-        key: "rate"
+        key: "rate",
+        invert: true
     });
 
     this.hotcueButtons = [];
@@ -104,7 +91,20 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         this.hotcueButtons[i] = new components.HotcueButton({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x00 + i],
-            number: i
+            number: i,
+            input: function(channel, control, value, _status, _group) {
+                // DJ2GO2/DJ2GO2 Touch does not have a "shift" button,
+                // but when in CUES Pad Mode, holding the PAD MODE button will
+                // cause the controller to send messages where the originating midi
+                // control is offset by 8.
+                // this "feature" only applies to the CUES PAD MODE. Holding the button
+                // in other modes does nothing.
+                if (control <= 8) {
+                    engine.setValue(this.group, "hotcue_" + this.number + "_activate", value);
+                } else {
+                    engine.setValue(this.group, "hotcue_" + this.number + "_clear", value);
+                }
+            },
         });
         var sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
         this.samplerButtons[i] = new components.SamplerButton({

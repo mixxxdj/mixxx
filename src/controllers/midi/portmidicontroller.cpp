@@ -5,7 +5,7 @@
 
 namespace {
 const QString kUnknownControllerName = QStringLiteral("Unknown PortMidiController");
-}
+} // namespace
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,
@@ -18,10 +18,8 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                           : kUnknownControllerName),
           m_cReceiveMsg_index(0),
           m_bInSysex(false) {
-    for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
-        // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
-        m_midiBuffer[k].message = 0;
-        m_midiBuffer[k].timestamp = 0;
+    for (int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
+        m_midiBuffer[k] = {0, 0};
     }
 
     // Note: We prepend the input stream's index to the device's name to prevent
@@ -45,7 +43,7 @@ PortMidiController::~PortMidiController() {
     }
 }
 
-int PortMidiController::open() {
+int PortMidiController::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "PortMIDI device" << getName() << "already open";
         return -1;
@@ -80,9 +78,9 @@ int PortMidiController::open() {
             return -2;
         }
     }
-
-    setOpen(true);
     startEngine();
+    applyMapping(resourcePath);
+    setOpen(true);
     return 0;
 }
 
@@ -204,12 +202,13 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
 
     PmError err = m_pOutputDevice->writeShort(word);
     if (err == pmNoError) {
-        qCDebug(m_logOutput) << MidiUtils::formatMidiOpCode(getName(),
-                status,
-                byte1,
-                byte2,
-                MidiUtils::channelFromStatus(status),
-                MidiUtils::opCodeFromStatus(status));
+        qCDebug(m_logOutput) << QStringLiteral("outgoing: ")
+                             << MidiUtils::formatMidiOpCode(getName(),
+                                        status,
+                                        byte1,
+                                        byte2,
+                                        MidiUtils::channelFromStatus(status),
+                                        MidiUtils::opCodeFromStatus(status));
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
         qCWarning(m_logOutput) << "Error sending short message"
@@ -223,27 +222,30 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
     }
 }
 
-void PortMidiController::sendBytes(const QByteArray& data) {
+bool PortMidiController::sendBytes(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
     // Pm_WriteSysEx. Instead, it scans for a MidiOpCode::EndOfExclusive byte
     // to know when the message is over. If one is not provided, it will
     // overflow the buffer and cause a segfault.
     if (!data.endsWith(MidiUtils::opCodeValue(MidiOpCode::EndOfExclusive))) {
         qCDebug(m_logOutput) << "SysEx message does not end with 0xF7 -- ignoring.";
-        return;
+        return false;
     }
 
     if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
-        return;
+        return false;
     }
 
     PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
     if (err == pmNoError) {
-        qCDebug(m_logOutput) << MidiUtils::formatSysexMessage(getName(), data);
+        qCDebug(m_logOutput) << QStringLiteral("outgoing: ")
+                             << MidiUtils::formatSysexMessage(getName(), data);
+        return true;
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
         qCWarning(m_logOutput) << "Error sending SysEx message:"
                                << MidiUtils::formatSysexMessage(getName(), data);
         qCWarning(m_logOutput) << "PortMidi error:" << Pm_GetErrorText(err);
     }
+    return false;
 }

@@ -28,6 +28,7 @@ def find_qt_version():
 
 
 def main(argv=None):
+    qmlformat_executable = None
     # First look up at the most common location for QT6 which is
     # usually not in PATH
     if sys.platform != "win32":

@@ -8,29 +8,29 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QtGlobal>
+#include <memory>
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "effects/effectsmanager.h"
+#include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
-#include "recording/recordingmanager.h"
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/skincontext.h"
+#include "track/track.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
-#endif
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -44,6 +44,7 @@
 #include "widget/weffectchainpresetbutton.h"
 #include "widget/weffectchainpresetselector.h"
 #include "widget/weffectknobparametername.h"
+#include "widget/weffectmetaknob.h"
 #include "widget/weffectname.h"
 #include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
@@ -60,10 +61,9 @@
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/woverviewhsv.h"
-#include "widget/woverviewlmh.h"
-#include "widget/woverviewrgb.h"
+#include "widget/woverview.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wplaybutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/wraterange.h"
 #include "widget/wrecordingduration.h"
@@ -73,17 +73,20 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
-#endif
+#include "widget/wspinnyglsl.h"
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#ifdef __STEM__
+#include "widget/wstemlabel.h"
+#endif
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
-#include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
 #include "widget/wvumeter.h"
+#include "widget/wvumeterglsl.h"
+#include "widget/wvumeterlegacy.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
@@ -121,7 +124,7 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
     ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
-    controlButton->setButtonMode(ControlPushButton::TOGGLE);
+    controlButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     if (pCreated) {
         *pCreated = true;
@@ -231,6 +234,13 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
 
     QDomDocument skin("skin");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = skin.setContent(&skinXmlFile);
+    if (!parseResult) {
+        qDebug() << "LegacySkinParser::openSkin - setContent failed see"
+                 << "line:" << parseResult.errorLine << "column:" << parseResult.errorColumn;
+        qDebug() << "LegacySkinParser::openSkin - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -239,6 +249,7 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
         qDebug() << "LegacySkinParser::openSkin - setContent failed see"
                  << "line:" << errorLine << "column:" << errorColumn;
         qDebug() << "LegacySkinParser::openSkin - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -321,7 +332,7 @@ Qt::MouseButton LegacySkinParser::parseButtonState(const QDomNode& node,
 }
 
 QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) {
-    ScopedTimer timer("SkinLoader::parseSkin");
+    ScopedTimer timer(QStringLiteral("SkinLoader::parseSkin"));
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
@@ -349,9 +360,10 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (!ok) {
-            SKIN_WARNING(skinDocument, *m_pContext)
-                    << "Error reading double value from skin attribute: "
-                    << QString::fromStdString(attribute.value());
+            SKIN_WARNING(skinDocument,
+                    *m_pContext,
+                    QStringLiteral("Failed reading double value from skin attribute: %1")
+                            .arg(QString::fromStdString(attribute.value())));
             continue;
         }
 
@@ -393,6 +405,17 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         }
     }
 
+    // This enables file paths like 'skins:Deere/some_template.xml',
+    // in addition to relative paths like 'skins:Deere/some_template.xml'
+    // Note: Here we assume this path exists. If it doesn't SkinLoader::getSkinSearchPaths()
+    // would have already triggered an error message.
+    // Note: we may also add the user skins path, in case there are custom skins
+    // that use the same template inheritance scheme like official skins, but we
+    // don't because unfortunately there is no reliable way to apply equivalent
+    // path replacement in stylesheetAbsIconPaths().
+    QString systemSkinsPath(m_pConfig->getResourcePath() + "skins/");
+    QDir::setSearchPaths("skins", QStringList{systemSkinsPath});
+
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style, m_pContext.get());
 
     // don't parent till here so the first opengl waveform doesn't screw
@@ -404,10 +427,12 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     QList<QWidget*> widgets = parseNode(skinDocument);
 
     if (widgets.empty()) {
-        SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced no widgets!";
+        SKIN_WARNING(skinDocument, *m_pContext, QStringLiteral("Skin produced no widgets!"));
         return nullptr;
     } else if (widgets.size() > 1) {
-        SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
+        SKIN_WARNING(skinDocument,
+                *m_pContext,
+                QStringLiteral("Skin produced more than 1 widget!"));
     }
     return widgets[0];
 }
@@ -438,8 +463,6 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
     setupSize(skinDocument, pLaunchImage);
     return pLaunchImage;
 }
-
-
 
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
@@ -514,6 +537,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
+    } else if (nodeName == "PlayButton") {
+        result = wrapWidget(parsePlayButton(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
@@ -531,11 +556,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "StarRating") {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
-        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        WaveformWidgetFactory::instance()->addTimerListener(pVuMeterWidget);
-#endif
-        result = wrapWidget(pVuMeterWidget);
+        result = wrapWidget(parseVuMeter(node));
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
@@ -555,7 +576,13 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
-    } else if (nodeName == "Knob") {
+    }
+#ifdef __STEM__
+    else if (nodeName == "StemLabel") {
+        result = wrapWidget(parseStemLabelWidget(node));
+    }
+#endif
+    else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
@@ -581,6 +608,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectChainPresetSelector(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
+    } else if (nodeName == "EffectMetaKnob") {
+        result = wrapWidget(parseEffectMetaKnob(node));
     } else if (nodeName == "EffectSelector") {
         result = wrapWidget(parseEffectSelector(node));
     } else if (nodeName == "EffectParameterKnob") {
@@ -618,8 +647,10 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "SingletonContainer") {
         result = wrapWidget(parseStandardWidget<WSingletonContainer>(node));
     } else {
-        SKIN_WARNING(node, *m_pContext) << "Invalid node name in skin:"
-                                       << nodeName;
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral("Invalid node name in skin: %1")
+                        .arg(nodeName));
     }
 
     if (sDebug) {
@@ -672,14 +703,19 @@ QWidget* LegacySkinParser::parseScrollable(const QDomElement& node) {
     if (!childrenNode.isNull()) {
         QDomNodeList childNodes = childrenNode.childNodes();
         if (childNodes.count() != 1) {
-            SKIN_WARNING(node, *m_pContext) << "Scrollables must have exactly one child";
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("Scrollables must have exactly one child"));
         }
 
         QDomNode childnode = childNodes.at(0);
         if (childnode.isElement()) {
             QList<QWidget*> children = parseNode(childnode.toElement());
             if (children.count() != 1) {
-                SKIN_WARNING(node, *m_pContext) << "Scrollables must have exactly one child";
+                SKIN_WARNING(node,
+                        *m_pContext,
+                        QStringLiteral(
+                                "Scrollables must have exactly one child"));
             } else if (children.at(0) != nullptr) {
                 pScrollable->setWidget(children.at(0));
             }
@@ -718,9 +754,18 @@ void LegacySkinParser::parseChildren(
 }
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
+#ifndef __STEM__
+    if (requiresStem(node)) {
+        return nullptr;
+    }
+#endif
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
+    setupBaseWidget(node, pGroup);
+    setupWidget(node, pGroup->toQWidget());
     pGroup->setup(node, *m_pContext);
+    // Note: if we call setupConnections earlier and it sets the visible property
+    // to true, the style is not applied correctly
+    setupConnections(node, pGroup);
     pGroup->Init();
     parseChildren(node, pGroup);
     return pGroup;
@@ -728,7 +773,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     ControlObject* pNextControl = controlFromConfigNode(node.toElement(), "NextControl");
-    ;
     ConfigKey nextConfigKey;
     if (pNextControl != nullptr) {
         nextConfigKey = pNextControl->getKey();
@@ -777,15 +821,19 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
             QList<QWidget*> child_widgets = parseNode(element);
 
             if (child_widgets.empty()) {
-                SKIN_WARNING(node, *m_pContext)
-                        << "WidgetStack child produced no widget.";
+                SKIN_WARNING(node,
+                        *m_pContext,
+                        QStringLiteral(
+                                "WidgetStack child produced no widget."));
                 continue;
             }
 
             if (child_widgets.size() > 1) {
-                SKIN_WARNING(node, *m_pContext)
-                        << "WidgetStack child produced multiple widgets."
-                        << "All but the first are ignored.";
+                SKIN_WARNING(node,
+                        *m_pContext,
+                        QStringLiteral(
+                                "WidgetStack child produced multiple widgets. "
+                                "All but the first are ignored."));
             }
             QWidget* pChild = child_widgets[0];
 
@@ -845,15 +893,19 @@ QWidget* LegacySkinParser::parseSizeAwareStack(const QDomElement& node) {
             QList<QWidget*> children = parseNode(element);
 
             if (children.empty()) {
-                SKIN_WARNING(node, *m_pContext)
-                        << "SizeAwareStack child produced no widget.";
+                SKIN_WARNING(node,
+                        *m_pContext,
+                        QStringLiteral(
+                                "SizeAwareStack child produced no widget."));
                 continue;
             }
 
             if (children.size() > 1) {
-                SKIN_WARNING(node, *m_pContext)
-                        << "SizeAwareStack child produced multiple widgets."
-                        << "All but the first are ignored.";
+                SKIN_WARNING(node,
+                        *m_pContext,
+                        QStringLiteral(
+                                "SizeAwareStack child produced multiple "
+                                "widgets. All but the first are ignored."));
             }
             QWidget* pChild = children[0];
 
@@ -875,11 +927,13 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QLabel* bg = new QLabel(pInnerWidget);
 
     QString filename = m_pContext->selectString(node, "Path");
-    QPixmap* background = WPixmapStore::getPixmapNoCache(
-        m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
+    auto background = WPixmapStore::getPixmapNoCache(
+            m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
 
     bg->move(0, 0);
     if (background != nullptr && !background->isNull()) {
+        // setPixmap makes a copy of the background
+        // which can be disposed of afterwards.
         bg->setPixmap(*background);
     }
 
@@ -896,7 +950,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QColor c(0,0,0);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -904,10 +958,6 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     pOuterWidget->setBackgroundRole(QPalette::Window);
     pOuterWidget->setPalette(palette);
     pOuterWidget->setAutoFillBackground(true);
-
-    // WPixmapStore::getPixmapNoCache() allocated background and gave us
-    // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
-    delete background;
 
     return bg;
 }
@@ -945,73 +995,101 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
     pLabel->Init();
 }
 
-QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
+#ifdef __STEM__
+QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
+    WStemLabel* pLabel = new WStemLabel(m_pParent);
+    setupLabelWidget(element, pLabel);
 
-    return nullptr;
-#else
-    QString group = lookupNodeGroup(node);
+    QString group = lookupNodeGroup(element);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        SKIN_WARNING(element,
+                *m_pContext,
+                QStringLiteral("No player found for group: %1").arg(group));
         return nullptr;
     }
 
-    WOverview* overviewWidget = nullptr;
+    connect(pPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            pLabel,
+            &WStemLabel::slotTrackLoaded);
 
-    // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
-    int type = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformOverviewType"), 2);
-    if (type == 0) {
-        overviewWidget = new WOverviewLMH(group, m_pPlayerManager, m_pConfig, m_pParent);
-    } else if (type == 1) {
-        overviewWidget = new WOverviewHSV(group, m_pPlayerManager, m_pConfig, m_pParent);
-    } else {
-        overviewWidget = new WOverviewRGB(group, m_pPlayerManager, m_pConfig, m_pParent);
+    connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            pLabel,
+            &WStemLabel::slotTrackUnloaded);
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        // Set the trackpoinnter to the already loaded track,
+        // needed at skin change
+        pLabel->slotTrackLoaded(pTrack);
     }
+
+    return pLabel;
+}
+#endif
+
+QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+
+    WOverview* overviewWidget =
+            new WOverview(group, m_pPlayerManager, m_pConfig, m_pParent);
 
     connect(overviewWidget,
             &WOverview::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerStopped);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    // This signal stems from AnalysisFeature, and the overview can now
+    // render the analysis progress like when listening to Playermanager's
+    // analysis progress signal when loading a track.
+    connect(m_pLibrary,
+            &Library::onTrackAnalyzerProgress,
+            overviewWidget,
+            &WOverview::onTrackAnalyzerProgress);
 
     commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    overviewWidget->Init();
+    overviewWidget->initWithTrack(pPlayer->getLoadedTrack());
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, overviewWidget, &WOverview::slotTrackLoaded);
     connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
 
-    // just in case track already loaded
-    overviewWidget->slotLoadingTrack(pPlayer->getLoadedTrack(), TrackPointer());
-    overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
-
     return overviewWidget;
-#endif
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
         return nullptr;
     }
 
     WWaveformViewer* viewer = new WWaveformViewer(group, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    factory->setWaveformWidget(viewer, node, *m_pContext);
+    WaveformWidgetFactory* pFactory = WaveformWidgetFactory::instance();
+    pFactory->setWaveformWidget(viewer, node, *m_pContext);
 
     //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
     //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
@@ -1030,11 +1108,22 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &BaseTrackPlayer::loadingTrack,
             viewer,
             &WWaveformViewer::slotLoadingTrack);
+#ifdef __STEM__
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::selectedStems,
+            viewer,
+            &WWaveformViewer::slotSelectStem);
+#endif
+
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            viewer,
+            &WWaveformViewer::slotTrackUnloaded);
 
     connect(viewer,
             &WWaveformViewer::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerStopped);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(viewer, &WWaveformViewer::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1042,53 +1131,68 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
-#endif
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-    if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
-        return nullptr;
+    if (group.isEmpty()) {
+        // use WLabel, try to parse 'Text' node
+        return parseLabelWidget<WLabel>(node);
+    } else {
+        // use WTrackProperty to show a track tag / file name
+        return parseTrackProperty(node);
     }
-
-    WTrackText* pTrackText = new WTrackText(m_pParent,
-            m_pConfig,
-            m_pLibrary,
-            group);
-    setupLabelWidget(node, pTrackText);
-
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pTrackText, &WTrackText::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::loadingTrack, pTrackText, &WTrackText::slotLoadingTrack);
-    connect(pTrackText,
-            &WTrackText::trackDropped,
-            m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerStopped);
-    connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
-
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        pTrackText->slotTrackLoaded(pTrack);
-    }
-
-    return pTrackText;
 }
 
 QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
         return nullptr;
     }
 
+    bool isMainDeck = PlayerManager::isDeckGroup(group);
     WTrackProperty* pTrackProperty = new WTrackProperty(
             m_pParent,
             m_pConfig,
             m_pLibrary,
-            group);
+            group,
+            isMainDeck);
     setupLabelWidget(node, pTrackProperty);
+
+    // Ensure 'show_track_menu' control is created for each main deck and
+    // valueChangeRequest hook is set up.
+    if (isMainDeck) {
+        // Only the first WTrackProperty that is created connects the signals,
+        // for later attempts this returns false.
+        if (pPlayer->isTrackMenuControlAvailable()) {
+            connect(pPlayer,
+                    &BaseTrackPlayer::trackMenuChangeRequest,
+                    pTrackProperty,
+                    &WTrackProperty::slotShowTrackMenuChangeRequest,
+                    Qt::DirectConnection);
+            connect(pTrackProperty,
+                    &WTrackProperty::setAndConfirmTrackMenuControl,
+                    pPlayer,
+                    &BaseTrackPlayer::slotSetAndConfirmTrackMenuControl,
+                    Qt::DirectConnection);
+        }
+    }
+
+    // Relay for the label's WTrackMenu (which is created only on demand):
+    // Emitted before/after deleting a track file via that menu
+    // IF that track is in the current view.
+    connect(pTrackProperty,
+            &WTrackProperty::saveCurrentViewState,
+            m_pLibrary,
+            &Library::slotSaveCurrentViewState,
+            Qt::DirectConnection);
+    connect(pTrackProperty,
+            &WTrackProperty::restoreCurrentViewState,
+            m_pLibrary,
+            &Library::slotRestoreCurrentViewState,
+            Qt::DirectConnection);
 
     connect(pPlayer,
             &BaseTrackPlayer::newTrackLoaded,
@@ -1101,7 +1205,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     connect(pTrackProperty,
             &WTrackProperty::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerStopped);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pTrackProperty,
             &WTrackProperty::cloneDeck,
             m_pPlayerManager,
@@ -1119,7 +1223,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
         return nullptr;
     }
 
@@ -1127,7 +1231,8 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
             m_pParent,
             m_pConfig,
             m_pLibrary,
-            group);
+            group,
+            PlayerManager::isDeckGroup(group));
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();
@@ -1144,7 +1249,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     connect(pGroup,
             &WTrackWidgetGroup::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerStopped);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(pGroup,
             &WTrackWidgetGroup::cloneDeck,
             m_pPlayerManager,
@@ -1161,22 +1266,26 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
         return nullptr;
     }
 
-    WStarRating* pStarRating = new WStarRating(group, m_pParent);
+    WStarRating* pStarRating = new WStarRating(m_pParent);
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
 
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pStarRating, &WStarRating::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::playerEmpty, pStarRating, [pStarRating]() {
-        pStarRating->slotTrackLoaded(TrackPointer());
-    });
+    connect(pPlayer,
+            &BaseTrackPlayer::trackRatingChanged,
+            pStarRating,
+            &WStarRating::slotSetRating);
+    connect(pStarRating,
+            &WStarRating::ratingChangeRequest,
+            pPlayer,
+            &BaseTrackPlayer::slotTrackRatingChangeRequest);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
-        pStarRating->slotTrackLoaded(pTrack);
+        pStarRating->slotSetRating(pTrack->getRating());
     }
 
     return pStarRating;
@@ -1200,7 +1309,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QColor c(255,255,255);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1269,11 +1378,11 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1281,10 +1390,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
 
-    if (!waveformWidgetFactory->isOpenGlAvailable() &&
-            !waveformWidgetFactory->isOpenGlesAvailable()) {
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
@@ -1294,34 +1403,121 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
         return nullptr;
     }
-    WSpinny* spinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-    commonWidgetSetup(node, spinny);
+    // Note: For some reasons on X11 we need to create the widget without a parent to avoid to
+    // create two platform windows (QXcbWindow) in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
+    WSpinnyBase* pSpinny;
+#ifdef MIXXX_USE_QOPENGL
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable() &&
+            !CmdlineArgs::Instance().getUseLegacySpinny()) {
+        pSpinny = new WSpinnyGLSL(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    } else
+#endif
+    {
+        pSpinny = new WSpinny(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
+        pSpinny->setParent(m_pParent);
+    }
+    commonWidgetSetup(node, pSpinny);
 
-    connect(waveformWidgetFactory,
+    connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
-            spinny,
-            &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
-    connect(spinny,
-            &WSpinny::trackDropped,
+            pSpinny,
+            &WSpinnyBase::render);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::swapSpinnies,
+            pSpinny,
+            &WSpinnyBase::swap);
+    connect(pSpinny,
+            &WSpinnyBase::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerStopped);
-    connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    connect(pSpinny, &WSpinnyBase::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
     ConfigKey configKey;
     if (showCoverControl) {
         configKey = showCoverControl->getKey();
     }
-    spinny->setup(node, *m_pContext, configKey);
-    spinny->installEventFilter(m_pKeyboard);
-    spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    spinny->Init();
-    return spinny;
+    pSpinny->setup(node, *m_pContext, configKey);
+    pSpinny->installEventFilter(m_pKeyboard);
+    pSpinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pSpinny->Init();
+    return pSpinny;
+}
+
+QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
 #endif
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
+            (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+                    !pWaveformWidgetFactory->isOpenGlesAvailable())) {
+        // Legacy WVuMeter
+        WVuMeterLegacy* pVuMeterWidget = parseStandardWidget<WVuMeterLegacy>(node);
+        pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
+        return pVuMeterWidget;
+    }
+
+    // WGLWidget derived WVuMeter
+
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
+
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when VuMeter can not be displayed. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
+    // Note: For some reasons on X11 we need to create the widget without a parent to avoid to
+    // create two platform windows (QXcbWindow) in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
+    WVuMeterBase* pVuMeterWidget;
+#ifdef MIXXX_USE_QOPENGL
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+        pVuMeterWidget = new WVuMeterGLSL(pParent);
+    } else
+#endif
+    {
+        pVuMeterWidget = new WVuMeter(pParent);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
+        pVuMeterWidget->setParent(m_pParent);
+    }
+    commonWidgetSetup(node, pVuMeterWidget);
+
+    pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
+
+    pVuMeterWidget->setup(node, *m_pContext);
+    pVuMeterWidget->installEventFilter(m_pKeyboard);
+    pVuMeterWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pVuMeterWidget->Init();
+
+    return pVuMeterWidget;
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
@@ -1350,7 +1546,9 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     if (!group.isEmpty()) {
         pPlayer = m_pPlayerManager->getPlayer(group);
         if (!pPlayer) {
-            SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("No player found for group: %1").arg(group));
             return nullptr;
         }
     }
@@ -1368,7 +1566,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
         connect(pCoverArt,
                 &WCoverArt::trackDropped,
                 m_pPlayerManager,
-                &PlayerManager::slotLoadLocationToPlayerStopped);
+                &PlayerManager::slotLoadLocationToPlayerMaybePlay);
         connect(pCoverArt, &WCoverArt::cloneDeck,
                 m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }
@@ -1379,14 +1577,17 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
 void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
     QString objectName = m_pContext->selectString(node, "ObjectName");
     if (objectName.isEmpty()) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition requires an ObjectName";
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral("SingletonDefinition requires an ObjectName"));
     }
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (childrenNode.isNull()) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition requires a Children tag with one child";
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral("SingletonDefinition requires a Children tag "
+                               "with one child"));
     }
 
     // Descend children, taking the first valid element.
@@ -1400,27 +1601,30 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
     }
 
     if (child_node.isNull()) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition Children node is empty";
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral("SingletonDefinition Children node is empty"));
         return;
     }
 
     QDomElement element = child_node.toElement();
     QList<QWidget*> child_widgets = parseNode(element);
     if (child_widgets.empty()) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child produced no widget.";
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral(
+                        "SingletonDefinition child produced no widget."));
         return;
     } else if (child_widgets.size() > 1) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child produced multiple widgets."
-                << "All but the first are ignored.";
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral("SingletonDefinition child produced multiple "
+                               "widgets. All but the first are ignored."));
     }
 
     QWidget* pChild = child_widgets[0];
     if (pChild == nullptr) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child widget is NULL";
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("SingletonDefinition child widget is NULL"));
         return;
     }
 
@@ -1434,6 +1638,28 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     pLibraryWidget->setup(node, *m_pContext);
+
+    const auto bpmColumnPrecision =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
+                    BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
+
+    const auto keyColorsEnabled =
+            m_pConfig->getValue(
+                    ConfigKey("[Config]", "key_colors_enabled"),
+                    BaseTrackTableModel::kKeyColorsEnabledDefault);
+    BaseTrackTableModel::setKeyColorsEnabled(keyColorsEnabled);
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    BaseTrackTableModel::setKeyColorPalette(colorPaletteSettings.getConfigKeyColorPalette());
+
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    BaseTrackTableModel::setApplyPlayedTrackColor(applyPlayedTrackColor);
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,
@@ -1534,7 +1760,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     QString styleHack = "";
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
-        color.setNamedColor(fgColor);
+        color = QColor(fgColor);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
@@ -1548,7 +1774,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColor;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
-        color.setNamedColor(bgColor);
+        color = QColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
         styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
@@ -1560,7 +1786,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowEven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowEven", &bgColorRowEven)) {
-        color.setNamedColor(bgColorRowEven);
+        color = QColor(bgColorRowEven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
@@ -1568,7 +1794,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowUneven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowUneven", &bgColorRowUneven)) {
-        color.setNamedColor(bgColorRowUneven);
+        color = QColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
@@ -1591,9 +1817,19 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
     if (!templateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Could not open template file:" << absolutePath;
+        return QDomElement();
     }
 
     QDomDocument tmpl("template");
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = tmpl.setContent(&templateFile);
+    if (!parseResult) {
+        qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
+                   << absolutePath << "line:" << parseResult.errorLine
+                   << "column:" << parseResult.errorColumn;
+        qWarning() << "LegacySkinParser::loadTemplate - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -1603,6 +1839,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
         qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
                    << absolutePath << "line:" << errorLine << "column:" << errorColumn;
         qWarning() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -1613,9 +1850,11 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
 QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
     if (!node.hasAttribute("src")) {
-        SKIN_WARNING(node, *m_pContext)
-                << "Template instantiation without src attribute:"
-                << node.text();
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral(
+                        "Template instantiation without src attribute: %1")
+                        .arg(node.text()));
         return QList<QWidget*>();
     }
 
@@ -1627,7 +1866,10 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
     QDomElement templateNode = loadTemplate(path);
 
     if (templateNode.isNull()) {
-        SKIN_WARNING(node, *m_pContext) << "Template instantiation for template failed:" << path;
+        SKIN_WARNING(node,
+                *m_pContext,
+                QStringLiteral("Template instantiation for template failed: %1")
+                        .arg(path));
         m_pContext = std::move(pOldContext);
         return QList<QWidget*>();
     }
@@ -1685,7 +1927,34 @@ QString LegacySkinParser::getSharedGroupString(const QString& channelStr) {
 
 QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     QString group = lookupNodeGroup(element);
-    WHotcueButton* pWidget = new WHotcueButton(group, m_pParent);
+    WHotcueButton* pWidget = new WHotcueButton(m_pParent, group);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    auto* pCLEFilter = m_pControllerManager->getControllerLearningEventFilter();
+    pWidget->installEventFilter(pCLEFilter);
+    // For HotcueButton, widget connections are created in its own setup(), not
+    // via <Connection> nodes. In order to make Hotcue controls learnable for
+    // ControllerLearningEventFilter we need to add the clickInfo manually.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::LeftButton,
+            controlFromConfigKey(pWidget->getLeftClickConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+    // Shift + right click = clear hotcue
+    // ControllerLearningEventFilter doesn't (yet) care about keyboard events or
+    // modifiers, so let's use just right-click to make this learnable as well.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::RightButton,
+            controlFromConfigKey(pWidget->getClearConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parsePlayButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WPlayButton* pWidget = new WPlayButton(m_pParent, group);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
@@ -1735,6 +2004,18 @@ QWidget* LegacySkinParser::parseEffectSelector(const QDomElement& node) {
         m_pControllerManager->getControllerLearningEventFilter());
     pSelector->Init();
     return pSelector;
+}
+
+QWidget* LegacySkinParser::parseEffectMetaKnob(const QDomElement& node) {
+    WEffectMetaKnob* pMetaKnob =
+            new WEffectMetaKnob(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pMetaKnob);
+    pMetaKnob->setup(node, *m_pContext);
+    pMetaKnob->installEventFilter(m_pKeyboard);
+    pMetaKnob->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pMetaKnob->Init();
+    return pMetaKnob;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {
@@ -1844,9 +2125,11 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         } else if (y >= 0 && x == -1) {
             pWidget->setMinimumHeight(y);
         } else if (x != -1 || y != -1) {
-            SKIN_WARNING(node, *m_pContext)
-                    << "Could not parse widget MinimumSize:" << size;
-	}
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("Could not parse widget MinimumSize: %1")
+                            .arg(size));
+        }
     }
 
 
@@ -1866,8 +2149,10 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         } else if (y >= 0 && x == -1) {
             pWidget->setMaximumHeight(y);
         } else if (x != -1 || y != -1) {
-            SKIN_WARNING(node, *m_pContext)
-                    << "Could not parse widget MaximumSize:" << size;
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("Could not parse widget MaximumSize: %1")
+                            .arg(size));
         }
     }
 
@@ -1883,16 +2168,20 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         if (parseSizePolicy(&xs, &horizontalPolicy)) {
             sizePolicy.setHorizontalPolicy(horizontalPolicy);
         } else if (!xs.isEmpty()) {
-            SKIN_WARNING(node, *m_pContext)
-                    << "Could not parse horizontal size policy:" << xs;
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("Could not parse horizontal size policy: %1")
+                            .arg(xs));
         }
 
         QSizePolicy::Policy verticalPolicy;
         if (parseSizePolicy(&ys, &verticalPolicy)) {
             sizePolicy.setVerticalPolicy(verticalPolicy);
         } else if (!ys.isEmpty()) {
-            SKIN_WARNING(node, *m_pContext)
-                    << "Could not parse vertical size policy:" << ys;
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("Could not parse vertical size policy: %1")
+                            .arg(ys));
         }
 
         hasSizePolicyNode = true;
@@ -2045,7 +2334,7 @@ void LegacySkinParser::commonWidgetSetup(const QDomNode& node,
     // setupWidget since a BindProperty connection to the display parameter can
     // cause the widget to be polished (i.e. style computed) before it is
     // ready. The most common case is that the object name has not yet been set
-    // in setupWidget. See Bug #1285836.
+    // in setupWidget. See issue #7328.
     if (allowConnections) {
         setupConnections(node, pBaseWidget);
     }
@@ -2065,8 +2354,10 @@ void LegacySkinParser::setupBaseWidget(const QDomNode& node,
         } else if (!toolTipId.isEmpty()) {
             // Only warn if there was a tooltip ID specified and no tooltip for
             // that ID.
-            SKIN_WARNING(node, *m_pContext)
-                    << "Invalid <TooltipId> in skin.xml:" << toolTipId;
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("Invalid <TooltipId> in skin.xml: %1")
+                            .arg(toolTipId));
         }
     }
 }
@@ -2103,8 +2394,6 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
 }
 
 void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidget) {
-    ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = nullptr;
-
     for (QDomNode con = m_pContext->selectNode(node, "Connection");
             !con.isNull();
             con = con.nextSibling()) {
@@ -2115,20 +2404,22 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             continue;
         }
 
-        ValueTransformer* pTransformer = nullptr;
+        std::unique_ptr<ValueTransformer> pTransformer = nullptr;
         QDomElement transform = m_pContext->selectElement(con, "Transform");
         if (!transform.isNull()) {
-            pTransformer = ValueTransformer::parseFromXml(transform, *m_pContext);
+            pTransformer =
+                    ValueTransformer::parseFromXml(transform, *m_pContext);
         }
 
         QString property;
         if (m_pContext->hasNodeSelectString(con, "BindProperty", &property)) {
             //qDebug() << "Making property connection for" << property;
 
-            ControlWidgetPropertyConnection* pConnection =
-                    new ControlWidgetPropertyConnection(pWidget, control->getKey(),
-                                                        pTransformer, property);
-            pWidget->addPropertyConnection(pConnection);
+            pWidget->addPropertyConnection(
+                    std::make_unique<ControlWidgetPropertyConnection>(pWidget,
+                            control->getKey(),
+                            std::move(pTransformer),
+                            property));
         } else {
             bool nodeValue;
             Qt::MouseButton state = parseButtonState(con, *m_pContext);
@@ -2176,9 +2467,11 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 if (nodeValue) {
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {
-                    SKIN_WARNING(con, *m_pContext)
-                            << "LegacySkinParser::setupConnections():"
-                            << "Setting EmitOnPressAndRelease to false is not necessary.";
+                    SKIN_WARNING(con,
+                            *m_pContext,
+                            QStringLiteral("LegacySkinParser::setupConnections("
+                                           "): Setting EmitOnPressAndRelease "
+                                           "to false is not necessary."));
                 }
             } else {
                 // default:
@@ -2187,26 +2480,36 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
-            ControlParameterWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                    pWidget, control->getKey(), pTransformer,
-                    static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
-                    static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
+            auto pConnection =
+                    std::make_unique<ControlParameterWidgetConnection>(pWidget,
+                            control->getKey(),
+                            std::move(pTransformer),
+                            static_cast<ControlParameterWidgetConnection::
+                                            DirectionOption>(directionOption),
+                            static_cast<ControlParameterWidgetConnection::
+                                            EmitOption>(emitOption));
 
             switch (state) {
             case Qt::NoButton:
-                pWidget->addConnection(pConnection);
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
-                    pLastLeftOrNoButtonConnection = pConnection;
+                    pWidget->addAndSetDisplayConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::None);
+                } else {
+                    pWidget->addConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::None);
                 }
                 break;
             case Qt::LeftButton:
-                pWidget->addLeftConnection(pConnection);
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
-                    pLastLeftOrNoButtonConnection = pConnection;
+                    pWidget->addAndSetDisplayConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::Left);
+                } else {
+                    pWidget->addConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::Left);
                 }
                 break;
             case Qt::RightButton:
-                pWidget->addRightConnection(pConnection);
+                pWidget->addConnection(std::move(pConnection), WBaseWidget::ConnectionSide::Right);
                 break;
             default:
                 // can't happen. Nothing else is returned by parseButtonState();
@@ -2245,12 +2548,13 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     subkey.item += "_toggle";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                     addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
-                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget()))) {
+                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget())) ||
+                        qobject_cast<const WKnobComposed*>(pWidget->toQWidget())) {
                     // check for "_up", "_down", "_up_small", "_down_small"
                     ConfigKey subkey;
                     QString shortcut;
 
-                    if (pSlider->isHorizontal()) {
+                    if (pSlider && pSlider->tryParseHorizontal(node)) {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
@@ -2270,7 +2574,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                         addShortcutToToolTip(pWidget, shortcut, tr("left small"));
-                    } else {
+                    } else { // vertical slider of knob
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
@@ -2294,14 +2598,6 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 }
             }
         }
-    }
-
-    // Legacy behavior: The last left-button or no-button connection with
-    // connectValueToWidget is the display connection. If no left-button or
-    // no-button connection exists, use the last right-button connection as the
-    // display connection.
-    if (pLastLeftOrNoButtonConnection != nullptr) {
-        pWidget->setDisplayConnection(pLastLeftOrNoButtonConnection);
     }
 }
 
@@ -2327,16 +2623,38 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
     pWidget->appendBaseTooltip(tooltip);
 }
 
-QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
-    return m_pContext->selectString(node, "LaunchImageStyle");
+QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& skinDoc) {
+    QString schemeLaunchImageStyle;
+    // Check if the skins has color schemes
+    const QDomNode colorSchemeNode =
+            ColorSchemeParser::findConfiguredColorSchemeNode(
+                    skinDoc.toElement(),
+                    m_pConfig);
+    if (!colorSchemeNode.isNull()) {
+        // Check if the selected scheme has a <LaunchImageStyle> node with a string
+        schemeLaunchImageStyle = m_pContext->selectString(colorSchemeNode, "LaunchImageStyle");
+    }
+    if (!schemeLaunchImageStyle.isEmpty()) {
+        return schemeLaunchImageStyle;
+    } else {
+        // Look for the skin's general LaunchImage style
+        return m_pContext->selectString(skinDoc, "LaunchImageStyle");
+    }
 }
 
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
-    // Workaround for https://bugs.kde.org/show_bug.cgi?id=434451 which renders
-    // relative SVG icon paths in external stylesheets unusable:
+    // Initially, this was a Workaround for https://bugs.kde.org/show_bug.cgi?id=434451
+    // which renders relative SVG icon paths in external stylesheets unusable:
     // Replaces relative icon urls in stylesheets (external qss or inline
     // <Style> nodes) with absolute file paths.
-    // TODO Can be removed/disabled as soon as all target distros have the fixed
-    // package in their repo.
+    // Now this also replaces the 'skins:' alias which allows skin mods in the
+    // user skins directory to use image urls referencing files in the system
+    // skins directory for the launch image style.
+    style.replace("url(skins:", "url(" + m_pConfig->getResourcePath() + "skins/");
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
+}
+
+bool LegacySkinParser::requiresStem(const QDomElement& node) {
+    QDomElement requiresStemNode = node.firstChildElement("RequiresStem");
+    return !requiresStemNode.isNull() && requiresStemNode.text() == "true";
 }

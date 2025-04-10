@@ -7,7 +7,7 @@ Variables:
   LoopLength_Control: length of the beatloop as config value
 -->
 <Template>
-  <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+  <Template src="skins:Tango/controls/button_2state_right_display.xml">
     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
     <SetVariable name="ObjectName">LoopSizeButton</SetVariable>
     <SetVariable name="Size">22f,21f</SetVariable>

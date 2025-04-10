@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QUrlQuery>
 
+#include "moc_findonwebmenulastfm.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 
@@ -26,17 +27,17 @@ const QUrl composeLastfmUrl(const QString& serviceSearchUrl,
 
 } //namespace
 
-FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track) {
+FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();
-    auto pLastfmMenu = make_parented<QMenu>(pFindOnWebMenu);
-    pLastfmMenu->setTitle(kServiceTitle);
-    pFindOnWebMenu->addMenu(pLastfmMenu);
-    pLastfmMenu->addSeparator();
+    setTitle(kServiceTitle);
+    pFindOnWebMenu->addMenu(this);
+    addSeparator();
     if (!artist.isEmpty()) {
         const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
-        addActionToServiceMenu(pLastfmMenu,
+        addActionToServiceMenu(
                 composeActionText(tr("Artist"), artist),
                 lastfmUrlArtist);
     }
@@ -45,13 +46,13 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
             const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl lastfmUrlArtistWithTrackTitle =
                     composeLastfmUrl(kSearchUrlTitle, artistWithTrackTitle);
-            addActionToServiceMenu(pLastfmMenu,
+            addActionToServiceMenu(
                     composeActionText(
                             tr("Artist + Title"), artistWithTrackTitle),
                     lastfmUrlArtistWithTrackTitle);
         }
         const QUrl lastfmUrlTrackTitle = composeLastfmUrl(kSearchUrlTitle, trackTitle);
-        addActionToServiceMenu(pLastfmMenu,
+        addActionToServiceMenu(
                 composeActionText(tr("Title"), trackTitle),
                 lastfmUrlTrackTitle);
     }
@@ -60,12 +61,12 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
             const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl lastfmUrlArtistWithAlbum =
                     composeLastfmUrl(kSearchUrlAlbum, artistWithAlbum);
-            addActionToServiceMenu(pLastfmMenu,
+            addActionToServiceMenu(
                     composeActionText(tr("Artist + Album"), artistWithAlbum),
                     lastfmUrlArtistWithAlbum);
         } else {
             const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
-            addActionToServiceMenu(pLastfmMenu,
+            addActionToServiceMenu(
                     composeActionText(tr("Album"), album),
                     lastfmUrlAlbum);
         }

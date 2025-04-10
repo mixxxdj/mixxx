@@ -75,6 +75,19 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
         "Pure Data Midi in 1",
         "Pure Data Midi out 1"));
 
+    ASSERT_FALSE(shouldLinkInputToOutput(
+            "Pure Data Midi in 1",
+            "Pure Data Midi out 2"));
+
+    ASSERT_TRUE(shouldLinkInputToOutput(
+            "foo in 123 bar test",
+            "foo out 123 bar test"));
+
+    // Bug 1986440 - Behringer X32
+    ASSERT_TRUE(shouldLinkInputToOutput(
+            "X-USB MIDI IN",
+            "X-USB MIDI OUT"));
+
     // Strip ' input ' from inputs and ' output ' from outputs.
 
     // Lemur Daemon shows 8 port pairs named like: 'Daemon Input 1' and 'Daemon

@@ -1,5 +1,6 @@
 #include "util/workerthreadscheduler.h"
 
+#include "moc_workerthreadscheduler.cpp"
 #include "util/workerthread.h"
 
 

@@ -4,12 +4,16 @@
 #include <QSortFilterProxyModel>
 
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -22,20 +26,30 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(
-            QWidget* parent,
+            QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
+    QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
+    void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
-    void activateSelectedTrack() override;
-    void loadSelectedTrackToGroup(const QString& group, bool play) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void editSelectedItem();
+    void activateSelectedTrack();
+#ifdef __STEM__
+    void loadSelectedTrackToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
+    void loadSelectedTrackToGroup(const QString& group,
+            bool play);
+#endif
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
@@ -45,17 +59,60 @@ class WTrackTableView : public WLibraryTableView {
     TrackId getCurrentTrackId() const;
     bool setCurrentTrackId(const TrackId& trackId, int column = 0, bool scrollToTrack = false);
 
+    void addToAutoDJBottom();
+    void addToAutoDJTop();
+    void addToAutoDJReplace();
+    void selectTrack(const TrackId&);
+
+    void removeSelectedTracks();
+    void cutSelectedTracks();
+    void copySelectedTracks();
+    void pasteTracks(const QModelIndex& index);
+
+    void moveSelection(int delta);
+    void moveRows(QList<int> selectedRows, int destRow);
+    void moveSelectedTracks(QKeyEvent* event);
+    void selectTracksById(const QList<TrackId>& tracks, int prevColumn);
+    void selectTracksByPosition(const QList<int>& positions, int prevColum);
+
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
     }
 
-    Q_PROPERTY(QColor focusBorderColor MEMBER m_pFocusBorderColor DESIGNABLE true);
+    Q_PROPERTY(QColor focusBorderColor
+                    MEMBER m_focusBorderColor
+                            NOTIFY focusBorderColorChanged
+                                    DESIGNABLE true);
     QColor getFocusBorderColor() const {
-        return m_pFocusBorderColor;
+        return m_focusBorderColor;
+    }
+
+    // Default color for played tracks' text color. #555555, bit darker than Qt::darkgray.
+    // BaseTrackTableModel uses this for the ForegroundRole of played tracks.
+    static constexpr const char* kDefaultTrackPlayedColor = "#555555";
+    Q_PROPERTY(QColor trackPlayedColor
+                    MEMBER m_trackPlayedColor
+                            NOTIFY trackPlayedColorChanged
+                                    DESIGNABLE true);
+    QColor getTrackPlayedColor() const {
+        return m_trackPlayedColor;
+    }
+    // Default color for missing tracks' text color. #ee0000, bit darker than Qt::red.
+    // BaseTrackTableModel uses this for the ForegroundRole of missing tracks.
+    static constexpr const char* kDefaultTrackMissingColor = "#ff0000";
+    Q_PROPERTY(QColor trackMissingColor
+                    MEMBER m_trackMissingColor
+                            NOTIFY trackMissingColorChanged
+                                    DESIGNABLE true);
+    QColor getTrackMissingColor() const {
+        return m_trackMissingColor;
     }
 
   signals:
     void trackMenuVisible(bool visible);
+    void focusBorderColorChanged(QColor col);
+    void trackPlayedColorChanged(QColor col);
+    void trackMissingColorChanged(QColor col);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
@@ -65,16 +122,15 @@ class WTrackTableView : public WLibraryTableView {
     void slotDeleteTracksFromDisk();
     void slotShowHideTrackMenu(bool show);
 
-    void slotAddToAutoDJBottom() override;
-    void slotAddToAutoDJTop() override;
-    void slotAddToAutoDJReplace() override;
     void slotSaveCurrentViewState() {
         saveCurrentViewState();
     };
     bool slotRestoreCurrentViewState() {
         return restoreCurrentViewState();
     };
-    void slotSelectTrack(const TrackId&);
+    void slotrestoreCurrentIndex() {
+        restoreCurrentIndex();
+    }
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
@@ -86,6 +142,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:
@@ -101,9 +158,15 @@ class WTrackTableView : public WLibraryTableView {
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected) override;
 
+    void mousePressEvent(QMouseEvent* pEvent) override;
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
     void mouseMoveEvent(QMouseEvent *pEvent) override;
+
+    // Returns the list of selected row indices, or an empty list if none are selected.
+    QModelIndexList getSelectedRows() const;
+    // Returns the list of selected row numbers, or an empty list if none are selected.
+    QList<int> getSelectedRowNumbers() const;
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
@@ -119,7 +182,9 @@ class WTrackTableView : public WLibraryTableView {
     parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
-    QColor m_pFocusBorderColor;
+    QColor m_focusBorderColor;
+    QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.

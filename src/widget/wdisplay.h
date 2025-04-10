@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QString>
 #include <QVector>
 
-#include "skin/legacy/skincontext.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WDisplay : public WWidget {
    Q_OBJECT

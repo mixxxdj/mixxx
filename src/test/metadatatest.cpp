@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
+#include <textidentificationframe.h>
+#include <tstring.h>
 
-#include "track/taglib/trackmetadata.h"
-#include "util/memory.h"
-
-#include <taglib/tstring.h>
-#include <taglib/textidentificationframe.h>
 #include <QtDebug>
+#include <memory>
+
+#include "track/bpm.h"
+#include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_common.h"
 
 namespace {
 
@@ -46,7 +48,10 @@ class MetadataTest : public testing::Test {
         pFrame.release();
 
         mixxx::TrackMetadata trackMetadata;
-        mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
+        // Both resetMissingTagMetadata = false/true have the same effect
+        constexpr auto resetMissingTagMetadata = false;
+        mixxx::taglib::id3v2::importTrackMetadataFromTag(
+                &trackMetadata, tag, resetMissingTagMetadata);
 
         EXPECT_DOUBLE_EQ(expectedValue, trackMetadata.getTrackInfo().getBpm().value());
     }
@@ -128,7 +133,10 @@ TEST_F(MetadataTest, ID3v2Year) {
                 mixxx::taglib::id3v2::exportTrackMetadataIntoTag(&tag, trackMetadata);
             }
             mixxx::TrackMetadata trackMetadata;
-            mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
+            // Both resetMissingTagMetadata = false/true have the same effect
+            constexpr auto resetMissingTagMetadata = false;
+            mixxx::taglib::id3v2::importTrackMetadataFromTag(
+                    &trackMetadata, tag, resetMissingTagMetadata);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
                 const QString actualYear(trackMetadata.getTrackInfo().getYear());

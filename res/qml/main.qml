@@ -1,5 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -94,11 +94,60 @@ ApplicationWindow {
                         width: 640
                         height: 480
                     }
-
                 }
-
             }
+        }
 
+        Skin.WaveformDisplay {
+            id: deck3waveform
+
+            group: "[Channel3]"
+            width: root.width
+            height: 120
+            visible: root.show4decks && !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck3waveform
+            }
+        }
+
+        Skin.WaveformDisplay {
+            id: deck1waveform
+
+            group: "[Channel1]"
+            width: root.width
+            height: 120
+            visible: !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck1waveform
+            }
+        }
+
+        Skin.WaveformDisplay {
+            id: deck2waveform
+
+            group: "[Channel2]"
+            width: root.width
+            height: 120
+            visible: !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck2waveform
+            }
+        }
+
+        Skin.WaveformDisplay {
+            id: deck4waveform
+
+            group: "[Channel4]"
+            width: root.width
+            height: 120
+            visible: root.show4decks && !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck4waveform
+            }
         }
 
         Skin.DeckRow {
@@ -120,7 +169,6 @@ ApplicationWindow {
             Skin.FadeBehavior on visible {
                 fadeTarget: crossfader
             }
-
         }
 
         Skin.DeckRow {
@@ -135,7 +183,6 @@ ApplicationWindow {
             Skin.FadeBehavior on visible {
                 fadeTarget: decks34
             }
-
         }
 
         Skin.SamplerRow {
@@ -147,7 +194,6 @@ ApplicationWindow {
             Skin.FadeBehavior on visible {
                 fadeTarget: samplers
             }
-
         }
 
         Skin.EffectRow {
@@ -159,7 +205,6 @@ ApplicationWindow {
             Skin.FadeBehavior on visible {
                 fadeTarget: effects
             }
-
         }
 
         Skin.Library {
@@ -172,9 +217,6 @@ ApplicationWindow {
                 properties: "x,y"
                 duration: 150
             }
-
         }
-
     }
-
 }

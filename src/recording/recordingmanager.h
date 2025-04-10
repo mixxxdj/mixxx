@@ -1,18 +1,16 @@
 #pragma once
 
-#include <QDateTime>
-#include <QList>
 #include <QObject>
 #include <QString>
+#include <memory>
 
 #include "control/controlobject.h"
-#include "encoder/encoder.h"
 #include "preferences/usersettings.h"
-#include "recording/defs_recording.h"
 
-class EngineMaster;
+class EngineMixer;
 class ControlPushButton;
 class ControlProxy;
+class QDateTime;
 
 /// The RecordingManager is a central class and manages
 /// the recording feature of Mixxx.
@@ -25,8 +23,8 @@ class ControlProxy;
 class RecordingManager : public QObject {
     Q_OBJECT
   public:
-    RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
-    ~RecordingManager() override;
+    RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine);
+    ~RecordingManager() override = default;
 
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
@@ -60,9 +58,8 @@ class RecordingManager : public QObject {
     // name of the first split but with a suffix.
     void splitContinueRecording();
     void warnFreespace();
-    ControlProxy* m_recReady;
-    ControlObject* m_recReadyCO;
-    ControlPushButton* m_pToggleRecording;
+    std::unique_ptr<ControlObject> m_pCoRecStatus;
+    std::unique_ptr<ControlPushButton> m_pToggleRecording;
 
     quint64 getFileSplitSize();
     unsigned int getFileSplitSeconds();

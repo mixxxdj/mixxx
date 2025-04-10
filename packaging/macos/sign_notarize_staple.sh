@@ -1,55 +1,38 @@
 #!/bin/bash
 
+set -e
+
 DMG_FILE="${1}"
 [ -z "${DMG_FILE}" ] && echo "Pass DMG file name as first argument." >&2 && exit 1
-[ -z "${APPLE_CODESIGN_IDENTITY}" ] && echo "Please set the $APPLE_CODESIGN_IDENTITY env var." >&2 && exit 1
-[ -z "${APPLE_BUNDLE_ID}" ] && echo "Please set the $APPLE_BUNDLE_ID env var." >&2 && exit 1
-[ -z "${APPLE_ID_USERNAME}" ] && echo "Please set the $APPLE_ID_USERNAME env var." >&2 && exit 1
-[ -z "${APPLE_APP_SPECIFIC_PASSWORD}" ] && echo "Please set the $APPLE_APP_SPECIFIC_PASSWORD env var." >&2 && exit 1
-[ -z "${ASC_PROVIDER}" ] && echo "Please set the $ASC_PROVIDER env var." >&2 && exit 1
+[ -z "${APPLE_CODESIGN_IDENTITY}" ] && echo 'Please set the APPLE_CODESIGN_IDENTITY env var.' >&2 && exit 1
+[ -z "${APPLE_ID_USERNAME}" ] && echo 'Please set the APPLE_ID_USERNAME env var.' >&2 && exit 1
+[ -z "${APPLE_APP_SPECIFIC_PASSWORD}" ] && echo 'Please set the APPLE_APP_SPECIFIC_PASSWORD env var.' >&2 && exit 1
+[ -z "${APPLE_TEAM_ID}" ] && echo 'Please set the APPLE_TEAM_ID env var.' >&2 && exit 1
 
-echo "Signing $DMG_FILE"
-codesign --verbose=4 --options runtime \
-    --sign "${APPLE_CODESIGN_IDENTITY}" "$(dirname "$0")/entitlements.plist" "${DMG_FILE}"
+tmp_dir="$(mktemp -dt mixxx_notarize)"
+# We want $tmp_dir to expand now, therefore we disable the check
+# shellcheck disable=SC2064
+trap "rm -rf '$tmp_dir'" EXIT
 
-echo "Notarizing $DMG_FILE"
-xcrun altool --notarize-app --primary-bundle-id "${APPLE_BUNDLE_ID}" --username "${APPLE_ID_USERNAME}" \
-    --password "${APPLE_APP_SPECIFIC_PASSWORD}" --asc-provider "${ASC_PROVIDER}" --file "${DMG_FILE}" \
-    --output-format xml > notarize_result.plist
-UUID="$(/usr/libexec/PlistBuddy -c 'Print notarization-upload:RequestUUID' notarize_result.plist)"
-echo "Notarization UUID: $UUID"
-rm notarize_result.plist
+echo "==> Signing $DMG_FILE"
+codesign --verbose=4 --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
 
-# Wait a few seconds to avoid "Could not find the RequestUUID." error
-sleep 5
 
-# wait for confirmation that notarization finished
-while true; do
-    xcrun altool --notarization-info "$UUID" \
-    --username "${APPLE_ID_USERNAME}" --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
-    --output-format xml > notarize_status.plist
+echo "==> Notarizing $DMG_FILE"
 
-    # shellcheck disable=SC2181
-    if [ "$?" != "0" ]; then
-        echo "Notarization failed:"
-        cat notarize_status.plist
-        curl "$(/usr/libexec/PlistBuddy -c 'Print notarization-info:LogFileURL' notarize_status.plist)"
-        exit 1
-    fi
+credentials=(
+    --apple-id "${APPLE_ID_USERNAME}"
+    --password "${APPLE_APP_SPECIFIC_PASSWORD}"
+    --team-id "${APPLE_TEAM_ID}"
+)
+submit_out="$tmp_dir/submit_out.txt"
 
-    NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print notarization-info:Status' notarize_status.plist)"
-    if [ "${NOTARIZATION_STATUS}" == "in progress" ]; then
-        echo "Waiting another 10 seconds for notarization to complete"
-        sleep 10
-    elif [ "${NOTARIZATION_STATUS}" == "success" ]; then
-        echo "Notarization succeeded"
-        break
-    else
-        echo "Notarization status: ${NOTARIZATION_STATUS}"
-    fi
-done
+xcrun notarytool submit "${credentials[@]}" "${DMG_FILE}" 2>&1 | tee "$submit_out"
+REQUEST_ID="$(grep -e " id: " "$submit_out" | grep -oE '([0-9a-f-]{36})'| head -n1)"
+rm "$submit_out"
+xcrun notarytool wait "$REQUEST_ID" "${credentials[@]}" --timeout 15m ||:
+xcrun notarytool log "$REQUEST_ID" "${credentials[@]}" ||:
+xcrun notarytool info "$REQUEST_ID" "${credentials[@]}"
 
-rm notarize_status.plist
-
-echo "Stapling $DMG_FILE"
+echo "==> Stapling $DMG_FILE"
 xcrun stapler staple -q "${DMG_FILE}"

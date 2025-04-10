@@ -38,7 +38,7 @@ int execRowCountQuery(FwdSqlQuery& query) {
 }
 
 /// Clean up the database and fix inconsistencies from previous runs.
-/// See also: https://bugs.launchpad.net/mixxx/+bug/1846945
+/// See also: https://github.com/mixxxdj/mixxx/issues/9771
 void cleanUpDatabase(const QSqlDatabase& database) {
     kLogger.info()
             << "Cleaning up database...";
@@ -56,7 +56,7 @@ void cleanUpDatabase(const QSqlDatabase& database) {
     FwdSqlQuery query(database, sqlStmt);
     query.bindValue(
             QStringLiteral(":unequalHash"),
-            static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+            QVariant(mixxx::invalidCacheKey()));
     const auto numRows = execRowCountQuery(query);
     VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()
@@ -245,7 +245,7 @@ void LibraryScanner::slotStartScan() {
             this,
             &LibraryScanner::slotFinishHashedScan);
 
-    for (const mixxx::FileInfo& rootDir : qAsConst(m_libraryRootDirs)) {
+    for (const mixxx::FileInfo& rootDir : std::as_const(m_libraryRootDirs)) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
         // scanning so that relies on having an open bookmark for the containing
@@ -489,7 +489,7 @@ void LibraryScanner::cancel() {
 
 void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
-    ScopedTimer timer("LibraryScanner::queueTask");
+    ScopedTimer timer(QStringLiteral("LibraryScanner::queueTask"));
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
         return;
     }
@@ -531,7 +531,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, mixxx::cache_key_t hash) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
+    ScopedTimer timer(QStringLiteral("LibraryScanner::slotDirectoryHashedAndScanned"));
     //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
@@ -550,7 +550,7 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
 }
 
 void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryUnchanged");
+    ScopedTimer timer(QStringLiteral("LibraryScanner::slotDirectoryUnchanged"));
     //kLogger.debug() << "slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
@@ -560,7 +560,7 @@ void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
 
 void LibraryScanner::slotTrackExists(const QString& trackPath) {
     //kLogger.debug() << "slotTrackExists" << trackPath;
-    ScopedTimer timer("LibraryScanner::slotTrackExists");
+    ScopedTimer timer(QStringLiteral("LibraryScanner::slotTrackExists"));
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedTrack(trackPath);
     }
@@ -568,35 +568,29 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     //kLogger.debug() << "slotAddNewTrack" << trackPath;
-    ScopedTimer timer("LibraryScanner::addNewTrack");
+    ScopedTimer timer(QStringLiteral("LibraryScanner::addNewTrack"));
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
             trackPath,
             false);
-    if (pTrack) {
-        DEBUG_ASSERT(!pTrack->isDirty());
-        // The track's actual location might differ from the
-        // given trackPath
-        const QString trackLocation(pTrack->getLocation());
-        // Acknowledge successful track addition
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackLocation);
-        }
-        // Signal the main instance of TrackDAO, that there is
-        // a new track in the database.
-        emit trackAdded(pTrack);
-        emit progressLoading(trackLocation);
-    } else {
-        // Acknowledge failed track addition
-        // TODO(XXX): Is it really intended to acknowledge a failed
-        // track addition with a trackAdded() signal??
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackPath);
-        }
-        kLogger.warning()
-                << "Failed to add track to library:"
-                << trackPath;
+    if (!pTrack) {
+        // This happens only when there is an issue with the database which
+        // has been logged already. No need for yet another warning here.
+        return;
     }
+
+    DEBUG_ASSERT(!pTrack->isDirty());
+    // The track's actual location might differ from the
+    // given trackPath
+    const QString trackLocation = pTrack->getLocation();
+    // Acknowledge successful track addition
+    if (m_scannerGlobal) {
+        m_scannerGlobal->trackAdded(trackLocation);
+    }
+    // Signal the main instance of TrackDAO, that there is
+    // a new track in the database.
+    emit trackAdded(pTrack);
+    emit progressLoading(trackLocation);
 }
 
 bool LibraryScanner::changeScannerState(ScannerState newState) {

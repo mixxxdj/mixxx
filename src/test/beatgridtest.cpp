@@ -1,30 +1,68 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <memory>
 
+#include "audio/types.h"
 #include "track/beats.h"
 #include "track/track.h"
-#include "util/memory.h"
 
 using namespace mixxx;
 
 namespace {
 
+constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
 const double kMaxBeatError = 1e-9;
 
-TrackPointer newTrack(int sampleRate) {
+TrackPointer newTrack(mixxx::audio::SampleRate sampleRate) {
     TrackPointer pTrack(Track::newTemporary());
     pTrack->setAudioProperties(
             mixxx::audio::ChannelCount(2),
-            mixxx::audio::SampleRate(sampleRate),
+            sampleRate,
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(180));
     return pTrack;
 }
 
+TEST(BeatGridTest, TranslateBeats) {
+    TrackPointer pTrack = newTrack(kSampleRate);
+    constexpr mixxx::Bpm bpm(60.0);
+    pTrack->trySetBpm(bpm.value());
+    auto pBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    BeatsPointer pQuarterBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos + 0.25 * kSampleRate,
+            mixxx::Bpm(bpm));
+    BeatsPointer pHalfBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos + 0.5 * kSampleRate,
+            mixxx::Bpm(bpm));
+    BeatsPointer pOneBeat = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos + kSampleRate,
+            mixxx::Bpm(bpm));
+
+    // Test nothing happens for xBeats=0.0
+    EXPECT_EQ(*pBeat, **pBeat->tryTranslateBeats(0.0));
+
+    // Test quarter beat shift
+    EXPECT_EQ(*pQuarterBeat, **pBeat->tryTranslateBeats(0.25));
+
+    // Test half beat shift
+    EXPECT_EQ(*pHalfBeat, **pBeat->tryTranslateBeats(0.5));
+    EXPECT_EQ(*pHalfBeat, **(*pBeat->tryTranslateBeats(0.25))->tryTranslateBeats(0.25));
+
+    // Test full beat shift
+    EXPECT_EQ(*pOneBeat, **pBeat->tryTranslateBeats(1.0));
+    EXPECT_EQ(*pOneBeat, **pQuarterBeat->tryTranslateBeats(0.75));
+    EXPECT_EQ(*pOneBeat, **pHalfBeat->tryTranslateBeats(0.5));
+
+    // Test negative shift
+    EXPECT_EQ(*pBeat, **pHalfBeat->tryTranslateBeats(-0.5));
+    EXPECT_EQ(*pBeat, **pOneBeat->tryTranslateBeats(-1.0));
+}
+
 TEST(BeatGridTest, Scale) {
-    int sampleRate = 44100;
-    TrackPointer pTrack = newTrack(sampleRate);
+    TrackPointer pTrack = newTrack(kSampleRate);
 
     constexpr mixxx::Bpm bpm(60.0);
     pTrack->trySetBpm(bpm.value());
@@ -69,12 +107,11 @@ TEST(BeatGridTest, Scale) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
-    constexpr int sampleRate = 44100;
-    TrackPointer pTrack = newTrack(sampleRate);
+    TrackPointer pTrack = newTrack(kSampleRate);
 
     constexpr double bpm = 60.1;
     pTrack->trySetBpm(bpm);
-    constexpr mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm;
+    constexpr mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate / bpm;
 
     auto pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
             mixxx::audio::kStartFramePos,
@@ -113,12 +150,11 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
-    constexpr int sampleRate = 44100;
-    TrackPointer pTrack = newTrack(sampleRate);
+    TrackPointer pTrack = newTrack(kSampleRate);
 
     constexpr mixxx::Bpm bpm(60.1);
     pTrack->trySetBpm(bpm.value());
-    const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
+    const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate / bpm.value();
 
     auto pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
             mixxx::audio::kStartFramePos,
@@ -156,8 +192,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 }
 
 TEST(BeatGridTest, FromMetadata) {
-    int sampleRate = 44100;
-    TrackPointer pTrack = newTrack(sampleRate);
+    TrackPointer pTrack = newTrack(kSampleRate);
 
     constexpr mixxx::Bpm bpm(60.1);
     ASSERT_TRUE(pTrack->trySetBpm(bpm.value()));

@@ -6,31 +6,33 @@ Variables:
   chanNum : channel number
 
 Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
-Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
+Refer to https://github.com/mixxxdj/mixxx/issues/9201
 -->
 <Template>
   <WidgetGroup>
-    <Size><Variable name="Size"/></Size>
-    <Layout>stacked</Layout>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,max</SizePolicy>
     <Children>
       <StatusLight>
+        <Size>2f,-1min</Size>
         <TooltipId><Variable name="sourceType"/>_VuMeter</TooltipId>
-        <PathStatusLight scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
-        <PathBack scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_clipping.png</PathBack>
+        <PathStatusLight scalemode="STRETCH">skins:Tango/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
+        <PathBack scalemode="STRETCH">skins:Tango/graphics/vumeter_mini_clipping.png</PathBack>
         <Connection>
-          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+          <ConfigKey><Variable name="group"/>,peak_indicator</ConfigKey>
         </Connection>
       </StatusLight>
       <VuMeter>
-        <PathVu scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_level_over.png</PathVu>
-        <PathBack scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_level.png</PathBack>
+        <Size><Variable name="Size"/></Size>
+        <PathVu scalemode="STRETCH">skins:Tango/graphics/vumeter_mini_level_over.png</PathVu>
+        <PathBack scalemode="STRETCH">skins:Tango/graphics/vumeter_mini_level.png</PathBack>
         <Horizontal>false</Horizontal>
         <PeakHoldSize>5</PeakHoldSize>
         <PeakHoldTime>500</PeakHoldTime>
         <PeakFallTime>50</PeakFallTime>
         <PeakFallStep>2</PeakFallStep>
         <Connection>
-          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+          <ConfigKey><Variable name="group"/>,vu_meter</ConfigKey>
         </Connection>
       </VuMeter>
     </Children>

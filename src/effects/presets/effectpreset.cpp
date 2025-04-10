@@ -1,5 +1,8 @@
 #include "effects/presets/effectpreset.h"
 
+#include <QHash>
+#include <functional>
+
 #include "effects/backends/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "effects/presets/effectxmlelements.h"
@@ -50,10 +53,12 @@ EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot)
     for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
         const EffectParameterType parameterType =
                 static_cast<EffectParameterType>(parameterTypeId);
-        for (const auto& pParameter : pEffectSlot->getLoadedParameters().value(parameterType)) {
+        const auto& loadedParameters = pEffectSlot->getLoadedParameters().value(parameterType);
+        for (const auto& pParameter : loadedParameters) {
             m_effectParameterPresets.append(EffectParameterPreset(pParameter, false));
         }
-        for (const auto& pParameter : pEffectSlot->getHiddenParameters().value(parameterType)) {
+        const auto& hiddenParameters = pEffectSlot->getHiddenParameters().value(parameterType);
+        for (const auto& pParameter : hiddenParameters) {
             m_effectParameterPresets.append(EffectParameterPreset(pParameter, true));
         }
     }
@@ -99,5 +104,28 @@ const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
     return effectElement;
 }
 
-EffectPreset::~EffectPreset() {
+void EffectPreset::updateParametersFrom(const EffectPreset& other) {
+    DEBUG_ASSERT(backendType() == other.backendType());
+
+    // we use a std::reference_wrapper as optimization so we don't copy and
+    // store the entire object when we need to copy later anyways
+    // TODO(XXX): Replace QHash with <std::flat_map>
+    QHash<QString, std::reference_wrapper<const EffectParameterPreset>> parameterPresetLookup;
+    // we build temporary hashtable to reduce the algorithmic complexity of the
+    // lookup later. A plain std::find_if (O(n)) would've resulted in O(n^n)
+    // parameter updating. The hashtable has O(1) lookup with O(n) updating,
+    // though with more constant overhead. Since 3rd-party EffectPresets could
+    // have hundreds of parameters, we can't afford O(n^2) lookups.
+    // TODO(XXX): measure overhead and possibly implement fallback to lower
+    // overhead O(n^2) solution for small presets.
+    for (const EffectParameterPreset& preset : other.m_effectParameterPresets) {
+        parameterPresetLookup.insert(preset.id(), std::ref(preset));
+    }
+
+    for (EffectParameterPreset& parameterToUpdate : m_effectParameterPresets) {
+        const auto parameterToCopyIt = parameterPresetLookup.constFind(parameterToUpdate.id());
+        if (parameterToCopyIt != parameterPresetLookup.constEnd()) {
+            parameterToUpdate = *parameterToCopyIt;
+        }
+    }
 }

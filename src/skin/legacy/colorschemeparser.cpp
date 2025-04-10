@@ -3,7 +3,6 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 #include "util/xml.h"
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/imgloader.h"
@@ -16,58 +15,56 @@ void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
         UserSettingsPointer pConfig,
         QString* pStyle,
         SkinContext* pContext) {
+    QDomNode schemeNode = findConfiguredColorSchemeNode(docElem, pConfig);
+
+    if (!schemeNode.isNull()) {
+        std::shared_ptr<ImgSource> pImgSrc =
+                std::shared_ptr<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
+        WPixmapStore::setLoader(pImgSrc);
+        WImageStore::setLoader(pImgSrc);
+        WSkinColor::setLoader(pImgSrc);
+
+        // This calls SkinContext::updateVariables which iterates over all
+        // <SetVariable> nodes in the selected color scheme node.
+        pContext->updateVariables(schemeNode);
+
+        if (pStyle) {
+            // read scheme's stylesheet (node text or stylesheet file)
+            *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
+        }
+    } else {
+        std::shared_ptr<ImgSource> pImgSrc = std::make_shared<ImgLoader>();
+        WPixmapStore::setLoader(pImgSrc);
+        WImageStore::setLoader(pImgSrc);
+        WSkinColor::setLoader(pImgSrc);
+    }
+}
+
+QDomNode ColorSchemeParser::findConfiguredColorSchemeNode(
+        const QDomElement& docElem,
+        UserSettingsPointer pConfig) {
     QDomNode schemesNode = docElem.namedItem("Schemes");
-
-    bool bSelectedColorSchemeFound = false;
-
-    if (!schemesNode.isNull() && schemesNode.isElement()) {
-        QString selectedSchemeName = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
-        QDomNode schemeNode = schemesNode.firstChild();
-
-        if (selectedSchemeName.isEmpty()) {
-            // If no scheme selected, accept the first one in the file
-            bSelectedColorSchemeFound = true;
-        }
-
-        while (!schemeNode.isNull() && !bSelectedColorSchemeFound) {
-            QString schemeName = XmlParse::selectNodeQString(schemeNode, "Name");
-            if (schemeName == selectedSchemeName) {
-                bSelectedColorSchemeFound = true;
-            } else {
-                schemeNode = schemeNode.nextSibling();
-            }
-        }
-
-        if (!bSelectedColorSchemeFound) {
-            // If we didn't find a matching color scheme, pick the first one
-            schemeNode = schemesNode.firstChild();
-            bSelectedColorSchemeFound = !schemeNode.isNull();
-        }
-
-        if (bSelectedColorSchemeFound) {
-            QSharedPointer<ImgSource> imsrc =
-                    QSharedPointer<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
-            WPixmapStore::setLoader(imsrc);
-            WImageStore::setLoader(imsrc);
-            WSkinColor::setLoader(imsrc);
-
-            // This calls SkinContext::updateVariables in skincontext.cpp which
-            // iterates over all <SetVariable> nodes in the selected color scheme node
-            pContext->updateVariables(schemeNode);
-
-            if (pStyle) {
-                *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
-            }
-        }
+    if (schemesNode.isNull() || !schemesNode.isElement()) {
+        return {};
     }
 
-    if (!bSelectedColorSchemeFound) {
-        QSharedPointer<ImgSource> imsrc =
-                QSharedPointer<ImgSource>(new ImgLoader());
-        WPixmapStore::setLoader(imsrc);
-        WImageStore::setLoader(imsrc);
-        WSkinColor::setLoader(imsrc);
+    QDomNode schemeNode = schemesNode.firstChild();
+    const QString selectedSchemeName = pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+    if (selectedSchemeName.isEmpty()) {
+        // If no scheme selected, accept the first one in the file
+        return schemeNode;
     }
+
+    while (!schemeNode.isNull()) {
+        QString schemeName = XmlParse::selectNodeQString(schemeNode, "Name");
+        if (schemeName == selectedSchemeName) {
+            return schemeNode;
+        }
+        schemeNode = schemeNode.nextSibling();
+    }
+
+    // If we didn't find a matching color scheme, pick the first one
+    return schemesNode.firstChild();
 }
 
 ImgSource* ColorSchemeParser::parseFilters(const QDomNode& filt) {

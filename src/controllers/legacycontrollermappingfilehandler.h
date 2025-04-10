@@ -1,7 +1,21 @@
 #pragma once
 
+#include <QDomElement>
+#include <QString>
+#include <memory>
+#ifdef MIXXX_USE_QML
+#include <QImage>
+#include <QMap>
+#include <bit>
+
 #include "controllers/legacycontrollermapping.h"
-#include "util/xml.h"
+#else
+class LegacyControllerMapping;
+#endif
+
+class QFileInfo;
+class QDir;
+class LegacyControllerSettingsLayoutContainer;
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
 /// LegacyControllerMapping objects to/from XML files and is also responsible
@@ -36,10 +50,16 @@ class LegacyControllerMappingFileHandler {
     void parseMappingInfo(const QDomElement& root,
             std::shared_ptr<LegacyControllerMapping> mapping) const;
 
-    /// Adds script files from XML to the LegacyControllerMapping.
+    /// @brief Parse the setting definition block from the root node if any.
+    /// @param root The root node (MixxxControllerPreset)
+    /// @param mapping The mapping object to populate with the gathered data
+    void parseMappingSettings(const QDomElement& root,
+            LegacyControllerMapping* mapping) const;
+
+    /// Adds script files and QML scenes from XML to the LegacyControllerMapping.
     ///
     /// This function parses the supplied QDomElement structure, finds the
-    /// matching script files inside the search paths and adds them to
+    /// matching script files and QML scenes inside the search paths and adds them to
     /// LegacyControllerMapping.
     ///
     /// @param root The root node of the XML document for the mapping.
@@ -56,8 +76,34 @@ class LegacyControllerMappingFileHandler {
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
   private:
+    /// @brief Recursively parse setting definition and layout information
+    /// within a setting node
+    /// @param current The setting node (MixxxControllerPreset.settings) or any
+    /// children nodes
+    /// @param mapping The mapping object to populate with the gathered data
+    /// @param layout The currently active layout, on which new setting item
+    /// (leaf) should be attached
+    void parseMappingSettingsElement(const QDomElement& current,
+            LegacyControllerMapping* pMapping,
+            LegacyControllerSettingsLayoutContainer* pLayout) const;
+
     // Sub-classes implement this.
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingPath) = 0;
+
+#ifdef MIXXX_USE_QML
+  public:
+    static QMap<QString, QImage::Format> kSupportedPixelFormat;
+    static QMap<QString, LegacyControllerMapping::ScreenInfo::ColorEndian> kEndianFormat;
+    // Maximum target frame per request for a screen controller
+    static constexpr int kMaxTargetFps = 240;
+    // Maximum MSAA value that can be used
+    static constexpr int kMaxMsaa = 16;
+    // Maximum time allowed for a screen to run a splash off animation
+    static constexpr int kMaxSplashOffDuration = 3000;
+
+    friend class ControllerRenderingEngineTest;
+#endif
+    friend class LegacyControllerMappingSettingsTest_parseSettingBlock_Test;
 };

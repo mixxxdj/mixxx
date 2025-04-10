@@ -1,15 +1,11 @@
 #pragma once
 
-#include <rubberband/RubberBandStretcher.h>
-
 #include <QMap>
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
+#include "util/samplebuffer.h"
+#include "util/types.h"
 
 namespace RubberBand {
 class RubberBandStretcher;
@@ -18,18 +14,19 @@ class RubberBandStretcher;
 class PitchShiftGroupState : public EffectState {
   public:
     PitchShiftGroupState(const mixxx::EngineParameters& engineParameters);
-
     ~PitchShiftGroupState() override;
+
     void initializeBuffer(const mixxx::EngineParameters& engineParameters);
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters);
 
     std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
-    CSAMPLE* m_retrieveBuffer[2];
+    mixxx::SampleBuffer m_retrieveBuffer[2];
 };
 
 class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> {
   public:
-    PitchShiftEffect() = default;
+    PitchShiftEffect();
+    ~PitchShiftEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -50,7 +47,11 @@ class PitchShiftEffect final : public EffectProcessorImpl<PitchShiftGroupState> 
         return getId();
     }
 
+    bool m_currentFormant;
     EngineEffectParameterPointer m_pPitchParameter;
+    EngineEffectParameterPointer m_pRangeParameter;
+    EngineEffectParameterPointer m_pSemitonesModeParameter;
+    EngineEffectParameterPointer m_pFormantPreservingParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PitchShiftEffect);
 };

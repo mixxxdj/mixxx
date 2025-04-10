@@ -5,14 +5,13 @@
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/bpmcontrol.h"
-#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
+#include "engine/sync/enginesync.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"
-#include "util/math.h"
 
 const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
@@ -46,23 +45,21 @@ SyncControl::SyncControl(const QString& group,
     m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay, Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
-    m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncMode->setStates(static_cast<int>(SyncMode::NumModes));
+    m_pSyncMode->setBehavior(mixxx::control::ButtonMode::Toggle,
+            static_cast<int>(SyncMode::NumModes));
     m_pSyncMode->connectValueChangeRequest(
             this, &SyncControl::slotSyncModeChangeRequest, Qt::DirectConnection);
 
     m_pSyncLeaderEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_leader")));
-    m_pSyncLeaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncLeaderEnabled->setStates(3);
+    m_pSyncLeaderEnabled->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "sync_master"),
-            ConfigKey(group, "sync_leader"));
+    m_pSyncLeaderEnabled->addAlias(ConfigKey(group, QStringLiteral("sync_master")));
 
     m_pSyncEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_enabled")));
-    m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
+    m_pSyncEnabled->setButtonMode(mixxx::control::ButtonMode::LongPressLatching);
     m_pSyncEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 
@@ -281,7 +278,7 @@ void SyncControl::reinitLeaderParams(
         kLogger.trace() << "SyncControl::reinitLeaderParams" << getGroup()
                         << beatDistance << baseBpm << bpm;
     }
-    m_leaderBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    m_leaderBpmAdjustFactor = determineBpmMultiplier(mixxx::Bpm(m_pBpm->get()), bpm);
     updateLeaderBpm(bpm);
     updateLeaderBeatDistance(beatDistance);
 }
@@ -312,7 +309,9 @@ void SyncControl::updateTargetBeatDistance(mixxx::audio::FramePos refPosition) {
         kLogger.trace()
                 << getGroup()
                 << "SyncControl::updateTargetBeatDistance, unmult distance"
-                << targetDistance << m_leaderBpmAdjustFactor;
+                << targetDistance
+                << m_leaderBpmAdjustFactor
+                << refPosition;
     }
 
     // Determining the target distance is not as simple as x2 or /2.  Since one
@@ -360,56 +359,22 @@ void SyncControl::updateInstantaneousBpm(mixxx::Bpm bpm) {
     m_pBpmControl->updateInstantaneousBpm(bpmValue);
 }
 
-void SyncControl::reportTrackPosition(double fractionalPlaypos) {
-    // If we're close to the end, and leader, disable leader so we don't stop
-    // the party.
-    if (isLeader(getSyncMode()) && fractionalPlaypos >= 1.0) {
-        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
-    }
-}
-
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    mixxx::BeatsPointer pBeats;
-    if (pNewTrack) {
-        pBeats = pNewTrack->getBeats();
-    }
-    // This slot is fired by a new file is loaded or if the user
-    // has adjusted the beatgrid.
+    // Note: The track is loaded but not yet cued.
+    // in case of dynamic tempo tracks we do not know the bpm for syncing yet.
+
+    // This slot is also fired if the user has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
-        // object not initialized
-        return;
+    mixxx::BeatsPointer pBeats;
+    if (pNewTrack) {
+        pBeats = pNewTrack->getBeats();
     }
-
-    const bool hadBeats = m_pBeats != nullptr;
     m_pBeats = pBeats;
     m_leaderBpmAdjustFactor = kBpmUnity;
-
-    m_pBpmControl->updateLocalBpm();
-    if (isSynchronized()) {
-        if (!m_pBeats) {
-            // If we were soft leader and now we have no beats, go to follower.
-            // This is a bit of "enginesync" logic that has bled into this Syncable,
-            // is there a better way to handle "soft leaders no longer have bpm"?
-            if (getSyncMode() == SyncMode::LeaderSoft) {
-                m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
-            }
-            return;
-        }
-
-        // Re-requesting the existing sync mode will resync us.
-        m_pChannel->getEngineBuffer()->requestSyncMode(getSyncMode());
-        if (!hadBeats) {
-            // There is a chance we were beatless leader before, so we notify a basebpm change
-            // to possibly reinit leader params.
-            m_pChannel->getEngineBuffer()->requestSyncMode(getSyncMode());
-            m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
-        }
-    }
 }
 
 void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
@@ -481,7 +446,7 @@ void SyncControl::slotControlBeatSync(double value) {
 
 void SyncControl::slotControlPlay(double play) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
+        kLogger.trace() << "SyncControl::slotControlPlay" << getGroup() << getSyncMode() << play;
     }
     m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
@@ -522,7 +487,11 @@ void SyncControl::slotSyncLeaderEnabledChangeRequest(double state) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderExplicit);
+        // NOTE: This branch would normally activate Explicit Leader mode. Due to the large number
+        // of side effects and bugs, this mode is disabled. For now, requesting explicit leader mode
+        // only activates the chosen deck as the soft leader. See:
+        // https://github.com/mixxxdj/mixxx/issues/11788
+        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderSoft);
     } else {
         // Turning off leader goes back to follower mode.
         switch (mode) {
@@ -583,7 +552,7 @@ void SyncControl::setLocalBpm(mixxx::Bpm localBpm) {
 void SyncControl::updateAudible() {
     int channelIndex = m_pChannel->getChannelIndex();
     if (channelIndex >= 0) {
-        CSAMPLE_GAIN gain = getEngineMaster()->getMasterGain(channelIndex);
+        CSAMPLE_GAIN gain = getEngineMixer()->getMainGain(channelIndex);
         bool newAudible = gain > CSAMPLE_GAIN_ZERO;
         if (static_cast<bool>(m_audible) != newAudible) {
             m_audible = newAudible;

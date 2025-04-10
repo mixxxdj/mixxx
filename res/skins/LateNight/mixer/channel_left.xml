@@ -23,30 +23,36 @@ vertical layout and a side-by-side layout for two-deck mode -->
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <Template src="skin:/mixer/eq_knob_left.xml">
+          <!-- In case an EQ/non-EQ effect has less than 3 knobs we need
+               center those vertically. This spacer and the one below knob 3
+               push Gain and QuickEffect etc. to the top/bottom -->
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+          <Template src="skins:LateNight/mixer/eq_knob_left.xml">
             <SetVariable name="EqParameter">3</SetVariable>
             <SetVariable name="EqRange">High</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
-          <Template src="skin:/mixer/eq_knob_left.xml">
+          <Template src="skins:LateNight/mixer/eq_knob_left.xml">
             <SetVariable name="EqParameter">2</SetVariable>
             <SetVariable name="EqRange">Mid</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
-          <Template src="skin:/mixer/eq_knob_left.xml">
+          <Template src="skins:LateNight/mixer/eq_knob_left.xml">
             <SetVariable name="EqParameter">1</SetVariable>
             <SetVariable name="EqRange">Low</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,2me</Size></WidgetGroup>
 
-          <Template src="skin:/mixer/quick_effect_knob_left.xml"/>
 
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+          <Template src="skins:LateNight/mixer/quick_effect_knob_left.xml"/>
+
+          <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
@@ -59,7 +65,7 @@ vertical layout and a side-by-side layout for two-deck mode -->
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:/controls/knob.xml">
+          <Template src="skins:LateNight/controls/knob.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="KnobColor">orange</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
@@ -72,8 +78,8 @@ vertical layout and a side-by-side layout for two-deck mode -->
           <SliderComposed><!-- Volume -->
             <TooltipId>channel_volume</TooltipId>
             <Size>42f,107f</Size>
-            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
-            <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <BarColor><Variable name="BarColorVolume"/></BarColor>
             <BarWidth><Variable name="BarWidth"/></BarWidth>

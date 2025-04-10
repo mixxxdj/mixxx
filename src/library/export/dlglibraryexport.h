@@ -6,19 +6,18 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QRadioButton>
-#include <QTreeWidget>
-#include <QWidget>
-#include <memory>
 
-#include "library/export/engineprimeexportrequest.h"
-#include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
 #include "util/optional.h"
 #include "util/parented_ptr.h"
 
 class TrackCollectionManager;
+class QWidget;
+class CrateId;
 
 namespace mixxx {
+
+struct EnginePrimeExportRequest;
 
 /// The DlgLibraryExport class is a UI window that gathers information from
 /// the user about how they would like to export the Mixxx library.
@@ -46,7 +45,7 @@ class DlgLibraryExport : public QDialog {
 
   signals:
     /// The startEnginePrimeExport signal is emitted when sufficient information
-    /// has been gathered from the user to kick off an Engine Prime export, and
+    /// has been gathered from the user to kick off an Engine DJ export, and
     /// details of the request are provided as part of the signal.
     void startEnginePrimeExport(QSharedPointer<mixxx::EnginePrimeExportRequest>);
 

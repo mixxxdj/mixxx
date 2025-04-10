@@ -63,17 +63,17 @@ HerculesSteel.Button = function (controlId, blinkId) {
 
     HerculesSteel.Button.prototype.setLed = function(lightState) {
         if(lightState == HerculesSteel.LedState.on)
-        {
-            engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId) + ", " + HerculesSteel.LedState.on + ")", true);
+        {   
+            engine.beginTimer(20, () => midi.sendShortMsg(0xB0, this.controlId, HerculesSteel.LedState.on), true);
         }
         else if(lightState == HerculesSteel.LedState.blink)
-        {
-            engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + HerculesSteel.LedState.on + ")", true);
+        {   
+            engine.beginTimer(20, () => midi.sendShortMsg(0xB0, this.controlId + 0x30, HerculesSteel.LedState.on), true);
         }
         else
-        {
-            engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId) + ", " + HerculesSteel.LedState.off + ")", true);
-            engine.beginTimer(40, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + HerculesSteel.LedState.off + ")", true);
+        {   
+            engine.beginTimer(20, () => midi.sendShortMsg(0xB0, this.controlId, HerculesSteel.LedState.off), true);
+            engine.beginTimer(40, () => midi.sendShortMsg(0xB0, this.controlId + 0x30, HerculesSteel.LedState.off), true);
         }
     };
 
@@ -973,7 +973,7 @@ HerculesSteel.LedsON = function() {
     {
         //TODO: remove timers when alsa midi work properly.
         //midi.sendShortMsg(0xB0, i, 0x7F);
-        engine.beginTimer(time, "midi.sendShortMsg(0xB0, '" + i + "', 0x7F);", true);
+        engine.beginTimer(time, () => midi.sendShortMsg(0xB0, i, 0x7F), true);
         time = time + 5;
     }
 
@@ -985,7 +985,7 @@ HerculesSteel.LedsON = function() {
     {
         //TODO: remove timers when alsa midi work properly.
         //midi.sendShortMsg(0xB0, i, 0x7F);
-        engine.beginTimer(time, "midi.sendShortMsg(0xB0, '" + i + "', 0x7F);", true);
+        engine.beginTimer(time, () => midi.sendShortMsg(0xB0, i, 0x7F), true);
         time = time + 5;
     }
     // Some buttons stays OFF : rewind A/B, forward A/B, Load Deck A, Load Deck B, Up, Down, Apply Ctrl. on
@@ -994,16 +994,15 @@ HerculesSteel.LedsON = function() {
 HerculesSteel.LedsOFF = function() {
     HerculesSteel.Buttons.Scratch.setLed(HerculesSteel.LedState.off);
     //TODO: remove timers when alsa midi work properly.
-    var button;
     var time = 20;
     print("switch off Left deck LEDs");
     for (var key in HerculesSteel.Decks.Left.Buttons) {
-        engine.beginTimer(time, "HerculesSteel.Decks.Left.Buttons['" + key + "'].setLed(HerculesSteel.LedState.off)", true);
+        engine.beginTimer(time, () => HerculesSteel.Decks.Left.Buttons[key].setLed(HerculesSteel.LedState.off), true);
         time = time + 5;
     }
     print("switch off Right deck LEDs");
     for (var key in HerculesSteel.Decks.Right.Buttons) {
-        engine.beginTimer(time, "HerculesSteel.Decks.Right.Buttons['" + key + "'].setLed(HerculesSteel.LedState.off)", true);
+        engine.beginTimer(time, () => HerculesSteel.Decks.Right.Buttons[key].setLed(HerculesSteel.LedState.off), true);
         time = time + 5;
     }
 }
@@ -1015,10 +1014,9 @@ HerculesSteel.rateChange = function (value, group) {
         HerculesSteel.Decks.Left.Buttons.Sync.setLed(HerculesSteel.LedState.off);
     }
     if (HerculesSteel.Decks.Right.Buttons.Sync.state != HerculesSteel.ButtonState.pressed) {
-        engine.beginTimer(25, "HerculesSteel.Decks.Right.Buttons.Sync.setLed(HerculesSteel.LedState.off)", true);
+        engine.beginTimer(25, () => HerculesSteel.Decks.Right.Buttons.Sync.setLed(HerculesSteel.LedState.off), true);
     }
     if (value != 0.0) {
-        var deck = HerculesSteel.GetDeck(group);
-        engine.beginTimer(30, "HerculesSteel.GetDeck('" + group + "').Buttons.PitchReset.setLed(HerculesSteel.LedState.off)", true);
+        engine.beginTimer(30, () => HerculesSteel.GetDeck(group).Buttons.PitchReset.setLed(HerculesSteel.LedState.off), true);
     }
 };

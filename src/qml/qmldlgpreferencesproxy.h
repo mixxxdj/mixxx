@@ -1,9 +1,9 @@
 #pragma once
-#include <QObject>
-#include <QtQml>
-#include <memory>
 
-#include "preferences/dialog/dlgpreferences.h"
+#include <QDialog>
+#include <QObject>
+#include <QQmlEngine>
+#include <memory>
 
 namespace mixxx {
 namespace qml {
@@ -14,17 +14,17 @@ class QmlDlgPreferencesProxy : public QObject {
     QML_SINGLETON
   public:
     explicit QmlDlgPreferencesProxy(
-            std::shared_ptr<DlgPreferences> pDlgPreferences,
+            std::shared_ptr<QDialog> pDlgPreferences,
             QObject* parent = nullptr);
 
     Q_INVOKABLE void show();
 
     static QmlDlgPreferencesProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
-    static inline QmlDlgPreferencesProxy* s_pInstance = nullptr;
+    static inline std::unique_ptr<QmlDlgPreferencesProxy> s_pInstance;
 
   private:
     static inline QJSEngine* s_pJsEngine = nullptr;
-    std::shared_ptr<DlgPreferences> m_pDlgPreferences;
+    std::shared_ptr<QDialog> m_pDlgPreferences;
 };
 
 } // namespace qml

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QComboBox>
-#include <QDomNode>
 
-#include "effects/effectslot.h"
-#include "skin/legacy/skincontext.h"
+#include "effects/defs.h"
+#include "widget/wbasewidget.h"
 
 class EffectsManager;
+class QDomNode;
+class SkinContext;
 
 class WEffectSelector : public QComboBox, public WBaseWidget {
     Q_OBJECT
@@ -22,7 +23,6 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     bool event(QEvent* pEvent) override;
 
   private:
-    int m_iEffectSlotIndex;
     EffectsManager* m_pEffectsManager;
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectSlotPointer m_pEffectSlot;

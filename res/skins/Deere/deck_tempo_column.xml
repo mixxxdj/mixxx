@@ -7,6 +7,8 @@
 -->
 <Template>
   <WidgetGroup>
+    <!-- TODO Adjust padding / alignment when we add official support for
+         rate ranges >= 100% so range label don't overlap the slider. -->
     <ObjectName>DeckRateSliderColumn</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,min</SizePolicy>
@@ -15,21 +17,31 @@
         <ObjectName>TempoControlButtons</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:left_right_2state_button.xml">
-            <SetVariable name="TooltipId">sync_enabled</SetVariable>
-            <SetVariable name="ObjectName">DeckSync</SetVariable>
-            <SetVariable name="MinimumSize">-1,18</SetVariable>
-            <SetVariable name="MaximumSize">-1,18</SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">Sync</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="state_1_text">Sync</SetVariable>
-            <SetVariable name="state_1_pressed"></SetVariable>
-            <SetVariable name="state_1_unpressed"></SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <ObjectName>RateTempButtons</ObjectName>
+            <Children>
+              <Template src="skin:left_right_2state_button.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">DeckSync</SetVariable>
+                <SetVariable name="MinimumSize">35,18</SetVariable>
+                <SetVariable name="MaximumSize">35,18</SetVariable>
+                <!-- <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable> -->
+                <SetVariable name="state_0_text">Sync</SetVariable>
+                <SetVariable name="state_1_text">Sync</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
+              <Template src="skin:left_3state_button.xml">
+                <SetVariable name="TooltipId">sync_leader</SetVariable>
+                <SetVariable name="ObjectName">SyncLeader</SetVariable>
+                <SetVariable name="MinimumSize">15,18</SetVariable>
+                <SetVariable name="MaximumSize">15,18</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,sync_leader</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>RateTempButtons</ObjectName>
@@ -93,7 +105,7 @@
                 <Size>50f,-1me</Size>
                 <MaximumSize>40,200</MaximumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-                <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>
                 </Connection>
@@ -105,34 +117,35 @@
           <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
-            <Size>50f,-1me</Size>
+            <Size>50me,-1me</Size>
             <Children>
               <WidgetGroup>
-                <SizePolicy>me,me</SizePolicy>
+                <SizePolicy>me,max</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <!-- Top range limit + prefix -->
                   <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
                     <ObjectName>RateDisplayTopPrefix</ObjectName>
-                    <Channel><Variable name="i" /></Channel>
+                    <Channel><Variable name="i"/></Channel>
                     <Position>Top</Position>
                     <Display>prefix</Display>
-                    <SizePolicy>me,me</SizePolicy>
                   </RateRange>
+                  <Template src="skin:spacer_h.xml"/>
                   <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
                     <ObjectName>RateDisplayTopRate</ObjectName>
-                    <Channel><Variable name="i" /></Channel>
+                    <Channel><Variable name="i"/></Channel>
                     <Position>Top</Position>
                     <Display>range</Display>
-                    <SizePolicy>me,me</SizePolicy>
                   </RateRange>
                 </Children>
               </WidgetGroup><!-- Pitch range indicators -->
 
+              <Template src="skin:spacer_v.xml"/>
+
               <WidgetGroup>
-                <SizePolicy>me,me</SizePolicy>
+                <SizePolicy>me,max</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <!-- Bottom range limit + prefix -->
@@ -143,15 +156,14 @@
                     <Position>Bottom</Position>
                     <Align>Bottom</Align>
                     <Display>prefix</Display>
-                    <SizePolicy>me,me</SizePolicy>
                   </RateRange>
+                  <Template src="skin:spacer_h.xml"/>
                   <RateRange>
                     <TooltipId>rate_range_display</TooltipId>
                     <ObjectName>RateDisplayBottomRate</ObjectName>
                     <Channel><Variable name="i" /></Channel>
                     <Align>Bottom</Align>
                     <Display>range</Display>
-                    <SizePolicy>me,me</SizePolicy>
                   </RateRange>
                 </Children>
               </WidgetGroup><!-- Pitch range indicators -->

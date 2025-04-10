@@ -5,14 +5,14 @@
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "mixer/playermanager.h"
+#include "library/trackset/crate/crate.h"
 #include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
 namespace {
 
-const QString kModelName = "crate";
+const QString kModelName = QStringLiteral("crate");
 
 } // anonymous namespace
 
@@ -31,6 +31,16 @@ void CrateTableModel::selectCrate(CrateId crateId) {
         qDebug() << "Already focused on crate " << crateId;
         return;
     }
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_selectedCrate.isValid()) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_selectedCrate, currSearch);
+        } else {
+            m_searchTexts.remove(m_selectedCrate);
+        }
+    }
+
     m_selectedCrate = crateId;
 
     QString tableName = QStringLiteral("crate_%1").arg(m_selectedCrate.toString());
@@ -65,7 +75,9 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             LIBRARYTABLE_ID,
             columns,
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setSearch("");
+
+    // Restore search text
+    setSearch(m_searchTexts.value(m_selectedCrate));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
@@ -119,8 +131,11 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::RemoveCrate |
             Capability::ResetPlayed |
+            Capability::Hide |
             Capability::RemoveFromDisk |
-            Capability::Analyze;
+            Capability::Analyze |
+            Capability::Properties |
+            Capability::Sorting;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -138,22 +153,38 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
     return caps;
 }
 
-int CrateTableModel::addTracks(
-        const QModelIndex& index, const QList<QString>& locations) {
+int CrateTableModel::addTracksWithTrackIds(
+        const QModelIndex& index, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
     Q_UNUSED(index);
+
+    if (pOutInsertionPos != nullptr) {
+        // crate insertion is not done by position, and no duplicates will be added,.
+        // 0 indicates this to the caller.
+        *pOutInsertionPos = 0;
+    }
+
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<TrackId> trackIds =
-            m_pTrackCollectionManager->resolveTrackIdsFromLocations(locations);
     if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(
                 m_selectedCrate, trackIds)) {
         qWarning() << "CrateTableModel::addTracks could not add"
-                   << locations.size() << "tracks to crate" << m_selectedCrate;
+                   << trackIds.size() << "tracks to crate" << m_selectedCrate;
         return 0;
     }
 
     select();
     return trackIds.size();
+}
+
+bool CrateTableModel::isLocked() {
+    Crate crate;
+    if (!m_pTrackCollectionManager->internalCollection()
+                    ->crates()
+                    .readCrateById(m_selectedCrate, &crate)) {
+        qWarning() << "Failed to read create" << m_selectedCrate;
+        return false;
+    }
+    return crate.isLocked();
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
@@ -193,18 +224,17 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 QString CrateTableModel::modelKey(bool noSearch) const {
     if (m_selectedCrate.isValid()) {
         if (noSearch) {
-            return kModelName + QStringLiteral(":") +
-                    QString::number(m_selectedCrate.value());
+            return kModelName + QChar(':') + m_selectedCrate.toString();
         }
-        return kModelName + QStringLiteral(":") +
-                QString::number(m_selectedCrate.value()) +
-                QStringLiteral("#") +
+        return kModelName + QChar(':') +
+                m_selectedCrate.toString() +
+                QChar('#') +
                 currentSearch();
     } else {
         if (noSearch) {
             return kModelName;
         }
-        return kModelName + QStringLiteral("#") +
+        return kModelName + QChar('#') +
                 currentSearch();
     }
 }

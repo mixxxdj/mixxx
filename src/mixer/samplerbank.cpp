@@ -41,10 +41,9 @@ SamplerBank::SamplerBank(UserSettingsPointer pConfig,
             this,
             &SamplerBank::slotSaveSamplerBank);
 
-    m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"), this);
-}
-
-SamplerBank::~SamplerBank() {
+    m_pCONumSamplers = new ControlProxy(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_samplers")),
+            this);
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {
@@ -103,9 +102,9 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
         return false;
     }
 
-    QDomDocument doc("SamplerBank");
+    QDomDocument doc(QStringLiteral("SamplerBank"));
 
-    QDomElement root = doc.createElement("samplerbank");
+    QDomElement root = doc.createElement(QStringLiteral("samplerbank"));
     doc.appendChild(root);
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
@@ -113,14 +112,14 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
         if (!pSampler) {
             continue;
         }
-        QDomElement samplerNode = doc.createElement(QString("sampler"));
+        QDomElement samplerNode = doc.createElement(QStringLiteral("sampler"));
 
-        samplerNode.setAttribute("group", pSampler->getGroup());
+        samplerNode.setAttribute(QStringLiteral("group"), pSampler->getGroup());
 
         TrackPointer pTrack = pSampler->getLoadedTrack();
         if (pTrack) {
             QString samplerLocation = pTrack->getLocation();
-            samplerNode.setAttribute("location", samplerLocation);
+            samplerNode.setAttribute(QStringLiteral("location"), samplerLocation);
         }
         root.appendChild(samplerNode);
     }
@@ -207,19 +206,22 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                 QString location = e.attribute("location", "");
                 int samplerNum;
 
-                if (!group.isEmpty()
-                        && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
-                    if (m_pPlayerManager->numSamplers() < (unsigned) samplerNum) {
+                if (!group.isEmpty() && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
+                    if (m_pPlayerManager->numSamplers() < (unsigned)samplerNum) {
                         m_pCONumSamplers->set(samplerNum);
                     }
 
                     if (location.isEmpty()) {
-                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group);
+                        m_pPlayerManager->slotLoadTrackToPlayer(
+                                TrackPointer(), group,
+#ifdef __STEM__
+                                mixxx::StemChannelSelection(),
+#endif
+                                false);
                     } else {
-                        m_pPlayerManager->slotLoadLocationToPlayer(location, group);
+                        m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
                     }
                 }
-
             }
         }
         n = n.nextSibling();

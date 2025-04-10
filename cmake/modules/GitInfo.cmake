@@ -12,7 +12,7 @@ if(NOT GIT_DESCRIBE)
   else()
     message(NOTICE "Git describe: ${GIT_DESCRIBE}")
     string(REGEX MATCH "-modified$" GIT_DIRTY "${GIT_DESCRIBE}")
-    if (GIT_DIRTY)
+    if(GIT_DIRTY)
       message("Git worktree modified: yes")
       set(GIT_DIRTY 1)
     else()
@@ -33,25 +33,27 @@ if(NOT GIT_DESCRIBE)
     else()
       message(NOTICE "Git branch: ${GIT_BRANCH}")
     endif()
-
-    # Get the number of commits on the working branch
-    execute_process(
-      COMMAND git rev-list --count --first-parent HEAD
-      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-      OUTPUT_VARIABLE GIT_COMMIT_COUNT
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET
+    # Get the number of commits since the version tag
+    string(
+      REGEX MATCH
+      ".*-([0-9]*)-.*"
+      GIT_COMMIT_COUNT_MATCH
+      "${GIT_DESCRIBE}"
     )
-    if(NOT GIT_COMMIT_COUNT)
-      message(NOTICE "Git commit count: unknown")
-    else()
+    if(GIT_COMMIT_COUNT_MATCH)
+      set(GIT_COMMIT_COUNT "${CMAKE_MATCH_1}")
       message(NOTICE "Git commit count: ${GIT_COMMIT_COUNT}")
+    else()
+      message(NOTICE "Git commit count: unknown")
     endif()
   endif()
 else()
   message(NOTICE "Git describe: ${GIT_DESCRIBE}")
   if(NOT GIT_COMMIT_DATE)
-    message(NOTICE "Git commit date unknown, using current time for GIT_COMMIT_DATE")
+    message(
+      NOTICE
+      "Git commit date unknown, using current time for GIT_COMMIT_DATE"
+    )
     # use current date in case of tar ball builds
     string(TIMESTAMP GIT_COMMIT_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
   endif()
@@ -60,7 +62,7 @@ endif()
 # Get the current commit date
 if(NOT GIT_COMMIT_DATE)
   execute_process(
-    COMMAND git show --quiet --format=%cI --date=short
+    COMMAND git show --quiet --format=%cI --date=short --no-show-signature
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_VARIABLE GIT_COMMIT_DATE
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -69,7 +71,10 @@ if(NOT GIT_COMMIT_DATE)
 endif()
 
 if(NOT GIT_COMMIT_DATE)
-  message(NOTICE "Git commit date unknown, using current time for GIT_COMMIT_DATE")
+  message(
+    NOTICE
+    "Git commit date unknown, using current time for GIT_COMMIT_DATE"
+  )
   # use current date in case of tar ball builds
   string(TIMESTAMP GIT_COMMIT_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 else()

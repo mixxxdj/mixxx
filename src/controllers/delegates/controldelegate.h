@@ -2,12 +2,12 @@
 
 #include <QStyledItemDelegate>
 
-#include "controllers/controlpickermenu.h"
+class ControlPickerMenu;
 
 class ControlDelegate : public QStyledItemDelegate {
     Q_OBJECT
   public:
-    ControlDelegate(QObject* pParent);
+    ControlDelegate(QObject* pParent, ControlPickerMenu* pControlPickerMenu);
     virtual ~ControlDelegate();
 
     inline void setMidiOptionsColumn(int column) {
@@ -27,6 +27,8 @@ class ControlDelegate : public QStyledItemDelegate {
     void setModelData(QWidget* editor, QAbstractItemModel* model,
                       const QModelIndex& index) const;
 
+    QString translateConfigKeyGroup(const QString& group) const;
+
   private:
     ControlPickerMenu* m_pPicker;
     int m_iMidiOptionsColumn;
@@ -34,4 +36,6 @@ class ControlDelegate : public QStyledItemDelegate {
     // MidiOption. displayText does not give us the current QModelIndex so we
     // can't check there.
     mutable bool m_bIsIndexScript;
+    QMap<QString, QString> m_numGroupsTrMap;
+    QMap<QString, QString> m_otherGroupsTrMap;
 };

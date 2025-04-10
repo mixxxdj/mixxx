@@ -91,7 +91,7 @@ QList<EncoderSettings::OptionsGroup> EncoderMp3Settings::getOptionGroups() const
 // index 0 means disabled and 1 enabled.
 void EncoderMp3Settings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found=false;
-    for (const auto& group : qAsConst(m_radioList)) {
+    for (const auto& group : std::as_const(m_radioList)) {
         if (groupCode == group.groupCode) {
             found=true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {

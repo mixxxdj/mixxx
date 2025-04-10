@@ -3,10 +3,10 @@
 #include <QDateTime>
 #include <QFile>
 #include <QImage>
+#include <memory>
 #include <utility>
 
 #include "track/trackmetadata.h"
-#include "util/memory.h"
 
 namespace mixxx {
 
@@ -31,14 +31,20 @@ class MetadataSource {
         Unavailable,
     };
 
-    // Read both track metadata and cover art at once, because this
-    // is the most common use case. Both pointers are output parameters
-    // and might be passed a nullptr if their result is not needed.
-    // If no metadata is available for a track then the source should
-    // return Unavailable as this default implementation does.
+    /// Read both track metadata and cover art at once, because this
+    /// is the most common use case. Both pointers are output parameters
+    /// and might be passed a nullptr if their result is not needed.
+    /// If no metadata is available for a track then the source should
+    /// return Unavailable as this default implementation does.
+    /// The flag resetMissingTagMetadata controls if existing metadata
+    /// should be discarded if the corresponding file tags are missing.
     virtual std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
-            TrackMetadata* /*pTrackMetadata*/,
-            QImage* /*pCoverImage*/) const {
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverImage,
+            bool resetMissingTagMetadata) const {
+        Q_UNUSED(pTrackMetadata)
+        Q_UNUSED(pCoverImage)
+        Q_UNUSED(resetMissingTagMetadata)
         return std::make_pair(ImportResult::Unavailable, QDateTime());
     }
 

@@ -20,7 +20,7 @@ Variables:
     <Size>52f,32f</Size>
     <Children>
       <!-- Actual button, invisible except hover border -->
-      <Template src="skin:../Tango/fx/button.xml">
+      <Template src="skins:Tango/fx/button.xml">
         <SetVariable name="FxUnit">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
         <SetVariable name="ObjectName">FxParameterPushButton</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>

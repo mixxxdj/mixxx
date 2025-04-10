@@ -29,11 +29,6 @@ void Keys::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 
-bool Keys::isValid() const {
-    return m_keyMap.global_key() != mixxx::track::io::key::INVALID ||
-            m_keyMap.global_key_text().length() > 0;
-}
-
 ChromaticKey Keys::getGlobalKey() const {
     return m_keyMap.global_key();
 }

@@ -4,14 +4,19 @@
 #include <QList>
 
 #include "effects/backends/effectsbackendmanager.h"
-#include "effects/presets/effectchainpreset.h"
 #include "preferences/usersettings.h"
 
-class EffectsManager;
-
 struct EffectsXmlData {
+    QHash<QString, EffectManifestPointer> eqEffectManifests;
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
+    QHash<QString, EffectChainPresetPointer> quickStemEffectChainPresets;
     QList<EffectChainPresetPointer> standardEffectChainPresets;
+    EffectChainPresetPointer outputChainPreset;
+};
+
+struct EffectXmlDataSingleDeck {
+    EffectManifestPointer eqEffectManifest;
+    EffectChainPresetPointer quickEffectChainPreset;
 };
 
 /// EffectChainPresetManager maintains a list of custom EffectChainPresets in the
@@ -51,9 +56,9 @@ class EffectChainPresetManager : public QObject {
     int quickEffectPresetIndex(EffectChainPresetPointer pChainPreset) const;
     EffectChainPresetPointer quickEffectPresetAtIndex(int index) const;
 
-    void importPreset();
+    bool importPreset();
     void exportPreset(const QString& chainPresetName);
-    void renamePreset(const QString& oldName);
+    bool renamePreset(const QString& oldName);
     bool deletePreset(const QString& chainPresetName);
 
     void resetToDefaults();
@@ -65,11 +70,20 @@ class EffectChainPresetManager : public QObject {
         return m_effectChainPresets.value(name);
     }
 
-    void savePreset(EffectChainPresetPointer pPreset);
-    void savePreset(EffectChainPointer pChainSlot);
+    void savePresetAndReload(EffectChainPointer pChainSlot);
+    bool savePreset(EffectChainPresetPointer pPreset);
     void updatePreset(EffectChainPointer pChainSlot);
 
+    EffectManifestPointer getDefaultEqEffect();
+    EffectChainPresetPointer getDefaultQuickEffectPreset();
+
+    static EffectChainPresetPointer createEmptyNamelessChainPreset();
+
     EffectsXmlData readEffectsXml(const QDomDocument& doc, const QStringList& deckStrings);
+    EffectXmlDataSingleDeck readEffectsXmlSingleDeck(
+            const QDomDocument& doc, const QString& deckString);
+    EffectChainPresetPointer readEffectsXmlSingleDeckStem(
+            const QDomDocument& doc, const QString& deckStemString);
     void saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data);
 
   signals:

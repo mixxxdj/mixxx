@@ -1,7 +1,7 @@
 #include "qml/qmlwaveformoverview.h"
 
 #include "mixer/basetrackplayer.h"
-#include "qml/qmlplayerproxy.h"
+#include "moc_qmlwaveformoverview.cpp"
 
 namespace {
 constexpr double kDesiredChannelHeight = 255;
@@ -35,7 +35,8 @@ void QmlWaveformOverview::setPlayer(QmlPlayerProxy* pPlayer) {
 
     m_pPlayer = pPlayer;
 
-    if (pPlayer != nullptr) {
+    if (m_pPlayer != nullptr) {
+        setCurrentTrack(m_pPlayer->internalTrackPlayer()->getLoadedTrack());
         connect(m_pPlayer->internalTrackPlayer(),
                 &BaseTrackPlayer::newTrackLoaded,
                 this,

@@ -12,11 +12,6 @@ class KeyUtilsTest : public testing::Test {
 };
 
 TEST_F(KeyUtilsTest, OpenKeyNotation) {
-    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
-              KeyUtils::guessKeyFromText("1D"));
-    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
-              KeyUtils::guessKeyFromText("5M"));
-
     // Lower-case.
     EXPECT_EQ(mixxx::track::io::key::B_MAJOR,
               KeyUtils::guessKeyFromText("6d"));
@@ -37,23 +32,23 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
     EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
               KeyUtils::guessKeyFromText("12A"));
 
-    // Lower-case.
-    EXPECT_EQ(mixxx::track::io::key::B_MAJOR,
-              KeyUtils::guessKeyFromText("1b"));
-    EXPECT_EQ(mixxx::track::io::key::B_MINOR,
-              KeyUtils::guessKeyFromText("10a"));
+    // Allow lower-case to be more flexible when parsing search queries
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("8b"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("12a"));
 
     // whitespace is ok
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
-              KeyUtils::guessKeyFromText("\t10a  "));
+            KeyUtils::guessKeyFromText("\t10A  "));
     // but other stuff is not
     EXPECT_EQ(mixxx::track::io::key::INVALID,
-              KeyUtils::guessKeyFromText("\t10aa  "));
+            KeyUtils::guessKeyFromText("\t10AA  "));
 }
 
 TEST_F(KeyUtilsTest, KeyNameNotation) {
     // Invalid letter
-    // (actually valid in traditional german notation where B is H and Bb is B -
+    // (actually valid in traditional German notation where B is H and Bb is B -
     //  everyone confused?)
     EXPECT_EQ(mixxx::track::io::key::INVALID,
               KeyUtils::guessKeyFromText("H"));
@@ -142,6 +137,85 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
               KeyUtils::guessKeyFromText("cb"));
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("b#"));
+
+    // Rapid Evolution test cases
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("Am"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("08A"));
+    EXPECT_EQ(mixxx::track::io::key::B_FLAT_MINOR,
+            KeyUtils::guessKeyFromText("A#m"));
+    EXPECT_EQ(mixxx::track::io::key::B_FLAT_MINOR,
+            KeyUtils::guessKeyFromText("Bbm"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11B"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("G#+50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab +50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab +50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("04B +50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("G#-50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab -50"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("Ab -50cents"));
+    EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+            KeyUtils::guessKeyFromText("04B -50cents"));
+    // Mixxx does not allow this but Rapid Evolution
+    // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+    //      KeyUtils::guessKeyFromText("    4b    -50   cents    "));
+    // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+    //          KeyUtils::guessKeyFromText("    g  #    -    50   cents    "));
+    // EXPECT_EQ(mixxx::track::io::key::A_FLAT_MAJOR, // ionian
+    //          KeyUtils::guessKeyFromText("    g  #    +    50   cents    "));
+    EXPECT_EQ(mixxx::track::io::key::INVALID, // ionian
+            KeyUtils::guessKeyFromText(" "));
+    EXPECT_EQ(mixxx::track::io::key::INVALID, // ionian
+            KeyUtils::guessKeyFromText(""));
+    EXPECT_EQ(mixxx::track::io::key::INVALID, // ionian
+            KeyUtils::guessKeyFromText("xyz"));
+}
+
+TEST_F(KeyUtilsTest, ScaleModeNotation) {
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("C ionian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("A aeolian"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("F lydian"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("G mixolydian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("D dorian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("E phrygian"));
+    EXPECT_EQ(mixxx::track::io::key::A_MINOR,
+            KeyUtils::guessKeyFromText("B locrian"));
+
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11A"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11B"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11I"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11L"));
+    EXPECT_EQ(mixxx::track::io::key::A_MAJOR,
+            KeyUtils::guessKeyFromText("11M"));
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11D"));
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11P"));
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("11C"));
+
+    // Redundant Mode
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+            KeyUtils::guessKeyFromText("Cm ionian"));
 }
 
 mixxx::track::io::key::ChromaticKey incrementKey(

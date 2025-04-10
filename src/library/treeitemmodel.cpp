@@ -3,30 +3,29 @@
 #include "library/treeitem.h"
 #include "moc_treeitemmodel.cpp"
 
-/*
- * Just a word about how the TreeItem objects and TreeItemModels are used in general:
- * TreeItems are used by the TreeItemModel class to display tree
- * structures in the sidebar.
- *
- * The constructor has 4 arguments:
- * 1. argument represents a name shown in the sidebar view later on
- * 2. argument represents the absolute path of this tree item
- * 3. argument is a library feature object.
- *    This is necessary because in sidebar.cpp we handle 'activateChid' events
- * 4. the parent TreeItem object
- *    The constructor does not add this TreeItem object to the parent's child list
- *
- * In case of no arguments, the standard constructor creates a
- * root item that is not visible in the sidebar.
- *
- * Once the TreeItem objects are inserted to models, the models take care of their
- * deletion.
- *
- * Examples on how to use TreeItem and TreeItemModels can be found in
- * - playlistfeature.cpp
- * - cratefeature.cpp
- * - *feature.cpp
- */
+// Just a word about how the TreeItem objects and TreeItemModels are used in general:
+// TreeItems are used by the TreeItemModel class to display tree
+// structures in the sidebar.
+//
+// The constructor has 4 arguments:
+// 1. argument represents a name shown in the sidebar view later on
+// 2. argument represents the absolute path of this tree item
+// 3. argument is a library feature object.
+//    This is necessary because in sidebar.cpp we handle 'activateChid' events
+// 4. the parent TreeItem object
+//    The constructor does not add this TreeItem object to the parent's child list
+//
+// In case of no arguments, the standard constructor creates a
+// root item that is not visible in the sidebar.
+//
+// Once the TreeItem objects are inserted to models, the models take care of their
+// deletion.
+//
+// Examples on how to use TreeItem and TreeItemModels can be found in
+// - playlistfeature.cpp
+// - cratefeature.cpp
+// - *feature.cpp
+
 TreeItemModel::TreeItemModel(QObject *parent)
         : QAbstractItemModel(parent),
           m_pRootItem(std::make_unique<TreeItem>()) {
@@ -35,7 +34,7 @@ TreeItemModel::TreeItemModel(QObject *parent)
 TreeItemModel::~TreeItemModel() {
 }
 
-//Our Treeview Model supports exactly a single column
+// Our Treeview Model supports exactly a single column
 int TreeItemModel::columnCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
     return 1;
@@ -153,10 +152,8 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
     return parentItem->childRows();
 }
 
-/**
- * Populates the model and notifies the view.
- * Call this method first, before you do call any other methods.
- */
+// Populates the model and notifies the view.
+// Call this method first, before you do call any other methods.
 TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
     beginResetModel();
     m_pRootItem = std::move(pRootItem);
@@ -168,24 +165,21 @@ const QModelIndex TreeItemModel::getRootIndex() {
     return createIndex(0, 0, getRootItem());
 }
 
-/**
- * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
- * make sure you have initialized
- */
+// Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
+// make sure you have initialized.
 void TreeItemModel::insertTreeItemRows(
-        QList<TreeItem*>& rows,
+        std::vector<std::unique_ptr<TreeItem>>&& rows,
         int position,
         const QModelIndex& parent) {
-    if (rows.isEmpty()) {
+    if (rows.empty()) {
         return;
     }
 
     TreeItem* pParentItem = getItem(parent);
     DEBUG_ASSERT(pParentItem != nullptr);
 
-    beginInsertRows(parent, position, position + rows.size() - 1);
-    pParentItem->insertChildren(position, rows);
-    DEBUG_ASSERT(rows.isEmpty());
+    beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
+    pParentItem->insertChildren(position, std::move(rows));
     endInsertRows();
 }
 

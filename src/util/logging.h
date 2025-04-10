@@ -22,6 +22,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(LogFlags);
 
 /// Default log level for (console) logs.
 constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
+constexpr qint64 kLogMaxFileSizeDefault = 100'000'000; // 100 MB
 
 /// Default log level for flushing the buffered log stream.
 /// This is required to ensure that all buffered messages have

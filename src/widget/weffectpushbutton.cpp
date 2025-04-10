@@ -1,8 +1,11 @@
 #include "widget/weffectpushbutton.h"
 
 #include <QActionGroup>
-#include <QtDebug>
+#include <QMenu>
+#include <QMouseEvent>
 
+#include "effects/effectparameterslotbase.h"
+#include "effects/presets/effectchainpreset.h"
 #include "moc_weffectpushbutton.cpp"
 #include "widget/effectwidgetutils.h"
 
@@ -22,6 +25,10 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     auto pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
     m_pEffectParameterSlot = EffectWidgetUtils::getButtonParameterSlotFromNode(
             node, context, pEffectSlot);
+    if (!m_pEffectParameterSlot) {
+        SKIN_WARNING(node, context, QStringLiteral("Could not find effect parameter slot"));
+        DEBUG_ASSERT(false);
+    }
     connect(m_pEffectParameterSlot.data(),
             &EffectParameterSlotBase::updated,
             this,
@@ -33,9 +40,6 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
             this,
             &WEffectPushButton::slotActionChosen);
     parameterUpdated();
-    VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
-        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
-    }
 }
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
@@ -51,7 +55,7 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
 
 void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
-    if (rightClick && m_pButtonMenu->actions().size()) {
+    if (rightClick && !m_pButtonMenu->actions().isEmpty()) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         m_pButtonMenu->exec(e->globalPosition().toPoint());
 #else
@@ -98,7 +102,7 @@ void WEffectPushButton::parameterUpdated() {
 
     // Set tooltip
     if (m_pEffectParameterSlot->isLoaded()) {
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 m_pEffectParameterSlot->name(),
                 m_pEffectParameterSlot->description()));
     } else {
@@ -126,7 +130,7 @@ void WEffectPushButton::parameterUpdated() {
 
     auto* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
-    for (const auto& option : qAsConst(options)) {
+    for (const auto& option : std::as_const(options)) {
         // action is added automatically to actionGroup
         auto* action = new QAction(actionGroup);
         // qDebug() << options[i].first;
@@ -143,5 +147,5 @@ void WEffectPushButton::parameterUpdated() {
 
 void WEffectPushButton::slotActionChosen(QAction* action) {
     action->setChecked(true);
-    setControlParameter(action->data().toDouble());
+    setControlParameterLeftDown(action->data().toDouble());
 }

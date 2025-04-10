@@ -2,16 +2,16 @@
 
 #include <QPainter>
 #include <QPointer>
+#include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
-#include <QtQml>
 
+#include "qml/qmlplayerproxy.h"
 #include "track/track.h"
 
 namespace mixxx {
 namespace qml {
 
-class QmlPlayerProxy;
 
 class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT
@@ -42,7 +42,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     QmlWaveformOverview(QQuickItem* parent = nullptr);
     ~QmlWaveformOverview() override = default;
 
-    void paint(QPainter* painter);
+    void paint(QPainter* painter) override;
 
     void setPlayer(QmlPlayerProxy* player);
     QmlPlayerProxy* getPlayer() const;

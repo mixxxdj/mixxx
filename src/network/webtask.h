@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QMimeType>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPointer>
 #include <QUrl>
 
 #include "network/httpstatuscode.h"
 #include "network/networktask.h"
 #include "util/optional.h"
 #include "util/performancetimer.h"
+
+class QNetworkAccessManager;
 
 namespace mixxx {
 
@@ -127,6 +127,11 @@ class WebTask : public NetworkTask {
             QObject* parent = nullptr);
     ~WebTask() override = default;
 
+    bool isBusy() const {
+        return state() == State::Starting ||
+                state() == State::Pending;
+    }
+
   signals:
     /// Network or server-side abort/timeout/failure
     void networkError(
@@ -136,7 +141,8 @@ class WebTask : public NetworkTask {
 
   public slots:
     void slotStart(
-            int timeoutMillis) override;
+            int timeoutMillis = kNoTimeout,
+            int delayMillis = kNoStartDelay) override;
     void slotAbort() override;
 
   private slots:
@@ -147,7 +153,9 @@ class WebTask : public NetworkTask {
 
     enum class State {
         // Initial state
-        Idle,
+        Initial,
+        // Timed start
+        Starting,
         // Pending state
         Pending,
         // Terminal states
@@ -174,6 +182,11 @@ class WebTask : public NetworkTask {
             const QString& errorString,
             const WebResponseWithContent& responseWithContent);
 
+  protected:
+    virtual void onNetworkError(
+            QNetworkReply* pFinishedNetworkReply,
+            HttpStatusCode statusCode);
+
   private:
     QUrl abortPendingNetworkReply();
 
@@ -191,7 +204,7 @@ class WebTask : public NetworkTask {
 
     /// Handle network response.
     virtual void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
+            QNetworkReply* pFinishedNetworkReply,
             HttpStatusCode statusCode) = 0;
 
     /// Handle the abort and ensure that the task eventually
@@ -210,6 +223,7 @@ class WebTask : public NetworkTask {
     PerformanceTimer m_timer;
 
     int m_timeoutTimerId;
+    int m_timeoutMillis;
 
     SafeQPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };

@@ -2,7 +2,6 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QDir>
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
@@ -19,6 +18,7 @@
 
 // forward declaration(s)
 class BaseTrackCache;
+class QDir;
 
 // Manages the internal database.
 class TrackCollection : public QObject,
@@ -45,6 +45,7 @@ class TrackCollection : public QObject,
 
     QList<mixxx::FileInfo> loadRootDirs(
             bool skipInvalidOrMissing = false) const;
+    QStringList getRootDirStrings() const;
 
     const CrateStorage& crates() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -83,9 +84,6 @@ class TrackCollection : public QObject,
     bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
-
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
 
   signals:
     // Forwarded signals from LibraryScanner
@@ -131,6 +129,9 @@ class TrackCollection : public QObject,
     QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& trackFiles,
             TrackDAO::ResolveTrackIdFlags flags);
+    QList<TrackId> resolveTrackIds(
+            const QList<QUrl>& urls,
+            TrackDAO::ResolveTrackIdFlags flags);
     QList<TrackId> resolveTrackIdsFromUrls(
             const QList<QUrl>& urls,
             bool addMissing);
@@ -158,10 +159,9 @@ class TrackCollection : public QObject,
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
 
-    bool addDirectory(const mixxx::FileInfo& rootDir);
-    bool removeDirectory(const mixxx::FileInfo& rootDir);
-
-    void relocateDirectory(const QString& oldDir, const QString& newDir);
+    DirectoryDAO::AddResult addDirectory(const mixxx::FileInfo& rootDir);
+    DirectoryDAO::RemoveResult removeDirectory(const mixxx::FileInfo& rootDir);
+    DirectoryDAO::RelocateResult relocateDirectory(const QString& oldDir, const QString& newDir);
 
     bool saveTrack(Track* pTrack) const;
 

@@ -5,9 +5,9 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
-#include <memory>
 
 #include "audio/types.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
@@ -15,20 +15,18 @@
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
-class EngineMaster;
-class AudioOutput;
-class AudioInput;
-class AudioSource;
-class AudioDestination;
+class EngineMixer;
 class ControlObject;
-class ControlProxy;
-class SoundDeviceNotFound;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
 #define MIXXX_PORTAUDIO_OSS_STRING "OSS"
 #define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
+// NOTE: This is what our patched version of PortAudio uses for the Core Audio
+// backend on iOS. If/when upstream supports iOS officially
+// (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
+#define MIXXX_PORTAUDIO_IOSAUDIO_STRING "iOS Audio"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
 #define SOUNDMANAGER_DISCONNECTED 0
@@ -39,7 +37,7 @@ class SoundDeviceNotFound;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
+    SoundManager(UserSettingsPointer pConfig, EngineMixer* pEngineMixer);
     ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -56,7 +54,7 @@ class SoundManager : public QObject {
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
-    SoundDeviceError setupDevices();
+    SoundDeviceStatus setupDevices();
 
     // Playermanager will notify us when the number of decks changes.
     void setConfiguredDeckCount(int count);
@@ -64,18 +62,19 @@ class SoundManager : public QObject {
 
     SoundDevicePointer getErrorDevice() const;
     QString getErrorDeviceName() const;
-    QString getLastErrorMessage(SoundDeviceError err) const;
+    QString getLastErrorMessage(SoundDeviceStatus status) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
-    QList<unsigned int> getSampleRates(const QString& api) const;
+    QList<mixxx::audio::SampleRate> getSampleRates(const QString& api) const;
 
     // Convenience overload for SoundManager::getSampleRates(QString)
-    QList<unsigned int> getSampleRates() const;
+    QList<mixxx::audio::SampleRate> getSampleRates() const;
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    SoundDeviceError setConfig(const SoundManagerConfig& config);
+    SoundDeviceStatus setConfig(const SoundManagerConfig& config);
+    void closeActiveConfig();
     void checkConfig();
 
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);
@@ -85,9 +84,8 @@ class SoundManager : public QObject {
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                           const SINT iFramesPerBuffer);
 
-
-    void writeProcess() const;
-    void readProcess() const;
+    void writeProcess(SINT framesPerBuffer) const;
+    void readProcess(SINT framesPerBuffer) const;
 
     void registerOutput(const AudioOutput& output, AudioSource* src);
     void registerInput(const AudioInput& input, AudioDestination* dest);
@@ -107,7 +105,7 @@ class SoundManager : public QObject {
         }
     }
 
-    void processUnderflowHappened();
+    void processUnderflowHappened(SINT framesPerBuffer);
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
@@ -126,13 +124,16 @@ class SoundManager : public QObject {
     void closeDevices(bool sleepAfterClosing);
 
     void setJACKName() const;
+    bool jackApiUsed() const {
+        return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
+    }
 
-    EngineMaster *m_pMaster;
+    EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
-    QList<unsigned int> m_samplerates;
+    QList<mixxx::audio::SampleRate> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
@@ -146,6 +147,6 @@ class SoundManager : public QObject {
 
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
-    ControlProxy* m_pMasterAudioLatencyOverloadCount;
-    ControlProxy* m_pMasterAudioLatencyOverload;
+    PollingControlProxy m_audioLatencyOverloadCount;
+    PollingControlProxy m_audioLatencyOverload;
 };

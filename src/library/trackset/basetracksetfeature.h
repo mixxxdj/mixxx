@@ -3,6 +3,8 @@
 #include "library/libraryfeature.h"
 #include "util/parented_ptr.h"
 
+class AnalyzerScheduledTrack;
+
 class BaseTrackSetFeature : public LibraryFeature {
     Q_OBJECT
 
@@ -12,8 +14,9 @@ class BaseTrackSetFeature : public LibraryFeature {
             const QString& rootViewName,
             const QString& iconName);
 
+    void pasteChild(const QModelIndex& index) override;
   signals:
-    void analyzeTracks(const QList<TrackId>&);
+    void analyzeTracks(const QList<AnalyzerScheduledTrack>&);
 
   public slots:
     void activate() override;

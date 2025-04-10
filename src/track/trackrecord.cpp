@@ -22,37 +22,41 @@ TrackRecord::TrackRecord(TrackId id)
           m_headerParsed(false) {
 }
 
-void TrackRecord::setKeys(const Keys& keys) {
-    refMetadata().refTrackInfo().setKey(KeyUtils::getGlobalKeyText(keys));
+void TrackRecord::setKeys(Keys keys) {
+    refMetadata().refTrackInfo().setKeyText(keys.getGlobalKeyText());
     m_keys = std::move(keys);
 }
 
-bool TrackRecord::updateGlobalKey(
-        track::io::key::ChromaticKey key,
-        track::io::key::Source keySource) {
-    if (key == track::io::key::INVALID) {
-        return false;
-    } else {
-        Keys keys = KeyFactory::makeBasicKeys(key, keySource);
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
-    }
-    return false;
-}
-
-UpdateResult TrackRecord::updateGlobalKeyText(
+UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
         const QString& keyText,
         track::io::key::Source keySource) {
-    Keys keys = KeyFactory::makeBasicKeysFromText(keyText, keySource);
-    if (keys.getGlobalKey() == track::io::key::INVALID) {
+    if (keyText.isEmpty()) {
+        // User tries to delete the key
+        setKeys(Keys());
+        return UpdateResult::Updated;
+    }
+    // Try to parse the input as a key.
+    mixxx::track::io::key::ChromaticKey newKey =
+            KeyUtils::guessKeyFromText(keyText);
+    if (newKey == mixxx::track::io::key::INVALID && !keyText.isEmpty()) {
+        // revert if we can't guess a valid key from it
         return UpdateResult::Rejected;
     }
-    if (m_keys.getGlobalKey() == keys.getGlobalKey()) {
+
+    // If the new key is the same as the old key, reject the change.
+    if (m_keys.getGlobalKey() == newKey) {
         return UpdateResult::Unchanged;
     }
-    setKeys(keys);
+
+    Keys newKeys;
+    if (keySource == mixxx::track::io::key::FILE_METADATA) {
+        newKeys = KeyFactory::makeBasicKeysKeepText(
+                keyText,
+                mixxx::track::io::key::FILE_METADATA);
+    } else {
+        newKeys = KeyFactory::makeBasicKeys(newKey, keySource);
+    }
+    setKeys(newKeys);
     return UpdateResult::Updated;
 }
 
@@ -77,13 +81,12 @@ bool mergeReplayGainMetadataProperty(
     }
     return modified;
 }
-#endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.
 template<typename T>
 bool copyIfNotNull(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isNull() &&
             *pMergedProperty != importedProperty) {
@@ -97,7 +100,7 @@ bool copyIfNotNull(
 // empty = missing.
 template<typename T>
 bool copyIfNotEmpty(
-        T* pMergedProperty,
+        gsl::not_null<T*> pMergedProperty,
         const T& importedProperty) {
     if (pMergedProperty->isEmpty() &&
             *pMergedProperty != importedProperty) {
@@ -106,6 +109,7 @@ bool copyIfNotEmpty(
     }
     return false;
 }
+#endif // __EXTRA_METADATA__
 
 } // anonymous namespace
 
@@ -153,6 +157,12 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
         // Existing tracks that have been imported before database version
         // 37 don't have a synchronization time stamp.
         return SourceSyncStatus::Unknown;
+    }
+    if (!fileInfo.exists()) {
+        kLogger.warning()
+                << "Failed to obtain synchronization time stamp for not existing file"
+                << mixxx::FileInfo(fileInfo);
+        return SourceSyncStatus::Undefined;
     }
     const QDateTime fileSourceSynchronizedAt =
             MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());
@@ -325,9 +335,15 @@ bool TrackRecord::updateStreamInfoFromSource(
         streamInfoFromSource.setBitrate(
                 getMetadata().getStreamInfo().getBitrate());
     }
-    // Stream properties are not expected to vary during a session
+    // Stream properties are not expected to vary during a session, apart from
+    // the channel count and so the bitrate as different components may request
+    // the stream in stereo or multi channels
     VERIFY_OR_DEBUG_ASSERT(!m_streamInfoFromSource ||
-            *m_streamInfoFromSource == streamInfoFromSource) {
+            (m_streamInfoFromSource->getDuration() ==
+                            streamInfoFromSource.getDuration() &&
+                    m_streamInfoFromSource->getSignalInfo().getSampleRate() ==
+                            streamInfoFromSource.getSignalInfo()
+                                    .getSampleRate())) {
         kLogger.warning()
                 << "Varying stream properties:"
                 << *m_streamInfoFromSource

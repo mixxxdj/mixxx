@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QHBoxLayout>
-#include <QWidget>
 #include <QWidgetAction>
 
 #include "util/parented_ptr.h"

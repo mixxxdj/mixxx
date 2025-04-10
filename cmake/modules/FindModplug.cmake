@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
+# Copyright (C) 2001-2025 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -48,25 +48,31 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Modplug QUIET libmodplug)
 endif()
 
-find_path(Modplug_INCLUDE_DIR
+find_path(
+  Modplug_INCLUDE_DIR
   NAMES libmodplug/modplug.h
-  PATHS ${PC_Modplug_INCLUDE_DIRS}
-  DOC "Modplug include directory")
+  HINTS ${PC_Modplug_INCLUDE_DIRS}
+  DOC "Modplug include directory"
+)
 mark_as_advanced(Modplug_INCLUDE_DIR)
 
-find_library(Modplug_LIBRARY
+find_library(
+  Modplug_LIBRARY
   NAMES modplug
-  PATHS ${PC_Modplug_LIBRARY_DIRS}
+  HINTS ${PC_Modplug_LIBRARY_DIRS}
   DOC "Modplug library"
 )
 mark_as_advanced(Modplug_LIBRARY)
 
+if(DEFINED PC_Modplug_VERSION AND NOT PC_Modplug_VERSION STREQUAL "")
+  set(Modplug_VERSION "${PC_Modplug_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Modplug
-  DEFAULT_MSG
-  Modplug_LIBRARY
-  Modplug_INCLUDE_DIR
+  REQUIRED_VARS Modplug_LIBRARY Modplug_INCLUDE_DIR
+  VERSION_VAR Modplug_VERSION
 )
 
 if(Modplug_FOUND)
@@ -76,7 +82,8 @@ if(Modplug_FOUND)
 
   if(NOT TARGET Modplug::Modplug)
     add_library(Modplug::Modplug UNKNOWN IMPORTED)
-    set_target_properties(Modplug::Modplug
+    set_target_properties(
+      Modplug::Modplug
       PROPERTIES
         IMPORTED_LOCATION "${Modplug_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Modplug_CFLAGS_OTHER}"

@@ -3,15 +3,19 @@
 #include <QColor>
 #include <QImage>
 #include <QString>
+#include <memory>
 
 #include "control/controlproxy.h"
-#include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
 QT_FORWARD_DECLARE_CLASS(QDomNode);
 
 class SkinContext;
 class WaveformSignalColors;
+
+namespace allshader {
+class WaveformRenderMarkRange;
+}
 
 class WaveformMarkRange {
   public:
@@ -20,6 +24,18 @@ class WaveformMarkRange {
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors);
+    WaveformMarkRange(
+            const QString& group,
+            const QColor& activeColor,
+            const QColor& disabledColor,
+            double enabledOpacity,
+            double disabledOpacity,
+            const QColor& durationTextColor,
+            const QString& startControl,
+            const QString& endControl,
+            const QString& enabledControl,
+            const QString& visibilityControl,
+            const QString& durationTextLocation);
     // This class is only moveable, but not copiable!
     WaveformMarkRange(WaveformMarkRange&&) = default;
     WaveformMarkRange(const WaveformMarkRange&) = delete;
@@ -52,7 +68,7 @@ class WaveformMarkRange {
     WaveformMarkLabel m_durationLabel;
 
   private:
-    void generateImage(int weidth, int height);
+    void generateImage(int width, int height);
 
     std::unique_ptr<ControlProxy> m_markStartPointControl;
     std::unique_ptr<ControlProxy> m_markEndPointControl;
@@ -71,5 +87,6 @@ class WaveformMarkRange {
     DurationTextLocation m_durationTextLocation;
 
     friend class WaveformRenderMarkRange;
+    friend class allshader::WaveformRenderMarkRange;
     friend class WOverview;
 };

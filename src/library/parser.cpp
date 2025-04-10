@@ -1,8 +1,6 @@
 #include "library/parser.h"
 
 #include <QDir>
-#include <QFile>
-#include <QIODevice>
 #include <QUrl>
 #include <QtDebug>
 

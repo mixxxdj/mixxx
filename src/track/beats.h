@@ -10,7 +10,6 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "track/bpm.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 #define BEAT_GRID_1_VERSION "BeatGrid-1.0"
@@ -77,7 +76,9 @@ class Beats : private std::enable_shared_from_this<Beats> {
         ConstIterator(const Beats* beats,
                 std::vector<BeatMarker>::const_iterator it,
                 int beatOffset)
-                : m_beats(beats), m_it(it), m_beatOffset(beatOffset) {
+                : m_beats(beats),
+                  m_it(it),
+                  m_beatOffset(beatOffset) {
             updateValue();
         }
 
@@ -133,7 +134,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
         difference_type operator-(const ConstIterator& other) const;
 
         friend bool operator==(const ConstIterator& lhs, const ConstIterator& rhs) {
-            return lhs.m_beats == rhs.m_beats && lhs.m_it == rhs.m_it &&
+            return lhs.m_beats == rhs.m_beats &&
+                    lhs.m_it == rhs.m_it &&
                     lhs.m_beatOffset == rhs.m_beatOffset;
         }
 
@@ -394,6 +396,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// Returns a pointer to the modified beats object, or `nullopt` on
     /// failure.
     std::optional<BeatsPointer> tryTranslate(audio::FrameDiff_t offset) const;
+
+    /// Translate all beats based on scalar 'xBeats', e.g. half a beat if xBeats
+    /// is set to 0.5. Works only for tracks with constant BPM.
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> tryTranslateBeats(double xBeats) const;
 
     /// Scale the position of every beat in the song by `scale`.
     //

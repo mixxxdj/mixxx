@@ -17,7 +17,7 @@
           </SingletonContainer>
         </Children>
         <Connection>
-          <ConfigKey>[LateNight],show_small_spinny_cover</ConfigKey>
+          <ConfigKey>[Skin],show_small_spinny_or_cover</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- SpinnyCoverContainer_SmallCompact -->

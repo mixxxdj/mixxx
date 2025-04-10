@@ -61,6 +61,7 @@ class ChannelCount {
             return 2;
         }
         DEBUG_ASSERT(!"unreachable code");
+        return kValueDefault;
     }
 
   public:
@@ -79,6 +80,14 @@ class ChannelCount {
         return ChannelCount(valueFromInt(value));
     }
 
+    static ChannelCount fromDouble(double value) {
+        const auto channelCount = ChannelCount(static_cast<value_t>(value));
+        // The channel count should always be an integer value
+        // and this conversion is supposed to be lossless.
+        DEBUG_ASSERT(channelCount.toDouble() == value);
+        return channelCount;
+    }
+
     static constexpr ChannelCount mono() {
         return ChannelCount(static_cast<value_t>(1));
     }
@@ -87,12 +96,16 @@ class ChannelCount {
         return ChannelCount(static_cast<value_t>(2));
     }
 
+    static constexpr ChannelCount stem() {
+        return ChannelCount(static_cast<value_t>(8)); // 4 stereo channels
+    }
+
     explicit constexpr ChannelCount(
             value_t value = kValueDefault)
             : m_value(value) {
     }
 
-    // A limits checking c-tor fom int channel used in many
+    // A limits checking c-tor from int channel used in many
     // external libraries
     explicit ChannelCount(int value)
             : m_value(valueFromInt(value)) {
@@ -112,6 +125,11 @@ class ChannelCount {
     }
     /*implicit*/ constexpr operator value_t() const {
         return value();
+    }
+
+    // Helper cast for COs
+    constexpr double toDouble() const {
+        return static_cast<double>(value());
     }
 
   private:
@@ -201,7 +219,7 @@ class Bitrate {
 
   public:
     static constexpr const char* unit() {
-        return "kbps";
+        return "kbit/s";
     }
 
     explicit constexpr Bitrate(

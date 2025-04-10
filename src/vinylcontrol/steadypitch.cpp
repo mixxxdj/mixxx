@@ -1,6 +1,3 @@
-#include <QtDebug>
-
-#include "vinylcontrolxwax.h"
 #include "steadypitch.h"
 #include "util/math.h"
 

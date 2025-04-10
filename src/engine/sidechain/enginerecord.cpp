@@ -1,6 +1,5 @@
 #include "engine/sidechain/enginerecord.h"
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "mixer/playerinfo.h"
@@ -14,22 +13,20 @@ constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
+          m_sampleRateControl(QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),
           m_cueTrack(0),
           m_bCueIsEnabled(false) {
-
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
-    m_pSamplerate = new ControlProxy("[Master]", "samplerate", this);
-    m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 }
 
 EngineRecord::~EngineRecord() {
     closeCueFile();
     closeFile();
     delete m_pRecReady;
-    delete m_pSamplerate;
 }
 
 int EngineRecord::updateFromPreferences() {
@@ -39,7 +36,7 @@ int EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
-    m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
@@ -110,7 +107,7 @@ bool EngineRecord::metaDataHasChanged()
     return true;
 }
 
-void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     const auto recordingStatus = static_cast<int>(m_pRecReady->get());
     static const QString tag("EngineRecord recording");
 
@@ -148,7 +145,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
+            m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+            m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -180,7 +178,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
+            m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
             m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
@@ -202,7 +200,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (m_pRecReady->get() == RECORD_ON) {
         // Compress audio. Encoder will call method 'write()' below to
         // write a file stream and emit bytesRecorded.
-        m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
+        m_pEncoder->encodeBuffer(pBuffer, bufferSize);
 
         //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.
@@ -213,7 +211,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         }
 
         // update frames counting and recorded duration (seconds)
-        m_frames += iBufferSize / 2;
+        m_frames += bufferSize / 2;
         unsigned long lastDuration = m_recordedDuration;
         m_recordedDuration = m_frames / m_sampleRate;
 
@@ -226,9 +224,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(m_recordedDuration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(m_recordedDuration % 60, 2, 10, QChar('0')); // seconds
 }
 
 void EngineRecord::writeCueLine() {
@@ -307,6 +305,9 @@ bool EngineRecord::openFile() {
     if (m_pEncoder) {
         m_file.setFileName(m_fileName);
         if (!m_file.open(QIODevice::WriteOnly)) {
+            qDebug() << "EngineRecord::openFile() failed for"
+                     << m_fileName
+                     << m_file.errorString();
             return false;
         }
         if (m_file.handle() != -1) {
@@ -330,7 +331,9 @@ bool EngineRecord::openCueFile() {
 
     // TODO(rryan): maybe we need to use the sandbox to get read/write rights on Mac OS ?!
     if (!m_cueFile.open(QIODevice::WriteOnly)) {
-        qDebug() << "Could not write Cue File:" << m_cueFileName;
+        qDebug() << "Could not write Cue File:"
+                 << m_cueFileName
+                 << m_cueFile.errorString();
         return false;
     }
 

@@ -1,13 +1,11 @@
 #pragma once
 
-#include <QModelIndexList>
 #include <QObject>
 #include <QString>
 
+#include "audio/frame.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/controls/cuecontrol.h"
-#include "library/playlisttablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/class.h"
@@ -16,6 +14,8 @@ class ControlPushButton;
 class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
+class PlaylistTableModel;
+typedef QList<QModelIndex> QModelIndexList;
 
 class DeckAttributes : public QObject {
     Q_OBJECT
@@ -155,7 +155,7 @@ class AutoDJProcessor : public QObject {
         ADJ_IS_INACTIVE,
         ADJ_QUEUE_EMPTY,
         ADJ_BOTH_DECKS_PLAYING,
-        ADJ_DECKS_3_4_PLAYING,
+        ADJ_UNUSED_DECK_PLAYING,
         ADJ_NOT_TWO_DECKS
     };
 
@@ -163,7 +163,8 @@ class AutoDJProcessor : public QObject {
         FullIntroOutro,
         FadeAtOutroStart,
         FixedFullTrack,
-        FixedSkipSilence
+        FixedSkipSilence,
+        FixedStartCenterSkipSilence
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -201,8 +202,16 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+#endif
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    void autoDJError(AutoDJProcessor::AutoDJError error);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
@@ -218,8 +227,9 @@ class AutoDJProcessor : public QObject {
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
+    void playlistFirstTrackChanged();
 
-    void controlEnable(double value);
+    void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
@@ -228,7 +238,11 @@ class AutoDJProcessor : public QObject {
   protected:
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
-        emit loadTrackToPlayer(pTrack, group, play);
+        emit loadTrackToPlayer(pTrack, group,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         emit autoDJStateChanged(state);
@@ -284,6 +298,7 @@ class AutoDJProcessor : public QObject {
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
+    bool m_crossfaderStartCenter;
 
     QList<DeckAttributes*> m_decks;
 

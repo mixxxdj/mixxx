@@ -1,9 +1,6 @@
 #pragma once
 
-#include <QDomNode>
-
-#include "effects/effectslot.h"
-#include "skin/legacy/skincontext.h"
+#include "effects/defs.h"
 #include "widget/wlabel.h"
 
 class EffectsManager;

@@ -1,14 +1,9 @@
 #pragma once
 
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QWheelEvent>
-#include <QWidget>
+#include <optional>
 
 #include "skin/legacy/skincontext.h"
-#include "util/widgetrendertimer.h"
 #include "widget/knobeventhandler.h"
-#include "widget/wimagestore.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
@@ -28,11 +23,16 @@ class WKnobComposed : public WWidget {
 
   protected:
     void wheelEvent(QWheelEvent *e) override;
+    void leaveEvent(QEvent* e) override;
     void mouseMoveEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseDoubleClickEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
+
+    std::optional<double> m_defaultAngle;
+    void setDefaultAngleFromParameterOrReset(std::optional<double> parameter);
 
   private:
     void inputActivity();
@@ -47,10 +47,10 @@ class WKnobComposed : public WWidget {
             double scaleFactor);
     void drawArc(QPainter* pPainter);
 
-    double m_dCurrentAngle;
     PaintablePointer m_pKnob;
     PaintablePointer m_pPixmapBack;
     KnobEventHandler<WKnobComposed> m_handler;
+    double m_dCurrentAngle;
     double m_dMinAngle;
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;
@@ -63,7 +63,7 @@ class WKnobComposed : public WWidget {
     bool m_arcUnipolar;
     bool m_arcReversed;
     Qt::PenCapStyle m_arcPenCap;
-    WidgetRenderTimer m_renderTimer;
+    QRectF m_rect;
 
     friend class KnobEventHandler<WKnobComposed>;
 };
