@@ -1,7 +1,7 @@
 <Template>
   <SetVariable name="Type">deck</SetVariable>
   <WidgetGroup>
-    <ObjectName>DecksRight</ObjectName>
+    <ObjectName>DecksLeft</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -25,5 +25,41 @@
       </WidgetGroup>
 
     </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_4decks_row</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform><Not/></Transform>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>DecksLeft</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <SingletonContainer>
+        <ObjectName>Deck2_Src</ObjectName>
+      </SingletonContainer>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck4_Src</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_4decks_row</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>
