@@ -1737,6 +1737,29 @@ bool TrackDAO::updateTrack(const Track& track) const {
     return true;
 }
 
+// Make sure that `directory` in in track_locations table is indeed a
+// directory path. This works around / removes residues of a bug where tracks
+// are falsely marked missing because `directory` == `location`.
+// See https://github.com/mixxxdj/mixxx/issues/14513
+void TrackDAO::cleanupTrackLocationsDirectory() const {
+    kLogger.debug() << "cleanupTrackLocationsDirectory"
+                    << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    // If directory == location, we remove the filename and the trailing /
+    // As of now, this is the only inconsistency we know of. We might also verify
+    // directory (eg. no trailing /) or recreate file name and directory from
+    // location.
+    query.prepare(QStringLiteral(
+            "UPDATE track_locations "
+            "SET directory=rtrim(rtrim(directory, filename),'/') "
+            "WHERE directory == location"));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "Couldn't clean up track directories.";
+        DEBUG_ASSERT(!"Failed query");
+    }
+}
+
 // Mark all the tracks in the library as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.
