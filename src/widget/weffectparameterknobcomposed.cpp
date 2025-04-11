@@ -4,6 +4,10 @@
 #include "effects/presets/effectchainpreset.h"
 #include "moc_weffectparameterknobcomposed.cpp"
 #include "widget/effectwidgetutils.h"
+//// Included this headers for QToolTip, label access, and manifest for dynamic tooltip display.
+#include <QToolTip>
+#include "widget/weffectknobparametername.h"
+#include "effects/backends/effectmanifestparameter.h"
 
 void WEffectParameterKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     WKnobComposed::setup(node, context);
@@ -34,5 +38,31 @@ void WEffectParameterKnobComposed::parameterUpdated() {
         // The knob should be hidden by the skin when the parameterX_loaded ControlObject
         // indicates no parameter is loaded, so this tooltip should never be shown.
         setBaseTooltip("");
+    }
+}
+
+// Override mousePressEvent to show a tooltip with the parameter name and its
+// current value (with correct unit). Falls back to label text if unavailable.
+void WEffectParameterKnobComposed::mousePressEvent(QMouseEvent* e) {
+    WKnobComposed::mousePressEvent(e);
+
+    if (m_pEffectParameterSlot && m_pEffectParameterSlot->isLoaded()) {
+        EffectManifestParameterPointer pManifest = m_pEffectParameterSlot->getManifest();
+        if (pManifest) {
+            QString name = pManifest->name();
+            double value = m_pEffectParameterSlot->currentParameterValue();
+            QString valueStr = pManifest->valueToString(value);
+
+            QString tooltip = QString("%1: %2").arg(name, valueStr);
+            QToolTip::showText(e->globalPos(), tooltip, this);
+            return;
+        }
+    }
+    // fallback: show label
+    if (m_pLabel) {
+        QString labelText = m_pLabel->text();
+        if (!labelText.isEmpty()) {
+            QToolTip::showText(e->globalPos(), labelText, this);
+        }
     }
 }
