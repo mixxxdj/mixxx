@@ -1,5 +1,8 @@
+#include <memory>
 #include <vector>
 
+#include <QHttpServer>
+#include <QHttpServerResponse>
 #include <QJsonValue>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -10,15 +13,10 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectioniterator.h"
 
-#include <httpserver/httplistener.h>
-#include <httpserver/staticfilecontroller.h>
-#include <httpserver/httpsessionstore.h>
 
 const mixxx::Logger kLogger("RemoteControl");
 
-#define FSWEBPATH "/home/jan.koester/projects/mixxx/res/web/"
-
-std::shared_ptr<::stefanfrings::StaticFileController> m_staticFileController;
+#define FSWEBPATH "/home/intranet.tuxist.de/jan.koester/Projects/mixxx/res/web/"
 
 namespace mixxx {
     class Session {
@@ -27,29 +25,20 @@ namespace mixxx {
         QUuid    sessionid;
         friend RemoteController;
     };
-    
+
     ::std::vector<Session> m_Session;
-    
-    class RemoteController : public ::stefanfrings::HttpRequestHandler {
+
+    class RemoteController {
     public:
-        RemoteController(UserSettingsPointer settings,TrackCollectionManager *collectionManager,QObject* parent=0) : 
-                    ::stefanfrings::HttpRequestHandler(parent){
-            m_pSettings=settings;
-            m_Parent=parent;
-            m_TrackCollectionManager=collectionManager;
-        };
-        
-        virtual ~RemoteController(){
-        };
-        
-        void service(::stefanfrings::HttpRequest& request, 
-                     ::stefanfrings::HttpResponse& response){
-            QByteArray path=request.getPath();
-            if (path==("/")) {
-                response.redirect("/index.html");
-                response.flush();
-            }else if(path=="/rcontrol"){
-                QJsonDocument jsonRequest = QJsonDocument::fromJson(request.getBody());
+        RemoteController(UserSettingsPointer settings,std::shared_ptr<TrackCollectionManager> collectionManager,
+                         QObject* parent=0) {
+
+            httpServer.route("/", [] (const QUrl &url) {
+                return QHttpServerResponse::fromFile(QString("FSWEBPATH")+ url.path());
+            });
+
+            httpServer.route("/rcontrol", [this,settings,collectionManager] (const QHttpServerRequest &request) {
+                QJsonDocument jsonRequest = QJsonDocument::fromJson(request.body());
                 QJsonDocument jsonResponse;
                 QJsonArray requroot = jsonRequest.array();
                 QJsonArray resproot = {};
@@ -57,7 +46,7 @@ namespace mixxx {
                     QJsonObject cur=i->toObject();
                     if(!cur["login"].isNull()){
                         if(QString::compare(cur["login"].toObject()["password"].toString(),
-                            m_pSettings->get(ConfigKey("[RemoteControl]","pass")).value)==0
+                            settings->get(ConfigKey("[RemoteControl]","pass")).value)==0
                         ){
                             
                             QJsonObject sessid;                           
@@ -68,18 +57,13 @@ namespace mixxx {
                             sessid.insert("sessionid",session.sessionid.toString());
                             resproot.push_back(sessid);
                             jsonResponse.setArray(resproot);
-                            response.write(jsonResponse.toJson());
-                            response.flush();
-                            kLogger.debug() << "successfuly login";
-                            return;
+                            return jsonResponse.toJson();
                         }else{
                             QJsonObject err;
                             err.insert("error","wrong password");
                             resproot.push_back(err);
                             jsonResponse.setArray(resproot);
-                            response.write(jsonResponse.toJson());
-                            response.flush();
-                            return;
+                            return jsonResponse.toJson();
                         };
                     }
                 }
@@ -100,15 +84,13 @@ namespace mixxx {
                         }
                     }
                 }
-                
+
                 if(!auth){
                     QJsonObject err;
                     err.insert("error","wrong sessionid");
                     resproot.push_back(err);
                     jsonResponse.setArray(resproot);
-                    response.write(jsonResponse.toJson());
-                    response.flush();
-                    return;
+                    return jsonResponse.toJson();
                 }
                 
                 for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
@@ -116,82 +98,46 @@ namespace mixxx {
                     if(!cur["searchtrack"].isNull()){
                         QJsonArray list;
                         TrackIdList tracklist;
-                        TrackByIdCollectionIterator curcoll(m_TrackCollectionManager,tracklist);
+                        TrackByIdCollectionIterator curcoll(collectionManager.get(),tracklist);
                         do{
                             for(TrackIdList::Iterator curtrack=tracklist.begin(); curtrack<tracklist.end(); curtrack++){
                                 list.push_back(curtrack->toString());
                                 kLogger.info() << curtrack->toString();
                             };
                         }while(curcoll.nextItem());
-                        resproot.push_back(list);                   
+                        resproot.push_back(list);
                     }
                 }
-                
+
                 jsonResponse.setArray(resproot);
-                response.write(jsonResponse.toJson());
-                response.flush();
-            }else{
-                m_staticFileController->service(request,response);
-            }
+                return jsonResponse.toJson();
+            });
+        };
+
+        virtual ~RemoteController(){
+
         };
     private:
-        TrackCollectionManager *m_TrackCollectionManager;
-        UserSettingsPointer     m_pSettings;
-        QObject*                m_Parent;
+        QObject*                 m_Parent;
+        QHttpServer              httpServer;
     };
 };
 
-mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,TrackCollectionManager *trackscollmngr,
-                                    QObject* pParent){
+mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,std::shared_ptr<TrackCollectionManager> trackscollmngr,
+                                    QObject* pParent) {
     kLogger.debug() << "Starting RemoteControl";
-    m_pSettings=pConfig;
-    m_pTrackCollectionManager=trackscollmngr;
-    if(QVariant(m_pSettings->get(
-                        ConfigKey("[RemoteControl]","actv")
-                    ).value).toBool()){
+    if(QVariant(pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
-    
-        m_HttpSettings = std::make_shared<QSettings>();
-        
-        m_HttpSettings->setValue("host",
-                          m_pSettings->get(
-                              ConfigKey("[RemoteControl]","host")
-                          ).value);
-        m_HttpSettings->setValue("port",
-                          m_pSettings->get(
-                              ConfigKey("[RemoteControl]","port")
-                          ).value);
-        
-        m_FileSettings = std::make_shared<QSettings>();
-        
-        m_FileSettings->setValue("path",FSWEBPATH);
-        
-        m_FileSettings->setValue("encoding","UTF-8");
-        
-        m_FileSettings->setValue("maxAge",90000);
-        
-        m_FileSettings->setValue("cacheTime",0);
-        
-        m_FileSettings->setValue("cacheSize",0);
-        
-        m_FileSettings->setValue("maxCachedFileSize",0);
-        
-        m_RemoteController = std::make_shared<RemoteController>(pConfig,m_pTrackCollectionManager,pParent);
-        
-        m_staticFileController=std::make_shared<::stefanfrings::StaticFileController>
-                                (m_FileSettings.get(),pParent);
-        
-        m_SessionSettings = std::make_shared<QSettings>();
-        
-        m_FileSettings->setValue("expirationTime","3600000");
-        m_FileSettings->setValue("cookieName","sessionid");
-        m_FileSettings->setValue("cookiePath","/");
-        m_FileSettings->setValue("cookieComment","Identifies the mixxx session");
-        m_HttpListener=std::make_shared<::stefanfrings::HttpListener>(
-            m_HttpSettings.get(),
-            m_RemoteController.get(), pParent);
+
+        // pConfig->setValue("host",
+        //                   pConfig->get(ConfigKey("[RemoteControl]","host")).value
+        //                  );
+        // pConfig->setValue("port",
+        //                   pConfig->get(ConfigKey("[RemoteControl]","port")).value
+        //                  );
+        m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,pParent);
+
     }
-        
 }
 
 mixxx::RemoteControl::~RemoteControl(){
