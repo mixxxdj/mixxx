@@ -3433,6 +3433,8 @@ if(QML)
       src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlwaveformdisplay.cpp
       src/qml/qmlwaveformrenderer.cpp
+      src/qml/qmlsettingparameter.cpp
+      src/qml/qmlpreferencesproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
@@ -4098,6 +4100,10 @@ if(RUBBERBAND)
   find_package(rubberband REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
   target_compile_definitions(mixxx-lib PUBLIC __RUBBERBAND__)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE rubberband::rubberband)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __RUBBERBAND__)
+  endif()
   target_sources(
     mixxx-lib
     PRIVATE

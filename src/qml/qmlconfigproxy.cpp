@@ -1,8 +1,11 @@
 #include "qml/qmlconfigproxy.h"
 
+#include <qvariant.h>
+
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
+#include "util/assert.h"
 
 namespace {
 QVariantList paletteToQColorList(const ColorPalette& palette) {
@@ -40,6 +43,31 @@ int QmlConfigProxy::getMultiSamplingLevel() {
     return static_cast<int>(m_pConfig->getValue(
             ConfigKey(kPreferencesGroup, kMultiSamplingKey),
             mixxx::preferences::MultiSamplingMode::Disabled));
+}
+
+QVariant QmlConfigProxy::getValue(const ConfigKey& key, const QVariant& default_value) const {
+    switch (default_value.typeId()) {
+    case QMetaType::Int:
+        return m_pConfig->getValue(key, default_value.toInt());
+    case QMetaType::QString:
+        return m_pConfig->getValue(key, default_value.toString());
+    // TODO add more
+    default:
+        DEBUG_ASSERT(!"Type not implemented");
+        return QVariant();
+    }
+}
+
+void QmlConfigProxy::setValue(const ConfigKey& key, const QVariant& value) {
+    switch (value.typeId()) {
+    case QMetaType::Int:
+        return m_pConfig->setValue(key, value.toInt());
+    case QMetaType::QString:
+        return m_pConfig->setValue(key, value.toString());
+    // TODO add more
+    default:
+        DEBUG_ASSERT(!"Type not implemented");
+    }
 }
 
 // static
