@@ -21,6 +21,7 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "remote/remote.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -137,6 +138,7 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
+    initializeRemoteControl();
     // Only record stats in developer mode.
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::createInstance();
@@ -573,6 +575,14 @@ void CoreServices::slotOptionsKeyboard(bool toggle) {
         m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
     }
+}
+
+void CoreServices::initializeRemoteControl(){
+    m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
+        m_pSettingsManager->settings(),
+       m_pTrackCollectionManager,
+       this
+    );
 }
 
 bool CoreServices::initializeDatabase() {
