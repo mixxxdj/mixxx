@@ -176,7 +176,7 @@ allshader::WaveformRenderMark::WaveformRenderMark(
         m_pPlayPosNode->initForRectangles<TextureMaterial>(1);
         appendChildNode(std::move(pNode));
     }
-
+#ifndef __SCENEGRAPH__
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkShowBeatsChanged,
@@ -198,6 +198,7 @@ allshader::WaveformRenderMark::WaveformRenderMark(
             &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
             this,
             &WaveformRenderMark::setUntilMarkTextHeightLimit);
+#endif
 }
 
 void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
