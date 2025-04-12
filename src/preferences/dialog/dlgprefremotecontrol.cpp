@@ -1,3 +1,8 @@
+#include <QWidget>
+#include <QUrl>
+
+#include "moc_dlgprefremotecontrol.cpp"
+
 #include "preferences/dialog/dlgprefremotecontrol.h"
 
 DlgPrefRemoteControl::DlgPrefRemoteControl(QWidget *pParent,UserSettingsPointer  pSettings) : DlgPreferencePage(pParent){

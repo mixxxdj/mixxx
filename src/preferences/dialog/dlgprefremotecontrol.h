@@ -1,14 +1,14 @@
 #pragma once
 
 #include <memory>
-#include <QWidget>
-#include <QUrl>
 
 #include <preferences/usersettings.h>
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefremotecontrol.h"
 
+class QWidget;
+class QUrl;
 class RemoteControl;
 
 class DlgPrefRemoteControl: public DlgPreferencePage,
