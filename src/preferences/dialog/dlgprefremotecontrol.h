@@ -6,8 +6,8 @@
 
 #include <preferences/usersettings.h>
 
-#include "dlgpreferencepage.h"
-#include "ui_dlgprefremotecontrol.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgprefremotecontrol.h"
 
 class RemoteControl;
 
