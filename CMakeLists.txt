@@ -1359,6 +1359,8 @@ add_library(
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
+  src/preferences/dailog/dlgprefremotecontrol.cpp
+  src/preferences/dailog/dlgprefremotecontrol.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
   src/preferences/dialog/dlgprefsound.cpp
