@@ -38,7 +38,9 @@ namespace mixxx {
                 return QHttpServerResponse::fromFile(QString("FSWEBPATH")+ url.path());
             });
 
-            httpServer.route("/rcontrol", [this,settings,collectionManager] (const QHttpServerRequest &request) {
+            httpServer.route("/rcontrol",QHttpServerRequest::Method::Post,[this,settings,collectionManager]
+                (const QHttpServerRequest &request, QHttpServerResponder &responder) {
+
                 QJsonDocument jsonRequest = QJsonDocument::fromJson(request.body());
                 QJsonDocument jsonResponse;
                 QJsonArray requroot = jsonRequest.array();
@@ -58,13 +60,15 @@ namespace mixxx {
                             sessid.insert("sessionid",session.sessionid.toString());
                             resproot.push_back(sessid);
                             jsonResponse.setArray(resproot);
-                            return jsonResponse.toJson();
+                            responder.write(jsonResponse);
+                            return;
                         }else{
                             QJsonObject err;
                             err.insert("error","wrong password");
                             resproot.push_back(err);
                             jsonResponse.setArray(resproot);
-                            return jsonResponse.toJson();
+                            responder.write(jsonResponse);
+                            return;
                         };
                     }
                 }
@@ -91,7 +95,8 @@ namespace mixxx {
                     err.insert("error","wrong sessionid");
                     resproot.push_back(err);
                     jsonResponse.setArray(resproot);
-                    return jsonResponse.toJson();
+                    responder.write(jsonResponse);
+                    return;
                 }
                 
                 for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
@@ -111,18 +116,19 @@ namespace mixxx {
                 }
 
                 jsonResponse.setArray(resproot);
-                return jsonResponse.toJson();
+                responder.write(jsonResponse);
+                return;
             });
 
             auto tcpserver = new QTcpServer();
 
             if (!tcpserver->listen(QHostAddress(settings->get(ConfigKey("[RemoteControl]","host")).value),
-                                               settings->get(ConfigKey("[RemoteControl]","port")).value.toInt() ||
+                                               quint16(settings->get(ConfigKey("[RemoteControl]","port")).value.toUInt())) ||
                                               !httpServer.bind(tcpserver)
-                )) {
+                ) {
+                qCritical()  << "Cannot listen at Port" << settings->get(ConfigKey("[RemoteControl]","port")).value.toInt();
                 delete tcpserver;
             }
-
         };
 
         virtual ~RemoteController(){
