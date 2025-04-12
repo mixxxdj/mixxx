@@ -1,5 +1,3 @@
-#include <remote/remote.h>
-
 #include "preferences/dialog/dlgprefremotecontrol.h"
 
 DlgPrefRemoteControl::DlgPrefRemoteControl(QWidget *pParent,UserSettingsPointer  pSettings) : DlgPreferencePage(pParent){
