@@ -1,0 +1,433 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.5" schemaVersion="1">
+    <info>
+        <name>Icon iControls</name>
+        <author>Sam Whited</author>
+        <description>MIDI mapping for the iControls by Icon Pro Audio.</description>
+        <forums>https://mixxx.discourse.group/t/icon-pro-audio-icontrols/31593</forums>
+        <manual>icon_icontrols</manual>
+        <devices>
+          <product protocol="midi" vendor_id="0x1d03" product_id="0x001a" />
+        </devices>
+    </info>
+    <controller id="icon-icontrols">
+        <scriptfiles>
+            <file filename="midi-components-0.0.js" functionprefix=""/>
+            <file filename="Icon-iControls-scripts.js" functionprefix="iControls"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.pflButton[0].input</key>
+                <description>Bottom button for f1.</description>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.pflButton[1].input</key>
+                <description>Bottom button for f2.</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.pflButton[2].input</key>
+                <description>Bottom button for f3.</description>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.pflButton[3].input</key>
+                <description>Bottom button for f4.</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel3]_Effect1]</group>
+                <key>iControls.controller.nextEffectButton[0].input</key>
+                <description>Bottom button for f5.</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
+                <key>iControls.controller.nextEffectButton[1].input</key>
+                <description>Bottom button for f6.</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]_Effect1]</group>
+                <key>iControls.controller.nextEffectButton[2].input</key>
+                <description>Bottom button for f7.</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel4]_Effect1]</group>
+                <key>iControls.controller.nextEffectButton[3].input</key>
+                <description>Bottom button for f8.</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.slipButton[0].input</key>
+                <description>Top button for f1.</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.slipButton[1].input</key>
+                <description>Top button for f2.</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.slipButton[2].input</key>
+                <description>Top button for f3.</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.slipButton[3].input</key>
+                <description>Top button for f4.</description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.superButton[0].input</key>
+                <description>Top button for f5.</description>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.superButton[1].input</key>
+                <description>Top button for f6.</description>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.superButton[2].input</key>
+                <description>Top button for f7.</description>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.superButton[3].input</key>
+                <description>Bottom button for f8.</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.leftDeckBtn.input</key>
+                <description>Top button for F9.</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.rightDeckBtn.input</key>
+                <description>Bottom button for F9.</description>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>iControls.controller.knobs[8].input</key>
+                <description>Knob e9</description>
+                <status>0xB0</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.faders[0].input</key>
+                <description>Fader f1.</description>
+                <status>0xE0</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.faders[1].input</key>
+                <description>Fader f2.</description>
+                <status>0xE1</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.faders[2].input</key>
+                <description>Fader f3.</description>
+                <status>0xE2</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.faders[3].input</key>
+                <description>Fader f4.</description>
+                <status>0xE3</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.faders[4].input</key>
+                <description>Fader f5.</description>
+                <status>0xE4</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.faders[5].input</key>
+                <description>Fader f6.</description>
+                <status>0xE5</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.faders[6].input</key>
+                <description>Fader f7.</description>
+                <status>0xE6</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.faders[7].input</key>
+                <description>Fader f8.</description>
+                <status>0xE7</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>iControls.controller.faders[8].input</key>
+                <description>Fader f9.</description>
+                <status>0xE8</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.knobs[0].input</key>
+                <description>Knob e1</description>
+                <status>0xB0</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.knobs[1].input</key>
+                <description>Knob e2</description>
+                <status>0xB0</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.knobs[2].input</key>
+                <description>Knob e3</description>
+                <status>0xB0</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.knobs[3].input</key>
+                <description>Knob e4</description>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>iControls.controller.knobs[4].input</key>
+                <description>Knob e5</description>
+                <status>0xB0</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.knobs[5].input</key>
+                <description>Knob e6</description>
+                <status>0xB0</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>iControls.controller.knobs[6].input</key>
+                <description>Knob e7</description>
+                <status>0xB0</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>iControls.controller.knobs[7].input</key>
+                <description>Knob e8</description>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.loopButton.input</key>
+                <description>Repeat button.</description>
+                <status>0x90</status>
+                <midino>0x56</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.backButton.input</key>
+                <description>Rewind button.</description>
+                <status>0x90</status>
+                <midino>0x5B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.forwardButton.input</key>
+                <description>Fast forward button.</description>
+                <status>0x90</status>
+                <midino>0x5C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.cueButton.input</key>
+                <description>Stop/cue button.</description>
+                <status>0x90</status>
+                <midino>0x5D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>iControls.controller.activeDeck.playButton.input</key>
+                <description>Play button.</description>
+                <status>0x90</status>
+                <midino>0x5E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Recording]</group>
+                <key>iControls.controller.recordButton.input</key>
+                <description>Record button.</description>
+                <status>0x90</status>
+                <midino>0x5F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        </controls>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
