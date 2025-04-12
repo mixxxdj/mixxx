@@ -6,6 +6,7 @@
 #include <QJsonValue>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QTcpServer>
 
 #include "remote.h"
 
@@ -112,6 +113,16 @@ namespace mixxx {
                 jsonResponse.setArray(resproot);
                 return jsonResponse.toJson();
             });
+
+            auto tcpserver = new QTcpServer();
+
+            if (!tcpserver->listen(QHostAddress(settings->get(ConfigKey("[RemoteControl]","host")).value),
+                                               settings->get(ConfigKey("[RemoteControl]","port")).value.toInt() ||
+                                              !httpServer.bind(tcpserver)
+                )) {
+                delete tcpserver;
+            }
+
         };
 
         virtual ~RemoteController(){
@@ -119,7 +130,7 @@ namespace mixxx {
         };
     private:
         QObject*                 m_Parent;
-        QHttpServer              httpServer;
+        QHttpServer           httpServer;
     };
 };
 
@@ -128,15 +139,7 @@ mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,std::shared_ptr<
     kLogger.debug() << "Starting RemoteControl";
     if(QVariant(pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
-
-        // pConfig->setValue("host",
-        //                   pConfig->get(ConfigKey("[RemoteControl]","host")).value
-        //                  );
-        // pConfig->setValue("port",
-        //                   pConfig->get(ConfigKey("[RemoteControl]","port")).value
-        //                  );
         m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,pParent);
-
     }
 }
 

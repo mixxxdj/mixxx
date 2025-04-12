@@ -28,6 +28,7 @@ namespace mixxx {
 class ControlIndicatorTimer;
 class DbConnectionPool;
 class ScreensaverManager;
+class RemoteControl;
 
 class CoreServices : public QObject {
     Q_OBJECT
@@ -112,6 +113,7 @@ class CoreServices : public QObject {
   private:
     bool initializeDatabase();
     void initializeKeyboard();
+    void initializeRemoteControl();
     void initializeSettings();
     void initializeScreensaverManager();
     void initializeLogging();
@@ -143,6 +145,8 @@ class CoreServices : public QObject {
     std::shared_ptr<KeyboardEventFilter> m_pKeyboardEventFilter;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfigEmpty;
+
+    std::shared_ptr<mixxx::RemoteControl> m_RemoteControl;
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
