@@ -56,7 +56,7 @@ bool WaveformRendererFiltered::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif

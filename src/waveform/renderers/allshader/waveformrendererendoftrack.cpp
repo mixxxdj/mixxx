@@ -44,6 +44,12 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        m_pEndOfTrackControl.reset();
+        m_pTimeRemainingControl.reset();
+        return true;
+    }
+
     m_pEndOfTrackControl.reset(new ControlProxy(
             m_waveformRenderer->getGroup(), "end_of_track"));
     m_pTimeRemainingControl.reset(new ControlProxy(
@@ -70,7 +76,7 @@ void WaveformRendererEndOfTrack::preprocess() {
 }
 
 bool WaveformRendererEndOfTrack::preprocessInner() {
-    if (!m_pEndOfTrackControl->toBool()) {
+    if (!m_pEndOfTrackControl || !m_pEndOfTrackControl->toBool()) {
         return false;
     }
 
