@@ -32,10 +32,10 @@ namespace mixxx {
     class RemoteController {
     public:
         RemoteController(UserSettingsPointer settings,std::shared_ptr<TrackCollectionManager> collectionManager,
-                         QObject* parent=0) {
+            QObject* parent=0) {
 
-            httpServer.route("/", [] (const QUrl &url) {
-                return QHttpServerResponse::fromFile(QString("FSWEBPATH")+ url.path());
+            httpServer.route("/", [] () {
+                return QHttpServerResponse::fromFile( QString(FSWEBPATH)+("/index.html") );
             });
 
             httpServer.route("/rcontrol",QHttpServerRequest::Method::Post,[this,settings,collectionManager]
@@ -118,6 +118,10 @@ namespace mixxx {
                 jsonResponse.setArray(resproot);
                 responder.write(jsonResponse);
                 return;
+            });
+
+            httpServer.route("/<arg>",QHttpServerRequest::Method::Get, [] (const QString &url) {
+                return QHttpServerResponse::fromFile(QString(FSWEBPATH)+url);
             });
 
             auto tcpserver = new QTcpServer();
