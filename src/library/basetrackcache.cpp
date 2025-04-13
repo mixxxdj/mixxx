@@ -542,8 +542,8 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     for (TrackId trackId : std::as_const(dirtyTracks)) {
         // Only get the track if it is in the cache. Tracks that
         // are not cached in memory cannot be dirty.
-        TrackPointer pTrack = getCachedTrack(trackId);
-
+        // Bypass getCachedTrack() to not invalidate m_recentTrackId
+        TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (!pTrack) {
             continue;
         }
