@@ -102,13 +102,20 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_audio_formats">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="builtInFormats">
         <property name="text">
          <string/>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBox_enable_stem">
+        <property name="text">
+         <string>Enable support for stem (Preview)</string>
         </property>
        </widget>
       </item>

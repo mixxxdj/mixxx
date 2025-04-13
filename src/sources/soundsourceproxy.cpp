@@ -192,10 +192,14 @@ QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
     return mimeTypes;
 }
 
+#ifdef __STEM__
+const ConfigKey kAppEnableStemConfigKey = ConfigKey("[App]", "enable_stem");
+#endif
+
 } // anonymous namespace
 
 // static
-bool SoundSourceProxy::registerProviders() {
+bool SoundSourceProxy::registerProviders(UserSettingsPointer pConfig) {
     // Initialize built-in file types.
     // Fallback providers should be registered before specialized
     // providers to ensure that they are only after the specialized
@@ -237,9 +241,13 @@ bool SoundSourceProxy::registerProviders() {
             std::make_shared<mixxx::SoundSourceProviderSndFile>());
 #endif
 #ifdef __STEM__
-    registerSoundSourceProvider(
-            &s_soundSourceProviders,
-            std::make_shared<mixxx::SoundSourceProviderSTEM>());
+    // Stem is an opt-in only feature due to the risk certain untested/unstable
+    // codec represent to the user!
+    if (pConfig && pConfig->getValue(kAppEnableStemConfigKey, false)) {
+        registerSoundSourceProvider(
+                &s_soundSourceProviders,
+                std::make_shared<mixxx::SoundSourceProviderSTEM>());
+    }
 #endif
     // Register the high-priority reference providers AFTER all other
     // providers to verify that their priorities are correct.

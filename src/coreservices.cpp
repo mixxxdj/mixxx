@@ -233,7 +233,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     ScopedTimer t(QStringLiteral("CoreServices::initialize"));
 
-    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders(m_pSettingsManager->settings())) {
         qCritical() << "Failed to register any SoundSource providers";
         return;
     }

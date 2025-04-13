@@ -25,6 +25,10 @@
 
 namespace {
 constexpr int kDefaultFuzzyRateRangePercent = 75;
+
+#ifdef __STEM__
+const ConfigKey kAppEnableStemConfigKey = ConfigKey("[App]", "enable_stem");
+#endif
 } // namespace
 
 using namespace mixxx::library::prefs;
@@ -112,6 +116,13 @@ DlgPrefLibrary::DlgPrefLibrary(
     updateSearchLineEditHistoryOptions();
 
     connect(btn_library_font, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
+
+#ifdef __STEM__
+    connect(checkBox_enable_stem,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefLibrary::updateStemFeature);
+#endif
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
@@ -202,6 +213,16 @@ QUrl DlgPrefLibrary::helpUrl() const {
     return QUrl(MIXXX_MANUAL_LIBRARY_URL);
 }
 
+#ifdef __STEM__
+void DlgPrefLibrary::notifyRebootNecessary() {
+    // make the fact that you have to restart mixxx more obvious
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted before the stem support "
+               "setting will take effect."));
+}
+#endif
+
 void DlgPrefLibrary::populateDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
@@ -271,6 +292,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+    checkBox_enable_stem->setChecked(false);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -386,7 +408,36 @@ void DlgPrefLibrary::slotUpdate() {
                     mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     checkbox_played_track_color->setChecked(applyPlayedTrackColor);
+
+#ifdef __STEM__
+    m_stemEnabled = m_pConfig->getValue(kAppEnableStemConfigKey, false);
+    checkBox_enable_stem->setChecked(m_stemEnabled);
+#endif
 }
+
+#ifdef __STEM__
+void DlgPrefLibrary::updateStemFeature(bool enabled) {
+    if (!enabled) {
+        return;
+    }
+    QMessageBox msg;
+    msg.setIcon(QMessageBox::Warning);
+    msg.setWindowTitle(tr("Are you sure?"));
+    msg.setText(QStringLiteral("<p>%1</p><p>%2</p>")
+                    .arg(tr("Stem support is currently under preview and codec "
+                            "inconsistencies are known and could result in "
+                            "seeking imprecision (cues, loop or beat jump) as "
+                            "well as marker loss in future Mixxx version."),
+                            tr("Are you sure you wish to proceed to enable "
+                               "Stem preview?")));
+    QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::RejectRole);
+    QPushButton* pYesBtn = msg.addButton(
+            tr("Yes, I am happy with the risk and live on the edge"), QMessageBox::AcceptRole);
+    msg.setDefaultButton(pNoBtn);
+    msg.exec();
+    checkBox_enable_stem->setChecked(msg.clickedButton() == pYesBtn);
+}
+#endif
 
 void DlgPrefLibrary::slotCancel() {
     // Undo any changes in the library font or row height.
@@ -542,6 +593,11 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+#ifdef __STEM__
+    bool stemEnabled = checkBox_enable_stem->isChecked();
+    m_pConfig->setValue(kAppEnableStemConfigKey,
+            stemEnabled);
+#endif
 
     int coverartfetcherquality_status;
     if (radioButton_cover_art_fetcher_highest->isChecked()) {
@@ -590,6 +646,13 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(
             mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+#ifdef __STEM__
+    if (stemEnabled != m_stemEnabled) {
+        notifyRebootNecessary();
+        m_stemEnabled = stemEnabled;
+    }
+#endif
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

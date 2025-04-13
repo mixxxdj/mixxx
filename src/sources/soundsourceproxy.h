@@ -24,7 +24,7 @@ class SoundSourceProxy {
     ///
     /// Returns true if providers for one or more file extensions have been
     /// registered.
-    static bool registerProviders();
+    static bool registerProviders(UserSettingsPointer pConfig = {});
 
     static QStringList getSupportedFileTypes() {
         return s_soundSourceProviders.getRegisteredFileTypes();

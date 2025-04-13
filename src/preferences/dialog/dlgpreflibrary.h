@@ -52,6 +52,10 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotRemoveDir();
     void slotRelocateDir();
 
+#ifdef __STEM__
+    void updateStemFeature(bool enabled);
+#endif
+
   signals:
     void apply();
     void scanLibrary();
@@ -70,6 +74,9 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
   private:
     void populateDirList();
+#ifdef __STEM__
+    void notifyRebootNecessary();
+#endif
     void setLibraryFont(const QFont& font);
     void updateSearchLineEditHistoryOptions();
     void setSeratoMetadataEnabled(bool shouldSyncTrackMetadata);
@@ -78,6 +85,9 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
+#ifdef __STEM__
+    bool m_stemEnabled;
+#endif
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
     // Listen to rate range changes in order to update the fuzzy BPM range
