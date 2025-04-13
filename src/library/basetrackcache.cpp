@@ -107,10 +107,6 @@ void BaseTrackCache::ensureCached(TrackId trackId) {
     updateTrackInIndex(trackId);
 }
 
-void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
-    updateTracksInIndex(trackIds);
-}
-
 const TrackPointer& BaseTrackCache::getCachedTrack(TrackId trackId) const {
     DEBUG_ASSERT(m_bIsCaching);
     // Only refresh the recently used track if the identifiers

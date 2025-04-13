@@ -73,7 +73,6 @@ class BaseTrackCache : public QObject {
                                QHash<TrackId, int>* trackToIndex);
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
-    virtual void ensureCached(const QSet<TrackId>& trackIds);
 
   signals:
     void tracksChanged(const QSet<TrackId>& trackIds);
