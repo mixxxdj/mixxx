@@ -191,10 +191,6 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
     }
 
-    if (m_bIsCaching) {
-        resetRecentTrack();
-    }
-
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
@@ -249,6 +245,9 @@ void BaseTrackCache::buildIndex() {
     // clear the table, and keep track of what IDs we see, then delete the ones
     // we don't see.
     m_trackInfo.clear();
+    if (m_bIsCaching) {
+        resetRecentTrack();
+    }
 
     if (!updateIndexWithQuery(queryString)) {
         qDebug() << "buildIndex failed!";
