@@ -791,9 +791,9 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
                             "image. It is not recommended during "
                             "broadcasting or recording."),
                             tr("Are you sure you wish to proceed?")));
-    QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::AcceptRole);
+    QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::RejectRole);
     QPushButton* pYesBtn = msg.addButton(
-            tr("Yes, I know what I am doing"), QMessageBox::RejectRole);
+            tr("Yes, I know what I am doing"), QMessageBox::AcceptRole);
     msg.setDefaultButton(pNoBtn);
     msg.exec();
     keylockDualthreadedCheckBox->setChecked(msg.clickedButton() == pYesBtn);
