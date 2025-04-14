@@ -379,33 +379,35 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
 
 bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
     if (e->type() == QEvent::MouseButtonPress) {
-        // Clicking any spot in the checkbox that is not inside the indicator's
-        // 'click' rectangle triggers the search, ignoring other checked boxes.
-        // Clicks on the indicator are passed on to the event filter, hence
-        // toggling the checkbox happens as usual.
+        // Since we want tp provide a toggle function that allows to check multiple
+        // criteria (ie. don't auto-close the menu on first click) we need to
+        // figure the intended click target.
+        // Simply checking whether the click is inside the indicator's rectangle
+        // is not sufficient: the indicator's width & height is only about 60%
+        // of the item's total height, so there's top/left/bottom margin that
+        // would activate the action.
+        // Let's simply check if the click's x position is in the label region.
+        // If it is, trigger search ignoring other checked boxes. Else toggle it.
         QCheckBox* pBox = qobject_cast<QCheckBox*>(pObj);
         if (pBox) {
-            QMouseEvent* pMe = static_cast<QMouseEvent*>(e);
-            VERIFY_OR_DEBUG_ASSERT(pMe) {
-                return true;
-            }
+            auto* pStyle = pBox->style();
             QStyleOptionButton option;
             option.initFrom(pBox);
-            auto* pStyle = pBox->style();
-            if (!pStyle) {
-                return true;
-            }
-            const QRect indicatorClickRect = pStyle->subElementRect(QStyle::SE_CheckBoxClickRect,
+            const QRect labelRect = pStyle->subElementRect(QStyle::SE_CheckBoxContents,
                     &option,
                     pBox);
-            if (!indicatorClickRect.contains(pMe->pos())) {
-                // Text ('border' ractangle) was clicked, trigger the search.
+            QMouseEvent* pMe = static_cast<QMouseEvent*>(e);
+            if (pMe->pos().x() > labelRect.left()) {
+                // Label region was clicked, trigger the search.
                 const QString query = pBox->property("query").toString();
                 emit triggerSearch(query);
                 // Note that this click will not emit QAction::triggered like
                 // when pressing Return on a selected action, hence we need to
                 // make sure WTrackMenu closes when receiving triggerSearch().
+            } else {
+                pBox->toggle();
             }
+            return true;
         }
     }
     return QObject::eventFilter(pObj, e);
