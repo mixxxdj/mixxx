@@ -1940,7 +1940,11 @@ bool TrackDAO::detectMovedTracks(
             const auto nextSuffixMatch =
                     matchStringSuffix(nextTrackLocation, oldTrackLocation);
             DEBUG_ASSERT(nextSuffixMatch >= filename.length());
-            // document this
+            // When we look for a successor for 'Music/Abba-1981-Greatest Hits/1-Waterloo.mp3'
+            // we may have multiple candidates (same name, same duration).
+            // With this suffix match ranking we'll prefer
+            // 'Music/Abba/Greatest Hits/Waterloo-1.mp3' over
+            // 'Music/Falko/Track1.mp3'
             if (newTrackLocationSuffixMatch < nextSuffixMatch) {
                 newTrackLocationSuffixMatch = nextSuffixMatch;
                 newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
