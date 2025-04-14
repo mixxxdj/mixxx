@@ -364,6 +364,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     m_pSearchAction->setDefaultWidget(pCheckBox.get());
     addAction(m_pSearchAction.get());
     m_pSearchAction->setDisabled(true);
+    // To fix the hover effect, see eventFilter() for details
+    m_pSearchAction->installEventFilter(this);
 
     // This is for Enter/Return key
     connect(m_pSearchAction.get(),
@@ -406,6 +408,14 @@ bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
                 // when pressing Return on a selected action, hence we need to
                 // make sure WTrackMenu closes when receiving triggerSearch().
             }
+        }
+    } else if (e->type() == QEvent::HoverEnter && pObj != this) {
+        // The hover effect seems to be broken for widgets in QWidgetActions:
+        // hovering anything but the label or indicator won't highlight the
+        // entire row. Let's set focus manually.
+        QCheckBox* pBox = qobject_cast<QCheckBox*>(pObj);
+        if (pBox && pBox->isEnabled()) {
+            pBox->setFocus();
         }
     }
     return QObject::eventFilter(pObj, e);

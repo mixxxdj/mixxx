@@ -1545,6 +1545,10 @@ void WTrackMenu::slotPopulateCrateMenu() {
         //                    pCheckBox->palette().highlight().color().name()));
         pAction->setEnabled(!crate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
+        // The hover effect seems to be broken for widgets in QWidgetActions:
+        // hovering anything but the label or indicator won't highlight the
+        // entire row. Let's set focus manually.
+        pCheckBox.get()->installEventFilter(this);
 
         if (crate.getTrackCount() == 0) {
             pCheckBox->setChecked(false);
@@ -1574,6 +1578,16 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_pCrateMenu->addAction(newCrateAction);
     connect(newCrateAction, &QAction::triggered, this, &WTrackMenu::addSelectionToNewCrate);
     m_bCrateMenuLoaded = true;
+}
+
+bool WTrackMenu::eventFilter(QObject* pObj, QEvent* e) {
+    if (e->type() == QEvent::HoverEnter && pObj != this) {
+        QCheckBox* pBox = qobject_cast<QCheckBox*>(pObj);
+        if (pBox) {
+            pBox->setFocus();
+        }
+    }
+    return QObject::eventFilter(pObj, e);
 }
 
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
