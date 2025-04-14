@@ -74,6 +74,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     ///////////////////////////////////////////////////////////////////////////
     int fieldIndex(
             ColumnCache::Column column) const final;
+    int endFieldIndex() const final;
 
     QString modelKey(bool noSearch) const override;
 
@@ -94,7 +95,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             QString trackIdColumn,
             QStringList tableColumns,
             QSharedPointer<BaseTrackCache> trackSource);
-    void initHeaderProperties() override;
+
     virtual void initSortColumnMapping();
 
     TrackCollectionManager* const m_pTrackCollectionManager;
