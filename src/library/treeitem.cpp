@@ -1,5 +1,6 @@
 #include "library/treeitem.h"
 
+#include "library/libraryfeature.h"
 #include "util/make_const_iterator.h"
 
 /*
@@ -109,4 +110,8 @@ void TreeItem::removeChildren(int row, int count) {
     DEBUG_ASSERT(row <= (m_children.size() - count));
     qDeleteAll(m_children.constBegin() + row, m_children.constBegin() + (row + count));
     constErase(&m_children, m_children.constBegin() + row, m_children.constBegin() + (row + count));
+}
+
+bool TreeItem::isDataUniqueInFeature() const {
+    return feature()->isItemDataUnique(m_data);
 }
