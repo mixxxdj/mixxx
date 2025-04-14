@@ -20,6 +20,8 @@ const QString kColumnHidden = QStringLiteral("hidden");
 
 } // anonymous namespace
 
+const char* SettingsDAO::s_tracksFeatureNamespace = "mixxx.db.model.library";
+
 QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     const QString statement =
             QStringLiteral("SELECT ") +
