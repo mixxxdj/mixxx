@@ -83,6 +83,12 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
 
     QStringList getFilePaths() {
         QStringList filePaths;
+        // STEM with ALAC
+        filePaths.append(getTestDir().filePath("stems/test_with_alac.stem.mp4"));
+#ifdef __LINUX__
+        // STEM with AAC
+        filePaths.append(getTestDir().filePath("stems/test.stem.mp4"));
+#endif
         const QStringList fileNameSuffixes = getFileNameSuffixes();
         for (const auto& fileNameSuffix : fileNameSuffixes) {
             filePaths.append(getTestDir().filePath(
