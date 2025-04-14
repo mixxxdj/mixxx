@@ -18,6 +18,12 @@ class BroadcastProfile : public QObject {
           STATUS_CONNECTED = 2, // On Air
           STATUS_FAILURE = 3 // Happens when disconnected by an error
     };
+    enum class EncryptionMode {
+        Required,
+        Preferred,
+        Disabled
+    };
+    Q_ENUM(EncryptionMode);
 
     explicit BroadcastProfile(const QString& profileName,
                               QObject* parent = nullptr);
@@ -59,6 +65,13 @@ class BroadcastProfile : public QObject {
 
     QString getPassword() const;
     void setPassword(const QString& value);
+
+    EncryptionMode getEncryptionMode() const {
+        return m_encryptionMode;
+    }
+    void setEncryptionMode(EncryptionMode value) {
+        m_encryptionMode = value;
+    }
 
     bool getEnableReconnect() const;
     void setEnableReconnect(bool value);
@@ -151,6 +164,7 @@ class BroadcastProfile : public QObject {
     void errorDialog(const QString& text, const QString& detailedError);
 
     bool m_secureCredentials;
+    EncryptionMode m_encryptionMode;
 
     QString m_filename;
 
