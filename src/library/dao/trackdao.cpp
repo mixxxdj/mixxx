@@ -45,7 +45,7 @@ mixxx::Logger kLogger("TrackDAO");
 enum { UndefinedRecordIndex = -2 };
 
 void markTrackLocationsAsDeleted(const QSqlDatabase& database, const QString& directory) {
-    // kLogger.debug() << "TrackDAO::markTrackLocationsAsDeleted" <<
+    // kLogger.debug()<< "markTrackLocationsAsDeleted" <<
     // QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(database);
     query.prepare("UPDATE track_locations "
@@ -112,7 +112,7 @@ TrackDAO::~TrackDAO() {
 }
 
 void TrackDAO::finish() {
-    kLogger.debug() << "TrackDAO::finish()";
+    kLogger.debug() << "finish()";
 
     // clear out played information on exit
     // crash prevention: if mixxx crashes, played information will be maintained
@@ -158,7 +158,7 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
         return {};
     }
     if (!query.next()) {
-        kLogger.debug() << "TrackDAO::getTrackId(): Track location not found "
+        kLogger.debug() << "getTrackId(): Track location not found "
                            "in library:"
                         << location;
         return {};
@@ -263,7 +263,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         }
         DEBUG_ASSERT(trackIds.size() <= pathList.size());
         if (trackIds.size() < pathList.size()) {
-            kLogger.debug() << "TrackDAO::getTrackIds(): Found only"
+            kLogger.debug() << "getTrackIds(): Found only"
                             << trackIds.size()
                             << "of"
                             << pathList.size()
@@ -303,7 +303,7 @@ QSet<QString> TrackDAO::getAllTrackLocations() const {
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
 // not worth retrieving a whole Track.
 QString TrackDAO::getTrackLocation(TrackId trackId) const {
-    kLogger.debug() << "TrackDAO::getTrackLocation"
+    kLogger.debug() << "getTrackLocation"
                     << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     QString trackLocation = "";
@@ -383,7 +383,7 @@ void TrackDAO::addTracksPrepare() {
     if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
             m_pQueryLibrarySelect || m_pQueryTrackLocationSelect ||
             m_pTransaction) {
-        kLogger.debug() << "TrackDAO::addTracksPrepare: PROGRAMMING ERROR"
+        kLogger.debug() << "addTracksPrepare: PROGRAMMING ERROR"
                         << "old queries have been left open, rolling back.";
         // true == do a db rollback
         addTracksFinish(true);
@@ -704,7 +704,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 
     if (!(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
                 m_pQueryLibrarySelect || m_pQueryTrackLocationSelect)) {
-        kLogger.debug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
+        kLogger.debug() << "addTracksAddTrack: needed SqlQuerys have not "
                            "been prepared. Skipping track"
                         << fileInfo.location();
         DEBUG_ASSERT("Failed query");
@@ -844,7 +844,7 @@ TrackPointer TrackDAO::addTracksAddFile(
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
     if (!SoundSourceProxy::isFileSupported(fileAccess.info())) {
-        kLogger.warning() << "TrackDAO::addTracksAddFile:"
+        kLogger.warning() << "addTracksAddFile:"
                           << "Unsupported file type"
                           << fileAccess.info().location();
         return nullptr;
@@ -855,14 +855,14 @@ TrackPointer TrackDAO::addTracksAddFile(
     switch (cacheResolver.getLookupResult()) {
     case GlobalTrackCacheLookupResult::Hit: {
         VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            kLogger.warning() << "TrackDAO::addTracksAddFile:"
+            kLogger.warning() << "addTracksAddFile:"
                               << "pTrack is null"
                               << fileAccess.info().location();
             return nullptr;
         }
         const TrackId oldTrackId = pTrack->getId();
         if (oldTrackId.isValid()) {
-            kLogger.debug() << "TrackDAO::addTracksAddFile:"
+            kLogger.debug() << "addTracksAddFile:"
                             << "Track has already been added to the database"
                             << oldTrackId;
             DEBUG_ASSERT(pTrack->getDateAdded().isValid());
@@ -907,7 +907,7 @@ TrackPointer TrackDAO::addTracksAddFile(
             SoundSourceProxy::UpdateTrackFromSourceMode::Once,
             SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
     if (!pTrack->checkSourceSynchronized()) {
-        kLogger.warning() << "TrackDAO::addTracksAddFile:"
+        kLogger.warning() << "addTracksAddFile:"
                           << "Failed to parse track metadata from file"
                           << pTrack->getLocation();
         // Continue with adding the track to the library, no matter
@@ -916,7 +916,7 @@ TrackPointer TrackDAO::addTracksAddFile(
 
     const TrackId newTrackId = addTracksAddTrack(pTrack, unremove);
     if (!newTrackId.isValid()) {
-        kLogger.warning() << "TrackDAO::addTracksAddTrack:"
+        kLogger.warning() << "addTracksAddTrack:"
                           << "Failed to add track to database"
                           << pTrack->getLocation();
         // GlobalTrackCache will be unlocked implicitly
@@ -1737,14 +1737,35 @@ bool TrackDAO::updateTrack(const Track& track) const {
     return true;
 }
 
+// Make sure that `directory` in in track_locations table is indeed a
+// directory path. This works around / removes residues of a bug where tracks
+// are falsely marked missing because `directory` == `location`.
+// See https://github.com/mixxxdj/mixxx/issues/14513
+void TrackDAO::cleanupTrackLocationsDirectory() const {
+    kLogger.debug() << "cleanupTrackLocationsDirectory"
+                    << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    // If directory == location, we remove the filename and the trailing /
+    // As of now, this is the only inconsistency we know of. We might also verify
+    // directory (eg. no trailing /) or recreate file name and directory from
+    // location.
+    query.prepare(QStringLiteral(
+            "UPDATE track_locations "
+            "SET directory=rtrim(rtrim(directory, filename),'/') "
+            "WHERE directory == location"));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "Couldn't clean up track directories.";
+        DEBUG_ASSERT(!"Failed query");
+    }
+}
+
 // Mark all the tracks in the library as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.
 void TrackDAO::invalidateTrackLocationsInLibrary() const {
-    // kLogger.debug() << "TrackDAO::invalidateTrackLocations" <<
-    // QThread::currentThread() << m_database.connectionName(); kLogger.debug()
-    // << "invalidateTrackLocations(" << libraryPath << ")";
-
+    // kLogger.debug()<< "invalidateTrackLocations" <<
+    // QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations SET needs_verification = 1");
     if (!query.exec()) {
@@ -1755,7 +1776,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary() const {
 }
 
 void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const {
-    // kLogger.debug() << "TrackDAO::markTrackLocationsAsVerified" <<
+    // kLogger.debug()<< "markTrackLocationsAsVerified" <<
     // QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -1771,7 +1792,7 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const 
 }
 
 void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) const {
-    // kLogger.debug() << "TrackDAO::markTracksInDirectoryAsVerified" <<
+    // kLogger.debug()<< "markTracksInDirectoryAsVerified" <<
     // QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -1788,7 +1809,7 @@ void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories)
 }
 
 void TrackDAO::markUnverifiedTracksAsDeleted() {
-    // kLogger.debug() << "TrackDAO::markUnverifiedTracksAsDeleted" <<
+    // kLogger.debug()<< "markUnverifiedTracksAsDeleted" <<
     // QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT library.id as id FROM library INNER JOIN track_locations ON "
