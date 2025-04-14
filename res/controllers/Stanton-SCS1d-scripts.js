@@ -284,6 +284,7 @@ StantonSCS1d.inboundSysex = function (data, length) {
         }
     }
 }
+StantonSCS1d.incomingData = StantonSCS1d.inboundSysex;
 
 StantonSCS1d.checkInSetup = function () {
   if (StantonSCS1d.inSetup) print ("StantonSCS1d: In setup mode, ignoring command.");

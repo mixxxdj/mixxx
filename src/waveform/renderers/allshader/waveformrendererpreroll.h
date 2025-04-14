@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QColor>
-#include <memory>
 
 #include "rendergraph/geometrynode.h"
 #include "util/class.h"
@@ -12,11 +11,13 @@ class SkinContext;
 
 namespace allshader {
 class WaveformRendererPreroll;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererPreroll final
-        : public ::WaveformRendererAbstract,
+        : public QObject,
+          public ::WaveformRendererAbstract,
           public rendergraph::GeometryNode {
+    Q_OBJECT
   public:
     explicit WaveformRendererPreroll(
             WaveformWidgetRenderer* waveformWidget,
@@ -31,6 +32,11 @@ class allshader::WaveformRendererPreroll final
 
     // Virtual for rendergraph::Node
     void preprocess() override;
+
+  public slots:
+    void setColor(const QColor& color) {
+        m_color = color;
+    }
 
   private:
     QColor m_color;

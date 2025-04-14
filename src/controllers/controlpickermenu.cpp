@@ -313,6 +313,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Move Beatgrid"),
             tr("Adjust the beatgrid to the left or right"),
             pBpmMenu);
+    addDeckControl("beats_translate_half",
+            tr("Move Beatgrid Half a Beat"),
+            tr("Adjust the beatgrid by exactly one half beat. Usable only for "
+               "tracks with constant tempo."),
+            pBpmMenu);
     addDeckControl("beats_translate_curpos",
             tr("Adjust Beatgrid"),
             tr("Align beatgrid to current position"),
@@ -494,41 +499,35 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Cues
     QMenu* pCueMenu = addSubmenu(tr("Cues"));
-    addDeckControl("cue_default", tr("Cue"), tr("Cue button"), pCueMenu);
-    addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), pCueMenu);
-    addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), pCueMenu);
+    addDeckAndSamplerControl("cue_default", tr("Cue"), tr("Cue button"), pCueMenu);
+    addDeckAndSamplerControl("cue_set", tr("Set Cue"), tr("Set cue point"), pCueMenu);
+    addDeckAndSamplerControl(
+            "cue_goto", tr("Go-To Cue"), tr("Go to cue point"), pCueMenu);
     addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay",
             tr("Go-To Cue And Play"),
             tr("Go to cue point and play"),
             pCueMenu);
-    addDeckControl("cue_gotoandstop",
+    addDeckAndSamplerControl("cue_gotoandstop",
             tr("Go-To Cue And Stop"),
             tr("Go to cue point and stop"),
             pCueMenu);
-    addDeckControl("cue_preview", tr("Preview Cue"), tr("Preview from cue point"), pCueMenu);
-    addDeckControl("cue_cdj", tr("Cue (CDJ Mode)"), tr("Cue button (CDJ mode)"), pCueMenu);
-    addDeckControl("play_stutter", tr("Stutter Cue"), tr("Stutter cue"), pCueMenu);
-    addDeckControl("cue_play",
+    addDeckAndSamplerControl("cue_preview",
+            tr("Preview Cue"),
+            tr("Preview from cue point"),
+            pCueMenu);
+    addDeckAndSamplerControl("cue_cdj",
+            tr("Cue (CDJ Mode)"),
+            tr("Cue button (CDJ mode)"),
+            pCueMenu);
+    addDeckAndSamplerControl(
+            "play_stutter", tr("Stutter Cue"), tr("Stutter cue"), pCueMenu);
+    addDeckAndSamplerControl("cue_play",
             tr("CUP (Cue + Play)"),
             tr("Go to cue point and play after release"),
             pCueMenu);
 
     // Hotcues
     QMenu* pHotcueMainMenu = addSubmenu(tr("Hotcues"));
-    QString hotcueActivateTitle = tr("Hotcue %1");
-    QString hotcueClearTitle = tr("Clear Hotcue %1");
-    QString hotcueSetTitle = tr("Set Hotcue %1");
-    QString hotcueGotoTitle = tr("Jump To Hotcue %1");
-    QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 And Stop");
-    QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 And Play");
-    QString hotcuePreviewTitle = tr("Preview Hotcue %1");
-    QString hotcueActivateDescription = tr("Set, preview from or jump to hotcue %1");
-    QString hotcueClearDescription = tr("Clear hotcue %1");
-    QString hotcueSetDescription = tr("Set hotcue %1");
-    QString hotcueGotoDescription = tr("Jump to hotcue %1");
-    QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
-    QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
-    QString hotcuePreviewDescription = tr("Preview from hotcue %1");
     addDeckControl("shift_cues_earlier",
             tr("Shift cue points earlier"),
             tr("Shift cue points 10 milliseconds earlier"),
@@ -545,6 +544,29 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Shift cue points later (fine)"),
             tr("Shift cue points 1 millisecond later"),
             pHotcueMainMenu);
+    addDeckControl("sort_hotcues",
+            tr("Sort hotcues by position"),
+            tr("Sort hotcues by position"),
+            pHotcueMainMenu);
+    addDeckControl("sort_hotcues_remove_offsets",
+            tr("Sort hotcues by position (remove offsets)"),
+            tr("Sort hotcues by position (remove offsets)"),
+            pHotcueMainMenu);
+
+    const QString hotcueActivateTitle = tr("Hotcue %1");
+    const QString hotcueClearTitle = tr("Clear Hotcue %1");
+    const QString hotcueSetTitle = tr("Set Hotcue %1");
+    const QString hotcueGotoTitle = tr("Jump To Hotcue %1");
+    const QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 And Stop");
+    const QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 And Play");
+    const QString hotcuePreviewTitle = tr("Preview Hotcue %1");
+    const QString hotcueActivateDescription = tr("Set, preview from or jump to hotcue %1");
+    const QString hotcueClearDescription = tr("Clear hotcue %1");
+    const QString hotcueSetDescription = tr("Set hotcue %1");
+    const QString hotcueGotoDescription = tr("Jump to hotcue %1");
+    const QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
+    const QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
+    const QString hotcuePreviewDescription = tr("Preview from hotcue %1");
     // add menus for hotcues 1-16.
     // though, keep the menu small put additional hotcues in a separate menu,
     // but don't create that submenu for less than 4 additional hotcues.

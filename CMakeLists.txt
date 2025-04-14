@@ -64,7 +64,12 @@ function(fatal_error_missing_env)
       )
     endif()
   elseif(APPLE AND NOT IOS)
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+      message(
+        FATAL_ERROR
+        "Did you build the Mixxx build environment as described here: https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64?"
+      )
+    elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
         FATAL_ERROR
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`"
@@ -75,11 +80,24 @@ function(fatal_error_missing_env)
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh` or `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`(includes Debug)?"
       )
     endif()
-  elseif(LINUX)
-    message(
-      FATAL_ERROR
-      "Did you install the Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh` or the equivalent packages using your package manager?"
-    )
+  elseif(UNIX AND NOT APPLE)
+    # Linux, BSD, Solaris, Minix
+    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+      message(
+        FATAL_ERROR
+        "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    elseif(EXISTS "/etc/redhat-release") # exists also on Fedora Mageia Madndriva Alma CentOS
+      message(
+        FATAL_ERROR
+        "Did you install the required RPM dev packages via `${CMAKE_SOURCE_DIR}/tools/rpm_buildenv.sh`?"
+      )
+    else()
+      message(
+        FATAL_ERROR
+        "Did you install the equivalent dev packages listed in `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+      )
+    endif()
   elseif(DEFINED VCPKG_TARGET_TRIPLET)
     message(
       FATAL_ERROR
@@ -92,6 +110,20 @@ function(fatal_error_missing_env)
     )
   endif()
 endfunction()
+
+if(UNIX AND NOT APPLE)
+  execute_process(
+    COMMAND uname -r
+    OUTPUT_VARIABLE UNAME_R
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(UNAME_R MATCHES ".*[Mm]icrosoft.*" OR UNAME_R MATCHES ".*WSL.*")
+    message(
+      FATAL_ERROR
+      "Building on Windows Subsystem for Linux (WSL) is not supported. If you want to build Mixxx from command line on Windows, you need to use the \"x64 Native Tools Command Prompt for VS 2022\"!"
+    )
+  endif()
+endif()
 
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
@@ -270,10 +302,10 @@ elseif(APPLE)
       )
     else()
       if(QT6)
-        # Minimum macOS version supported by Qt 6
+        # Minimum macOS version supported by Qt 6.5
         set(
           CMAKE_OSX_DEPLOYMENT_TARGET
-          10.15
+          11.0
           CACHE STRING
           "Minimum macOS version the build will be able to run on"
         )
@@ -306,8 +338,7 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.6.0)
-enable_language(C CXX)
+project(mixxx VERSION 2.6.0 LANGUAGES C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
@@ -1206,6 +1237,7 @@ add_library(
   src/library/itunes/itunesfeature.cpp
   src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
+  src/library/itunes/itunestrackmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
@@ -1510,11 +1542,13 @@ add_library(
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
+  src/widget/hotcuedrag.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
+  src/widget/wcollapsiblegroupbox.cpp
   src/widget/wcolorpicker.cpp
   src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
@@ -1553,6 +1587,7 @@ add_library(
   src/widget/wnumberrate.cpp
   src/widget/woverview.cpp
   src/widget/wpixmapstore.cpp
+  src/widget/wplaybutton.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
   src/widget/wstarratingaction.cpp
@@ -1560,6 +1595,7 @@ add_library(
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
+  src/widget/wsettingscheckboxlabel.cpp
   src/widget/wsingletoncontainer.cpp
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
@@ -1848,6 +1884,19 @@ if(APPLE)
       mixxx-lib
       PRIVATE src/soundio/soundmanagerios.mm src/util/screensaverios.mm
     )
+
+    option(IOS_ITUNES_LIBRARY "Native iOS music library integration" ON)
+    if(IOS_ITUNES_LIBRARY)
+      target_sources(
+        mixxx-lib
+        PRIVATE
+          src/library/itunes/itunesiosassetexporter.mm
+          src/library/itunes/itunesiosimporter.mm
+          src/library/itunes/itunesiostrackresolver.cpp
+      )
+      target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+      target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
+    endif()
   else()
     target_sources(mixxx-lib PRIVATE src/util/darkappearance.mm)
 
@@ -2187,7 +2236,9 @@ endif()
 if(WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
   if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_UCRT_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
   include(InstallRequiredSystemLibraries)
 endif()
@@ -2461,6 +2512,7 @@ if(BUILD_TESTING)
     src/test/frametest.cpp
     src/test/globaltrackcache_test.cpp
     src/test/hotcuecontrol_test.cpp
+    src/test/hotcueorderbyposition_test.cpp
     src/test/imageutils_test.cpp
     src/test/indexrange_test.cpp
     src/test/itunesxmlimportertest.cpp
@@ -2721,7 +2773,11 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
+find_package(Chromaprint)
+if(NOT Chromaprint_FOUND)
+  # Fail verbose, because with Qt Creator, the verbose error message for Qt is bypassed.
+  fatal_error_missing_env()
+endif()
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
@@ -2768,7 +2824,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.22.1)
+  set(LIBDJINTEROP_VERSION 0.24.3)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2831,7 +2887,7 @@ if(ENGINEPRIME)
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
       URL_HASH
-        SHA256=e811158d42c3864f5b682bcf76e0af78278050439d82d14d592dd0a391da6b20
+        SHA256=df41fe39bed9d16d27a3649d237b68edd2cdb6fc71a82cae5cd746d4e4ef6578
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2886,6 +2942,13 @@ if(ENGINEPRIME)
         IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
     )
     add_dependencies(mixxx-libdjinterop libdjinterop)
+    # Add the local include directory explicitly before linking the library
+    # to make sure not the system provided headers are used
+    target_include_directories(
+      mixxx-lib
+      BEFORE
+      PRIVATE "${DJINTEROP_INSTALL_DIR}/include"
+    )
     target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
   endif()
 
@@ -3115,6 +3178,7 @@ target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
 
 # OpenGL
+option(QGLES2 "Use GLES 2.0 (or higher) instead of full OpenGL for UNIX" OFF)
 if(IOS)
   target_link_libraries(mixxx-lib PRIVATE "-framework OpenGLES")
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -3142,6 +3206,9 @@ else()
     )
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
+  if(UNIX AND QGLES2)
+    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
   endif()
   if(APPLE)
     # Restore the previous CMAKE_FIND_FRAMEWORK value
@@ -3235,8 +3302,17 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+  endif()
+  if(QT_VERSION VERSION_LESS 6.8)
+    # From Qt 6.8 integrated in Qml via QmlMeta
+    list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
+  endif()
 endif()
 find_package(
   Qt${QT_VERSION_MAJOR}
@@ -3254,6 +3330,16 @@ if(QT_EXTRA_COMPONENTS)
 endif()
 
 if(QML)
+  if(QT_KNOWN_POLICY_QTP0004)
+    # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
+    # OLD (Qt < 6.8) requires to import qml modules with a folder e.g.:
+    # fragmentShader: "qrc:/shaders/rgbsignal_qml.frag.qsb"
+    # For using NEW, we need to back-port:
+    # https://github.com/qt/qtdeclarative/commit/6314d305ee0d9064ca848980ef2dab1793c191b8
+    # until Qt 6.8 lands in all supported distros
+    qt6_policy(SET QTP0004 OLD)
+  endif()
+
   add_subdirectory(res/shaders)
 
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
@@ -3319,6 +3405,7 @@ if(QML)
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
+      res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
   target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
@@ -3344,6 +3431,21 @@ if(QML)
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlwaveformoverview.cpp
       src/qml/qmlmixxxcontrollerscreen.cpp
+      src/qml/qmlwaveformdisplay.cpp
+      src/qml/qmlwaveformrenderer.cpp
+      src/waveform/renderers/allshader/digitsrenderer.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/renderers/allshader/waveformrendererslipmode.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererhsv.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
       # The following sources need to be in this target to get QML_ELEMENT properly interpreted
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
@@ -3415,9 +3517,16 @@ if(Qt_IS_STATIC)
       Qt${QT_VERSION_MAJOR}::QSvgPlugin
       # sqldrivers
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
-      # network plugins
-      Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
   )
+
+  if(NOT IOS)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE
+        # network plugins
+        Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+    )
+  endif()
 
   if(EMSCRIPTEN)
     target_link_libraries(
@@ -3514,28 +3623,21 @@ else()
         applocal
     )
 
-    install(
-      IMPORTED_RUNTIME_ARTIFACTS
-        Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
-        DESTINATION
-        "${MIXXX_INSTALL_DATADIR}/tls"
-        COMPONENT
-        applocal
-    )
+    if(NOT IOS)
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}/tls"
+          COMPONENT
+          applocal
+      )
+    endif()
 
     if(QML)
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::LabsQmlModels
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickControls2
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
@@ -3550,6 +3652,32 @@ else()
           COMPONENT
           applocal
       )
+
+      if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2Basic
+            Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
+            Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
+            Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
+
+      if(QT_VERSION VERSION_LESS 6.8)
+        # From Qt 6.8 integrated in Qml via QmlMeta
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -3569,23 +3697,17 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickTemplates2
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QmlWorkerScript
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickTemplates2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -4297,7 +4419,12 @@ if(STEM)
   endif()
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
-    target_sources(mixxx-qml-lib PRIVATE src/qml/qmlstemsmodel.cpp)
+    target_sources(
+      mixxx-qml-lib
+      PRIVATE
+        src/waveform/renderers/allshader/waveformrendererstem.cpp
+        src/qml/qmlstemsmodel.cpp
+    )
   endif()
 endif()
 
@@ -4652,8 +4779,26 @@ endif()
 
 # rendergraph
 add_subdirectory(src/rendergraph)
+target_compile_definitions(
+  rendergraph_gl
+  PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+)
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 target_compile_definitions(mixxx-lib PUBLIC rendergraph=rendergraph_gl)
+target_compile_definitions(mixxx-lib PRIVATE allshader=allshader_gl)
+if(BUILD_TESTING)
+  target_compile_definitions(mixxx-test PRIVATE allshader=allshader_gl)
+endif()
+if(QML)
+  target_compile_definitions(
+    rendergraph_sg
+    PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+  )
+  target_link_libraries(mixxx-qml-lib PRIVATE rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE __SCENEGRAPH__)
+  target_compile_definitions(mixxx-qml-lib PRIVATE allshader=allshader_sg)
+endif()
 
 # WavPack audio file support
 find_package(wavpack)

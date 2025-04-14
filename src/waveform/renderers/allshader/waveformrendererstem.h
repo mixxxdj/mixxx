@@ -11,7 +11,7 @@ class QOpenGLTexture;
 
 namespace allshader {
 class WaveformRendererStem;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererStem final
         : public allshader::WaveformRendererSignalBase,
@@ -33,8 +33,14 @@ class allshader::WaveformRendererStem final
     // Virtuals for rendergraph::Node
     void preprocess() override;
 
+  public slots:
+    void setSplitStemTracks(bool splitStemTracks) {
+        m_splitStemTracks = splitStemTracks;
+    }
+
   private:
     bool m_isSlipRenderer;
+    bool m_splitStemTracks;
 
     std::vector<std::unique_ptr<PollingControlProxy>> m_pStemGain;
     std::vector<std::unique_ptr<PollingControlProxy>> m_pStemMute;

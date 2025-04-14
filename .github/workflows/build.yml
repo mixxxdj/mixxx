@@ -5,6 +5,7 @@ name: Build
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -103,7 +104,7 @@ jobs:
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
               -DQT6=ON
-              -DQML=OFF
+              -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
@@ -175,7 +176,7 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
@@ -334,6 +335,7 @@ jobs:
           timeout: 600
 
       - name: "Package"
+        id: package
         if: matrix.cpack_generator != null
         # Use retry loop to work around a race condition on macOS causing
         # 'Resource busy' errors with 'hdiutil'. See
@@ -341,11 +343,18 @@ jobs:
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
-          max_attempts: 12
+          max_attempts: ${{ runner.os == 'macOS' && 12 || 1 }}
           retry_wait_seconds: 1
           command: |
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
+
+      - name: Upload failed packaging logs
+        if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-packages-wix
+          path: D:/a/mixxx/mixxx/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
@@ -484,7 +493,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}

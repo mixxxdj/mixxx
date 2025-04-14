@@ -6,13 +6,14 @@
 
 namespace allshader {
 class WaveformRendererFiltered;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererFiltered final
         : public allshader::WaveformRendererSignalBase,
           public rendergraph::GeometryNode {
   public:
-    explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget, bool rgbStacked);
+    explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget,
+            bool rgbStacked);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;

@@ -573,11 +573,6 @@ TrackPointer TrackCollection::getTrackByRef(
     return m_trackDao.getTrackByRef(trackRef);
 }
 
-TrackId TrackCollection::getTrackIdByRef(
-        const TrackRef& trackRef) const {
-    return m_trackDao.getTrackIdByRef(trackRef);
-}
-
 TrackPointer TrackCollection::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {

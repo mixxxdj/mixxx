@@ -63,6 +63,7 @@
 #include "widget/wnumberrate.h"
 #include "widget/woverview.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wplaybutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/wraterange.h"
 #include "widget/wrecordingduration.h"
@@ -536,6 +537,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
+    } else if (nodeName == "PlayButton") {
+        result = wrapWidget(parsePlayButton(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
@@ -1924,7 +1927,7 @@ QString LegacySkinParser::getSharedGroupString(const QString& channelStr) {
 
 QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     QString group = lookupNodeGroup(element);
-    WHotcueButton* pWidget = new WHotcueButton(group, m_pParent);
+    WHotcueButton* pWidget = new WHotcueButton(m_pParent, group);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
@@ -1945,6 +1948,18 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
             controlFromConfigKey(pWidget->getClearConfigKey(), false),
             ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
 
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parsePlayButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WPlayButton* pWidget = new WPlayButton(m_pParent, group);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
     return pWidget;
 }

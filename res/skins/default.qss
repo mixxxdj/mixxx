@@ -151,10 +151,6 @@ WLibraryTextBrowser QMenu::icon {
   padding: 0em 0em 0em 2em;
 }
 
-/* Column checkboxes in the table header menu */
-WTrackTableViewHeader QMenu::indicator {
-  margin: 0 -1em 0 0.25em;
-}
 
 /* Column checkboxes in the table header menu */
 WTrackTableViewHeader QMenu QCheckBox,

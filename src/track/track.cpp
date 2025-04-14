@@ -989,6 +989,73 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     markDirtyAndUnlock(&locked);
 }
 
+void Track::setHotcueIndicesSortedByPosition(HotcueSortMode sortMode) {
+    auto locked = lockMutex(&m_qMutex);
+
+    // Populate lists of positions and indices
+    QList<int> indices;
+    QList<mixxx::audio::FramePos> positions;
+    indices.reserve(m_cuePoints.size());
+    positions.reserve(m_cuePoints.size());
+    for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
+        // We only want hotcues (regular, loop, jump) with a valid index.
+        // Note: Loop with index -1 is the temporary, unsaved loop.
+        // Also note that there may be orphaned hotcues with index -1.
+        // Remember to also run this check when setting the new indices.
+        if (pCue->getHotCue() == Cue::kNoHotCue ||
+                (pCue->getType() != mixxx::CueType::HotCue &&
+                        pCue->getType() != mixxx::CueType::Loop &&
+                        pCue->getType() != mixxx::CueType::Jump)) {
+            continue;
+        }
+        const auto pos = pCue->getPosition();
+        positions.append(pos);
+        if (sortMode == HotcueSortMode::KeepOffsets) {
+            // We shall keep empty hotcues (start offset, gaps), so we need
+            // to store the indices
+            indices.append(pCue->getHotCue());
+        }
+    }
+
+    std::sort(positions.begin(), positions.end());
+    if (sortMode == HotcueSortMode::KeepOffsets) {
+        DEBUG_ASSERT(positions.size() == indices.size());
+        std::sort(indices.begin(), indices.end());
+    }
+
+    // The actual sorting:
+    // re-map hotcue positions to indices in ascending order
+    QHash<mixxx::audio::FramePos, int> posIndexHash;
+    if (sortMode == HotcueSortMode::RemoveOffsets) {
+        // Assign new indices, start with 0
+        int index = mixxx::kFirstHotCueIndex;
+        for (int i = 0; i < positions.size(); i++) {
+            posIndexHash.insert(positions[i], index);
+            index++;
+        }
+    } else { // HotcueSortMode::KeepOffsets
+        // Assign sorted indices
+        for (int i = 0; i < positions.size(); i++) {
+            posIndexHash.insert(positions[i], indices[i]);
+        }
+    }
+
+    // Finally set new indices on hotcues
+    for (CuePointer& pCue : m_cuePoints) {
+        if (pCue->getHotCue() == Cue::kNoHotCue ||
+                (pCue->getType() != mixxx::CueType::HotCue &&
+                        pCue->getType() != mixxx::CueType::Loop &&
+                        pCue->getType() != mixxx::CueType::Jump)) {
+            continue;
+        }
+        int newIndex = posIndexHash.take(pCue->getPosition());
+        pCue->setHotCue(newIndex);
+    }
+
+    markDirtyAndUnlock(&locked);
+    emit cuesUpdated();
+}
+
 void Track::analysisFinished() {
     emit analyzed();
 }
