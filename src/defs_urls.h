@@ -11,6 +11,8 @@
 // Icons used for the main window and dialogs
 #define MIXXX_ICON_PATH ":/images/icons/scalable/apps/mixxx.svg"
 #define MIXXX_LOGO_PATH ":/images/mixxx_logo.svg"
+#define PREF_DARK_ICON_PATH ":/images/preferences/dark/"
+#define PREF_LIGHT_ICON_PATH ":/images/preferences/light/"
 
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_WEBSITE_SHORT_URL "www.mixxx.org"

@@ -57,7 +57,7 @@ void TrackExportDlg::slotProgress(const QString& filename, int progress, int cou
     } else {
         statusLabel->setText(tr("Exporting %1").arg(filename));
     }
-    exportProgress->setMinimum(0);
+    // TODO Set max in showEvent(), get const count from worker
     exportProgress->setMaximum(count);
     exportProgress->setValue(progress);
 }
@@ -107,7 +107,7 @@ void TrackExportDlg::finish() {
     m_worker->wait();
     if (!m_worker->errorMessage().isEmpty()) {
         QMessageBox::warning(
-                nullptr,
+                this,
                 tr("Export Error"),
                 m_worker->errorMessage(),
                 QMessageBox::Ok,

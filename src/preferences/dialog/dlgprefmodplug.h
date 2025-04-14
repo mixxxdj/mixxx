@@ -16,6 +16,8 @@ class DlgPrefModplug : public DlgPreferencePage {
     explicit DlgPrefModplug(QWidget* parent, UserSettingsPointer _config);
     virtual ~DlgPrefModplug();
 
+    void updateColoredLinkTexts() override;
+
   public slots:
     void slotApply() override;
     void slotUpdate() override;

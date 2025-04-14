@@ -33,6 +33,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 
     QUrl helpUrl() const override;
 
+    void updateColoredLinkTexts() override;
+
   signals:
     void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);

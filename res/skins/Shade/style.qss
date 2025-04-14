@@ -27,7 +27,7 @@ WTime,
 WTrackProperty,
 QSpinBox,
 WBeatSpinBox,
-QToolTip,
+#Skin QToolTip,
 WTrackTableViewHeader,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu QCheckBox,
@@ -97,7 +97,8 @@ WBeatSpinBox::down-button {
 #MainMenu QMenu,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-QToolTip,
+/*QToolTip:not(DlgTrackInfo QToolTip),*/
+WWidget > QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
@@ -105,15 +106,16 @@ WTrackTableViewHeader QMenu::item,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
-WTrackMenu::item,
-WTrackMenu QMenu,
-WTrackMenu QMenu::item,
+/*WTrackMenu::item,*/
+WTrackMenu > QMenu,
+/*WTrackMenu QMenu::item,*/
 WTrackMenu QMenu QCheckBox,
-WTrackMenu WStarRating,
-QLineEdit QMenu,
-QLineEdit QMenu::item,
-QPlainTextEdit QMenu,
-QPlainTextEdit QMenu::item,
+WTrackMenu > WStarRating,
+/*WWidget QLineEdit QMenu,*/
+WTrackTableView QLineEdit QMenu,
+/*WTrackTableView > QLineEdit QMenu::item,*/
+WTrackTableView > QPlainTextEdit QMenu,
+WTrackTableView > QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -127,8 +129,14 @@ WEffectSelector::indicator:unchecked,
 #fadeModeCombobox::item,
 #fadeModeCombobox::indicator:unchecked {
   color: #060613;
-  background-color: #aab2b7;
+  background-color: darkred;
   }
+WTrackMenu QMenu WStarRating,
+#Skin > WStarRating {
+  color: #060613;
+  background-color: darkcyan;
+  }
+
 #MainMenu,
 #MainMenu::item,
 WBeatSpinBox,
@@ -467,10 +475,10 @@ WCueMenuPopup QLabel {
   padding: 2px;
 }
 #CueColorPicker QPushButton,
-WLibrary WColorPicker QPushButton {
+#TrackColorMenu WColorPicker QPushButton {
   width: 38px;
   height: 20px;
-  border: 1px solid #060613;
+  border: 1px solid red;
 }
 
 /*################################################################
@@ -552,7 +560,7 @@ WLibrarySidebar::item:!selected:focus {
 /* This is for all cells including Played and Location */
 WTrackTableView,
 /* This is for the BPM and play count cells */
-WTrackTableView QCheckBox:focus {
+WTrackTableView > QCheckBox:focus {
   outline: 1px solid #c9c9c9;
 }
 /* This uses a custom qproperty to set the focus border
@@ -569,8 +577,8 @@ WTrackTableView {
 }
 
   /* Table cell in edit mode */
-  WLibrary QLineEdit,
-  WLibrary QPlainTextEdit,
+  WTrackTableView > QLineEdit,
+  WTrackTableView > QPlainTextEdit,
   /* Track label inline editor in decks and samplers */
   WTrackPropertyEditor,
   #LibraryBPMSpinBox {
@@ -579,7 +587,7 @@ WTrackTableView {
     selection-color: #000;
     selection-background-color: #ccc;
   }
-  WLibrary QLineEdit,
+  WTrackTableView > QLineEdit,
   #LibraryBPMSpinBox {
     border: 1px solid #656d75;
   }
@@ -602,7 +610,7 @@ WTrackTableView {
     #LibraryBPMButton::indicator:unchecked:selected {
       image: url(skin:/btn/btn_lib_bpm_unlocked_black.svg);
       }
-    WLibrary > QCheckBox {
+    WTrackTableView > QCheckBox {
       text-align: right;
       alignment: right;
     }

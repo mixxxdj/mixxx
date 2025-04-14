@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <QString>
 #include <QUrl>
 #include <QWidget>
@@ -38,6 +39,8 @@ class DlgPreferencePage : public QWidget {
 
     QColor m_pLinkColor;
 
+    const char* kOriginalText = "originalText";
+
   public slots:
     /// Called when the preference dialog is shown to the user (not necessarily
     /// when this PreferencePage is shown to the user). At this point, the
@@ -73,9 +76,16 @@ class DlgPreferencePage : public QWidget {
         // Blend the palette colors for regular text and link text to get a color
         // that is more likely to be visible with dark OS themes.
         // https://github.com/mixxxdj/mixxx/issues/10170
+        // Text color can be set with
+        // DlgPreferencePage { color: yellow; }
+        // (if external stylesheets are applied to DlgPreferences)
+        // No success so far with styling the links.
         m_pLinkColor = Color::blendColors(palette().link().color(),
                 palette().text().color())
                                .name();
+    }
+
+    virtual void updateColoredLinkTexts() {
     }
 
   private:

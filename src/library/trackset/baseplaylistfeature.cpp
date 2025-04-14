@@ -23,6 +23,7 @@
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/file.h"
+#include "util/widgethelper.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -424,7 +425,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         return;
     }
 
-    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+    QMessageBox::StandardButton btn = QMessageBox::question(
+            mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles,
             tr("Confirm Deletion"),
             tr("Do you really want to delete playlist <b>%1</b>?")
                     .arg(m_playlistDao.getPlaylistName(playlistId)),
@@ -644,7 +646,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
         return;
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, tracks);
+    TrackExportWizard track_export(m_pConfig, tracks);
     track_export.exportTracks();
 }
 

@@ -1,7 +1,7 @@
 <svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb">
   <title>Mixxx 1.12+ iconset</title>
-  <g id="a" transform="translate(0,16)" fill="#fff">
-    <g fill="#fff">
+  <g id="a" transform="translate(0,16)" fill="#c2b3a5">
+    <g fill="#c2b3a5">
       <rect x="24" y="-4" width="2" height="10"/>
       <rect x="20" y="-4" width="2" height="10"/>
       <rect x="14" y="-4" width="2" height="10"/>

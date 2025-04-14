@@ -30,6 +30,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
+            QWidget* pParent,
             UserSettingsPointer pUserSettings,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
