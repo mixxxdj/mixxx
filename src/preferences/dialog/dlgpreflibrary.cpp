@@ -422,12 +422,15 @@ void DlgPrefLibrary::updateStemFeature(bool enabled) {
     }
     QMessageBox msg;
     msg.setIcon(QMessageBox::Warning);
-    msg.setWindowTitle(tr("Are you sure?"));
+    msg.setWindowTitle(tr("Enabling experimental Stem file support"));
     msg.setText(QStringLiteral("<p>%1</p><p>%2</p>")
-                    .arg(tr("Stem support is currently under preview and codec "
-                            "inconsistencies are known and could result in "
-                            "seeking imprecision (cues, loop or beat jump) as "
-                            "well as marker loss in future Mixxx version."),
+                    .arg(tr("Stem file support is currently in a preview state."
+                            "There are known seeking imprecision (cues, loop "
+                            "or beat jump)"
+                            "This leads to audible glitches and out of sync "
+                            "beats."
+                            "All track markers and waveform data might be loss "
+                            "a in future Mixxx version."),
                             tr("Are you sure you wish to proceed to enable "
                                "Stem preview?")));
     QPushButton* pNoBtn = msg.addButton(tr("No"), QMessageBox::RejectRole);
