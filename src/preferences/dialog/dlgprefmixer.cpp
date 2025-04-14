@@ -1,8 +1,11 @@
 #include "preferences/dialog/dlgprefmixer.h"
 
 #include <QButtonGroup>
+#include <QGraphicsView>
+#include <QMouseEvent>
 #include <QPainterPath>
 #include <QStandardItemModel>
+#include <QStyle>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -19,6 +22,7 @@
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 #include "util/rescaler.h"
+#include "util/widgethelper.h"
 
 namespace {
 const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
@@ -65,6 +69,126 @@ bool isMainEQ(EffectManifest* pManifest) {
 }
 } // anonymous namespace
 
+DlgXfaderCurve::DlgXfaderCurve(QWidget* pParent)
+        : QDialog(pParent),
+          m_mousePressed(false),
+          m_moved(false) {
+    setupUi(this);
+    setWindowTitle(tr("Crossfader Curve"));
+    // Prohibit resize
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    // Timer to allow dragging the window with longpress
+    m_clickTimer.setSingleShot(true);
+    m_clickTimer.setInterval(500);
+
+    // Hide the window 3 seconds after showing or last mouse interaction
+    m_hideTimer.setSingleShot(true);
+    m_hideTimer.setInterval(3000);
+    m_hideTimer.callOnTimeout(this, [this]() { close(); });
+
+    graphicsViewXfader->setRenderHint(QPainter::Antialiasing);
+
+    // Install event filter for dragging with left mouse button and close on click.
+    // Tracking the mouse on the transparent overlay widget is much easier than
+    // dealing with the complex QGraphicsView/QGraphicsScene mouse event handling.
+    // Leave mousetracking() off to receive mouse moves only when a button is pressed.
+    mouseCatcher->installEventFilter(this);
+}
+
+void DlgXfaderCurve::setScene(QGraphicsScene* pScene) {
+    graphicsViewXfader->setScene(pScene);
+    layout()->update();
+    adjustSize();
+}
+
+void DlgXfaderCurve::show() {
+    if (graphicsViewXfader->scene() == nullptr) {
+        return;
+    }
+    // This saves us from resetting pressed on close.
+    m_mousePressed = false;
+    QDialog::show();
+    m_hideTimer.start();
+
+    if (m_moved) {
+        return;
+    }
+
+    QWidget* centerOverWidget = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
+        qWarning() << "DlgXfaderCurve does not have a parent widget";
+        centerOverWidget = this;
+    }
+
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    QRect screenGeometry;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        screenGeometry = pScreen->geometry();
+    }
+
+    // Center the window
+    setGeometry(QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            size(),
+            screenGeometry));
+}
+
+bool DlgXfaderCurve::eventFilter(QObject* pObj, QEvent* pEvent) {
+    switch (pEvent->type()) {
+    case QEvent::MouseButtonPress: {
+        QMouseEvent* pME = static_cast<QMouseEvent*>(pEvent);
+        if (!pME->buttons().testFlag(Qt::LeftButton)) {
+            break;
+        }
+
+        m_mousePressed = true;
+        m_clickTimer.start();
+        m_hideTimer.start();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        const QPoint eventPosition = pME->globalPosition().toPoint();
+#else
+        const QPoint eventPosition = pME->globalPos();
+#endif
+        m_dragStartPosition = eventPosition - frameGeometry().topLeft();
+        break;
+    }
+    case QEvent::MouseMove: {
+        if (m_mousePressed) {
+            QMouseEvent* pME = static_cast<QMouseEvent*>(pEvent);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            const QPoint eventPosition = pME->globalPosition().toPoint();
+#else
+            const QPoint eventPosition = pME->globalPos();
+#endif
+            move(eventPosition - m_dragStartPosition);
+            m_moved = true;
+        }
+        break;
+    }
+    case QEvent::MouseButtonRelease: {
+        m_mousePressed = false;
+        if (m_clickTimer.isActive()) {
+            // short press
+            close();
+            break;
+        }
+        // long press
+        m_hideTimer.stop();
+        m_hideTimer.start();
+        break;
+    }
+    default:
+        break;
+    }
+    return QDialog::eventFilter(pObj, pEvent);
+}
+
 DlgPrefMixer::DlgPrefMixer(
         QWidget* pParent,
         std::shared_ptr<EffectsManager> pEffectsManager,
@@ -72,13 +196,13 @@ DlgPrefMixer::DlgPrefMixer(
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
-          m_transform(EngineXfader::kTransformDefault),
-          m_cal(0.0),
-          m_mode(kXfaderModeKey),
-          m_curve(kXfaderCurveKey),
-          m_calibration(kXfaderCalibrationKey),
-          m_reverse(kXfaderReverseKey),
-          m_crossfader("[Master]", "crossfader"),
+          m_xFaderCurve(EngineXfader::kTransformDefault),
+          m_xFaderCal(0.0),
+          m_xfModeCO(make_parented<ControlProxy>(kXfaderModeKey, this)),
+          m_xfCurveCO(make_parented<ControlProxy>(kXfaderCurveKey, this)),
+          m_xfReverseCO(make_parented<ControlProxy>(kXfaderReverseKey, this)),
+          m_xfCalibrationCO(make_parented<ControlProxy>(kXfaderCalibrationKey, this)),
+          m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),
@@ -100,6 +224,7 @@ DlgPrefMixer::DlgPrefMixer(
 #endif
           m_eqBypass(false),
           m_initializing(true),
+          m_updatingGui(false),
           m_updatingMainEQ(false),
           m_applyingDeckEQs(false),
           m_applyingQuickEffects(false) {
@@ -110,14 +235,27 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderXFader,
             QOverload<int>::of(&QSlider::valueChanged),
             this,
-            &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(radioButtonConstantPower,
-            &QRadioButton::clicked,
+            &DlgPrefMixer::slotXFaderSliderChanged);
+    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotXFaderSliderChanged);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotXFaderSliderChanged);
+    connect(buttonGroupCrossfaderModes,
+            &QButtonGroup::buttonClicked,
             this,
-            &DlgPrefMixer::slotUpdateXFader);
+            &DlgPrefMixer::slotXFaderModeBoxToggled);
+    connect(checkBoxReverse,
+            // TODO deprecated after Qt 6.9, replace with checkStateChanged(Qt::CheckState)
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefMixer::slotXFaderReverseBoxToggled);
+
+    m_xfModeCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderModeControlChanged);
+    m_xfCurveCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderCurveControlChanged);
+    m_xfCalibrationCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderCalibrationControlChanged);
+    m_xfReverseCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderReverseControlChanged);
 
     // Don't allow the xfader graph getting keyboard focus
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
@@ -192,7 +330,6 @@ DlgPrefMixer::DlgPrefMixer(
     m_initializing = false;
 }
 
-// Create EQ & QuickEffect selectors and deck label for each added deck
 void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         // 1-based for display
@@ -688,19 +825,7 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
-    // xfader //////////////////////////////////////////////////////////////////
-    m_mode.set(m_xFaderMode);
-    m_curve.set(m_transform);
-    m_calibration.set(m_cal);
-    if (checkBoxReverse->isChecked() != m_xFaderReverse) {
-        m_reverse.set(checkBoxReverse->isChecked());
-        double position = m_crossfader.get();
-        m_crossfader.set(0.0 - position);
-        m_xFaderReverse = checkBoxReverse->isChecked();
-    }
-    m_pConfig->set(kXfaderModeKey, ConfigValue(m_xFaderMode));
-    m_pConfig->set(kXfaderCurveKey, ConfigValue(QString::number(m_transform)));
-    m_pConfig->set(kXfaderReverseKey, ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
+    applyXFader();
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
     m_pConfig->set(kEnableEqsKey, ConfigValue(m_eqBypass ? 0 : 1));
@@ -717,6 +842,22 @@ void DlgPrefMixer::slotApply() {
     storeEqShelves();
 }
 
+void DlgPrefMixer::applyXFader() {
+    m_xfModeCO->set(m_xFaderMode);
+    m_xfCurveCO->set(m_xFaderCurve);
+    m_xfReverseCO->set(m_xFaderReverse ? 1.0 : 0.0);
+    m_xfCalibrationCO->set(m_xFaderCal);
+    if (m_xFaderReverse != (m_xfReverseCO->get() > 0)) {
+        double position = m_crossfader.get();
+        m_crossfader.set(0.0 - position);
+    }
+    m_xfReverseCO->set(m_xFaderReverse ? 1.0 : 0.0);
+
+    m_pConfig->setValue(kXfaderModeKey, m_xFaderMode);
+    m_pConfig->setValue(kXfaderCurveKey, m_xFaderCurve);
+    m_pConfig->setValue(kXfaderReverseKey, m_xFaderReverse);
+}
+
 void DlgPrefMixer::storeEqShelves() {
     if (m_initializing) {
         return;
@@ -726,29 +867,8 @@ void DlgPrefMixer::storeEqShelves() {
     m_pConfig->set(kLowEqFreqPreciseKey, ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
-// Update the widgets with values from config / EffectsManager
 void DlgPrefMixer::slotUpdate() {
-    // xfader //////////////////////////////////////////////////////////////////
-    m_transform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
-
-    // Range SliderXFader 0 .. 100
-    double sliderVal = RescalerUtils::oneByXToLinear(
-            m_transform - EngineXfader::kTransformMin + 1,
-            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
-            SliderXFader->minimum(),
-            SliderXFader->maximum());
-    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
-
-    m_xFaderMode = m_pConfig->getValueString(kXfaderModeKey).toInt();
-    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
-        radioButtonConstantPower->setChecked(true);
-    } else {
-        radioButtonAdditive->setChecked(true);
-    }
-
-    m_xFaderReverse = m_pConfig->getValueString(kXfaderReverseKey).toInt() == 1;
-    checkBoxReverse->setChecked(m_xFaderReverse);
-
+    m_updatingGui = true;
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
@@ -813,20 +933,101 @@ void DlgPrefMixer::slotUpdate() {
     }
 
     updateMainEQ();
+    m_updatingGui = false;
 }
 
-// Draw the crossfader curve graph. Only needs to get drawn when a change
-// has been made.
+void DlgPrefMixer::slotUpdateXFader() {
+    qWarning() << "     .";
+    qWarning() << "     .";
+    qWarning() << "     slotUpdateXFader";
+    // Read values from config only on first update if the xfader curve controls
+    // are still at their default values. This should detect if controller mappings
+    // (or skin attributes) have changed the xfader controls.
+    // Else and on later calls, always read the current state from controls.
+    if (m_initializing &&
+            m_xfCurveCO->get() == m_xfCurveCO->getDefault() &&
+            m_xfCalibrationCO->get() == m_xfCalibrationCO->getDefault() &&
+            m_xfModeCO->get() == m_xfModeCO->getDefault() &&
+            m_xfReverseCO->get() == m_xfReverseCO->getDefault()) {
+        qWarning() << "     --> init from config";
+        m_xFaderCurve = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
+        // "xFaderCalibration" is not stored in the config and it's not expsoed
+        // with a slider here. Each time the slider is touched it's calculated
+        // to get us a smooth curve for ConstPower mode. And hos no effect for
+        // Additive mode.
+        // TODO This also means custom values set by controller mappings are
+        // wiped on shutdown.
+        m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderCurve);
+        m_xFaderMode = m_pConfig->getValue<int>(kXfaderModeKey);
+        m_xFaderReverse = m_pConfig->getValue<int>(kXfaderReverseKey) == 1;
+    } else {
+        qWarning() << "     --> from controls";
+        // Update xfader from controls
+        // deactivated for now. resolve dupe debug etc.
+        // slotXFaderControlChanged();
+        m_xFaderCurve = m_xfCurveCO->get();
+        m_xFaderCal = m_xfCalibrationCO->get();
+        m_xFaderMode = static_cast<int>(m_xfModeCO->get());
+        m_xFaderReverse = static_cast<bool>(m_xfReverseCO->get());
+    }
+
+    qWarning().noquote() << "         mode:       "
+                         << QString(m_xFaderMode == MIXXX_XFADER_CONSTPWR ? "Const" : "Addi");
+    qWarning() << "         curve:  " << m_xFaderCurve;
+    qWarning() << "         calibration:" << m_xFaderCal;
+    qWarning().noquote() << "         reverse:    "
+                         << QString(m_xFaderReverse ? "Yes" : "normal");
+
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::updateXFaderWidgets() {
+    SliderXFader->blockSignals(true);
+    buttonGroupCrossfaderModes->blockSignals(true);
+    checkBoxReverse->blockSignals(true);
+
+    // Range SliderXFader 0 .. 100
+    double sliderVal = RescalerUtils::oneByXToLinear(
+            m_xFaderCurve - EngineXfader::kTransformMin + 1,
+            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
+            SliderXFader->minimum(),
+            SliderXFader->maximum());
+    qWarning() << "     --> SliderXFader->setValue" << sliderVal;
+    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
+
+    // Same here
+    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
+        qWarning() << "     --> radioButtonConstantPower->setChecked";
+        radioButtonConstantPower->setChecked(true);
+    } else {
+        qWarning() << "     --> radioButtonAdditive->setChecked";
+        radioButtonAdditive->setChecked(true);
+    }
+
+    checkBoxReverse->setChecked(m_xFaderReverse);
+
+    SliderXFader->blockSignals(false);
+    buttonGroupCrossfaderModes->blockSignals(false);
+    checkBoxReverse->blockSignals(false);
+
+    drawXfaderDisplay();
+    qWarning() << "     .";
+    qWarning() << "     .";
+}
+
 void DlgPrefMixer::drawXfaderDisplay() {
+    qWarning() << "------------- draw xFader";
     // Initialize or clear scene
+    int sizeX = graphicsViewXfader->width() - 2;
+    int sizeY = graphicsViewXfader->height() - 2;
     if (m_pxfScene) {
         m_pxfScene->clear();
     } else {
         m_pxfScene = make_parented<QGraphicsScene>(this);
         // The size of the QGraphicsView doesn't change so we need to do this only once
         graphicsViewXfader->setLineWidth(1); // frame width
-        int sizeX = graphicsViewXfader->width() - 2;
-        int sizeY = graphicsViewXfader->height() - 2;
+        // int sizeX = graphicsViewXfader->width() - 2;
+        // int sizeY = graphicsViewXfader->height() - 2;
         m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
         m_pxfScene->setBackgroundBrush(Qt::black);
         graphicsViewXfader->setRenderHints(QPainter::Antialiasing);
@@ -878,10 +1079,10 @@ void DlgPrefMixer::drawXfaderDisplay() {
     for (int x = 1; x <= pointCount + 1; x++) {
         CSAMPLE_GAIN gainL, gainR;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * (x - 1))),
-                m_transform,
-                m_cal,
+                m_xFaderCurve,
+                m_xFaderCal,
                 m_xFaderMode,
-                checkBoxReverse->isChecked(),
+                m_xFaderReverse,
                 &gainL,
                 &gainR);
 
@@ -906,28 +1107,100 @@ void DlgPrefMixer::drawXfaderDisplay() {
 
     graphicsViewXfader->show();
     graphicsViewXfader->repaint();
+
+    if (!isVisible() && !m_initializing && !m_updatingGui) {
+        // show popup with xfader curve
+        if (m_pDlgXfaderCurve.get() == nullptr) {
+            m_pDlgXfaderCurve = make_parented<DlgXfaderCurve>(this);
+            m_pDlgXfaderCurve->setScene(m_pxfScene);
+        }
+        m_pDlgXfaderCurve->show();
+    }
 }
 
-void DlgPrefMixer::slotUpdateXFader() {
-    if (radioButtonAdditive->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
-    } else {
-        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
-    }
+void DlgPrefMixer::slotXFaderReverseBoxToggled() {
+    qWarning() << "     .";
+    qWarning() << "     slotXFaderReverseChanged";
+    qWarning() << "     .";
+    m_xFaderReverse = checkBoxReverse->isChecked();
+}
 
-    // m_transform is in the range of 1 to 1000 while 50 % slider results
+void DlgPrefMixer::slotXFaderSliderChanged() {
+    qWarning() << "     .";
+    qWarning() << "     slotXFaderWidgetsChanged";
+    qWarning() << "     .";
+    // m_xFaderCurve is in the range of 1 to 1000 while 50 % slider results
     // to ~2, which represents a medium rounded fader curve.
-    double transform = RescalerUtils::linearToOneByX(
-                               SliderXFader->value(),
-                               SliderXFader->minimum(),
-                               SliderXFader->maximum(),
-                               EngineXfader::kTransformMax) -
+    double curve = RescalerUtils::linearToOneByX(
+                           SliderXFader->value(),
+                           SliderXFader->minimum(),
+                           SliderXFader->maximum(),
+                           EngineXfader::kTransformMax) -
             1 + EngineXfader::kTransformMin;
     // Round to 4 decimal places to avoid round-trip offsets with default 1.0
-    m_transform = std::round(transform * 10000) / 10000;
-    m_cal = EngineXfader::getPowerCalibration(m_transform);
+    m_xFaderCurve = std::round(curve * 10000) / 10000;
+    // If the curve has been changed in the GUI we fetch the engine value for
+    // calibration which gives us a smooth curve.
+    // This wipes any previous value set by controller mappings for example.
+    m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderCurve);
+    m_xFaderMode = radioButtonConstantPower->isChecked()
+            ? MIXXX_XFADER_CONSTPWR
+            : MIXXX_XFADER_ADDITIVE;
 
     drawXfaderDisplay();
+}
+
+void DlgPrefMixer::slotXFaderModeBoxToggled() {
+    qWarning() << "     .";
+    qWarning() << "     slotXFaderModeBoxToggled";
+    qWarning() << "     .";
+    m_xFaderMode = radioButtonConstantPower->isChecked()
+            ? MIXXX_XFADER_CONSTPWR
+            : MIXXX_XFADER_ADDITIVE;
+
+    drawXfaderDisplay();
+}
+
+void DlgPrefMixer::slotXFaderCurveControlChanged(double v) {
+    if (v == m_xFaderCurve) {
+        qWarning() << "    (Curve CO changed, no-op)" << v;
+        return;
+    }
+    qWarning() << "     Curve CO changed" << v;
+    m_xFaderCurve = v;
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderCalibrationControlChanged(double v) {
+    if (v == m_xFaderCal) {
+        qWarning() << "    (Calibration CO changed, no-op)" << v;
+        return;
+    }
+    qWarning() << "     Calibration CO changed" << v;
+    m_xFaderCal = v;
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderModeControlChanged(double v) {
+    int mode = static_cast<int>(v);
+    if (mode == m_xFaderMode) {
+        qWarning() << "    (Mode CO changed, no-op)" << v;
+        return;
+    }
+    qWarning() << "     Mode CO changed" << v;
+    m_xFaderMode = mode;
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderReverseControlChanged(double v) {
+    bool reverse = v > 0;
+    if (reverse == m_xFaderReverse) {
+        qWarning() << "    (Reverse CO changed, no-op)" << v;
+        return;
+    }
+    qWarning() << "     Reverse CO changed" << v;
+    m_xFaderReverse = reverse;
+    updateXFaderWidgets();
 }
 
 void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
