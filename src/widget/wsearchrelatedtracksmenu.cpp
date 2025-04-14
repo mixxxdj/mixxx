@@ -409,6 +409,11 @@ bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
             }
             return true;
         }
+    } else if (e->type() == QEvent::MouseButtonDblClick) {
+        // Another quirk: double-click does first un/tick the box, the second
+        // click however triggers the action.
+        // Let's just disable double-click, it has no benefit here.
+        return true;
     }
     return QObject::eventFilter(pObj, e);
 }
