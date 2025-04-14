@@ -4,7 +4,9 @@
 #include <QString>
 #include <optional>
 
+#include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectmanifestparameter.h"
+#include "effects/effectparameter.h"
 #include "util/class.h"
 
 class ControlObject;
@@ -24,6 +26,16 @@ class EffectParameterSlotBase : public QObject {
     EffectParameterSlotBase(const QString& group,
             const unsigned int iParameterSlotNumber,
             const EffectParameterType parameterType);
+
+    // Returns the current value of the associated effect parameter, if loaded.
+    // Used for displaying meaningful values in the UI (e.g., in tooltips).
+    // Returns 0.0 if no parameter is currently loaded.
+    double currentParameterValue() const {
+        if (m_pEffectParameter) {
+            return m_pEffectParameter->getValue();
+        }
+        return 0.0;
+    }
 
     ~EffectParameterSlotBase() override;
 
