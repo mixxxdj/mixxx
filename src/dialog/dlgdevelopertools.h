@@ -21,6 +21,7 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     void slotControlSearch(const QString& search);
     void slotLogSearch();
     void slotControlDump();
+    void slotOscQuerryDump();
 
   private:
     UserSettingsPointer m_pConfig;
