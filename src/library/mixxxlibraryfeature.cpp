@@ -184,7 +184,7 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 #endif
 
 void MixxxLibraryFeature::activate() {
-    //qDebug() << "MixxxLibraryFeature::activate()";
+    qDebug() << "MixxxLibraryFeature::activate()";
     emit saveModelState();
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
