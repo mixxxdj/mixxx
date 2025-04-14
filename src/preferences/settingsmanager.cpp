@@ -6,34 +6,44 @@
 #include "preferences/upgrade.h"
 #include "util/assert.h"
 
-void displaySettingsPermError(const QString& settingsPath, const QString& operation) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+#include <QNtfsPermissionCheckGuard>
+#else
+extern Q_CORE_EXPORT int qt_ntfs_permission_lookup;
+#endif
+
+void displaySettingsPermError(const QString& settingsPath) {
     QMessageBox::critical(nullptr,
             QObject::tr("Cannot access settings folder"),
             QObject::tr("Mixxx cannot access the settings folder at\n%1\n"
                         "because you do not have permission "
-                        "to %2 files in that folder.\n"
+                        "to read/write files in that folder.\n"
                         "Change permissions for the settings folder "
                         "or specify a different folder by running "
                         "Mixxx with the --settingsPath option.\n\n"
                         "Click OK to exit.")
-                    .arg(settingsPath, operation),
+                    .arg(settingsPath),
             QMessageBox::Ok);
 }
 
 bool checkSettingsPathPerm(const QString& settingsPath) {
-    QFile file(settingsPath + "test_perm_file");
-    if (!file.open(QIODevice::WriteOnly)) {
-        displaySettingsPermError(settingsPath, "write");
-        file.remove();
+#if defined(Q_OS_WIN)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    QNtfsPermissionCheckGuard guard;
+#else
+    ++qt_ntfs_permission_lookup;
+#endif
+#endif
+
+    QFileInfo file(settingsPath);
+    if (!file.permission(QFileDevice::WriteUser | QFileDevice::ReadUser)) {
+        displaySettingsPermError(settingsPath);
         return false;
     }
-    file.close();
-    if (!file.open(QIODevice::ReadOnly)) {
-        displaySettingsPermError(settingsPath, "read");
-        file.remove();
-        return false;
-    }
-    file.remove();
+
+#if defined(Q_OS_WIN) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
+    --qt_ntfs_permission_lookup;
+#endif
     return true;
 }
 
