@@ -113,7 +113,6 @@ class CoreServices : public QObject {
   private:
     bool initializeDatabase();
     void initializeKeyboard();
-    void initializeRemoteControl();
     void initializeSettings();
     void initializeScreensaverManager();
     void initializeLogging();
