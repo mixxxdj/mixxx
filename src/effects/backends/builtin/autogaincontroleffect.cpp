@@ -176,48 +176,66 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
         const mixxx::EngineParameters& engineParameters,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput) {
+    // Get user-defined parameters
     double thresholdDB = m_pThreshold->value();
     double targetLevelDB = m_pTarget->value();
     double maxGainDB = m_pGain->value();
     double kneeDB = m_pKnee->value();
+
+    // Define the upper and lower boundaries of the knee region
     double upperKneeDB = thresholdDB + 0.5 * kneeDB;
     double lowerKneeDB = thresholdDB - 0.5 * kneeDB;
 
+    // Initialize the envelope state
     double state = pState->state;
 
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
     for (SINT i = 0; i < numSamples; i += channelCount) {
+        // Detect peak level across stereo channels
         CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
+
+        // If the input is silent, output silence
         if (maxSample == CSAMPLE_ZERO) {
             pOutput[i] = CSAMPLE_ZERO;
             pOutput[i + 1] = CSAMPLE_ZERO;
             continue;
         }
 
+        // Smooth the level detector using attack/release envelope
         if (maxSample > state) {
             state = pState->attackCoeff * state + (1 - pState->attackCoeff) * maxSample;
         } else {
             state = pState->releaseCoeff * state + (1 - pState->releaseCoeff) * maxSample;
         }
 
+        // Convert current signal level to decibels
         double inputLevelDB = ratio2db(state);
+
+        // Determine the appropriate gain based on the input level
         double desiredGainDB;
         if (inputLevelDB > upperKneeDB) {
+            // Above the knee range: apply full gain reduction
             desiredGainDB = targetLevelDB - inputLevelDB;
         } else if (inputLevelDB < lowerKneeDB) {
+            // Below the knee range: no gain applied
             desiredGainDB = 0.0;
         } else {
+            // Within the knee: interpolate gain smoothly
             double kneePosition = (inputLevelDB - lowerKneeDB) / kneeDB;
             desiredGainDB = (targetLevelDB - upperKneeDB) * kneePosition;
         }
 
+        // Limit the gain to the maximum allowed value
         desiredGainDB = std::min(desiredGainDB, maxGainDB);
 
+        // Convert gain from decibels to linear amplitude ratio
         CSAMPLE_GAIN gain = static_cast<CSAMPLE>(db2ratio(desiredGainDB));
 
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
     }
+
+    // Store the envelope state for the next buffer
     pState->state = state;
 }
