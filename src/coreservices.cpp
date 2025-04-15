@@ -138,7 +138,6 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
-    initializeRemoteControl();
     // Only record stats in developer mode.
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::createInstance();
@@ -487,6 +486,14 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_isInitialized = true;
 
+    //initalize Remote Controll Plugin
+    m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
+        m_pSettingsManager->settings(),
+        m_pTrackCollectionManager,
+        m_pDbConnectionPool,
+       this
+    );
+
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();
 }
@@ -575,14 +582,6 @@ void CoreServices::slotOptionsKeyboard(bool toggle) {
         m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
     }
-}
-
-void CoreServices::initializeRemoteControl(){
-    m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
-        m_pSettingsManager->settings(),
-       m_pTrackCollectionManager,
-       this
-    );
 }
 
 bool CoreServices::initializeDatabase() {

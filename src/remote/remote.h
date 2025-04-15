@@ -14,7 +14,8 @@ namespace mixxx {
    class RemoteControl{
    public:
        RemoteControl(UserSettingsPointer pConfig,
-                     std::shared_ptr<TrackCollectionManager> trackscollmngr,
+                     std::shared_ptr<TrackCollectionManager> &trackscollmngr,
+                     std::shared_ptr<DbConnectionPool> &database,
                      QObject* pParent = nullptr);
        virtual ~RemoteControl();
    private:
