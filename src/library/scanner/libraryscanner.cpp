@@ -428,7 +428,17 @@ void LibraryScanner::slotFinishUnhashedScan() {
         kLogger.debug() << "Scan cancelled";
     }
 
-    const QString durationString = m_scannerGlobal->timerElapsed().formatMillisWithUnit();
+    const auto duration = m_scannerGlobal->timerElapsed();
+    double seconds = duration.toDoubleSeconds();
+    QString durationString;
+    // Pick a comfortable format for the duration display
+    if (seconds < 2.0) { // 812 ms
+        durationString = duration.formatMillisWithUnit();
+    } else if (seconds < 60) { // 12 s
+        durationString = duration.formatSecondsWithUnit();
+    } else { // 3:48
+        durationString = mixxx::Duration::formatTime(seconds);
+    }
     const int numVerifiedDirs = static_cast<int>(m_scannerGlobal->verifiedDirectories().size());
     const int numScannedDirs = m_scannerGlobal->numScannedDirectories();
     const int numVerifiedTracks = static_cast<int>(m_scannerGlobal->verifiedTracks().size());
