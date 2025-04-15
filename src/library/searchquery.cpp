@@ -689,7 +689,7 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
 
 bool BpmFilterNode::match(const TrackPointer& pTrack) const {
     double value = pTrack->getBpm();
-
+    pTrack->getBeats()->hasConstantTempo();
     switch (m_matchMode) {
     case MatchMode::Null: {
         return value == 0.0;
