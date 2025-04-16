@@ -1596,7 +1596,6 @@ add_library(
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
   src/widget/wrecordingduration.cpp
-  src/widget/wrelationtableview.cpp
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
