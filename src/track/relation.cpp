@@ -55,7 +55,7 @@ PositionPair Relation::getPositions() const {
     return m_positions;
 }
 
-void Relation::setPositions(PositionPair positions) {
+void Relation::setPositions(const PositionPair& positions) {
     if (m_positions == positions) {
         return;
     }

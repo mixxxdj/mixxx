@@ -37,7 +37,7 @@ class Relation : public QObject {
     TrackPair getTracks() const;
     void setTracks(TrackPair);
     PositionPair getPositions() const;
-    void setPositions(PositionPair);
+    void setPositions(const PositionPair&);
     QString getComment() const;
     void setComment(const QString&);
     QDateTime getDateAdded() const;
