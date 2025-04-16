@@ -490,7 +490,9 @@ void CoreServices::initialize(QApplication* pApp) {
     m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
         m_pSettingsManager->settings(),
         m_pTrackCollectionManager,
+        m_pLibrary,
         m_pDbConnectionPool,
+        m_pPlayerManager,
        this
     );
 
