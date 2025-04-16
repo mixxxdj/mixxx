@@ -11,6 +11,7 @@ class RelationsTableModel final : public TrackSetTableModel {
     ~RelationsTableModel() final = default;
 
     void displayRelatedTracks(TrackPointer pTrack);
+    void displayAllRelations();
     TrackPointer selectedTrack() const {
         return m_pTrack;
     }

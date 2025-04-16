@@ -9,7 +9,7 @@
 Relation::Relation(
         DbId dbId,
         TrackPair tracks,
-        PositionPair positions,
+        const PositionPair& positions,
         const QString& comment,
         const QDateTime& dateAdded)
         : m_dbId(dbId),
@@ -22,7 +22,7 @@ Relation::Relation(
 // Initialize new relation
 Relation::Relation(
         TrackPair tracks,
-        PositionPair positions,
+        const PositionPair& positions,
         const QString& comment)
         : m_tracks(tracks),
           m_positions(positions),

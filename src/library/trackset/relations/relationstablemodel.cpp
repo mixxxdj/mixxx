@@ -63,6 +63,43 @@ void RelationsTableModel::displayRelatedTracks(TrackPointer pTrack) {
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
+void RelationsTableModel::displayAllRelations() {
+    QString tableName = QStringLiteral("all_relations");
+
+    QStringList columns;
+    columns << "l." + LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+            // the same value as the cover digest.
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+    QSqlQuery query(m_database);
+    QString queryString = QStringLiteral(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+            "SELECT %2, r.rowid * 2 AS sort_order "
+            "FROM relations r "
+            "JOIN library l ON l.id = r.track_a "
+            "UNION ALL "
+            "SELECT %2, r.rowid * 2 + 1 AS sort_order "
+            "FROM relations r "
+            "JOIN library l ON l.id = r.track_b "
+            "ORDER BY sort_order")
+                                  .arg(tableName,
+                                          columns.join(','));
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    columns[0] = LIBRARYTABLE_ID;
+    columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_COVERART;
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            columns,
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
+}
+
 TrackModel::Capabilities RelationsTableModel::getCapabilities() const {
     Capabilities caps =
             Capability::AddToTrackSet |

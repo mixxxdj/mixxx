@@ -21,14 +21,14 @@ class Relation : public QObject {
     Relation(
             DbId id,
             TrackPair tracks,
-            PositionPair positions,
+            const PositionPair& positions,
             const QString& comment,
             const QDateTime& dateAdded);
 
     /// Initialize new relation
     Relation(
             TrackPair tracks,
-            PositionPair = {std::nullopt, std::nullopt},
+            const PositionPair& = PositionPair{std::nullopt, std::nullopt},
             const QString& comment = QString());
 
     ~Relation() override = default;

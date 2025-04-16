@@ -15,6 +15,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "widget/wrelationtableview.h"
 
 namespace {
 
@@ -48,11 +49,6 @@ QVariant RelationsFeature::title() {
 
 void RelationsFeature::bindLibraryWidget(WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    // Register root view
-    WLibraryTextBrowser* editHome = new WLibraryTextBrowser(libraryWidget);
-    editHome->setHtml(getRootViewHtml());
-    libraryWidget->registerView(kRootViewName, editHome);
-
     // Register view for empty decks
     WLibraryTextBrowser* editEmptyDeck = new WLibraryTextBrowser(libraryWidget);
     editEmptyDeck->setHtml(getEmptyDeckViewHtml());
@@ -68,7 +64,11 @@ TreeItemModel* RelationsFeature::sidebarModel() const {
 }
 
 void RelationsFeature::activate() {
-    emit switchToView(kRootViewName);
+    m_lastRightClickedIndex = QModelIndex();
+    emit saveModelState();
+    m_relationsTableModel.displayAllRelations();
+    emit showTrackModel(&m_relationsTableModel);
+    emit enableCoverArtDisplay(true);
 }
 
 QString RelationsFeature::deckGroupFromIndex(const QModelIndex& index) const {
@@ -91,19 +91,6 @@ void RelationsFeature::activateChild(const QModelIndex& index) {
     m_relationsTableModel.displayRelatedTracks(pTrack);
     emit showTrackModel(&m_relationsTableModel);
     emit enableCoverArtDisplay(true);
-}
-
-QString RelationsFeature::getRootViewHtml() const {
-    QString browseTitle = tr("Relations");
-    QString browseSummary = tr(
-            "Relations allows you to save a relation between two tracks,"
-            " e.g. for particularly epic transitions or notably well-"
-            "sounding mashups.");
-
-    QString html;
-    html.append(QString("<h2>%1</h2>").arg(browseTitle));
-    html.append(QString("<p>%1</p>").arg(browseSummary));
-    return html;
 }
 
 QString RelationsFeature::getEmptyDeckViewHtml() const {

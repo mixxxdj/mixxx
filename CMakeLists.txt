@@ -1595,8 +1595,8 @@ add_library(
   src/widget/wplaybutton.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
-  src/widget/wstarratingaction.cpp
   src/widget/wrecordingduration.cpp
+  src/widget/wrelationtableview.cpp
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
@@ -1609,6 +1609,7 @@ add_library(
   src/widget/wspinnybase.cpp
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
+  src/widget/wstarratingaction.cpp
   src/widget/wstatuslight.cpp
   src/widget/wtime.cpp
   src/widget/wtrackmenu.cpp
