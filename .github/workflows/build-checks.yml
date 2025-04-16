@@ -5,6 +5,7 @@ name: build-checks
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read #  to fetch code (actions/checkout)

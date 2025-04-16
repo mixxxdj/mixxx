@@ -5,6 +5,7 @@ name: Build
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -175,7 +176,7 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
@@ -492,7 +493,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
