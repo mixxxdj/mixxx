@@ -90,10 +90,10 @@ void RelationDAO::saveRelation(Relation* relation) {
         query.bindValue(":position_a", QVariant());
     }
     if (positions[1].has_value()) {
-        query.bindValue(":position_a",
+        query.bindValue(":position_b",
                 positions[1]->toEngineSamplePos());
     } else {
-        query.bindValue(":position_a", QVariant());
+        query.bindValue(":position_b", QVariant());
     }
 
     query.bindValue(":comment", relation->getComment());
