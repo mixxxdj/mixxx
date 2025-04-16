@@ -111,15 +111,19 @@ namespace mixxx {
                         QSqlDatabase dbase=DbConnectionPooled(db);
 
                         TextFilterNode search(dbase,
-                                                            QStringList({"id","title","artist"}),
+                                                            QStringList({"title","artist","album"}),
                                                             cur["searchtrack"].toString());
 
-                        QSqlQuery query(search.toSql(),dbase);
+
+                        QSqlQuery query(QString("SELECT id,artist,title FROM library WHERE ")+search.toSql(),dbase);
 
                         if(query.exec() && query.first() ){
                             do{
-                                list.push_back(query.value(0).toString());
-                                kLogger.info() << query.value("title").toString();
+                                QJsonObject jtrack;
+                                jtrack.insert("id",query.value("id").toString());
+                                jtrack.insert("artist",query.value("artist").toString());
+                                jtrack.insert("title",query.value("title").toString());
+                                list.push_back(jtrack);
                             }while(query.next());
                             resproot.push_back(list);
                         }
