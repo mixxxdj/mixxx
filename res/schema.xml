@@ -596,7 +596,6 @@ reapplying those migrations.
         position_a INTEGER DEFAULT NULL,
         position_b INTEGER DEFAULT NULL,
         comment varchar(256),
-        tag varchar(60),
         datetime_added DEFAULT CURRENT_TIMESTAMP
       );
     </sql>
