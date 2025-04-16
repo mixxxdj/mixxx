@@ -10,7 +10,6 @@
 #include "control/pollingcontrolproxy.h"
 #include "library/trackset/basetracksetfeature.h"
 #include "library/trackset/relations/relationstablemodel.h"
-#include "widget/wrelationtableview.h"
 
 #define ALL_RELATIONS_NODE "::mixxx_all_relations_node::"
 
@@ -48,7 +47,6 @@ class RelationsFeature : public BaseTrackSetFeature {
     QString m_deckGroup;
 
     RelationsTableModel m_relationsTableModel;
-    WRelationTableView* m_pRelationTableView;
 
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;

@@ -15,7 +15,6 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
-#include "widget/wrelationtableview.h"
 
 namespace {
 
