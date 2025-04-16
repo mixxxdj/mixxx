@@ -18,6 +18,8 @@
 #include "library/trackcollectioniterator.h"
 #include "library/searchquery.h"
 #include "library/searchqueryparser.h"
+#include "library/autodj/autodjprocessor.h"
+#include "library/autodj/autodjfeature.h"
 
 const mixxx::Logger kLogger("RemoteControl");
 
@@ -35,6 +37,8 @@ namespace mixxx {
     public:
         RemoteController(UserSettingsPointer settings,
                          std::shared_ptr<TrackCollectionManager> &collectionManager,
+                         std::shared_ptr<Library> &library,
+                         std::shared_ptr<PlayerManager> &ainf,
                          std::shared_ptr<DbConnectionPool> db,
                          QObject* parent=0) {
 
@@ -42,7 +46,7 @@ namespace mixxx {
                 return QHttpServerResponse::fromFile(QString(settings->getResourcePath())+"/web/index.html" );
             });
 
-            httpServer.route("/rcontrol",QHttpServerRequest::Method::Post,[this,settings,collectionManager,db]
+            httpServer.route("/rcontrol",QHttpServerRequest::Method::Post,[this,parent,settings,collectionManager,library,ainf,db]
                 (const QHttpServerRequest &request, QHttpServerResponder &responder) {
 
                 QJsonDocument jsonRequest = QJsonDocument::fromJson(request.body());
@@ -115,7 +119,9 @@ namespace mixxx {
                                                             cur["searchtrack"].toString());
 
 
-                        QSqlQuery query(QString("SELECT id,artist,title FROM library WHERE ")+search.toSql(),dbase);
+                        QSqlQuery query(QString("SELECT id,artist,title,url FROM library WHERE ")+search.toSql(),dbase);
+
+                        QJsonArray tracklist;
 
                         if(query.exec() && query.first() ){
                             do{
@@ -123,9 +129,23 @@ namespace mixxx {
                                 jtrack.insert("id",query.value("id").toString());
                                 jtrack.insert("artist",query.value("artist").toString());
                                 jtrack.insert("title",query.value("title").toString());
-                                list.push_back(jtrack);
+                                jtrack.insert("url",query.value("url").toString());
+                                tracklist.push_back(jtrack);
                             }while(query.next());
-                            resproot.push_back(list);
+                            QJsonObject trackobj;
+                            trackobj["tracklist"]=tracklist;
+                            resproot.push_back(trackobj);
+                        }
+                    }
+                    if(!cur["addautodj"].isNull()){
+                        QJsonObject jautodj=cur["addautodj"].toObject();
+                        if(!jautodj["trackurl"].isNull() && !jautodj["position"].isNull() ){
+                            // cdao.  //->dragMoveAccept(jautodj["trackurl"].toString());
+                            if(jautodj["position"].toString()=="begin"){
+                                // dao->moveTrack(QList({TrackId(jautodj["trackid"].toVariant())}), 0);
+                            }else if(jautodj["position"].toString()=="end"){
+                                // dao->moveTrack(QList({TrackId(jautodj["trackid"].toVariant())}), 0);
+                            }
                         }
                     }
                 }
@@ -161,12 +181,14 @@ namespace mixxx {
 
 mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,
                                                                     std::shared_ptr<TrackCollectionManager> &trackscollmngr,
+                                                                    std::shared_ptr<Library> &library,
                                                                     std::shared_ptr<DbConnectionPool> &database,
+                                                                    std::shared_ptr<PlayerManager> &ainf,
                                     QObject* pParent) {
     kLogger.debug() << "Starting RemoteControl";
     if(QVariant(pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
-        m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,database,pParent);
+        m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,library,ainf,database,pParent);
     }
 }
 

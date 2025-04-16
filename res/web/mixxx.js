@@ -63,7 +63,49 @@ function search(searchtext){
     ));
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            alert(xmlhttp.responseText);
+            var result = document.getElementById("result");
+            var resjs=JSON.parse(xmlhttp.responseText);
+            while (result.firstChild) {
+                result.removeChild(result.firstChild);
+            }
+            var ttable=result.appendChild(document.createElement("table"));
+            for (var i = 0; i < resjs.length; i++) {
+                    var track = resjs[i].tracklist;
+                    if(track){
+                        var changecolor=false;
+                        for(var ii = 0; ii < track.length; ii++){
+                            var trow=document.createElement("tr");
+                            if(changecolor)
+                                trow.setAttribute("style","background:#898989;");
+                            trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" value="+track[ii].url+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
+                            ttable.appendChild(trow);
+                            if(changecolor)
+                                changecolor=false;
+                            else
+                                changecolor=true;
+                        }
+                    }
+            }
         }
     }
+}
+
+function addtoautodj(position){
+    var sels=document.getElementsByClassName("seltracks");
+    var trackurl;
+    for(var i=0; i< sels.length; ++i){
+        if(sels[i].checked){
+            trackurl=sels[i].value;
+        }
+    }
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"addautodj": { "trackurl": trackurl , "postion": position}},
+        ]
+    ));
 }

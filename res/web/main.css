@@ -1,4 +1,14 @@
 body {
     background-color: rgb(21, 21, 23);
     color: rgb(239, 240, 241);
+    width:100vw;
+    font-size:1.5em;
+}
+
+button,input,span,radio{
+    font-size:1.5em;
+}
+
+input[type=radio] {
+    transform: scale(2.5);
 }
