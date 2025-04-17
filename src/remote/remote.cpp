@@ -162,17 +162,17 @@ namespace mixxx {
                         QJsonObject jautodj=cur["delautodj"].toObject();
                         if(!jautodj["position"].isNull() ){
                             QSqlDatabase dbase=DbConnectionPooled(db);
-                            TrackId tid(jautodj["trackid"].toVariant());
+
                             PlaylistDAO playlist;
+
                             playlist.initialize(dbase);
 
                             int adjid=playlist.getPlaylistIdFromName("Auto DJ");
 
-                            int did=playlist.getPlaylistIdFromName("Auto DJ");
+                            int pos= jautodj["position"].toString().toInt();
 
-                            if(playlist.isHidden(did)==1){
-                                playlist.removeTrackFromPlaylist(adjid,jautodj["position"].toInt());
-                            }
+                            playlist.removeTrackFromPlaylist(adjid,pos);
+
                         }
                     }
 
