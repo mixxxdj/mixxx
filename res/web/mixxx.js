@@ -19,7 +19,6 @@ function login(password){
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                alert(resp[i]["sessionid"]);
                 document.cookie = "sessionid="+resp[i]["sessionid"] +"; SameSite=Lax";
                 if(resp[i].sessionid)
                     window.location.replace("/index.html");
