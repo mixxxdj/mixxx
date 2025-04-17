@@ -64,7 +64,6 @@ DlgRelations::~DlgRelations() {
 }
 
 void DlgRelations::onShow() {
-    m_pRelationTableModel->displayAllRelations();
     m_pRelationTableModel->select();
 }
 
@@ -74,6 +73,10 @@ void DlgRelations::onSearch(const QString& text) {
 
 QString DlgRelations::currentSearch() {
     return m_pRelationTableModel->currentSearch();
+}
+
+void DlgRelations::showAllRelations() {
+    m_pRelationTableModel->showAllRelations();
 }
 
 bool DlgRelations::hasFocus() const {
@@ -90,4 +93,9 @@ bool DlgRelations::restoreCurrentViewState() {
 
 void DlgRelations::setFocus() {
     m_pRelationTableView->setFocus();
+}
+
+void DlgRelations::installEventFilter(QObject* pFilter) {
+    QWidget::installEventFilter(pFilter);
+    m_pRelationTableView->installEventFilter(pFilter);
 }

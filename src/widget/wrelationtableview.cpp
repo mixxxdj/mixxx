@@ -21,7 +21,7 @@ void WRelationTableView::paintEvent(QPaintEvent* event) {
     QTableView::paintEvent(event);
 
     QPainter painter(viewport());
-    QPen pen(Qt::gray, 1);
+    QPen pen(QColor(60, 60, 60), 1);
     painter.setPen(pen);
 
     int rowCount = model()->rowCount();

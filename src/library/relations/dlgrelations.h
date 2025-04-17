@@ -28,6 +28,10 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
 
+  public slots:
+    void installEventFilter(QObject* pFilter);
+    void showAllRelations();
+
   signals:
     void trackSelected(TrackPointer pTrack);
 

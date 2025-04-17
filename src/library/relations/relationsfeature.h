@@ -34,20 +34,16 @@ class RelationsFeature : public BaseTrackSetFeature {
 
   public slots:
     void activate() override;
-    void activateChild(const QModelIndex& index) override;
+    // void activateChild(const QModelIndex& index) override;
 
   private:
-    bool activateDeckRelations(const QString& deckGroup);
-
-    QString getEmptyDeckViewHtml() const;
-
-    QString deckGroupFromIndex(const QModelIndex& index) const;
-    QModelIndex indexFromDeckGroup(const QString& deckGroup) const;
+    // QString getEmptyDeckViewHtml() const;
+    // QString deckGroupFromIndex(const QModelIndex& index) const;
 
     PollingControlProxy m_pNumDecks;
     QString m_deckGroup;
 
-    RelationsTableModel m_relationsTableModel;
+    // RelationsTableModel m_relationsTableModel; DECK SPECIFIC
     DlgRelations* m_pRelationView;
 
     QModelIndex m_lastClickedIndex;

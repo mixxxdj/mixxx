@@ -4,6 +4,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playermanager.h"
 #include "moc_relationstablemodel.cpp"
 
 namespace {
@@ -15,12 +16,31 @@ const QString kModelName = QStringLiteral("relations");
 RelationsTableModel::RelationsTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager)
-        : TrackSetTableModel(
+        : BaseSqlTableModel(
                   parent,
                   pTrackCollectionManager,
                   "mixxx.db.model.relations") {
+    showAllRelations();
 }
 
+bool RelationsTableModel::isColumnInternal(int column) {
+    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
+}
+
+/* DECK SPECIFIC
 void RelationsTableModel::displayRelatedTracks(TrackPointer pTrack) {
     if (!pTrack) {
         return;
@@ -62,8 +82,9 @@ void RelationsTableModel::displayRelatedTracks(TrackPointer pTrack) {
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
+*/
 
-void RelationsTableModel::displayAllRelations() {
+void RelationsTableModel::showAllRelations() {
     QString tableName = QStringLiteral("all_relations");
 
     QStringList columns;

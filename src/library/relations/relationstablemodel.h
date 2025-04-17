@@ -1,8 +1,8 @@
 #pragma once
 
-#include "library/trackset/tracksettablemodel.h"
+#include "library/basesqltablemodel.h"
 
-class RelationsTableModel final : public TrackSetTableModel {
+class RelationsTableModel final : public BaseSqlTableModel {
     Q_OBJECT
 
   public:
@@ -10,14 +10,19 @@ class RelationsTableModel final : public TrackSetTableModel {
             TrackCollectionManager* pTrackCollectionManager);
     ~RelationsTableModel() final = default;
 
-    void displayRelatedTracks(TrackPointer pTrack);
-    void displayAllRelations();
-    TrackPointer selectedTrack() const {
-        return m_pTrack;
-    }
+    bool isColumnInternal(int column) override;
+
+    // void displayRelatedTracks(TrackPointer pTrack);
+
+    // TrackPointer selectedTrack() const {
+    //     return m_pTrack;
+    // }
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;
+
+  public slots:
+    void showAllRelations();
 
   private:
     TrackPointer m_pTrack;
