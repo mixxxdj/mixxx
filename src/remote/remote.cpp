@@ -158,6 +158,24 @@ namespace mixxx {
                         }
                     }
 
+                    if(!cur["delautodj"].isNull()){
+                        QJsonObject jautodj=cur["delautodj"].toObject();
+                        if(!jautodj["position"].isNull() ){
+                            QSqlDatabase dbase=DbConnectionPooled(db);
+                            TrackId tid(jautodj["trackid"].toVariant());
+                            PlaylistDAO playlist;
+                            playlist.initialize(dbase);
+
+                            int adjid=playlist.getPlaylistIdFromName("Auto DJ");
+
+                            int did=playlist.getPlaylistIdFromName("Auto DJ");
+
+                            if(playlist.isHidden(did)==1){
+                                playlist.removeTrackFromPlaylist(adjid,jautodj["position"].toInt());
+                            }
+                        }
+                    }
+
                     if(!cur["getautotracklist"].isNull()){
                             QSqlDatabase dbase=DbConnectionPooled(db);
 
