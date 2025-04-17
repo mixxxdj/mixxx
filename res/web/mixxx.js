@@ -15,13 +15,14 @@ function login(password){
             "login":{"password" : password}
         }]
     ));
-    xmlhttp.onreadystatechange = function () {
+    xmlhttp.onload = (event) => {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                document.cookie = "sessionid="+resp[i].sessionid +"; SameSite=Lax";
+                alert(resp[i]["sessionid"]);
+                document.cookie = "sessionid="+resp[i]["sessionid"] +"; SameSite=Lax";
                 if(resp[i].sessionid)
-                    window.location.replace("/library.html");
+                    window.location.replace("/index.html");
             }
         }
     }
@@ -37,15 +38,14 @@ function checkauth(){
             {"sessionid": readCookie("sessionid")},
         ]
     ));
-
-    xmlhttp.onreadystatechange = function () {
+    xmlhttp.onload = (event) => {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                if(resp[i].error=="wrong sessionid"){
-                    window.location.replace("/login.html");
-                }
+                if(resp[i].error!="wrong sessionid")
+                    return;
             }
+            window.location.replace("/login.html");
         }
     }
 }
@@ -61,7 +61,7 @@ function search(searchtext){
             {"searchtrack": searchtext}
         ]
     ));
-    xmlhttp.onreadystatechange = function () {
+    xmlhttp.onload = (event) => {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var result = document.getElementById("result");
             var resjs=JSON.parse(xmlhttp.responseText);
