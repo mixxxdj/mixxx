@@ -120,6 +120,7 @@ function loadautodjtracklist(){
             {"getautotracklist" : "true"},
         ]
     ));
+
     xmlhttp.onload = (event) => {
         var resjs=JSON.parse(xmlhttp.responseText);
         var autopl = document.getElementById("autoplaylist");

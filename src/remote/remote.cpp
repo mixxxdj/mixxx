@@ -164,16 +164,27 @@ namespace mixxx {
                             PlaylistDAO playlist;
                             playlist.initialize(dbase);
 
-                            QList<TrackId> trackids;
-                            trackids=playlist.getTrackIds(playlist.getPlaylistIdFromName("Auto DJ"));
-
+                            int adjid=playlist.getPlaylistIdFromName("Auto DJ");
                             QJsonArray tracklist;
 
-                            for(auto tick : trackids){
-                                TrackPointer tptrack=collectionManager->getTrackById(tick);
-                                tptrack->getArtist();
+                            QList<TrackId> trackIds;
+
+                            QSqlQuery query(dbase);
+                            query.prepare(QStringLiteral("SELECT DISTINCT track_id FROM PlaylistTracks WHERE playlist_id = :id ORDER BY position ASC"));
+                            query.bindValue(":id", adjid);
+                            if (!query.exec()) {
+                                return;
+                            }
+                            const int trackIdColumn = query.record().indexOf("track_id");
+
+                            while (query.next()) {
+                                    trackIds.append(TrackId(query.value(trackIdColumn)));
+                            }
+
+                            for(TrackIdList::Iterator it=trackIds.begin(); it!=trackIds.end(); ++it ){
+                                TrackPointer tptrack=collectionManager->getTrackById(*it);
                                 QJsonObject jtrack;
-                                jtrack.insert("id",tick.toString());
+                                jtrack.insert("id",it->toString());
                                 jtrack.insert("artist",tptrack->getArtist());
                                 jtrack.insert("title",tptrack->getTitle());
                                 tracklist.push_back(jtrack);
