@@ -122,7 +122,7 @@ namespace mixxx {
                                                             cur["searchtrack"].toString());
 
 
-                        QSqlQuery query(QString("SELECT id,artist,title,url FROM library WHERE ")+search.toSql(),dbase);
+                        QSqlQuery query(QString("SELECT id,artist,title FROM library WHERE ")+search.toSql(),dbase);
 
                         QJsonArray tracklist;
 
@@ -132,7 +132,6 @@ namespace mixxx {
                                 jtrack.insert("id",query.value("id").toString());
                                 jtrack.insert("artist",query.value("artist").toString());
                                 jtrack.insert("title",query.value("title").toString());
-                                jtrack.insert("url",query.value("url").toString());
                                 tracklist.push_back(jtrack);
                             }while(query.next());
                             QJsonObject trackobj;
@@ -159,6 +158,32 @@ namespace mixxx {
                                 }
                             }
                         }
+                    }
+
+                    if(!cur["getautotracklist"].isNull()){
+                            QSqlDatabase dbase=DbConnectionPooled(db);
+
+                            PlaylistDAO playlist;
+                            playlist.initialize(dbase);
+
+                            QList<TrackId> trackids;
+                            trackids=playlist.getTrackIds(playlist.getPlaylistIdFromName("Auto DJ"));
+
+                            QJsonArray tracklist;
+
+                            for(auto tick : trackids){
+                                TrackPointer tptrack=collectionManager->getTrackById(tick);
+                                tptrack->getArtist();
+                                QJsonObject jtrack;
+                                jtrack.insert("id",tick.toString());
+                                jtrack.insert("artist",tptrack->getArtist());
+                                jtrack.insert("title",tptrack->getTitle());
+                                tracklist.push_back(jtrack);
+                            }
+
+                            QJsonObject trackobj;
+                            trackobj["tracklist"]=tracklist;
+                            resproot.push_back(trackobj);
                     }
                 }
 
