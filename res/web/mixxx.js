@@ -110,7 +110,7 @@ function addtoautodj(position){
     ));
 }
 
-document.addEventListener("DOMContentLoaded", (event) => {
+function loadautodjtracklist(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
@@ -122,7 +122,25 @@ document.addEventListener("DOMContentLoaded", (event) => {
         ]
     ));
     xmlhttp.onload = (event) => {
-        const tracks = xmlhttp.responseText;
-        document.getElementById("autoplaylist").innerHTML = tracks;
+        var resjs=JSON.parse(xmlhttp.responseText);
+        var autopl = document.getElementById("autoplaylist");
+        var ttable=autopl.appendChild(document.createElement("table"));
+        for (var i = 0; i < resjs.length; i++) {
+            var track = resjs[i].tracklist;
+            if(track){
+                var changecolor=false;
+                for(var ii = 0; ii < track.length; ii++){
+                    var trow=document.createElement("tr");
+                    if(changecolor)
+                        trow.setAttribute("style","background:#898989;");
+                    trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" value="+track[ii].id+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
+                    ttable.appendChild(trow);
+                    if(changecolor)
+                        changecolor=false;
+                    else
+                        changecolor=true;
+                }
+            }
+        }
     };
-});
+}
