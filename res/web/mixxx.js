@@ -133,7 +133,8 @@ function loadautodjtracklist(){
                     var trow=document.createElement("tr");
                     if(changecolor)
                         trow.setAttribute("style","background:#898989;");
-                    trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" value="+track[ii].id+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
+                    trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" apos="+
+                                                            track[ii].position+" value="+track[ii].id+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
                     ttable.appendChild(trow);
                     if(changecolor)
                         changecolor=false;
