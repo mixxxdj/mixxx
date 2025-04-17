@@ -77,7 +77,7 @@ function search(searchtext){
                             var trow=document.createElement("tr");
                             if(changecolor)
                                 trow.setAttribute("style","background:#898989;");
-                            trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" value="+track[ii].url+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
+                            trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" value="+track[ii].id+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
                             ttable.appendChild(trow);
                             if(changecolor)
                                 changecolor=false;
@@ -92,10 +92,10 @@ function search(searchtext){
 
 function addtoautodj(position){
     var sels=document.getElementsByClassName("seltracks");
-    var trackurl;
+    var trackid;
     for(var i=0; i< sels.length; ++i){
         if(sels[i].checked){
-            trackurl=sels[i].value;
+            trackid=sels[i].value;
         }
     }
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
@@ -105,7 +105,7 @@ function addtoautodj(position){
     xmlhttp.send(JSON.stringify(
         [
             {"sessionid": readCookie("sessionid")},
-            {"addautodj": { "trackurl": trackurl , "postion": position}},
+            {"addautodj": { "trackid": trackid , "position": position}},
         ]
     ));
 }

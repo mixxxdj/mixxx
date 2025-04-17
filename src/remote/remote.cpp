@@ -20,6 +20,9 @@
 #include "library/searchqueryparser.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/autodjfeature.h"
+#include "track/track.h"
+#include "track/trackiterator.h"
+#include "library/playlisttablemodel.h"
 
 const mixxx::Logger kLogger("RemoteControl");
 
@@ -139,12 +142,21 @@ namespace mixxx {
                     }
                     if(!cur["addautodj"].isNull()){
                         QJsonObject jautodj=cur["addautodj"].toObject();
-                        if(!jautodj["trackurl"].isNull() && !jautodj["position"].isNull() ){
-                            // cdao.  //->dragMoveAccept(jautodj["trackurl"].toString());
+                        if(!jautodj["trackid"].isNull() && !jautodj["position"].isNull() ){
+                            QSqlDatabase dbase=DbConnectionPooled(db);
+                            TrackId tid(jautodj["trackid"].toVariant());
+                            PlaylistDAO playlist;
+                            playlist.initialize(dbase);
+
+                            int did=playlist.getPlaylistIdFromName("Auto DJ");
                             if(jautodj["position"].toString()=="begin"){
-                                // dao->moveTrack(QList({TrackId(jautodj["trackid"].toVariant())}), 0);
+                                if(playlist.isHidden(did)==1){
+                                    playlist.addTracksToAutoDJQueue(QList({tid}),PlaylistDAO::AutoDJSendLoc::TOP);
+                                }
                             }else if(jautodj["position"].toString()=="end"){
-                                // dao->moveTrack(QList({TrackId(jautodj["trackid"].toVariant())}), 0);
+                                if(playlist.isHidden(did)==1){
+                                    playlist.addTracksToAutoDJQueue(QList({tid}),PlaylistDAO::AutoDJSendLoc::BOTTOM);
+                                }
                             }
                         }
                     }
