@@ -129,6 +129,38 @@ function delautodj(){
             {"delautodj": { "position": position}},
         ]
     ));
+     xmlhttp.onload = (event) => {
+        window.location.replace("/index.html");
+     }
+}
+
+function moveautotracklist(direction){
+    var sels=document.getElementsByClassName("seltracks");
+    var position=0,newpos=0;
+    for(var i=0; i< sels.length; ++i){
+        if(sels[i].checked){
+            position=sels[i].getAttribute('apos');
+            console.log(position);
+        }
+    }
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    if(direction=='up'){
+        newpos=position-1;
+    }else if(direction=='down'){
+        newpos=position+1;
+    }
+    xmlhttp.send(JSON.stringify(
+            [
+                {"sessionid": readCookie("sessionid")},
+                {"moveautotracklist": { "position": position, "newposition" : newpos}},
+            ]
+    ));
+    xmlhttp.onload = (event) => {
+        window.location.replace("/index.html");
+    }
 }
 
 function loadautodjtracklist(){
