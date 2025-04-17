@@ -72,14 +72,12 @@ namespace mixxx {
                             resproot.push_back(sessid);
                             jsonResponse.setArray(resproot);
                             responder.write(jsonResponse);
-                            return;
                         }else{
                             QJsonObject err;
                             err.insert("error","wrong password");
                             resproot.push_back(err);
                             jsonResponse.setArray(resproot);
                             responder.write(jsonResponse);
-                            return;
                         };
                     }
                 }
