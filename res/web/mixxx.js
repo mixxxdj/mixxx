@@ -109,6 +109,28 @@ function addtoautodj(position){
     ));
 }
 
+
+function delautodj(){
+    var sels=document.getElementsByClassName("seltracks");
+    var position;
+    for(var i=0; i< sels.length; ++i){
+        if(sels[i].checked){
+            position=sels[i].getAttribute('apos');
+            console.log(position);
+        }
+    }
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"delautodj": { "position": position}},
+        ]
+    ));
+}
+
 function loadautodjtracklist(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);
