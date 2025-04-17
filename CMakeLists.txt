@@ -2270,6 +2270,12 @@ install(
   DESTINATION "${MIXXX_INSTALL_DATADIR}"
 )
 
+# RemoteControl Webfiles
+install(
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/web"
+  DESTINATION "${MIXXX_INSTALL_DATADIR}"
+)
+
 # Translation files
 install(
   DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/translations"
