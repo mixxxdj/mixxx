@@ -49,65 +49,62 @@ namespace mixxx {
                 return QHttpServerResponse::fromFile(QString(settings->getResourcePath())+"/web/index.html" );
             });
 
-            httpServer.route("/rcontrol",QHttpServerRequest::Method::Post,[this,parent,settings,collectionManager,library,ainf,db]
-                (const QHttpServerRequest &request, QHttpServerResponder &responder) {
-
+            httpServer.route("/rcontrol",QHttpServerRequest::Method::Post,[settings,collectionManager,library,ainf,db]
+                (const QHttpServerRequest &request) {
+                qInfo() << request.body();
                 QJsonDocument jsonRequest = QJsonDocument::fromJson(request.body());
                 QJsonDocument jsonResponse;
                 QJsonArray requroot = jsonRequest.array();
                 QJsonArray resproot = {};
+
+                bool auth = false;
+
                 for(QJsonArray::Iterator i = requroot.begin(); i<requroot.end(); ++i){
                     QJsonObject cur=i->toObject();
                     if(!cur["login"].isNull()){
                         if(QString::compare(cur["login"].toObject()["password"].toString(),
                             settings->get(ConfigKey("[RemoteControl]","pass")).value)==0
                         ){
-                            
-                            QJsonObject sessid;                           
+                            QJsonObject sessid;
                             Session session;
                             session.sessionid = QUuid::createUuid();
                             session.loginTime = QTime::currentTime();
                             m_Session.push_back(session);
-                            sessid.insert("sessionid",session.sessionid.toString());
+                            sessid.insert("sessionid",QJsonValue(session.sessionid.toString()));
                             resproot.push_back(sessid);
-                            jsonResponse.setArray(resproot);
-                            responder.write(jsonResponse);
+                            auth=true;
                         }else{
                             QJsonObject err;
                             err.insert("error","wrong password");
                             resproot.push_back(err);
-                            jsonResponse.setArray(resproot);
-                            responder.write(jsonResponse);
                         };
-                    }
-                }
-                
-                bool auth = false;
-                
-                for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
-                    QJsonObject cur=i->toObject();
-                    if(!cur["sessionid"].isNull()){
-                        std::vector<Session>::iterator it;
-                        for (it = m_Session.begin(); it < m_Session.end(); it++){
-                            if(QString::compare(cur["sessionid"].toString(),it->sessionid.toString())==0){
-                                auth=true;
-                                QJsonObject auth;
-                                auth.insert("logintime",it->loginTime.toString());
-                                resproot.push_back(auth);
-                            }
-                        }
                     }
                 }
 
                 if(!auth){
-                    QJsonObject err;
-                    err.insert("error","wrong sessionid");
-                    resproot.push_back(err);
-                    jsonResponse.setArray(resproot);
-                    responder.write(jsonResponse);
-                    return;
+                    for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
+                        QJsonObject cur=i->toObject();
+                        if(!cur["sessionid"].isNull()){
+                            std::vector<Session>::iterator it;
+                            for (it = m_Session.begin(); it < m_Session.end(); it++){
+                                if(QString::compare(cur["sessionid"].toString(),it->sessionid.toString())==0){
+                                    auth=true;
+                                    QJsonObject auth;
+                                    auth.insert("logintime",it->loginTime.toString());
+                                    resproot.push_back(auth);
+                                }
+                            }
+                        }
+                    }
+                    if(!auth){
+                        QJsonObject err;
+                        err.insert("error","wrong sessionid");
+                        resproot.push_back(err);
+                        jsonResponse.setArray(resproot);
+                        return jsonResponse.toJson();
+                    }
                 }
-                
+
                 for(QJsonArray::Iterator i =requroot.begin(); i<requroot.end(); ++i){
                     QJsonObject cur=i->toObject();
                     if(!cur["searchtrack"].isNull()){
@@ -204,7 +201,7 @@ namespace mixxx {
                             query.prepare(QStringLiteral("SELECT DISTINCT track_id,position FROM PlaylistTracks WHERE playlist_id = :id ORDER BY position ASC"));
                             query.bindValue(":id", adjid);
                             if (!query.exec()) {
-                                return;
+                                return jsonResponse.toJson();
                             }
 
                             QJsonArray tracklist;
@@ -226,30 +223,31 @@ namespace mixxx {
                 }
 
                 jsonResponse.setArray(resproot);
-                responder.write(jsonResponse);
-                return;
+                return jsonResponse.toJson();
             });
 
             httpServer.route("/<arg>",QHttpServerRequest::Method::Get, [settings] (const QString &url) {
                 return QHttpServerResponse::fromFile(QString(settings->getResourcePath())+"/web/"+url);
             });
 
-            auto tcpserver = new QTcpServer();
+            tcpserver = new QTcpServer();
 
             if (!tcpserver->listen(QHostAddress(settings->get(ConfigKey("[RemoteControl]","host")).value),
-                                               quint16(settings->get(ConfigKey("[RemoteControl]","port")).value.toUInt())) ||
-                                              !httpServer.bind(tcpserver)
+                                               quint16(settings->get(ConfigKey("[RemoteControl]","port")).value.toUInt()))
                 ) {
                 qCritical()  << "Cannot listen at Port" << settings->get(ConfigKey("[RemoteControl]","port")).value.toInt();
                 delete tcpserver;
             }
+
+            httpServer.bind(tcpserver);
         };
 
         virtual ~RemoteController(){
 
         };
     private:
-        QObject*                 m_Parent;
+    	QTcpServer*  	      tcpserver;
+        QObject*              m_Parent;
         QHttpServer           httpServer;
     };
 };
