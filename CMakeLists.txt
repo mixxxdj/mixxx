@@ -1299,8 +1299,10 @@ add_library(
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
   src/library/trackset/playlistfeature.cpp
-  src/library/trackset/relations/relationsfeature.cpp
-  src/library/trackset/relations/relationstablemodel.cpp
+  src/library/relations/dlgrelations.cpp
+  src/library/relations/dlgrelations.ui
+  src/library/relations/relationsfeature.cpp
+  src/library/relations/relationstablemodel.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
@@ -1596,6 +1598,7 @@ add_library(
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
   src/widget/wrecordingduration.cpp
+  src/widget/wrelationtableview.cpp
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp

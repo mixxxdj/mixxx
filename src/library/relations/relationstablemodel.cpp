@@ -1,4 +1,4 @@
-#include "library/trackset/relations/relationstablemodel.h"
+#include "library/relations/relationstablemodel.h"
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"

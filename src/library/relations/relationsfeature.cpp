@@ -1,4 +1,4 @@
-#include "library/trackset/relations/relationsfeature.h"
+#include "library/relations/relationsfeature.h"
 
 #include <QAction>
 #include <QFileInfo>
@@ -8,6 +8,7 @@
 #include <QStringList>
 
 #include "library/library.h"
+#include "library/relations/dlgrelations.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -46,12 +47,19 @@ QVariant RelationsFeature::title() {
     return tr("Relations");
 }
 
-void RelationsFeature::bindLibraryWidget(WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
+void RelationsFeature::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+    // Register view for all relations
+    m_pRelationView = new DlgRelations(pLibraryWidget, m_pConfig, m_pLibrary, pKeyboard);
+    pLibraryWidget->registerView(kRootViewName, m_pRelationView);
+    connect(m_pRelationView,
+            &DlgRelations::trackSelected,
+            this,
+            &RelationsFeature::trackSelected);
+
     // Register view for empty decks
-    WLibraryTextBrowser* editEmptyDeck = new WLibraryTextBrowser(libraryWidget);
+    WLibraryTextBrowser* editEmptyDeck = new WLibraryTextBrowser(pLibraryWidget);
     editEmptyDeck->setHtml(getEmptyDeckViewHtml());
-    libraryWidget->registerView(kEmptyDeckViewName, editEmptyDeck);
+    pLibraryWidget->registerView(kEmptyDeckViewName, editEmptyDeck);
 }
 
 void RelationsFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -65,8 +73,9 @@ TreeItemModel* RelationsFeature::sidebarModel() const {
 void RelationsFeature::activate() {
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_relationsTableModel.displayAllRelations();
-    emit showTrackModel(&m_relationsTableModel);
+    // m_relationsTableModel.displayAllRelations();
+    emit switchToView(kRootViewName);
+    // emit showTrackModel(&m_relationsTableModel);
     emit enableCoverArtDisplay(true);
 }
 
