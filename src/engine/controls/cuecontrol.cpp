@@ -6,6 +6,7 @@
 #include "engine/enginebuffer.h"
 #include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -2525,6 +2526,11 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
         return;
     }
 
+    if (pSavedLoopControl && pSavedLoopControl->getType() != mixxx::CueType::Loop) {
+        slotLoopReset();
+        return;
+    }
+
     DEBUG_ASSERT(pSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
     DEBUG_ASSERT(pSavedLoopControl->getCue() &&
             pSavedLoopControl->getCue()->getPosition() ==
@@ -2549,7 +2555,8 @@ void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
         return;
     }
 
-    if (pSavedLoopControl->getStatus() != HotcueControl::Status::Active) {
+    if (pSavedLoopControl->getStatus() != HotcueControl::Status::Active ||
+            pSavedLoopControl->getType() != mixxx::CueType::Loop) {
         slotLoopReset();
         return;
     }
@@ -2885,6 +2892,12 @@ void HotcueControl::setType(mixxx::CueType type) {
 
 void HotcueControl::setStatus(HotcueControl::Status status) {
     m_pHotcueStatus->forceSet(static_cast<double>(status));
+}
+
+mixxx::CueType HotcueControl::getType() const {
+    // Cast to int before casting to the int-based enum class because MSVC will
+    // throw a hissy fit otherwise.
+    return static_cast<mixxx::CueType>(static_cast<int>(m_hotcueType->get()));
 }
 
 HotcueControl::Status HotcueControl::getStatus() const {

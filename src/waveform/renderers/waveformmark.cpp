@@ -131,7 +131,7 @@ WaveformMark::WaveformMark(const QString& group,
     }
     if (!endPositionControl.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
-        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+        m_typeCO = PollingControlProxy(group, typeControl);
     }
 
     if (!visibilityControl.isEmpty()) {

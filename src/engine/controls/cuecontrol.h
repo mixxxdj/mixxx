@@ -92,6 +92,7 @@ class HotcueControl : public QObject {
     void setEndPosition(mixxx::audio::FramePos endPosition);
 
     void setType(mixxx::CueType type);
+    mixxx::CueType getType() const;
 
     void setStatus(HotcueControl::Status status);
     HotcueControl::Status getStatus() const;

@@ -12,6 +12,7 @@
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/colorcomponents.h"
 #include "util/roundtopixel.h"
 #include "waveform/renderers/allshader/digitsrenderer.h"
@@ -345,7 +346,7 @@ void allshader::WaveformRenderMark::update() {
                         samplePosition, positionType));
         auto* pMarkEndGraphics = pMark->m_pEndGraphics.get();
         auto* pMarkEndNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkEndGraphics);
-        if (!pMarkEndNodeGraphics) { // is this even possible?
+        VERIFY_OR_DEBUG_ASSERT(pMarkEndNodeGraphics) {
             continue;
         }
 
@@ -382,24 +383,31 @@ void allshader::WaveformRenderMark::update() {
                     m_waveformRenderer->transformSamplePositionInRendererWorld(
                             sampleEndPosition, positionType));
 
-            if (visible || currentMarkEndPos > 0) {
-                // Reuse, or create new when needed
-                if (!pRangeChild) {
-                    auto pNode = std::make_unique<GeometryNode>();
-                    pNode->initForRectangles<RGBAMaterial>(2);
-                    pRangeChild = pNode.get();
-                    m_pRangeNodesParent->appendChildNode(std::move(pNode));
-                }
-
+            if (visible || currentMarkEndPos > 0.f) {
                 if (pMark->fillRange()) {
+                    // Reuse, or create new when needed
+                    if (!pRangeChild) {
+                        auto pNode = std::make_unique<GeometryNode>();
+                        pNode->initForRectangles<RGBAMaterial>(2);
+                        pRangeChild = pNode.get();
+                        m_pRangeNodesParent->appendChildNode(std::move(pNode));
+                    }
+
                     QColor color = pMark->fillColor();
                     color.setAlphaF(0.4f);
                     updateRangeNode(pRangeChild,
-                            QRectF(QPointF(roundToPixel(currentMarkPos), 0.f),
+                            QRectF(QPointF(roundToPixel(currentMarkPos),
+                                           !m_isSlipRenderer && slipActive
+                                                   ? roundToPixel(
+                                                             m_waveformRenderer
+                                                                     ->getBreadth() /
+                                                             2)
+                                                   : 0.f),
                                     QPointF(roundToPixel(currentMarkEndPos),
-                                            roundToPixel(m_waveformRenderer->getBreadth()))),
+                                            roundToPixel(m_waveformRenderer
+                                                            ->getBreadth()))),
                             color);
-
+                    pRangeChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
                 } else {
                     pMarkEndNodeGraphics->update(
                             roundToPixel(currentMarkEndPos - markWidth / 2.f),
@@ -412,7 +420,6 @@ void allshader::WaveformRenderMark::update() {
                     m_pMarkNodesParent->appendChildNode(pMarkEndNodeGraphics->detachNode());
                 }
                 visible = true;
-                pRangeChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
             }
         }
 

@@ -93,7 +93,16 @@ SINT ReadAheadManager::getNextSamples(double dRate,
                             m_currentPosition, channelCount),
                     &jumpTargetPosition,
                     static_cast<mixxx::audio::FrameDiff_t>(requested_samples / channelCount));
-    const double jump_trigger = jumpTriggerPosition.toSamplePosMaybeInvalid(channelCount);
+    double jump_trigger = jumpTriggerPosition.toSamplePosMaybeInvalid(channelCount);
+
+    // If there is both a loop and saved jump that are armed, and they both
+    // cancel each other (Loop from A -> B, jump from A -> B), we no-op the jump
+    // to prevent an infinite silent play loop
+    if (jump_trigger != kNoTrigger && loop_trigger != kNoTrigger &&
+            jumpTriggerPosition == targetPosition &&
+            loopTriggerPosition == jumpTargetPosition) {
+        jump_trigger = kNoTrigger;
+    }
 
     SINT prejump_samples = 0;
     double samplesToJumpTrigger = 0.0;
