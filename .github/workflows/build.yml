@@ -89,8 +89,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
-          - name: Windows 2019 (MSVC)
-            os: windows-2019
+          - name: Windows 2022 (MSVC)
+            os: windows-2022
             # TODO: Re-enable FFmpeg after licensing issues have been clarified
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
