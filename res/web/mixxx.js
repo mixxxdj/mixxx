@@ -139,22 +139,28 @@ function delautodj(){
 }
 
 function moveautotracklist(direction){
-    var sels=document.getElementsByClassName("seltracks");
-    var position=0,newpos=0;
+    let sels=document.getElementsByClassName("seltracks");
+    let position=0,newpos=0;
     for(var i=0; i< sels.length; ++i){
         if(sels[i].checked){
             position=sels[i].getAttribute('apos');
+            break;
         }
     }
-    var xmlhttp = new XMLHttpRequest();
+
+    newpos=position;
+
+    let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", "/rcontrol",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.responseType = 'text';
-    if(direction=='up'){
-        newpos=(position-1);
-    }else if(direction=='down'){
-        newpos=(position+1);
+
+    if(arguments[0]=='up'){
+        --newpos;
+    }else if(arguments[0]=='down'){
+        ++newpos;
     }
+
     xmlhttp.send(JSON.stringify(
             [
                 {"sessionid": readCookie("sessionid")},
