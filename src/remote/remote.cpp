@@ -42,8 +42,8 @@ namespace mixxx {
                          std::shared_ptr<TrackCollectionManager> &collectionManager,
                          std::shared_ptr<Library> &library,
                          std::shared_ptr<PlayerManager> &ainf,
-                         std::shared_ptr<DbConnectionPool> db,
-                         QObject* parent=0) {
+                         std::shared_ptr<DbConnectionPool> db
+                         ) {
 
             httpServer.route("/", [settings] () {
                 return QHttpServerResponse::fromFile(QString(settings->getResourcePath())+"/web/index.html" );
