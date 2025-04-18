@@ -32,6 +32,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
             UserSettingsPointer pSettings);
 
     QUrl helpUrl() const override;
+    bool okayToClose() const override;
 
   signals:
     void loadPaths(const SoundManagerConfig &config);
@@ -110,4 +111,5 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bLatencyChanged;
     bool m_bSkipConfigClear;
     bool m_loading;
+    bool m_configValid;
 };
