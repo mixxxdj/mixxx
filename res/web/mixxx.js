@@ -160,7 +160,6 @@ function moveautotracklist(direction){
     }else if(arguments[0]=='down'){
         ++newpos;
     }
-
     xmlhttp.send(JSON.stringify(
             [
                 {"sessionid": readCookie("sessionid")},

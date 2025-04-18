@@ -176,6 +176,7 @@ namespace mixxx {
                             playlist.removeTrackFromPlaylist(adjid,pos);
 
                             emit playlist.tracksRemoved(QSet<int>({adjid}));
+
                         }
                     }
 
@@ -192,6 +193,7 @@ namespace mixxx {
                                                            jautodj["position"].toString().toInt(),
                                                            jautodj["newposition"].toString().toInt()
                                                           );
+
                             emit playlist.tracksMoved(QSet<int>({adjid}));
                         }
                     }
