@@ -70,7 +70,7 @@ namespace mixxx {
                             session.sessionid = QUuid::createUuid();
                             session.loginTime = QTime::currentTime();
                             m_Session.push_back(session);
-                            sessid.insert("sessionid",QJsonValue(session.sessionid.toString()));
+                            sessid.insert("sessionid",session.sessionid.toString(QUuid::WithoutBraces));
                             resproot.push_back(sessid);
                             auth=true;
                         }else{
@@ -87,10 +87,11 @@ namespace mixxx {
                         if(!cur["sessionid"].isNull()){
                             std::vector<Session>::iterator it;
                             for (it = m_Session.begin(); it < m_Session.end(); it++){
-                                if(QString::compare(cur["sessionid"].toString(),it->sessionid.toString())==0){
+                                if(QString::compare(cur["sessionid"].toString(),it->sessionid.toString(QUuid::WithoutBraces))==0){
                                     auth=true;
                                     QJsonObject auth;
                                     auth.insert("logintime",it->loginTime.toString());
+                                    auth.insert("sessionid",it->sessionid.toString(QUuid::WithoutBraces));
                                     resproot.push_back(auth);
                                 }
                             }
@@ -152,12 +153,14 @@ namespace mixxx {
                                     playlist.addTracksToAutoDJQueue(QList({tid}),PlaylistDAO::AutoDJSendLoc::BOTTOM);
                                 }
                             }
+
+                            emit playlist.tracksAdded(QSet<int>({did}));
                         }
                     }
 
                     if(!cur["delautodj"].isNull()){
                         QJsonObject jautodj=cur["delautodj"].toObject();
-                        if(!jautodj["position"].isNull() ){
+                        if(!jautodj["trackid"].isNull() && !jautodj["position"].isNull() ){
                             QSqlDatabase dbase=DbConnectionPooled(db);
 
                             PlaylistDAO playlist;
@@ -168,7 +171,11 @@ namespace mixxx {
 
                             int pos= jautodj["position"].toString().toInt();
 
+                            TrackId tid(jautodj["trackid"].toVariant());
+
                             playlist.removeTrackFromPlaylist(adjid,pos);
+
+                            emit playlist.tracksRemoved(QSet<int>({adjid}));
 
                         }
                     }
@@ -186,6 +193,8 @@ namespace mixxx {
                                                            jautodj["position"].toString().toInt(),
                                                            jautodj["newposition"].toString().toInt()
                                                           );
+
+                            emit playlist.tracksMoved(QSet<int>({adjid}));
                         }
                     }
 

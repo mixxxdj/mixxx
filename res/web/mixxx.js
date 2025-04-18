@@ -19,9 +19,10 @@ function login(password){
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                document.cookie = "sessionid="+resp[i]["sessionid"] +"; SameSite=Lax";
-                if(resp[i].sessionid)
+                if(resp[i].sessionid){
+                    document.cookie = "sessionid="+resp[i].sessionid +"; SameSite=Lax";
                     window.location.replace("/index.html");
+                }
             }
         }
     }
@@ -34,16 +35,19 @@ function checkauth(){
     xmlhttp.responseType = 'text';
     xmlhttp.send(JSON.stringify(
         [
-            {"sessionid": readCookie("sessionid")},
+           {"sessionid": readCookie("sessionid")},
         ]
     ));
     xmlhttp.onload = (event) => {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                if(resp[i].error!="wrong sessionid")
-                    return;
+                if(resp[i].sessionid){
+                    if(resp[i].sessionid==readCookie("sessionid"))
+                        return;
+                }
             }
+            document.cookie = "sessionid=\"\"; SameSite=Lax";
             window.location.replace("/login.html");
         }
     }
@@ -112,11 +116,11 @@ function addtoautodj(position){
 
 function delautodj(){
     var sels=document.getElementsByClassName("seltracks");
-    var position;
+    var position,trackid;
     for(var i=0; i< sels.length; ++i){
         if(sels[i].checked){
             position=sels[i].getAttribute('apos');
-            console.log(position);
+            trackid=sels[i].value;
         }
     }
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
@@ -126,7 +130,7 @@ function delautodj(){
     xmlhttp.send(JSON.stringify(
         [
             {"sessionid": readCookie("sessionid")},
-            {"delautodj": { "position": position}},
+            {"delautodj": { "position": position, "trackid": trackid }},
         ]
     ));
      xmlhttp.onload = (event) => {
@@ -135,22 +139,26 @@ function delautodj(){
 }
 
 function moveautotracklist(direction){
-    var sels=document.getElementsByClassName("seltracks");
-    var position=0,newpos=0;
+    let sels=document.getElementsByClassName("seltracks");
+    let position=0,newpos=0;
     for(var i=0; i< sels.length; ++i){
         if(sels[i].checked){
             position=sels[i].getAttribute('apos');
-            console.log(position);
+            break;
         }
     }
-    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+
+    newpos=position;
+
+    let xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", "/rcontrol",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.responseType = 'text';
-    if(direction=='up'){
-        newpos=position-1;
-    }else if(direction=='down'){
-        newpos=position+1;
+
+    if(arguments[0]=='up'){
+        --newpos;
+    }else if(arguments[0]=='down'){
+        ++newpos;
     }
     xmlhttp.send(JSON.stringify(
             [
@@ -159,7 +167,7 @@ function moveautotracklist(direction){
             ]
     ));
     xmlhttp.onload = (event) => {
-        window.location.replace("/index.html");
+        window.location.reload();
     }
 }
 

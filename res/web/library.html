@@ -3,16 +3,16 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="main.css">
-    <script type="text/javascript" src="mixxx.js"></script> 
-    <title></title>
+    <script src="mixxx.js"></script>
+    <title>Library</title>
   </head>
   <body onload="checkauth()">
         <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
         <span>Library</span>
         <span>Search:</span>
-        <form action="#" onsubmit="search(document.getElementById('searchform').value)">
+        <form action="#" >
             <input id="searchform" type="text"/>
-            <input type="submit" value="search">
+            <button onclick="search(document.getElementById('searchform').value)">search</button>
         </form>
         <br>
         <div id="result">
