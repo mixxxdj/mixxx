@@ -152,12 +152,14 @@ namespace mixxx {
                                     playlist.addTracksToAutoDJQueue(QList({tid}),PlaylistDAO::AutoDJSendLoc::BOTTOM);
                                 }
                             }
+
+                            emit playlist.tracksAdded(QSet<int>({did}));
                         }
                     }
 
                     if(!cur["delautodj"].isNull()){
                         QJsonObject jautodj=cur["delautodj"].toObject();
-                        if(!jautodj["position"].isNull() ){
+                        if(!jautodj["trackid"].isNull() && !jautodj["position"].isNull() ){
                             QSqlDatabase dbase=DbConnectionPooled(db);
 
                             PlaylistDAO playlist;
@@ -168,8 +170,11 @@ namespace mixxx {
 
                             int pos= jautodj["position"].toString().toInt();
 
+                            TrackId tid(jautodj["trackid"].toVariant());
+
                             playlist.removeTrackFromPlaylist(adjid,pos);
 
+                            emit playlist.tracksRemoved(QSet<int>({adjid}));
                         }
                     }
 
@@ -186,6 +191,7 @@ namespace mixxx {
                                                            jautodj["position"].toString().toInt(),
                                                            jautodj["newposition"].toString().toInt()
                                                           );
+                            emit playlist.tracksMoved(QSet<int>({adjid}));
                         }
                     }
 

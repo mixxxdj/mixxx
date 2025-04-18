@@ -112,11 +112,11 @@ function addtoautodj(position){
 
 function delautodj(){
     var sels=document.getElementsByClassName("seltracks");
-    var position;
+    var position,trackid;
     for(var i=0; i< sels.length; ++i){
         if(sels[i].checked){
             position=sels[i].getAttribute('apos');
-            console.log(position);
+            trackid=sels[i].value;
         }
     }
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
@@ -126,7 +126,7 @@ function delautodj(){
     xmlhttp.send(JSON.stringify(
         [
             {"sessionid": readCookie("sessionid")},
-            {"delautodj": { "position": position}},
+            {"delautodj": { "position": position, "trackid": trackid }},
         ]
     ));
      xmlhttp.onload = (event) => {
