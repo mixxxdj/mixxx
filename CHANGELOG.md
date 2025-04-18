@@ -41,6 +41,7 @@
 * fix: sync rate using the current BPM instead of the file one
   [#13671](https://github.com/mixxxdj/mixxx/pull/13671)
   [#12738](https://github.com/mixxxdj/mixxx/issues/12738)
+* sync: prefer playing inaudible decks over stopped non-sync decks [#14580](https://github.com/mixxxdj/mixxx/pull/14580)
 * fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
 * Tooltips: Fix cue mode setting location [#14045](https://github.com/mixxxdj/mixxx/pull/14045)
 * Use correct detected channel count on CoreAudio [#14372](https://github.com/mixxxdj/mixxx/pull/14372)
@@ -193,6 +194,8 @@
 * Show translator file path in debug message [#14209](https://github.com/mixxxdj/mixxx/pull/14209)
 * Building without tests-tools [#14268](https://github.com/mixxxdj/mixxx/pull/14268)
 * Remove unmaintained shell.nix [#14300](https://github.com/mixxxdj/mixxx/pull/14300)
+* add QGLES2 option for UNIX [#14489](https://github.com/mixxxdj/mixxx/pull/14489)
+* Don't set GL_BGRA if QT_OPENGL_ES_2 [#14488](https://github.com/mixxxdj/mixxx/pull/14488)
 
 ### Misc Refactorings
 
@@ -298,6 +301,10 @@
 * Use std::shared_ptr in  controller settings to fix memory leak [#14413](https://github.com/mixxxdj/mixxx/pull/14413)
 * github labeler: add Dev Tools to `developer experience` [#14475](https://github.com/mixxxdj/mixxx/pull/14475)
 * chore: clean up README.md [#14471](https://github.com/mixxxdj/mixxx/pull/14471)
+* Fix type safety warnings [#14613](https://github.com/mixxxdj/mixxx/pull/14613)
+* CMake: Join project() with enable_language() [#14577](https://github.com/mixxxdj/mixxx/pull/14577)
+* fix warning when building without STEM support [#14551](https://github.com/mixxxdj/mixxx/pull/14551)
+* scenegraph is conditioned to QML=ON  [#14487](https://github.com/mixxxdj/mixxx/pull/14487)
 
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (unreleased)
 
