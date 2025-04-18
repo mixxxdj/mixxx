@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-03-16" timestamp="1742082086">
+    <release version="2.6.0" type="development" date="2025-04-18" timestamp="1744968147">
       <description>
  <p>
   Controller Mappings
@@ -207,6 +207,10 @@
    fix: sync rate using the current BPM instead of the file one
    #13671
    #12738
+  </li>
+  <li>
+   sync: prefer playing inaudible decks over stopped non-sync decks
+   #14580
   </li>
   <li>
    fix: prevent null CO access when cloning sampler or preview
@@ -597,6 +601,14 @@
   <li>
    Remove unmaintained shell.nix
    #14300
+  </li>
+  <li>
+   add QGLES2 option for UNIX
+   #14489
+  </li>
+  <li>
+   Don't set GL_BGRA if QT_OPENGL_ES_2
+   #14488
   </li>
  </ul>
  <p>
@@ -990,10 +1002,26 @@
    chore: clean up README.md
    #14471
   </li>
+  <li>
+   Fix type safety warnings
+   #14613
+  </li>
+  <li>
+   CMake: Join project() with enable_language()
+   #14577
+  </li>
+  <li>
+   fix warning when building without STEM support
+   #14551
+  </li>
+  <li>
+   scenegraph is conditioned to QML=ON
+   #14487
+  </li>
  </ul>
 </description>
     </release>
-    <release version="2.5.1" type="development" date="2025-03-16" timestamp="1742082086">
+    <release version="2.5.1" type="development" date="2025-04-18" timestamp="1744968147">
       <description>
  <p>
   Controller Mappings
