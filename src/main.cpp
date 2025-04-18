@@ -3,11 +3,13 @@
 #include <QPixmapCache>
 #include <QString>
 #include <QStringList>
+#include <QStyle>
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
 #include <cstdio>
+#include <memory>
 #include <stdexcept>
 
 #include "config.h"
@@ -16,7 +18,11 @@
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
 #ifdef MIXXX_USE_QML
+#include "mixer/playermanager.h"
 #include "qml/qmlapplication.h"
+#include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/waveformwidgetfactory.h"
 #endif
 #include "mixxxmainwindow.h"
 #if defined(__WINDOWS__)
@@ -52,16 +58,16 @@ constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
-    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
     int exitCode;
 #ifdef MIXXX_USE_QML
     if (args.isQml()) {
-        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        mixxx::qml::QmlApplication qmlApplication(pApp, args);
         exitCode = pApp->exec();
     } else
 #endif
     {
+        auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.
@@ -142,6 +148,26 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
     }
 }
 
+void applyStyleOverride(CmdlineArgs* pArgs) {
+    if (!pArgs->getStyle().isEmpty()) {
+        qDebug() << "Default style is overwritten by command line argument "
+                    "-style"
+                 << pArgs->getStyle();
+        QApplication::setStyle(pArgs->getStyle());
+        return;
+    }
+    if (qEnvironmentVariableIsSet("QT_STYLE_OVERRIDE")) {
+        QString styleOverride = QString::fromLocal8Bit(qgetenv("QT_STYLE_OVERRIDE"));
+        if (!styleOverride.isEmpty()) {
+            // The environment variable overrides the command line option
+            qDebug() << "Default style is overwritten by env variable "
+                        "QT_STYLE_OVERRIDE"
+                     << styleOverride;
+            QApplication::setStyle(styleOverride);
+        }
+    }
+}
+
 } // anonymous namespace
 
 int main(int argc, char * argv[]) {
@@ -207,6 +233,21 @@ int main(int argc, char * argv[]) {
     adjustScaleFactor(&args);
 
     MixxxApplication app(argc, argv);
+
+#if defined(Q_OS_WIN)
+    // The Mixxx style is based on Qt's WindowsVista style
+    QApplication::setStyle("windowsvista");
+#endif
+
+    applyStyleOverride(&args);
+
+    qInfo() << "Selected Qt style:" << QApplication::style()->objectName();
+
+#if defined(Q_OS_WIN)
+    if (QApplication::style()->objectName() != "windowsvista") {
+        qWarning() << "Qt style for Windows is not set to 'windowsvista'. GUI might look broken!";
+    }
+#endif
 
 #ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components

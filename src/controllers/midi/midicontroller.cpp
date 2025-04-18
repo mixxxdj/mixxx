@@ -56,15 +56,39 @@ QString MidiController::mappingExtension() {
 }
 
 void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMutableMapping = pMapping;
     m_pMapping = downcastAndClone<LegacyMidiControllerMapping>(pMapping.get());
 }
 
-std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
+QList<LegacyControllerMapping::ScriptFileInfo> MidiController::getMappingScriptFiles() {
     if (!m_pMapping) {
-        return nullptr;
+        return {};
     }
-    return std::make_shared<LegacyMidiControllerMapping>(*m_pMapping);
+    return m_pMapping->getScriptFiles();
 }
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> MidiController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
+}
+
+#ifdef MIXXX_USE_QML
+QList<LegacyControllerMapping::QMLModuleInfo> MidiController::getMappingModules() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getModules();
+}
+
+QList<LegacyControllerMapping::ScreenInfo> MidiController::getMappingInfoScreens() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getInfoScreens();
+}
+#endif
 
 int MidiController::close() {
     destroyOutputHandlers();

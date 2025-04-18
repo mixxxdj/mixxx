@@ -94,7 +94,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     bool hasSelectedText() const;
 
     inline int findCurrentTextIndex() {
-        return findData(currentText(), Qt::DisplayRole);
+        return findData(currentText().trimmed(), Qt::DisplayRole);
     }
 
     QString getSearchText() const;

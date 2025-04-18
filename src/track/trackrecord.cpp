@@ -22,7 +22,7 @@ TrackRecord::TrackRecord(TrackId id)
           m_headerParsed(false) {
 }
 
-void TrackRecord::setKeys(const Keys& keys) {
+void TrackRecord::setKeys(Keys keys) {
     refMetadata().refTrackInfo().setKeyText(keys.getGlobalKeyText());
     m_keys = std::move(keys);
 }

@@ -108,7 +108,7 @@ WOverview::WOverview(
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overallVisualGainChanged,
+            &WaveformWidgetFactory::visualGainChanged,
             this,
             &WOverview::slotNormalizeOrVisualGainChanged);
     // Also listen to ReplayGain changes to scale the waveform
@@ -742,7 +742,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
             DEBUG_ASSERT(m_pCurrentTrack);
             const auto replayGain = m_pCurrentTrack->getReplayGain();
             const auto visualGain = static_cast<float>(
-                    pWidgetFactory->getVisualGain(WaveformWidgetFactory::All) *
+                    pWidgetFactory->getVisualGain(BandIndex::AllBand) *
                     (replayGain.hasRatio()
                                     ? replayGain.getRatio()
                                     : 1.0));

@@ -22,12 +22,13 @@ QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal() {
 void QtWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 
-    QColor borderColor = m_pColors->getSignalColor().lighter(125);
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
+    QColor borderColor = pColors->getSignalColor().lighter(125);
     borderColor.setAlphaF(0.5f);
     m_borderPen.setColor(borderColor);
     m_borderPen.setWidthF(1.25f);
 
-    QColor signalColor = m_pColors->getSignalColor();
+    QColor signalColor = pColors->getSignalColor();
     signalColor.setAlphaF(0.8f);
     m_brush = QBrush(signalColor);
 }
@@ -90,7 +91,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_pColors->getAxesColor());
+        painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
         painter->drawLine(0,0,m_waveformRenderer->getLength(),0);
     }
 

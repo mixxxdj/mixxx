@@ -170,7 +170,7 @@ ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
 *	<i>FPS: %0/%1</i>
 *	\u276f
 *	\u276e
-de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi	Album
+de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL	Album
 de,da,fr,lb,ms,nl,oc,sv	Genre
 de,it,pl	Bitrate:
 es,es_419,es_AR,es_CO,es_MX,ca,es_ES	Error:
@@ -285,12 +285,12 @@ it	&File
 it,nl	database
 sn	Key
 lb,nl	Crossfader Curve
-nb,nn,ro,sv	Artist
+nb,nn,ro,sv,sq_AL	Artist
 nl	Cover Art
 nl	Scan
 nl,pt*	Item
 ca	Controls
-ca,de,fr,nb,oc,pl,ro,sl,sv	Format
+ca,de,fr,nb,oc,pl,ro,sl,sv,sq_AL	Format
 ca,fr,nl,ro,sv	Permanent
 ca,de,es*,fr,gl,pt*,ro,sv,tr	Global
 ca	Colors
@@ -304,7 +304,7 @@ ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
 ca,de,fr,it,nl,pl,sv	Intro
 cs,de,fr,sl	Formant
-da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv	Auto DJ
+da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL	Auto DJ
 da,fr,nb,nl,nn	Type
 de,nl,pl,sv	Status
 da,de,it,nl	Computer
@@ -359,7 +359,7 @@ de,fr,it,nl,pl,sv	Outro
 de,nl	Loops
 el,pt_BR	Tool tips
 el,es*,eu,id,it,lb,nb,pt*,tr	Scratching
-es*,fr,it,nl,pt*	&Ok
+es*,fr,it,nl,pt*,sq_AL	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
@@ -399,7 +399,7 @@ de,it,nl,pl,pt,pt_PT,ru,zh*	BW
 de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
 nl	Track #
 de	Name
-de,et,fr,nb,nl,pl,ro,sl	Transport
+de,et,fr,nb,nl,pl,ro,sl,sq_AL	Transport
 de,lt,nl,pt_BR	Cues
 de,es*,hu,it,nl,pt_BR,ro,tr,vi,zh,zh_HK	Hotcue %1
 de,pt,pt_BR,vi	Looping
@@ -415,7 +415,7 @@ de	Controller Name
 de	Name:
 de	Mappings
 de,it,nl	Multi-Sampling
-de,sv	Version:
+de,sv,sq_AL	Version:
 de,lb,oc,pt_BR,pt_PT	Linear
 de,nl,vi	Tags
 de	Sound API
@@ -442,3 +442,14 @@ it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
 es,es_419,es_AR,es_CO,es_ES,es_MX	No
+nl,sq_AL	VID:
+nl	Product ID
+nl,sq_AL	PID:
+nl	Lossy
+nl	Lossless
+nl	Top
+nl	OpenGL Status
+nl	Stem Label
+nl	Stem Mute
+sq_AL	Artist + Album
+sq_AL	Off

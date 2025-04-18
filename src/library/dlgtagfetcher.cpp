@@ -255,7 +255,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
                 &DlgTagFetcher::slotTrackChanged);
     }
 
-    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(CoverInfo{}, QPixmap{});
 
     m_coverCache.clear();
 
@@ -580,7 +580,7 @@ void DlgTagFetcher::tagSelected() {
     m_data.m_selectedTag = tagIndex;
 
     m_fetchedCoverArtByteArrays.clear();
-    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
@@ -612,7 +612,7 @@ void DlgTagFetcher::slotCoverFound(
             m_pTrack &&
             m_pTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
-        m_pWCurrentCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCurrentCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 
@@ -673,7 +673,7 @@ void DlgTagFetcher::loadPixmapToLabel(const QPixmap& pixmap) {
     statusMessage->clear();
     statusMessage->setVisible(true);
 
-    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
 
     checkBoxCover->setEnabled(!pixmap.isNull());
 }

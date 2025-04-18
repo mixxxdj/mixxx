@@ -12,7 +12,8 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
-        WaveformWidgetRenderer* waveformWidget, bool bRgbStacked)
+        WaveformWidgetRenderer* waveformWidget,
+        bool bRgbStacked)
         : WaveformRendererSignalBase(waveformWidget),
           m_bRgbStacked(bRgbStacked) {
     initForRectangles<RGBMaterial>(0);
@@ -189,7 +190,9 @@ bool WaveformRendererFiltered::preprocessInner() {
 
     DEBUG_ASSERT(reserved ==
             vertexUpdater[0].index() + vertexUpdater[1].index() +
-                    vertexUpdater[2].index());
+                    vertexUpdater[2].index() +
+                    numVerticesPerLine); // all lines on the three channels and
+                                         // the axis
 
     markDirtyMaterial();
 
