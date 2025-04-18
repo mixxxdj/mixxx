@@ -19,9 +19,10 @@ function login(password){
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                document.cookie = "sessionid="+resp[i]["sessionid"] +"; SameSite=Lax";
-                if(resp[i].sessionid)
+                if(resp[i].sessionid){
+                    document.cookie = "sessionid="+resp[i].sessionid +"; SameSite=Lax";
                     window.location.replace("/index.html");
+                }
             }
         }
     }
@@ -34,16 +35,19 @@ function checkauth(){
     xmlhttp.responseType = 'text';
     xmlhttp.send(JSON.stringify(
         [
-            {"sessionid": readCookie("sessionid")},
+           {"sessionid": readCookie("sessionid")},
         ]
     ));
     xmlhttp.onload = (event) => {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var resp=JSON.parse(xmlhttp.responseText);
             for(var i=0; i<resp.length; ++i){
-                if(resp[i].error!="wrong sessionid")
-                    return;
+                if(resp[i].sessionid){
+                    if(resp[i].sessionid==readCookie("sessionid"))
+                        return;
+                }
             }
+            document.cookie = "sessionid=\"\"; SameSite=Lax";
             window.location.replace("/login.html");
         }
     }
