@@ -1,11 +1,30 @@
 #pragma once
 
+#include <QCheckBox>
 #include <QMenu>
 
 #include "util/parented_ptr.h"
 
 class Track;
 class QWidgetAction;
+
+class WSearchRelatedCheckBox : public QCheckBox {
+    Q_OBJECT
+  public:
+    explicit WSearchRelatedCheckBox(const QString& label,
+            QWidget* pParent = nullptr)
+            : QCheckBox(label, pParent) {
+    }
+
+    Q_PROPERTY(QColor separatorColor
+                    MEMBER m_separatorColor
+                            DESIGNABLE true);
+
+    void paintEvent(QPaintEvent*) override;
+
+  private:
+    QColor m_separatorColor;
+};
 
 class WSearchRelatedTracksMenu : public QMenu {
     Q_OBJECT

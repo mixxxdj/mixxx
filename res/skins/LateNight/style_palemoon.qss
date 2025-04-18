@@ -3152,6 +3152,10 @@ QPlainTextEdit QMenu::item:disabled {
     border-top: 1px solid #000;
     border-bottom: 1px solid #333;
   }
+  /* use the same color for the vertical separator in Search related menu */
+  WSearchRelatedCheckBox {
+    qproperty-separatorColor: #333;
+  }
 
   #MainMenu QMenu::right-arrow,
   WTrackMenu::right-arrow,

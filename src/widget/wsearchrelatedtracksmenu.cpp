@@ -2,8 +2,10 @@
 
 #include <QCheckBox>
 #include <QMouseEvent>
+#include <QPalette>
 #include <QScreen>
 #include <QStyleOptionButton>
+#include <QStylePainter>
 #include <QWidgetAction>
 
 #include "library/searchquery.h"
@@ -20,7 +22,7 @@ namespace {
 // a viable upper bound for the context menu.
 constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
-const QString kActionTextPrefixSuffixSeparator = QStringLiteral(" | ");
+const QString kActionTextPrefixSuffixSeparator = QStringLiteral(": ");
 
 inline QString quoteSearchQueryText(const QString& text) {
     return QChar('"') + text + QChar('"');
@@ -75,7 +77,7 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
                     actionTextPrefix,
                     elidableTextSuffix);
 
-    auto pCheckBox = make_parented<QCheckBox>(
+    auto pCheckBox = make_parented<WSearchRelatedCheckBox>(
             mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
             this);
     pCheckBox->setProperty("query", searchQuery);
@@ -130,7 +132,8 @@ QString WSearchRelatedTracksMenu::elideActionText(
                     // TODO: Customize the suffix elision?
                     Qt::ElideMiddle,
                     maxWidthInPixels - prefixWidthInPixels);
-    return actionTextPrefixWithSeparator + elidedTextSuffix;
+    // Add some margin between the label and the separator bar (see paintEvent())
+    return QStringLiteral("  ") + actionTextPrefixWithSeparator + elidedTextSuffix;
 }
 
 void WSearchRelatedTracksMenu::addActionsForTrack(
@@ -454,4 +457,32 @@ void WSearchRelatedTracksMenu::combineQueriesTriggerSearch() {
         QString queryCombo = queries.join(QChar(' '));
         emit triggerSearch(queryCombo);
     }
+}
+
+void WSearchRelatedCheckBox::paintEvent(QPaintEvent*) {
+    // start original QCheckBox implementation
+    QStylePainter painter(this);
+    QStyleOptionButton opt;
+    initStyleOption(&opt);
+    painter.drawControl(QStyle::CE_CheckBox, opt);
+    // end
+
+    // Draw a vertical bar over the entire height at the left edge of the label
+    const QStyle* pStyle = style();
+    const QRect labelRect = pStyle->subElementRect(QStyle::SE_CheckBoxContents,
+            &opt,
+            this);
+    const QRect frameRect = opt.rect;
+    const QPoint top(labelRect.left(), frameRect.top());
+    const QPoint bottom(labelRect.left(), frameRect.bottom());
+    // We draw with the separator color from qss or, if that's not set,
+    // with the palette's inactive text color.
+    const QPen linePen(
+            m_separatorColor.isValid() ? m_separatorColor
+                                       : opt.palette.color(QPalette::Disabled, QPalette::Text),
+            1,
+            Qt::SolidLine,
+            Qt::SquareCap);
+    painter.setPen(linePen);
+    painter.drawLine(top, bottom);
 }
