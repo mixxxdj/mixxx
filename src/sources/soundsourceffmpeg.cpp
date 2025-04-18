@@ -582,7 +582,8 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     if (pDecoder->id == AV_CODEC_ID_AAC ||
             pDecoder->id == AV_CODEC_ID_AAC_LATM) {
-        if (std::strcmp(pDecoder->name, "aac") != 0) {
+        // We only allow AAC decoders that pass our seeking tests
+        if (std::strcmp(pDecoder->name, "aac") != 0 && std::strcmp(pDecoder->name, "aac_at") != 0) {
             pAacDecoder = avcodec_find_decoder_by_name("aac");
             if (pAacDecoder) {
                 pDecoder = pAacDecoder;
