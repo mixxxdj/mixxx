@@ -776,8 +776,7 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(pDel);
 
     DEBUG_ASSERT(strongPtr == m_incompleteTrack);
-    m_incompleteTrack = nullptr;
-    m_isTrackCompleted.wakeAll();
+    discardIncompleteTrack();
 
     // Insert item by id
     DEBUG_ASSERT(m_tracksById.find(trackId) == m_tracksById.end());
