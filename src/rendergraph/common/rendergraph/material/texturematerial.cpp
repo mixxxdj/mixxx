@@ -18,7 +18,7 @@ TextureMaterial::TextureMaterial()
 }
 
 /* static */ const UniformSet& TextureMaterial::uniforms() {
-    static UniformSet set = makeUniformSet<QMatrix4x4>({"ubuf.matrix"});
+    static UniformSet set = makeUniformSet<QMatrix4x4, float>({"ubuf.matrix", "ubuf.alpha"});
     return set;
 }
 
