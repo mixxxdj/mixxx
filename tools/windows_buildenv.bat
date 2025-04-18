@@ -20,18 +20,21 @@ IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
 
-IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.5-rel
-    SET VCPKG_TARGET_TRIPLET=x64-windows-release
-    vcpkg_update_main
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
-    SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
-) ELSE (
-    SET BUILDENV_BRANCH=2.5
+SET VCPKG_COMMIT_SHA=d3b6db3
+SET BUILDENV_MINOR_VERSION=2.6
+
+@REM IF DEFINED BUILDENV_RELEASE (
+@REM     SET BUILDENV_BRANCH=2.5-rel
+@REM     SET VCPKG_TARGET_TRIPLET=x64-windows-release
+@REM     vcpkg_update_main
+@REM     SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
+@REM     SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
+@REM ) ELSE (
     SET VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-c15790e
     SET BUILDENV_SHA256=138e4685ec73c6a6a509f71f8573be581403b091e4ecea2314df2cc79f9720b9
-)
+@REM )
+SET BUILDENV_NAME=mixxx-deps-!BUILDENV_MINOR_VERSION!-!VCPKG_TARGET_TRIPLET!-!VCPKG_COMMIT_SHA!
+
 
 IF "%~1"=="" (
     REM In case of manual start by double click no arguments are specified: Default to COMMAND_setup
@@ -61,11 +64,49 @@ EXIT /B 0
     )
 
     IF NOT EXIST "%BUILDENV_PATH%" (
-        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
+        SET BUILDENV_URL=https://github.com/acolombier/vcpkg/releases/download/!BUILDENV_MINOR_VERSION!-!VCPKG_COMMIT_SHA!/!BUILDENV_NAME!.zip
         IF NOT EXIST "!BUILDENV_PATH!.zip" (
-            ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
-            REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
-            BITSADMIN /transfer buildenvjob /download /priority normal /DYNAMIC !BUILDENV_URL! "!BUILDENV_PATH!.zip"
+            ECHO ^Download prebuilt build environment from "!BUILDENV_URL!"...
+            REM Create a temporary directory to store the parts
+            IF NOT EXIST "%TEMP%\~buildenv" MD "%TEMP%\~buildenv"
+
+            SET "PART_NUMBER=0"
+
+            :DOWNLOAD_LOOP
+            ECHO ^Attempting to download part !PART_NUMBER!...
+
+            REM Construct the URL for this part
+            SET "PART_URL=!BUILDENV_URL!.part!PART_NUMBER!"
+            SET "PART_FILE=!BUILDENV_PATH!.zip.part!PART_NUMBER!"
+
+            REM Download the part using BitsAdmin
+            BITSADMIN /transfer buildenvjob_part!PART_NUMBER! /download /priority normal /DYNAMIC !PART_URL! "!PART_FILE!"
+            IF %ERRORLEVEL% NEQ 0 (
+                IF %ERRORLEVEL% NEQ 0 (
+                    ECHO ^Part !PART_NUMBER! not found. Stopping download loop.
+                    GOTO :CONCATENATE
+                ) ELSE (
+                    ECHO ^Error downloading part !PART_NUMBER!
+                    EXIT /B 1
+                )
+            )
+
+            SET /A PART_NUMBER +=1
+            GOTO :DOWNLOAD_LOOP
+
+            :CONCATENATE
+            ECHO ^Concatenating all parts into "!BUILDENV_PATH!.zip"...
+
+            REM Concatenate the files in binary mode
+            COPY /b "!BUILDENV_PATH!.zip.part*" "!BUILDENV_PATH!.zip" >nul 2>&1
+            IF %ERRORLEVEL% NEQ 0 (
+                ECHO ^Error concatenating parts!
+                EXIT /B 1
+            )
+
+            REM Clean up temporary files and directory
+            RD /S /Q "%TEMP%\~buildenv"
+
             ECHO ^Download complete.
             certutil -hashfile "!BUILDENV_PATH!.zip" SHA256 | FIND /C "!BUILDENV_SHA256!"
             IF errorlevel 1 (
