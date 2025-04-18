@@ -140,17 +140,16 @@ function moveautotracklist(direction){
     for(var i=0; i< sels.length; ++i){
         if(sels[i].checked){
             position=sels[i].getAttribute('apos');
-            console.log(position);
         }
     }
-    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", "/rcontrol",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.responseType = 'text';
     if(direction=='up'){
-        newpos=position-1;
+        newpos=(position-1);
     }else if(direction=='down'){
-        newpos=position+1;
+        newpos=(position+1);
     }
     xmlhttp.send(JSON.stringify(
             [
@@ -159,7 +158,7 @@ function moveautotracklist(direction){
             ]
     ));
     xmlhttp.onload = (event) => {
-        window.location.replace("/index.html");
+        window.location.reload();
     }
 }
 
