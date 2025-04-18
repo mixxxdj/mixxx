@@ -19,8 +19,7 @@ namespace mixxx {
                      std::shared_ptr<TrackCollectionManager> &trackscollmngr,
                      std::shared_ptr<Library> &library,
                      std::shared_ptr<DbConnectionPool> &database,
-                     std::shared_ptr<PlayerManager> &ainf,
-                     QObject* pParent = nullptr);
+                     std::shared_ptr<PlayerManager> &ainf);
        virtual ~RemoteControl();
    private:
         std::shared_ptr<RemoteController>     m_RemoteController;

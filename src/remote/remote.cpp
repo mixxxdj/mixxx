@@ -263,8 +263,7 @@ mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,
                                                                     std::shared_ptr<TrackCollectionManager> &trackscollmngr,
                                                                     std::shared_ptr<Library> &library,
                                                                     std::shared_ptr<DbConnectionPool> &database,
-                                                                    std::shared_ptr<PlayerManager> &ainf,
-                                    QObject* pParent) {
+                                                                    std::shared_ptr<PlayerManager> &ainf) {
     kLogger.debug() << "Starting RemoteControl";
     if(QVariant(pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
