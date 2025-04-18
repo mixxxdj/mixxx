@@ -268,7 +268,7 @@ mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,
     kLogger.debug() << "Starting RemoteControl";
     if(QVariant(pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
-        m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,library,ainf,database,pParent);
+        m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,library,ainf,database);
     }
 }
 
