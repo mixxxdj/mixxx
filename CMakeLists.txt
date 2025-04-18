@@ -4993,7 +4993,9 @@ endif()
 
 if(APPLE AND MACOS_BUNDLE)
   set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-  set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
+  foreach(PREFIX ${CMAKE_PREFIX_PATH})
+    list(APPEND BUNDLE_DIRS "${PREFIX}/lib")
+  endforeach()
   set(
     APPLE_CODESIGN_ENTITLEMENTS
     "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements"
