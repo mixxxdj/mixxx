@@ -83,6 +83,14 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
 
     QStringList getFilePaths() {
         QStringList filePaths;
+        // STEM with ALAC 24 bit
+        filePaths.append(getTestDir().filePath("stems/oddchap_sound_104-alac.stem.mp4"));
+        filePaths.append(getTestDir().filePath("stems/sine_with_alac.stem.mp4"));
+#ifdef __LINUX__
+        // STEM with AAC LC - 256kbps VBR
+        filePaths.append(getTestDir().filePath("stems/oddchap_sound_104-aac.stem.mp4"));
+        filePaths.append(getTestDir().filePath("stems/sine_with_aac.stem.mp4"));
+#endif
         const QStringList fileNameSuffixes = getFileNameSuffixes();
         for (const auto& fileNameSuffix : fileNameSuffixes) {
             filePaths.append(getTestDir().filePath(
