@@ -1359,6 +1359,8 @@ add_library(
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
+  src/preferences/dialog/dlgprefremotecontrol.cpp
+  src/preferences/dialog/dlgprefremotecontrol.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
   src/preferences/dialog/dlgprefsound.cpp
@@ -1374,6 +1376,7 @@ add_library(
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/recording/recordingmanager.cpp
+  src/remote/remote.cpp
   src/skin/legacy/colorschemeparser.cpp
   src/skin/legacy/imgcolor.cpp
   src/skin/legacy/imginvert.cpp
@@ -2145,7 +2148,7 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+  find_package(Qt6 COMPONENTS Core HttpServer) # For Qt Core cmake functions
   # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
@@ -2264,6 +2267,12 @@ install(
 # Effect presets
 install(
   DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/effects"
+  DESTINATION "${MIXXX_INSTALL_DATADIR}"
+)
+
+# RemoteControl Webfiles
+install(
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/web"
   DESTINATION "${MIXXX_INSTALL_DATADIR}"
 )
 
@@ -3290,6 +3299,7 @@ if(QT6)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
+  list(APPEND QT_EXTRA_COMPONENTS "HttpServer")
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()

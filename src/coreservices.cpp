@@ -21,6 +21,7 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "remote/remote.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -484,6 +485,15 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     m_isInitialized = true;
+
+    //initalize Remote Controll Plugin
+    m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
+        m_pSettingsManager->settings(),
+        m_pTrackCollectionManager,
+        m_pLibrary,
+        m_pDbConnectionPool,
+        m_pPlayerManager
+    );
 
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();

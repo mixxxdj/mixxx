@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <script src="mixxx.js"></script>
+    <title>Library</title>
+  </head>
+  <body onload="checkauth()">
+        <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
+        <span>Library</span>
+        <span>Search:</span>
+        <form action="#" >
+            <input id="searchform" type="text"/>
+            <button onclick="search(document.getElementById('searchform').value)">search</button>
+        </form>
+        <br>
+        <div id="result">
+        </div>
+        <br>
+        <div id="tools">
+            <button onclick="addtoautodj('begin');">Add to Begin AutoDJ</button>
+            <button onclick="addtoautodj('end');">Add to End AutoDJ</button>
+        </div>
+        <br>
+        <button onclick="window.location.href='index.html';">Back</button>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+body {
+    background-color: rgb(21, 21, 23);
+    color: rgb(239, 240, 241);
+    width:100%;
+    font-size:1.5em;
+}
+
+button,input,span,radio{
+    font-size:1.5em;
+}
+
+input[type=radio] {
+    transform: scale(2.5);
+    border: 2px  solid #FCFCFC;
+    border-radius:0px;
+    margin:0px;
+    padding:0px;
+    width:100%;
+    height:100%;
+}
+
+table {
+    width:100%;
+}
+
+td {
+    min-width:40px;
+    min-height:40px;
+}

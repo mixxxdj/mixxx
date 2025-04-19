@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="mixxx.js"></script> 
+    <title>mixxx</title>
+  </head>
+  <body onload="checkauth()">
+    <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
+    <main>
+    <div id="autoplaylist">
+    </div>
+      <br>
+      <div id="tools">
+            <button onclick="moveautotracklist('up');">Up</button>
+            <button onclick="moveautotracklist('down');">Down</button>
+            <button onclick="window.location.href='library.html';">Add</button>
+            <button onclick="delautodj();">Remove</button>
+      </div>
+    <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();});</script>
+    </main>
+    <footer></footer>
+  </body>
+</html>
