@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.21)
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
 
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
