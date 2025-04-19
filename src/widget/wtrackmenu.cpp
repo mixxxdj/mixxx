@@ -13,6 +13,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
+#include "library/dao/relationdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
@@ -35,6 +36,7 @@
 #include "preferences/configobject.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
+#include "track/relation.h"
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/desktophelper.h"
@@ -210,6 +212,11 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::BPM)) {
         m_pBPMMenu = make_parented<QMenu>(this);
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
+    }
+
+    if (featureIsEnabled(Feature::SetRelation)) {
+        m_pSetRelationMenu = make_parented<QMenu>(this);
+        m_pSetRelationMenu->setTitle(tr("Set Relation"));
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -604,12 +611,17 @@ void WTrackMenu::setupActions() {
         addMenu(m_pSearchRelatedMenu);
     }
 
+    if (featureIsEnabled(Feature::SetRelation)) {
+        addMenu(m_pSetRelationMenu);
+    }
+
     if (featureIsEnabled(Feature::SelectInLibrary)) {
         addAction(m_pSelectInLibraryAct);
     }
 
     if (featureIsEnabled(Feature::SearchRelated) ||
-            featureIsEnabled(Feature::SelectInLibrary)) {
+            featureIsEnabled(Feature::SelectInLibrary) ||
+            featureIsEnabled(Feature::SetRelation)) {
         addSeparator();
     }
 
@@ -972,6 +984,20 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
     }
 }
 
+void WTrackMenu::generateSetRelationMenu(const QString& group,
+        const QString& label,
+        QMenu* pParentMenu,
+        bool enabled,
+        bool atPlayPosition) {
+    QAction* pAction = new QAction(label, this);
+    pAction->setEnabled(enabled);
+    pParentMenu->addAction(pAction);
+    connect(pAction,
+            &QAction::triggered,
+            this,
+            [this, group, atPlayPosition] { slotAddRelationToDeck(group, atPlayPosition); });
+}
+
 void WTrackMenu::updateMenus() {
     if (isEmpty()) {
         return;
@@ -995,6 +1021,10 @@ void WTrackMenu::updateMenus() {
         const auto pTrack = getFirstTrackPointer();
         m_pSearchRelatedMenu->setEnabled(pTrack != nullptr);
         // TODO Only enable for single track?
+    }
+
+    if (featureIsEnabled(Feature::SetRelation)) {
+        slotPopulateRelationMenu();
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
@@ -1466,6 +1496,37 @@ void WTrackMenu::slotTranslateBeatsHalf() {
     m_pTrack->trySetBeats(*translatedBeats);
 }
 
+void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosition) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
+        return;
+    }
+    TrackPointer pTargetTrack = PlayerInfo::instance().getTrackInfo(deckGroup);
+    if (!pTargetTrack) {
+        return;
+    }
+    TrackPair tracks = {
+            m_pTrack->getId(),
+            pTargetTrack->getId()};
+    PositionPair positions;
+    if (atPlayPosition && !m_deckGroup.isEmpty()) {
+        positions = {
+                mixxx::audio::FramePos(
+                        ControlObject::get(ConfigKey(m_deckGroup, "playposition"))),
+                mixxx::audio::FramePos(
+                        ControlObject::get(ConfigKey(deckGroup, "playposition")))};
+    } else {
+        positions = {std::nullopt, std::nullopt};
+    }
+    Relation* relation = new Relation(
+            tracks,
+            positions);
+    m_pLibrary
+            ->trackCollectionManager()
+            ->internalCollection()
+            ->getRelationDAO()
+            .saveRelation(relation);
+}
+
 void WTrackMenu::slotImportMetadataFromFileTags() {
     const auto progressLabelText =
             tr("Importing metadata of %n track(s) from file tags", "", getTrackCount());
@@ -1517,6 +1578,46 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     }
 
     externalTrackCollection->updateTracks(getTrackRefs());
+}
+
+void WTrackMenu::slotPopulateRelationMenu() {
+    // Gray out some stuff if multiple songs were selected.
+    const bool singleTrackSelected = getTrackCount() == 1;
+    bool menuEnabled = false;
+
+    int iNumDecks = static_cast<int>(m_pNumDecks.get());
+    m_pSetRelationMenu->clear();
+    for (int i = 1; i <= iNumDecks; ++i) {
+        // PlayerManager::groupForDeck is 0-indexed.
+        QString deckGroup = PlayerManager::groupForDeck(i - 1);
+        if (deckGroup == m_deckGroup) {
+            continue;
+        }
+        TrackPointer pTargetTrack = PlayerInfo::instance().getTrackInfo(deckGroup);
+        if (!pTargetTrack) {
+            continue;
+        }
+        menuEnabled = true;
+        bool deckEnabled = (singleTrackSelected);
+        generateSetRelationMenu(deckGroup,
+                tr("Deck %1 | %2").arg(i).arg(pTargetTrack->getTitle()),
+                m_pSetRelationMenu,
+                deckEnabled,
+                false);
+        if (!m_deckGroup.isEmpty()) {
+            generateSetRelationMenu(deckGroup,
+                    tr("... at playback position"),
+                    m_pSetRelationMenu,
+                    deckEnabled,
+                    true);
+        }
+        m_pSetRelationMenu->addSeparator();
+    }
+    menuEnabled = menuEnabled && singleTrackSelected;
+    m_pSetRelationMenu->setEnabled(menuEnabled);
+    if (!menuEnabled) {
+        return;
+    }
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
@@ -2962,6 +3063,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
     case Feature::SelectInLibrary:
+        return m_pTrack != nullptr;
+    case Feature::SetRelation:
         return m_pTrack != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
