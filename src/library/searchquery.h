@@ -193,7 +193,11 @@ class BpmFilterNode : public QueryNode {
     static constexpr double kRelativeRangeDefault = 0.06;
     static void setBpmRelativeRange(double range);
 
-    BpmFilterNode(QString& argument, bool fuzzy, bool negate = false);
+    BpmFilterNode(
+            QString& argument,
+            bool fuzzy,
+            bool negate = false,
+            const QSqlDatabase& database = QSqlDatabase());
 
     enum class MatchMode {
         Invalid,
@@ -205,6 +209,8 @@ class BpmFilterNode : public QueryNode {
         HalveDouble,       // bpm:120
         HalveDoubleStrict, // bpm:120.0
         Operator,          // bpm:<=120
+        Locked,            // bpm:locked
+        Constant,          // bpm:const|constant
     };
 
     // Allows WSearchRelatedTracksMenu to construct the QAction title
@@ -216,6 +222,8 @@ class BpmFilterNode : public QueryNode {
 
   private:
     bool match(const TrackPointer& pTrack) const override;
+
+    QSqlDatabase m_database;
 
     MatchMode m_matchMode;
 
