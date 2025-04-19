@@ -12,6 +12,7 @@
 #include "library/tabledelegates/checkboxdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
+#include "library/tabledelegates/defaultdelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
 #include "library/tabledelegates/previewbuttondelegate.h"
@@ -509,7 +510,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
     }
-    return nullptr;
+    return new DefaultDelegate(pTableView);
 }
 
 QVariant BaseTrackTableModel::data(
@@ -557,6 +558,8 @@ QVariant BaseTrackTableModel::data(
             if (!playedRaw.isNull() &&
                     playedRaw.canConvert<bool>() &&
                     playedRaw.toBool()) {
+                // TODO Maybe adjust color for bright track colors?
+                // Here or in DefaultDelegate
                 return QVariant::fromValue(m_trackPlayedColor);
             }
         }
