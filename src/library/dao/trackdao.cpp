@@ -1852,25 +1852,36 @@ bool TrackDAO::detectMovedTracks(
     }
 
     // Query possible successors
-    // NOTE: Successors are identified by filename and duration (in seconds).
+    // Successors are identified by
+    // * duration (in seconds, +-1 sec)
+    // AND
+    // * filename (find moved files) OR
+    // * track title.(find renamed files)
+    //
+    // NOTE: renamed files are found reliably only if
+    // * the directory with the track has not been renamed (moved is okay though)
+    // * the file's title tag (ID3/APE/..) has not been modified
+    // * title in mixxxdb matches title tag OR
+    //   mixxxdb title has been exported to file tag
     // Since duration is stored as double-precision floating-point and since it
     // is sometimes truncated to nearest integer, tolerance of 1 second is used.
     QSqlQuery newTrackQuery(m_database);
     newTrackQuery.prepare(QString(
             "SELECT library.id as track_id, track_locations.id as location_id, "
-            "track_locations.location "
+            "track_locations.location, track_locations.directory, title, filename "
             "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
             "WHERE track_locations.location IN (%1) AND "
-            "filename=:filename AND "
+            "(filename=:filename OR title=:title) AND "
             "ABS(duration - :duration) < 1 AND "
-            "fs_deleted=0").arg(
-                    SqlStringFormatter::formatList(m_database, addedTracks)));
+            "fs_deleted=0")
+                    .arg(SqlStringFormatter::formatList(m_database, addedTracks)));
 
     // Query tracks, where we need a successor for
     QSqlQuery oldTrackQuery(m_database);
     oldTrackQuery.prepare(
             "SELECT library.id as track_id, track_locations.id as location_id, "
-            "track_locations.location, filename, duration "
+            "track_locations.location, track_locations.filename, "
+            "track_locations.directory, title, duration "
             "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
             "WHERE fs_deleted=1");
     if (!oldTrackQuery.exec()) {
@@ -1882,25 +1893,29 @@ bool TrackDAO::detectMovedTracks(
     const int oldTrackIdColumn = oldTrackQueryRecord.indexOf("track_id");
     const int oldLocationIdColumn = oldTrackQueryRecord.indexOf("location_id");
     const int oldLocationColumn = oldTrackQueryRecord.indexOf("location");
-    const int filenameColumn = oldTrackQueryRecord.indexOf("filename");
+    const int oldFilenameColumn = oldTrackQueryRecord.indexOf("filename");
+    const int oldDirectoryColumn = oldTrackQueryRecord.indexOf("directory");
     const int durationColumn = oldTrackQueryRecord.indexOf("duration");
+    const int titleColumn = oldTrackQueryRecord.indexOf("title");
 
     // For each track that's been "deleted" on disk...
     while (oldTrackQuery.next()) {
         if (*pCancel) {
             return false;
         }
-        QString oldTrackLocation = oldTrackQuery.value(oldLocationColumn).toString();
-        QString filename = oldTrackQuery.value(filenameColumn).toString();
+        const QString oldTrackLocation = oldTrackQuery.value(oldLocationColumn).toString();
+        const QString oldFilename = oldTrackQuery.value(oldFilenameColumn).toString();
+        const QString oldTitle = oldTrackQuery.value(titleColumn).toString();
+        const QString oldDirectory = oldTrackQuery.value(oldDirectoryColumn).toString();
         // rather use duration then filesize as an indicator of changes. The filesize
         // can change by adding more ID3v2 tags
         const int duration = oldTrackQuery.value(durationColumn).toInt();
 
-        kLogger.info()
-                << "Looking for substitute of missing track location"
-                << oldTrackLocation;
+        kLogger.info() << "Looking for substitute of missing track location"
+                       << oldTrackLocation;
 
-        newTrackQuery.bindValue(":filename", filename);
+        newTrackQuery.bindValue(":filename", oldFilename);
+        newTrackQuery.bindValue(":title", oldTitle);
         newTrackQuery.bindValue(":duration", duration);
         if (!newTrackQuery.exec()) {
             LOG_FAILED_QUERY(newTrackQuery);
@@ -1910,24 +1925,57 @@ bool TrackDAO::detectMovedTracks(
         const auto newTrackIdColumn = newTrackQuery.record().indexOf("track_id");
         const auto newTrackLocationIdColumn = newTrackQuery.record().indexOf("location_id");
         const auto newTrackLocationColumn = newTrackQuery.record().indexOf("location");
-        int newTrackLocationSuffixMatch = 0;
+        const auto newTrackFilenameColumn = newTrackQuery.record().indexOf("filename");
+        const auto newTrackDirectoryColumn = newTrackQuery.record().indexOf("directory");
+        int newTrackLocationMatch = 0;
+        int nextTrackLocationMatch = 0;
         TrackId newTrackId;
         DbId newTrackLocationId;
         QString newTrackLocation;
         while (newTrackQuery.next()) {
             const auto nextTrackLocation =
                     newTrackQuery.value(newTrackLocationColumn).toString();
+            const auto nextTrackFilename =
+                    newTrackQuery.value(newTrackFilenameColumn).toString();
             VERIFY_OR_DEBUG_ASSERT(nextTrackLocation != oldTrackLocation) {
                 continue;
             }
-            kLogger.info()
-                    << "Found potential moved track location:"
-                    << nextTrackLocation;
-            const auto nextSuffixMatch =
-                    matchStringSuffix(nextTrackLocation, oldTrackLocation);
-            DEBUG_ASSERT(nextSuffixMatch >= filename.length());
-            if (newTrackLocationSuffixMatch < nextSuffixMatch) {
-                newTrackLocationSuffixMatch = nextSuffixMatch;
+            kLogger.warning() << "Found potential moved or renamed track:"
+                              << nextTrackLocation;
+            if (nextTrackFilename == oldFilename) {
+                // Filename is identical, find the best matching directory. E.g. if
+                // "/Music/Abba/BestOf/track01.mp3" has been moved to
+                // "/Music/A/Abba/BestOf/track01.mp3" we want to pick that instead of
+                // "/Music/B/Beatles/BestOf/track01.mp3" which also be a new track
+                //  (with the same duration +-1? rather unlikely...)
+                // NOTE this check is rather useless if the track directory (suffix)
+                // has been renamed, for example BestOf-001/ -> BestOf/
+                // TODO Instead of comparing paths from the right,
+                // split paths into chunks at '/', find highest chunk match?
+                const auto nextSuffixMatch =
+                        matchStringSuffix(nextTrackLocation, oldTrackLocation);
+                DEBUG_ASSERT(nextSuffixMatch >= oldFilename.length());
+                nextTrackLocationMatch = nextSuffixMatch;
+                kLogger.info() << "Filename match, found better match:"
+                               << nextSuffixMatch << nextTrackLocation;
+            } else {
+                // Try to find a track with the same title in a directory with
+                // the best matching parent directory name.
+                const auto nextTrackDirectory =
+                        newTrackQuery.value(newTrackDirectoryColumn).toString();
+                kLogger.info() << "Title match, check directory match:" << oldDirectory;
+                kLogger.info() << "                               new:" << nextTrackDirectory;
+                const auto nextDirectoryMatch =
+                        matchStringSuffix(nextTrackDirectory, oldDirectory);
+                nextTrackLocationMatch = nextDirectoryMatch;
+                kLogger.info() << "--- found better directory match:"
+                               << nextDirectoryMatch << nextTrackDirectory;
+            }
+
+            if (newTrackLocationMatch < nextTrackLocationMatch) {
+                // We found a better match than the previous one (initially 0).
+                // Point to the new matching track.
+                newTrackLocationMatch = nextTrackLocationMatch;
                 newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
                 newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
                 newTrackLocation = nextTrackLocation;
@@ -1935,17 +1983,14 @@ bool TrackDAO::detectMovedTracks(
         }
         if (newTrackLocation.isEmpty()) {
             kLogger.info()
-                    << "Found no substitute for missing track location"
+                    << "Found no substitute for missing track"
                     << oldTrackLocation;
             continue;
         }
         DEBUG_ASSERT(newTrackId.isValid());
         DEBUG_ASSERT(newTrackLocationId.isValid());
-        kLogger.info()
-                << "Found moved track location:"
-                << oldTrackLocation
-                << "->"
-                << newTrackLocation;
+        kLogger.info() << "Found moved/renamed track:" << oldTrackLocation;
+        kLogger.info() << "                        ->" << newTrackLocation;
 
         TrackId oldTrackId(oldTrackQuery.value(oldTrackIdColumn));
         DEBUG_ASSERT(oldTrackId.isValid());
