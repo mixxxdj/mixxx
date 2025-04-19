@@ -43,6 +43,7 @@ class VinylControlXwax : public VinylControl {
     void doTrackSelection(bool valid_pos, double pitch, double position);
     void resetSteadyPitch(double pitch, double time);
     double checkSteadyPitch(double pitch, double time);
+    double calcDeltaRelativeDriftAmount(double deltaFilePosition);
     void enableRecordEndMode();
     void disableRecordEndMode();
     void enableConstantMode();
@@ -87,6 +88,8 @@ class VinylControlXwax : public VinylControl {
 
     // The file position from the last run of analyzeSamples.
     double m_dOldFilePos;
+    // The delta file position in relative mode
+    double m_deltaFilePos;
 
     // The loaded track duration from the last run of analyzeSamples.
     double m_dOldDuration;
@@ -135,6 +138,8 @@ class VinylControlXwax : public VinylControl {
     // The drift between the vinyl position and the file position from the most
     // recent run of analyzeSamples.
     double m_dDriftAmt;
+    double m_initialRelativeDriftAmt;
+    double m_deltaRelativeDriftAmount;
 
     // Records the time of the last UI update. Used to prevent hammering the GUI
     // with updates.
