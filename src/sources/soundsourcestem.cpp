@@ -128,7 +128,9 @@ SoundSource::OpenResult SoundSourceSingleSTEM::tryOpen(
                            "build."
                         << "To enable AAC support, please install an FFmpeg "
                            "version with the internal aac decoder enabled."
-                        << "Note: AAC decoding may be subject to patent "
+                           "Note 1: The libfdk_aac decoder is no working properly "
+                           "with Mixxx, FFmpeg's internal AAC decoder does."
+                        << "Note 2: AAC decoding may be subject to patent "
                            "restrictions, depending on your country.";
             }
         }
