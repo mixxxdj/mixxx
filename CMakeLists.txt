@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.21)
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
 
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
@@ -4772,7 +4774,14 @@ if(VINYLCONTROL)
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
-  target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
+  target_sources(
+    mixxx-xwax
+    PRIVATE
+      lib/xwax/timecoder.c
+      lib/xwax/lut.c
+      lib/xwax/filters.c
+      lib/xwax/delayline.c
+  )
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
