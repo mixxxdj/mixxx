@@ -125,9 +125,39 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
             const CSAMPLE* expected,
             const CSAMPLE* actual,
             const char* errorMessage) {
-        for (SINT i = 0; i < size; ++i) {
-            EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
-                    << "i=" << i << " " << errorMessage;
+        int error_count = 0;
+        SINT first = 0;
+        SINT last = 0;
+        SINT i = 0;
+        for (; i < size; ++i) {
+            if (std::abs(expected[i] - actual[i]) > kMaxDecodingError) {
+                error_count = 1;
+                first = i;
+                EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
+                        << "i=" << i << " " << errorMessage;
+                break;
+            }
+        }
+        if (error_count == 1) {
+            std::ostringstream csv;
+            csv << std::setprecision(std::numeric_limits<CSAMPLE>::max_digits10);
+
+            csv << "sep=,\nexpected,actual,error\n"; // CSV header
+
+            for (SINT i = 0; i < size; ++i) {
+                csv << expected[i] << "," << actual[i];
+                if (std::abs(expected[i] - actual[i]) > kMaxDecodingError) {
+                    csv << ",1\n";
+                    error_count++;
+                    last = i;
+                } else {
+                    csv << ",0\n";
+                }
+            }
+            std::cout << "CSV debug output with " << error_count
+                      << " errors in the range " << first << " to " << last
+                      << ":\n"
+                      << csv.str();
         }
     }
 
