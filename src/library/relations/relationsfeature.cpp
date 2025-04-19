@@ -50,6 +50,20 @@ void RelationsFeature::setConnections(DlgRelations* pView) {
             &DlgRelations::trackSelected,
             this,
             &RelationsFeature::trackSelected);
+    connect(pView,
+            &DlgRelations::loadTrack,
+            this,
+            &RelationsFeature::loadTrack);
+    connect(pView,
+            &DlgRelations::loadTrackToPlayer,
+            this,
+            [=, this](TrackPointer track, const QString& group) {
+                emit loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        mixxx::StemChannelSelection(),
+#endif
+                        false);
+            });
 }
 
 void RelationsFeature::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {

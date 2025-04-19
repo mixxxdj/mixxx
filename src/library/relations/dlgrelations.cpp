@@ -46,6 +46,14 @@ DlgRelations::DlgRelations(
             &WRelationTableView::trackSelected,
             this,
             &DlgRelations::trackSelected);
+    connect(m_pRelationTableView,
+            &WRelationTableView::loadTrack,
+            this,
+            &DlgRelations::loadTrack);
+    connect(m_pRelationTableView,
+            &WRelationTableView::loadTrackToPlayer,
+            this,
+            &DlgRelations::loadTrackToPlayer);
 
     connect(pLibrary,
             &Library::setTrackTableFont,

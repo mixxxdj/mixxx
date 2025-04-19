@@ -36,6 +36,8 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
 
   signals:
     void trackSelected(TrackPointer pTrack);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& player);
 
   private:
     WRelationTableView* m_pRelationTableView;

@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QObject>
 #include <QString>
+
 #include "moc_relation.cpp"
 
 // Loading entity from database
