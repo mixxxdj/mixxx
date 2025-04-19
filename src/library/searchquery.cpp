@@ -550,6 +550,11 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         return;
     }
 
+    if (argument == QStringLiteral("locked")) {
+        m_matchMode = MatchMode::Locked;
+        return;
+    }
+
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
     if (opMatch.hasMatch()) {
         if (fuzzy) {
@@ -688,6 +693,10 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
 }
 
 bool BpmFilterNode::match(const TrackPointer& pTrack) const {
+    if (m_matchMode == MatchMode::Locked) {
+        return pTrack->isBpmLocked();
+    }
+
     double value = pTrack->getBpm();
 
     switch (m_matchMode) {
@@ -728,8 +737,11 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
 
 QString BpmFilterNode::toSql() const {
     switch (m_matchMode) {
+    case MatchMode::Locked: {
+        return QStringLiteral("%1 IS 1").arg(LIBRARYTABLE_BPM_LOCK);
+    }
     case MatchMode::Null: {
-        return QString("bpm IS 0");
+        return QStringLiteral("bpm IS 0");
     }
     case MatchMode::Explicit: {
         return QStringLiteral("bpm >= %1 AND bpm < %2")
@@ -756,10 +768,10 @@ QString BpmFilterNode::toSql() const {
         return concatSqlClauses(searchClauses, "OR");
     }
     case MatchMode::Operator: {
-        return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
+        return QStringLiteral("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
     }
     default: // MatchMode::Invalid
-        return QString("bpm IS NULL");
+        return QStringLiteral("bpm IS NULL");
     }
 }
 
