@@ -115,6 +115,8 @@ SoundSource::OpenResult SoundSourceSingleSTEM::tryOpen(
 
     DEBUG_ASSERT(pDecoder);
 
+    kLogger.debug() << "using FFmpeg decoder:" << pDecoder->long_name;
+
     // Select the main mix stream for decoding
     AVStream* pavStream = selectedAudioStream;
     DEBUG_ASSERT(pavStream != nullptr);
