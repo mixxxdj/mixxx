@@ -113,7 +113,8 @@ void DlgAnalysis::setFocus() {
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
-    m_pAnalysisLibraryTableModel->search(text);
+    m_pAnalysisLibraryTableModel->searchCurrentTrackSet(
+            text, radioButtonRecentlyAdded->isChecked());
 }
 
 void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,

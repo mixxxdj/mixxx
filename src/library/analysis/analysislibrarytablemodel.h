@@ -13,4 +13,5 @@ class AnalysisLibraryTableModel : public LibraryTableModel
 
     void showRecentSongs();
     void showAllSongs();
+    void searchCurrentTrackSet(const QString& text, bool useRecentFilter);
 };
