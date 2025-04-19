@@ -18,6 +18,7 @@ class PlayerManagerInterface;
 class TrackCollection;
 class AutoDJProcessor;
 class WLibrarySidebar;
+class WLibraryPreparation;
 class QAction;
 class QModelIndex;
 class QPoint;
@@ -26,8 +27,8 @@ class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AutoDJFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig,
-                  PlayerManagerInterface* pPlayerManager);
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager);
     virtual ~AutoDJFeature();
 
     QVariant title() override;
@@ -40,7 +41,10 @@ class AutoDJFeature : public LibraryFeature {
     bool dragMoveAccept(const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard) override;
+            KeyboardEventFilter* keyboard) override;
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
+            KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
@@ -84,17 +88,21 @@ class AutoDJFeature : public LibraryFeature {
     parented_ptr<QAction> m_pEnableAutoDJAction;
     parented_ptr<QAction> m_pDisableAutoDJAction;
     parented_ptr<QAction> m_pClearQueueAction;
+    parented_ptr<QAction> m_pShowTrackModelInPreparationWindowAction;
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
     parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget = nullptr;
+    WLibrary* m_pLibraryWidget = nullptr;
 
   private slots:
     void slotEnableAutoDJ();
     void slotDisableAutoDJ();
     void slotClearQueue();
+    void slotShowInPreparationWindow();
 
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(CrateId crateId);

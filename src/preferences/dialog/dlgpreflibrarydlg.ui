@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>661</width>
-    <height>1522</height>
+    <height>1747</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -430,6 +430,33 @@
      </layout>
     </widget>
    </item><!-- History -->
+
+    <item>
+      <widget class="QGroupBox" name="groupBoxPreparationLists">
+        <property name="minimumSize">
+          <size>
+            <width>0</width>
+            <height>50</height>
+          </size>
+        </property>
+        <property name="title">
+          <string>Preparation Lists</string>
+        </property>
+        <widget class="QCheckBox" name="checkBox_preparationlists_addallloadedtracks">
+          <property name="geometry">
+            <rect>
+              <x>10</x>
+              <y>20</y>
+              <width>350</width>
+              <height>20</height>
+            </rect>
+          </property>
+          <property name="text">
+            <string>Add every track loaded in all players to the Preparation List</string>
+          </property>
+        </widget>
+      </widget>
+    </item>
 
    <item>
     <widget class="QGroupBox" name="groupBox_external_libraries">

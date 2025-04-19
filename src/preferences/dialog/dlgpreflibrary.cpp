@@ -271,6 +271,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+    checkBox_preparationlists_addallloadedtracks->setChecked(false);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -305,6 +306,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
+    checkBox_preparationlists_addallloadedtracks->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "PreparationListsAddAllLoadedTracks"), true));
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -584,6 +587,9 @@ void DlgPrefLibrary::slotApply() {
         m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
+
+    m_pConfig->set(ConfigKey("[Library]", "PreparationListsAddAllLoadedTracks"),
+            ConfigValue((int)checkBox_preparationlists_addallloadedtracks->isChecked()));
 
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
