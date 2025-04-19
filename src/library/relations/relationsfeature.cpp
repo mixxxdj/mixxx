@@ -21,6 +21,7 @@
 namespace {
 
 const QString kRootViewName = QStringLiteral("RELATIONSHOME");
+const QString kDeckViewName = QStringLiteral("RELATIONSDECK");
 const QString kEmptyDeckViewName = QStringLiteral("EMPTYDECK");
 
 const QString kAppGroup = QStringLiteral("[App]");
@@ -44,23 +45,30 @@ QVariant RelationsFeature::title() {
     return tr("Relations");
 }
 
-void RelationsFeature::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
-    // Register view for all relations
-    m_pRelationView = new DlgRelations(pLibraryWidget, m_pConfig, m_pLibrary, pKeyboard);
-
-    connect(m_pRelationView,
+void RelationsFeature::setConnections(DlgRelations* pView) {
+    connect(pView,
             &DlgRelations::trackSelected,
             this,
             &RelationsFeature::trackSelected);
+}
 
-    m_pRelationView->installEventFilter(pKeyboard);
+void RelationsFeature::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+    // Register view for all relations
+    m_pAllRelationView = new DlgRelations(pLibraryWidget, m_pConfig, m_pLibrary, pKeyboard, true);
+    setConnections(m_pAllRelationView);
+    m_pAllRelationView->installEventFilter(pKeyboard);
+    pLibraryWidget->registerView(kRootViewName, m_pAllRelationView);
 
-    pLibraryWidget->registerView(kRootViewName, m_pRelationView);
+    // Register view for deck relations
+    m_pDeckRelationView = new DlgRelations(pLibraryWidget, m_pConfig, m_pLibrary, pKeyboard, false);
+    setConnections(m_pDeckRelationView);
+    m_pDeckRelationView->installEventFilter(pKeyboard);
+    pLibraryWidget->registerView(kDeckViewName, m_pDeckRelationView);
 
     // Register view for empty decks
-    // WLibraryTextBrowser* editEmptyDeck = new WLibraryTextBrowser(pLibraryWidget);
-    // editEmptyDeck->setHtml(getEmptyDeckViewHtml());
-    // pLibraryWidget->registerView(kEmptyDeckViewName, editEmptyDeck);
+    WLibraryTextBrowser* editEmptyDeck = new WLibraryTextBrowser(pLibraryWidget);
+    editEmptyDeck->setHtml(getEmptyDeckViewHtml());
+    pLibraryWidget->registerView(kEmptyDeckViewName, editEmptyDeck);
 }
 
 void RelationsFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -74,12 +82,11 @@ TreeItemModel* RelationsFeature::sidebarModel() const {
 void RelationsFeature::activate() {
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_pRelationView->showAllRelations();
+    m_pAllRelationView->showAllRelations();
     emit switchToView(kRootViewName);
     emit enableCoverArtDisplay(true);
 }
 
-/* DECK SPECIFIC
 QString RelationsFeature::deckGroupFromIndex(const QModelIndex& index) const {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     QString deckGroup = item->getData().toString();
@@ -97,8 +104,9 @@ void RelationsFeature::activateChild(const QModelIndex& index) {
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_relationsTableModel.displayRelatedTracks(pTrack);
-    emit showTrackModel(&m_relationsTableModel);
+    m_pDeckRelationView->showRelatedTracks(pTrack);
+    emit switchToView(kDeckViewName);
+    m_pDeckRelationView->onShow();
     emit enableCoverArtDisplay(true);
 }
 
@@ -113,4 +121,3 @@ QString RelationsFeature::getEmptyDeckViewHtml() const {
     html.append(QString("<p>%1</p>").arg(browseSummary));
     return html;
 }
-*/

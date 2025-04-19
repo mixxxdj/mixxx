@@ -40,8 +40,7 @@ bool RelationsTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
 }
 
-/* DECK SPECIFIC
-void RelationsTableModel::displayRelatedTracks(TrackPointer pTrack) {
+void RelationsTableModel::showRelatedTracks(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
@@ -82,7 +81,6 @@ void RelationsTableModel::displayRelatedTracks(TrackPointer pTrack) {
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
-*/
 
 void RelationsTableModel::showAllRelations() {
     QString tableName = QStringLiteral("all_relations");
@@ -131,8 +129,7 @@ TrackModel::Capabilities RelationsTableModel::getCapabilities() const {
             Capability::ResetPlayed |
             Capability::Hide |
             Capability::Analyze |
-            Capability::Properties |
-            Capability::Sorting;
+            Capability::Properties;
 
     return caps;
 }

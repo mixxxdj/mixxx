@@ -14,7 +14,8 @@ DlgRelations::DlgRelations(
         WLibrary* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        KeyboardEventFilter* pKeyboard)
+        KeyboardEventFilter* pKeyboard,
+        bool relationPairView)
         : QWidget(parent),
           Ui::DlgRelations(),
           m_pRelationTableView(
@@ -22,7 +23,9 @@ DlgRelations::DlgRelations(
                           this,
                           pConfig,
                           pLibrary,
-                          parent->getTrackTableBackgroundColorOpacity())) {
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          relationPairView)),
+          m_bRelationPairView(relationPairView) {
     setupUi(this);
     m_pRelationTableView->installEventFilter(pKeyboard);
 
@@ -77,6 +80,10 @@ QString DlgRelations::currentSearch() {
 
 void DlgRelations::showAllRelations() {
     m_pRelationTableModel->showAllRelations();
+}
+
+void DlgRelations::showRelatedTracks(TrackPointer pTrack) {
+    m_pRelationTableModel->showRelatedTracks(pTrack);
 }
 
 bool DlgRelations::hasFocus() const {

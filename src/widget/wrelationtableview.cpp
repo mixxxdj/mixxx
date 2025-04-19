@@ -4,31 +4,41 @@
 
 #include "moc_wrelationtableview.cpp"
 
+const int SEPERATOR_SIZE = 1;
+
 WRelationTableView::WRelationTableView(
         QWidget* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        double trackTableBackgroundColorOpacity)
+        double trackTableBackgroundColorOpacity,
+        bool relationPairView)
         : WTrackTableView(parent,
                   pConfig,
                   pLibrary,
-                  trackTableBackgroundColorOpacity) {
+                  trackTableBackgroundColorOpacity),
+          m_bRelationPairView(relationPairView) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true);
+}
+
+bool isSeperatorRow(int row) {
+    return row % 2 == 0;
 }
 
 void WRelationTableView::paintEvent(QPaintEvent* event) {
     QTableView::paintEvent(event);
 
-    QPainter painter(viewport());
-    QPen pen(QColor(60, 60, 60), 1);
-    painter.setPen(pen);
+    if (m_bRelationPairView) {
+        QPainter painter(viewport());
+        QPen pen(QColor(60, 60, 60), SEPERATOR_SIZE);
+        painter.setPen(pen);
 
-    int rowCount = model()->rowCount();
-    for (int row = 1; row < rowCount; ++row) {
-        if (row % 2 == 0) {
-            int y = rowViewportPosition(row);
-            painter.drawLine(0, y, viewport()->width(), y);
+        int rowCount = model()->rowCount();
+        for (int row = 1; row < rowCount; ++row) {
+            if (isSeperatorRow(row)) {
+                int y = rowViewportPosition(row);
+                painter.drawLine(0, y, viewport()->width(), y);
+            }
         }
     }
 }

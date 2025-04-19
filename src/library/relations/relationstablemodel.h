@@ -12,11 +12,11 @@ class RelationsTableModel final : public BaseSqlTableModel {
 
     bool isColumnInternal(int column) override;
 
-    // void displayRelatedTracks(TrackPointer pTrack);
+    void showRelatedTracks(TrackPointer pTrack);
 
-    // TrackPointer selectedTrack() const {
-    //     return m_pTrack;
-    // }
+    TrackPointer selectedTrack() const {
+        return m_pTrack;
+    }
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;

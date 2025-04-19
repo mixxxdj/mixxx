@@ -10,8 +10,12 @@ class WRelationTableView : public WTrackTableView {
             QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double trackTableBackgroundColorOpacity);
+            double trackTableBackgroundColorOpacity,
+            bool relationPairView);
 
   protected:
     void paintEvent(QPaintEvent* event) override;
+
+  private:
+    bool m_bRelationPairView;
 };

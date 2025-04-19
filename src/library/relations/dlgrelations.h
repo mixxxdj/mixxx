@@ -17,7 +17,8 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
     DlgRelations(WLibrary* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            KeyboardEventFilter* pKeyboard);
+            KeyboardEventFilter* pKeyboard,
+            bool relationPairView);
     ~DlgRelations() override;
 
     void onShow() override;
@@ -31,6 +32,7 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
   public slots:
     void installEventFilter(QObject* pFilter);
     void showAllRelations();
+    void showRelatedTracks(TrackPointer pTrack);
 
   signals:
     void trackSelected(TrackPointer pTrack);
@@ -38,4 +40,6 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
   private:
     WRelationTableView* m_pRelationTableView;
     RelationsTableModel* m_pRelationTableModel;
+
+    bool m_bRelationPairView;
 };
