@@ -420,16 +420,31 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
         QString path = m_pixmapPath;
         // Use devicePixelRatio to properly scale the image
         QImage image = *WImageStore::getImage(path, devicePixelRatio);
-        //  If loading the image didn't fail, then we're done. Otherwise fall
-        //  through and render a label.
+        // If loading the image didn't fail, then we're done. Otherwise fall
+        // through and render a label.
         if (!image.isNull()) {
             image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            //  Set the pixel/device ratio AFTER loading the image in order to get
-            //  a truly scaled source image.
-            //  See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
-            //  Also, without this some Qt-internal issue results in an offset
-            //  image when calculating the center line of pixmaps in draw().
+            // Set the pixel/device ratio AFTER loading the image in order to get
+            // a truly scaled source image.
+            // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
+            // Also, without this some Qt-internal issue results in an offset
+            // image when calculating the center line of pixmaps in draw().
             image.setDevicePixelRatio(devicePixelRatio);
+            // Calculate the offset
+            const float imgw = image.width();
+            const Qt::Alignment alignH = m_align & Qt::AlignHorizontal_Mask;
+            switch (alignH) {
+            case Qt::AlignHCenter:
+                m_offset = -(imgw - 1.f) / 2.f;
+                break;
+            case Qt::AlignLeft:
+                m_offset = -imgw + 2.f;
+                break;
+            case Qt::AlignRight:
+            default:
+                m_offset = -1.f;
+                break;
+            }
             return image;
         }
     }
