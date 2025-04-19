@@ -430,6 +430,7 @@ void MixxxMainWindow::initialize() {
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+        ControlObject::set(ConfigKey("[Master],recording"), 1.0);
     }
 }
 
