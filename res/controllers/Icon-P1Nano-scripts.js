@@ -283,6 +283,52 @@ var P1Nano;
         }
     }
 
+    class TouchScreen extends components.ComponentContainer {
+        constructor() {
+            super({});
+
+            // TODO: I've seen these have a lit up background before; does that
+            // only work for CC messages, or notes, or what?
+            this.introStartBtn = new components.Button({
+                group: "[Channel1]",
+                inKey: "intro_start_activate",
+                midi: [0x91, 0x00],
+            });
+            this.introEndBtn = new components.Button({
+                group: "[Channel1]",
+                inKey: "intro_end_activate",
+                midi: [0x90, 0x40],
+            });
+            this.outroStartBtn = new components.Button({
+                group: "[Channel1]",
+                inKey: "outro_start_activate",
+                midi: [0x91, 0x02],
+            });
+            this.outroEndBtn = new components.Button({
+                group: "[Channel1]",
+                inKey: "outro_end_activate",
+                midi: [0x91, 0x03],
+            });
+
+            // TODO: should we do 8 hotcues and some loop controls instead?
+            this.hotcues = [];
+            for (let i = 0; i < 12; i++) {
+                this.hotcues[i] = new components.HotcueButton({
+                    number: i + 1,
+                    midi: [0x92, i],
+                });
+            }
+
+            this.samplers = [];
+            for (let i = 0; i < 16; i++) {
+                this.samplers[i] = new components.SamplerButton({
+                    number: i + 1,
+                    midi: [0x93, i],
+                });
+            }
+        }
+    }
+
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
@@ -293,6 +339,7 @@ var P1Nano;
                 midi: [0x90, 0x55],
                 key: "bpm_tap",
             });
+            this.touchScreen = new TouchScreen();
 
             this.jogWheel = new components.JogWheelBasic({
                 deck: 3,
