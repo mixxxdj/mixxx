@@ -129,11 +129,18 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
         SINT first = 0;
         SINT last = 0;
         SINT i = 0;
-        for (; i < size; ++i) {
+        for (; i < size - 1; i += 2) {
             if (std::abs(expected[i] - actual[i]) > kMaxDecodingError) {
                 error_count = 1;
                 first = i;
                 EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
+                        << "i=" << i << " " << errorMessage;
+                break;
+            }
+            if (std::abs(expected[i + 1] - actual[i + 1]) > kMaxDecodingError) {
+                error_count = 1;
+                first = i;
+                EXPECT_NEAR(expected[i + 1], actual[i + 1], kMaxDecodingError)
                         << "i=" << i << " " << errorMessage;
                 break;
             }
@@ -142,11 +149,14 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
             std::ostringstream csv;
             csv << std::setprecision(std::numeric_limits<CSAMPLE>::max_digits10);
 
-            csv << "sep=,\nexpected,actual,error\n"; // CSV header
+            csv << "sep=,\nexpected left,expected right,actual left, actual "
+                   "right, error\n"; // CSV header
 
-            for (SINT i = 0; i < size; ++i) {
-                csv << expected[i] << "," << actual[i];
-                if (std::abs(expected[i] - actual[i]) > kMaxDecodingError) {
+            for (SINT i = 0; i < size - 1; i += 2) {
+                csv << expected[i] << "," << expected[i + 1] << "," << actual[i]
+                    << "," << actual[i + 1];
+                if (std::abs(expected[i] - actual[i]) > kMaxDecodingError ||
+                        std::abs(expected[i + 1] - actual[i + 1]) > kMaxDecodingError) {
                     csv << ",1\n";
                     error_count++;
                     last = i;
@@ -155,7 +165,7 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
                 }
             }
             std::cout << "CSV debug output with " << error_count
-                      << " errors in the range " << first << " to " << last
+                      << " errors in the range " << first / 2 << " to " << last / 2
                       << ":\n"
                       << csv.str();
         }
