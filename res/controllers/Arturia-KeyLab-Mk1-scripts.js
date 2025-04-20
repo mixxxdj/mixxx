@@ -72,7 +72,7 @@ var KeyLabMk1;
         rotate: {
             inKey: "key",
             max: 24,
-            outputValue: (value) => {
+            outValueScale: (value) => {
                 return keyNums[script.posMod(value - 1, keyNums.length)];
             },
         },
@@ -131,7 +131,7 @@ var KeyLabMk1;
                 min: 1,
                 max: 31,
                 inKey: "sort_column_toggle",
-                outputValue: (value) => {
+                outValueScale: (value) => {
                     return sortCols[(((value - 1) % sortCols.length) + sortCols.length) % sortCols.length];
                 },
             },
@@ -399,8 +399,8 @@ var KeyLabMk1;
                     this.output(this.inGetParameter());
                 },
                 output: function(value) {
-                    if (this.outputValue) {
-                        const newVal = this.outputValue(value);
+                    if (this.outValueScale) {
+                        const newVal = this.outValueScale(value);
                         writeDisplay(`${this.name}: ${newVal}`);
                     }
                 },
@@ -425,8 +425,8 @@ var KeyLabMk1;
                     this.output(this.encoder.inGetParameter());
                 },
                 output: function(value) {
-                    if (this.outputValue) {
-                        const newVal = this.outputValue(value);
+                    if (this.outValueScale) {
+                        const newVal = this.outValueScale(value);
                         writeDisplay(`${this.name}: ${newVal}`);
                     }
                 },
@@ -810,7 +810,7 @@ var KeyLabMk1;
                         key: undefined,
                         inKey: undefined,
                         outKey: undefined,
-                        outputValue: undefined,
+                        outValueScale: undefined,
                         min: undefined,
                         max: undefined,
                     });
@@ -821,7 +821,7 @@ var KeyLabMk1;
                         key: undefined,
                         inKey: undefined,
                         outKey: undefined,
-                        outputValue: undefined,
+                        outValueScale: undefined,
                         min: undefined,
                         max: undefined,
                     });
@@ -967,7 +967,7 @@ var KeyLabMk1;
         }
         for (let n = 0; n < MMCHeader.length; n++) {
             if (data[n] !== MMCHeader[n]) {
-                console.log("unknown sysex packet");
+                console.log(`unknown sysex packet: ${data}`);
                 return;
             }
         }
