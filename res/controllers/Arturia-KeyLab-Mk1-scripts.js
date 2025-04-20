@@ -128,8 +128,8 @@ var KeyLabMk1;
             name: "Sort",
             rotate: {
                 group: "[Library]",
-                min: 1,
-                max: 31,
+                min: script.LIBRARY_COLUMNS.ARTIST,
+                max: script.LIBRARY_COLUMNS.LAST_PLAYED,
                 inKey: "sort_column_toggle",
                 outValueScale: (value) => {
                     return sortCols[(((value - 1) % sortCols.length) + sortCols.length) % sortCols.length];
@@ -367,33 +367,28 @@ var KeyLabMk1;
                         return;
                     }
                     const param = this.inGetParameter();
-                    if (value === 0x3F) {
-                        if (this.relative) {
-                            this.inSetParameter(-1);
-                            return;
-                        }
-                        const newParam = param - 1;
-                        if (
-                            this.min !== undefined && this.max !== undefined
-                            && newParam < this.min
-                        ) {
-                            this.inSetParameter(this.max);
-                        } else {
-                            this.inSetParameter(param - 1);
-                        }
-                    } else if (value === 0x41) {
+
+                    if (value & 0x40) {
                         if (this.relative) {
                             this.inSetParameter(1);
-                            return;
-                        }
-                        const newParam = param + 1;
-                        if (
-                            this.max !== undefined && this.min !== undefined
-                            && newParam > this.max
-                        ) {
-                            this.inSetParameter(this.min);
                         } else {
-                            this.inSetParameter(param + 1);
+                            const newParam = param + 1;
+                            if (this.max !== undefined && this.min !== undefined && newParam > this.max) {
+                                this.inSetParameter(this.min);
+                            } else {
+                                this.inSetParameter(newParam);
+                            }
+                        }
+                    } else {
+                        if (this.relative) {
+                            this.inSetParameter(-1);
+                        } else {
+                            const newParam = param - 1;
+                            if (this.max !== undefined && this.min !== undefined && newParam < this.min) {
+                                this.inSetParameter(this.max);
+                            } else {
+                                this.inSetParameter(newParam);
+                            }
                         }
                     }
                     this.output(this.inGetParameter());
@@ -1005,3 +1000,5 @@ var KeyLabMk1;
         }
     };
 })(KeyLabMk1 || (KeyLabMk1 = {}));
+
+// vim:expandtab:shiftwidth=4:tabstop=4:backupcopy=yes
