@@ -9722,7 +9722,7 @@ Wil je het echt overschrijven?</translation>
         <location filename="../../src/mixxxmainwindow.cpp" line="565"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
-        <translation>De menu balk altijd weergeven?</translation>
+        <translation>Verberg</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="566"/>
