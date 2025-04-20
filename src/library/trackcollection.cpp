@@ -24,11 +24,6 @@ TrackCollection::TrackCollection(
                      m_analysisDao, m_libraryHashDao, pConfig) {
     // Forward signals from TrackDAO
     connect(&m_trackDao,
-            &TrackDAO::trackClean,
-            this,
-            &TrackCollection::trackClean,
-            /*signal-to-signal*/ Qt::DirectConnection);
-    connect(&m_trackDao,
             &TrackDAO::trackDirty,
             this,
             &TrackCollection::trackDirty,
