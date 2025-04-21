@@ -2455,17 +2455,21 @@ class S4Mk3Deck extends Deck {
                 }
                 let [oldValue, oldTimestamp, speed] = this.oldValue;
 
+                // Unwrap the previous counter value if the new one rolls over to zero
                 if (timestamp < oldTimestamp) {
                     oldTimestamp -= wheelTimerMax;
                 }
 
+                // Calculate the 1st derivative of angular position --> angular velocity
                 let diff = value - oldValue;
+                // unwrap over/under-runs
                 if (diff > wheelRelativeMax / 2) {
                     oldValue += wheelRelativeMax;
                 } else if (diff < -wheelRelativeMax / 2) {
                     oldValue -= wheelRelativeMax;
                 }
-
+                
+                // Tie the derivative to the time reference for real speed
                 const currentSpeed = (value - oldValue)/(timestamp - oldTimestamp);
                 if ((currentSpeed <= 0) === (speed <= 0)) {
                     speed = (speed + currentSpeed)/2;
@@ -3017,6 +3021,7 @@ class S4MK3 {
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
                 tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                // the relative wheel value here is one byte offset from its position in the raw data, and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
                 wheelRelative: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 4},
@@ -3068,6 +3073,7 @@ class S4MK3 {
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
                 tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                // the relative wheel value here is one byte offset from its position in the raw data, and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
                 wheelRelative: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 5},
@@ -3142,6 +3148,7 @@ class S4MK3 {
             if (wheelTimerDelta < 0) {
                 wheelTimerDelta += wheelTimerMax;
             }
+            // the byte offsets below don't match with the ones in the deck definitions. this should all be harmonized somehow. ZT
             this.leftDeck.wheelRelative.input(view.getUint32(12, true), view.getUint32(8, true));
             this.rightDeck.wheelRelative.input(view.getUint32(40, true), view.getUint32(36, true));
         } else {
