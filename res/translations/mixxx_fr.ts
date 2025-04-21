@@ -2459,12 +2459,12 @@ trace : ci-dessus + messages de profilage</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="317"/>
         <source>Move Beatgrid Half a Beat</source>
-        <translation type="unfinished"/>
+        <translation>Déplacer la grille rythmique d&apos;un demi-battement</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
         <source>Adjust the beatgrid by exactly one half beat. Usable only for tracks with constant tempo.</source>
-        <translation type="unfinished"/>
+        <translation>Ajuster la grille rythmique exactement d&apos;un demi-battement. Utilisable uniquement pour les pistes à tempo constant.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="330"/>
@@ -13607,7 +13607,8 @@ du signal d&apos;entrée, des temps de relâchement courts peuvent introduire un
         <location filename="../../src/skin/legacy/tooltips.cpp" line="445"/>
         <source>Adjust beatgrid by exactly one half beat. Usable only on
 tracks with constant tempo.</source>
-        <translation type="unfinished"/>
+        <translation>Ajuster la grille rythmique exactement d&apos;un demi-battement. Utilisable uniquement sur 
+les pistes à tempo constant.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="476"/>
@@ -16507,7 +16508,7 @@ Cette opération est irréversible !</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="548"/>
         <source>Shift Beatgrid Half Beat</source>
-        <translation type="unfinished"/>
+        <translation>Grille rythmique décalée d&apos;un demi-battement</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="560"/>
