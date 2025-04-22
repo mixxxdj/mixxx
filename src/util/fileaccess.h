@@ -19,6 +19,10 @@ class FileAccess final {
     FileAccess& operator=(FileAccess&&) = default;
     FileAccess& operator=(const FileAccess&) = default;
 
+    bool isSet() const {
+        return !m_fileInfo.asQFileInfo().filePath().isEmpty();
+    }
+
     const FileInfo& info() const {
         return m_fileInfo;
     }
