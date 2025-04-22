@@ -426,7 +426,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         for (const PreferencesPage& page : std::as_const(m_allPages)) {
             if (page.pDlg && !page.pDlg->okayToClose()) {
                 // If any page is not okay to close, switch to it and don't accept
-                switchToPage(page.pTreeItem->text(0), page.pDlg);
+                contentsTreeWidget->setCurrentItem(page.pTreeItem);
                 return;
             }
         }
@@ -519,13 +519,6 @@ void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* p
     Q_UNUSED(pageTitle);
 #endif
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
-
-    for (const PreferencesPage& page : std::as_const(m_allPages)) {
-        if (page.pDlg == pWidget) {
-            contentsTreeWidget->setCurrentItem(page.pTreeItem);
-            break;
-        }
-    }
 
     QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);
     VERIFY_OR_DEBUG_ASSERT(pButton) {
