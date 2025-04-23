@@ -4,12 +4,15 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QSortFilterProxyModel>
 #include <QStandardPaths>
 #include <QStringList>
 #include <memory>
 
+#include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
+#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
@@ -39,20 +42,22 @@ const QStringList removableDriveRootPaths() {
 
 } // anonymous namespace
 
-BrowseFeature::BrowseFeature(
-        Library* pLibrary,
+BrowseFeature::BrowseFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary, pConfig, QString("computer")),
-          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
-          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
-          m_proxyModel(&m_browseModel, true),
-          m_pSidebarModel(new FolderTreeModel(this)) {
-    connect(&m_browseModel,
+          m_pTrackCollection(
+                  pLibrary->trackCollectionManager()->internalCollection()),
+          m_pBrowseModel(make_parented<BrowseTableModel>(
+                  this, pLibrary->trackCollectionManager(), pRecordingManager)),
+          m_pProxyModel(std::make_unique<ProxyTrackModel>(
+                  m_pBrowseModel, true /* handle search */)),
+          m_pSidebarModel(make_parented<FolderTreeModel>(this)) {
+    connect(m_pBrowseModel,
             &BrowseTableModel::saveModelState,
             this,
             &LibraryFeature::saveModelState);
-    connect(&m_browseModel,
+    connect(m_pBrowseModel,
             &BrowseTableModel::restoreModelState,
             this,
             &LibraryFeature::restoreModelState);
@@ -69,37 +74,37 @@ BrowseFeature::BrowseFeature(
             this,
             &BrowseFeature::invalidateRightClickIndex);
 
-    m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
+    m_pAddQuickLinkAction = make_parented<QAction>(tr("Add to Quick Links"), this);
     connect(m_pAddQuickLinkAction,
             &QAction::triggered,
             this,
             &BrowseFeature::slotAddQuickLink);
 
-    m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
+    m_pRemoveQuickLinkAction = make_parented<QAction>(tr("Remove from Quick Links"), this);
     connect(m_pRemoveQuickLinkAction,
             &QAction::triggered,
             this,
             &BrowseFeature::slotRemoveQuickLink);
 
-    m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
+    m_pAddtoLibraryAction = make_parented<QAction>(tr("Add to Library"), this);
     connect(m_pAddtoLibraryAction,
             &QAction::triggered,
             this,
             &BrowseFeature::slotAddToLibrary);
 
-    m_pRefreshDirTreeAction = new QAction(tr("Refresh directory tree"), this);
+    m_pRefreshDirTreeAction = make_parented<QAction>(tr("Refresh directory tree"), this);
     connect(m_pRefreshDirTreeAction,
             &QAction::triggered,
             this,
             &BrowseFeature::slotRefreshDirectoryTree);
 
-    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
     // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
     // of the item.
-    m_proxyModel.setSortRole(Qt::UserRole);
+    m_pProxyModel->setSortRole(Qt::UserRole);
     // Dynamically re-sort contents as we add items to the source model.
-    m_proxyModel.setDynamicSortFilter(true);
+    m_pProxyModel->setDynamicSortFilter(true);
 
     // The invisible root item of the child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
@@ -305,7 +310,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
         // Clear the tracks view
-        m_browseModel.setPath({});
+        m_pBrowseModel->setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
@@ -321,9 +326,9 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
             }
         }
         emit saveModelState();
-        m_browseModel.setPath(std::move(dirAccess));
+        m_pBrowseModel->setPath(std::move(dirAccess));
     }
-    emit showTrackModel(&m_proxyModel);
+    emit showTrackModel(m_pProxyModel.get());
     // Search is restored in Library::slotShowTrackModel, disable it where it's useless
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit disableSearch();
@@ -616,7 +621,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 }
 
 void BrowseFeature::releaseBrowseThread() {
-    m_browseModel.releaseBrowseThread();
+    m_pBrowseModel->releaseBrowseThread();
 }
 
 QString BrowseFeature::getLastRightClickedPath() const {
