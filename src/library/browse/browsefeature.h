@@ -2,24 +2,22 @@
 
 #include <QObject>
 #include <QPointer>
-#include <QSortFilterProxyModel>
 #include <QString>
-#include <QStringListModel>
-#include <QVariant>
 
-#include "library/browse/browsetablemodel.h"
 #include "library/libraryfeature.h"
-#include "library/proxytrackmodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
 
+class BrowseTableModel;
+class ProxyTrackModel;
+class FolderTreeModel;
 class Library;
+class RecordingManager;
 class TrackCollection;
 class WLibrarySidebar;
-class QModelIndex;
-class FolderTreeModel;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
@@ -68,13 +66,13 @@ class BrowseFeature : public LibraryFeature {
 
     TrackCollection* const m_pTrackCollection;
 
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
-    FolderTreeModel* m_pSidebarModel;
-    QAction* m_pAddQuickLinkAction;
-    QAction* m_pRemoveQuickLinkAction;
-    QAction* m_pAddtoLibraryAction;
-    QAction* m_pRefreshDirTreeAction;
+    parented_ptr<BrowseTableModel> m_pBrowseModel;
+    std::unique_ptr<ProxyTrackModel> m_pProxyModel;
+    parented_ptr<FolderTreeModel> m_pSidebarModel;
+    parented_ptr<QAction> m_pAddQuickLinkAction;
+    parented_ptr<QAction> m_pRemoveQuickLinkAction;
+    parented_ptr<QAction> m_pAddtoLibraryAction;
+    parented_ptr<QAction> m_pRefreshDirTreeAction;
 
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
