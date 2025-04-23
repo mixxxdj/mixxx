@@ -242,7 +242,7 @@ void WKnobComposed::mousePressEvent(QMouseEvent* e) {
         formattedValue = QString::number(normalizedValue, 'f', 2);
     }
 
-    QToolTip::showText(e->globalPos(), formattedValue);
+    QToolTip::showText(e->globalPosition().toPoint(), formattedValue);
 
     m_handler.mousePressEvent(this, e);
 }
