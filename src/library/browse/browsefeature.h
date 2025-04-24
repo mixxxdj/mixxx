@@ -50,6 +50,7 @@ class BrowseFeature : public LibraryFeature {
     void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
+    void invalidateRightClickIndex();
 
   signals:
     void setRootIndex(const QModelIndex&);

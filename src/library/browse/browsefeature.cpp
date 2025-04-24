@@ -52,6 +52,18 @@ BrowseFeature::BrowseFeature(
             &BrowseTableModel::restoreModelState,
             this,
             &LibraryFeature::restoreModelState);
+    connect(m_pSidebarModel,
+            &QAbstractItemModel::rowsAboutToBeRemoved,
+            this,
+            &BrowseFeature::invalidateRightClickIndex);
+    connect(m_pSidebarModel,
+            &QAbstractItemModel::rowsAboutToBeInserted,
+            this,
+            &BrowseFeature::invalidateRightClickIndex);
+    connect(m_pSidebarModel,
+            &QAbstractItemModel::modelAboutToBeReset,
+            this,
+            &BrowseFeature::invalidateRightClickIndex);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction,
@@ -600,4 +612,8 @@ QString BrowseFeature::getLastRightClickedPath() const {
         return {};
     }
     return pItem->getData().toString();
+}
+
+void BrowseFeature::invalidateRightClickIndex() {
+    m_lastRightClickedIndex = QModelIndex();
 }
