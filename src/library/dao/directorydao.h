@@ -25,7 +25,12 @@ class DirectoryDAO : public DAO {
     };
     AddResult addDirectory(const mixxx::FileInfo& newDir) const;
 
-    bool isDirectoryWatched(const mixxx::FileInfo& dir) const;
+    /// Tests if dir is (a child of) one of the watched library root directories.
+    /// The check uses mixxx::FileInfo::canoniclaLocation(), therefore it returns
+    /// true also if either dir or the corresponding library root dir is a symlink.
+    /// In case of symlink root dirs, dir is un-resolved, ie. the dir path is turned
+    /// into (a child of) the symlink root.path.
+    std::pair<bool, mixxx::FileInfo> isDirectoryWatched(const mixxx::FileInfo& dir) const;
 
     enum class RemoveResult {
         Ok,
