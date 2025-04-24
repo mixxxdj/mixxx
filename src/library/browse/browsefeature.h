@@ -63,6 +63,7 @@ class BrowseFeature : public LibraryFeature {
     std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
+    QString getLastRightClickedPath() const;
 
     TrackCollection* const m_pTrackCollection;
 
@@ -76,8 +77,7 @@ class BrowseFeature : public LibraryFeature {
 
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
-    TreeItem* m_pLastRightClickedItem;
-    QModelIndex m_pLastRightClickedIndex;
+    QModelIndex m_lastRightClickedIndex;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;

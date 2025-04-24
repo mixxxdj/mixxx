@@ -47,8 +47,7 @@ BrowseFeature::BrowseFeature(
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel, true),
-          m_pSidebarModel(new FolderTreeModel(this)),
-          m_pLastRightClickedItem(nullptr) {
+          m_pSidebarModel(new FolderTreeModel(this)) {
     connect(&m_browseModel,
             &BrowseTableModel::restoreModelState,
             this,
@@ -159,21 +158,18 @@ QVariant BrowseFeature::title() {
 }
 
 void BrowseFeature::slotAddQuickLink() {
-    if (!m_pLastRightClickedItem) {
+    const QString path = getLastRightClickedPath();
+    if (path.isEmpty()) {
         return;
     }
 
-    const QVariant pathData = m_pLastRightClickedItem->getData();
-    DEBUG_ASSERT(pathData.isValid() && pathData.canConvert<QString>());
-    m_pLastRightClickedItem = nullptr;
-    const QString path = pathData.toString();
     const QString name = extractNameFromPath(path);
 
     const QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     std::vector<std::unique_ptr<TreeItem>> rows;
     // TODO() Use here std::span to get around the heap allocation of
     // std::vector for a single element.
-    rows.push_back(std::make_unique<TreeItem>(name, pathData));
+    rows.push_back(std::make_unique<TreeItem>(name, path));
     m_pSidebarModel->insertTreeItemRows(std::move(rows), m_pQuickLinkItem->childRows(), parent);
 
     m_quickLinkList.append(path);
@@ -181,14 +177,11 @@ void BrowseFeature::slotAddQuickLink() {
 }
 
 void BrowseFeature::slotAddToLibrary() {
-    if (!m_pLastRightClickedItem) {
+    const QString path = getLastRightClickedPath();
+    if (path.isEmpty()) {
         return;
     }
-    const QVariant pathData = m_pLastRightClickedItem->getData();
-    DEBUG_ASSERT(pathData.isValid() && pathData.canConvert<QString>());
-    m_pLastRightClickedItem = nullptr;
-    const QString path = pathData.toString();
-    m_pLastRightClickedItem = nullptr;
+
     if (!m_pLibrary->requestAddDir(path)) {
         return;
     }
@@ -222,15 +215,12 @@ void BrowseFeature::slotLibraryScanFinished() {
 }
 
 void BrowseFeature::slotRemoveQuickLink() {
-    if (!m_pLastRightClickedItem) {
+    const QString path = getLastRightClickedPath();
+    if (path.isEmpty()) {
         return;
     }
 
-    const auto data = m_pLastRightClickedItem->getData();
-    m_pLastRightClickedItem = nullptr;
-    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
-    const QString spath = data.toString();
-    int quickLinkIndex = m_quickLinkList.indexOf(spath);
+    int quickLinkIndex = m_quickLinkList.indexOf(path);
     if (quickLinkIndex == -1) {
         return;
     }
@@ -245,21 +235,15 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 void BrowseFeature::slotRefreshDirectoryTree() {
-    if (!m_pLastRightClickedItem) {
-        return;
-    }
-    if (!m_pLastRightClickedIndex.isValid()) {
+    if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
 
-    const auto data = m_pLastRightClickedItem->getData();
-    m_pLastRightClickedItem = nullptr;
-    DEBUG_ASSERT(data.isValid() && data.canConvert<QString>());
-    const QString path = data.toString();
+    const QString path = getLastRightClickedPath();
     m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
 
     // Update child items
-    onLazyChildExpandation(m_pLastRightClickedIndex);
+    onLazyChildExpandation(m_lastRightClickedIndex);
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
@@ -343,9 +327,9 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         return;
     }
 
-    // Make sure that this is reset after use
-    m_pLastRightClickedItem = pItem;
-    m_pLastRightClickedIndex = index;
+    // Make sure that this is reset whenever the tree changes
+    // and it may have become a dangling pointer
+    m_lastRightClickedIndex = index;
 
     QMenu menu(m_pSidebarWidget);
 
@@ -605,4 +589,15 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 
 void BrowseFeature::releaseBrowseThread() {
     m_browseModel.releaseBrowseThread();
+}
+
+QString BrowseFeature::getLastRightClickedPath() const {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return {};
+    }
+    TreeItem* pItem = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pItem && pItem->getData().isValid()) {
+        return {};
+    }
+    return pItem->getData().toString();
 }
