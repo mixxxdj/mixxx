@@ -60,8 +60,12 @@ class BrowseFeature : public LibraryFeature {
   private:
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
-    bool isPathWatched(const QString& path) const;
+    std::pair<bool, mixxx::FileInfo> isPathWatched(const QString& path) const;
     QStringList getDefaultQuickLinks() const;
+    std::unique_ptr<TreeItem> createPathTreeItem(const QString& name,
+            const QString& path,
+            bool checkIfPathIsWatched = false) const;
+    std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() const;
     std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
