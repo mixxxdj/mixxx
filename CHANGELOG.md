@@ -7,6 +7,8 @@
 * Behringer DDM4000 & BCR2000: Update mappings to 2.5
   [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
   [#14349](https://github.com/mixxxdj/mixxx/pull/14349)
+* DJ TechTools MIDI Fighter Spectra: Add controller mapping
+  [#14559](https://github.com/mixxxdj/mixxx/pull/14559)
 * Hercules DJControl Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
@@ -22,6 +24,7 @@
 * M-Vave SMK-25 II: Piano keyboard mapping
   [#14412](https://github.com/mixxxdj/mixxx/pull/14412)
   [#14484](https://github.com/mixxxdj/mixxx/pull/14484)
+* Numark Mixtrack Platinum: Fix VU Meters [#14575](https://github.com/mixxxdj/mixxx/pull/14575)
 * Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
 * Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
 * Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
@@ -38,6 +41,9 @@
   [#14028](https://github.com/mixxxdj/mixxx/pull/14028)
   [#13995](https://github.com/mixxxdj/mixxx/issues/13995)
 * Traktor Kontrol S3: Use pitch absolute mode as described in the manual [#14123](https://github.com/mixxxdj/mixxx/pull/14123)
+* Stanton SCS.1m/d; Keith McMillen QuNeo; EKS Otus: use `playposition` instead of non-existent `visual_playposition`
+  [#14609](https://github.com/mixxxdj/mixxx/pull/14609)
+  [#14603](https://github.com/mixxxdj/mixxx/issues/14603)
 
 ### Controller Backend
 
@@ -91,6 +97,10 @@
 * Key Wheel: Move to View menu and make it a floating tool window
   [#14256](https://github.com/mixxxdj/mixxx/pull/14256)
   [#14239](https://github.com/mixxxdj/mixxx/pull/14239)
+* Center effect parameter names [#14598](https://github.com/mixxxdj/mixxx/pull/14598)
+* Track menu: highlight row when hovering checkbox
+  [#14636](https://github.com/mixxxdj/mixxx/pull/14636)
+  [#14680](https://github.com/mixxxdj/mixxx/pull/14680)
 
 ### Library
 
@@ -120,8 +130,23 @@
 * Fix AutoDJ "Remove Crate" action
   [#14426](https://github.com/mixxxdj/mixxx/pull/14426)
   [#14425](https://github.com/mixxxdj/mixxx/issues/14425)
-* Fix scrolling issue with coverart columns visible [#13719](https://github.com/mixxxdj/mixxx/pull/13719)
+* Fix scrolling issue with coverart columns visible
+  [#13719](https://github.com/mixxxdj/mixxx/pull/13719)
+  [#14631](https://github.com/mixxxdj/mixxx/pull/14631)
 * Developer Tools: multi-word search, no Tab navigation in controls table [#14474](https://github.com/mixxxdj/mixxx/pull/14474)
+* Analyze feature: respect New / All selection when searching
+  [#14660](https://github.com/mixxxdj/mixxx/pull/14660)
+  [#14659](https://github.com/mixxxdj/mixxx/issues/14659)
+* Stop populating Computer library feature when Mixxx should close [#14573](https://github.com/mixxxdj/mixxx/pull/14573)
+* Tracks: apply played/missing text color also to selected tracks [#13583](https://github.com/mixxxdj/mixxx/pull/13583)
+* Tracks: `show_track_menu` at index position [#14385](https://github.com/mixxxdj/mixxx/pull/14385)
+* Search related menu: improve checkbox click UX [#14637](https://github.com/mixxxdj/mixxx/pull/14637)
+* Avoid false missing tracks due to db inconsistency
+  [#14615](https://github.com/mixxxdj/mixxx/pull/14615)
+  [#14513](https://github.com/mixxxdj/mixxx/issues/14513)
+* Fix automatic trimming of search bar text
+  [#14497](https://github.com/mixxxdj/mixxx/pull/14497)
+  [#14486](https://github.com/mixxxdj/mixxx/issues/14486)
 
 ### Other Fixes
 
@@ -139,6 +164,12 @@
 * Allow seeking to a hotcue during waveform scratching
   [#14357](https://github.com/mixxxdj/mixxx/pull/14357)
   [#13981](https://github.com/mixxxdj/mixxx/issues/13981)
+* Reset saved loop when toggling off after switching cue type
+  [#14661](https://github.com/mixxxdj/mixxx/pull/14661)
+  [#14657](https://github.com/mixxxdj/mixxx/issues/14657)
+* Fix leaks from fid_design()
+  [#14567](https://github.com/mixxxdj/mixxx/pull/14567)
+  [#9470](https://github.com/mixxxdj/mixxx/issues/9470)
 
 ### Target support
 
@@ -150,6 +181,8 @@
   [#14071](https://github.com/mixxxdj/mixxx/issues/14071)
   [#14200](https://github.com/mixxxdj/mixxx/pull/14200)
   [#14204](https://github.com/mixxxdj/mixxx/pull/14204)
+  [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+  [#14518](https://github.com/mixxxdj/mixxx/pull/14518)
 * Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
   [#14148](https://github.com/mixxxdj/mixxx/pull/14148)
   [#14158](https://github.com/mixxxdj/mixxx/pull/14158)
@@ -163,9 +196,13 @@
 * Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
 * Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
-* Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
-* Raise macOS target version to 11 (Qt6.5 requirement). [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+* Qt 6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
+* Raise macOS target version to 11 (Qt 6.5 requirement). [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
 * Fail early when building on WSL [#14481](https://github.com/mixxxdj/mixxx/pull/14481)
+* Remove useless udev rule [#14630](https://github.com/mixxxdj/mixxx/pull/14630)
+* Handle new " / " from taglib 2.0
+  [#12854](https://github.com/mixxxdj/mixxx/pull/12854)
+  [#12790](https://github.com/mixxxdj/mixxx/issues/12790)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
