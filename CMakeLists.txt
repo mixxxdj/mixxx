@@ -1228,6 +1228,7 @@ add_library(
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
   src/library/dlgtagfetcher.cpp
@@ -1591,6 +1592,7 @@ add_library(
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wmenucheckbox.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp

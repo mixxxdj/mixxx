@@ -1,14 +1,11 @@
 #pragma once
 
-#include <QStyledItemDelegate>
+#include "library/tabledelegates/defaultdelegate.h"
 
-class QTableView;
-
-class TableItemDelegate : public QStyledItemDelegate {
+class TableItemDelegate : public DefaultDelegate {
     Q_OBJECT
   public:
-    explicit TableItemDelegate(
-            QTableView* pTableView);
+    explicit TableItemDelegate(QTableView* pTableView);
     ~TableItemDelegate() override = default;
 
     void paint(
@@ -36,6 +33,6 @@ class TableItemDelegate : public QStyledItemDelegate {
     // Having this here avoids including QTableView there.
     int columnWidth(const QModelIndex &index) const;
 
-    QColor m_focusBorderColor;
     QTableView* m_pTableView;
+    QColor m_focusBorderColor;
 };

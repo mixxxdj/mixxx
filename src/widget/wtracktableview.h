@@ -172,6 +172,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
 
     void initTrackMenu();
+    void showTrackMenu(const QPoint pos, const QModelIndex& index);
 
     void hideOrRemoveSelectedTracks();
 

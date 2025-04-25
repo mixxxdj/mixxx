@@ -506,42 +506,85 @@ void WTrackTableView::slotUnhide() {
 
 void WTrackTableView::slotShowHideTrackMenu(bool show) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
-        return;
+        initTrackMenu();
     }
     if (show == m_pTrackMenu->isVisible()) {
         emit trackMenuVisible(show);
         return;
     }
     if (show) {
-        QContextMenuEvent event(QContextMenuEvent::Mouse,
-                mapFromGlobal(QCursor::pos()),
-                QCursor::pos());
-        contextMenuEvent(&event);
+        const auto selectedIndices = selectionModel()->selectedIndexes();
+        if (selectedIndices.isEmpty()) {
+            // If selection is empty, contextMenuEvent() won't work anyway.
+            return;
+        }
+
+        // Show at current index if it's valid. When using only a controller for
+        // for track selection, there's only on row selected.
+        // If it's not part of the selection, like when Ctrl+click was used to
+        // deselect a row, we use the first selected row and the column of the
+        // current index.
+        // Else show at cursor position.
+        QPoint evPos;
+        const auto currIdx = currentIndex();
+        if (currIdx.isValid()) {
+            if (selectedIndices.contains(currIdx)) {
+                evPos = visualRect(currIdx).center();
+            } else {
+                // use first selected row and column of current index
+                const QList<int> rows = getSelectedRowNumbers();
+                const QModelIndex tempIdx = currIdx.siblingAtRow(rows.first());
+                evPos = visualRect(tempIdx).center();
+            }
+            // If the selected row is outside the table's viewport (above or below),
+            // let the menu unfold from the bottom center to hopefully clarify
+            // that the menu belongs to the library and not to some deck widget.
+            if (!viewport()->rect().contains(evPos)) {
+                evPos = QPoint(viewport()->rect().center().x(),
+                        viewport()->rect().bottom());
+            } else {
+                // The viewports start below the header, but mapToGlobal() uses
+                // the rect() as reference. Add header height to y and we're good.
+                // Assumes the view shows at least one row which is at least as tall
+                // as the header, else we'll end up below the viewport, then it's
+                // up to QMenu to find an adequate popup position.
+                evPos += QPoint(0, horizontalHeader()->height());
+            }
+            evPos = mapToGlobal(evPos);
+        } else {
+            evPos = QCursor::pos();
+        }
+        showTrackMenu(evPos, indexAt(evPos));
     } else {
         m_pTrackMenu->close();
     }
 }
 
-void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
+void WTrackTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         initTrackMenu();
     }
-    event->accept();
+    pEvent->accept();
+
+    showTrackMenu(pEvent->globalPos(), indexAt(pEvent->pos()));
+}
+
+void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
+        return;
+    }
     // Update track indices in context menu
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
     }
-    // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi?
-    // They could then focus the respective edit field.
     m_pTrackMenu->loadTrackModelIndices(indices);
-    const QModelIndex clickedIdx = indexAt(event->pos());
-    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(clickedIdx));
+    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
 
-    m_pTrackMenu->popup(event->globalPos());
-    // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
+    m_pTrackMenu->popup(pos);
+    // WTrackmenu emits restoreCurrentViewStateOrIndex() on hide if required
 }
 
 QString WTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
