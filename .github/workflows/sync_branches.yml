@@ -1,9 +1,12 @@
 name: Sync Branches
 on:
   push:
-    branches:
-      - "2.4"
-      - "2.5"
+    #    branches:
+    #      - "2.4"
+    #      - "2.5"
+    #   temporary disabled for all branches
+    branches-ignore:
+      - "*"
   workflow_dispatch:
 
 permissions: {}
