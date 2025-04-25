@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-03-20" timestamp="1742453738">
+    <release version="2.5.1" type="development" date="2025-04-25" timestamp="1745598227">
       <description>
  <p>
   Controller Mappings
@@ -6136,9 +6136,7 @@ varies on different versions of Windows:
  </p>
  <ul>
   <li>
-   Windows Vista, 7, and 8:
-   Start &gt; Control Panel &gt; Programs &gt; Uninstall a
-  Program
+   Windows Vista, 7, and 8: Start &gt; Control Panel &gt; Programs &gt; Uninstall a Program
   </li>
   <li>
    Windows 10:
