@@ -1,19 +1,22 @@
 #pragma once
 
-#include <QCheckBox>
 #include <QMenu>
 
 #include "util/parented_ptr.h"
+#include "widget/wmenucheckbox.h"
 
 class Track;
 class QWidgetAction;
 
-class WSearchRelatedCheckBox : public QCheckBox {
+/// Extension of WMenuCheckBox with a vertical separator bar in between the
+/// label and the indicator box. This is supposed to clarify the different
+/// behavior of clicks in these two regions.
+class WSearchRelatedCheckBox : public WMenuCheckBox {
     Q_OBJECT
   public:
     explicit WSearchRelatedCheckBox(const QString& label,
             QWidget* pParent = nullptr)
-            : QCheckBox(label, pParent) {
+            : WMenuCheckBox(label, pParent) {
     }
 
     Q_PROPERTY(QColor separatorColor
