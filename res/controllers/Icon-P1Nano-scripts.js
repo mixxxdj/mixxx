@@ -74,16 +74,18 @@ var P1Nano;
     };
 
     const printScreenName = function(idx, name, row=0) {
-        if (name.length > 7) {
-            throw Error(`display is only 7 glyphs wide, tried to print "${name}"`);
+        const maxLen = 7;
+        if (name.length > maxLen) {
+            console.log(`Trimmed text longer than ${maxLen} bytes: "${name}"`);
+            name = name.slice(0, maxLen);
         }
         midi.sendSysexMsg(MCUHeader
-            .concat([0x12, (idx * 7) + (row * 56)])
+            .concat([0x12, (idx * maxLen) + (row * 56)])
             .concat(name.toInt())
             .concat([0xF7]));
     };
 
-    const printLCDDisplay = function(row, channelIndex, text) {
+    const printLCDDisplay = function(channelIndex, text, row=0) {
         // The MCU spec indicates that a there should be a two rowsstrip of 55
         // dot-matrix displays (and a 56 byte buffer with a newline character at
         // the end of each line).
@@ -99,7 +101,7 @@ var P1Nano;
 
         const maxLen = 5;
         if (text.length > maxLen) {
-            console.log(`Trimmed text longer than 5 bytes: "${text}"`);
+            console.log(`Trimmed text longer than ${maxLen} bytes: "${text}"`);
             text = text.slice(0, maxLen);
         }
         text = ` ${text}`;
@@ -257,7 +259,7 @@ var P1Nano;
                 // otherwise hang around on this line).
                 this.name = this.name.padEnd(7, " ");
             }
-            printScreenName(this.screen, this.name);
+            printScreenName(this.screen, this.name, 1);
         }
         outValueScale(_value) {
             // TODO: I'm extremely confused about what values this expects or
@@ -276,9 +278,9 @@ var P1Nano;
             const groupNo = /\[Channel(\d+)\]/.exec(this.group);
             if (groupNo) {
                 const deck = `Deck ${groupNo[1]}`.padEnd(7, " ");
-                printScreenName(this.screen, deck, 1);
+                printScreenName(this.screen, deck);
             } else {
-                printScreenName(this.screen, "Main".padEnd(7, " "), 1);
+                printScreenName(this.screen, "Main".padEnd(7, " "));
             }
         }
     }
@@ -694,9 +696,9 @@ var P1Nano;
                     outKey: "bpm",
                     output: function(value) {
                         if (value === 0) {
-                            printLCDDisplay(0, i, " ");
+                            printLCDDisplay(i, " ");
                         } else {
-                            printLCDDisplay(0, i, value.toPrecision(4).toString());
+                            printLCDDisplay(i, value.toPrecision(4).toString());
                         }
                     },
                 });
