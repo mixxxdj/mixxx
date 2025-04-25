@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-03-24" timestamp="1742856467">
+    <release version="2.5.1" type="development" date="2025-03-20" timestamp="1742453738">
       <description>
  <p>
   Controller Mappings
@@ -106,6 +106,10 @@
    Behringer DDM4000 &amp; BCR2000: Update mappings to 2.5
    #14232
    #14349
+  </li>
+  <li>
+   DJ TechTools MIDI Fighter Spectra: Add controller mapping
+   #14559
   </li>
   <li>
    Hercules DJControl Inpulse 300: add toneplay, slicer, and beatmatch functionalities
@@ -132,6 +136,10 @@
    M-Vave SMK-25 II: Piano keyboard mapping
    #14412
    #14484
+  </li>
+  <li>
+   Numark Mixtrack Platinum: Fix VU Meters
+   #14575
   </li>
   <li>
    Numark NS6II: New mapping
@@ -168,6 +176,14 @@
   <li>
    Traktor Kontrol S3: Use pitch absolute mode as described in the manual
    #14123
+  </li>
+  <li>
+   Stanton SCS.1m/d; Keith McMillen QuNeo; EKS Otus: use
+   playposition
+   instead of non-existent
+   visual_playposition
+   #14609
+   #14603
   </li>
  </ul>
  <p>
@@ -288,6 +304,15 @@
    #14256
    #14239
   </li>
+  <li>
+   Center effect parameter names
+   #14598
+  </li>
+  <li>
+   Track menu: highlight row when hovering checkbox
+   #14636
+   #14680
+  </li>
  </ul>
  <p>
   Library
@@ -357,10 +382,44 @@
   <li>
    Fix scrolling issue with coverart columns visible
    #13719
+   #14631
   </li>
   <li>
    Developer Tools: multi-word search, no Tab navigation in controls table
    #14474
+  </li>
+  <li>
+   Analyze feature: respect New / All selection when searching
+   #14660
+   #14659
+  </li>
+  <li>
+   Stop populating Computer library feature when Mixxx should close
+   #14573
+  </li>
+  <li>
+   Tracks: apply played/missing text color also to selected tracks
+   #13583
+  </li>
+  <li>
+   Tracks:
+   show_track_menu
+   at index position
+   #14385
+  </li>
+  <li>
+   Search related menu: improve checkbox click UX
+   #14637
+  </li>
+  <li>
+   Avoid false missing tracks due to db inconsistency
+   #14615
+   #14513
+  </li>
+  <li>
+   Fix automatic trimming of search bar text
+   #14497
+   #14486
   </li>
  </ul>
  <p>
@@ -402,6 +461,16 @@
    #14357
    #13981
   </li>
+  <li>
+   Reset saved loop when toggling off after switching cue type
+   #14661
+   #14657
+  </li>
+  <li>
+   Fix leaks from fid_design()
+   #14567
+   #9470
+  </li>
  </ul>
  <p>
   Target support
@@ -418,6 +487,8 @@
    #14071
    #14200
    #14204
+   #14440
+   #14518
   </li>
   <li>
    Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
@@ -447,16 +518,25 @@
    #14321
   </li>
   <li>
-   Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows
+   Qt 6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows
    #14228
   </li>
   <li>
-   Raise macOS target version to 11 (Qt6.5 requirement).
+   Raise macOS target version to 11 (Qt 6.5 requirement).
    #14440
   </li>
   <li>
    Fail early when building on WSL
    #14481
+  </li>
+  <li>
+   Remove useless udev rule
+   #14630
+  </li>
+  <li>
+   Handle new " / " from taglib 2.0
+   #12854
+   #12790
   </li>
  </ul>
 </description>
