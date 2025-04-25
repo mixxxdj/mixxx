@@ -358,8 +358,6 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     menu.addAction(m_pAddtoLibraryAction);
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
-    // Don't invoke onLazyChildExpandation(index) now! It might cause a crash
-    // after quick link removal, see comment function for details.
 }
 
 namespace {
@@ -413,18 +411,10 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
-    // The selected item might have been removed just before this function
-    // is invoked!
-    // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
-    // that would otherwise occur after a quick link has been removed.
-    // Especially the check of QVariant::isValid() seems to be essential.
-    // See also: https://github.com/mixxxdj/mixxx/issues/8270
-    // After migration to Qt5 the implementation of all LibraryFeatures
-    // should be revisited, because I consider these checks only as a
-    // temporary workaround.
-    // NOTE(ronso0) Still relevant with 2.5.0 and Qt6. These checks don't seem
-    // to suffice, it would crash after removing a quick link.
-    // Just don't call this after right-clicking a quick link.
+    // Caution: Make sure the passed index still exists in the model.
+    // In case it has been removed or replaced, it is still "valid", but
+    // holds dangling internalPointer() that causes a crash.
+    // These sanity checks will pass in such case.
     if (!index.isValid()) {
         return;
     }
