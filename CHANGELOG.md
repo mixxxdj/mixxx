@@ -115,7 +115,9 @@
   [#14172](https://github.com/mixxxdj/mixxx/pull/14172)
   [#14289](https://github.com/mixxxdj/mixxx/pull/14289)
 * Fix writing metadata via symlink [#13711](https://github.com/mixxxdj/mixxx/pull/13711)
-* Library menu: change "Engine DJ Prime" to "Engine DJ" [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
+* Library menu: change "Engine DJ Prime" to "Engine DJ"
+  [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
+  [#14682](https://github.com/mixxxdj/mixxx/pull/14682)
 * Fix file extension handling during playlist export [#14381](https://github.com/mixxxdj/mixxx/pull/14381)
 * Fix manual key metadata editing in track properties dialog
   [#14022](https://github.com/mixxxdj/mixxx/pull/14022)
@@ -147,6 +149,9 @@
 * Fix automatic trimming of search bar text
   [#14497](https://github.com/mixxxdj/mixxx/pull/14497)
   [#14486](https://github.com/mixxxdj/mixxx/issues/14486)
+* Avoid crash after removing Quick Link
+  [#14556](https://github.com/mixxxdj/mixxx/pull/14556)
+  [#8270](https://github.com/mixxxdj/mixxx/issues/8270)
 
 ### Other Fixes
 

@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-04-25" timestamp="1745598227">
+    <release version="2.5.1" type="development" date="2025-04-25" timestamp="1745604613">
       <description>
  <p>
   Controller Mappings
@@ -347,6 +347,7 @@
   <li>
    Library menu: change "Engine DJ Prime" to "Engine DJ"
    #14248
+   #14682
   </li>
   <li>
    Fix file extension handling during playlist export
@@ -420,6 +421,11 @@
    Fix automatic trimming of search bar text
    #14497
    #14486
+  </li>
+  <li>
+   Avoid crash after removing Quick Link
+   #14556
+   #8270
   </li>
  </ul>
  <p>
