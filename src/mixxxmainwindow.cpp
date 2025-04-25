@@ -740,6 +740,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
+            m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Output);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
                 return QDialog::Accepted;
@@ -1084,7 +1085,7 @@ void MixxxMainWindow::slotNoVinylControlInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
@@ -1098,7 +1099,7 @@ void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
@@ -1112,7 +1113,7 @@ void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
@@ -1126,7 +1127,7 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
