@@ -3426,9 +3426,6 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
-if (NOT TagLib_VERSION VERSION_LESS 2.0.0)
-  message(WARNING "Installed Taglib ${TagLib_VERSION} is not supported and might lead to data loss (https://github.com/mixxxdj/mixxx/issues/12708). Use version >= 1.11 and < 2.0 instead.")
-endif()
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if (QML)
   target_link_libraries(mixxx-qml-lib PUBLIC TagLib::TagLib)
