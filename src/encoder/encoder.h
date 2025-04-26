@@ -36,14 +36,16 @@ class Encoder {
     virtual void updateMetaData(const QString& artist,
             const QString& title,
             const QString& album,
-            std::chrono::seconds timecode = {}) = 0;
+            std::chrono::seconds timestamp = {}) = 0;
     // called at the end when encoding is finished
     virtual void flush() = 0;
     // Setup the encoder with the specific settings
     virtual void setEncoderSettings(const EncoderSettings& settings) = 0;
 
   protected:
-    void addToTracklist(const QString& artist, const QString& title, std::chrono::seconds timecode);
+    void addToTracklist(const QString& artist,
+            const QString& title,
+            std::chrono::seconds timestamp);
     QStringList getTrackList() const {
         return m_trackList;
     }

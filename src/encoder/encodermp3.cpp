@@ -3,6 +3,7 @@
 #include <lame/lame.h>
 #include <limits.h>
 #include <qbytearrayview.h>
+#include <qglobal.h>
 #include <qobject.h>
 #include <qstringliteral.h>
 
@@ -17,7 +18,7 @@
 
 namespace {
 constexpr size_t kHeaderPadding = 10000;
-}
+} // namespace
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number
@@ -149,18 +150,19 @@ void EncoderMp3::flush() {
     // (ID3v2 & Xing frame) dynamically, but `EncoderCallback` doesn't support
     // that so we use the static header padding and truncate the tracklist if
     // too long
-    size_t tracklistMaxSize = kHeaderPadding - numBytes -
+    qsizetype tracklistMaxByteSize = kHeaderPadding - numBytes -
             lame_get_id3v2_tag(m_lameFlags, nullptr, 0);
-    auto trackList = getTrackList().join("\n");
+    QByteArray trackList = getTrackList().join("\n").toLocal8Bit();
     if (!trackList.isEmpty()) {
         // Because of the static header size offset, we need to ensure that the
         // tracklist comment won't make the header overflow on the MP3 frames,
         // we we truncate to the max value
-        auto currentSize = static_cast<size_t>(trackList.size());
-        if (currentSize > tracklistMaxSize - 1) { // -1 since we need a byte for the NULL terminator
-            trackList = trackList.left(tracklistMaxSize - 4) + "...";
+        qsizetype currentByteSize = trackList.size();
+        if (currentByteSize > tracklistMaxByteSize -
+                        1) { // -1 since we need a byte for the NULL terminator
+            trackList = trackList.left(tracklistMaxByteSize - 4) + "...";
         }
-        id3tag_set_comment(m_lameFlags, trackList.toLatin1());
+        id3tag_set_comment(m_lameFlags, trackList);
     }
 
     size_t id3HeaderNumBytes = lame_get_id3v2_tag(m_lameFlags, nullptr, 0);

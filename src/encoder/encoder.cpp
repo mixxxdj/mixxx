@@ -158,22 +158,22 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
 
 void Encoder::addToTracklist(const QString& artist,
         const QString& title,
-        std::chrono::seconds timecode) {
-    auto recordedDuration = timecode.count();
+        std::chrono::seconds timestamp) {
+    auto recordedDurationSeconds = timestamp.count();
     m_trackList.append(
             QStringLiteral("%1: %2 - %3")
                     .arg(QString("%1:%2:%3")
-                                    .arg(recordedDuration / (60 * 60),
+                                    .arg(recordedDurationSeconds / (60 * 60),
                                             2,
                                             'f',
                                             0,
                                             '0') // hours
-                                    .arg((recordedDuration / 60) % 60,
+                                    .arg((recordedDurationSeconds / 60) % 60,
                                             2,
                                             'f',
                                             0,
                                             '0') // minutes
-                                    .arg(recordedDuration % 60, 2, 'f', 0, '0'),
+                                    .arg(recordedDurationSeconds % 60, 2, 'f', 0, '0'),
                             artist.trimmed().isEmpty()
                                     ? QObject::tr("(Unknown Artist)")
                                     : artist,
