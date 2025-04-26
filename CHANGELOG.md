@@ -84,9 +84,10 @@
 
 ### Skins
 
-* Deere (64 samplers): Bring back library in regular view
+* Deere/LateNight (64 samplers): Bring back library in regular view
   [#14101](https://github.com/mixxxdj/mixxx/pull/14101)
   [#14097](https://github.com/mixxxdj/mixxx/issues/14097)
+  [#14700](https://github.com/mixxxdj/mixxx/issues/14700)
 * Fix crash when hiding waveforms in Deere
   [#14170](https://github.com/mixxxdj/mixxx/pull/14170)
 * Waveform Overview: Abort play pos dragging if cursor is released outside the valid area

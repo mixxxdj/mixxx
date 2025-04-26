@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.1" type="development" date="2025-04-25" timestamp="1745604613">
+    <release version="2.5.1" type="development" date="2025-04-26" timestamp="1745670165">
       <description>
  <p>
   Controller Mappings
@@ -278,9 +278,10 @@
  </p>
  <ul>
   <li>
-   Deere (64 samplers): Bring back library in regular view
+   Deere/LateNight (64 samplers): Bring back library in regular view
    #14101
    #14097
+   #14700
   </li>
   <li>
    Fix crash when hiding waveforms in Deere
