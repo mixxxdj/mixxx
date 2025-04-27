@@ -713,7 +713,13 @@ var P1Nano;
                 this.recordButton[i] = new components.Button({
                     group: `[Channel${mapIndexToChannel(i)}]`,
                     midi: [0x90, i],
-                    key: "bpm_tap",
+                    inKey: "bpm_tap",
+                    outKey: (() => {
+                        if (engine.getSetting("enableBPMBlink")) {
+                            return "beat_active";
+                        }
+                        return undefined;
+                    })(),
                 });
 
                 // TODO: these are 14-bit, so using the default output means the

@@ -17,6 +17,9 @@
     <option default="false" variable="disableTimeDisplay" type="boolean" label="Disable Timecode Display">
       <description>Disables the 7-segment timecode display</description>
     </option>
+    <option default="false" variable="enableBPMBlink" type="boolean" label="Blink record arm button on beat">
+      <description>Blink the record arm LED on the beat</description>
+    </option>
   </settings>
   <controller id="icon-p1nano">
     <scriptfiles>
