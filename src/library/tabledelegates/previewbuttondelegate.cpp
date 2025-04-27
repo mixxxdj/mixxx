@@ -49,7 +49,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(
           m_column(column),
           m_pPreviewDeckPlay(make_parented<ControlProxy>(
                   kPreviewDeckGroup, QStringLiteral("play"), this)),
-          m_pCueGotoAndPlay(kPreviewDeckGroup, QStringLiteral("cue_gotoandplay")),
+          m_pCueGotoAndPlay({kPreviewDeckGroup, QStringLiteral("cue_gotoandplay")}),
           m_pButton(make_parented<LibraryPreviewButton>(parent)) {
     DEBUG_ASSERT(m_column >= 0);
 

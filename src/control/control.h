@@ -36,6 +36,23 @@ class ControlDoublePrivate : public QObject {
     // TODO: don't expose this implementation detail
     constexpr static double kDefaultValue = 0.0;
 
+    struct Parameters {
+        ConfigKey key;
+        ControlObject* pCreatorCO = nullptr;
+        QString name{};
+        QString description{};
+        ControlNumericBehavior* behavior = nullptr;
+        double defaultValue = kDefaultValue;
+        bool ignoreNops = true;
+        bool track = false;
+        bool persist = false;
+        bool keyboardRepeatable = false;
+    };
+
+    struct ParametersWithFlags : public Parameters {
+        ControlFlags flags = ControlFlag::None;
+    };
+
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
@@ -49,14 +66,7 @@ class ControlDoublePrivate : public QObject {
     // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
     // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
     // one does not exist.
-    static QSharedPointer<ControlDoublePrivate> getControl(
-            const ConfigKey& key,
-            ControlFlags flags = ControlFlag::None,
-            ControlObject* pCreatorCO = nullptr,
-            bool bIgnoreNops = true,
-            bool bTrack = false,
-            bool bPersist = false,
-            double defaultValue = kDefaultValue);
+    static QSharedPointer<ControlDoublePrivate> getControl(const ParametersWithFlags& params);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
     // Returns a list of all existing instances.
@@ -168,14 +178,10 @@ class ControlDoublePrivate : public QObject {
     ControlDoublePrivate();
 
   private:
-    ControlDoublePrivate(
-            const ConfigKey& key,
-            ControlObject* pCreatorCO,
-            bool bIgnoreNops,
-            bool bTrack,
-            bool bPersist,
-            double defaultValue,
-            bool confirmRequired);
+    struct ParametersWithConfirm : public Parameters {
+        bool confirmRequired = false;
+    };
+    ControlDoublePrivate(const ParametersWithConfirm& params);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;

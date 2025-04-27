@@ -18,10 +18,10 @@ void CueTypePushButton::mousePressEvent(QMouseEvent* e) {
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
         : QWidget(parent),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
-          m_pBeatLoopSize(ControlFlag::AllowMissingOrInvalid),
-          m_pPlayPos(ControlFlag::AllowMissingOrInvalid),
-          m_pTrackSample(ControlFlag::AllowMissingOrInvalid),
-          m_pQuantizeEnabled(ControlFlag::AllowMissingOrInvalid) {
+          m_pBeatLoopSize(),
+          m_pPlayPos(),
+          m_pTrackSample(),
+          m_pQuantizeEnabled() {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
     setAttribute(Qt::WA_StyledBackground);
@@ -113,19 +113,19 @@ void WCueMenuPopup::setTrackCueGroup(
     m_pCue = pCue;
 
     if (m_pBeatLoopSize.getKey().group != group) {
-        m_pBeatLoopSize = PollingControlProxy(group, "beatloop_size");
+        m_pBeatLoopSize = PollingControlProxy({group, "beatloop_size"});
     }
 
     if (m_pPlayPos.getKey().group != group) {
-        m_pPlayPos = PollingControlProxy(group, "playposition");
+        m_pPlayPos = PollingControlProxy({group, "playposition"});
     }
 
     if (m_pTrackSample.getKey().group != group) {
-        m_pTrackSample = PollingControlProxy(group, "track_samples");
+        m_pTrackSample = PollingControlProxy({group, "track_samples"});
     }
 
     if (m_pQuantizeEnabled.getKey().group != group) {
-        m_pQuantizeEnabled = PollingControlProxy(group, "quantize");
+        m_pQuantizeEnabled = PollingControlProxy({group, "quantize"});
     }
     slotUpdate();
 }

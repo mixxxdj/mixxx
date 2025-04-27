@@ -2,29 +2,41 @@
 
 #include <QSharedPointer>
 #include <QString>
+#include <gsl/pointers>
 
 #include "control/control.h"
+#include "preferences/configobject.h"
+#include "util/assert.h"
 
 /// This is the light version of a control proxy without the QObject overhead.
 /// This should be used when no signal connections are used.
 /// It is basically a PIMPL version of a ControlDoublePrivate Shared pointer
 class PollingControlProxy {
   public:
-    PollingControlProxy(ControlFlags flags = ControlFlag::None)
-            : PollingControlProxy(ConfigKey(), flags) {
-    }
+    struct Parameters : public ControlDoublePrivate::ParametersWithFlags {};
 
-    PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)
-            : PollingControlProxy(ConfigKey(g, i), flags) {
-    }
-
-    PollingControlProxy(const ConfigKey& key, ControlFlags flags = ControlFlag::None) {
-        m_pControl = ControlDoublePrivate::getControl(key, flags);
-        if (!m_pControl) {
-            DEBUG_ASSERT(flags & ControlFlag::AllowMissingOrInvalid);
-            m_pControl = ControlDoublePrivate::getDefaultControl();
+  private:
+    gsl::not_null<QSharedPointer<ControlDoublePrivate>> fromParams(const Parameters& params) {
+        auto control = ControlDoublePrivate::getControl(params);
+        if (!control) {
+            DEBUG_ASSERT(params.flags.testFlag(ControlFlag::AllowMissingOrInvalid));
+            control = ControlDoublePrivate::getDefaultControl();
         }
-        DEBUG_ASSERT(m_pControl);
+        DEBUG_ASSERT(control);
+        return gsl::not_null(control);
+    };
+
+  public:
+    // convenience constructor. Prefer the `Parameter` version if you want to pass options
+    PollingControlProxy(const ConfigKey& key)
+            : PollingControlProxy(Parameters{{{key}}}) {
+    }
+    PollingControlProxy()
+            : m_pControl(ControlDoublePrivate::getDefaultControl()) {
+    }
+
+    PollingControlProxy(const Parameters& params)
+            : m_pControl(fromParams(params)) {
     }
 
     bool valid() const {
@@ -71,6 +83,5 @@ class PollingControlProxy {
     }
 
   private:
-    // not null
-    QSharedPointer<ControlDoublePrivate> m_pControl;
+    gsl::not_null<QSharedPointer<ControlDoublePrivate>> m_pControl;
 };

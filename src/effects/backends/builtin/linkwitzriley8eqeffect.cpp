@@ -74,8 +74,8 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(
 }
 
 LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect()
-        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
-          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
+        : m_pLoFreqCorner({kMixerProfile, kLowEqFrequency}),
+          m_pHiFreqCorner({kMixerProfile, kHighEqFrequency}) {
 }
 
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(

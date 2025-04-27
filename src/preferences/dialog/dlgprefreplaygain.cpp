@@ -14,9 +14,9 @@ constexpr int kReplayGainReferenceLUFS = -18;
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_rgSettings(pConfig),
-          m_replayGainBoost(kConfigKey, kReplayGainBoost),
-          m_defaultBoost(kConfigKey, kDefaultBoost),
-          m_enabled(kConfigKey, kReplayGainEnabled) {
+          m_replayGainBoost({kConfigKey, kReplayGainBoost}),
+          m_defaultBoost({kConfigKey, kDefaultBoost}),
+          m_enabled({kConfigKey, kReplayGainEnabled}) {
     setupUi(this);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)

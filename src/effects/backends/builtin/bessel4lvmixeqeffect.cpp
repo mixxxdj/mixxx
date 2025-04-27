@@ -31,8 +31,8 @@ EffectManifestPointer Bessel4LVMixEQEffect::getManifest() {
 }
 
 Bessel4LVMixEQEffect::Bessel4LVMixEQEffect()
-        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
-          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
+        : m_pLoFreqCorner({kMixerProfile, kLowEqFrequency}),
+          m_pHiFreqCorner({kMixerProfile, kHighEqFrequency}) {
 }
 
 void Bessel4LVMixEQEffect::loadEngineEffectParameters(

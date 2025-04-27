@@ -64,15 +64,12 @@ WOverview::WOverview(
           m_trackLoaded(false),
           m_pHoveredMark(nullptr),
           m_scaleFactor(1.0),
-          m_trackSampleRateControl(
-                  m_group,
-                  QStringLiteral("track_samplerate")),
-          m_trackSamplesControl(
-                  m_group,
-                  QStringLiteral("track_samples")),
-          m_playpositionControl(
-                  m_group,
-                  QStringLiteral("playposition")) {
+          m_trackSampleRateControl({m_group,
+                  QStringLiteral("track_samplerate")}),
+          m_trackSamplesControl({m_group,
+                  QStringLiteral("track_samples")}),
+          m_playpositionControl({m_group,
+                  QStringLiteral("playposition")}) {
     m_endOfTrackControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
