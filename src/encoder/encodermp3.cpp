@@ -168,26 +168,27 @@ void EncoderMp3::flush() {
     qsizetype tracklistMaxByteSize = kHeaderPadding -
             id3Tag.render().size();
     DEBUG_ASSERT(tracklistMaxByteSize > 0);
-    TagLib::String trackList = QStringToTString(getTrackList().join("\n"));
-    if (!trackList.isEmpty()) {
-        // Because of the static header size offset, we need to ensure that the
-        // tracklist comment won't make the header overflow on the MP3 frames,
-        // we we truncate to the max value
 
-        TagLib::ByteVector trackListBytes = trackList.data(TagLib::String::Type::UTF8);
-        if (trackListBytes.size() > tracklistMaxByteSize) {
-            // Note - since the string data is UTF-8, there is a risk that the
-            // truncating would occur on a UTF-8 glyph which is > to 8 bits.
-            // This could cause issues. An alternative could be to make a greedy
-            // algorithm that trieds to remove the latest character  till we are
-            // within range.
-            trackListBytes.resize(
-                    tracklistMaxByteSize - 4); // ellipse + 1 since we need a
-                                               // byte for the NULL terminator
-            trackList = trackListBytes + TagLib::String("...");
+    TagLib::String trackList;
+    qsizetype currentTracklistByteSize = 0;
+
+    for (const auto& track : getTrackList()) {
+        if (!trackList.isEmpty()) {
+            trackList += "\n";
+            currentTracklistByteSize += 1;
         }
-        id3Tag.setComment(trackList);
+        auto tagTrack = QStringToTString(track);
+        currentTracklistByteSize += tagTrack.data(TagLib::String::Type::UTF8).size();
+        // ellipse + 1 since we need a byte for the NULL terminator
+        if (currentTracklistByteSize > tracklistMaxByteSize - 4) {
+            trackList += "…";
+            break;
+        } else {
+            trackList += tagTrack;
+        }
     }
+    id3Tag.setComment(trackList);
+
     auto id3Buffer = id3Tag.render();
 
     m_pCallback->seek(0);
@@ -238,7 +239,10 @@ void EncoderMp3::initStream() {
 
     // Add a static header padding, which will be filled one termination
     QByteArray headerPad(kHeaderPadding, 0);
-    m_pCallback->write(nullptr, (unsigned char*)headerPad.constData(), 0, headerPad.size());
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(headerPad.constData()),
+            0,
+            headerPad.size());
 }
 
 int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {

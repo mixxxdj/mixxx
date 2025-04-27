@@ -22,7 +22,14 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_cueTrack(0),
           m_bCueIsEnabled(false) {
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
-    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+    m_pRecReady->connectValueChanged(this, [this](double value) {
+        const auto recordingStatus = static_cast<int>(value);
+        // If the recording is starting, we make sure the tracklist record setting is in sync.
+        if (recordingStatus == RECORD_ON) {
+            m_bTracklistAsCommentEnabled = m_pConfig->getValue(
+                    ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"), true);
+        }
+    });
 }
 
 EngineRecord::~EngineRecord() {

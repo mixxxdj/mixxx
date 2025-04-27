@@ -1,5 +1,8 @@
 #include "encoder/encoderwave.h"
 
+#include <infotag.h>
+#include <qendian.h>
+#include <qglobal.h>
 #include <sndfile.h>
 
 #include <QtDebug>
@@ -136,16 +139,43 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
 
 // call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderWave::flush() {
-    // AIFF uses COMMENT to store the album info, so we don't store the
-    // tracklist there for backward compatibility.
-    auto trackList = getTrackList().join("\n");
-    if (!trackList.isEmpty() && m_sfInfo.format != SF_FORMAT_AIFF) {
-        int ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, trackList.toUtf8().constData());
-        VERIFY_OR_DEBUG_ASSERT(ret == 0) {
-            qWarning() << "libsndfile error when storing tracklist: %s", sf_error_number(ret);
-        }
-    }
     sf_write_sync(m_pSndfile);
+
+    auto trackList = getTrackList().join("\n");
+
+    TagLib::RIFF::Info::Tag tag;
+    tag.setTitle(QStringToTString(m_metaDataTitle));
+    tag.setArtist(QStringToTString(m_metaDataArtist));
+    tag.setAlbum(QStringToTString(m_metaDataAlbum));
+    tag.setComment(QStringToTString(trackList));
+
+    auto tagBuffer = tag.render();
+
+    // Write the LIST chunk header.
+    QByteArray listChunkHeaderBuffer = QByteArray("LIST");
+    listChunkHeaderBuffer.resize(8);
+    qToLittleEndian(tagBuffer.size(), listChunkHeaderBuffer.data() + 4);
+
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(listChunkHeaderBuffer.constData()),
+            0,
+            listChunkHeaderBuffer.size());
+
+    // Write the INFO chunks.
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(tagBuffer.data()),
+            0,
+            tagBuffer.size());
+
+    // Update the file header with the new file size
+    auto fileSize = m_pCallback->tell();
+    m_pCallback->seek(4);
+    auto fileSizeBuffer = QByteArray(4, 0);
+    qToLittleEndian(fileSize - 8, listChunkHeaderBuffer.data());
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(fileSizeBuffer.constData()),
+            0,
+            4);
 }
 
 void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
