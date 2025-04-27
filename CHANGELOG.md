@@ -306,17 +306,31 @@
 * fix warning when building without STEM support [#14551](https://github.com/mixxxdj/mixxx/pull/14551)
 * scenegraph is conditioned to QML=ON  [#14487](https://github.com/mixxxdj/mixxx/pull/14487)
 
-## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (unreleased)
+## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 
 ### Controller Mappings
 
 * Behringer DDM4000 & BCR2000: Update mappings to 2.5
   [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
   [#14349](https://github.com/mixxxdj/mixxx/pull/14349)
-* Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+* DJ TechTools MIDI Fighter Spectra: Add controller mapping
+  [#14559](https://github.com/mixxxdj/mixxx/pull/14559)
+* Hercules DJControl Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
-* M-Vave SMC-Mixer: Add controller mapping [#14411](https://github.com/mixxxdj/mixxx/pull/14411)
+* Hercules DJControl Inpulse 500: New mapping
+  [#14491](https://github.com/mixxxdj/mixxx/pull/14491)
+  [#14510](https://github.com/mixxxdj/mixxx/pull/14510)
+* Hercules DJ Console Mk1: Fix pitch bend buttons [#14447](https://github.com/mixxxdj/mixxx/pull/14447)
+* M-Vave SMC-Mixer: Add controller mapping
+  [#14411](https://github.com/mixxxdj/mixxx/pull/14411)
+  [#14448](https://github.com/mixxxdj/mixxx/pull/14448)
+  [#14457](https://github.com/mixxxdj/mixxx/pull/14457)
+  [#14458](https://github.com/mixxxdj/mixxx/pull/14458)
+* M-Vave SMK-25 II: Piano keyboard mapping
+  [#14412](https://github.com/mixxxdj/mixxx/pull/14412)
+  [#14484](https://github.com/mixxxdj/mixxx/pull/14484)
+* Numark Mixtrack Platinum: Fix VU Meters [#14575](https://github.com/mixxxdj/mixxx/pull/14575)
 * Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
 * Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
 * Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
@@ -333,6 +347,9 @@
   [#14028](https://github.com/mixxxdj/mixxx/pull/14028)
   [#13995](https://github.com/mixxxdj/mixxx/issues/13995)
 * Traktor Kontrol S3: Use pitch absolute mode as described in the manual [#14123](https://github.com/mixxxdj/mixxx/pull/14123)
+* Stanton SCS.1m/d; Keith McMillen QuNeo; EKS Otus: use `playposition` instead of non-existent `visual_playposition`
+  [#14609](https://github.com/mixxxdj/mixxx/pull/14609)
+  [#14603](https://github.com/mixxxdj/mixxx/issues/14603)
 
 ### Controller Backend
 
@@ -369,12 +386,14 @@
 * Fix for `TypeError` in `midi-components-0.0.js`
   [#14203](https://github.com/mixxxdj/mixxx/pull/14203)
   [#14197](https://github.com/mixxxdj/mixxx/issues/14197)
+* Fix crash due to concurrent access in MidiController [#14159](https://github.com/mixxxdj/mixxx/pull/14159)
 
 ### Skins
 
-* Deere (64 samplers): Bring back library in regular view
+* Deere/LateNight (64 samplers): Bring back library in regular view
   [#14101](https://github.com/mixxxdj/mixxx/pull/14101)
   [#14097](https://github.com/mixxxdj/mixxx/issues/14097)
+  [#14700](https://github.com/mixxxdj/mixxx/issues/14700)
 * Fix crash when hiding waveforms in Deere
   [#14170](https://github.com/mixxxdj/mixxx/pull/14170)
 * Waveform Overview: Abort play pos dragging if cursor is released outside the valid area
@@ -385,6 +404,10 @@
 * Key Wheel: Move to View menu and make it a floating tool window
   [#14256](https://github.com/mixxxdj/mixxx/pull/14256)
   [#14239](https://github.com/mixxxdj/mixxx/pull/14239)
+* Center effect parameter names [#14598](https://github.com/mixxxdj/mixxx/pull/14598)
+* Track menu: highlight row when hovering checkbox
+  [#14636](https://github.com/mixxxdj/mixxx/pull/14636)
+  [#14680](https://github.com/mixxxdj/mixxx/pull/14680)
 
 ### Library
 
@@ -399,7 +422,9 @@
   [#14172](https://github.com/mixxxdj/mixxx/pull/14172)
   [#14289](https://github.com/mixxxdj/mixxx/pull/14289)
 * Fix writing metadata via symlink [#13711](https://github.com/mixxxdj/mixxx/pull/13711)
-* Library menu: change "Engine DJ Prime" to "Engine DJ" [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
+* Library menu: change "Engine DJ Prime" to "Engine DJ"
+  [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
+  [#14682](https://github.com/mixxxdj/mixxx/pull/14682)
 * Fix file extension handling during playlist export [#14381](https://github.com/mixxxdj/mixxx/pull/14381)
 * Fix manual key metadata editing in track properties dialog
   [#14022](https://github.com/mixxxdj/mixxx/pull/14022)
@@ -409,10 +434,31 @@
 * History: Don't allow joining with locked previous playlist
   [#14401](https://github.com/mixxxdj/mixxx/pull/14401)
   [#14399](https://github.com/mixxxdj/mixxx/issues/14399)
+* Track info dialog: fixed cover label (max) size [#14418](https://github.com/mixxxdj/mixxx/pull/14418)
 * Track Menu: Reset `eject` after moving track file to trash [#14402](https://github.com/mixxxdj/mixxx/pull/14402)
 * Fix AutoDJ "Remove Crate" action
   [#14426](https://github.com/mixxxdj/mixxx/pull/14426)
   [#14425](https://github.com/mixxxdj/mixxx/issues/14425)
+* Fix scrolling issue with coverart columns visible
+  [#13719](https://github.com/mixxxdj/mixxx/pull/13719)
+  [#14631](https://github.com/mixxxdj/mixxx/pull/14631)
+* Developer Tools: multi-word search, no Tab navigation in controls table [#14474](https://github.com/mixxxdj/mixxx/pull/14474)
+* Analyze feature: respect New / All selection when searching
+  [#14660](https://github.com/mixxxdj/mixxx/pull/14660)
+  [#14659](https://github.com/mixxxdj/mixxx/issues/14659)
+* Stop populating Computer library feature when Mixxx should close [#14573](https://github.com/mixxxdj/mixxx/pull/14573)
+* Tracks: apply played/missing text color also to selected tracks [#13583](https://github.com/mixxxdj/mixxx/pull/13583)
+* Tracks: `show_track_menu` at index position [#14385](https://github.com/mixxxdj/mixxx/pull/14385)
+* Search related menu: improve checkbox click UX [#14637](https://github.com/mixxxdj/mixxx/pull/14637)
+* Avoid false missing tracks due to db inconsistency
+  [#14615](https://github.com/mixxxdj/mixxx/pull/14615)
+  [#14513](https://github.com/mixxxdj/mixxx/issues/14513)
+* Fix automatic trimming of search bar text
+  [#14497](https://github.com/mixxxdj/mixxx/pull/14497)
+  [#14486](https://github.com/mixxxdj/mixxx/issues/14486)
+* Avoid crash after removing Quick Link
+  [#14556](https://github.com/mixxxdj/mixxx/pull/14556)
+  [#8270](https://github.com/mixxxdj/mixxx/issues/8270)
 
 ### Other Fixes
 
@@ -430,6 +476,12 @@
 * Allow seeking to a hotcue during waveform scratching
   [#14357](https://github.com/mixxxdj/mixxx/pull/14357)
   [#13981](https://github.com/mixxxdj/mixxx/issues/13981)
+* Reset saved loop when toggling off after switching cue type
+  [#14661](https://github.com/mixxxdj/mixxx/pull/14661)
+  [#14657](https://github.com/mixxxdj/mixxx/issues/14657)
+* Fix leaks from fid_design()
+  [#14567](https://github.com/mixxxdj/mixxx/pull/14567)
+  [#9470](https://github.com/mixxxdj/mixxx/issues/9470)
 
 ### Target support
 
@@ -441,6 +493,8 @@
   [#14071](https://github.com/mixxxdj/mixxx/issues/14071)
   [#14200](https://github.com/mixxxdj/mixxx/pull/14200)
   [#14204](https://github.com/mixxxdj/mixxx/pull/14204)
+  [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+  [#14518](https://github.com/mixxxdj/mixxx/pull/14518)
 * Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
   [#14148](https://github.com/mixxxdj/mixxx/pull/14148)
   [#14158](https://github.com/mixxxdj/mixxx/pull/14158)
@@ -454,7 +508,13 @@
 * Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
 * Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
-* Qt6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
+* Qt 6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
+* Raise macOS target version to 11 (Qt 6.5 requirement). [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+* Fail early when building on WSL [#14481](https://github.com/mixxxdj/mixxx/pull/14481)
+* Remove useless udev rule [#14630](https://github.com/mixxxdj/mixxx/pull/14630)
+* Handle new " / " from taglib 2.0
+  [#12854](https://github.com/mixxxdj/mixxx/pull/12854)
+  [#12790](https://github.com/mixxxdj/mixxx/issues/12790)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
@@ -2613,8 +2673,7 @@ announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
 
-* Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
-  Program](https://support.microsoft.com/en-us/help/2601726)
+* Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a Program
 * Windows 10: [Start > Control Panel > Programs > Programs And Features >
   look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
