@@ -186,7 +186,6 @@ DlgAbout::DlgAbout()
             << "Max Linke"
             << "Marcos Cardinot"
             << "Nicu Badescu"
-            << "Uwe Klotz"
             << "Sean Pappalardo"
             << "S. Brandt";
 
