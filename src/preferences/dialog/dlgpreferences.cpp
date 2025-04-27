@@ -47,6 +47,8 @@
 #include "util/darkappearance.h"
 #endif
 
+#include "preferences/dialog/dlgprefremotecontrol.h"
+
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
@@ -211,6 +213,12 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Recording"),
             "ic_preferences_recording.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRemoteControl(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Remote Control"),
+            "ic_preferences_broadcast.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefBeats(this, m_pConfig),
