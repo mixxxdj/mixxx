@@ -89,7 +89,7 @@ jobs:
           echo tsan-fix-13895/manifest.json >> include_file.txt
           echo tsan-fix-13895/mixxx-2.5-beta-83-* >> include_file.txt
           echo waveformwidgetinfo >> include_file.txt
-          echo waveformwidgetinfo/mixxx-2.5-aplpha-3* >> include_file.txt
+          echo waveformwidgetinfo/mixxx-2.5-alpha-3* >> include_file.txt
           rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/snapshots/"
         env:
           DESTDIR: public_html/downloads
