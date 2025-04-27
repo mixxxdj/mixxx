@@ -1,11 +1,15 @@
 #include "encoder/encodermp3.h"
 
+#include <id3v2header.h>
+#include <id3v2tag.h>
 #include <lame/lame.h>
 #include <limits.h>
 #include <qbytearrayview.h>
 #include <qglobal.h>
 #include <qobject.h>
 #include <qstringliteral.h>
+#include <tbytevector.h>
+#include <tstring.h>
 
 #include <QByteArray>
 #include <QObject>
@@ -146,36 +150,49 @@ void EncoderMp3::flush() {
                 m_lameFlags, m_bufferOut, m_bufferOutSize);
     }
 
+    TagLib::ID3v2::Tag id3Tag;
+
     // Ideally, we should shift the file content forward to insert the header
     // (ID3v2 & Xing frame) dynamically, but `EncoderCallback` doesn't support
     // that so we use the static header padding and truncate the tracklist if
     // too long
-    qsizetype tracklistMaxByteSize = kHeaderPadding - numBytes -
-            lame_get_id3v2_tag(m_lameFlags, nullptr, 0);
-    QByteArray trackList = getTrackList().join("\n").toLocal8Bit();
+    if (!m_metaDataTitle.isEmpty()) {
+        id3Tag.setTitle(QStringToTString(m_metaDataTitle));
+    }
+    if (!m_metaDataArtist.isEmpty()) {
+        id3Tag.setArtist(QStringToTString(m_metaDataArtist));
+    }
+    if (!m_metaDataAlbum.isEmpty()) {
+        id3Tag.setAlbum(QStringToTString(m_metaDataAlbum));
+    }
+    qsizetype tracklistMaxByteSize = kHeaderPadding -
+            id3Tag.render().size();
+    DEBUG_ASSERT(tracklistMaxByteSize > 0);
+    TagLib::String trackList = QStringToTString(getTrackList().join("\n"));
     if (!trackList.isEmpty()) {
         // Because of the static header size offset, we need to ensure that the
         // tracklist comment won't make the header overflow on the MP3 frames,
         // we we truncate to the max value
-        qsizetype currentByteSize = trackList.size();
-        if (currentByteSize > tracklistMaxByteSize -
-                        1) { // -1 since we need a byte for the NULL terminator
-            trackList = trackList.left(tracklistMaxByteSize - 4) + "...";
+
+        TagLib::ByteVector trackListBytes = trackList.data(TagLib::String::Type::UTF8);
+        if (trackListBytes.size() > tracklistMaxByteSize) {
+            // Note - since the string data is UTF-8, there is a risk that the
+            // truncating would occur on a UTF-8 glyph which is > to 8 bits.
+            // This could cause issues. An alternative could be to make a greedy
+            // algorithm that trieds to remove the latest character  till we are
+            // within range.
+            trackListBytes.resize(
+                    tracklistMaxByteSize - 4); // ellipse + 1 since we need a
+                                               // byte for the NULL terminator
+            trackList = trackListBytes + TagLib::String("...");
         }
-        id3tag_set_comment(m_lameFlags, trackList);
+        id3Tag.setComment(trackList);
     }
-
-    size_t id3HeaderNumBytes = lame_get_id3v2_tag(m_lameFlags, nullptr, 0);
-    QByteArray id3Buffer(id3HeaderNumBytes, 0);
-
-    DEBUG_ASSERT(lame_get_id3v2_tag(m_lameFlags,
-                         (unsigned char*)id3Buffer.data(),
-                         id3HeaderNumBytes) == id3HeaderNumBytes);
-    DEBUG_ASSERT(id3Buffer.size() + numBytes <= kHeaderPadding);
+    auto id3Buffer = id3Tag.render();
 
     m_pCallback->seek(0);
     // Write the lame/xing header.
-    m_pCallback->write((const unsigned char*)id3Buffer.constData(),
+    m_pCallback->write((const unsigned char*)id3Buffer.data(),
             m_bufferOut,
             static_cast<int>(id3Buffer.size()),
             static_cast<int>(numBytes));
@@ -266,19 +283,7 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserE
 
     lame_set_quality(m_lameFlags, 2);
 
-    //ID3 Tag if fields are not NULL
-    id3tag_init(m_lameFlags);
-    // ID3 tags will be written manually when flushing the encoder.
-    lame_set_write_id3tag_automatic(m_lameFlags, 0);
-    if (!m_metaDataTitle.isEmpty()) {
-        id3tag_set_title(m_lameFlags, m_metaDataTitle.toLatin1().constData());
-    }
-    if (!m_metaDataArtist.isEmpty()) {
-        id3tag_set_artist(m_lameFlags, m_metaDataArtist.toLatin1().constData());
-    }
-    if (!m_metaDataAlbum.isEmpty()) {
-        id3tag_set_album(m_lameFlags,m_metaDataAlbum.toLatin1().constData());
-    }
+    // ID3 tag will be written during flushing
 
     int ret = lame_init_params(m_lameFlags);
     if (ret < 0) {
