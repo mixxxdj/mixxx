@@ -19,10 +19,7 @@
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
-#ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"
-#endif
-
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
@@ -33,7 +30,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
-          m_pHiddenView(nullptr) {
+          m_pHiddenView(nullptr),
+          m_trackCount{0} {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
@@ -114,6 +112,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             pLibrary->trackCollectionManager(),
             "mixxx.db.model.library");
 
+    connect(m_pLibraryTableModel,
+            &LibraryTableModel::updateTrackCount,
+            this,
+            &MixxxLibraryFeature::slotUpdateTrackCount);
+
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
@@ -149,7 +152,7 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Tracks");
+    return tr("Tracks (%1)").arg(m_trackCount);
 }
 
 TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
@@ -176,12 +179,16 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
     activate();
 }
 
-#ifdef __ENGINEPRIME__
 void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // store the sidebar widget pointer for later use in onRightClick
+    // store the sidebar widget pointer for later use in onRightClick and
+    // updating track count
     m_pSidebarWidget = pSidebarWidget;
 }
-#endif
+
+void MixxxLibraryFeature::slotUpdateTrackCount() {
+    m_trackCount = m_pLibraryTableModel->rowCount();
+    m_pSidebarWidget->repaint();
+}
 
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
