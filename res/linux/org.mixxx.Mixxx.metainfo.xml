@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-04-27" timestamp="1745712712">
+    <release version="2.6.0" type="development" date="2025-04-27" timestamp="1745752383">
       <description>
  <p>
   Controller Mappings
@@ -258,6 +258,10 @@
    Preferences Effects: left/right key in effect lists trigger hide/unhide
    #14205
   </li>
+  <li>
+   Open sound preferences with sprecific I/O tab selected
+   #14346
+  </li>
  </ul>
  <p>
   Skins
@@ -345,6 +349,17 @@
   <li>
    Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons
    #13614
+  </li>
+  <li>
+   Library scan: log summary and show popup
+   #13427
+   #10720
+  </li>
+  <li>
+   Search: add BPM lock filter
+   bpm:locked
+   #14590
+   #14583
   </li>
  </ul>
  <p>
@@ -448,6 +463,11 @@
    Add slip waveform to Textured/'High details' type
    #14039
   </li>
+  <li>
+   Fix waveform marker image alignment
+   #14656
+   #14037
+  </li>
  </ul>
  <p>
   STEM file support
@@ -511,6 +531,14 @@
   <li>
    Solves problem with special characters in path to stems
    #13784
+  </li>
+  <li>
+   Enable FFmpeg (free) on Windows.
+   #14695
+  </li>
+  <li>
+   FFmpeg: Use internal aac decoder. If not available give a hint.
+   #14645
   </li>
  </ul>
  <p>
@@ -609,6 +637,10 @@
   <li>
    Don't set GL_BGRA if QT_OPENGL_ES_2
    #14488
+  </li>
+  <li>
+   Windows and macOS: Update to Qt 6.8.3 (requires MSVC 2022)
+   #14655
   </li>
  </ul>
  <p>
@@ -1017,6 +1049,18 @@
   <li>
    scenegraph is conditioned to QML=ON
    #14487
+  </li>
+  <li>
+   Fix building with Qt 6.9
+   #14678
+  </li>
+  <li>
+   fix: import proper QtQml.Models module instead of qmllabs
+   #14675
+  </li>
+  <li>
+   qmlwaveform: Fix moc in Qt 6.9.0
+   #14649
   </li>
  </ul>
 </description>
