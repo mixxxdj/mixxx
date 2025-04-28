@@ -26,11 +26,10 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(
-            QWidget* parent,
+            QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
@@ -41,6 +40,7 @@ class WTrackTableView : public WLibraryTableView {
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void editSelectedItem();
     void activateSelectedTrack();
 #ifdef __STEM__
     void loadSelectedTrackToGroup(const QString& group,
@@ -142,6 +142,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:
@@ -171,6 +172,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
 
     void initTrackMenu();
+    void showTrackMenu(const QPoint pos, const QModelIndex& index);
 
     void hideOrRemoveSelectedTracks();
 

@@ -143,7 +143,7 @@ QList<TrackId> PlaylistDAO::getTrackIds(const int playlistId) const {
         return trackIds;
     }
 
-    const int trackIdColumn = query.record().indexOf("track_id");
+    const int trackIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_TRACKID);
     while (query.next()) {
         trackIds.append(TrackId(query.value(trackIdColumn)));
     }
@@ -644,8 +644,9 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& pos
 void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
-            "SELECT track_id FROM PlaylistTracks "
-            "WHERE playlist_id=:id AND position=:position"));
+            "SELECT %1 FROM PlaylistTracks "
+            "WHERE playlist_id=:id AND position=:position")
+                    .arg(PLAYLISTTRACKSTABLE_TRACKID));
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
 
@@ -659,7 +660,7 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
                  << position << "in playlist:" << playlistId;
         return;
     }
-    TrackId trackId(query.value(query.record().indexOf("track_id")));
+    TrackId trackId(query.value(query.record().indexOf(PLAYLISTTRACKSTABLE_TRACKID)));
 
     // Delete the track from the playlist.
     query.prepare(QStringLiteral(

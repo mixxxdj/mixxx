@@ -14,6 +14,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
+#include "track/keyfactory.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/datetime.h"
@@ -64,8 +65,8 @@ void DlgTrackInfo::init() {
     // this is opened by double-clicking a WTrackProperty label.
     // Associate with property strings taken from library/dao/trackdao.h
     m_propertyWidgets.insert("artist", txtArtist);
-    m_propertyWidgets.insert("title", txtTrackName);
-    m_propertyWidgets.insert("titleInfo", txtTrackName);
+    m_propertyWidgets.insert("title", txtTitle);
+    m_propertyWidgets.insert("titleInfo", txtTitle);
     m_propertyWidgets.insert("album", txtAlbum);
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
@@ -172,68 +173,77 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotBpmTap);
 
     // Metadata fields
-    connect(txtTrackName,
+    connect(txtTitle,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtTitle->setText(txtTitle->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTitle(
-                        txtTrackName->text().trimmed());
+                        txtTitle->text());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtArtist->setText(txtArtist->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setArtist(
-                        txtArtist->text().trimmed());
+                        txtArtist->text());
             });
     connect(txtAlbum,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtAlbum->setText(txtAlbum->text().trimmed());
                 m_trackRecord.refMetadata().refAlbumInfo().setTitle(
-                        txtAlbum->text().trimmed());
+                        txtAlbum->text());
             });
     connect(txtAlbumArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtAlbumArtist->setText(txtAlbumArtist->text().trimmed());
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
-                        txtAlbumArtist->text().trimmed());
+                        txtAlbumArtist->text());
             });
     connect(txtGenre,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtGenre->setText(txtGenre->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text().trimmed());
+                        txtGenre->text());
             });
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtComposer->setText(txtComposer->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setComposer(
-                        txtComposer->text().trimmed());
+                        txtComposer->text());
             });
     connect(txtGrouping,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtGrouping->setText(txtGrouping->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setGrouping(
-                        txtGrouping->text().trimmed());
+                        txtGrouping->text());
             });
     connect(txtYear,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtYear->setText(txtYear->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setYear(
-                        txtYear->text().trimmed());
+                        txtYear->text());
             });
     connect(txtTrackNumber,
             &QLineEdit::editingFinished,
             this,
             [this]() {
+                txtTrackNumber->setText(txtTrackNumber->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
-                        txtTrackNumber->text().trimmed());
+                        txtTrackNumber->text());
             });
 
     // Import and file browser buttons
@@ -372,7 +382,7 @@ void DlgTrackInfo::replaceTrackRecord(
     const auto coverInfo = CoverInfo(
             m_trackRecord.getCoverInfo(),
             trackLocation);
-    m_pWCoverArtLabel->setCoverArt(coverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, QPixmap());
     // Executed concurrently
     CoverArtCache::requestCover(this, coverInfo);
 
@@ -389,7 +399,7 @@ void DlgTrackInfo::replaceTrackRecord(
 
 void DlgTrackInfo::updateTrackMetadataFields() {
     // Editable fields
-    txtTrackName->setText(
+    txtTitle->setText(
             m_trackRecord.getMetadata().getTrackInfo().getTitle());
     txtArtist->setText(
             m_trackRecord.getMetadata().getTrackInfo().getArtist());
@@ -498,6 +508,9 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
         return;
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
@@ -512,6 +525,7 @@ void DlgTrackInfo::focusField(const QString& property) {
     auto it = m_propertyWidgets.constFind(property);
     if (it != m_propertyWidgets.constEnd()) {
         if (property == kBpmPropertyName) {
+            // If we shall focus the BPM spinbox, switch to BPM tab
             tabWidget->setCurrentIndex(tabWidget->indexOf(tabBPM));
         }
         it.value()->setFocus();
@@ -526,7 +540,7 @@ void DlgTrackInfo::slotCoverFound(
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
-        m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 
@@ -614,7 +628,7 @@ void DlgTrackInfo::saveTrack() {
     // handlers manually to capture any changes. If the bpm or key was unchanged
     // or invalid then the change will be ignored/rejected.
     slotSpinBpmValueChanged(spinBpm->value());
-    static_cast<void>(updateKeyText()); // discard result
+    updateKeyText();
 
     // Update the cached track
     //
@@ -734,34 +748,21 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     updateSpinBpmFromBeats();
 }
 
-mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
-    const auto keyText = txtKey->text().trimmed();
-    const auto updateResult =
-            m_trackRecord.updateGlobalKeyNormalizeText(
-                    keyText,
-                    mixxx::track::io::key::USER);
-    if (updateResult == mixxx::UpdateResult::Rejected) {
-        // Restore the current key text
-        displayKeyText();
-    }
-    return updateResult;
+void DlgTrackInfo::updateKeyText() {
+    const auto keyText = txtKey->text();
+    m_trackRecord.updateGlobalKeyNormalizeText(
+            keyText,
+            mixxx::track::io::key::USER);
+    displayKeyText();
 }
 
 void DlgTrackInfo::displayKeyText() {
-    QString keyText;
-    if (m_pLoadedTrack) {
-        keyText = KeyUtils::keyFromKeyTextAndIdValues(
-                m_pLoadedTrack->getKeyText(),
-                m_pLoadedTrack->getKey());
-    }
+    const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
-    if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
-        // Ensure that the text field always reflects the actual value
-        displayKeyText();
-    }
+    updateKeyText();
 }
 
 void DlgTrackInfo::slotRatingChanged(int rating) {
@@ -808,6 +809,19 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             sourceSynchronizedAt);
     trackRecord.setCoverInfo(
             std::move(guessedCoverInfo));
+
+    QString importedKeyText = trackRecord.getMetadata().getTrackInfo().getKeyText();
+    {
+        Keys newKeys = KeyFactory::makeBasicKeysKeepText(
+                importedKeyText, mixxx::track::io::key::FILE_METADATA);
+        if (newKeys.getGlobalKey() != mixxx::track::io::key::INVALID &&
+                trackRecord.getKeys().getGlobalKeyText() != importedKeyText) {
+            // Only replace the keys with a single new key if valid and different.
+            // Otherwise preserve existing array of keys for different positions.
+            trackRecord.setKeys(std::move(newKeys));
+        }
+    }
+
     replaceTrackRecord(
             std::move(trackRecord),
             fileInfo.location());
@@ -851,4 +865,33 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
     m_pDlgTagFetcher->show();
+}
+
+void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
+    QDialog::resizeEvent(pEvent);
+
+    if (!isVisible()) {
+        // Likely one of the resize events before show().
+        // Widgets don't have their final size, yet, so it
+        // makes no sense to resize the cover label.
+        return;
+    }
+
+    // Set a maximum size on the cover label so it can use the available space
+    // but doesn't force-expand the dialog.
+    // The cover label spans across three tag rows and the two rightmost columns.
+    // Unfortunately we can't read row/column sizes directly, so we use the widgets.
+    int contHeight = txtTitle->height() + txtArtist->height() + txtAlbum->height();
+    int vSpacing = tags_layout->verticalSpacing();
+    int totalHeight = vSpacing * 2 + contHeight;
+
+    int contWidth = lblYear->width() + txtYear->width();
+    int hSpacing = tags_layout->horizontalSpacing();
+    int totalWidth = contWidth + hSpacing;
+
+    m_pWCoverArtLabel->setMaxSize(QSize(totalWidth, totalHeight));
+
+    // Also clamp height of the cover's parent widget. Keeping its height minimal
+    // can't be accomplished with QSizePolicies alone unfortunately.
+    coverWidget->setFixedHeight(totalHeight);
 }

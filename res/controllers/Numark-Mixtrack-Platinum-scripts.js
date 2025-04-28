@@ -1413,13 +1413,13 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
             midi.sendShortMsg(0xBF, 0x45, level);
         }
     }
-    else if (group == '[Master]' && control == 'VuMeterL') {
+    else if (group === "[Main]" && control === "vu_meter_left") {
         if (engine.getValue(group, "peak_indicator_left")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
-    else if (group == '[Master]' && control == 'VuMeterR') {
+    else if (group === "[Main]" && control === "vu_meter_right") {
         if (engine.getValue(group, "peak_indicator_right")) {
             level = 81;
         }

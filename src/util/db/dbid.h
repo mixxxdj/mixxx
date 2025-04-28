@@ -88,6 +88,18 @@ class DbId {
         return debug << dbId.m_value;
     }
 
+    friend QDataStream& operator<<(QDataStream& out, const DbId& dbId) {
+        // explicit cast as recommended by Qt docs
+        return out << static_cast<quint32>(dbId.m_value);
+    }
+
+    friend QDataStream& operator>>(QDataStream& in, DbId& dbId) {
+        quint32 v;
+        in >> v;
+        dbId.m_value = v;
+        return in;
+    }
+
     friend qhash_seed_t qHash(
             const DbId& dbId,
             qhash_seed_t seed = 0) {
