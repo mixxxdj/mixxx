@@ -3,6 +3,7 @@
 #include "rendergraph/material/rgbmaterial.h"
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -25,6 +26,22 @@ WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
           m_options(options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
+}
+
+void WaveformRendererRGB::setAxesColor(const QColor& axesColor) {
+    getRgbF(axesColor, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
+}
+
+void WaveformRendererRGB::setLowColor(const QColor& lowColor) {
+    getRgbF(lowColor, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+}
+
+void WaveformRendererRGB::setMidColor(const QColor& midColor) {
+    getRgbF(midColor, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+}
+
+void WaveformRendererRGB::setHighColor(const QColor& highColor) {
+    getRgbF(highColor, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode&) {
@@ -117,7 +134,7 @@ bool WaveformRendererRGB::preprocessInner() {
     const int numVerticesPerLine = 6; // 2 triangles
 
     const int reserved = numVerticesPerLine *
-            // Slip rendere only render a single channel, so the vertices count doesn't change
+            // Slip renderer only render a single channel, so the vertices count doesn't change
             ((splitLeftRight && !m_isSlipRenderer ? pixelLength * 2 : pixelLength) + 1);
 
     geometry().setDrawingMode(Geometry::DrawingMode::Triangles);

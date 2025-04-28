@@ -2,6 +2,7 @@
 
 #include <QDomNode>
 
+#include "moc_waveformrenderbeat.cpp"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/unicolormaterial.h"
 #include "rendergraph/vertexupdaters/vertexupdater.h"

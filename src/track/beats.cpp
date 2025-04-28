@@ -634,6 +634,20 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
             m_subVersion));
 }
 
+std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
+    if (!hasConstantTempo()) {
+        return std::nullopt;
+    }
+    const mixxx::audio::FrameDiff_t lastOffsetFrames =
+            xBeats * m_sampleRate.value() * 60.0 / m_lastMarkerBpm.value();
+    const auto lastMarkerPosition = m_lastMarkerPosition + lastOffsetFrames;
+    return BeatsPointer(new Beats(m_markers,
+            lastMarkerPosition.toLowerFrameBoundary(),
+            m_lastMarkerBpm,
+            m_sampleRate,
+            m_subVersion));
+}
+
 std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
     double scaleFactor = 1.0;
     switch (scale) {

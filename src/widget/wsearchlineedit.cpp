@@ -641,7 +641,8 @@ void WSearchLineEdit::slotTriggerSearch() {
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
     m_saveTimer.stop();
-    QString cText = currentText().trimmed();
+    // Keep original text for UI, potentially with trailing spaces
+    QString cText = currentText();
     int cIndex = findCurrentTextIndex();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -660,13 +661,16 @@ void WSearchLineEdit::slotSaveSearch() {
     }
     if (cIndex > 0 || cIndex == -1) {
         // If the query doesn't exist yet or was not at top, insert it at the top
-        insertItem(0, cText);
+        insertItem(0, cText.trimmed());
     }
     setCurrentIndex(0);
 
     while (count() > kMaxSearchEntries) {
         removeItem(kMaxSearchEntries);
     }
+
+    // Set the text without spaces for UI
+    setTextBlockSignals(cText);
 }
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {

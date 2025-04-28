@@ -288,8 +288,8 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
             element = element.nextSiblingElement()) {
         const QString& tagName = element.tagName().toLower();
         if (tagName == "option") {
-            std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
-                    LegacyControllerSettingBuilder::build(element));
+            std::shared_ptr<AbstractLegacyControllerSetting> pSetting =
+                    LegacyControllerSettingBuilder::build(element);
             if (pSetting.get() == nullptr) {
                 qDebug() << "Ignoring unsupported controller setting in file"
                          << pMapping->filePath() << "at line"

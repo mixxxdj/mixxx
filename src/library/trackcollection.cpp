@@ -27,11 +27,6 @@ TrackCollection::TrackCollection(
                      m_analysisDao, m_libraryHashDao, pConfig) {
     // Forward signals from TrackDAO
     connect(&m_trackDao,
-            &TrackDAO::trackClean,
-            this,
-            &TrackCollection::trackClean,
-            /*signal-to-signal*/ Qt::DirectConnection);
-    connect(&m_trackDao,
             &TrackDAO::trackDirty,
             this,
             &TrackCollection::trackDirty,
@@ -750,11 +745,6 @@ TrackPointer TrackCollection::getTrackByRef(
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_trackDao.getTrackByRef(trackRef);
-}
-
-TrackId TrackCollection::getTrackIdByRef(
-        const TrackRef& trackRef) const {
-    return m_trackDao.getTrackIdByRef(trackRef);
 }
 
 TrackPointer TrackCollection::getOrAddTrack(

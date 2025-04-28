@@ -237,12 +237,13 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
             && (m_pLeaderSyncable != triggering_syncable || newStatus) &&
             m_pLeaderSyncable->isPlaying() &&
             m_pLeaderSyncable->getBaseBpm().isValid());
+    Syncable* first_inaudible_playing_deck = nullptr;
     Syncable* first_other_playing_deck = nullptr;
     Syncable* first_playing_deck = nullptr;
     Syncable* first_stopped_deck = nullptr;
 
     int stopped_deck_count = 0;
-    int playing_deck_count = 0;
+    int audible_playing_deck_count = 0;
 
     for (const auto& pSyncable : std::as_const(m_syncables)) {
         if (!pSyncable->getBaseBpm().isValid()) {
@@ -258,14 +259,18 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
             }
         }
 
-        if (pSyncable->isPlaying() && pSyncable->isAudible()) {
-            if (playing_deck_count == 0) {
-                first_playing_deck = pSyncable;
+        if (pSyncable->isPlaying()) {
+            if (pSyncable->isAudible()) {
+                if (audible_playing_deck_count == 0) {
+                    first_playing_deck = pSyncable;
+                }
+                if (!first_other_playing_deck && pSyncable != triggering_syncable) {
+                    first_other_playing_deck = pSyncable;
+                }
+                audible_playing_deck_count++;
+            } else if (!first_inaudible_playing_deck) {
+                first_inaudible_playing_deck = pSyncable;
             }
-            if (!first_other_playing_deck && pSyncable != triggering_syncable) {
-                first_other_playing_deck = pSyncable;
-            }
-            playing_deck_count++;
         } else {
             if (stopped_deck_count == 0) {
                 first_stopped_deck = pSyncable;
@@ -280,9 +285,9 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
     switch (picker) {
     case PREFER_SOFT_LEADER:
         // Always pick a deck for a new leader.
-        if (playing_deck_count == 1) {
+        if (audible_playing_deck_count == 1) {
             return first_playing_deck;
-        } else if (playing_deck_count > 1) {
+        } else if (audible_playing_deck_count > 1) {
             // Prefer keeping the current leader rather than switching it with the first playing
             // deck.
             if (leaderIsValid) {
@@ -290,6 +295,8 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
             } else {
                 return first_other_playing_deck;
             }
+        } else if (first_inaudible_playing_deck) {
+            return first_inaudible_playing_deck;
         }
 
         if (stopped_deck_count >= 1) {
@@ -299,10 +306,12 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
     case PREFER_LOCK_BPM:
         // Old 2.3 behavior:
         // Lock the bpm if there is more than one playing sync deck
-        if (playing_deck_count == 1) {
+        if (audible_playing_deck_count == 1) {
             return first_playing_deck;
-        } else if (playing_deck_count > 1) {
+        } else if (audible_playing_deck_count > 1) {
             return m_pInternalClock;
+        } else if (first_inaudible_playing_deck) {
+            return first_inaudible_playing_deck;
         }
 
         if (stopped_deck_count >= 1) {
@@ -319,11 +328,13 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     // First preference: playing synced deck
     // Second preferene: stopped synced deck
     // Third preference: playing nonsync deck
-    // Fourth preference: stopped nonsync deck
+    // Fourth preference: playing inaudible deck
+    // Fifth preference: stopped nonsync deck
     // This could probably be rewritten with a nicer algorithm.
 
     Syncable* pStoppedSyncTarget = nullptr;
     Syncable* pPlayingNonSyncTarget = nullptr;
+    Syncable* pPlayingInaudibleTarget = nullptr;
     Syncable* pStoppedNonSyncTarget = nullptr;
 
     for (const auto& pOtherSyncable : std::as_const(m_syncables)) {
@@ -343,12 +354,16 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 
         // If the other deck is playing we stop looking immediately. Otherwise continue looking
         // for a playing deck with bpm > 0.0.
-        if (pOtherSyncable->isPlaying() && pOtherSyncable->isAudible()) {
-            if (pOtherSyncable->isSynchronized()) {
-                return pOtherSyncable;
-            }
-            if (!pPlayingNonSyncTarget) {
-                pPlayingNonSyncTarget = pOtherSyncable;
+        if (pOtherSyncable->isPlaying()) {
+            if (pOtherSyncable->isAudible()) {
+                if (pOtherSyncable->isSynchronized()) {
+                    return pOtherSyncable;
+                }
+                if (!pPlayingNonSyncTarget) {
+                    pPlayingNonSyncTarget = pOtherSyncable;
+                }
+            } else {
+                pPlayingInaudibleTarget = pOtherSyncable;
             }
         }
 
@@ -372,6 +387,10 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 
     if (pPlayingNonSyncTarget) {
         return pPlayingNonSyncTarget;
+    }
+
+    if (pPlayingInaudibleTarget) {
+        return pPlayingInaudibleTarget;
     }
 
     return pStoppedNonSyncTarget;

@@ -171,7 +171,6 @@ WSearchLineEdit::item:selected,
 }
 
   WLibrarySidebar QMenu::indicator,
-  WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator,
   WEffectChainPresetButton QMenu QCheckBox::indicator {
     /* Note that the border is added to the base size of 0.7em x 0.7em
@@ -204,8 +203,6 @@ WSearchLineEdit::item:selected,
     background-color: transparent;
   }
 
-  WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
-  }
   WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
     image: url(skins:LateNight/palemoon/buttons/btn__search_disabled.svg);
   }

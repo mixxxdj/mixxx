@@ -19,3 +19,14 @@ enum class FocusWidget {
     Count        // Used for setting the number of PushButton states of
                  // m_pFocusedWidget in librarycontrol.cpp
 };
+
+struct LibraryScanResultSummary {
+    QString durationString;
+    bool autoscan;
+    int numNewTracks;
+    int numMovedTracks;
+    int numMissingTracks;
+    int numNewMissingTracks;
+    int numRediscoveredTracks;
+    int tracksTotal;
+};

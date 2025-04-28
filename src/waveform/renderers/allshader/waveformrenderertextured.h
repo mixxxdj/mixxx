@@ -16,8 +16,7 @@ class WaveformRendererTextured;
 } // namespace allshader
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured final : public QObject,
-                                                  public allshader::WaveformRendererSignalBase,
+class allshader::WaveformRendererTextured final : public allshader::WaveformRendererSignalBase,
                                                   public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
@@ -35,6 +34,10 @@ class allshader::WaveformRendererTextured final : public QObject,
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
+
+    bool supportsSlip() const override {
+        return true;
+    }
 
     void onSetTrack() override;
 
