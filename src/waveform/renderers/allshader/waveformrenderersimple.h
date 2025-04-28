@@ -1,30 +1,27 @@
 #pragma once
 
-#include "rendergraph/openglnode.h"
-#include "shaders/unicolorshader.h"
+#include "rendergraph/geometrynode.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 namespace allshader {
 class WaveformRendererSimple;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererSimple final
         : public allshader::WaveformRendererSignalBase,
-          public rendergraph::OpenGLNode {
+          public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererSimple(WaveformWidgetRenderer* waveformWidget);
 
-    // override ::WaveformRendererSignalBase
+    // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
 
-    void initializeGL() override;
-    void paintGL() override;
+    // Virtuals for rendergraph::Node
+    void preprocess() override;
 
   private:
-    mixxx::UnicolorShader m_shader;
-    VertexData m_vertices[2];
+    bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererSimple);
 };

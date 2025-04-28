@@ -34,6 +34,7 @@
 #endif
 #include "control/controlindicatortimer.h"
 #include "library/library.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
@@ -104,6 +105,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
 #endif
+          m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
@@ -124,6 +126,12 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
                 CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref);
     }
 #endif // __LINUX__
+
+    connect(m_pCoreServices.get(),
+            &mixxx::CoreServices::libraryScanSummary,
+            this,
+            &MixxxMainWindow::slotLibraryScanSummaryDlg);
+
     createMenuBar();
     m_pMenuBar->hide();
 
@@ -281,7 +289,7 @@ void MixxxMainWindow::initialize() {
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -522,6 +530,8 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(false);
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
+
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
@@ -745,6 +755,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
+            m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Output);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
                 return QDialog::Accepted;
@@ -1089,7 +1100,7 @@ void MixxxMainWindow::slotNoVinylControlInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
@@ -1103,7 +1114,7 @@ void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
@@ -1117,7 +1128,7 @@ void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
@@ -1131,13 +1142,60 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
             QMessageBox::Cancel);
     if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout;
     about->show();
+}
+
+void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
+    // Don't show the report dialog when the scan is run during startup and no
+    // noteworthy changes have been detected.
+    if (result.autoscan &&
+            result.numNewTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        return;
+    }
+
+    QString summary =
+            tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
+    if (result.numNewTracks == 0 && result.numMovedTracks == 0 && result.numNewMissingTracks == 0) {
+        summary += tr("No changes detected.") +
+                QStringLiteral("<br><b>") +
+                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                QStringLiteral("</b>");
+    } else {
+        if (result.numNewTracks != 0) {
+            summary += tr("%1 new tracks found").arg(QString::number(result.numNewTracks)) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numMovedTracks != 0) {
+            summary += tr("%1 moved tracks detected").arg(QString::number(result.numMovedTracks)) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numNewMissingTracks != 0) {
+            summary += tr("%1 tracks are missing (%2 total)")
+                               .arg(QString::number(result.numNewMissingTracks),
+                                       result.numMissingTracks);
+        }
+        if (result.numRediscoveredTracks != 0) {
+            summary += QStringLiteral("<br>") +
+                    tr("%1 tracks have been rediscovered")
+                            .arg(QString::number(result.numRediscoveredTracks));
+        }
+        summary += QStringLiteral("<br><br><b>") +
+                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                QStringLiteral("</b>");
+    }
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
+    pMsg->setText(summary);
+    pMsg->show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {
@@ -1167,6 +1225,7 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
 
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
+    m_inRebootMixxxView = true;
 
     ScopedWaitCursor cursor;
     // safe geometry for later restoration
@@ -1200,6 +1259,7 @@ void MixxxMainWindow::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
+        m_inRebootMixxxView = false;
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
@@ -1228,6 +1288,7 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
 
+    m_inRebootMixxxView = false;
     qDebug() << "rebootMixxxView DONE";
 }
 
@@ -1258,8 +1319,9 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::ToolTip) {
-        // always show tooltips in the preferences window
+    // Always show tooltips if Ctrl is held down
+    if (event->type() == QEvent::ToolTip &&
+            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
                 QLatin1String(activeWindow->metaObject()->className()) !=
@@ -1318,7 +1380,9 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             if (!m_supportsGlobalMenuBar || isFullScreenNow)
 #endif
             {
-                alwaysHideMenuBarDlg();
+                if (!m_inRebootMixxxView) {
+                    alwaysHideMenuBarDlg();
+                }
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif

@@ -113,7 +113,9 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqEffectsOnly;
     bool m_eqAutoReset;
     bool m_gainAutoReset;
+#ifdef __STEM__
     bool m_stemAutoReset;
+#endif
     bool m_eqBypass;
 
     bool m_initializing;

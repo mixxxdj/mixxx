@@ -94,6 +94,76 @@ bool isShowUntilNextPositionControl(const QString& positionControl) {
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
+        QString positionControl,
+        const QString& visibilityControl,
+        const QString& textColor,
+        const QString& markAlign,
+        const QString& text,
+        const QString& pixmapPath,
+        const QString& iconPath,
+        QColor color,
+        int priority,
+        int hotCue,
+        const WaveformSignalColors& signalColors)
+        : m_textColor(textColor),
+          m_pixmapPath(pixmapPath),
+          m_iconPath(iconPath),
+          m_linePosition{},
+          m_breadth{},
+          m_level{},
+          m_iPriority(priority),
+          m_iHotCue(hotCue),
+          m_showUntilNext{} {
+    QString endPositionControl;
+    QString typeControl;
+    if (hotCue != Cue::kNoHotCue) {
+        QString hotcueNumber = QString::number(hotCue + 1);
+        positionControl = QStringLiteral("hotcue_%1_position").arg(hotcueNumber);
+        endPositionControl = QStringLiteral("hotcue_%1_endposition").arg(hotcueNumber);
+        typeControl = QStringLiteral("hotcue_%1_type").arg(hotcueNumber);
+        m_showUntilNext = true;
+    } else {
+        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
+    }
+
+    if (!positionControl.isEmpty()) {
+        m_pPositionCO = std::make_unique<ControlProxy>(group, positionControl);
+    }
+    if (!endPositionControl.isEmpty()) {
+        m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
+        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+    }
+
+    if (!visibilityControl.isEmpty()) {
+        ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
+        m_pVisibleCO = std::make_unique<ControlProxy>(key);
+    }
+
+    if (!color.isValid()) {
+        // As a fallback, grab the color from the parent's AxesColor
+        color = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark <Color>:" << color;
+    } else {
+        color = WSkinColor::getCorrectColor(color);
+    }
+    int dimBrightThreshold = signalColors.getDimBrightThreshold();
+    setBaseColor(color, dimBrightThreshold);
+
+    if (!m_textColor.isValid()) {
+        // Read the text color, otherwise use the parent's BgColor.
+        m_textColor = signalColors.getBgColor();
+        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" << m_textColor;
+    }
+
+    m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
+
+    // Hotcue text is set by the cue's label in the database, not by the skin.
+    if (hotCue == Cue::kNoHotCue) {
+        m_text = text;
+    }
+}
+
+WaveformMark::WaveformMark(const QString& group,
         const QDomNode& node,
         const SkinContext& context,
         int priority,
@@ -350,16 +420,31 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
         QString path = m_pixmapPath;
         // Use devicePixelRatio to properly scale the image
         QImage image = *WImageStore::getImage(path, devicePixelRatio);
-        //  If loading the image didn't fail, then we're done. Otherwise fall
-        //  through and render a label.
+        // If loading the image didn't fail, then we're done. Otherwise fall
+        // through and render a label.
         if (!image.isNull()) {
             image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            //  Set the pixel/device ratio AFTER loading the image in order to get
-            //  a truly scaled source image.
-            //  See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
-            //  Also, without this some Qt-internal issue results in an offset
-            //  image when calculating the center line of pixmaps in draw().
+            // Set the pixel/device ratio AFTER loading the image in order to get
+            // a truly scaled source image.
+            // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
+            // Also, without this some Qt-internal issue results in an offset
+            // image when calculating the center line of pixmaps in draw().
             image.setDevicePixelRatio(devicePixelRatio);
+            // Calculate the offset
+            const float imgw = image.width();
+            const Qt::Alignment alignH = m_align & Qt::AlignHorizontal_Mask;
+            switch (alignH) {
+            case Qt::AlignHCenter:
+                m_offset = -(imgw - 1.f) / 2.f;
+                break;
+            case Qt::AlignLeft:
+                m_offset = -imgw + 2.f;
+                break;
+            case Qt::AlignRight:
+            default:
+                m_offset = -1.f;
+                break;
+            }
             return image;
         }
     }

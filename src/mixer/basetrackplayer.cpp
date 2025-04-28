@@ -295,10 +295,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 #ifdef __STEM__
     m_pStemColors.reserve(mixxx::kMaxSupportedStems);
     QString group = getGroup();
-    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
-        QString stemGroup = QStringLiteral("%1Stem%2]")
-                                    .arg(group.left(group.size() - 1),
-                                            QString::number(stemIdx));
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = EngineDeck::getGroupForStem(group, stemIdx);
         m_pStemColors.emplace_back(std::make_unique<ControlObject>(
                 ConfigKey(stemGroup, QStringLiteral("color"))));
         m_pStemColors.back()->set(kNoTrackColor);
@@ -312,7 +310,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
 }
 
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
-    TrackPointer pTrack(Track::newTemporary());
+    TrackPointer pTrack = Track::newTemporary();
     pTrack->setAudioProperties(
             mixxx::kEngineChannelOutputCount,
             mixxx::audio::SampleRate(44100),

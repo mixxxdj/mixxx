@@ -24,7 +24,7 @@ Variables:
         <Size>50f,24f</Size>
         <Children>
           <!-- Play -->
-          <Template src="skins:Tango/controls/button_2state_right_display.xml">
+          <Template src="skins:Tango/controls/button_play_2state_right_display.xml">
             <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>

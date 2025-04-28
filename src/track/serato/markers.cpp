@@ -635,7 +635,7 @@ QByteArray SeratoMarkers::dumpMP4() const {
 }
 
 QList<CueInfo> SeratoMarkers::getCues() const {
-    qDebug() << "Reading cues from 'Serato Markers_' tag data...";
+    // qDebug() << "Reading cues from 'Serato Markers_' tag data...";
 
     QList<CueInfo> cueInfos;
     int cueIndex = 0;

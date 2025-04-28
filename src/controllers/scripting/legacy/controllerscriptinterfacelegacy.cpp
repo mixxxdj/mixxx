@@ -1060,67 +1060,69 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharset(
     using enum Charset;
     switch (targetCharset) {
     case ASCII:
-        return convertCharsetInternal(QStringLiteral("US-ASCII"), value);
+        return convertCharsetInternal(QLatin1String("US-ASCII"), value);
     case UTF_8:
-        return convertCharsetInternal(QStringLiteral("UTF-8"), value);
+        return convertCharsetInternal(QLatin1String("UTF-8"), value);
     case UTF_16LE:
-        return convertCharsetInternal(QStringLiteral("UTF-16LE"), value);
+        return convertCharsetInternal(QLatin1String("UTF-16LE"), value);
     case UTF_16BE:
-        return convertCharsetInternal(QStringLiteral("UTF-16BE"), value);
+        return convertCharsetInternal(QLatin1String("UTF-16BE"), value);
     case UTF_32LE:
-        return convertCharsetInternal(QStringLiteral("UTF-32LE"), value);
+        return convertCharsetInternal(QLatin1String("UTF-32LE"), value);
     case UTF_32BE:
-        return convertCharsetInternal(QStringLiteral("UTF-32BE"), value);
+        return convertCharsetInternal(QLatin1String("UTF-32BE"), value);
     case CentralEurope:
-        return convertCharsetInternal(QStringLiteral("windows-1250"), value);
+        return convertCharsetInternal(QLatin1String("windows-1250"), value);
     case Cyrillic:
-        return convertCharsetInternal(QStringLiteral("windows-1251"), value);
-    case Latin1:
-        return convertCharsetInternal(QStringLiteral("windows-1252"), value);
+        return convertCharsetInternal(QLatin1String("windows-1251"), value);
+    case WesternEurope:
+        return convertCharsetInternal(QLatin1String("windows-1252"), value);
     case Greek:
-        return convertCharsetInternal(QStringLiteral("windows-1253"), value);
+        return convertCharsetInternal(QLatin1String("windows-1253"), value);
     case Turkish:
-        return convertCharsetInternal(QStringLiteral("windows-1254"), value);
+        return convertCharsetInternal(QLatin1String("windows-1254"), value);
     case Hebrew:
-        return convertCharsetInternal(QStringLiteral("windows-1255"), value);
+        return convertCharsetInternal(QLatin1String("windows-1255"), value);
     case Arabic:
-        return convertCharsetInternal(QStringLiteral("windows-1256"), value);
+        return convertCharsetInternal(QLatin1String("windows-1256"), value);
     case Baltic:
-        return convertCharsetInternal(QStringLiteral("windows-1257"), value);
+        return convertCharsetInternal(QLatin1String("windows-1257"), value);
     case Vietnamese:
-        return convertCharsetInternal(QStringLiteral("windows-1258"), value);
+        return convertCharsetInternal(QLatin1String("windows-1258"), value);
     case Latin9:
-        return convertCharsetInternal(QStringLiteral("ISO-8859-15"), value);
+        return convertCharsetInternal(QLatin1String("ISO-8859-15"), value);
     case Shift_JIS:
-        return convertCharsetInternal(QStringLiteral("Shift_JIS"), value);
+        return convertCharsetInternal(QLatin1String("Shift_JIS"), value);
     case EUC_JP:
-        return convertCharsetInternal(QStringLiteral("EUC-JP"), value);
+        return convertCharsetInternal(QLatin1String("EUC-JP"), value);
     case EUC_KR:
-        return convertCharsetInternal(QStringLiteral("EUC-KR"), value);
+        return convertCharsetInternal(QLatin1String("EUC-KR"), value);
     case Big5_HKSCS:
-        return convertCharsetInternal(QStringLiteral("Big5-HKSCS"), value);
+        return convertCharsetInternal(QLatin1String("Big5-HKSCS"), value);
     case KOI8_U:
-        return convertCharsetInternal(QStringLiteral("KOI8-U"), value);
+        return convertCharsetInternal(QLatin1String("KOI8-U"), value);
     case UCS2:
-        return convertCharsetInternal(QStringLiteral("ISO-10646-UCS-2"), value);
+        return convertCharsetInternal(QLatin1String("ISO-10646-UCS-2"), value);
     case SCSU:
-        return convertCharsetInternal(QStringLiteral("SCSU"), value);
+        return convertCharsetInternal(QLatin1String("SCSU"), value);
     case BOCU_1:
-        return convertCharsetInternal(QStringLiteral("BOCU-1"), value);
+        return convertCharsetInternal(QLatin1String("BOCU-1"), value);
     case CESU_8:
-        return convertCharsetInternal(QStringLiteral("CESU-8"), value);
+        return convertCharsetInternal(QLatin1String("CESU-8"), value);
+    case Latin1:
+        return convertCharsetInternal(QLatin1String("ISO-8859-1"), value);
     }
+
     m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
     return QByteArray();
 }
 
 QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
-        const QString& targetCharset, const QString& value) {
+        QLatin1String targetCharset, const QString& value) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     QAnyStringView encoderName = QAnyStringView(targetCharset);
 #else
-    QByteArray encoderNameArray = targetCharset.toUtf8();
-    const char* encoderName = encoderNameArray.constData();
+    const char* encoderName = targetCharset.data();
 #endif
     QStringEncoder fromUtf16 = QStringEncoder(encoderName);
     if (!fromUtf16.isValid()) {
