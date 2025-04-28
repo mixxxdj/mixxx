@@ -245,6 +245,17 @@ mixxx::audio::FrameDiff_t Cue::getLengthFrames() const {
     return m_endPosition - m_startPosition;
 }
 
+void Cue::setHotCue(int n) {
+    VERIFY_OR_DEBUG_ASSERT(n >= mixxx::kFirstHotCueIndex) {
+        return;
+    }
+    const auto lock = lockMutex(&m_mutex);
+    if (m_iHotCue == n) {
+        return;
+    }
+    m_iHotCue = n;
+}
+
 int Cue::getHotCue() const {
     const auto lock = lockMutex(&m_mutex);
     return m_iHotCue;

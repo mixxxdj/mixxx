@@ -168,12 +168,14 @@ ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
 *	Stem #%1
 *	FPS: n/a
 *	<i>FPS: %0/%1</i>
-de,hu,bs,cs,da,es_419,es_AR,es_CO,es_CR,es_EC,es_MX,es_PA,es_UY,et,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,pt,pt_PT,ro,sk,sl,sv,vi	Album
+*	\u276f
+*	\u276e
+de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL	Album
 de,da,fr,lb,ms,nl,oc,sv	Genre
 de,it,pl	Bitrate:
 es,es_419,es_AR,es_CO,es_MX,ca,es_ES	Error:
-pt_BR,de,el,es_419,es_AR,es_CO,es_CR,es_EC,es_MX,es_PA,es_UY,id,it,nl,ro	Deck %1
-hu,da,de,el,es_419,es_AR,es_CO,es_CR,es_EC,es_MX,es_PA,es_UY,eu,id,nb,nl,pl,pt*,ro,sn,tr,vi	Sampler %1
+pt_BR,de,el,id,it,nl,ro	Deck %1
+hu,da,de,el,eu,id,nb,nl,pl,pt*,ro,sn,tr,vi	Sampler %1
 hu,id,nl,sn	Auxiliary %1
 *	Crossfader
 *	Cue
@@ -214,9 +216,9 @@ pt,pt_BR,ca,de,fr,it,nl,pl,pt_PT,sl,sv	Tremolo
 pt_BR,da,de,id,it,nl,pt,ro	Mixer
 pt_BR,de,it,nl,pt_PT	Reloop
 de,es*,nl,pt_BR,vi	Hotcues
-de,es_CR,es_EC,es_PA,es_UY,it,nl,pt_BR,pt_PT,vi,pl	Hotcues %1-%2
+de,es*	Hotcues %1-%2
 nl,pl	Hotcue index
-de,it,nl,pl	Hotcue #%1
+de,it,nl,pl,es_ES	Hotcue #%1
 fr,de,sv	Information
 fr,es*	Simple
 ca,es*	Color
@@ -283,12 +285,12 @@ it	&File
 it,nl	database
 sn	Key
 lb,nl	Crossfader Curve
-nb,nn,ro,sv	Artist
+nb,nn,ro,sv,sq_AL	Artist
 nl	Cover Art
 nl	Scan
 nl,pt*	Item
 ca	Controls
-ca,de,fr,nb,oc,pl,ro,sl,sv	Format
+ca,de,fr,nb,oc,pl,ro,sl,sv,sq_AL	Format
 ca,fr,nl,ro,sv	Permanent
 ca,de,es*,fr,gl,pt*,ro,sv,tr	Global
 ca	Colors
@@ -302,7 +304,7 @@ ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
 ca,de,fr,it,nl,pl,sv	Intro
 cs,de,fr,sl	Formant
-da,es,es_ES,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv	Auto DJ
+da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL	Auto DJ
 da,fr,nb,nl,nn	Type
 de,nl,pl,sv	Status
 da,de,it,nl	Computer
@@ -357,18 +359,18 @@ de,fr,it,nl,pl,sv	Outro
 de,nl	Loops
 el,pt_BR	Tool tips
 el,es*,eu,id,it,lb,nb,pt*,tr	Scratching
-es*,fr,it,nl,pt*	&Ok
+es*,fr,it,nl,pt*,sq_AL	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
-fr,it,nl	 pt
+fr,it,nl,zh*	 pt
 it	Password
 nl,sv,vi	Equalizers
 nl,it	Controllers
 nl	Audio Buffer
 nl,sv	OpenGL Direct Rendering
-nl	Hard Clip
-nl	Hard
+nl,zh*	Hard Clip
+nl,zh*	Hard
 sv	(status text)
 da	Input
 de,nl	Moog Filter
@@ -387,7 +389,7 @@ de,es*,it,nl,pt_BR,ro,vi	Hotcue
 de	Loop-In Marker
 de	Loop-Out Marker
 de,it	Beatloop
-nl,it	Booth
+nl,it,zh*	Booth
 de,it,nl,pt_BR,ro	Deck
 de,fr,it,nl,pl	Echo
 de,it,nl,sv	Feedback
@@ -397,7 +399,7 @@ de,it,nl,pl,pt,pt_PT,ru,zh*	BW
 de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
 nl	Track #
 de	Name
-de,et,fr,nb,nl,pl,ro,sl	Transport
+de,et,fr,nb,nl,pl,ro,sl,sq_AL	Transport
 de,lt,nl,pt_BR	Cues
 de,es*,hu,it,nl,pt_BR,ro,tr,vi,zh,zh_HK	Hotcue %1
 de,pt,pt_BR,vi	Looping
@@ -413,7 +415,7 @@ de	Controller Name
 de	Name:
 de	Mappings
 de,it,nl	Multi-Sampling
-de,sv	Version:
+de,sv,sq_AL	Version:
 de,lb,oc,pt_BR,pt_PT	Linear
 de,nl,vi	Tags
 de	Sound API
@@ -427,8 +429,8 @@ de,nl	Track
 de,nl	Tracks
 it	legacy
 nl	Waveform type
-es*,it,nl	Knee (dBFS)
-es*,it,nl	Knee
+es*,it,nl,zh*	Knee (dBFS)
+es*,it,nl,zh*	Knee
 es*,nl	Release
 it,nl	Auto Makeup Gain
 it,nl	Makeup
@@ -437,3 +439,17 @@ nl	&Reset
 nl	Compressor
 nl	Release (ms)
 it	Tempo Tap
+zh*	Soft Clipping
+zh*	Hard Clipping
+es,es_419,es_AR,es_CO,es_ES,es_MX	No
+nl,sq_AL	VID:
+nl	Product ID
+nl,sq_AL	PID:
+nl	Lossy
+nl	Lossless
+nl	Top
+nl	OpenGL Status
+nl	Stem Label
+nl	Stem Mute
+sq_AL	Artist + Album
+sq_AL	Off

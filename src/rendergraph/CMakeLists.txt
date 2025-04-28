@@ -39,5 +39,7 @@ set(
 )
 
 add_subdirectory(opengl)
-add_subdirectory(scenegraph)
+if(QML)
+  add_subdirectory(scenegraph)
+endif()
 add_subdirectory(shaders)

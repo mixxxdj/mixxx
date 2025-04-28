@@ -40,6 +40,9 @@ class DlgPrefController : public DlgPreferencePage {
     void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
     void slotApply() override;
+    /// Called when the preferences are hidden, e.g. when closing the window
+    /// with the [X] button or keyboard shortcut
+    void slotHide() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
 
@@ -55,9 +58,6 @@ class DlgPrefController : public DlgPreferencePage {
   private slots:
     /// Called when the user selects another mapping in the combobox
     void slotMappingSelected(int index);
-    /// Used to selected the current mapping in the combobox and display the
-    /// mapping information.
-    void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     void slotInputControlSearch();
     void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
@@ -87,10 +87,10 @@ class DlgPrefController : public DlgPreferencePage {
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
+    /// Used to selected the current mapping in the combobox and display the
+    /// mapping information.
+    void showMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     QString mappingShortName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingAuthor(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFilePathFromIndex(int index) const;
@@ -98,6 +98,8 @@ class DlgPrefController : public DlgPreferencePage {
     void applyMappingChanges();
     bool saveMapping();
     void initTableView(QTableView* pTable);
+    unsigned int getNumberOfVisibleTabs();
+    int getIndexOfFirstVisibleTab();
 
     /// Set dirty state (i.e. changes have been made).
     ///
@@ -140,4 +142,9 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
+    int m_inputMappingsTabIndex;  // Index of the input mappings tab
+    int m_outputMappingsTabIndex; // Index of the output mappings tab
+    int m_settingsTabIndex;       // Index of the settings tab
+    int m_screensTabIndex;        // Index of the screens tab
+    QHash<QString, bool> m_settingsCollapsedStates;
 };

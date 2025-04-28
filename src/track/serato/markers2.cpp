@@ -592,7 +592,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2::findEntryByType(
 }
 
 QList<CueInfo> SeratoMarkers2::getCues() const {
-    qDebug() << "Reading cues from 'Serato Markers2' tag data...";
+    // qDebug() << "Reading cues from 'Serato Markers2' tag data...";
 
     QList<CueInfo> cueInfos;
 
@@ -803,7 +803,7 @@ QByteArray SeratoMarkers2::dumpFLAC() const {
 }
 
 std::optional<SeratoStoredTrackColor> SeratoMarkers2::getTrackColor() const {
-    kLogger.debug() << "Reading track color from 'Serato Markers2' tag data...";
+    // kLogger.debug() << "Reading track color from 'Serato Markers2' tag data...";
 
     for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
@@ -853,7 +853,7 @@ void SeratoMarkers2::setTrackColor(SeratoStoredTrackColor color) {
 }
 
 bool SeratoMarkers2::isBpmLocked() const {
-    kLogger.debug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
+    // kLogger.debug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
 
     for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {

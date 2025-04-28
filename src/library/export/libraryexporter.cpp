@@ -69,7 +69,7 @@ void LibraryExporter::beginEnginePrimeExport(
 
     // Construct a dialog to monitor job progress and offer cancellation.
     auto pProgressDlg = make_parented<QProgressDialog>(this);
-    pProgressDlg->setLabelText(tr("Exporting to Engine Prime..."));
+    pProgressDlg->setLabelText(tr("Exporting to Engine DJ..."));
     pProgressDlg->setMinimumDuration(0);
     connect(pJobThread,
             &EnginePrimeExportJob::jobMaximum,

@@ -731,7 +731,7 @@ EksOtus.enableSpinningPlatterLEDs = function() {
         return;
     engine.connectControl(
         EksOtus.activeSpinningPlatterGroup,
-        "visual_playposition",
+        "playposition",
         "EksOtus.circleLEDs"
     );
     engine.connectControl(
@@ -748,7 +748,7 @@ EksOtus.disableSpinningPlatterLEDs = function() {
         return;
     engine.connectControl(
         EksOtus.activeSpinningPlatterGroup,
-        "visual_playposition",
+        "playposition",
         "EksOtus.circleLEDs",
         true
     );
