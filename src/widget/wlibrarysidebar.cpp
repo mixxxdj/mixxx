@@ -5,17 +5,26 @@
 #include <QtDebug>
 
 #include "library/library_prefs.h"
+#include "library/sidebaritemdelegate.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
 #include "util/dnd.h"
 
+namespace {
+
+const QColor kDefaultBookmarkColor = QColor(Qt::red);
+
+} // anonymous namespace
+
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
           m_pSidebarModel(nullptr),
+          m_pItemDelegate(nullptr),
           m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault),
-          m_lastDragMoveAccepted(false) {
+          m_lastDragMoveAccepted(false),
+          m_bookmarkColor(kDefaultBookmarkColor) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
@@ -37,6 +46,17 @@ void WLibrarySidebar::setModel(QAbstractItemModel* pModel) {
     DEBUG_ASSERT(pSidebarModel);
     m_pSidebarModel = pSidebarModel;
     QTreeView::setModel(pSidebarModel);
+    // Create the delegate for painting the bookmark indicator
+    DEBUG_ASSERT(m_pItemDelegate == nullptr);
+    m_pItemDelegate = new SidebarItemDelegate(this, pSidebarModel);
+    setItemDelegateForColumn(0, m_pItemDelegate);
+    m_pItemDelegate->setBookmarkColor(m_bookmarkColor);
+    // Color can be set in qss via qproperty-bookmarkColor which happens
+    // when the stylesheet is applied. Push it to delegate.
+    connect(this,
+            &WLibrarySidebar::bookmarkColorChanged,
+            m_pItemDelegate,
+            &SidebarItemDelegate::setBookmarkColor);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -262,9 +282,14 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     return rootIndex == selIndex;
 }
 
+void WLibrarySidebar::setBookmarkColor(const QColor& color) {
+    if (color.isValid() && m_pItemDelegate) {
+        m_pItemDelegate->setBookmarkColor(color);
+    }
+}
+
 void WLibrarySidebar::toggleBookmark() {
     const QModelIndex selIndex = selectedIndex();
-    // TODO add visual hint, custom qproperty
     if (!selIndex.isValid()) {
         qWarning() << " ! WLS bookmarkSelectedItem, invalid index" << selIndex;
         return;

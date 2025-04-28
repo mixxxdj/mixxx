@@ -2996,6 +2996,8 @@ WLibrarySidebar {
 }
 WLibrarySidebar {
   outline: none;
+  show-decoration-selected: 0;
+  qproperty-bookmarkColor: #ff0000;
 }
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
@@ -3365,9 +3367,6 @@ QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
   margin: 4px 5px 5px 1px;
 }
 
-WLibrarySidebar {
-  show-decoration-selected: 0;
-}
 /* triangle for closed/opened branches in treeview */
 /* closed */
 WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
