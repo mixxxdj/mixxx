@@ -312,7 +312,6 @@ var P1Nano;
                 midi: [0x91, 0x03],
             });
 
-            // TODO: should we do 8 hotcues and some loop controls instead?
             this.hotcues = [];
             for (let i = 0; i < 12; i++) {
                 this.hotcues[i] = new components.HotcueButton({
@@ -496,8 +495,6 @@ var P1Nano;
                 outKey: "loop_enabled",
             });
 
-            // TODO: this is annoying as the default, but I don't see a way to
-            // force the controller to swap to a different channel.
             this.setCurrentDeck("[Channel3]");
         }
 
