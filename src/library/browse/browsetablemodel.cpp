@@ -1,6 +1,7 @@
 #include "library/browse/browsetablemodel.h"
 
 #include <QMessageBox>
+#include <QMimeData>
 #include <QStringList>
 #include <QUrl>
 

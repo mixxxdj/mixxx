@@ -61,8 +61,8 @@ class InternalClock : public QObject, public Clock, public Syncable {
     void updateInstantaneousBpm(mixxx::Bpm bpm) override;
     void reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) override;
 
-    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
-    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize);
 
   private slots:
     void slotBpmChanged(double bpm);

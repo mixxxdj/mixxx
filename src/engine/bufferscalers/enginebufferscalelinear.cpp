@@ -90,8 +90,10 @@ double EngineBufferScaleLinear::scaleBuffer(
         // the other direction
         SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
         int chCount = getOutputSignal().getChannelCount();
-        if (iNextSample + chCount <= m_bufferIntSize) {
+        if (iNextSample >= 0 && iNextSample + chCount <= m_bufferIntSize) {
             SampleUtil::copy(m_floorSampleOld.data(), &m_bufferInt[iNextSample], chCount);
+        } else {
+            SampleUtil::clear(m_floorSampleOld.data(), chCount);
         }
 
         // if the buffer has extra samples, do a read so RAMAN ends up back where

@@ -2,9 +2,9 @@
 
 #include <QPainter>
 #include <QPointer>
+#include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
-#include <QtQml>
 
 #include "qml/qmlplayerproxy.h"
 #include "track/track.h"
@@ -58,7 +58,11 @@ class QmlWaveformOverview : public QQuickPaintedItem {
   signals:
     void playerChanged();
     void channelsChanged(mixxx::qml::QmlWaveformOverview::Channels channels);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void rendererChanged(Renderer renderer);
+#else
     void rendererChanged(mixxx::qml::QmlWaveformOverview::Renderer renderer);
+#endif
     void colorHighChanged(const QColor& color);
     void colorMidChanged(const QColor& color);
     void colorLowChanged(const QColor& color);

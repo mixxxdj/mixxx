@@ -74,6 +74,9 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
 
     comboBoxChosenControl->completer()->setCompletionMode(
         QCompleter::PopupCompletion);
+    comboBoxChosenControl->completer()->setCaseSensitivity(Qt::CaseInsensitive);
+    comboBoxChosenControl->completer()->setFilterMode(Qt::MatchContains);
+
     populateComboBox();
     connect(comboBoxChosenControl,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -150,17 +153,17 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
 void DlgControllerLearning::populateComboBox() {
     // Sort all of the controls and add them to the combo box
     comboBoxChosenControl->clear();
+    // Add a blank item so the lineedit is initially empty
     comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
+    // Note: changes here might break the completer, so remember to test that
     QList<NamedControl> sorted_controls;
-    foreach (ConfigKey key, m_pControlPickerMenu->controlsAvailable()) {
-        sorted_controls.push_back(
-                NamedControl(m_pControlPickerMenu->controlTitleForConfigKey(key),
-                        key));
+    for (const ConfigKey& key : m_pControlPickerMenu->controlsAvailable()) {
+        sorted_controls.push_back(NamedControl(
+                m_pControlPickerMenu->controlTitleForConfigKey(key),
+                key));
     }
-    std::sort(sorted_controls.begin(), sorted_controls.end(),
-          namedControlComparator);
-    foreach(NamedControl control, sorted_controls)
-    {
+    std::sort(sorted_controls.begin(), sorted_controls.end(), namedControlComparator);
+    for (const NamedControl& control : std::as_const(sorted_controls)) {
         comboBoxChosenControl->addItem(control.first,
                                        QVariant::fromValue(control.second));
     }
@@ -318,7 +321,9 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
-    if (opCode != MidiOpCode::ControlChange || progressBarWiggleFeedback->value() != 10) {
+    if (opCode != MidiOpCode::ControlChange &&
+            progressBarWiggleFeedback->value() !=
+                    progressBarWiggleFeedback->maximum()) {
         m_lastMessageTimer.start();
     }
 }
@@ -484,6 +489,22 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
 }
 
 void DlgControllerLearning::controlPicked(const ConfigKey& control) {
+    if (!ControlObject::exists(control)) {
+        QMessageBox msg(QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("The selected control does not exist.<br>"
+                   "This likely a bug. Please report it on the Mixxx bug "
+                   "tracker.<br>"
+                   "<a href='https://github.com/mixxxdj/mixxx/issues'>"
+                   "https://github.com/mixxxdj/mixxx/issues</a>"
+                   "<br><br>"
+                   "You tried to learn: %1,%2")
+                        .arg(control.group, control.item));
+        msg.setTextFormat(Qt::RichText);              // make the link clickable
+        msg.setWindowFlags(Qt::WindowStaysOnTopHint); // position it above the Learning dialog
+        msg.exec();
+        return;
+    }
     QString title = m_pControlPickerMenu->controlTitleForConfigKey(control);
     QString description = m_pControlPickerMenu->descriptionForConfigKey(control);
     loadControl(control, title, description);

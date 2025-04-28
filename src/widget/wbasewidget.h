@@ -2,7 +2,8 @@
 
 #include <QString>
 #include <QWidget>
-#include <QList>
+#include <memory>
+#include <vector>
 
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
@@ -12,53 +13,55 @@ class WBaseWidget {
     explicit WBaseWidget(QWidget* pWidget);
     virtual ~WBaseWidget();
 
+    enum class ConnectionSide {
+        None,
+        Left,
+        Right
+    };
+
     virtual void Init();
 
-    QWidget* toQWidget() {
+    QWidget* toQWidget() const {
         return m_pWidget;
     }
 
     void appendBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.append(tooltip);
+        m_baseTooltip.append(tooltip.trimmed());
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void prependBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.prepend(tooltip);
+        m_baseTooltip.prepend(tooltip.trimmed());
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void setBaseTooltip(const QString& tooltip) {
-        m_baseTooltip = tooltip;
-        m_pWidget->setToolTip(tooltip);
+        m_baseTooltip = tooltip.trimmed();
+        m_pWidget->setToolTip(m_baseTooltip);
     }
 
     QString baseTooltip() const {
         return m_baseTooltip;
     }
 
-    void addLeftConnection(ControlParameterWidgetConnection* pConnection);
-    void addRightConnection(ControlParameterWidgetConnection* pConnection);
-    void addConnection(ControlParameterWidgetConnection* pConnection);
+    void addConnection(
+            std::unique_ptr<ControlParameterWidgetConnection> pConnection,
+            ConnectionSide side);
 
-    void addPropertyConnection(ControlWidgetPropertyConnection* pConnection);
+    void addPropertyConnection(std::unique_ptr<ControlWidgetPropertyConnection> pConnection);
 
-    // Set a ControlWidgetConnection to be the display connection for the
-    // widget. The connection should also be added via an addConnection method
-    // or it will not be deleted or receive updates.
-    void setDisplayConnection(ControlParameterWidgetConnection* pConnection);
+    // Add a ControlWidgetConnection to be the display connection for the
+    // widget. There can only be one DisplayConnection. Calling this multiple
+    // times will add each connection but only the last one is considered to be
+    // the DisplayConnection.
+    void addAndSetDisplayConnection(
+            std::unique_ptr<ControlParameterWidgetConnection> pConnection,
+            ConnectionSide side);
 
     double getControlParameter() const;
     double getControlParameterLeft() const;
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
-
-    inline const QList<ControlParameterWidgetConnection*>& connections() const {
-        return m_connections;
-    };
-    inline const QList<ControlParameterWidgetConnection*>& leftConnections() const {
-        return m_leftConnections;
-    };
 
 
   protected:
@@ -86,12 +89,12 @@ class WBaseWidget {
     void updateTooltip();
     virtual void fillDebugTooltip(QStringList* debug);
 
-    QList<ControlParameterWidgetConnection*> m_connections;
+    std::vector<std::unique_ptr<ControlParameterWidgetConnection>> m_connections;
     ControlParameterWidgetConnection* m_pDisplayConnection;
-    QList<ControlParameterWidgetConnection*> m_leftConnections;
-    QList<ControlParameterWidgetConnection*> m_rightConnections;
+    std::vector<std::unique_ptr<ControlParameterWidgetConnection>> m_leftConnections;
+    std::vector<std::unique_ptr<ControlParameterWidgetConnection>> m_rightConnections;
 
-    QList<ControlWidgetPropertyConnection*> m_propertyConnections;
+    std::vector<std::unique_ptr<ControlWidgetPropertyConnection>> m_propertyConnections;
 
   private:
     QWidget* m_pWidget;

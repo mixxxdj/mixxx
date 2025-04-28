@@ -37,6 +37,24 @@ ControllerJSProxy* Controller::jsProxy() {
     return new ControllerJSProxy(this);
 }
 
+QString Controller::physicalTransport2String(PhysicalTransportProtocol protocol) {
+    switch (protocol) {
+    case PhysicalTransportProtocol::USB:
+        return QStringLiteral("USB");
+    case PhysicalTransportProtocol::BlueTooth:
+        return QStringLiteral("Bluetooth");
+    case PhysicalTransportProtocol::I2C:
+        return QStringLiteral("I2C");
+    case PhysicalTransportProtocol::SPI:
+        return QStringLiteral("SPI");
+    case PhysicalTransportProtocol::FireWire:
+        return QStringLiteral("Firewire - IEEE 1394");
+    case PhysicalTransportProtocol::UNKNOWN:
+        break; // Effectively fallthrough
+    }
+    return tr("Unknown");
+}
+
 void Controller::startEngine() {
     qCInfo(m_logBase) << "Starting engine";
     if (m_pScriptEngineLegacy) {
@@ -70,8 +88,7 @@ bool Controller::applyMapping(const QString& resourcePath) {
         return false;
     }
 
-    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
-    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = getMappingScriptFiles();
     if (scriptFiles.isEmpty()) {
         qCWarning(m_logBase)
                 << "No script functions available! Did the XML file(s) load "
@@ -81,10 +98,10 @@ bool Controller::applyMapping(const QString& resourcePath) {
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
-    m_pScriptEngineLegacy->setSettings(pMapping->getSettings());
+    m_pScriptEngineLegacy->setSettings(getMappingSettings());
 #ifdef MIXXX_USE_QML
-    m_pScriptEngineLegacy->setModulePaths(pMapping->getModules());
-    m_pScriptEngineLegacy->setInfoScreens(pMapping->getInfoScreens());
+    m_pScriptEngineLegacy->setModulePaths(getMappingModules());
+    m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);
 #else
     Q_UNUSED(resourcePath);

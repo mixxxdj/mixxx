@@ -136,9 +136,8 @@ void EncoderWave::flush() {
     sf_write_sync(m_pSndfile);
 }
 
-
-void EncoderWave::encodeBuffer(const CSAMPLE *pBuffer, const int iBufferSize) {
-    sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
+    sf_write_float(m_pSndfile, pBuffer, bufferSize);
 }
 
 /* Originally called from enginebroadcast.cpp to update metadata information

@@ -29,10 +29,14 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     ~DlgTrackInfoMulti() override = default;
 
     void loadTracks(const QList<TrackPointer>& pTracks);
+    void focusField(const QString& property);
 
+  protected:
     /// We need this to set the max width of the comment QComboBox which has
     /// issues with long lines / multi-line content. See init() for details.
+    /// Also used to set the maximum size of the cover label
     void resizeEvent(QResizeEvent* event) override;
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
 
   private slots:
     void slotOk();
@@ -41,12 +45,14 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     void slotImportMetadataFromFiles();
 
-    /// If only one track is changed while the dialog is open, re-populate
-    /// the dialog from all tracks. This discards pending changes.
+    /// If any of the loaded track has been changed while the dialog is open we
+    /// re-populate the dialog from all tracks. This discards pending changes.
     void slotTrackChanged(TrackId trackId);
 
     void slotTagBoxIndexChanged();
     void slotCommentBoxIndexChanged();
+    void commentTextChanged();
+    void slotEditingFinished(QComboBox* pBox, QLineEdit* pLine);
     void slotKeyTextChanged();
 
     void slotColorButtonClicked();
@@ -81,6 +87,9 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
             QSet<T>& values,
             bool sort = false);
     void addValuesToCommentBox(QSet<QString>& comments);
+    void updateTagPlaceholder(QComboBox* pBox, bool dirty);
+    void updateCommentPlaceholder(bool dirty);
+
     void updateCoverArtFromTracks();
     void trackColorDialogSetColorStyleButton(const mixxx::RgbColor::optional_t& color,
             bool variousColors = false);
@@ -98,6 +107,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
     QList<mixxx::TrackRecord> m_trackRecords;
+
+    QHash<QString, QWidget*> m_propertyWidgets;
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;

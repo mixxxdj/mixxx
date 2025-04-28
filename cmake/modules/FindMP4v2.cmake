@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindMP4v2
 ---------
@@ -48,13 +43,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_MP4v2 QUIET mp4v2)
 endif()
 
-find_path(MP4v2_INCLUDE_DIR
+find_path(
+  MP4v2_INCLUDE_DIR
   NAMES mp4v2/mp4v2.h
   HINTS ${PC_MP4v2_INCLUDE_DIRS}
-  DOC "MP4v2 include directory")
+  DOC "MP4v2 include directory"
+)
 mark_as_advanced(MP4v2_INCLUDE_DIR)
 
-find_library(MP4v2_LIBRARY
+find_library(
+  MP4v2_LIBRARY
   NAMES mp4v2
   HINTS ${PC_MP4v2_LIBRARY_DIRS}
   DOC "MP4v2 library"
@@ -79,7 +77,8 @@ if(MP4v2_FOUND)
 
   if(NOT TARGET MP4v2::MP4v2)
     add_library(MP4v2::MP4v2 UNKNOWN IMPORTED)
-    set_target_properties(MP4v2::MP4v2
+    set_target_properties(
+      MP4v2::MP4v2
       PROPERTIES
         IMPORTED_LOCATION "${MP4v2_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_MP4v2_CFLAGS_OTHER}"

@@ -26,20 +26,20 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     int priority = 0;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(
-                    group, child, context, --priority, signalColors));
+            m_pDefaultMark = WaveformMarkPointer::create(
+                    group, child, context, --priority, signalColors);
             hasDefaultMark = true;
             defaultChild = child;
         } else if (child.nodeName() == "Mark") {
-            WaveformMarkPointer pMark(new WaveformMark(
-                    group, child, context, --priority, signalColors));
+            auto pMark = WaveformMarkPointer::create(
+                    group, child, context, --priority, signalColors);
             if (pMark->isValid()) {
                 // guarantee uniqueness even if there is a misdesigned skin
                 QString item = pMark->getItem();
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                 } else  {
-                    m_marks.push_back(pMark);
+                    addMark(pMark);
                     if (pMark->getHotCue() >= 0) {
                         m_hotCueMarks.insert(pMark->getHotCue(), pMark);
                     }
@@ -54,12 +54,51 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     if (hasDefaultMark) {
         for (int i = 0; i < NUM_HOT_CUES; ++i) {
             if (m_hotCueMarks.value(i).isNull()) {
-                //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                WaveformMarkPointer pMark(new WaveformMark(
-                        group, defaultChild, context, i, signalColors, i));
+                // qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
+                auto pMark = WaveformMarkPointer::create(
+                        group, defaultChild, context, i, signalColors, i);
                 m_marks.push_front(pMark);
                 m_hotCueMarks.insert(pMark->getHotCue(), pMark);
             }
+        }
+    }
+}
+
+void WaveformMarkSet::setDefault(const QString& group,
+        const DefaultMarkerStyle& model,
+        const WaveformSignalColors& signalColors) {
+    m_pDefaultMark = WaveformMarkPointer::create(
+
+            group,
+            model.positionControl,
+            model.visibilityControl,
+            model.textColor,
+            model.markAlign,
+            model.text,
+            model.pixmapPath,
+            model.iconPath,
+            model.color,
+            0,
+            Cue::kNoHotCue,
+            signalColors);
+    for (int i = 0; i < NUM_HOT_CUES; ++i) {
+        if (m_hotCueMarks.value(i).isNull()) {
+            auto pMark = WaveformMarkPointer::create(
+
+                    group,
+                    model.positionControl,
+                    model.visibilityControl,
+                    model.textColor,
+                    model.markAlign,
+                    model.text,
+                    model.pixmapPath,
+                    model.iconPath,
+                    model.color,
+                    i,
+                    i,
+                    signalColors);
+            m_marks.push_front(pMark);
+            m_hotCueMarks.insert(pMark->getHotCue(), pMark);
         }
     }
 }

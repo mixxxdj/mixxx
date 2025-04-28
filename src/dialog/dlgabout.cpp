@@ -57,7 +57,9 @@ DlgAbout::DlgAbout()
             << "Ferran Pujol Camins"
             << "J&ouml;rg Wartenberg"
             << "Fredrik Wieczerkowski"
-            << "Maarten de Boer";
+            << "Maarten de Boer"
+            << "Antoine Colombier"
+            << "Evelynne Veys";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
@@ -66,34 +68,16 @@ DlgAbout::DlgAbout()
     recentContributors
             << "Be"
             << "Uwe Klotz"
-            << "Nino MP"
             << "D&aacute;vid Szak&aacute;llas"
-            << "Daniel Poelzleithner"
-            << "luzpaz"
-            << "Kshitij Gupta"
-            << "Sebastian Hasler"
             << "Philip Gottschling"
             << "Adam Szmigin"
-            << "Evan Dekker"
-            << "Harshit Maurya"
-            << "Janek Fischer"
-            << "Matthias Beyer"
-            << "Kristiyan Katsarov"
-            << "Sanskar Bajpai"
             << "Christian"
             << "Geraldo Nascimento"
-            << "Javier Vilarroig"
             << "Allen Wittenauer"
             << "Raphael Bigal"
             << "Filok"
             << "tcoyvwac"
-            << "Gary Tunstall"
             << "Tobias Oszlanyi (OsZ)"
-            << "Viktor Gal"
-            << "Maty&aacute;&scaron; Bobek"
-            << "Mr. Rincewind"
-            << "Stefan N&uuml;rnberger"
-            << "motific"
             << "Fatih Emre YILDIZ"
             << "Neil Naveen"
             << "Javier Vilalta"
@@ -106,7 +90,6 @@ DlgAbout::DlgAbout()
             << "Jakob Leifhelm"
             << "Florian Goth"
             << "Chase Durand"
-            << "Antoine Colombier"
             << "John Last"
             << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
@@ -131,7 +114,32 @@ DlgAbout::DlgAbout()
             << "Raphael Quast"
             << "Christophe Henry"
             << "Lukas Waslowski"
-            << "Marcin Cie&#x15B;lak"; // &#x15B; = &sacute; in HTML 5.0
+            << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
+            << "HorstBaerbel"
+            << "gqzomer"
+            << "Bacadam"
+            << "Leon Eckardt"
+            << "Th&eacute;odore Noel"
+            << "Aquassaut"
+            << "Morgan Nunan"
+            << "FrankwaP"
+            << "Markus Kohlhase"
+            << "Daniel Fernandes"
+            << "Frank Grimy"
+            << "Al Hadebe"
+            << "Emilien Colombier"
+            << "DJ aK"
+            << "Sam Whited"
+            << "Ryan Bell"
+            << "Nicolas Parlant"
+            << "Ralf Pachali"
+            << "Patrick Taels"
+            << "armaan"
+            << "Karam Assany"
+            << "Anmol Mishra"
+            << "Lubosz Sarnecki"
+            << "Falk Ebert"
+            << "13dixi37";
 
     QStringList specialThanks;
     specialThanks
@@ -181,7 +189,6 @@ DlgAbout::DlgAbout()
             << "Max Linke"
             << "Marcos Cardinot"
             << "Nicu Badescu"
-            << "Uwe Klotz"
             << "Sean Pappalardo"
             << "S. Brandt";
 
@@ -379,7 +386,6 @@ DlgAbout::DlgAbout()
             << "David Baker"
             << "Justin Kourie"
             << "Waylon Robertson"
-            << "Al Hadebe"
             << "Ball&oacute; Gy&ouml;rgy"
             << "Pino Toscano"
             << "Alexander Horner"
@@ -389,7 +395,25 @@ DlgAbout::DlgAbout()
             << "Vincent Duez-Dellac"
             << "Somesh Metri"
             << "Doteya"
-            << "olafklingt";
+            << "olafklingt"
+            << "Nino MP"
+            << "Daniel Poelzleithner"
+            << "luzpaz"
+            << "Sebastian Hasler"
+            << "Kshitij Gupta"
+            << "Evan Dekker"
+            << "Harshit Maurya"
+            << "Janek Fischer"
+            << "Matthias Beyer"
+            << "Kristiyan Katsarov"
+            << "Sanskar Bajpai"
+            << "Javier Vilarroig"
+            << "Gary Tunstall"
+            << "Viktor Gal"
+            << "Maty&aacute;&scaron; Bobek"
+            << "Mr. Rincewind"
+            << "Stefan N&uuml;rnberger"
+            << "motific";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");

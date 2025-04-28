@@ -44,6 +44,7 @@
             <MinimumSize>34,15</MinimumSize>
             <MaximumSize>58,15</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
+            <Alignment>center</Alignment>
             <Elide>right</Elide>
             <ObjectName>EffectButtonLabel</ObjectName>
             <EffectRack><Variable name="EffectRack"/></EffectRack>

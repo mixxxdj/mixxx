@@ -42,7 +42,7 @@ class EngineEffect final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const unsigned int numSamples,
+            const std::size_t numSamples,
             const mixxx::audio::SampleRate sampleRate,
             const EffectEnableState chainEnableState,
             const GroupFeatureState& groupFeatures);

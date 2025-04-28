@@ -23,9 +23,15 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void slotUpdate() override;
     void slotResetToDefaults() override;
     void broadcastEnabledChanged(double value);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void checkBoxEnableReconnectChanged(Qt::CheckState state);
+    void checkBoxLimitReconnectsChanged(Qt::CheckState state);
+    void enableCustomMetadataChanged(Qt::CheckState state);
+#else
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
     void enableCustomMetadataChanged(int value);
+#endif
     void connectionListItemSelected(const QModelIndex& selected);
 
   signals:

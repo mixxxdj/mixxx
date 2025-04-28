@@ -7,6 +7,7 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -81,8 +82,6 @@ BulkController::BulkController(libusb_context* context,
     m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
 
-    setDeviceCategory(tr("USB Controller"));
-
     setInputDevice(true);
     setOutputDevice(true);
     m_pReader = nullptr;
@@ -99,15 +98,39 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMutableMapping = pMapping;
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
-std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+QList<LegacyControllerMapping::ScriptFileInfo> BulkController::getMappingScriptFiles() {
     if (!m_pMapping) {
-        return nullptr;
+        return {};
     }
-    return m_pMapping->clone();
+    return m_pMapping->getScriptFiles();
 }
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
+}
+
+#ifdef MIXXX_USE_QML
+QList<LegacyControllerMapping::QMLModuleInfo> BulkController::getMappingModules() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getModules();
+}
+
+QList<LegacyControllerMapping::ScreenInfo> BulkController::getMappingInfoScreens() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getInfoScreens();
+}
+#endif
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
@@ -141,7 +164,7 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
     return true;
 }
 
-int BulkController::open() {
+int BulkController::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "already open";
         return -1;
@@ -187,7 +210,6 @@ int BulkController::open() {
         }
     }
 
-    setOpen(true);
     startEngine();
 
     if (m_pReader != nullptr) {
@@ -208,7 +230,8 @@ int BulkController::open() {
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-
+    applyMapping(resourcePath);
+    setOpen(true);
     return 0;
 }
 
@@ -264,13 +287,13 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
     sendBytes(temp);
 }
 
-void BulkController::sendBytes(const QByteArray& data) {
+bool BulkController::sendBytes(const QByteArray& data) {
     VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
             m_pMapping->getDeviceDirection() &
                     LegacyControllerMapping::DeviceDirection::Outgoing) {
         qDebug() << "The mapping for the bulk device" << getName()
                  << "doesn't require sending data. Ignoring sending request.";
-        return;
+        return false;
     }
 
     int ret;
@@ -287,8 +310,10 @@ void BulkController::sendBytes(const QByteArray& data) {
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
                                << "serial #" << m_sUID << "-" << libusb_error_name(ret);
+        return false;
     } else if (CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(m_logOutput) << transferred << "bytes sent to" << getName()
                              << "serial #" << m_sUID;
     }
+    return true;
 }

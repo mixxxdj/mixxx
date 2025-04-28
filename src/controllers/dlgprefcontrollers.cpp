@@ -44,6 +44,32 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::rescanControllers);
 
+#ifdef __PORTMIDI__
+    checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
+    connect(checkBox_midithrough,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefControllers::slotMidiThroughChanged);
+    txt_midithrough->setTextFormat(Qt::RichText);
+    //: text enclosed in <b> is bold, <br/> is a linebreak
+    //: %1 is the placehodler for 'MIDI Through Port'
+    txt_midithrough->setText(tr(
+            "%1 is a virtual controller that allows to use e.g. the 'MIDI for light' "
+            "mapping.<br/>"
+            "You need to restart Mixxx in order to enable it.<br/>"
+            "<b>Note:</b> mappings meant for physical controllers can cause issues and "
+            "even render the Mixxx GUI unresponsive when being loaded to %1.")
+                    .arg(kMidiThroughPortPrefix));
+#else
+    line_midithrough->hide();
+    checkBox_midithrough->hide();
+    txt_midithrough->hide();
+#endif
+
     // Setting the description text here instead of in the ui file allows to paste
     // a formatted link (text color is a more readable blend of text color and original link color).
     txtMappingsOverview->setText(tr(
@@ -176,7 +202,7 @@ void DlgPrefControllers::setupControllerWidgets() {
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     for (auto* pController : std::as_const(controllerList)) {
-        DlgPrefController* pControllerDlg = new DlgPrefController(
+        auto pControllerDlg = make_parented<DlgPrefController>(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
                 &DlgPrefController::mappingStarted,
@@ -187,9 +213,9 @@ void DlgPrefControllers::setupControllerWidgets() {
                 m_pDlgPreferences,
                 &DlgPreferences::show);
         // Recreate the control picker menus when decks or samplers are added
-        m_pNumDecks->connectValueChanged(pControllerDlg,
+        m_pNumDecks->connectValueChanged(pControllerDlg.get(),
                 &DlgPrefController::slotRecreateControlPickerMenu);
-        m_pNumSamplers->connectValueChanged(pControllerDlg,
+        m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
                 &DlgPrefController::slotRecreateControlPickerMenu);
 
         m_controllerPages.append(pControllerDlg);
@@ -197,16 +223,30 @@ void DlgPrefControllers::setupControllerWidgets() {
         connect(pController,
                 &Controller::openChanged,
                 this,
-                [this, pControllerDlg](bool bOpen) {
-                    slotHighlightDevice(pControllerDlg, bOpen);
+                [this, pDlg = pControllerDlg.get()](bool bOpen) {
+                    slotHighlightDevice(pDlg, bOpen);
                 });
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
+
+        const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
+            switch (protocol) {
+            case DataRepresentationProtocol::USB_BULK_TRANSFER:
+                return QStringLiteral("ic_preferences_bulk.svg");
+            case DataRepresentationProtocol::HID:
+                return QStringLiteral("ic_preferences_hid.svg");
+            case DataRepresentationProtocol::MIDI:
+                return QStringLiteral("ic_preferences_midi.svg");
+            default:
+                return QStringLiteral("ic_preferences_controllers.svg");
+            }
+        }();
+
         m_pDlgPreferences->addPageWidget(
                 DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
                 pController->getName(),
-                "ic_preferences_controllers.svg");
+                treeImage);
 
         m_pControllersRootItem->addChild(pControllerTreeItem);
         m_controllerTreeItems.append(pControllerTreeItem);
@@ -234,3 +274,15 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
     temp.setBold(enabled);
     pControllerTreeItem->setFont(0, temp);
 }
+
+#ifdef __PORTMIDI__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefControllers::slotMidiThroughChanged(Qt::CheckState state) {
+    m_pConfig->setValue(kMidiThroughCfgKey, state != Qt::Unchecked);
+}
+#else
+void DlgPrefControllers::slotMidiThroughChanged(bool checked) {
+    m_pConfig->setValue(kMidiThroughCfgKey, checked);
+}
+#endif
+#endif

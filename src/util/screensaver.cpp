@@ -29,7 +29,9 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #elif defined(_WIN32)
 #  include <windows.h>
 #elif defined(__LINUX__)
-#  include <QtDBus>
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusReply>
 #elif defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND
 #  include <X11/extensions/scrnsaver.h>
 #endif

@@ -11,6 +11,17 @@
 // rendered.
 class WaveformMarkSet {
   public:
+    struct DefaultMarkerStyle {
+        QString positionControl;
+        QString visibilityControl;
+        QString textColor;
+        QString markAlign;
+        QString text;
+        QString pixmapPath;
+        QString iconPath;
+        QColor color;
+    };
+
     WaveformMarkSet();
     virtual ~WaveformMarkSet();
 
@@ -67,11 +78,20 @@ class WaveformMarkSet {
 
     void setBreadth(float breadth);
 
-  private:
     void clear() {
         m_marks.clear();
         m_marksToRender.clear();
     }
+
+    void addMark(WaveformMarkPointer pMark) {
+        m_marks.push_back(pMark);
+    }
+
+    void setDefault(const QString& group,
+            const DefaultMarkerStyle& model,
+            const WaveformSignalColors& signalColors = {});
+
+  private:
     WaveformMarkPointer m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track

@@ -19,7 +19,7 @@ Column {
     }
 
     function stemGroup(group, index) {
-        return `${group.substr(0, group.length-1)}Stem${index + 1}]`
+        return `${group.substr(0, group.length-1)}_Stem${index + 1}]`
     }
 
     Row {

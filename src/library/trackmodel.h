@@ -4,7 +4,6 @@
 #include <QList>
 #include <QUrl>
 #include <QVector>
-#include <QtSql>
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
@@ -53,6 +52,7 @@ class TrackModel {
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
         Properties = 1u << 18u,
+        Sorting = 1u << 19u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 

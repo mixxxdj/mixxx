@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
+#include <QQmlEngine>
 #include <QString>
-#include <QtQml>
 
 #include "mixer/playermanager.h"
 #include "qml/qmlplayerproxy.h"
@@ -18,7 +18,7 @@ class QmlPlayerManagerProxy : public QObject {
             std::shared_ptr<PlayerManager> pPlayerManager,
             QObject* parent = nullptr);
 
-    Q_INVOKABLE QObject* getPlayer(const QString& deck);
+    Q_INVOKABLE mixxx::qml::QmlPlayerProxy* getPlayer(const QString& deck);
     Q_INVOKABLE void loadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
     Q_INVOKABLE void loadLocationUrlIntoNextAvailableDeck(
             const QUrl& locationUrl, bool play = false);

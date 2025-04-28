@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
+   xml:space="preserve"
+   id="svg2"
+   sodipodi:docname="ic_preferences_hid.svg"
+   inkscape:export-filename="ic_preferences_hid.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="26.59375"
+   inkscape:cx="16.018801"
+   inkscape:cy="16"
+   inkscape:window-width="1920"
+   inkscape:window-height="1129"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg2"
+   inkscape:export-bgcolor="#00000000" /><defs
+   id="defs2" />
+
+
+
+
+<path
+   style="font-style:italic;font-stretch:condensed;font-size:16px;font-family:Arial;-inkscape-font-specification:'Arial, Italic Condensed';white-space:pre;fill:#ffffff;stroke:#ffffff;stroke-width:1.10101;stroke-opacity:1"
+   d="M 2.9574638,21.691564 5.3557114,10.33945 h 1.5383182 l -0.9936962,4.715851 h 5.9526226 l 0.993696,-4.715851 h 1.538318 l -2.398247,11.352114 h -1.538319 l 1.127463,-5.350826 H 5.6232449 L 4.495782,21.691564 Z m 11.8288062,0 2.398249,-11.352114 h 1.538317 l -2.398247,11.352114 z m 4.251874,0 2.398246,-11.352114 h 3.468383 q 1.165682,0 1.777188,0.147127 0.898148,0.209078 1.595646,0.782104 0.707053,0.573026 1.089244,1.525489 0.382191,0.952463 0.382191,2.191439 0,1.649385 -0.630615,2.996771 -0.62106,1.339644 -1.547873,2.21467 -0.917259,0.875026 -2.149823,1.223488 -0.936367,0.271026 -2.245372,0.271026 z m 1.805852,-1.285437 h 1.824961 q 1.280339,0 2.168932,-0.21682 0.898149,-0.224565 1.605202,-0.859541 0.707053,-0.642717 1.22301,-1.796515 0.525513,-1.153795 0.525513,-2.625078 0,-1.293182 -0.458629,-2.052055 -0.449074,-0.766616 -1.232566,-1.029898 -0.563731,-0.19359 -1.767632,-0.19359 h -2.035166 z"
+   id="text1"
+   aria-label="HID" /></svg>

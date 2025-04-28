@@ -78,7 +78,7 @@ ControllerRenderingEngine::ControllerRenderingEngine(
 #ifdef __EMSCRIPTEN__
             m_isValid = false;
             kLogger.critical() << "Reversed RGBA format is not supported in Emscripten/WebAssembly";
-#else
+#elif !defined(QT_OPENGL_ES_2)
             m_GLDataFormat = GL_BGRA;
 #endif
         } else {
@@ -375,7 +375,7 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
     DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     ScopedTimer t(QStringLiteral("ControllerRenderingEngine::send"));
     if (!frame.isEmpty()) {
-        controller->sendBytes(frame);
+        VERIFY_OR_TERMINATE(controller->sendBytes(frame), "Unable to send frame to device");
     }
 
     if (CmdlineArgs::Instance()

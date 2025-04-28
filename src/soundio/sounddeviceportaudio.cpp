@@ -76,6 +76,8 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
+void paFinishedCallback(void* soundDevice);
+
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         SoundManager* sm,
         const PaDeviceInfo* deviceInfo,
@@ -94,7 +96,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_lastCallbackEntrytoDacSecs(0),
+          m_callbackResult(paAbort) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
@@ -359,11 +362,19 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 #endif
 
+    // Set the finished callback. See makeStreamInactiveAndWait()
+    m_bFinished = false;
+    Pa_SetStreamFinishedCallback(pStream, paFinishedCallback);
+
+    // Tell the callback to return paContinue, once running.
+    m_callbackResult.store(paContinue, std::memory_order_release);
+
     // Start stream
     err = Pa_StartStream(pStream);
     if (err != paNoError) {
         qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
+        m_callbackResult.store(paAbort, std::memory_order_release);
         err = Pa_CloseStream(pStream);
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:"
@@ -391,47 +402,83 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
-    m_pStream = pStream;
+    m_pStream.store(pStream, std::memory_order_release);
+
     return SoundDeviceStatus::Ok;
 }
 
 bool SoundDevicePortAudio::isOpen() const {
-    return m_pStream != nullptr;
+    return m_pStream.load() != nullptr;
+}
+
+void paFinishedCallback(void* soundDevice) {
+    // This callback is called by PortAudio when Pa_IsStreamStopped becomes true.
+    // This is triggered when Mixxx sets the return value from the process callback
+    // to paAbort to indicate the stream has to finish. The return value is set in
+    // the SoundDevicePortAudio::close() method.
+    return ((SoundDevicePortAudio*)soundDevice)->finishedCallback();
+}
+
+void SoundDevicePortAudio::finishedCallback() {
+    // Called by paFinishedCallback
+    std::unique_lock lock(m_finishedMutex);
+    m_bFinished = true;
+    m_finishedCV.notify_one();
+}
+
+void SoundDevicePortAudio::makeStreamInactiveAndWait() {
+    // Tell the process callback to return paAbort, which will cause
+    // PortAudio to make the stream inactive as soon as possible. This
+    // has the advantage over calling Pa_StopStream directly, that it
+    // will not wait until all the buffers have been flushed, which
+    // can take a few (annoying) seconds when you're doing soundcard input.
+    m_callbackResult.store(paAbort, std::memory_order_release);
+
+    // We wait until the stream has become inactive, by waiting until the
+    // finishedCallback - as set with Pa_SetStreamFinishedCallback - has
+    // been called, using m_bFinished and conditional variable m_finishedCV.
+    // Without this, we can have a deadlock when we call Pa_StopStream
+    // later on.
+    {
+        std::unique_lock lock(m_finishedMutex);
+        if (!m_finishedCV.wait_for(lock, std::chrono::seconds(1), [&] { return m_bFinished; })) {
+            // The timeout should not be reached, because when the process
+            // callback returns paAbort, the stream will finish as soon as possible.
+            // We have it as a last resort in case inactivating the stream stalls.
+            qWarning() << "PortAudio: Timeout reached when waiting for PortAudio finish callback";
+        }
+    }
 }
 
 SoundDeviceStatus SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
-    PaStream* pStream = m_pStream;
-    m_pStream = nullptr;
+
+    PaStream* pStream = m_pStream.load(std::memory_order_relaxed);
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
-        // 1 means the stream is stopped. 0 means active.
+        // 1 means the stream is stopped. 0 means active, negative means error
+        // (PaUtil_ValidateStreamPointer() failing, when passing a nullptr or
+        // wrong pointer type)
+        VERIFY_OR_DEBUG_ASSERT(err >= 0) {
+            qWarning() << "PortAudio: Pa_IsStreamStopped returned error:"
+                       << Pa_GetErrorText(err) << m_deviceId;
+            return SoundDeviceStatus::Error;
+        }
         if (err == 1) {
-            //qDebug() << "PortAudio: Stream already stopped, but no error.";
-            return SoundDeviceStatus::Ok;
-        }
-        // Real PaErrors are always negative.
-        if (err < 0) {
-            qWarning() << "PortAudio: Stream already stopped:"
-                       << Pa_GetErrorText(err) << m_deviceId;
-            return SoundDeviceStatus::Error;
-        }
+            qWarning() << "PortAudio: Stream already stopped";
+        } else {
+            // Tell the process callback to return paAbort and wait for the
+            // callback set with Pa_SetStreamFinishedCallback to be called.
+            makeStreamInactiveAndWait();
 
-        //Stop the stream.
-        err = Pa_StopStream(pStream);
-        //PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream seems to wait
-                                                   //until all the buffers have been flushed, which can take a
-                                                   //few (annoying) seconds when you're doing soundcard input.
-                                                   //(it flushes the input buffer, and then some, or something)
-                                                   //BIG FAT WARNING: Pa_AbortStream() will kill threads while they're
-                                                   //waiting on a mutex, which will leave the mutex in an screwy
-                                                   //state. Don't use it!
-
-        if (err != paNoError) {
-            qWarning() << "PortAudio: Stop stream error:"
-                       << Pa_GetErrorText(err) << m_deviceId;
-            return SoundDeviceStatus::Error;
+            // We can now safely call Pa_StopStream, which should not block as the
+            // stream has become inactive.
+            err = Pa_StopStream(pStream);
+            if (err != paNoError) {
+                qWarning() << "PortAudio: Error while attempting to stop stream:"
+                           << Pa_GetErrorText(err) << m_deviceId;
+            }
         }
 
         // Close stream
@@ -441,6 +488,9 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
                        << Pa_GetErrorText(err) << m_deviceId;
             return SoundDeviceStatus::Error;
         }
+
+        // We can now safely set m_pStream to null
+        m_pStream.store(nullptr, std::memory_order_release);
     }
 
     m_outputFifo.reset();
@@ -455,8 +505,11 @@ QString SoundDevicePortAudio::getError() const {
 }
 
 void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
-    PaStream* pStream = m_pStream;
-    if (pStream && m_inputParams.channelCount && m_inputFifo) {
+    PaStream* pStream = m_pStream.load(std::memory_order_acquire);
+    if (!pStream) {
+        return;
+    }
+    if (m_inputParams.channelCount && m_inputFifo) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         if (m_syncBuffers == 0) { // "Experimental (no delay)"
 
@@ -586,9 +639,11 @@ void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
 }
 
 void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
-    PaStream* pStream = m_pStream;
-
-    if (pStream && m_outputParams.channelCount && m_outputFifo) {
+    PaStream* pStream = m_pStream.load(std::memory_order_acquire);
+    if (!pStream) {
+        return;
+    }
+    if (m_outputParams.channelCount && m_outputFifo) {
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int writeAvailable = m_outputFifo->writeAvailable();
         int writeCount = outChunkSize;
@@ -820,7 +875,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Buffer empty";
         }
     }
-    return paContinue;
+    return m_callbackResult.load(std::memory_order_acquire);
 }
 
 int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
@@ -872,7 +927,7 @@ int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
             //qDebug() << "callbackProcess read:" << "Buffer empty";
         }
     }
-    return paContinue;
+    return m_callbackResult.load(std::memory_order_acquire);
 }
 
 int SoundDevicePortAudio::callbackProcessClkRef(
@@ -1007,7 +1062,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
                     << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:"
                     << m_outputParams.channelCount;
             // Bail out.
-            return paContinue;
+            m_callbackResult.store(paAbort, std::memory_order_relaxed);
         }
 
         composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
@@ -1017,7 +1072,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     updateAudioLatencyUsage(framesPerBuffer);
 
-    return paContinue;
+    return m_callbackResult.load(std::memory_order_acquire);
 }
 
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(

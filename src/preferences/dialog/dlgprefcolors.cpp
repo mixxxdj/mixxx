@@ -75,7 +75,11 @@ DlgPrefColors::DlgPrefColors(
             &DlgPrefColors::slotReplaceCueColorClicked);
 
     connect(checkboxKeyColorsEnabled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefColors::slotKeyColorsEnabled);
 
@@ -408,8 +412,13 @@ void DlgPrefColors::slotEditHotcuePaletteClicked() {
     openColorPaletteEditor(hotcueColorPaletteName, true);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefColors::slotKeyColorsEnabled(Qt::CheckState state) {
+    m_bKeyColorsEnabled = state != Qt::Unchecked;
+#else
 void DlgPrefColors::slotKeyColorsEnabled(int i) {
     m_bKeyColorsEnabled = static_cast<bool>(i);
+#endif
     BaseTrackTableModel::setKeyColorsEnabled(m_bKeyColorsEnabled);
     m_pConfig->setValue(kKeyColorsEnabledConfigKey, checkboxKeyColorsEnabled->checkState());
 }

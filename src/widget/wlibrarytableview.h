@@ -8,6 +8,9 @@
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class QFont;
 
@@ -56,7 +59,12 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+#ifdef __STEM__
+            mixxx::StemChannelSelection stemMask,
+#endif
+            bool play = false);
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);

@@ -318,7 +318,8 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::Hide |
             Capability::RemoveFromDisk |
             Capability::Analyze |
-            Capability::Properties;
+            Capability::Properties |
+            Capability::Sorting;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;

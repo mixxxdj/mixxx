@@ -10,7 +10,6 @@ namespace mixxx {
 // fixed number of channels like the engine does, usually 2 = stereo.
 constexpr audio::ChannelCount kAnalysisChannels = mixxx::kEngineChannelOutputCount;
 constexpr audio::ChannelCount kAnalysisMaxChannels = mixxx::kMaxEngineChannelInputCount;
-constexpr int kMaxSupportedStems = 4;
 constexpr SINT kAnalysisFramesPerChunk = 4096;
 constexpr SINT kAnalysisSamplesPerChunk =
         kAnalysisFramesPerChunk * kAnalysisMaxChannels;

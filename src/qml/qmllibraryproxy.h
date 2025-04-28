@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 #include <memory>
 
 #include "qml/qmllibrarytracklistmodel.h"

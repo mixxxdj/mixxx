@@ -73,7 +73,6 @@ class BaseTrackCache : public QObject {
                                QHash<TrackId, int>* trackToIndex);
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
-    virtual void ensureCached(const QSet<TrackId>& trackIds);
 
   signals:
     void tracksChanged(const QSet<TrackId>& trackIds);
@@ -87,7 +86,7 @@ class BaseTrackCache : public QObject {
     void slotTrackClean(TrackId trackId);
 
   private:
-    const TrackPointer& getRecentTrack(TrackId trackId) const;
+    const TrackPointer& getCachedTrack(TrackId trackId) const;
     void replaceRecentTrack(TrackPointer pTrack) const;
     void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;
     void resetRecentTrack() const;
@@ -96,8 +95,7 @@ class BaseTrackCache : public QObject {
     void updateTrackInIndex(TrackId trackId);
     bool updateTrackInIndex(const TrackPointer& pTrack);
     void updateTracksInIndex(const QSet<TrackId>& trackIds);
-    void getTrackValueForColumn(TrackPointer pTrack, int column,
-                                QVariant& trackValue) const;
+    QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
 
     int findSortInsertionPoint(TrackPointer pTrack,
                                const QList<SortColumn>& sortColumns,

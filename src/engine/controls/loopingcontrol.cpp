@@ -361,10 +361,10 @@ void LoopingControl::slotLoopDouble(double pressed) {
     m_pCOBeatLoopSize->set(m_pCOBeatLoopSize->get() * 2.0);
 }
 
-void LoopingControl::process(const double dRate,
+void LoopingControl::process(const double rate,
         mixxx::audio::FramePos currentPosition,
-        const int iBufferSize) {
-    Q_UNUSED(iBufferSize);
+        const std::size_t bufferSize) {
+    Q_UNUSED(bufferSize);
 
     const auto previousPosition = m_currentPosition.getValue();
 
@@ -385,7 +385,7 @@ void LoopingControl::process(const double dRate,
                     // should be moved with it
                     const auto targetPosition =
                             adjustedPositionInsideAdjustedLoop(currentPosition,
-                                    dRate < 0, // reverse
+                                    rate < 0, // reverse
                                     m_oldLoopInfo.startPosition,
                                     m_oldLoopInfo.endPosition,
                                     loopInfo.startPosition,
