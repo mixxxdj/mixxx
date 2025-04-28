@@ -17,6 +17,7 @@
 #include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
+#include "library/tabledelegates/overviewdelegate.h"
 #include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
@@ -72,6 +73,7 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
         LIBRARYTABLE_YEAR,
+        LIBRARYTABLE_WAVESUMMARYHEX,
 };
 
 inline QSqlDatabase cloneDatabase(
@@ -257,6 +259,9 @@ void BaseTrackTableModel::initHeaderProperties() {
             ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
             tr("Location"),
             defaultColumnWidth() * 6);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX,
+            tr("Overview"),
+            defaultColumnWidth() * 8);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW,
             tr("Preview"),
@@ -518,7 +523,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 new CoverArtDelegate(pTableView);
         // WLibraryTableView -> CoverArtDelegate
         connect(pTableView,
-                &WLibraryTableView::onlyCachedCoverArt,
+                &WLibraryTableView::onlyCachedCoversAndOverviews,
                 pCoverArtDelegate,
                 &CoverArtDelegate::slotInhibitLazyLoading);
         // CoverArtDelegate -> BaseTrackTableModel
@@ -529,6 +534,17 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return pCoverArtDelegate;
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         return new KeyDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
+        auto* pOverviewDelegate = new OverviewDelegate(pTableView);
+        connect(pOverviewDelegate,
+                &OverviewDelegate::overviewRowsChanged,
+                this,
+                &BaseTrackTableModel::slotRefreshOverviewRows);
+        connect(pTableView,
+                &WLibraryTableView::onlyCachedCoversAndOverviews,
+                pOverviewDelegate,
+                &OverviewDelegate::slotInhibitLazyLoading);
+        return pOverviewDelegate;
     }
     return new DefaultDelegate(pTableView);
 }
@@ -1093,7 +1109,8 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
         return readOnlyFlags(index);
     }
 
@@ -1189,6 +1206,17 @@ void BaseTrackTableModel::slotRefreshCoverRows(
         return;
     }
     const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+        return;
+    }
+    emitDataChangedForMultipleRowsInColumn(rows, column);
+}
+
+void BaseTrackTableModel::slotRefreshOverviewRows(const QList<int>& rows) {
+    if (rows.isEmpty()) {
+        return;
+    }
+    const int column = fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX);
     VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }

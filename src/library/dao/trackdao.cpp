@@ -1634,6 +1634,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                 // Adapt and forward signal
                 emit mixxx::thisAsNonConst(this)->tracksChanged(QSet<TrackId>{trackId});
             });
+    connect(pTrack.get(),
+            &Track::waveformSummaryUpdated,
+            this,
+            [this, trackId]() {
+                emit mixxx::thisAsNonConst(this)->waveformSummaryUpdated(trackId);
+            });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
