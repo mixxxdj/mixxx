@@ -66,6 +66,9 @@ class WTrackTableViewHeader : public QHeaderView {
      /** returns false if the header state is stored in the database (on first time usgae) **/
     bool hasPersistedHeaderState();
 
+  signals:
+    void shuffle();
+
   private slots:
     void showOrHideColumn(int);
 

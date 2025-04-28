@@ -1,5 +1,6 @@
 add_library(
   rendergraph_gl
+  STATIC
   ${COMMON_RENDERGRAPH_FILES}
   attributeset.cpp
   backend/baseattributeset.cpp

@@ -78,7 +78,7 @@ ControllerRenderingEngine::ControllerRenderingEngine(
 #ifdef __EMSCRIPTEN__
             m_isValid = false;
             kLogger.critical() << "Reversed RGBA format is not supported in Emscripten/WebAssembly";
-#else
+#elif !defined(QT_OPENGL_ES_2)
             m_GLDataFormat = GL_BGRA;
 #endif
         } else {

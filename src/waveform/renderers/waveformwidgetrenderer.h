@@ -11,9 +11,13 @@
 
 class ControlProxy;
 class VisualPlayPosition;
-class VSyncThread;
+class VSyncTimeProvider;
 class QPainter;
 class WaveformRendererAbstract;
+
+namespace rendergraph {
+class Context;
+}
 
 class WaveformWidgetRenderer {
   public:
@@ -28,18 +32,23 @@ class WaveformWidgetRenderer {
     };
 
   public:
-    explicit WaveformWidgetRenderer(const QString& group);
+    explicit WaveformWidgetRenderer(const QString& group = {});
     virtual ~WaveformWidgetRenderer();
 
     bool init();
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void onPreRender(VSyncThread* vsyncThread);
+    void onPreRender(VSyncTimeProvider* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
     const QString& getGroup() const {
         return m_group;
+    }
+
+    virtual void setGroup(const QString& group) {
+        m_group = group;
+        init();
     }
 
     const TrackPointer& getTrackInfo() const {
@@ -115,7 +124,7 @@ class WaveformWidgetRenderer {
     int getTotalVSample() const {
         return m_totalVSamples;
     }
-    double getZoomFactor() const {
+    double getZoom() const {
         return m_zoomFactor;
     }
     double getGain(bool applyCompensation) const {
@@ -179,6 +188,11 @@ class WaveformWidgetRenderer {
 #ifdef __STEM__
     void selectStem(mixxx::StemChannelSelection stemMask);
 #endif
+
+    void addRenderer(WaveformRendererAbstract* renderer) {
+        m_rendererStack.push_back(renderer);
+    }
+
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
@@ -201,8 +215,16 @@ class WaveformWidgetRenderer {
         return m_trackSamples <= 0.0 || m_pos[::WaveformRendererAbstract::Play] == -1;
     }
 
+    void setContext(rendergraph::Context* pContext) {
+        m_pContext = pContext;
+    }
+
+    rendergraph::Context* getContext() const {
+        return m_pContext;
+    }
+
   protected:
-    const QString m_group;
+    QString m_group;
     TrackPointer m_pTrack;
 #ifdef __STEM__
     uint m_selectedStems;
@@ -231,13 +253,16 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     int m_posVSample[2];
     int m_totalVSamples;
-    ControlProxy* m_pRateRatioCO;
-    ControlProxy* m_pGainControlObject;
+    std::unique_ptr<ControlProxy> m_pRateRatioCO;
+    std::unique_ptr<ControlProxy> m_pGainControlObject;
+    std::unique_ptr<ControlProxy> m_pTrackSamplesControlObject;
     double m_gain;
-    ControlProxy* m_pTrackSamplesControlObject;
     double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
+
+    // used by allshader waveformrenderers when used with rendergraph nodes
+    rendergraph::Context* m_pContext;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

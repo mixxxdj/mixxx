@@ -64,7 +64,7 @@ QImage render(ConstWaveformPointer pWaveform,
         diffGain = 255 - peak - 1;
     } else {
         const auto visualGain = static_cast<float>(
-                widgetFactory->getVisualGain(WaveformWidgetFactory::All));
+                widgetFactory->getVisualGain(BandIndex::AllBand));
         diffGain = 255.0f - (255.0f / visualGain);
     }
 

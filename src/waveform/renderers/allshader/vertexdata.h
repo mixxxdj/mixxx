@@ -5,7 +5,7 @@
 
 namespace allshader {
 class VertexData;
-}
+} // namespace allshader
 
 class allshader::VertexData {
     QVector<QVector2D> mData;

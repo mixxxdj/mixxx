@@ -20,6 +20,7 @@
 #endif
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
 #include "library/overviewcache.h"
 #include "library/trackcollection.h"
@@ -388,6 +389,20 @@ void CoreServices::initialize(QApplication* pApp) {
     bool musicDirAdded = false;
 
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
+#if defined(Q_OS_IOS) || defined(Q_OS_WASM)
+        // On the web and iOS, we are running in a sandbox (a virtual file
+        // system on the web). Since we are generally limited to paths within
+        // the sandbox, there is not much point in asking the user about a
+        // custom directory, so we just default to Qt's standard music directory
+        // (~/Documents/Music on iOS and ~/Music on Wasm). Since the sandbox is
+        // initially empty, we create that directory automatically.
+        // Advanced users can still customize this directory in the settings.
+        QString fd = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+#else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
@@ -399,6 +414,7 @@ void CoreServices::initialize(QApplication* pApp) {
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
                         QStandardPaths::MusicLocation));
+#endif
         // request to add directory to database.
         if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
             musicDirAdded = true;
@@ -450,10 +466,16 @@ void CoreServices::initialize(QApplication* pApp) {
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             supportedFileSuffixes.join(","));
 
+    // Forward the scanner signal so MixxxMainWindow can display a summary popup.
+    connect(m_pTrackCollectionManager.get(),
+            &TrackCollectionManager::libraryScanSummary,
+            this,
+            &CoreServices::libraryScanSummary,
+            Qt::UniqueConnection);
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pTrackCollectionManager->startLibraryScan();
+        m_pTrackCollectionManager->startLibraryAutoScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()

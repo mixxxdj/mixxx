@@ -5,6 +5,7 @@
 #include <limits>
 
 #include "engine/engine.h"
+#include "util/compatibility/qhash.h"
 #include "util/fpclassify.h"
 
 namespace mixxx {
@@ -246,6 +247,12 @@ inline bool operator!=(FramePos frame1, FramePos frame2) {
 }
 
 QDebug operator<<(QDebug dbg, FramePos arg);
+
+inline qhash_seed_t qHash(
+        FramePos pos,
+        qhash_seed_t seed = 0) {
+    return static_cast<qhash_seed_t>(pos.value(), seed);
+}
 
 constexpr FramePos kInvalidFramePos = FramePos(FramePos::kInvalidValue);
 constexpr FramePos kStartFramePos = FramePos(FramePos::kStartValue);

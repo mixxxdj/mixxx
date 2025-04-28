@@ -1,0 +1,9 @@
+#version 120
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+varying vec4 vColor;
+
+void main()
+{
+    gl_FragData[0] = vec4(vColor.xyz * vColor.w, vColor.w);
+}
