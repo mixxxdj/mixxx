@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-04-27" timestamp="1745752383">
+    <release version="2.6.0" type="development" date="2025-04-27" timestamp="1745786701">
       <description>
  <p>
   Controller Mappings
@@ -307,6 +307,10 @@
   <li>
    Add color coding for key column
    #13390
+  </li>
+  <li>
+   Add overview column with small waveform
+   #14140
   </li>
   <li>
    Elide key text form the right

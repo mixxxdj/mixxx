@@ -79,6 +79,7 @@
 ### Library
 
 * Add color coding for key column [#13390](https://github.com/mixxxdj/mixxx/pull/13390)
+* Add overview column with small waveform [#14140](https://github.com/mixxxdj/mixxx/pull/14140)
 * Elide key text form the right [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
 * Add Key Color Palettes [#13497](https://github.com/mixxxdj/mixxx/pull/13497)
 * Fix BPM and Bitrate columns were wider than normal [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
