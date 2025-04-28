@@ -110,6 +110,13 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
+    m_pTranslateBeatsHalf = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_half"), false);
+    connect(m_pTranslateBeatsHalf.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsHalf,
+            Qt::DirectConnection);
     m_pTranslateBeatsMove = std::make_unique<ControlEncoder>(
             ConfigKey(group, "beats_translate_move"), false);
     connect(m_pTranslateBeatsMove.get(),
@@ -313,6 +320,26 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         return;
     }
     slotTranslateBeatsMove(1);
+}
+
+// slotTranslateBeatsHalf works only with constant BPM tracks
+void BpmControl::slotTranslateBeatsHalf(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
+    if (!translatedBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*translatedBeats);
 }
 
 void BpmControl::slotTranslateBeatsMove(double v) {
@@ -1106,7 +1133,7 @@ void BpmControl::slotUpdateRateSlider(double value) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
                         << value;
     }
-    // Adjust rate slider position response to a change in rate range or m_pEngineBpm
+    // Adjust rate slider position in response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm == 0.0) {

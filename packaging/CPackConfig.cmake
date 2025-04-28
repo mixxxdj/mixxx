@@ -23,7 +23,14 @@ if(PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+[A-Za-z0-9.+~-]*$")
   if(PACKAGE_VERSION MATCHES "(alpha|beta)")
     string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
   else()
-    string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+    string(REPLACE "-g" "+g" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+    string(
+      REPLACE
+      "-"
+      "+r"
+      CPACK_DEBIAN_PACKAGE_VERSION
+      "${CPACK_DEBIAN_PACKAGE_VERSION}"
+    )
   endif()
 else()
   string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_MIXXX_VERSION}")

@@ -11,7 +11,7 @@ class WaveformWidgetRenderer;
 
 namespace allshader {
 class WaveformRendererSignalBase;
-}
+} // namespace allshader
 
 class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase {
   public:

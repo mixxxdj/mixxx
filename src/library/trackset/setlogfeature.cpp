@@ -402,8 +402,7 @@ void SetlogFeature::slotJoinWithPrevious() {
         return;
     }
 
-    bool locked = m_playlistDao.isPlaylistLocked(clickedPlaylistId);
-    if (locked) {
+    if (m_playlistDao.isPlaylistLocked(clickedPlaylistId)) {
         qDebug() << "Aborting playlist join because playlist"
                  << clickedPlaylistId << "is locked.";
         return;
@@ -413,8 +412,14 @@ void SetlogFeature::slotJoinWithPrevious() {
     int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
             clickedPlaylistId, PlaylistDAO::PLHT_SET_LOG);
     if (previousPlaylistId == kInvalidPlaylistId) {
-        qDebug() << "Aborting playlist join because playlist"
-                 << clickedPlaylistId << "because there's no previous playlist.";
+        qDebug() << "Aborting playlist join because there's no previous playlist"
+                    " for playlist"
+                 << clickedPlaylistId;
+        return;
+    }
+    if (m_playlistDao.isPlaylistLocked(previousPlaylistId)) {
+        qDebug() << "Aborting playlist join because previous playlist"
+                 << previousPlaylistId << "is locked.";
         return;
     }
 

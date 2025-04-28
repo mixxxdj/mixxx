@@ -5,15 +5,15 @@
 
 #include "control/controlproxy.h"
 #include "track/cue.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;
-class WaveformSignalColors;
 class QOpenGLTexture;
 
 namespace allshader {
 class WaveformRenderMark;
-}
+} // namespace allshader
 
 class WaveformMark {
   public:
@@ -31,6 +31,20 @@ class WaveformMark {
             int priority,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
+
+    WaveformMark(
+            const QString& group,
+            QString positionControl,
+            const QString& visibilityControl,
+            const QString& textColor,
+            const QString& markAlign,
+            const QString& text,
+            const QString& pixmapPath,
+            const QString& iconPath,
+            QColor color,
+            int priority,
+            int hotCue = Cue::kNoHotCue,
+            const WaveformSignalColors& signalColors = {});
     ~WaveformMark();
 
     // Disable copying

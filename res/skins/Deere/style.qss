@@ -242,9 +242,22 @@ WTrackTableView::item:selected,
 WLibrarySidebar::item:selected,
 #LibraryBPMButton::item:selected,
 #LibraryPlayedCheckbox::item:selected {
-  color: #D6D6D6;
+  /* disabled since it interferes with selection-color
+   which we use in DefaultDelegate and TableItemDelegate to
+   blend the highlight color with the played/missing color.
+  color: #D6D6D6; */
+  /* This is not required for painting the background,
+   but it is for applying the focus outline. */
   background-color: #006596;
-}
+  }
+  /* Highlight currentIndex which can be moved with Ctrl + arrow keys */
+  WTrackTableView::item:!selected:focus {
+    /* For outline to be applied, background-color must be set, too ...
+       Use a value between #1F1F1F and #1A1A1A (alternate-background-color) */
+    background-color: #1d1d1d;
+    outline: 1px solid #fff;
+    color: #fff;
+  }
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
@@ -2049,6 +2062,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
@@ -2105,6 +2119,7 @@ WSearchLineEdit QAbstractScrollArea,
   #MainMenu QMenu::indicator:unchecked:selected,
   WLibrarySidebar QMenu::item:selected,
   WLibrarySidebar QMenu::indicator:unchecked:selected,
+  WTrackTableViewHeader QMenu::item:selected,
   WTrackTableViewHeader QMenu QCheckBox:selected,
   WTrackTableViewHeader QMenu QCheckBox:focus,
   WTrackTableViewHeader QMenu QCheckBox:hover,

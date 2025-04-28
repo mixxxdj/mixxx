@@ -11,6 +11,7 @@
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
+#include "util/thread_affinity.h"
 #include "util/time.h"
 
 #ifdef __PORTMIDI__
@@ -106,7 +107,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     }
 
     m_pollTimer.setInterval(kPollInterval.toIntegerMillis());
-    connect(&m_pollTimer, &QTimer::timeout, this, &ControllerManager::pollDevices);
+    connect(&m_pollTimer, &QTimer::timeout, this, &ControllerManager::slotPollDevices);
 
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
@@ -286,7 +287,7 @@ void ControllerManager::slotSetUpDevices() {
         pMapping->loadSettings(m_pConfig, pController->getName());
 
         // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-        pController->setMapping(pMapping->clone());
+        pController->setMapping(std::move(pMapping));
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -296,12 +297,11 @@ void ControllerManager::slotSetUpDevices() {
 
         qDebug() << "Opening controller:" << name;
 
-        int value = pController->open();
+        int value = pController->open(m_pConfig->getResourcePath());
         if (value != 0) {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyMapping(m_pConfig->getResourcePath());
     }
 
     pollIfAnyControllersOpen();
@@ -338,7 +338,7 @@ void ControllerManager::stopPolling() {
     qDebug() << "Controller polling stopped.";
 }
 
-void ControllerManager::pollDevices() {
+void ControllerManager::slotPollDevices() {
     // Note: this function is called from a high priority thread which
     // may stall the GUI or may reduce the available CPU time for other
     // High Priority threads like caching reader or broadcasting more
@@ -381,20 +381,19 @@ void ControllerManager::pollDevices() {
 }
 
 void ControllerManager::openController(Controller* pController) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!pController) {
         return;
     }
     if (pController->isOpen()) {
         pController->close();
     }
-    int result = pController->open();
+    int result = pController->open(m_pConfig->getResourcePath());
     pollIfAnyControllersOpen();
 
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
     if (result == 0) {
-        pController->applyMapping(m_pConfig->getResourcePath());
-
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(
                 ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 1);
@@ -402,6 +401,7 @@ void ControllerManager::openController(Controller* pController) {
 }
 
 void ControllerManager::closeController(Controller* pController) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!pController) {
         return;
     }
@@ -420,9 +420,9 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         return;
     }
 
+    closeController(pController);
     ConfigKey key(kSettingsGroup, sanitizeDeviceName(pController->getName()));
     if (!pMapping) {
-        closeController(pController);
         // Unset the controller mapping for this controller
         pController->setMapping(nullptr);
         m_pConfig->remove(key);
@@ -439,14 +439,12 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     // startup next time
     m_pConfig->set(key, pMapping->filePath());
 
-    // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-    pController->setMapping(pMapping->clone());
+    pController->setMapping(std::move(pMapping));
 
     if (bEnabled) {
         openController(pController);
         emit mappingApplied(pController->isMappable());
     } else {
-        closeController(pController);
         emit mappingApplied(false);
     }
 }

@@ -98,9 +98,10 @@ DlgPreferences::DlgPreferences(
         m_iconsPath.setPath(":/images/preferences/dark/");
     }
 
-    // Construct widgets for use in tabs.
+    // Construct page widgets and associated sidebar items
+    m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pSoundManager, m_pConfig);
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, pSoundManager, m_pConfig),
+            m_pSoundDlg.get(),
             new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type));
     addPageWidget(m_soundPage,
             tr("Sound Hardware"),
@@ -308,9 +309,13 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
     }
 }
 
-void DlgPreferences::showSoundHardwarePage() {
+void DlgPreferences::showSoundHardwarePage(
+        std::optional<mixxx::preferences::SoundHardwareTab> tab) {
     switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
+    if (tab.has_value()) {
+        m_pSoundDlg->selectIOTab(*tab);
+    }
 }
 
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {

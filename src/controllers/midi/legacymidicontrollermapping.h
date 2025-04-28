@@ -7,14 +7,10 @@
 
 /// Represents a MIDI controller mapping, containing the data elements that make
 /// it up.
-class LegacyMidiControllerMapping : public LegacyControllerMapping {
+class LegacyMidiControllerMapping final : public LegacyControllerMapping {
   public:
     LegacyMidiControllerMapping(){};
     virtual ~LegacyMidiControllerMapping(){};
-
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        return std::make_shared<LegacyMidiControllerMapping>(*this);
-    }
 
     bool saveMapping(const QString& fileName) const override;
 

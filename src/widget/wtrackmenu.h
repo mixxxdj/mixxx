@@ -12,6 +12,7 @@
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
+#include "track/track_decl.h"
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
@@ -165,6 +166,10 @@ class WTrackMenu : public QMenu {
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
     void slotUndoBeatsChange();
+    void slotTranslateBeatsHalf();
+
+    // Hotcues
+    void slotSortHotcuesByPosition(HotcueSortMode sortMode);
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -278,18 +283,19 @@ class WTrackMenu : public QMenu {
     QString m_deckGroup;
 
     // Submenus
-    QMenu* m_pLoadToMenu{};
-    QMenu* m_pDeckMenu{};
-    QMenu* m_pSamplerMenu{};
-    QMenu* m_pPlaylistMenu{};
-    QMenu* m_pCrateMenu{};
-    QMenu* m_pMetadataMenu{};
-    QMenu* m_pMetadataUpdateExternalCollectionsMenu{};
-    QMenu* m_pClearMetadataMenu{};
-    QMenu* m_pAnalyzeMenu{};
-    QMenu* m_pBPMMenu{};
-    QMenu* m_pColorMenu{};
-    WCoverArtMenu* m_pCoverMenu{};
+    parented_ptr<QMenu> m_pLoadToMenu;
+    parented_ptr<QMenu> m_pDeckMenu;
+    parented_ptr<QMenu> m_pSamplerMenu;
+    parented_ptr<QMenu> m_pPlaylistMenu;
+    parented_ptr<QMenu> m_pCrateMenu;
+    parented_ptr<QMenu> m_pMetadataMenu;
+    parented_ptr<QMenu> m_pMetadataUpdateExternalCollectionsMenu;
+    parented_ptr<QMenu> m_pHotcueMenu;
+    parented_ptr<QMenu> m_pClearMetadataMenu;
+    parented_ptr<QMenu> m_pAnalyzeMenu;
+    parented_ptr<QMenu> m_pBPMMenu;
+    parented_ptr<QMenu> m_pColorMenu;
+    parented_ptr<WCoverArtMenu> m_pCoverMenu;
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
@@ -297,74 +303,77 @@ class WTrackMenu : public QMenu {
 #endif
 
     // Update ReplayGain from Track
-    QAction* m_pUpdateReplayGainAct{};
+    parented_ptr<QAction> m_pUpdateReplayGainAct;
 
     // Reload Track Metadata Action:
-    QAction* m_pImportMetadataFromFileAct{};
-    QAction* m_pImportMetadataFromMusicBrainzAct{};
+    parented_ptr<QAction> m_pImportMetadataFromFileAct;
+    parented_ptr<QAction> m_pImportMetadataFromMusicBrainzAct;
 
     // Save Track Metadata Action:
-    QAction* m_pExportMetadataAct{};
+    parented_ptr<QAction> m_pExportMetadataAct;
 
     // Send to Auto-DJ Action
-    QAction* m_pAutoDJBottomAct{};
-    QAction* m_pAutoDJTopAct{};
-    QAction* m_pAutoDJReplaceAct{};
+    parented_ptr<QAction> m_pAutoDJBottomAct;
+    parented_ptr<QAction> m_pAutoDJTopAct;
+    parented_ptr<QAction> m_pAutoDJReplaceAct;
 
     // Remove from table
-    QAction* m_pRemoveAct{};
-    QAction* m_pRemovePlaylistAct{};
-    QAction* m_pRemoveCrateAct{};
-    QAction* m_pHideAct{};
-    QAction* m_pUnhideAct{};
-    QAction* m_pPurgeAct{};
-    QAction* m_pRemoveFromDiskAct{};
+    parented_ptr<QAction> m_pRemoveAct;
+    parented_ptr<QAction> m_pRemovePlaylistAct;
+    parented_ptr<QAction> m_pRemoveCrateAct;
+    parented_ptr<QAction> m_pHideAct;
+    parented_ptr<QAction> m_pUnhideAct;
+    parented_ptr<QAction> m_pPurgeAct;
+    parented_ptr<QAction> m_pRemoveFromDiskAct;
 
     // Show track-editor action
-    QAction* m_pPropertiesAct{};
+    parented_ptr<QAction> m_pPropertiesAct;
 
     // Open file in default file browser
-    QAction* m_pFileBrowserAct{};
+    parented_ptr<QAction> m_pFileBrowserAct;
 
     // Select track in library
-    QAction* m_pSelectInLibraryAct{};
+    parented_ptr<QAction> m_pSelectInLibraryAct;
 
     // BPM feature
-    QAction* m_pBpmLockAction{};
-    QAction* m_pBpmUnlockAction{};
-    QAction* m_pBpmDoubleAction{};
-    QAction* m_pBpmHalveAction{};
-    QAction* m_pBpmTwoThirdsAction{};
-    QAction* m_pBpmThreeFourthsAction{};
-    QAction* m_pBpmFourThirdsAction{};
-    QAction* m_pBpmThreeHalvesAction{};
-    QAction* m_pBpmResetAction{};
-    QAction* m_pBpmUndoAction{};
+    parented_ptr<QAction> m_pBpmLockAction;
+    parented_ptr<QAction> m_pBpmUnlockAction;
+    parented_ptr<QAction> m_pBpmDoubleAction;
+    parented_ptr<QAction> m_pBpmHalveAction;
+    parented_ptr<QAction> m_pBpmTwoThirdsAction;
+    parented_ptr<QAction> m_pBpmThreeFourthsAction;
+    parented_ptr<QAction> m_pBpmFourThirdsAction;
+    parented_ptr<QAction> m_pBpmThreeHalvesAction;
+    parented_ptr<QAction> m_pBpmResetAction;
+    parented_ptr<QAction> m_pBpmUndoAction;
+    parented_ptr<QAction> m_pTranslateBeatsHalf;
 
     // Track rating and color
-    WStarRatingAction* m_pStarRatingAction{};
-    WColorPickerAction* m_pColorPickerAction{};
+    parented_ptr<WStarRatingAction> m_pStarRatingAction;
+    parented_ptr<WColorPickerAction> m_pColorPickerAction;
 
     // Analysis actions
-    QAction* m_pAnalyzeAction{};
-    QAction* m_pReanalyzeAction{};
-    QAction* m_pReanalyzeConstBpmAction{};
-    QAction* m_pReanalyzeVarBpmAction{};
+    parented_ptr<QAction> m_pAnalyzeAction;
+    parented_ptr<QAction> m_pReanalyzeAction;
+    parented_ptr<QAction> m_pReanalyzeConstBpmAction;
+    parented_ptr<QAction> m_pReanalyzeVarBpmAction;
 
     // Clear track metadata actions
-    QAction* m_pClearBeatsAction{};
-    QAction* m_pClearPlayCountAction{};
-    QAction* m_pClearRatingAction{};
-    QAction* m_pClearMainCueAction{};
-    QAction* m_pClearHotCuesAction{};
-    QAction* m_pClearIntroCueAction{};
-    QAction* m_pClearOutroCueAction{};
-    QAction* m_pClearLoopsAction{};
-    QAction* m_pClearWaveformAction{};
-    QAction* m_pClearCommentAction{};
-    QAction* m_pClearKeyAction{};
-    QAction* m_pClearReplayGainAction{};
-    QAction* m_pClearAllMetadataAction{};
+    parented_ptr<QAction> m_pClearBeatsAction;
+    parented_ptr<QAction> m_pClearPlayCountAction;
+    parented_ptr<QAction> m_pClearRatingAction;
+    parented_ptr<QAction> m_pClearMainCueAction;
+    parented_ptr<QAction> m_pClearHotCuesAction;
+    parented_ptr<QAction> m_pClearIntroCueAction;
+    parented_ptr<QAction> m_pClearOutroCueAction;
+    parented_ptr<QAction> m_pClearLoopsAction;
+    parented_ptr<QAction> m_pClearWaveformAction;
+    parented_ptr<QAction> m_pClearCommentAction;
+    parented_ptr<QAction> m_pClearKeyAction;
+    parented_ptr<QAction> m_pClearReplayGainAction;
+    parented_ptr<QAction> m_pClearAllMetadataAction;
+    parented_ptr<QAction> m_pSortHotcuesByPositionAction{};
+    parented_ptr<QAction> m_pSortHotcuesByPositionCompressAction{};
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
@@ -378,8 +387,8 @@ class WTrackMenu : public QMenu {
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {
-        QPointer<ExternalTrackCollection> externalTrackCollection;
-        QAction* action{};
+        QPointer<ExternalTrackCollection> pExternalTrackCollection;
+        QAction* pAction{};
     };
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
