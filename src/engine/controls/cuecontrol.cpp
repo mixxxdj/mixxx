@@ -926,10 +926,10 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     if (proxyStem.get() > 1) {
         const QString groupBaseName = getGroup().remove("[").remove("]");
         const QString stemGroups[] = {
-                QString("[%1Stem1]").arg(groupBaseName),
-                QString("[%1Stem2]").arg(groupBaseName),
-                QString("[%1Stem3]").arg(groupBaseName),
-                QString("[%1Stem4]").arg(groupBaseName),
+                QString("[%1_Stem1]").arg(groupBaseName),
+                QString("[%1_Stem2]").arg(groupBaseName),
+                QString("[%1_Stem3]").arg(groupBaseName),
+                QString("[%1_Stem4]").arg(groupBaseName),
         };
 
         // get the mute multiplier
@@ -1201,10 +1201,10 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
             if (proxyStem.get() > 1) {
                 const QString groupBaseName = getGroup().remove('[').remove(']');
                 const std::vector<QString> stemGroups = {
-                        QString("[%1Stem1]").arg(groupBaseName),
-                        QString("[%1Stem2]").arg(groupBaseName),
-                        QString("[%1Stem3]").arg(groupBaseName),
-                        QString("[%1Stem4]").arg(groupBaseName)};
+                        QString("[%1_Stem1]").arg(groupBaseName),
+                        QString("[%1_Stem2]").arg(groupBaseName),
+                        QString("[%1_Stem3]").arg(groupBaseName),
+                        QString("[%1_Stem4]").arg(groupBaseName)};
 
                 auto setMuteAndVolume = [](const QString& group,
                                                 double volume) {
