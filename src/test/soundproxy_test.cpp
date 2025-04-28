@@ -50,8 +50,13 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
                 // was not correctly handled. The actual FFmpeg version
                 // that fixed this bug is unknown.
                 << "-itunes-12.3.0-aac.m4a"
+#ifndef __WINDOWS__
+                // These tests always fail on Windows11/Windows Server 2022,
+                // due to a bug in the MediaFoundation AAC decoder shipped with Windows.
+                // See https://bugs.mixxx.org/issues/11094
                 << "-itunes-12.7.0-aac.m4a"
                 << "-ffmpeg-aac.m4a"
+#endif
 #if defined(__FFMPEG__) || defined(__COREAUDIO__)
                 << "-itunes-12.7.0-alac.m4a"
 #endif

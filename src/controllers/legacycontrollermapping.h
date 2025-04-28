@@ -24,7 +24,7 @@
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
 class LegacyControllerMapping {
-  public:
+  protected:
     LegacyControllerMapping()
             : m_bDirty(false),
               m_deviceDirection(DeviceDirection::Bidirectionnal) {
@@ -53,10 +53,12 @@ class LegacyControllerMapping {
               m_scripts(other.m_scripts),
               m_deviceDirection(other.m_deviceDirection) {
     }
+    LegacyControllerMapping& operator=(const LegacyControllerMapping&) = delete;
+    LegacyControllerMapping(LegacyControllerMapping&&) = delete;
+    LegacyControllerMapping& operator=(LegacyControllerMapping&&) = delete;
     virtual ~LegacyControllerMapping() = default;
 
-    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
-
+  public:
     struct ScriptFileInfo {
         enum class Type {
             Javascript,

@@ -45,8 +45,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
         return m_pJSEngine;
     }
 
-  public slots:
-    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
+    void setScriptFiles(QList<LegacyControllerMapping::ScriptFileInfo> scripts);
 
     /// @brief Set the list of customizable settings and their currently set
     /// value, ready to be used. This method will generate a JSValue from their
@@ -125,7 +124,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     std::unordered_map<QString, std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>> m_rootItems;
     QList<LegacyControllerMapping::QMLModuleInfo> m_modules;
     QList<LegacyControllerMapping::ScreenInfo> m_infoScreens;
-    QString m_resourcePath{QStringLiteral(".")};
+    QString m_resourcePath;
 #endif
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;

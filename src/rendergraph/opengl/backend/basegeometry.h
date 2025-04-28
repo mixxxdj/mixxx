@@ -42,6 +42,9 @@ class rendergraph::BaseGeometry {
         return m_sizeOfVertex;
     }
     void allocate(int vertexCount) {
+        if (m_vertexCount == vertexCount) {
+            return;
+        }
         m_vertexCount = vertexCount;
         m_vertexData.resize(m_vertexCount * sizeOfVertex() / sizeof(float));
     }

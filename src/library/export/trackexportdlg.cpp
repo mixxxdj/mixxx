@@ -1,5 +1,6 @@
 #include "library/export/trackexportdlg.h"
 
+#include <QCheckBox>
 #include <QMessageBox>
 
 #include "moc_trackexportdlg.cpp"
@@ -66,30 +67,31 @@ void TrackExportDlg::slotAskOverwriteMode(
         std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     QMessageBox question_box(
             QMessageBox::Warning,
-            tr("Overwrite Existing File?"),
-            tr("\"%1\" already exists, overwrite?").arg(filename),
-            QMessageBox::Cancel);
+            tr("Replace Existing File?"),
+            tr("\"%1\" already exists, replace?").arg(filename),
+            QMessageBox::Cancel,
+            this);
 
     QPushButton* pSkip = question_box.addButton(
             tr("&Skip"), QMessageBox::NoRole);
-    QPushButton* pSkipAll = question_box.addButton(
-            tr("Skip &All"), QMessageBox::NoRole);
     QPushButton* pOverwrite = question_box.addButton(
-            tr("&Overwrite"), QMessageBox::YesRole);
-    QPushButton* pOverwriteAll = question_box.addButton(
-            tr("Over&write All"), QMessageBox::YesRole);
+            tr("&Replace"), QMessageBox::YesRole);
     question_box.setDefaultButton(pSkip);
+
+    QCheckBox* pApplyToAll = new QCheckBox(tr("Apply to all files"));
+    pApplyToAll->setChecked(false);
+    question_box.setCheckBox(pApplyToAll);
 
     question_box.exec();
     auto* pBtn = question_box.clickedButton();
     if (pBtn == pSkip) {
-        promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP);
-    } else if (pBtn == pSkipAll) {
-        promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP_ALL);
+        promise->set_value(pApplyToAll->isChecked()
+                        ? TrackExportWorker::OverwriteAnswer::SKIP_ALL
+                        : TrackExportWorker::OverwriteAnswer::SKIP);
     } else if (pBtn == pOverwrite) {
-        promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE);
-    } else if (pBtn == pOverwriteAll) {
-        promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
+        promise->set_value(pApplyToAll->isChecked()
+                        ? TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL
+                        : TrackExportWorker::OverwriteAnswer::OVERWRITE);
     } else {
         // Cancel
         promise->set_value(TrackExportWorker::OverwriteAnswer::CANCEL);

@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2025 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindChromaprint
 ---------------
@@ -102,11 +97,11 @@ if(Chromaprint_FOUND)
           PROPERTY INTERFACE_COMPILE_DEFINITIONS CHROMAPRINT_NODLL
         )
       endif()
-      find_package(FFTW REQUIRED)
+      find_package(FFTW3 REQUIRED)
       set_property(
         TARGET Chromaprint::Chromaprint
         APPEND
-        PROPERTY INTERFACE_LINK_LIBRARIES FFTW::FFTW
+        PROPERTY INTERFACE_LINK_LIBRARIES FFTW3::fftw3
       )
     endif()
   endif()

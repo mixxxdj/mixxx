@@ -5,6 +5,7 @@ name: build-checks
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -160,7 +161,7 @@ jobs:
       - name: "Upload Coverage Report to coveralls.io"
         if: matrix.name == 'coverage'
         continue-on-error: true
-        uses: coverallsapp/github-action@v2.3.4
+        uses: coverallsapp/github-action@v2.3.6
         with:
           flag-name: ubuntu-24.04
           path-to-lcov: build/lcov.info
