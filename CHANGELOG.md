@@ -58,6 +58,7 @@
   [#14354](https://github.com/mixxxdj/mixxx/pull/14354)
 * Waveform Preferences: Group options, adjust tabstops, reorder ui file [#13615](https://github.com/mixxxdj/mixxx/pull/13615)
 * Preferences Effects: left/right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
+* Open sound preferences with sprecific I/O tab selected [#14346](https://github.com/mixxxdj/mixxx/pull/14346)
 
 ### Skins
 
@@ -78,6 +79,7 @@
 ### Library
 
 * Add color coding for key column [#13390](https://github.com/mixxxdj/mixxx/pull/13390)
+* Add overview column with small waveform [#14140](https://github.com/mixxxdj/mixxx/pull/14140)
 * Elide key text form the right [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
 * Add Key Color Palettes [#13497](https://github.com/mixxxdj/mixxx/pull/13497)
 * Fix BPM and Bitrate columns were wider than normal [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
@@ -88,6 +90,12 @@
 * iTunes: Add iOS importer using the Media Player framework [#12690](https://github.com/mixxxdj/mixxx/pull/12690)
 * Add Shuffle action to track table header menu [#13392](https://github.com/mixxxdj/mixxx/pull/13392)
 * Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons [#13614](https://github.com/mixxxdj/mixxx/pull/13614)
+* Library scan: log summary and show popup
+  [#13427](https://github.com/mixxxdj/mixxx/pull/13427)
+  [#10720](https://github.com/mixxxdj/mixxx/issues/10720)
+* Search: add BPM lock filter `bpm:locked`
+  [#14590](https://github.com/mixxxdj/mixxx/pull/14590)
+  [#14583](https://github.com/mixxxdj/mixxx/issues/14583)
 
 ### Effects
 
@@ -139,6 +147,9 @@
   [#14331](https://github.com/mixxxdj/mixxx/pull/14331)
 * Fix invalid slip render marker [#13422](https://github.com/mixxxdj/mixxx/pull/13422)
 * Add slip waveform to Textured/'High details' type [#14039](https://github.com/mixxxdj/mixxx/pull/14039)
+* Fix waveform marker image alignment
+  [#14656](https://github.com/mixxxdj/mixxx/pull/14656)
+  [#14037](https://github.com/mixxxdj/mixxx/issues/14037)
 
 ### STEM file support
 
@@ -162,6 +173,8 @@
 * Fix build with -DSTEM=OFF [#13948](https://github.com/mixxxdj/mixxx/pull/13948)
 * Stem control test fix [#13960](https://github.com/mixxxdj/mixxx/pull/13960)
 * Solves problem with special characters in path to stems [#13784](https://github.com/mixxxdj/mixxx/pull/13784)
+* Enable FFmpeg (free) on Windows. [#14695](https://github.com/mixxxdj/mixxx/pull/14695)
+* FFmpeg: Use internal aac decoder. If not available give a hint. [#14645](https://github.com/mixxxdj/mixxx/pull/14645)
 
 ### Auto-DJ
 
@@ -196,6 +209,7 @@
 * Remove unmaintained shell.nix [#14300](https://github.com/mixxxdj/mixxx/pull/14300)
 * add QGLES2 option for UNIX [#14489](https://github.com/mixxxdj/mixxx/pull/14489)
 * Don't set GL_BGRA if QT_OPENGL_ES_2 [#14488](https://github.com/mixxxdj/mixxx/pull/14488)
+* Windows and macOS: Update to Qt 6.8.3 (requires MSVC 2022) [#14655](https://github.com/mixxxdj/mixxx/pull/14655)
 
 ### Misc Refactorings
 
@@ -305,6 +319,9 @@
 * CMake: Join project() with enable_language() [#14577](https://github.com/mixxxdj/mixxx/pull/14577)
 * fix warning when building without STEM support [#14551](https://github.com/mixxxdj/mixxx/pull/14551)
 * scenegraph is conditioned to QML=ON  [#14487](https://github.com/mixxxdj/mixxx/pull/14487)
+* Fix building with Qt 6.9 [#14678](https://github.com/mixxxdj/mixxx/pull/14678)
+* fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
+* qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 
