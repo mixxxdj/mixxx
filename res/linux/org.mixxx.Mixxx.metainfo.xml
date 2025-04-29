@@ -96,7 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-04-29" timestamp="1745934102">
+    <release version="2.7.0" type="development" date="2025-04-29" timestamp="1745953440">
+      <description>
+</description>
+    </release>
+    <release version="2.6.0" type="development" date="2025-04-29" timestamp="1745953440">
       <description>
  <p>
   Controller Mappings
