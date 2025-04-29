@@ -21,7 +21,7 @@
                     This requires the Mixxx window to have focus and allows to control the searchbar, too.
 
                     In Classic mode the Browse encoder can select items in the sidebar and tracks table only, but independent
-                    of keyboadr focus.
+                    of keyboard focus.
                 </description>
             </option>
         </group>
