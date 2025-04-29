@@ -204,11 +204,11 @@ void BrowseFeature::slotAddToLibrary() {
     }
 
     if (!m_pLibrary->requestAddDir(path)) {
+        // Return if adding failed due to missing/unreadable/SQL error,
+        // or if the directory is already watched.
         return;
     }
 
-    // TODO Check if this really added a new directory. Ignore if it's a child
-    // of an already watched directory. Notify if it failed for another reason.
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     // strings are dupes from DlgPrefLibrary
