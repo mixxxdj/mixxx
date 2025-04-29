@@ -59,6 +59,7 @@
 * Waveform Preferences: Group options, adjust tabstops, reorder ui file [#13615](https://github.com/mixxxdj/mixxx/pull/13615)
 * Preferences Effects: left/right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
 * Open sound preferences with sprecific I/O tab selected [#14346](https://github.com/mixxxdj/mixxx/pull/14346)
+* Show 'real' xfader configuration [#14124](https://github.com/mixxxdj/mixxx/pull/14124)
 
 ### Skins
 

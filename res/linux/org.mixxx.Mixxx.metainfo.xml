@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-04-27" timestamp="1745786701">
+    <release version="2.6.0" type="development" date="2025-04-29" timestamp="1745934102">
       <description>
  <p>
   Controller Mappings
@@ -261,6 +261,10 @@
   <li>
    Open sound preferences with sprecific I/O tab selected
    #14346
+  </li>
+  <li>
+   Show 'real' xfader configuration
+   #14124
   </li>
  </ul>
  <p>
