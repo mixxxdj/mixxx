@@ -103,6 +103,17 @@ BrowseFeature::BrowseFeature(Library* pLibrary,
             this,
             &BrowseFeature::slotRefreshDirectoryTree);
 
+    // Maybe update items' `isWatchedLibraryPath` flag when directories
+    // are added or removed from the library
+    connect(pLibrary,
+            &Library::directoryAdded,
+            this,
+            &BrowseFeature::slotUpdateItemIsWatchedPathRecursively);
+    connect(pLibrary,
+            &Library::directoryRemoved,
+            this,
+            &BrowseFeature::slotUpdateItemIsWatchedPathRecursively);
+
     m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
     // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
@@ -280,6 +291,29 @@ void BrowseFeature::slotRefreshDirectoryTree() {
 
     // Update child items
     onLazyChildExpandation(m_lastRightClickedIndex);
+}
+
+void BrowseFeature::slotUpdateItemIsWatchedPathRecursively(const QString& path) {
+    auto rootIdx = m_pSidebarModel->getRootIndex();
+    QModelIndexList matchList = m_pSidebarModel->match(rootIdx,
+            TreeItemModel::kDataRole,
+            path,
+            1,
+            Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
+    if (matchList.isEmpty()) {
+        return;
+    }
+    QModelIndex matchIdx = matchList.first();
+    if (!matchIdx.isValid()) {
+        return;
+    }
+    TreeItem* pMatchItem = m_pSidebarModel->getItem(matchIdx);
+    if (!pMatchItem) {
+        return;
+    }
+    bool watched = isPathWatched(path).first;
+    pMatchItem->updateIsWatchedLibraryPathRecursively(watched);
+    m_pSidebarWidget->update();
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {

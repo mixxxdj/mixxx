@@ -57,6 +57,9 @@ class BrowseFeature : public LibraryFeature {
     void requestAddDir(const QString&);
     void scanLibrary();
 
+  private slots:
+    void slotUpdateItemIsWatchedPathRecursively(const QString& path);
+
   private:
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
