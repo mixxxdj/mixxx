@@ -1,6 +1,7 @@
 #pragma once
 
 #include "library/basesqltablemodel.h"
+#include "library/trackcollectionmanager.h"
 
 class TrackSetTableModel : public BaseSqlTableModel {
     Q_OBJECT
