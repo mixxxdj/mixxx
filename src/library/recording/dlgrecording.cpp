@@ -1,7 +1,9 @@
 #include "library/recording/dlgrecording.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/browse/browsetablemodel.h"
 #include "library/library.h"
+#include "library/proxytrackmodel.h"
 #include "moc_dlgrecording.cpp"
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
@@ -9,21 +11,21 @@
 #include "widget/wtracktableview.h"
 
 DlgRecording::DlgRecording(
-        WLibrary* parent,
+        WLibrary* pLibraryWidget,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         RecordingManager* pRecordingManager,
         KeyboardEventFilter* pKeyboard)
-        : QWidget(parent),
+        : QWidget(pLibraryWidget),
           m_pConfig(pConfig),
-          m_pTrackTableView(
-                  new WTrackTableView(
-                          this,
-                          pConfig,
-                          pLibrary,
-                          parent->getTrackTableBackgroundColorOpacity())),
-          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
-          m_proxyModel(&m_browseModel, true),
+          m_pTrackTableView(make_parented<WTrackTableView>(
+                  this,
+                  pConfig,
+                  pLibrary,
+                  pLibraryWidget->getTrackTableBackgroundColorOpacity())),
+          m_pBrowseModel(make_parented<BrowseTableModel>(
+                  this, pLibrary->trackCollectionManager(), pRecordingManager)),
+          m_pProxyModel(new ProxyTrackModel(m_pBrowseModel, true /* handle search */)),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
@@ -65,7 +67,7 @@ DlgRecording::DlgRecording(
             &RecordingManager::durationRecorded,
             this,
             &DlgRecording::slotDurationRecorded);
-    connect(&m_browseModel,
+    connect(m_pBrowseModel,
             &BrowseTableModel::restoreModelState,
             m_pTrackTableView,
             &WTrackTableView::restoreCurrentViewState);
@@ -78,11 +80,12 @@ DlgRecording::DlgRecording(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     refreshBrowseModel();
-    m_pTrackTableView->loadTrackModel(&m_proxyModel);
+    // TODO switch proxy/library model
+    m_pTrackTableView->loadTrackModel(m_pProxyModel);
 
     connect(pushButtonRecording,
             &QPushButton::clicked,
@@ -111,12 +114,12 @@ void DlgRecording::setFocus() {
 
 void DlgRecording::refreshBrowseModel() {
     saveCurrentViewState();
-    QString recordingDir = m_pRecordingManager->getRecordingDir();
-    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(recordingDir)));
+    const QString recordingDir = m_pRecordingManager->getRecordingDir();
+    m_pBrowseModel->setPath(mixxx::FileAccess(mixxx::FileInfo(recordingDir)));
 }
 
 void DlgRecording::onSearch(const QString& text) {
-    m_proxyModel.search(text);
+    m_pProxyModel->search(text);
 }
 
 void DlgRecording::slotRestoreSearch() {
@@ -175,4 +178,8 @@ void DlgRecording::saveCurrentViewState() {
 
 bool DlgRecording::restoreCurrentViewState() {
     return m_pTrackTableView->restoreCurrentViewState();
+}
+
+QString DlgRecording::currentSearch() const {
+    return m_pProxyModel->currentSearch();
 }
