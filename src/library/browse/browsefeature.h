@@ -12,11 +12,13 @@
 #define DEVICE_NODE "::mixxx_device_node::"
 
 class BrowseTableModel;
+class BrowseLibraryTableModel;
 class ProxyTrackModel;
 class FolderTreeModel;
 class Library;
 class RecordingManager;
 class TrackCollection;
+class TrackModel;
 class WLibrarySidebar;
 
 class BrowseFeature : public LibraryFeature {
@@ -58,16 +60,21 @@ class BrowseFeature : public LibraryFeature {
   private:
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
+    bool isPathWatched(const QString& path) const;
     QStringList getDefaultQuickLinks() const;
     std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
     QString getLastRightClickedPath() const;
 
+    QString getCurrentSearch() const;
+
     TrackCollection* const m_pTrackCollection;
 
     parented_ptr<BrowseTableModel> m_pBrowseModel;
     std::unique_ptr<ProxyTrackModel> m_pProxyModel;
+    parented_ptr<BrowseLibraryTableModel> m_pLibraryTableModel;
+    TrackModel* m_pCurrentTrackModel;
     parented_ptr<FolderTreeModel> m_pSidebarModel;
     parented_ptr<QAction> m_pAddQuickLinkAction;
     parented_ptr<QAction> m_pRemoveQuickLinkAction;

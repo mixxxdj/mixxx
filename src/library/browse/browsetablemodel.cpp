@@ -45,7 +45,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         RecordingManager* pRecordingManager)
         : TrackModel(pTrackCollectionManager->internalCollection()->database(),
-                  "mixxx.db.model.browse"),
+                  "mixxx.db.model.browseFiles"),
           QStandardItemModel(parent),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pRecordingManager(pRecordingManager),
