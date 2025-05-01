@@ -1296,7 +1296,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Microphone Ducking Mode"),
             tr("Toggle microphone ducking mode (OFF, AUTO, MANUAL)"),
             pMicrophoneMenu);
-    addMicrophoneAndAuxControl("passthrough",
+    addMicrophoneAndAuxControl("main_mix",
             tr("Auxiliary On/Off"),
             tr("Auxiliary on/off"),
             pMicrophoneMenu,
