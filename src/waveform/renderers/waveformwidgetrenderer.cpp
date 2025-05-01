@@ -364,10 +364,10 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     if (!enabled) {
         return;
     }
-    // If passthrough is activated while no track has been loaded previously mark
-    // the renderer state dirty in order trigger the render process. This is only
-    // required for the background renderer since that's the only one that'll
-    // be processed if passtrhough is active.
+    // If passthrough is activated while no track has been loaded previously,
+    // mark the renderer state dirty in order trigger the render process.
+    // This is only required for the background renderer since that's the only
+    // one that'll be processed if passthrough is active.
     if (!m_rendererStack.isEmpty()) {
         m_rendererStack[0]->setDirty(true);
     }
