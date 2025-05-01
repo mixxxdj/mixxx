@@ -347,7 +347,7 @@ TraktorS2MK3.padModeHandler = function(field) {
                 TraktorS2MK3.outputHandler(colorValue, field.group, "pad_" + i);
             }
             else {
-                TraktorS2MK3.outputHandler(0, field.group, "pad_" + i);
+                TraktorS2MK3.outputHandler(0, field.group, `pad_${  i}`);
             }
         }
     }
@@ -889,10 +889,10 @@ TraktorS2MK3.registerOutputPackets = function() {
     this.linkOutput("[Channel2]", "keylock", this.outputHandler);
 
     for (let i = 1; i <= 8; ++i) {
-        engine.makeConnection("[Channel1]", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-        engine.makeConnection("[Channel2]", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
-        engine.makeConnection("[Channel1]", "hotcue_" + i + "_color", this.hotcueColorHandler);
-        engine.makeConnection("[Channel2]", "hotcue_" + i + "_color", this.hotcueColorHandler);
+        engine.makeConnection("[Channel1]", `hotcue_${  i  }_enabled`, this.hotcueOutputHandler);
+        engine.makeConnection("[Channel2]", `hotcue_${  i  }_enabled`, this.hotcueOutputHandler);
+        engine.makeConnection("[Channel1]", `hotcue_${  i  }_color`, this.hotcueColorHandler);
+        engine.makeConnection("[Channel2]", `hotcue_${  i  }_color`, this.hotcueColorHandler);
     }
 
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
@@ -977,9 +977,9 @@ TraktorS2MK3.hotcueOutputHandler = function(value, group, key) {
         const color = engine.getValue(group, colorKey);
         const padNum = key[7];
         if (value > 0) {
-            TraktorS2MK3.colorOutputHandler(color, group, "pad_" + padNum);
+            TraktorS2MK3.colorOutputHandler(color, group, `pad_${  padNum}`);
         } else {
-            TraktorS2MK3.outputHandler(0, group, "pad_" + padNum);
+            TraktorS2MK3.outputHandler(0, group, `pad_${  padNum}`);
         }
     }
 };
@@ -988,7 +988,7 @@ TraktorS2MK3.hotcueColorHandler = function(value, group, key) {
     // Light button LED only when we are in hotcue mode
     const padNum = key[7];
     if (TraktorS2MK3.padModeState[group] === 0) {
-        TraktorS2MK3.colorOutputHandler(value, group, "pad_" + padNum);
+        TraktorS2MK3.colorOutputHandler(value, group, `pad_${  padNum}`);
     }
 };
 
