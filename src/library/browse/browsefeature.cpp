@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <memory>
 
+#include "library/browse/browselibrarytablemodel.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
@@ -56,6 +57,10 @@ BrowseFeature::BrowseFeature(Library* pLibrary,
           // m_pCurrentTrackModel = m_pProxyModel;) and not convertible to
           // QAbstractItemModel* (for emit showTrackModel(m_pProxyModel);)
           m_pProxyModel(new ProxyTrackModel(m_pBrowseModel, true /* handle search */)),
+          m_pLibraryTableModel(make_parented<BrowseLibraryTableModel>(this,
+                  pLibrary->trackCollectionManager(),
+                  "mixxx.db.model.libraryBrowse")),
+          m_pCurrentTrackModel(nullptr),
           m_pSidebarModel(make_parented<FolderTreeModel>(this)) {
     connect(m_pBrowseModel,
             &BrowseTableModel::restoreModelState,
@@ -290,8 +295,19 @@ void BrowseFeature::activate() {
     emit enableCoverArtDisplay(false);
 }
 
-// Note: This is executed whenever you single click on an child item
-// Single clicks will not populate sub folders
+/// This is executed whenever you single click on an child item. The track view
+/// is then populated with tracks from that directory.
+/// Two different views (models) are used, depending on whether the directory
+/// is a (child of a) library directory or not:
+/// 1. not a library dir: file tag view
+/// This view shows the audio tags of the track files each time the directory item
+/// is activated, regardless if individual (or all) tracks have been added to the
+/// library. Population is usually slow and doesn't have all library columns.
+/// 2. a library dir: full library view
+/// Displays metadata from the library (database) like in other features and
+/// has all columns.
+///
+/// Note: single clicks will not expand or populate sub directories.
 void BrowseFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid()) {
         return;
@@ -307,15 +323,18 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     if (path.isEmpty()) {
         return;
     }
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        emit saveModelState();
-        // Clear the tracks view
-        m_pBrowseModel->setPath({});
+
+    mixxx::FileAccess dirAccess;
+    bool pathIsQuickLinkOrDevice = path == QUICK_LINK_NODE || path == DEVICE_NODE;
+    bool useLibraryModel = false;
+    if (pathIsQuickLinkOrDevice) {
+        // Clear path to clear the tracks view
+        path.clear();
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
         auto dirInfo = mixxx::FileInfo(path);
-        auto dirAccess = mixxx::FileAccess(dirInfo);
+        dirAccess = mixxx::FileAccess(dirInfo);
         if (!dirAccess.isReadable()) {
             if (Sandbox::askForAccess(&dirInfo)) {
                 // Re-create to get a new token.
@@ -325,15 +344,34 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
                 return;
             }
         }
-        emit saveModelState();
-        m_pBrowseModel->setPath(std::move(dirAccess));
+        useLibraryModel = isPathWatched(path);
     }
-    emit showTrackModel(m_pProxyModel);
+
+    emit saveModelState();
+
+    const QString currSearch = getCurrentSearch();
+    // TODO sync sort column, if possible
+    // * get sort column from current model
+    // * if we switch the model, set sort column
+    if (useLibraryModel) {
+        // use LibraryTableModel
+        // filter tracks by directory (not recursive)
+        m_pLibraryTableModel->setPath(std::move(path));
+        m_pLibraryTableModel->search(currSearch, "");
+        m_pCurrentTrackModel = m_pLibraryTableModel;
+        emit showTrackModel(m_pLibraryTableModel);
+    } else {
+        // use BrowseTableModel
+        m_pBrowseModel->setPath(std::move(dirAccess));
+        m_pProxyModel->search(currSearch);
+        m_pCurrentTrackModel = m_pProxyModel;
+        emit showTrackModel(m_pProxyModel);
+    }
     // Search is restored in Library::slotShowTrackModel, disable it where it's useless
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+    if (pathIsQuickLinkOrDevice) {
         emit disableSearch();
     }
-    emit enableCoverArtDisplay(false);
+    emit enableCoverArtDisplay(useLibraryModel);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
@@ -362,9 +400,12 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         menu.addAction(m_pAddQuickLinkAction);
     }
 
-    // TODO Check if we already watch this path or a parent and don't show or
-    // disable this action.
-    menu.addAction(m_pAddtoLibraryAction);
+    // TODO Show label "Directory is in the library"?
+    // If yes, use QAction which is always disabled (easier to style that QLabel
+    // inside QWidgetAction)
+    if (!isPathWatched(path)) {
+        menu.addAction(m_pAddtoLibraryAction);
+    }
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
 }
@@ -499,6 +540,11 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
     return items;
 }
 
+bool BrowseFeature::isPathWatched(const QString& path) const {
+    const auto dirInfo = mixxx::FileInfo(path);
+    return m_pTrackCollection->getDirectoryDAO().isDirectoryWatched(dirInfo);
+}
+
 QString BrowseFeature::getRootViewHtml() const {
     QString browseTitle = tr("Computer");
     QString browseSummary = tr("\"Computer\" lets you navigate, view, and load tracks"
@@ -596,6 +642,10 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 
     qDebug() << "Default quick links:" << result;
     return result;
+}
+
+QString BrowseFeature::getCurrentSearch() const {
+    return m_pCurrentTrackModel != nullptr ? m_pCurrentTrackModel->currentSearch() : QString();
 }
 
 void BrowseFeature::releaseBrowseThread() {

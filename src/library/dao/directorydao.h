@@ -25,6 +25,8 @@ class DirectoryDAO : public DAO {
     };
     AddResult addDirectory(const mixxx::FileInfo& newDir) const;
 
+    bool isDirectoryWatched(const mixxx::FileInfo& dir) const;
+
     enum class RemoveResult {
         Ok,
         NotFound,
