@@ -1,11 +1,15 @@
 #include "library/recording/dlgrecording.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/browse/browselibrarytablemodel.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/library.h"
 #include "library/proxytrackmodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgrecording.cpp"
 #include "recording/recordingmanager.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -18,6 +22,8 @@ DlgRecording::DlgRecording(
         KeyboardEventFilter* pKeyboard)
         : QWidget(pLibraryWidget),
           m_pConfig(pConfig),
+          m_pTrackCollection(
+                  pLibrary->trackCollectionManager()->internalCollection()),
           m_pTrackTableView(make_parented<WTrackTableView>(
                   this,
                   pConfig,
@@ -26,6 +32,10 @@ DlgRecording::DlgRecording(
           m_pBrowseModel(make_parented<BrowseTableModel>(
                   this, pLibrary->trackCollectionManager(), pRecordingManager)),
           m_pProxyModel(new ProxyTrackModel(m_pBrowseModel, true /* handle search */)),
+          m_pLibraryTableModel(make_parented<BrowseLibraryTableModel>(this,
+                  pLibrary->trackCollectionManager(),
+                  "mixxx.db.model.libraryRecording")),
+          m_pCurrentTrackModel(nullptr),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
@@ -36,7 +46,7 @@ DlgRecording::DlgRecording(
     connect(m_pTrackTableView,
             &WTrackTableView::loadTrack,
             this,
-            &DlgRecording::loadTrack);
+            &DlgRecording::slotLoadTrack);
     connect(m_pTrackTableView,
             &WTrackTableView::loadTrackToPlayer,
             this,
@@ -83,10 +93,6 @@ DlgRecording::DlgRecording(
     m_pProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_pProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    refreshBrowseModel();
-    // TODO switch proxy/library model
-    m_pTrackTableView->loadTrackModel(m_pProxyModel);
-
     connect(pushButtonRecording,
             &QPushButton::clicked,
             this,
@@ -97,7 +103,8 @@ DlgRecording::DlgRecording(
     labelRecStatistics->hide();
     labelRecPrefix->setText(tr("Recording to file:"));
 
-    // Sync GUI with recording state, also refreshes labels
+    // Sync GUI with recording state:
+    // refresh labels, switch to file or library view
     slotRecordingStateChanged(m_pRecordingManager->isRecordingActive());
 }
 
@@ -113,13 +120,35 @@ void DlgRecording::setFocus() {
 }
 
 void DlgRecording::refreshBrowseModel() {
+    qWarning() << "     .";
+    qWarning() << "     DlgRec::refresh";
+    qWarning() << "     .";
     saveCurrentViewState();
     const QString recordingDir = m_pRecordingManager->getRecordingDir();
-    m_pBrowseModel->setPath(mixxx::FileAccess(mixxx::FileInfo(recordingDir)));
+    auto dirInfo = mixxx::FileInfo(recordingDir);
+    bool isWatched = false;
+    std::tie(isWatched, dirInfo) =
+            m_pTrackCollection->getDirectoryDAO().isDirectoryWatched(dirInfo);
+    if (isWatched) {
+        m_pCurrentTrackModel = m_pLibraryTableModel;
+        m_pLibraryTableModel->setPath(dirInfo.location());
+        m_pTrackTableView->loadTrackModel(m_pLibraryTableModel);
+    } else {
+        m_pCurrentTrackModel = m_pProxyModel;
+        m_pBrowseModel->setPath(mixxx::FileAccess(dirInfo));
+        m_pTrackTableView->loadTrackModel(m_pProxyModel);
+    }
+    // emit restoreSearch(currentSearch());
+    onSearch(currentSearch());
+
+    restoreCurrentViewState();
+
+    // Switching models is only necessary when the rec directory is added to or
+    // removed from the library, so we don't take care of adopting the previous search here.
 }
 
 void DlgRecording::onSearch(const QString& text) {
-    m_pProxyModel->search(text);
+    m_pCurrentTrackModel->search(text);
 }
 
 void DlgRecording::slotRestoreSearch() {
@@ -132,12 +161,20 @@ void DlgRecording::slotRecButtonClicked(bool toggle) {
 }
 
 void DlgRecording::slotRecordingStateChanged(bool isRecording) {
+    qWarning() << "     .";
+    qWarning() << "     DlgRec::recChanged" << QString(isRecording ? "ON" : "OFF");
     if (isRecording) {
         pushButtonRecording->setChecked(true);
         pushButtonRecording->setText(tr("Stop Recording"));
         labelRecPrefix->show();
         labelRecFilename->show();
         labelRecStatistics->show();
+        if (m_pCurrentTrackModel == m_pLibraryTableModel) {
+            // Add the new recording file to the view
+            // Add track to library (saves a rescan which would scan ALL directories)
+            const QString recFileLoc = m_pRecordingManager->getRecordingLocation();
+            m_pLibraryTableModel->addTracks(QModelIndex(), QStringList{recFileLoc});
+        }
     } else {
         pushButtonRecording->setChecked(false);
         pushButtonRecording->setText(tr("Start Recording"));
@@ -145,7 +182,7 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
         labelRecFilename->hide();
         labelRecStatistics->hide();
     }
-    //This will update the recorded track table view
+    // This will update the recorded track table view
     refreshBrowseModel();
 }
 
@@ -172,6 +209,20 @@ void DlgRecording::refreshLabels() {
     labelRecStatistics->setText(recData);
 }
 
+void DlgRecording::slotLoadTrack(TrackPointer pTrack) {
+    // TODO Try to adopt block implementation from BrowseTableModel::getTrackByref
+    if (!pTrack) {
+        return;
+    }
+    const QString recFileLoc = m_pRecordingManager->getRecordingLocation();
+    const QString trackLoc = pTrack->getLocation();
+    if (trackLoc == recFileLoc) {
+        // Prevent loading the rec track
+        return;
+    }
+    emit loadTrack(pTrack);
+}
+
 void DlgRecording::saveCurrentViewState() {
     m_pTrackTableView->saveCurrentViewState();
 }
@@ -181,5 +232,5 @@ bool DlgRecording::restoreCurrentViewState() {
 }
 
 QString DlgRecording::currentSearch() const {
-    return m_pProxyModel->currentSearch();
+    return m_pCurrentTrackModel->currentSearch();
 }
