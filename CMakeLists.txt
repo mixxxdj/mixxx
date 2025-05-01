@@ -1358,6 +1358,7 @@ add_library(
   src/library/basetrackcache.cpp
   src/library/basetracktablemodel.cpp
   src/library/browse/browsefeature.cpp
+  src/library/browse/browselibrarytablemodel.cpp
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
