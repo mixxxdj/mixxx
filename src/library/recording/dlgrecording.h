@@ -10,10 +10,13 @@
 #include "util/parented_ptr.h"
 
 class BrowseTableModel;
+class BrowseLibraryTableModel;
 class KeyboardEventFilter;
 class Library;
 class ProxyTrackModel;
 class RecordingManager;
+class TrackCollection;
+class TrackModel;
 class WLibrary;
 class WTrackTableView;
 
@@ -40,6 +43,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotRestoreSearch();
     void slotDurationRecorded(const QString& durationRecorded);
 
+    void slotLoadTrack(TrackPointer pTrack);
+
   signals:
     void loadTrack(TrackPointer tio);
 #ifdef __STEM__
@@ -55,9 +60,13 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   private:
     UserSettingsPointer m_pConfig;
+    TrackCollection* const m_pTrackCollection;
+
     parented_ptr<WTrackTableView> m_pTrackTableView;
     parented_ptr<BrowseTableModel> m_pBrowseModel;
     ProxyTrackModel* m_pProxyModel;
+    parented_ptr<BrowseLibraryTableModel> m_pLibraryTableModel;
+    TrackModel* m_pCurrentTrackModel;
 
     void refreshLabels();
     void slotRecButtonClicked(bool checked);
