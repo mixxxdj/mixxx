@@ -79,15 +79,17 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     if (!newDir.exists() || !newDir.isDir()) {
         kLogger.warning()
                 << "Failed to add"
-                << newDir.location()
-                << ": Directory does not exist or is inaccessible";
+                << newDir.location();
+        kLogger.warning()
+                << "Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
     }
     if (!newDir.isReadable()) {
         kLogger.warning()
                 << "Aborting to to add"
-                << newDir.location()
-                << ": Directory can not be read";
+                << newDir.location();
+        kLogger.warning()
+                << "Directory can not be read";
         return AddResult::UnreadableDirectory;
     }
     const auto newCanonicalLocation = newDir.canonicalLocation();
@@ -140,6 +142,39 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     }
 
     return AddResult::Ok;
+}
+
+bool DirectoryDAO::isDirectoryWatched(const mixxx::FileInfo& dir) const {
+    DEBUG_ASSERT(m_database.isOpen());
+    VERIFY_OR_DEBUG_ASSERT(dir.exists() && dir.isDir()) {
+        kLogger.warning()
+                << "Failed to check"
+                << dir.location();
+        kLogger.warning()
+                << "Directory does not exist, is inaccessible or is not a directory";
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(dir.isReadable()) {
+        kLogger.warning()
+                << "Aborting to check"
+                << dir.location();
+        kLogger.warning()
+                << "Directory can not be read";
+        return false;
+    }
+    const auto newCanonicalLocation = dir.canonicalLocation();
+    DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
+    for (auto&& oldDir : loadAllDirectories(true /* ignore missing */)) {
+        const auto oldCanonicalLocation = oldDir.canonicalLocation();
+        DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
+        if (mixxx::FileInfo::isRootSubCanonicalLocation(
+                    oldCanonicalLocation,
+                    newCanonicalLocation)) {
+            // New dir is a child of an existing dir, return
+            return true;
+        }
+    }
+    return false;
 }
 
 DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
