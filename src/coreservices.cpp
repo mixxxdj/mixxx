@@ -9,6 +9,9 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#ifdef __MACOS_MEDIAPLAYER__
+#include "broadcast/macos/macosmediaplayerservice.h"
+#endif
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -385,6 +388,10 @@ void CoreServices::initialize(QApplication* pApp) {
     // been created. Otherwise Mixxx might hang when accessing
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+
+#ifdef __MACOS_MEDIAPLAYER__
+    m_pMacOSMediaPlayerService = std::make_shared<MacOSMediaPlayerService>(*m_pPlayerManager);
+#endif
 
     bool musicDirAdded = false;
 
