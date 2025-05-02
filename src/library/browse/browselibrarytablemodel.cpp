@@ -10,10 +10,12 @@
 BrowseLibraryTableModel::BrowseLibraryTableModel(
         QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager,
+        RecordingManager* pRecordingManager,
         const char* settingsNamespace)
         : LibraryTableModel(pParent,
                   pTrackCollectionManager,
-                  settingsNamespace) {
+                  settingsNamespace),
+          m_pRecordingManager(pRecordingManager) {
 }
 
 void BrowseLibraryTableModel::setPath(QString path) {
@@ -43,4 +45,25 @@ void BrowseLibraryTableModel::setPath(QString path) {
 
 void BrowseLibraryTableModel::search(const QString& searchText, const QString& /* extraFilter */) {
     LibraryTableModel::search(searchText, m_directoryFilter);
+}
+
+TrackPointer BrowseLibraryTableModel::getTrackByRef(const TrackRef& trackRef) const {
+    if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
+        QMessageBox::critical(nullptr,
+                tr("Mixxx Library"),
+                tr("Could not load the following file because it is in use by "
+                   "Mixxx or another application.") +
+                        "\n" + trackRef.getLocation());
+        return TrackPointer();
+    }
+    // TODO Comment from BrowseTableModel::getTrackByRef
+    // NOTE(uklotzde, 2015-12-08): Accessing tracks from the browse view
+    // will implicitly add them to the library. Is this really what we
+    // want here??
+    // NOTE(rryan, 2015-12-27): This was intentional at the time since
+    // some people use Browse instead of the library and we want to let
+    // them edit the tracks in a way that persists across sessions
+    // and we didn't want to edit the files on disk by default
+    // unless the user opts in to that.
+    return m_pTrackCollectionManager->getOrAddTrack(trackRef);
 }

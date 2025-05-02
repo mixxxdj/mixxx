@@ -73,5 +73,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
 
+    TrackPointer m_currentRecTrack;
+
     RecordingManager* m_pRecordingManager;
 };
