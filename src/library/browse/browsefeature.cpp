@@ -59,6 +59,7 @@ BrowseFeature::BrowseFeature(Library* pLibrary,
           m_pProxyModel(new ProxyTrackModel(m_pBrowseModel, true /* handle search */)),
           m_pLibraryTableModel(make_parented<BrowseLibraryTableModel>(this,
                   pLibrary->trackCollectionManager(),
+                  pRecordingManager,
                   "mixxx.db.model.libraryBrowse")),
           m_pCurrentTrackModel(nullptr),
           m_pSidebarModel(make_parented<FolderTreeModel>(this)) {

@@ -67,9 +67,11 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 void RecordingFeature::activate() {
+    // TODO Do we actually have to call directly (instead of emit refreshBrowseModel())
+    // in order to have the view ready when we switch to it?
     m_pRecordingView->refreshBrowseModel();
-    // emit refreshBrowseModel();
     emit switchToView(kViewName);
-    emit requestRestoreSearch();
+    // emit requestRestoreSearch();
+    //  TODO make this depend on used model (true for Library model)
     emit enableCoverArtDisplay(false);
 }
