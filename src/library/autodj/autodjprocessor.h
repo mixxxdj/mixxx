@@ -226,6 +226,7 @@ class AutoDJProcessor : public QObject {
     void controlShuffle(double value);
     void controlSkipNext(double value);
     void controlAddRandomTrack(double value);
+    void slotNumberOfDecksChanged(int decks);
 
   protected:
     // The following virtual signal wrappers are used for testing
@@ -287,6 +288,7 @@ class AutoDJProcessor : public QObject {
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
 
+    PlayerManagerInterface* m_pPlayerManager;
     QList<DeckAttributes*> m_decks;
 
     ControlProxy* m_pCOCrossfader;
