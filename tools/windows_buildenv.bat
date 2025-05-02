@@ -4,6 +4,16 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
 
+REM Detect host architecture
+REM looking for "System Type: x64-based PC"
+FOR /F "tokens=2 delims=:" %%F IN ('systeminfo ^| findstr /C:"System Type"') DO (
+    SET "SYSTEM_TYPE=%%F"
+)
+ECHO %SYSTEM_TYPE% | findstr /I "x64" >nul && SET "HOST_ARCH=x64"
+ECHO %SYSTEM_TYPE% | findstr /I "x86" >nul && SET "HOST_ARCH=x86"
+ECHO %SYSTEM_TYPE% | findstr /I "ARM64" >nul && SET "HOST_ARCH=arm64"
+ECHO %SYSTEM_TYPE% | findstr /I "ARM" >nul && SET "HOST_ARCH=arm"
+
 IF NOT DEFINED PLATFORM (
     SET PLATFORM=x64
 )
@@ -20,17 +30,24 @@ IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
 
-IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.5-rel
-    SET VCPKG_TARGET_TRIPLET=x64-windows-release
-    vcpkg_update_main
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
-    SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
+IF "%HOST_ARCH%"=="x64" (
+    IF DEFINED BUILDENV_RELEASE (
+        SET BUILDENV_BRANCH=2.5-rel
+        SET VCPKG_TARGET_TRIPLET=x64-windows-release
+        vcpkg_update_main
+        SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
+        SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
+    ) ELSE (
+        SET BUILDENV_BRANCH=2.5
+        SET VCPKG_TARGET_TRIPLET=x64-windows
+        SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-c15790e
+        SET BUILDENV_SHA256=138e4685ec73c6a6a509f71f8573be581403b091e4ecea2314df2cc79f9720b9
+    )
 ) ELSE (
-    SET BUILDENV_BRANCH=2.5
-    SET VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-c15790e
-    SET BUILDENV_SHA256=138e4685ec73c6a6a509f71f8573be581403b091e4ecea2314df2cc79f9720b9
+    ECHO "ERROR: Unsupported architecture detected: $HOST_ARCH"
+    ECHO "Please refer to the following guide to manually build the vcpkg environment:"
+    ECHO "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    EXIT /B 1
 )
 
 IF "%~1"=="" (
@@ -204,9 +221,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "configurationType": "%2",
     >>"%CMakeSettings%" echo       "enableClangTidyCodeAnalysis": true,
     >>"%CMakeSettings%" echo       "generator": "Ninja",
+    REM <compiler>_<architecture>_<host_arch>
     >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>"%CMakeSettings%" echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
     >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
+    REM <platform>-<compiler>-<architecture>
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
