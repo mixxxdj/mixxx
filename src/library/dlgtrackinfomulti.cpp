@@ -172,6 +172,13 @@ void DlgTrackInfoMulti::init() {
             this,
             &DlgTrackInfoMulti::slotOpenInFileBrowser);
 
+    // Show, hide, enable widgets when comment edit mode is changed
+    connect(commentEditModeGroup,
+            &QButtonGroup::buttonToggled,
+            this,
+            &DlgTrackInfoMulti::slotCommentEditModeChanged);
+    btnCommentSelect->setChecked(true);
+
     QList<QComboBox*> valueComboBoxes;
     valueComboBoxes.append(txtArtist);
     valueComboBoxes.append(txtTitle);
@@ -672,15 +679,19 @@ void DlgTrackInfoMulti::saveTracks() {
     const QString year = validEditText(txtYear);
     const QString key = validEditText(txtKey);
     const QString num = validEditText(txtTrackNumber);
+
+    bool commentFindReplace = btnCommentReplace->isChecked();
     // Check if the Comment has been changed.
     // (same as in validEditText(), just for the QPlainTextEdit)
     QString comment;
-    const QString origText = txtComment->property(kOrigValProp).toString();
-    const QString currText = txtComment->toPlainText();
-    if ((txtCommentBox->count() > 0 && txtComment->placeholderText().isNull()) ||
-            (txtCommentBox->count() == 0 && currText != origText)) {
-        // Remove trailing whitespaces.
-        comment = mixxx::removeTrailingWhitespaces(currText);
+    if (!commentFindReplace) {
+        const QString origText = txtComment->property(kOrigValProp).toString();
+        const QString currText = txtComment->toPlainText();
+        if ((txtCommentBox->count() > 0 && txtComment->placeholderText().isNull()) ||
+                (txtCommentBox->count() == 0 && currText != origText)) {
+            // Remove trailing whitespaces.
+            comment = mixxx::removeTrailingWhitespaces(currText);
+        }
     }
 
     for (auto& rec : m_trackRecords) {
@@ -716,14 +727,42 @@ void DlgTrackInfoMulti::saveTracks() {
         if (!num.isNull()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num);
         }
-        if (!comment.isNull()) {
-            rec.refMetadata().refTrackInfo().setComment(comment);
+
+        if (!commentFindReplace) {
+            if (!comment.isNull()) {
+                rec.refMetadata().refTrackInfo().setComment(comment);
+            }
         }
         if (m_colorChanged) {
             rec.setColor(m_newColor);
         }
         if (m_starRatingModified) {
             rec.setRating(m_newRating);
+        }
+    }
+
+    const QString findStr = txtCommentFind->text();
+    const QString replaceStr = txtCommentReplace->text();
+    // Nothing to do if we're in Find/Replace mode but both Find and Replace
+    // fields are empty.
+    if (commentFindReplace && (!findStr.isEmpty() || !replaceStr.isEmpty())) {
+        QRegularExpression findRegEx(QStringLiteral("\\b%1\\b").arg(findStr));
+        QRegularExpressionMatch findReplace;
+        // If we have a Find string, replace first occurrence with Replace
+        // (might be empty for removing a Find string).
+        // If we no Find but a Replace string, insert it before the comment,
+        // plus a whitespace.
+        for (auto& rec : m_trackRecords) {
+            QString comment = rec.refMetadata().refTrackInfo().getComment();
+            if (!comment.isEmpty() && !findStr.isEmpty()) {
+                findReplace = findRegEx.match(comment);
+                if (findReplace.hasMatch()) {
+                    comment.replace(findRegEx, replaceStr);
+                }
+            } else if (!replaceStr.isEmpty()) {
+                comment.insert(0, QString(replaceStr + ' '));
+            }
+            rec.refMetadata().refTrackInfo().setComment(comment);
         }
     }
 
@@ -1114,4 +1153,11 @@ void DlgTrackInfoMulti::slotReloadCoverArt() {
         rec.setCoverInfo(cover);
     }
     updateCoverArtFromTracks();
+}
+
+void DlgTrackInfoMulti::slotCommentEditModeChanged(QAbstractButton* pBtn) {
+    bool commentSelect = pBtn == btnCommentSelect;
+    txtComment->setVisible(commentSelect);
+    txtCommentBox->setEnabled(commentSelect);
+    commentFindReplaceBox->setVisible(!commentSelect);
 }
