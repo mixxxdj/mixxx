@@ -15,7 +15,7 @@ TEST(CueTest, NewCueIsDirty) {
             1,
             mixxx::audio::kStartFramePos,
             mixxx::audio::kInvalidFramePos,
-            mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            mixxx::predefinedcolorpalettes::kDefaultCueColor);
     EXPECT_TRUE(cue.isDirty());
 }
 
