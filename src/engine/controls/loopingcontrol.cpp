@@ -673,13 +673,23 @@ void LoopingControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enab
 void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
         bool enabled) {
-    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
-            startPosition < endPosition) {
+    qWarning() << "     > LoopingControl::setLoop" << startPosition << endPosition << enabled;
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid()) {
+        qWarning() << "       ! start pos invalid";
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(endPosition.isValid()) {
+        qWarning() << "       ! end pos invalid";
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(startPosition < endPosition) {
+        qWarning() << "       ! start pos > end pos";
         return;
     }
 
     LoopInfo loopInfo = m_loopInfo.getValue();
     if (loopInfo.startPosition != startPosition || loopInfo.endPosition != endPosition) {
+        qWarning() << "       adopt new loop boundaries";
         // Copy saved loop parameters to active loop
         loopInfo.startPosition = startPosition;
         loopInfo.endPosition = endPosition;
@@ -1221,9 +1231,11 @@ void LoopingControl::notifySeek(mixxx::audio::FramePos newPosition) {
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
+    qWarning() << "     > LoopingControl::setLoopingEnabled" << enabled;
     m_bLoopWasEnabledBeforeSlipEnable =
             !m_pSlipEnabled->toBool() && enabled && !m_bLoopRollActive;
     if (m_bLoopingEnabled == enabled) {
+        qWarning() << "       ! already enabled/disabled, return";
         return;
     }
 

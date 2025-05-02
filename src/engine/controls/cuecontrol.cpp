@@ -1108,23 +1108,28 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
 }
 
 void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSetMode mode) {
-    //qDebug() << "CueControl::hotcueActivate" << value;
+    qWarning() << "   CueControl::hotcueActivate" << value;
 
     CuePointer pCue = pControl->getCue();
     if (value > 0) {
         // pressed
         if (pCue && pCue->getPosition().isValid() &&
                 pCue->getType() != mixxx::CueType::Invalid) {
+            qWarning() << "   valid cue and position";
             if (m_pPlay->toBool() && m_currentlyPreviewingIndex == Cue::kNoHotCue) {
                 // playing by Play button
                 switch (pCue->getType()) {
                 case mixxx::CueType::HotCue:
+                    qWarning() << "   > HotCue";
                     hotcueGoto(pControl, value);
                     break;
                 case mixxx::CueType::Loop:
+                    qWarning() << "   > LoopCue";
                     if (m_pCurrentSavedLoopControl != pControl) {
+                        qWarning() << "   > setCurrentSavedLoopControlAndActivate";
                         setCurrentSavedLoopControlAndActivate(pControl);
                     } else {
+                        qWarning() << "   > setLoop";
                         bool loopActive = pControl->getStatus() ==
                                 HotcueControl::Status::Active;
                         Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
@@ -2338,6 +2343,7 @@ void CueControl::hotcueFocusColorNext(double value) {
 }
 
 void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) {
+    qWarning() << "   > CueControl::setCurrentSavedLoopControlAndActivate";
     HotcueControl* pOldSavedLoopControl = m_pCurrentSavedLoopControl.fetchAndStoreAcquire(nullptr);
     if (pOldSavedLoopControl && pOldSavedLoopControl != pControl) {
         // Disable previous saved loop
@@ -2346,20 +2352,28 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
     }
 
     if (!pControl) {
+        qWarning() << "     ! no HotcueControl";
         return;
     }
     CuePointer pCue = pControl->getCue();
     VERIFY_OR_DEBUG_ASSERT(pCue) {
+        qWarning() << "     ! control has no cue attached";
         return;
     }
 
     mixxx::CueType type = pCue->getType();
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
 
-    VERIFY_OR_DEBUG_ASSERT(
-            type == mixxx::CueType::Loop &&
-            pos.startPosition.isValid() &&
-            pos.endPosition.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(type == mixxx::CueType::Loop) {
+        qWarning() << "     ! hotcue" << pCue->getHotCue() << "is not a loop cue";
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pos.startPosition.isValid()) {
+        qWarning() << "     ! hotcue" << pCue->getHotCue() << ": start position invalid";
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pos.endPosition.isValid()) {
+        qWarning() << "     ! hotcue" << pCue->getHotCue() << ": end position invalid";
         return;
     }
 
