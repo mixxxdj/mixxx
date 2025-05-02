@@ -1301,6 +1301,8 @@ add_library(
   src/library/trackset/playlistfeature.cpp
   src/library/relations/dlgrelations.cpp
   src/library/relations/dlgrelations.ui
+  src/library/relations/dlgrelationinfo.cpp
+  src/library/relations/dlgrelationinfo.ui
   src/library/relations/relationsfeature.cpp
   src/library/relations/relationstablemodel.cpp
   src/library/trackset/setlogfeature.cpp

@@ -6,6 +6,8 @@
 class WLibrary;
 class WRelationTableView;
 class RelationsTableModel;
+class Relation;
+class DlgRelationInfo;
 class QItemSelection;
 class Library;
 class KeyboardEventFilter;
@@ -33,6 +35,8 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
     void installEventFilter(QObject* pFilter);
     void showAllRelations();
     void showRelatedTracks(TrackPointer pTrack);
+    void slotShowDlgRelationInfo();
+    void slotLoadRelationToDecks();
 
   signals:
     void trackSelected(TrackPointer pTrack);
@@ -42,6 +46,8 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
   private:
     WRelationTableView* m_pRelationTableView;
     RelationsTableModel* m_pRelationTableModel;
+
+    std::unique_ptr<DlgRelationInfo> m_pDlgRelationInfo;
 
     bool m_bRelationPairView;
 };

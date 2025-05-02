@@ -13,6 +13,8 @@ class WRelationTableView : public WTrackTableView {
             double trackTableBackgroundColorOpacity,
             bool relationPairView);
 
+    QList<DbId> getSelectedRelationIds() const;
+
   protected:
     void paintEvent(QPaintEvent* event) override;
 

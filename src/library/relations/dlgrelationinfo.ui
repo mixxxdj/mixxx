@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgRelationInfo</class>
+ <widget class="QDialog" name="DlgRelationInfo">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Relation Info</string>
+  </property>
+
+ </widget>
+ <tabstops>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

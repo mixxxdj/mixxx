@@ -65,6 +65,10 @@ class ColumnCache : public QObject {
 
         COLUMN_REKORDBOX_ANALYZE_PATH,
 
+        COLUMN_RELATIONTABLE_ID,
+        COLUMN_RELATIONTABLE_COMMENT,
+        COLUMN_RELATIONTABLE_DATETIMEADDED,
+
         // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };

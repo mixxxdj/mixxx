@@ -265,6 +265,14 @@ void BaseTrackTableModel::initHeaderProperties() {
             tr("Rating"),
             defaultColumnWidth() * 2);
     setHeaderProperties(
+            ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED,
+            tr("Relation Added"),
+            defaultColumnWidth() * 3);
+    setHeaderProperties(
+            ColumnCache::COLUMN_RELATIONTABLE_COMMENT,
+            tr("Relation Comment"),
+            defaultColumnWidth() * 6);
+    setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
             tr("ReplayGain"),
             defaultColumnWidth() * 2);
@@ -793,7 +801,8 @@ QVariant BaseTrackTableModel::roleValue(
             return QString::number(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
-        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED: {
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
@@ -1004,6 +1013,7 @@ QVariant BaseTrackTableModel::roleValue(
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignHCenter);
         }

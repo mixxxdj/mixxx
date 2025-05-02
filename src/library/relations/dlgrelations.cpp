@@ -4,6 +4,7 @@
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
+#include "library/relations/dlgrelationinfo.h"
 #include "library/relations/relationstablemodel.h"
 #include "moc_dlgrelations.cpp"
 #include "util/assert.h"
@@ -42,6 +43,9 @@ DlgRelations::DlgRelations(
     m_pRelationTableModel = new RelationsTableModel(this, pLibrary->trackCollectionManager());
     m_pRelationTableView->loadTrackModel(m_pRelationTableModel);
 
+    connect(pushButtonLoad, &QPushButton::clicked, this, &DlgRelations::slotLoadRelationToDecks);
+    connect(pushButtonEdit, &QPushButton::clicked, this, &DlgRelations::slotShowDlgRelationInfo);
+
     connect(m_pRelationTableView,
             &WRelationTableView::trackSelected,
             this,
@@ -72,6 +76,23 @@ DlgRelations::DlgRelations(
 DlgRelations::~DlgRelations() {
     delete m_pRelationTableView;
     delete m_pRelationTableModel;
+}
+
+void DlgRelations::slotShowDlgRelationInfo() {
+    Relation* relation; // Get selected relation
+    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation);
+    connect(m_pDlgRelationInfo.get(),
+            &QDialog::finished,
+            this,
+            [this]() {
+                if (m_pDlgRelationInfo.get() == sender()) {
+                    m_pDlgRelationInfo.release()->deleteLater();
+                }
+            });
+    m_pDlgRelationInfo->show();
+}
+
+void DlgRelations::slotLoadRelationToDecks() {
 }
 
 void DlgRelations::onShow() {

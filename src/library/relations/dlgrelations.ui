@@ -48,6 +48,39 @@
         <number>0</number>
        </property>
        <item>
+        <widget class="QPushButton" name="pushButtonLoad">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Load the selected relation to next available decks.</string>
+         </property>
+         <property name="text">
+          <string>Load</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonEdit">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Edit the selected relation.</string>
+         </property>
+         <property name="text">
+          <string>Edit</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+       <widget class="QLabel" name="labelRelationInfo">
+        <property name="text">
+         <string></string>
+        </property>
+       </widget>
+      </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

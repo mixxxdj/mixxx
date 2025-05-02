@@ -92,6 +92,10 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     insertColumnNameByEnum(COLUMN_REKORDBOX_ANALYZE_PATH, REKORDBOX_ANALYZE_PATH);
 
+    insertColumnNameByEnum(COLUMN_RELATIONTABLE_ID, RELATIONTABLE_ID);
+    insertColumnNameByEnum(COLUMN_RELATIONTABLE_COMMENT, RELATIONTABLE_COMMENT);
+    insertColumnNameByEnum(COLUMN_RELATIONTABLE_DATETIMEADDED, RELATIONTABLE_DATETIMEADDED);
+
     for (int i = 0; i < NUM_COLUMNS; ++i) {
         m_columnIndexByEnum[i] = -1;
     }

@@ -21,6 +21,19 @@ WRelationTableView::WRelationTableView(
     setDragEnabled(true);
 }
 
+// Need getSelectedRows and getTrackModel to be public.
+// QList<DbId> WRelationTableView::getSelectedRelationIds() const {
+//     Need getTrackModel to be pul
+//     TrackModel* pTrackModel = getTrackModel();
+//     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+//         qWarning() << "No track model available";
+//         return {};
+//     }
+
+//     const QModelIndexList rows = getSelectedRows();
+
+// }
+
 bool isSeperatorRow(int row) {
     return row % 2 == 0;
 }

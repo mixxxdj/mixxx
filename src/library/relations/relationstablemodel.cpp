@@ -25,6 +25,7 @@ RelationsTableModel::RelationsTableModel(
 
 bool RelationsTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_RELATIONTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
@@ -40,16 +41,25 @@ bool RelationsTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
 }
 
+bool RelationsTableModel::isColumnHiddenByDefault(int column) {
+    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) ||
+            BaseSqlTableModel::isColumnHiddenByDefault(column);
+}
+
 void RelationsTableModel::showRelatedTracks(TrackPointer pTrack) {
     if (!pTrack) {
         return;
     }
-    m_pTrack = pTrack;
+    m_pDeckTrack = pTrack;
     TrackId trackId = pTrack->getId();
     QString trackTableName = QStringLiteral("relations_track_%1").arg(trackId.toString());
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
+            << "r." + RELATIONTABLE_ID
+            << "r." + RELATIONTABLE_DATETIMEADDED
+            << "r." + RELATIONTABLE_COMMENT
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
@@ -72,8 +82,11 @@ void RelationsTableModel::showRelatedTracks(TrackPointer pTrack) {
     }
 
     columns[0] = LIBRARYTABLE_ID;
-    columns[1] = LIBRARYTABLE_PREVIEW;
-    columns[2] = LIBRARYTABLE_COVERART;
+    columns[1] = RELATIONTABLE_ID;
+    columns[2] = RELATIONTABLE_DATETIMEADDED;
+    columns[3] = RELATIONTABLE_COMMENT;
+    columns[4] = LIBRARYTABLE_PREVIEW;
+    columns[5] = LIBRARYTABLE_COVERART;
     setTable(trackTableName,
             LIBRARYTABLE_ID,
             columns,
@@ -87,6 +100,9 @@ void RelationsTableModel::showAllRelations() {
 
     QStringList columns;
     columns << "l." + LIBRARYTABLE_ID
+            << "r." + RELATIONTABLE_ID
+            << "r." + RELATIONTABLE_DATETIMEADDED
+            << "r." + RELATIONTABLE_COMMENT
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
@@ -111,8 +127,11 @@ void RelationsTableModel::showAllRelations() {
     }
 
     columns[0] = LIBRARYTABLE_ID;
-    columns[1] = LIBRARYTABLE_PREVIEW;
-    columns[2] = LIBRARYTABLE_COVERART;
+    columns[1] = RELATIONTABLE_ID;
+    columns[2] = RELATIONTABLE_DATETIMEADDED;
+    columns[3] = RELATIONTABLE_COMMENT;
+    columns[4] = LIBRARYTABLE_PREVIEW;
+    columns[5] = LIBRARYTABLE_COVERART;
     setTable(tableName,
             LIBRARYTABLE_ID,
             columns,
@@ -135,12 +154,12 @@ TrackModel::Capabilities RelationsTableModel::getCapabilities() const {
 }
 
 QString RelationsTableModel::modelKey(bool noSearch) const {
-    if (m_pTrack) {
+    if (m_pDeckTrack) {
         if (noSearch) {
-            return kModelName + QChar(':') + m_pTrack->getId().toString();
+            return kModelName + QChar(':') + m_pDeckTrack->getId().toString();
         }
         return kModelName + QChar(':') +
-                m_pTrack->getId().toString() +
+                m_pDeckTrack->getId().toString() +
                 QChar('#') +
                 currentSearch();
     } else {

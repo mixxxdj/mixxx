@@ -2,6 +2,8 @@
 
 #include "library/basesqltablemodel.h"
 
+class Relation;
+
 class RelationsTableModel final : public BaseSqlTableModel {
     Q_OBJECT
 
@@ -11,12 +13,9 @@ class RelationsTableModel final : public BaseSqlTableModel {
     ~RelationsTableModel() final = default;
 
     bool isColumnInternal(int column) override;
+    bool isColumnHiddenByDefault(int column) override;
 
     void showRelatedTracks(TrackPointer pTrack);
-
-    TrackPointer selectedTrack() const {
-        return m_pTrack;
-    }
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;
@@ -25,5 +24,5 @@ class RelationsTableModel final : public BaseSqlTableModel {
     void showAllRelations();
 
   private:
-    TrackPointer m_pTrack;
+    TrackPointer m_pDeckTrack;
 };

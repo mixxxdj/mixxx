@@ -10,7 +10,7 @@
 namespace {
 
 Relation* relationFromRow(const QSqlRecord& row) {
-    const auto id = DbId(row.value(row.indexOf("id")));
+    const auto id = DbId(row.value(row.indexOf("rl_id")));
     TrackPair tracks = {
             TrackId(row.value(row.indexOf("track_a"))),
             TrackId(row.value(row.indexOf("track_b")))};
@@ -24,8 +24,8 @@ Relation* relationFromRow(const QSqlRecord& row) {
             qPositions[1].isNull()
                     ? std::nullopt
                     : std::optional<mixxx::audio::FramePos>(qPositions[1].toInt())};
-    QString comment = row.value(row.indexOf("comment")).toString();
-    QDateTime dateAdded = row.value(row.indexOf("datetime_added")).toDateTime();
+    QString comment = row.value(row.indexOf("rl_comment")).toString();
+    QDateTime dateAdded = row.value(row.indexOf("rl_datetime_added")).toDateTime();
 
     Relation* relation = new Relation(
             id,
@@ -37,6 +37,22 @@ Relation* relationFromRow(const QSqlRecord& row) {
 }
 
 } // namespace
+
+Relation* RelationDAO::getRelationById(DbId id) const {
+    if (!id.isValid()) {
+        return nullptr;
+    }
+    QSqlQuery query(m_database);
+    QString queryText = QString("SELECT * FROM " RELATIONS_TABLE
+                                " WHERE rl_id=:id");
+    query.prepare(queryText);
+    query.bindValue(":id", id.toVariant());
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return nullptr;
+    }
+    return relationFromRow(query.record());
+}
 
 QList<Relation*> RelationDAO::getRelations(TrackId trackId) const {
     QList<Relation*> relations;
@@ -63,15 +79,15 @@ void RelationDAO::saveRelation(Relation* relation) {
                                      "track_b=:track_b,"
                                      "position_a=:position_a,"
                                      "position_b=:position_b,"
-                                     "comment=:comment,"
-                                     "datetime_added=:datetime_added"
-                                     " WHERE id=:id"));
+                                     "rl_comment=:comment,"
+                                     "rl_datetime_added=:datetime_added"
+                                     " WHERE rl_id=:id"));
         query.bindValue(":id", relation->getId().toVariant());
     } else {
         // New relation
         query.prepare(QStringLiteral("INSERT INTO " RELATIONS_TABLE
                                      " (track_a, track_b, position_a, "
-                                     "position_b, comment) VALUES "
+                                     "position_b, rl_comment) VALUES "
                                      "(:track_a, :track_b, "
                                      ":position_a, :position_b, "
                                      ":comment)"));
@@ -115,7 +131,7 @@ void RelationDAO::saveRelation(Relation* relation) {
 
 void RelationDAO::deleteRelation(DbId relationId) {
     QSqlQuery query(m_database);
-    query.prepare(QStringLiteral("DELETE FROM " RELATIONS_TABLE " WHERE id=:id"));
+    query.prepare(QStringLiteral("DELETE FROM " RELATIONS_TABLE " WHERE rl_id=:id"));
     query.bindValue(":id", relationId.toVariant());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

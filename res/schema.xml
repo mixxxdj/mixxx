@@ -590,13 +590,13 @@ reapplying those migrations.
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS relations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rl_id INTEGER PRIMARY KEY AUTOINCREMENT,
         track_a INTEGER NOT NULL REFERENCES library(id),
         track_b INTEGER NOT NULL REFERENCES library(id),
         position_a INTEGER DEFAULT NULL,
         position_b INTEGER DEFAULT NULL,
-        comment varchar(256),
-        datetime_added DEFAULT CURRENT_TIMESTAMP
+        rl_comment varchar(256),
+        rl_datetime_added DEFAULT CURRENT_TIMESTAMP
       );
     </sql>
   </revision>

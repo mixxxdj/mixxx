@@ -75,6 +75,10 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
+const QString RELATIONTABLE_ID = QStringLiteral("rl_id");
+const QString RELATIONTABLE_COMMENT = QStringLiteral("rl_comment");
+const QString RELATIONTABLE_DATETIMEADDED = QStringLiteral("rl_datetime_added");
+
 namespace mixxx {
 namespace trackschema {
 // TableForColumn returns the name of the table that contains the named column.
