@@ -843,6 +843,25 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
             qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, ITunesFilter) {
+    auto pQuery(
+            m_parser.parseQuery("itunes:house", QString()));
+    EXPECT_STREQ(
+            qPrintable(QStringLiteral(
+                    "id IN (SELECT library.id "
+                    "FROM itunes_playlist_tracks "
+                    "JOIN itunes_playlists ON itunes_playlists.id = "
+                    "itunes_playlist_tracks.playlist_id "
+                    "JOIN itunes_library ON itunes_library.id = "
+                    "itunes_playlist_tracks.track_id "
+                    "JOIN track_locations ON track_locations.location = "
+                    "itunes_library.location "
+                    "JOIN library ON library.location = track_locations.id "
+                    "WHERE itunes_playlists.name LIKE '%house%' ORDER BY "
+                    "itunes_playlist_tracks.track_id)")),
+            qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, CrateFilter) {
     // User's search term
     QString searchTerm = "test";
