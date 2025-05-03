@@ -106,6 +106,10 @@ class LibraryFeature : public QObject {
     const UserSettingsPointer m_pConfig;
 
   public slots:
+    /// Pretend that the user has clicked on a tree item belonging
+    /// to this LibraryFeature by updating both the library view
+    /// and the sidebar selection.
+    void selectAndActivate(const QModelIndex& index = QModelIndex());
     // called when you single click on the root item
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
