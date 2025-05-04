@@ -12,7 +12,6 @@ const QString kBackUpFrequency = "BackUpFrequency";
 const QString kLastBackUp = "LastBackUp";
 
 void createSettingsBackUp(UserSettingsPointer m_pConfig) {
-
     qDebug() << "[BackUp] -> BackUp enabled: "
              << m_pConfig->getValue<bool>(
                         ConfigKey(kConfigGroup, kBackUpEnabled));
