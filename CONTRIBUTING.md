@@ -32,6 +32,15 @@ This repository contains the Mixxx source code, skins, controller mappings, and 
 
 All of these are automatically built and deployed by [GitHub Actions](https://github.com/features/actions) whenever a change is committed. You are welcome to open a pull request in any of these repositories.
 
+### Use of AI
+
+The use of AI assistant is welcome in any contributions, but we expect the author of the PR to precisely understand any changes they would be submitting, thus ask them to review any generated content to ensure it is relevant and hallucination-free. As PR review is a constant challenge due to core member's time, if a Mixxx members suspects a PR to be exclusively vibe-coded and providing no value, they are allowed to close them right away with an automated notice, as following:
+
+> Thanks for your contribution in Mixxx. Unfortunately, it looks like the change you are submitting is exclusively written by AI and does not match with our level of expectation. For this matter, we are going to close this PR, but if you expect this decision to be unfair or incorrect, please feel free to provide a review of your own PR and justify the code diff. We appreciate that you may not be an expert in technologies used in Mixxx, but we believe that our time can be better invested than providing advice to an LLM.
+> Please check the CONTRIBUTING guideline for further details
+
+Please remember that these kind of abusive are particularly disrespectful to the Mixxx contributors, and we reserve ourself the right to ban any users that would repeatedly do so.
+
 ## Git Workflow
 
 ### `pre-commit`
