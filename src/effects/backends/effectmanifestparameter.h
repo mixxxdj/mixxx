@@ -340,6 +340,23 @@ class EffectManifestParameter {
         return m_steps;
     }
 
+    /// Converts a raw parameter value into a readable string with units (e.g., "0.25" → "250 ms").
+    /// Handles formatting for integral/toggle vs. continuous values.
+    /// Used by UI components like knobs and labels to show user-friendly tooltips.
+    QString valueToString(double value) const {
+        // Clamp value between allowed min and max
+        double clamped = std::clamp(value, m_minimum, m_maximum);
+
+        QString unit = m_unitString.isEmpty() ? QString() : QStringLiteral(" ") + m_unitString;
+
+        // Format based on scaler type
+        if (m_valueScaler == ValueScaler::Toggle || m_valueScaler == ValueScaler::Integral) {
+            return QString::number(static_cast<int>(clamped)) + unit;
+        } else {
+            return QString::number(clamped, 'f', 2) + unit;
+        }
+    }
+
   private:
     void setParameterType(const ParameterType parameterType) {
         m_parameterType = parameterType;
