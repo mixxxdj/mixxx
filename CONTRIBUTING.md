@@ -5,10 +5,15 @@ Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs a
 Table of Contents
 
 1. [Orientation](#orientation)
-   1. [Git Repositories](#git-repositories)
+   1. [Important Guidelines and Policies](#important-guidelines-and-policies)
+   2. [Git Repositories](#git-repositories)
+   3. [Use of AI](#use-of-ai)
 2. [Git Workflow](#git-workflow)
-   1. [All Contributors](#all-contributors)
-   2. [Core Team](#core-team)
+   1. [pre-commit](#pre-commit)
+   2. [All Contributors](#all-contributors)
+   3. [Core Team](#core-team)
+      1. [Change requests](#change-requests)
+      2. [Code owners](#code-owners)
 
 ## Orientation
 
