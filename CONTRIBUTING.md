@@ -95,6 +95,10 @@ Mixxx core team members are contributors who have write access to the [upstream 
 * Default to open; only post in the private Zulip stream for discussions that have a reason to be private. Most of the time, post to a public Zulip stream so anyone can participate in the discussion.
 * When Mixxx participates in Google Summer of Code, you may volunteer as a mentor if you like.
 
+#### Change requests
+
+We recommend that core members use the `Change request` review state carefully due to the blocking aspect it represent in PRs. When a member submit a change request, they are expected to commit to provide quick feedback once the PR's author has addressed these changes in order not to block the PR. If a core member request changes and doesn't provide a feedback within 15 days following the author actor acting on the this request, another core member can discard their review in order to unblock the PR. We trust the second core member to ensure that the initial change request has correctly been addressed. When in doubt, the initial change request should be kept. Note that the [CODEOWNERS file](.github/CODEOWNERS) can be used to find another member with expertise to help assessing whether or not the initial concerned has been addressed.
+
 #### Code owners
 
 To help with expertise across Mixxx codebase, we use [Github's CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to highlight members who can provide advice and help addressing a thorough review. Beside the filename, code owners do not own the approval, and any core member can decide to merge changes in section they aren't expert in. Once again, we trust core embers will take the right decision and reach out to another core member when in doubt.
