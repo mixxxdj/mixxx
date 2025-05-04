@@ -102,6 +102,18 @@ Library::Library(
 
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pPlaylistFeature,
+            &PlaylistFeature::exportAllPlaylists,
+            this,
+            &Library::exportLibrary, // signal-to-signal
+            Qt::DirectConnection);
+    connect(m_pPlaylistFeature,
+            &PlaylistFeature::exportPlaylist,
+            this,
+            &Library::exportPlaylist, // signal-to-signal
+            Qt::DirectConnection);
+#endif
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);

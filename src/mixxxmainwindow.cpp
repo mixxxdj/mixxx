@@ -203,6 +203,10 @@ void MixxxMainWindow::initialize() {
             &Library::exportCrate,
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportPlaylist,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialPlaylist);
 #endif
 
     // Turn on fullscreen mode
