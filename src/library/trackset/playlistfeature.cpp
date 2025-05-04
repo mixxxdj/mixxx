@@ -50,6 +50,10 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
+#ifdef __ENGINEPRIME__
+    menu.addSeparator();
+    menu.addAction(m_pExportAllPlaylistsToEngineAction);
+#endif
     menu.exec(globalPos);
 }
 
@@ -86,6 +90,9 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.addAction(m_pExportTrackFilesAction);
+#ifdef __ENGINEPRIME__
+    menu.addAction(m_pExportPlaylistToEngineAction);
+#endif
     menu.exec(globalPos);
 }
 

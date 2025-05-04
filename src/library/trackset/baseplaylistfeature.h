@@ -58,6 +58,12 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void renameItem(const QModelIndex& index) override;
     void deleteItem(const QModelIndex& index) override;
 
+#ifdef __ENGINEPRIME__
+  signals:
+    void exportAllPlaylists();
+    void exportPlaylist(int playlistId);
+#endif
+
   protected slots:
     virtual void slotDeletePlaylist();
     void slotDuplicatePlaylist();
@@ -114,6 +120,10 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QAction* m_pExportTrackFilesAction;
     QAction* m_pDuplicatePlaylistAction;
     QAction* m_pAnalyzePlaylistAction;
+#ifdef __ENGINEPRIME__
+    QAction* m_pExportAllPlaylistsToEngineAction;
+    QAction* m_pExportPlaylistToEngineAction;
+#endif
 
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
