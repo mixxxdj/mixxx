@@ -4,6 +4,8 @@
 #include <QProcess>
 #include <QStandardPaths>
 
+#include "preferences/usersettings.h"
+
 const QString kConfigGroup = "[BackUp]";
 const QString kBackUpEnabled = "BackUpEnabled";
 const QString kBackUpFrequency = "BackUpFrequency";

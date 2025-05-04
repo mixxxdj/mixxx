@@ -1,6 +1,5 @@
 #pragma once
 
-#include "preferences/usersettings.h"
 
 // Starts a backup of the Mixxx settings directory if enabled in config.
 // Excludes the "analysis" subfolder, and saves the archive to ~/Documents/Mixxx-BackUps.
