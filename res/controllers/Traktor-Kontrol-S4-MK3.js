@@ -71,6 +71,21 @@ const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor
 const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
 
+// Tempo fader center snap range
+// Transform user value (mm) into upper/lower values
+const TempoCenterRangeMm = engine.getSetting("tempoCenterRangeMm") || 1.0;
+// In theory we have an 80 mm fader. Though, the usable range appears to be only ~77 mm.
+// Value range is 0..4096, but we only get 510 steps with 8/9 ticks resolution
+// and therefore need to make sure the center zone can actually be reached.
+// A diff of 15 should be safe, this corresponds to .3 mm.
+const TempoFaderTicksPerMm = 4096 / 77; // 53.1948..
+const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
+// Value center may be off the labeled center.
+// Use this setting to compensate per device.
+const TempoCenterValueOffset = engine.getSetting("tempoCenterOffsetMm") || 0.0;
+const TempoCenterUpper = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
+const TempoCenterLower = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
+
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const InactiveLightsAlwaysBacklit = !!engine.getSetting("inactiveLightsAlwaysBacklit");
@@ -1629,32 +1644,50 @@ class S4Mk3Deck extends Deck {
         });
         this.tempoFader = new Pot({
             inKey: "rate",
+            appliedValue: null,
+
+            input: function(value) {
+                const receivingFirstValue = this.appliedValue === null;
+
+                if (value < TempoCenterLower) {
+                    // scale input for lower range
+                    this.appliedValue = script.absoluteLin(value, -1, 0, 0, TempoCenterLower);
+                } else if (value > TempoCenterUpper) {
+                    // scale input for upper range
+                    this.appliedValue = script.absoluteLin(value, 0, 1, TempoCenterUpper, 4096);
+                } else {
+                    // reset rate in center region
+                    this.appliedValue = 0;
+                }
+                engine.setValue(this.group, this.inKey, this.appliedValue);
+
+                if (receivingFirstValue) {
+                    engine.softTakeover(this.group, this.inKey, true);
+                }
+            },
         });
         this.tempoFaderLED = new Component({
             outKey: "rate",
-            centered: false,
-            toleranceWindow: 0.001,
             tempoFader: this.tempoFader,
             output: function(value) {
-                if (this.tempoFader.hardwarePosition === null) {
+                if (this.tempoFader.appliedValue === null) {
                     return;
                 }
 
-                const parameterValue = engine.getParameter(this.group, this.outKey);
-                const diffFromHardware = parameterValue - this.tempoFader.hardwarePosition;
-                if (diffFromHardware > this.toleranceWindow) {
-                    this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
-                    return;
-                } else if (diffFromHardware < (-1 * this.toleranceWindow)) {
+                const engineValue = engine.getValue(this.group, this.outKey);
+                const hardwareOffset = this.tempoFader.appliedValue - engineValue;
+                // Use LED to indicate softTakeover pickup position
+                if (hardwareOffset > 0) { // engine is faster
                     this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
                     return;
+                } else if (hardwareOffset < 0) { // engine is slower
+                    this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
+                    return;
                 }
 
-                const oldCentered = this.centered;
-                if (Math.abs(value) < 0.001) {
+                // Fader is in sync with engine, set center LED on/off
+                if (engineValue === 0) {
                     this.send(this.color + Button.prototype.brightnessOn);
-                    // round to precisely 0
-                    engine.setValue(this.group, "rate", 0);
                 } else {
                     this.send(0);
                 }
