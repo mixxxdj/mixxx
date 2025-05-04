@@ -85,7 +85,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
     pLayout->setContentsMargins(0, 0, 0, 0);
 
-    if (orientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
+    if (orientation == LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL) {
         auto* pSettingsContainer = dynamic_cast<WLegacyControllerSettingsContainer*>(pParent);
         if (pSettingsContainer) {
             connect(pSettingsContainer,
@@ -96,7 +96,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
                                     disposition) {
                         pLayout->setDirection(disposition ==
                                                 LegacyControllerSettingsLayoutContainer::
-                                                        HORIZONTAL
+                                                        Disposition::HORIZONTAL
                                         ? QBoxLayout::TopToBottom
                                         : QBoxLayout::LeftToRight);
                         pParent->layout()->invalidate();
@@ -250,7 +250,8 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
         m_options.emplace_back(val, value.attribute(QStringLiteral("label"), val), color);
 #else
-        m_options.emplace_back(Item{val, value.attribute(QStringLiteral("label"), val), color});
+        m_options.emplace_back(LegacyControllerEnumItem{
+                val, value.attribute(QStringLiteral("label"), val), color});
 #endif
         if (value.hasAttribute(QStringLiteral("default"))) {
             m_defaultValue = pos;

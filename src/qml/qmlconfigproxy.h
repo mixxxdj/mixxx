@@ -29,6 +29,10 @@ class QmlConfigProxy : public QObject {
         s_pUserSettings = std::move(pConfig);
     }
 
+    const UserSettingsPointer internal() const {
+        return m_pConfig;
+    }
+
   private:
     static inline UserSettingsPointer s_pUserSettings = nullptr;
 

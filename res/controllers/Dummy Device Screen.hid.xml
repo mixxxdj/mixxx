@@ -6,6 +6,9 @@
         <description>Dummy device screens</description>
         <devices>
             <product protocol="hid" vendor_id="0xdead" product_id="0xbeaf" />
+            <product protocol="hid" vendor_id="0x0835" product_id="0x2a06" image="file:///workspaces/mixxx/s4_mk3.png" interface_number="0x0" friendly_name="USB HID User device" serial_number_parser="USB HID User device \_([0-9]+)">
+                <image src="https://mixxx..."/>
+            </product>
         </devices>
     </info>
     <settings>
@@ -62,6 +65,14 @@
                     <value color="#FFFFFF" label="White">white</value>
                 </option>
             </row>
+            <option
+                variable="intValue"
+                type="integer"
+                min="20"
+                max="500"
+                step="2"
+                default="50"
+                label="Int value"/>
          </group>
     </settings>
     <controller id="DummyDevice">

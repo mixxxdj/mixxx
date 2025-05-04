@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtest/gtest_prod.h>
+#include <qstringliteral.h>
 
 #include <QColor>
 #include <QFileInfo>
@@ -8,7 +9,9 @@
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
-#include "util/parented_ptr.h"
+#ifdef MIXXX_USE_QML
+#include <QQmlEngine>
+#endif
 
 namespace {
 template<class T>
@@ -27,6 +30,14 @@ class QDoubleSpinBox;
 /// implement this base class
 class AbstractLegacyControllerSetting : public QObject {
     Q_OBJECT
+#ifdef MIXXX_USE_QML
+    Q_PROPERTY(QJSValue value READ value CONSTANT)
+    Q_PROPERTY(QString variableName READ variableName CONSTANT)
+    Q_PROPERTY(QString label READ label CONSTANT)
+    Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QString type READ getType CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
     ~AbstractLegacyControllerSetting() override = default;
 
@@ -37,12 +48,12 @@ class AbstractLegacyControllerSetting : public QObject {
     /// @return a new widget
     virtual QWidget* buildWidget(QWidget* parent,
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
-                    LegacyControllerSettingsLayoutContainer::HORIZONTAL);
+                    LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL);
 
     /// @brief Build a JSValue with the current setting value. The JSValue
     /// variant will use the appropriate type
     /// @return A QJSValue with the current value
-    virtual QJSValue value() const = 0;
+    Q_INVOKABLE virtual QJSValue value() const = 0;
 
     /// @brief Serialize the current value in a string format
     /// @return A String with current setting value
@@ -56,7 +67,7 @@ class AbstractLegacyControllerSetting : public QObject {
 
     /// @brief Indicate if the setting is currently not using a user-specified value
     /// @return Whether or not the setting is currently set to its default value
-    virtual bool isDefault() const = 0;
+    Q_INVOKABLE virtual bool isDefault() const = 0;
 
     /// @brief Indicate if the setting is currently being mutated and if the
     /// edited value is different than its its currently known value. This would
@@ -88,19 +99,23 @@ class AbstractLegacyControllerSetting : public QObject {
 
     /// @brief The user-friendly label to be display in the UI
     /// @return a string
-    const QString& label() const {
+    Q_INVOKABLE const QString& label() const {
         return m_label;
     }
 
     /// @brief A description of what this setting does
     /// @return a string
-    const QString& description() const {
+    Q_INVOKABLE const QString& description() const {
         return m_description;
     }
 
     bool operator==(const AbstractLegacyControllerSetting& other) const noexcept {
         return variableName() == other.variableName();
     }
+
+#ifdef MIXXX_USE_QML
+    virtual QString getType() const = 0;
+#endif
 
   protected:
     AbstractLegacyControllerSetting(const QString& variableName,
@@ -184,7 +199,7 @@ class LegacyControllerBooleanSetting
 
     QWidget* buildWidget(QWidget* parent,
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
-                    LegacyControllerSettingsLayoutContainer::HORIZONTAL)
+                    LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL)
             override;
 
     QJSValue value() const override {
@@ -206,6 +221,12 @@ class LegacyControllerBooleanSetting
         return std::make_shared<LegacyControllerBooleanSetting>(element);
     }
     static bool match(const QDomElement& element);
+
+#ifdef MIXXX_USE_QML
+    QString getType() const override {
+        return QStringLiteral("boolean");
+    }
+#endif
 
   protected:
     bool parseValue(const QString& in) {
@@ -302,6 +323,12 @@ class LegacyControllerNumberSetting
     }
     static bool match(const QDomElement& element);
 
+#ifdef MIXXX_USE_QML
+    QString getType() const override {
+        return QStringLiteral("number");
+    }
+#endif
+
   protected:
     LegacyControllerNumberSetting(const QDomElement& element,
             SettingType currentValue,
@@ -319,7 +346,7 @@ class LegacyControllerNumberSetting
 
     QWidget* buildInputWidget(QWidget* parent) override;
 
-  private:
+  protected:
     SettingType m_minValue;
     SettingType m_maxValue;
     SettingType m_stepValue;
@@ -345,15 +372,38 @@ inline QString packSettingDoubleValue(const double& in) {
     return QString::number(in);
 }
 
-using LegacyControllerIntegerSetting = LegacyControllerNumberSetting<int,
-        packSettingIntegerValue,
-        extractSettingIntegerValue,
-        QSpinBox>;
+class LegacyControllerIntegerSetting : public LegacyControllerNumberSetting<int,
+                                               packSettingIntegerValue,
+                                               extractSettingIntegerValue,
+                                               QSpinBox> {
+    Q_OBJECT
+#ifdef MIXXX_USE_QML
+    Q_PROPERTY(int min MEMBER m_minValue CONSTANT)
+    Q_PROPERTY(int max MEMBER m_maxValue CONSTANT)
+    Q_PROPERTY(int step MEMBER m_stepValue CONSTANT)
+    QML_ANONYMOUS
+#endif
+  public:
+    explicit LegacyControllerIntegerSetting(const QDomElement& element)
+            : LegacyControllerNumberSetting(element) {
+    }
+    static std::shared_ptr<LegacyControllerIntegerSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerIntegerSetting>(element);
+    }
+};
 
 class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
                                             packSettingDoubleValue,
                                             extractSettingDoubleValue,
                                             QDoubleSpinBox> {
+    Q_OBJECT
+#ifdef MIXXX_USE_QML
+    Q_PROPERTY(double min MEMBER m_minValue CONSTANT)
+    Q_PROPERTY(double max MEMBER m_maxValue CONSTANT)
+    Q_PROPERTY(double step MEMBER m_stepValue CONSTANT)
+    Q_PROPERTY(double precision MEMBER m_precisionValue CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
     LegacyControllerRealSetting(const QDomElement& element)
             : LegacyControllerNumberSetting(element) {
@@ -374,15 +424,27 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
     int m_precisionValue;
 };
 
+struct LegacyControllerEnumItem {
+#ifdef MIXXX_USE_QML
+    Q_GADGET
+    Q_PROPERTY(QString value MEMBER value CONSTANT)
+    Q_PROPERTY(QString label MEMBER label CONSTANT)
+    Q_PROPERTY(QColor color MEMBER color CONSTANT)
+#endif
+  public:
+    QString value;
+    QString label;
+    QColor color;
+};
 class LegacyControllerEnumSetting
         : public LegacyControllerSettingMixin<size_t>,
           public LegacyControllerSettingFactory<LegacyControllerEnumSetting> {
+#ifdef MIXXX_USE_QML
+    Q_OBJECT
+    Q_PROPERTY(QList<LegacyControllerEnumItem> options MEMBER m_options CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
-    struct Item {
-        QString value;
-        QString label;
-        QColor color;
-    };
 
     LegacyControllerEnumSetting(const QDomElement& element);
 
@@ -392,7 +454,7 @@ class LegacyControllerEnumSetting
         return QJSValue(stringify());
     }
 
-    const QList<Item>& options() const {
+    const QList<LegacyControllerEnumItem>& options() const {
         return m_options;
     }
 
@@ -416,9 +478,15 @@ class LegacyControllerEnumSetting
     }
     static inline bool match(const QDomElement& element);
 
+#ifdef MIXXX_USE_QML
+    QString getType() const override {
+        return QStringLiteral("enum");
+    }
+#endif
+
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
-            const QList<Item>& options,
+            const QList<LegacyControllerEnumItem>& options,
             size_t currentValue,
             size_t defaultValue)
             : LegacyControllerSettingMixin(element, currentValue, defaultValue),
@@ -429,7 +497,7 @@ class LegacyControllerEnumSetting
 
   private:
     // We use a QList instead of QHash here because we want to keep the natural order
-    QList<Item> m_options;
+    QList<LegacyControllerEnumItem> m_options;
 
     FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
     FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
@@ -438,7 +506,6 @@ class LegacyControllerEnumSetting
 class LegacyControllerColorSetting
         : public LegacyControllerSettingMixin<QColor>,
           public LegacyControllerSettingFactory<LegacyControllerColorSetting> {
-    Q_OBJECT
   public:
     LegacyControllerColorSetting(const QDomElement& element);
 
@@ -472,6 +539,12 @@ class LegacyControllerColorSetting
                         Qt::CaseInsensitive) == 0;
     }
 
+#ifdef MIXXX_USE_QML
+    QString getType() const override {
+        return QStringLiteral("color");
+    }
+#endif
+
   protected:
     LegacyControllerColorSetting(const QDomElement& element,
             QColor currentValue,
@@ -490,7 +563,11 @@ class LegacyControllerColorSetting
 class LegacyControllerFileSetting
         : public LegacyControllerSettingMixin<QFileInfo>,
           public LegacyControllerSettingFactory<LegacyControllerFileSetting> {
+#ifdef MIXXX_USE_QML
     Q_OBJECT
+    Q_PROPERTY(QString fileFilter MEMBER m_fileFilter CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
     LegacyControllerFileSetting(const QDomElement& element);
 
@@ -522,6 +599,12 @@ class LegacyControllerFileSetting
                         QStringLiteral("file"),
                         Qt::CaseInsensitive) == 0;
     }
+
+#ifdef MIXXX_USE_QML
+    QString getType() const override {
+        return QStringLiteral("file");
+    }
+#endif
 
   protected:
     LegacyControllerFileSetting(const QDomElement& element,

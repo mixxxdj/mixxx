@@ -314,11 +314,11 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
                     element.attribute("orientation").trimmed().toLower() ==
                             "vertical"
-                    ? LegacyControllerSettingsLayoutContainer::VERTICAL
-                    : LegacyControllerSettingsLayoutContainer::HORIZONTAL;
+                    ? LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL
+                    : LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL;
             std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
                     std::make_unique<LegacyControllerSettingsLayoutContainer>(
-                            LegacyControllerSettingsLayoutContainer::HORIZONTAL,
+                            LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL,
                             orientation);
             parseMappingSettingsElement(element, pMapping, row.get());
             pLayout->addItem(std::move(row));
