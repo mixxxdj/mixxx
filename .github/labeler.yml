@@ -6,6 +6,12 @@ build:
           - build/**
           - cmake/**
 
+dev container:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .devcontainer/**
+          - tools/debian_buildenv.sh
+
 cmake:
   - changed-files:
       - any-glob-to-any-file:
