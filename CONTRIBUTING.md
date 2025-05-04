@@ -94,3 +94,9 @@ Mixxx core team members are contributors who have write access to the [upstream 
 * Merge PRs using a merge, to keep the original commits valid. Keep the default commit message "Merge pull request ..." with the reference to the pull request. In case where the PR contains broken (non-building) commits, back-and-forth commits or commits without a meaningful commit message that are not worth keeping, ask the author to squash the commits before merge. Alternatively you may ask the contributor to check "Allow edits and access to secrets by maintainers". Then you can squash locally or use the `/softfix` comment to squash remotely. See [Softfix](https://github.com/daschuer/softfix/?tab=readme-ov-file#softfix-a-pull-request)
 * Default to open; only post in the private Zulip stream for discussions that have a reason to be private. Most of the time, post to a public Zulip stream so anyone can participate in the discussion.
 * When Mixxx participates in Google Summer of Code, you may volunteer as a mentor if you like.
+
+#### Code owners
+
+To help with expertise across Mixxx codebase, we use [Github's CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to highlight members who can provide advice and help addressing a thorough review. Beside the filename, code owners do not own the approval, and any core member can decide to merge changes in section they aren't expert in. Once again, we trust core embers will take the right decision and reach out to another core member when in doubt.
+
+Code owners member are initial defined on based on the last two years of contribution, and distributed across all active members. Any core members can add or remove themselves from the list.
