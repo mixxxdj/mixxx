@@ -4,11 +4,12 @@
 #include <QProcess>
 #include <QStandardPaths>
 
+const QString kConfigGroup = "[BackUp]";
+const QString kBackUpEnabled = "BackUpEnabled";
+const QString kBackUpFrequency = "BackUpFrequency";
+const QString kLastBackUp = "LastBackUp";
+
 void createSettingsBackUp(UserSettingsPointer m_pConfig) {
-    const QString kConfigGroup = "[BackUp]";
-    const QString kBackUpEnabled = "BackUpEnabled";
-    const QString kBackUpFrequency = "BackUpFrequency";
-    const QString kLastBackUp = "LastBackUp";
 
     qDebug() << "[BackUp] -> BackUp enabled: "
              << m_pConfig->getValue<bool>(
