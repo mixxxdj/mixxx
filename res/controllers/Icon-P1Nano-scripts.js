@@ -289,8 +289,14 @@ var P1Nano;
         constructor() {
             super({});
 
-            // TODO: I've seen these have a lit up background before; does that
-            // only work for CC messages, or notes, or what?
+            // Only button from the default mapping that makes sense.
+            this.tapTempoButton = new components.Button({
+                group: "[Channel1]",
+                midi: [0x90, 0x55],
+                key: "bpm_tap",
+            });
+
+            // Buttons from the custom Mixxx mapping.
             this.introStartBtn = new components.Button({
                 group: "[Channel1]",
                 inKey: "intro_start_activate",
@@ -334,12 +340,6 @@ var P1Nano;
         constructor() {
             super([1, 2, 3, 4]);
 
-            // Touch screen buttons
-            this.tapTempoButton = new components.Button({
-                group: "[Channel3]",
-                midi: [0x90, 0x55],
-                key: "bpm_tap",
-            });
             this.touchScreen = new TouchScreen();
 
             this.jogWheel = new components.JogWheelBasic({
