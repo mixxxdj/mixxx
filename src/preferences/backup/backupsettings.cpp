@@ -68,7 +68,22 @@ void createSettingsBackUp(UserSettingsPointer m_pConfig) {
 
     zipExecutable = QStandardPaths::findExecutable("7z");
 
+    // search possible locations, all possible locations added
+    // mac default - homebrew - and others I've found
+    // Extend PATH for GUI apps that do not inherit shell environment
+    // Try to find 7z in system PATH
+
 #if defined(Q_OS_MACOS)
+    // Extend PATH for GUI apps that do not inherit shell environment
+    QByteArray systemPath = qgetenv("PATH");
+    QStringList extraPaths = {"/opt/homebrew/bin", "/usr/local/bin", "/usr/bin"};
+    for (const QString& path : extraPaths) {
+        if (!systemPath.contains(path.toUtf8())) {
+            systemPath.append(":").append(path.toUtf8());
+        }
+    }
+    qputenv("PATH", systemPath);
+
     if (zipExecutable.isEmpty()) {
         // search possible locations, all possible locations added
         // mac default - homebrew - and others I've found
@@ -84,6 +99,15 @@ void createSettingsBackUp(UserSettingsPointer m_pConfig) {
         }
     }
 #endif
+
+    if (zipExecutable.isEmpty()) {
+        qWarning() << "[BackUp] -> 7z not found in PATH or fallback locations. "
+                      "Cannot create backup.";
+        return;
+    }
+
+    // where is the 7z we use?
+    qDebug() << "[BackUp] -> 7z found in: " << zipExecutable;
 
     if (zipExecutable.isEmpty()) {
         qWarning() << "[BackUp] -> 7z not found in PATH or fallback locations. "
