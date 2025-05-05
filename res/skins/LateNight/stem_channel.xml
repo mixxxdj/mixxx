@@ -57,9 +57,8 @@
         <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <ArcUnipolar>true</ArcUnipolar>
         <ArcRadius><Variable name="ArcRadiusSmall"/></ArcRadius>
-        <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
-        <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
         <ArcColor><Variable name="ArcColorGain"/></ArcColor>
         <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
         <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
@@ -110,8 +109,7 @@
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <ArcRadius><Variable name="ArcRadiusSmall"/></ArcRadius>
-        <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
-        <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
+        <ArcUnipolar>false</ArcUnipolar>
         <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
         <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
         <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
