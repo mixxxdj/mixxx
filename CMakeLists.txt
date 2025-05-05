@@ -2502,7 +2502,7 @@ if(BUILD_UI_TEST)
   ExternalProject_Add(
     libspix
     GIT_REPOSITORY https://github.com/faaxm/spix.git
-    GIT_TAG b948a347578e09df9b437e6938f0d147e66297a5
+    GIT_TAG 4afcb9e69bef0a0c4ffc34a8cdb46949fed9251b
     INSTALL_DIR ${SPIX_INSTALL_DIR}
     LIST_SEPARATOR "|"
     CMAKE_ARGS
