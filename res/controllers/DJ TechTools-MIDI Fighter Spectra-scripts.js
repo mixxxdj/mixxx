@@ -3,15 +3,6 @@
 // eslint-disable-next-line no-var
 var MidiFighterSpectra;
 (function(MidiFighterSpectra) {
-    const mapIndexToChannel = function(index) {
-        switch (Math.abs(index) % 4) {
-        case 0: return 3;
-        case 1: return 1;
-        case 2: return 2;
-        case 3: return 4;
-        }
-    };
-
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
@@ -111,7 +102,7 @@ var MidiFighterSpectra;
             this.eqLayer = [];
             for (let i = 0; i < 4; i++) {
                 this.eqLayer[i] = new components.Button({
-                    group: `[EqualizerRack1_[Channel${mapIndexToChannel(i)}]_Effect1]`,
+                    group: `[EqualizerRack1_[Channel${script.mapIndexToChannel(i)}]_Effect1]`,
                     midi: [0x92, 0x30 + i],
                     key: "button_parameter3",
                     type: components.Button.prototype.types.toggle,
@@ -119,7 +110,7 @@ var MidiFighterSpectra;
                     on: engine.getSetting("eqOffColor"),
                 });
                 this.eqLayer[i + 4] = new components.Button({
-                    group: `[EqualizerRack1_[Channel${mapIndexToChannel(i)}]_Effect1]`,
+                    group: `[EqualizerRack1_[Channel${script.mapIndexToChannel(i)}]_Effect1]`,
                     midi: [0x92, 0x2C + i],
                     key: "button_parameter2",
                     type: components.Button.prototype.types.toggle,
@@ -127,7 +118,7 @@ var MidiFighterSpectra;
                     on: engine.getSetting("eqOffColor"),
                 });
                 this.eqLayer[i + 8] = new components.Button({
-                    group: `[EqualizerRack1_[Channel${mapIndexToChannel(i)}]_Effect1]`,
+                    group: `[EqualizerRack1_[Channel${script.mapIndexToChannel(i)}]_Effect1]`,
                     midi: [0x92, 0x28 + i],
                     key: "button_parameter1",
                     type: components.Button.prototype.types.toggle,
@@ -135,7 +126,7 @@ var MidiFighterSpectra;
                     on: engine.getSetting("eqOffColor"),
                 });
                 this.eqLayer[i + 12] = new components.Button({
-                    group: `[QuickEffectRack1_[Channel${mapIndexToChannel(i)}]]`,
+                    group: `[QuickEffectRack1_[Channel${script.mapIndexToChannel(i)}]]`,
                     midi: [0x92, 0x24 + i],
                     key: "enabled",
                     type: components.Button.prototype.types.toggle,

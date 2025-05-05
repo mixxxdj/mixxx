@@ -3,15 +3,6 @@
 // eslint-disable-next-line no-var
 var SMCMixer;
 (function(SMCMixer) {
-    const mapIndexToChannel = function(index) {
-        switch (Math.abs(index) % 4) {
-        case 0: return 3;
-        case 1: return 1;
-        case 2: return 2;
-        case 3: return 4;
-        }
-    };
-
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
@@ -133,7 +124,7 @@ var SMCMixer;
     class EqRack extends components.ComponentContainer {
         constructor(index) {
             super({});
-            const channel = mapIndexToChannel(index);
+            const channel = script.mapIndexToChannel(index);
             this.knob = new Encoder({
                 group: `[Channel${channel}]`,
                 midi: [0xB0, 0x10 + index],
@@ -218,7 +209,7 @@ var SMCMixer;
             this.pflButtons = new Array(4);
             this.faders = new Array(8);
             for (let i = 0; i < 4; i++) {
-                const channel = mapIndexToChannel(i);
+                const channel = script.mapIndexToChannel(i);
                 const group = `[Channel${channel}]`;
                 this.eqButtons[i] = new EqRack(i);
                 this.slipButtons[i] = new components.Button({

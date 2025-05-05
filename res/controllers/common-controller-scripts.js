@@ -210,6 +210,30 @@ script.deckFromGroup = function(group) {
     return parseInt(deck);
 };
 
+// Maps an 0-indexed offset to a channel.
+// ie. the deck ordering sequence 3, 1, 2, 4.
+script.mapIndexToChannel = function(idx) {
+    switch (Math.abs(idx) % 4) {
+    case 0: return 3;
+    case 1: return 1;
+    case 2: return 2;
+    case 3: return 4;
+    }
+};
+
+// The inverse of mapIndexToChannel: given a channel, returns the 0-indexed
+// offset.
+script.mapChannelToIndex = function(channel) {
+    switch (channel) {
+    case 3: return 0;
+    case 1: return 1;
+    case 2: return 2;
+    case 4: return 3;
+    default:
+        throw Error("invalid channel, expected 3, 1, 2, or 4");
+    }
+};
+
 /* -------- ------------------------------------------------------
      script.bindConnections
    Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
