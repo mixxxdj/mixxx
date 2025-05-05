@@ -64,9 +64,7 @@ int main(int argc, char **argv) {
             if (run_ui) {
         auto* pApp = MixxxTest::application();
 
-        const auto pCoreServices = std::make_shared<mixxx::CoreServices>(
-                CmdlineArgs::Instance(), pApp);
-        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        mixxx::qml::QmlApplication qmlApplication(pApp, CmdlineArgs::Instance());
 
         MixxxAppTest tests;
         auto* pBot = new spix::QtQmlBot();
