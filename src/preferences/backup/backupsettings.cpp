@@ -98,6 +98,69 @@ void createSettingsBackUp(UserSettingsPointer m_pConfig) {
         }
     }
 #endif
+
+// Windows PowerShell fallback
+#if defined(Q_OS_WIN)
+    if (zipExecutable.isEmpty()) {
+        QString psPath = QStandardPaths::findExecutable("powershell");
+        if (psPath.isEmpty()) {
+            qWarning() << "[BackUp] -> PowerShell not found. Cannot create backup.";
+            return;
+        }
+
+        zipExecutable = psPath;
+        zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".zip";
+
+        QString tempBackupPath = QDir::tempPath() + "/mixxx_backup_temp";
+        QDir(tempBackupPath).removeRecursively(); // cleanup
+        QDir().mkpath(tempBackupPath);
+
+        // Copy the settings directory except the analysis folder (can be too big)
+        QDir sourceDir(settingsDir);
+        const QStringList entries = sourceDir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries);
+        for (const QString& entry : entries) {
+            if (entry.compare("analysis", Qt::CaseInsensitive) == 0) {
+                continue;
+            }
+            QString sourcePath = sourceDir.filePath(entry);
+            QString destPath = tempBackupPath + "/" + entry;
+            QFileInfo entryInfo(sourcePath);
+            if (entryInfo.isDir()) {
+                QDir().mkpath(destPath);
+                QDir subDir(sourcePath);
+                for (const QFileInfo& subEntry : subDir.entryInfoList(
+                             QDir::NoDotAndDotDot | QDir::AllEntries)) {
+                    QFile::copy(subEntry.absoluteFilePath(), destPath + "/" + subEntry.fileName());
+                }
+            } else {
+                QFile::copy(sourcePath, destPath);
+            }
+        }
+
+        // PowerShell script -> temp file
+        QString psScriptPath = QDir::tempPath() + "/mixxx_backup.ps1";
+        QFile psScript(psScriptPath);
+        if (psScript.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&psScript);
+            out << "$ErrorActionPreference = 'Stop'\n";
+            out << "Compress-Archive -Path \"" << tempBackupPath << "\\*\" "
+                << "-DestinationPath \"" << zipFilePath << "\" -Force\n";
+            out << "if (!(Test-Path \"" << zipFilePath << "\")) {\n";
+            out << "    Write-Error \"Backup failed: Archive not created.\"\n";
+            out << "    exit 1\n";
+            out << "}\n";
+            psScript.close();
+        } else {
+            qWarning() << "[BackUp] -> Failed to write PowerShell script.";
+            return;
+        }
+
+        arguments.clear();
+        arguments << "-NoProfile" << "-ExecutionPolicy" << "Bypass"
+                  << "-File" << psScriptPath;
+    }
+#endif
+
 #endif
 
     // where is the 7z we use?

@@ -42,7 +42,6 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "preferences/backup/backupsettings.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/skinloader.h"
@@ -143,7 +142,6 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
-    createSettingsBackUp(m_pCoreServices->getSettings());
 }
 
 #ifdef MIXXX_USE_QOPENGL
