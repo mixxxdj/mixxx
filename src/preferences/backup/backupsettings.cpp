@@ -62,71 +62,53 @@ void createSettingsBackUp(UserSettingsPointer m_pConfig) {
     QDir().mkpath(backupFolder);
 
     QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
-    QString zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".7z";
 
     QString zipExecutable;
-
-    zipExecutable = QStandardPaths::findExecutable("7z");
-
-    // search possible locations, all possible locations added
-    // mac default - homebrew - and others I've found
-    // Extend PATH for GUI apps that do not inherit shell environment
-    // Try to find 7z in system PATH
+    QStringList arguments;
+    QString zipFilePath;
 
 #if defined(Q_OS_MACOS)
-    // Extend PATH for GUI apps that do not inherit shell environment
-    QByteArray systemPath = qgetenv("PATH");
-    QStringList extraPaths = {"/opt/homebrew/bin", "/usr/local/bin", "/usr/bin"};
-    for (const QString& path : extraPaths) {
-        if (!systemPath.contains(path.toUtf8())) {
-            systemPath.append(":").append(path.toUtf8());
-        }
-    }
-    qputenv("PATH", systemPath);
+    // using zip that is in macOS -> can be called in sandbox
+    zipExecutable = "/usr/bin/zip";
+    zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".zip";
 
+    // the settings directory is added to the BackUp except the analysis folder (can be to big)
+    // I thought about excluding the log files to but these can be useful for to find bugs
+    // as the logs are constantly overwritten
+    arguments << "-r" << zipFilePath << settingsDir << "-x" << settingsDir + "/analysis/*";
+#elif defined(Q_OS_WIN) || defined(Q_OS_LINUX)
+    // Windows & Linux: use 7z
+    zipExecutable = QStandardPaths::findExecutable("7z");
+    zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".7z";
+
+    // the settings directory is added to the BackUp except the analysis folder (can be to big)
+    // I thought about excluding the log files to but these can be useful for to find bugs
+    // as the logs are constantly overwritten
+    arguments << "a" << "-t7z" << zipFilePath << settingsDir << "-xr!analysis";
+
+// Linux
+#if defined(Q_OS_LINUX)
     if (zipExecutable.isEmpty()) {
-        // search possible locations, all possible locations added
-        // mac default - homebrew - and others I've found
-        const QStringList fallbackPaths = {
-                "/opt/homebrew/bin/7z",
-                "/usr/local/bin/7z",
-                "/usr/bin/7z"};
-        for (const QString& path : fallbackPaths) {
-            if (QFile::exists(path) && QFileInfo(path).isExecutable()) {
+        const QStringList linuxPaths = {"/usr/bin/7z", "/usr/local/bin/7z", "/bin/7z"};
+        for (const QString& path : linuxPaths) {
+            if (QFile::exists(path)) {
                 zipExecutable = path;
                 break;
             }
         }
     }
 #endif
-
-    if (zipExecutable.isEmpty()) {
-        qWarning() << "[BackUp] -> 7z not found in PATH or fallback locations. "
-                      "Cannot create backup.";
-        return;
-    }
+#endif
 
     // where is the 7z we use?
-    qDebug() << "[BackUp] -> 7z found in: " << zipExecutable;
-
     if (zipExecutable.isEmpty()) {
-        qWarning() << "[BackUp] -> 7z not found in PATH or fallback locations. "
+        qWarning() << "[BackUp] -> 7z/Zip not found in PATH or fallback locations. "
                       "Cannot create backup.";
         return;
+    } else {
+        qDebug() << "[BackUp] -> 7z/Zip found in: " << zipExecutable;
+        qDebug() << "[BackUp] -> Executing:" << zipExecutable << arguments.join(" ");
     }
-
-    // where is the 7z we use?
-    qDebug() << "[BackUp] -> 7z found in: " << zipExecutable;
-
-    // the settings directory is added to the BackUp except the analysis folder (can be to big)
-    // I thought about excluding the log files to but these can be useful for to find bugs
-    // as the logs are constantly overwritten
-    QStringList arguments;
-    arguments << "a"
-              << "-t7z"
-              << zipFilePath
-              << settingsDir
-              << "-xr!analysis";
 
     bool started = QProcess::startDetached(zipExecutable, arguments);
     if (started) {
