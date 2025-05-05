@@ -59,10 +59,12 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
+            qml: ON
           - name: macOS 13 arm64
             os: macos-13
             cmake_args: >-
               -DCOREAUDIO=ON
+              -BUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
