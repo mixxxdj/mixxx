@@ -66,23 +66,37 @@ void createSettingsBackUp(UserSettingsPointer m_pConfig) {
 
     QString zipExecutable;
 
-#if defined(Q_OS_WIN)
-    zipExecutable = "7z.exe";
-#elif defined(Q_OS_MACOS)
-    zipExecutable = "/usr/local/bin/7z";
-    if (!QFile::exists(zipExecutable) || !QFileInfo(zipExecutable).isExecutable()) {
-        qWarning() << "[BackUp] -> 7z not found at" << zipExecutable << ". Cannot create backup.";
-        return;
-    }
-#else
     zipExecutable = QStandardPaths::findExecutable("7z");
+
+#if defined(Q_OS_MACOS)
     if (zipExecutable.isEmpty()) {
-        qWarning() << "[BackUp] -> 7z not found in PATH. Cannot create backup.";
-        return;
+        // search possible locations, all possible locations added
+        // mac default - homebrew - and others I've found
+        const QStringList fallbackPaths = {
+                "/opt/homebrew/bin/7z",
+                "/usr/local/bin/7z",
+                "/usr/bin/7z"};
+        for (const QString& path : fallbackPaths) {
+            if (QFile::exists(path) && QFileInfo(path).isExecutable()) {
+                zipExecutable = path;
+                break;
+            }
+        }
     }
 #endif
 
+    if (zipExecutable.isEmpty()) {
+        qWarning() << "[BackUp] -> 7z not found in PATH or fallback locations. "
+                      "Cannot create backup.";
+        return;
+    }
+
+    // where is the 7z we use?
+    qDebug() << "[BackUp] -> 7z found in: " << zipExecutable;
+
     // the settings directory is added to the BackUp except the analysis folder (can be to big)
+    // I thought about excluding the log files to but these can be useful for to find bugs
+    // as the logs are constantly overwritten
     QStringList arguments;
     arguments << "a"
               << "-t7z"
