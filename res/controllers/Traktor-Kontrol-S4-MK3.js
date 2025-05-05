@@ -1644,6 +1644,7 @@ class S4Mk3Deck extends Deck {
         });
         this.tempoFader = new Pot({
             inKey: "rate",
+            outKey: "rate",
             appliedValue: null,
 
             input: function(value) {
@@ -1663,19 +1664,18 @@ class S4Mk3Deck extends Deck {
 
                 if (receivingFirstValue) {
                     engine.softTakeover(this.group, this.inKey, true);
+                    // Forec-update LED.
+                    // Output connection is made and updated before input() can set this.appliedValue
+                    // (doesn't happen until getInputReport())
+                    this.outTrigger();
                 }
             },
-        });
-        this.tempoFaderLED = new Component({
-            outKey: "rate",
-            tempoFader: this.tempoFader,
             output: function(value) {
-                if (this.tempoFader.appliedValue === null) {
+                if (this.appliedValue === null) {
                     return;
                 }
 
-                const engineValue = engine.getValue(this.group, this.outKey);
-                const hardwareOffset = this.tempoFader.appliedValue - engineValue;
+                const hardwareOffset = this.appliedValue - value;
                 // Use LED to indicate softTakeover pickup position
                 if (hardwareOffset > 0) { // engine is faster
                     this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
@@ -1686,7 +1686,7 @@ class S4Mk3Deck extends Deck {
                 }
 
                 // Fader is in sync with engine, set center LED on/off
-                if (engineValue === 0) {
+                if (value === 0) {
                     this.send(this.color + Button.prototype.brightnessOn);
                 } else {
                     this.send(0);
@@ -3021,7 +3021,6 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 5, inBit: 2},
                 deckButtonRight: {inByte: 5, inBit: 3},
                 deckButtonOutputByteOffset: 12,
-                tempoFaderLED: {outByte: 11},
                 shiftButton: {inByte: 5, inBit: 1, outByte: 59},
                 leftEncoder: {inByte: 19, inBit: 0},
                 leftEncoderPress: {inByte: 6, inBit: 2},
@@ -3049,7 +3048,7 @@ class S4MK3 {
                     {inByte: 3, inBit: 1, outByte: 6},
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2], outByte: 11},
                 wheelRelative: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 4},
@@ -3072,7 +3071,6 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 14, inBit: 2},
                 deckButtonRight: {inByte: 14, inBit: 3},
                 deckButtonOutputByteOffset: 35,
-                tempoFaderLED: {outByte: 34},
                 shiftButton: {inByte: 14, inBit: 1, outByte: 70},
                 leftEncoder: {inByte: 20, inBit: 4},
                 leftEncoderPress: {inByte: 15, inBit: 5},
@@ -3100,7 +3098,7 @@ class S4MK3 {
                     {inByte: 13, inBit: 1, outByte: 29},
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2], outByte: 34},
                 wheelRelative: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 5},
