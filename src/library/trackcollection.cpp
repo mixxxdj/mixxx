@@ -269,7 +269,8 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    // Warn if tracks have a playlist membership
+    // Warn if tracks are in playlists.
+    // Always keep them in History playlists.
     QSet<int> allPlaylistIds;
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;
@@ -281,6 +282,9 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
         }
     }
 
+    // TODO show list with checkboxes for playlists to leave unchanged
+    // use QListWidget, see WTrackMenu::slotRemoveFromDisk()
+    bool removeFromplaylists = false;
     if (!allPlaylistIds.isEmpty()) {
          QStringList playlistNames;
          playlistNames.reserve(allPlaylistIds.count());
@@ -288,21 +292,20 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
              playlistNames.append(m_playlistDao.getPlaylistName(playlistId));
          }
 
-         QString playlistNamesSection =
-                 "\n\n\"" %
+         const QString playlistNamesSection =
+                 "\n\n\"" % // prepend linebreak
                  playlistNames.join("\"\n\"") %
-                 "\"\n\n";
+                 "\"\n\n"; // append linebreak
 
-         if (QMessageBox::question(
-                 nullptr,
+         QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
                  tr("Hiding tracks"),
                  tr("The selected tracks are in the following playlists:"
-                     "%1"
-                     "Hiding them will remove them from these playlists. Continue?")
+                    "%1"
+                    "Do you want to remove them from these playlists. Continue?")
                          .arg(playlistNamesSection),
-                 QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
-             return false;
-         }
+                 QMessageBox::Yes | QMessageBox::No,
+                 QMessageBox::No);
+         removeFromplaylists = btn == QMessageBox::Yes;
      }
 
     // Transactional
@@ -317,7 +320,9 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
         return false;
     }
 
-    m_playlistDao.removeTracksFromPlaylists(trackIds);
+    if (removeFromplaylists) {
+        m_playlistDao.removeTracksFromPlaylists(trackIds);
+    }
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection

@@ -28,9 +28,14 @@ class SettingsManager {
         return m_bShouldRescanLibrary;
     }
 
+    bool upgradedFrom21OrEarlier() {
+        return m_upgradedFrom21OrEarlier;
+    };
+
   private:
     UserSettingsPointer m_pSettings;
     bool m_bShouldRescanLibrary;
+    bool m_upgradedFrom21OrEarlier;
 #ifdef __BROADCAST__
     BroadcastSettingsPointer m_pBroadcastSettings;
 #endif
