@@ -303,7 +303,7 @@
          <string>Force 3D acceleration</string>
         </property>
         <property name="toolTip">
-         <string>If enabled, Mixxx will try to detect whether 3D acceleration is available instead.</string>
+         <string>If checked, Mixxx will always assume 3D acceleration is available. This may lead to pour performance if only CP-backed rendering is available..</string>
         </property>
        </widget>
       </item>
