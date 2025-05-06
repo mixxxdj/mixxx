@@ -19,9 +19,11 @@ class WaveformRenderBeat;
 namespace mixxx {
 namespace qml {
 
+typedef ::WaveformRendererAbstract::PositionSource WaveformRendererPositionSource;
+
 class QmlWaveformRendererFactory : public QObject {
     Q_OBJECT
-    Q_PROPERTY(::WaveformRendererAbstract::PositionSource position MEMBER
+    Q_PROPERTY(WaveformRendererPositionSource position MEMBER
                     m_position NOTIFY positionChanged)
     QML_ANONYMOUS
   public:
@@ -37,10 +39,14 @@ class QmlWaveformRendererFactory : public QObject {
     virtual Renderer create(WaveformWidgetRenderer* waveformWidget) const = 0;
 
   signals:
-    void positionChanged(::WaveformRendererAbstract::PositionSource);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void positionChanged(WaveformRendererPositionSource);
+#else
+    void positionChanged(mixxx::qml::WaveformRendererPositionSource);
+#endif
 
   protected:
-    ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
+    WaveformRendererPositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
 class QmlWaveformRendererEndOfTrack
@@ -79,6 +85,7 @@ class QmlWaveformRendererPreroll
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
+typedef allshader::WaveformRendererSignalBase::Options WaveformRendererSignalBaseOptions;
 class QmlWaveformRendererSignal
         : public QmlWaveformRendererFactory {
     Q_OBJECT
@@ -91,12 +98,12 @@ class QmlWaveformRendererSignal
     Q_PROPERTY(double gainLow MEMBER m_gainLow NOTIFY gainLowChanged REQUIRED)
     Q_PROPERTY(double gainMid MEMBER m_gainMid NOTIFY gainMidChanged REQUIRED)
     Q_PROPERTY(double gainHigh MEMBER m_gainHigh NOTIFY gainHighChanged REQUIRED)
-    Q_PROPERTY(allshader::WaveformRendererSignalBase::Options options MEMBER
+    Q_PROPERTY(WaveformRendererSignalBaseOptions options MEMBER
                     m_options NOTIFY optionsChanged)
     QML_ANONYMOUS
 
   public:
-    Q_ENUM(allshader::WaveformRendererSignalBase::Option)
+    Q_ENUM(WaveformRendererSignalBaseOptions)
 
   protected:
     void setup(allshader::WaveformRendererSignalBase* renderer) const;
@@ -111,7 +118,11 @@ class QmlWaveformRendererSignal
     void gainMidChanged(double);
     void gainHighChanged(double);
     void ignoreStemChanged(bool);
-    void optionsChanged(allshader::WaveformRendererSignalBase::Options);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void optionsChanged(WaveformRendererSignalBaseOptions);
+#else
+    void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
+#endif
 
   protected:
     QColor m_axesColor;
@@ -127,7 +138,7 @@ class QmlWaveformRendererSignal
     bool m_ignoreStem{false};
 
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
-    allshader::WaveformRendererSignalBase::Options m_options{
+    WaveformRendererSignalBaseOptions m_options{
             allshader::WaveformRendererSignalBase::Option::None};
 };
 
