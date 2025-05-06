@@ -1,13 +1,11 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
 
-Mixxx.SettingGroup {
+Category {
     id: root
 
-    property int selectedIndex: 0
-    property list<string> tabs: ["engine", "delays", "stats"]
-
     label: "Sound hardware"
+    tabs: ["engine", "delays", "stats"]
 
     Mixxx.SettingGroup {
         label: "Engine"

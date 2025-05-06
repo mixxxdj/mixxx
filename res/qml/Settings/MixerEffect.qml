@@ -1,7 +1,7 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
 
-Mixxx.SettingGroup {
+Category {
     label: "Mixer & Effects"
 
     Mixxx.SettingParameter {

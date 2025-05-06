@@ -200,7 +200,7 @@ Popup {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 30
                     color: Theme.darkGray3
-                    visible: !!tabs
+                    visible: tabs?.length > 0
 
                     RowLayout {
                         anchors.fill: parent

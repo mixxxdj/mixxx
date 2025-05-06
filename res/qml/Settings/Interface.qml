@@ -1,8 +1,8 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
 
-Mixxx.SettingGroup {
-    property list<string> tabs: ["theme & colour", "waveform", "decks"]
+Category {
+    tabs: ["theme & colour", "waveform", "decks"]
 
     label: "Interface"
 
