@@ -2,7 +2,10 @@ import QtQuick 2.12
 pragma Singleton
 
 QtObject {
-    property color white: "#e3d7fb"
+    property color accentColor: "#3a60be"
+    property color darkGray3: "#3F3F3F"
+    property color warningColor: "#7D3B3B"
+    property color white: "#D9D9D9"
     property color yellow: "#fca001"
     property color red: "#ea2a4e"
     property color blue: "#01dcfc"
