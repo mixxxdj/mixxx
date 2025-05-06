@@ -548,9 +548,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     // Find the best stream
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(59, 0, 100) // FFmpeg 5.0
     const AVCodec* pDecoder = nullptr;
+    const AVCodec* pAacDecoder = nullptr;
 #else
     // https://github.com/FFmpeg/FFmpeg/blob/dd17c86aa11feae2b86de054dd0679cc5f88ebab/doc/APIchanges#L175
     AVCodec* pDecoder = nullptr;
+    AVCodec* pAacDecoder = nullptr;
 #endif
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
@@ -577,6 +579,29 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return SoundSource::OpenResult::Aborted;
     }
     DEBUG_ASSERT(pDecoder);
+
+    if (pDecoder->id == AV_CODEC_ID_AAC ||
+            pDecoder->id == AV_CODEC_ID_AAC_LATM) {
+        // We only allow AAC decoders that pass our seeking tests
+        if (std::strcmp(pDecoder->name, "aac") != 0 && std::strcmp(pDecoder->name, "aac_at") != 0) {
+            pAacDecoder = avcodec_find_decoder_by_name("aac");
+            if (pAacDecoder) {
+                pDecoder = pAacDecoder;
+            } else {
+                kLogger.warning()
+                        << "Internal aac decoder not found in your FFmpeg "
+                           "build."
+                        << "To enable AAC support, please install an FFmpeg "
+                           "version with the internal aac decoder enabled."
+                           "Note 1: The libfdk_aac decoder is no working properly "
+                           "with Mixxx, FFmpeg's internal AAC decoder does."
+                        << "Note 2: AAC decoding may be subject to patent "
+                           "restrictions, depending on your country.";
+            }
+        }
+    }
+
+    kLogger.debug() << "using decoder:" << pDecoder->long_name;
 
     // Select audio stream for decoding
     AVStream* pavStream = m_pavInputFormatContext->streams[av_find_best_stream_result];

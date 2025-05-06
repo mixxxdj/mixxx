@@ -5,6 +5,7 @@ name: Build
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -88,15 +89,13 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
-          - name: Windows 2019 (MSVC)
-            os: windows-2019
-            # TODO: Re-enable FFmpeg after licensing issues have been clarified
+          - name: Windows 2022 (MSVC)
+            os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
               -DBULK=ON
-              -DFFMPEG=OFF
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
@@ -175,7 +174,7 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
@@ -492,7 +491,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}

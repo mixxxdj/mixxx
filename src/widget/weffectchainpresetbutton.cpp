@@ -1,6 +1,5 @@
 #include "widget/weffectchainpresetbutton.h"
 
-#include <QCheckBox>
 #include <QWidgetAction>
 
 #include "effects/effectparameter.h"
@@ -11,6 +10,7 @@
 #include "moc_weffectchainpresetbutton.cpp"
 #include "util/parented_ptr.h"
 #include "widget/effectwidgetutils.h"
+#include "widget/wmenucheckbox.h"
 
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
         : QPushButton(parent),
@@ -138,7 +138,7 @@ void WEffectChainPresetButton::populateMenu() {
             const auto& hiddenParameters = pEffectSlot->getHiddenParameters().value(parameterType);
             for (const auto& parameters : {loadedParameters, hiddenParameters}) {
                 for (const auto& pParameter : parameters) {
-                    auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
+                    auto pCheckbox = make_parented<WMenuCheckBox>(pEffectMenu);
                     pCheckbox->setChecked(true);
                     pCheckbox->setText(pParameter->manifest()->name());
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)

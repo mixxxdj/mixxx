@@ -14,12 +14,13 @@
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
-class SoundManager;
 class ControllerManager;
+class DlgPrefControllers;
+class DlgPrefSound;
 class EffectsManager;
 class Library;
+class SoundManager;
 class VinylControlManager;
-class DlgPrefControllers;
 
 namespace mixxx {
 class ScreensaverManager;
@@ -62,7 +63,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   public slots:
     void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
-    void showSoundHardwarePage();
+    void showSoundHardwarePage(
+            std::optional<mixxx::preferences::SoundHardwareTab> tab =
+                    std::nullopt);
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();
@@ -97,6 +100,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     QStringList m_geometry;
     UserSettingsPointer m_pConfig;
+    std::unique_ptr<DlgPrefSound> m_pSoundDlg;
     PreferencesPage m_soundPage;
     DlgPrefControllers* m_pControllersDlg;
 

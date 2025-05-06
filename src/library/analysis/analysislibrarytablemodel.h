@@ -11,7 +11,7 @@ class AnalysisLibraryTableModel : public LibraryTableModel
             TrackCollectionManager* pTrackCollectionManager);
     ~AnalysisLibraryTableModel() override = default;
 
-  public slots:
     void showRecentSongs();
     void showAllSongs();
+    void searchCurrentTrackSet(const QString& text, bool useRecentFilter);
 };
