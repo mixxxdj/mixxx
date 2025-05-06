@@ -82,12 +82,6 @@ QmlTrackProxy* QmlPlayerProxy::currentTrack() {
 }
 
 void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    // VERIFY_OR_DEBUG_ASSERT(pOldTrack == m_pCurrentTrack) {
-    //     qWarning() << "QML Player proxy was expected to contain "
-    //                << pOldTrack.get() << "as active track but got"
-    //                << m_pCurrentTrack.get();
-    // }
-
     if (pNewTrack.get() == m_pCurrentTrack.get()) {
         emit trackLoading();
         return;
@@ -96,7 +90,6 @@ void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
-    m_pCurrentTrack.reset();
     m_pCurrentTrack = pNewTrack;
     emit trackChanged();
     emit trackLoading();

@@ -6,6 +6,7 @@
 #include "moc_qmltrackproxy.cpp"
 #include "qml/asyncimageprovider.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 
 #define PROPERTY_IMPL_GETTER(TYPE, NAME, GETTER) \
     TYPE QmlTrackProxy::GETTER() const {         \
@@ -31,11 +32,11 @@ namespace qml {
 QmlTrackProxy::QmlTrackProxy(TrackPointer track, QObject* parent)
         : QObject(parent),
           m_pTrack(track),
-          m_pBeatsModel(new QmlBeatsModel(this)),
-          m_pHotcuesModel(new QmlCuesModel(this))
+          m_pBeatsModel(make_parented<QmlBeatsModel>(this)),
+          m_pHotcuesModel(make_parented<QmlCuesModel>(this))
 #ifdef __STEM__
           ,
-          m_pStemsModel(std::make_unique<QmlStemsModel>(this))
+          m_pStemsModel(make_parented<QmlStemsModel>(this))
 #endif
 {
     if (m_pTrack == nullptr) {
@@ -119,7 +120,7 @@ QmlTrackProxy::QmlTrackProxy(TrackPointer track, QObject* parent)
 }
 
 void QmlTrackProxy::slotBeatsChanged() {
-    VERIFY_OR_DEBUG_ASSERT(m_pBeatsModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pBeatsModel) {
         return;
     }
 
@@ -136,7 +137,7 @@ void QmlTrackProxy::slotBeatsChanged() {
 
 #ifdef __STEM__
 void QmlTrackProxy::slotStemsChanged() {
-    VERIFY_OR_DEBUG_ASSERT(m_pStemsModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pStemsModel) {
         return;
     }
 
@@ -148,7 +149,7 @@ void QmlTrackProxy::slotStemsChanged() {
 #endif
 
 void QmlTrackProxy::slotHotcuesChanged() {
-    VERIFY_OR_DEBUG_ASSERT(m_pHotcuesModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pHotcuesModel) {
         return;
     }
 
@@ -157,8 +158,9 @@ void QmlTrackProxy::slotHotcuesChanged() {
     if (m_pTrack) {
         const auto& cuePoints = m_pTrack->getCuePoints();
         for (const auto& cuePoint : cuePoints) {
-            if (cuePoint->getHotCue() == Cue::kNoHotCue)
+            if (cuePoint->getHotCue() == Cue::kNoHotCue) {
                 continue;
+            }
             hotcues.append(cuePoint);
         }
     }
@@ -201,7 +203,7 @@ int QmlTrackProxy::getSampleRate() const {
 }
 
 void QmlTrackProxy::setColor(const QColor& value) {
-    if (m_pTrack != nullptr) {
+    if (m_pTrack) {
         std::optional<RgbColor> color = RgbColor::fromQColor(value);
         m_pTrack->setColor(color);
     }
@@ -215,7 +217,7 @@ int QmlTrackProxy::getStars() const {
 }
 
 void QmlTrackProxy::setStars(int value) {
-    if (m_pTrack != nullptr && value <= mixxx::TrackRecord::kMaxRating &&
+    if (m_pTrack && value <= mixxx::TrackRecord::kMaxRating &&
             value >= mixxx::TrackRecord::kMinRating) {
         m_pTrack->setRating(value);
     }

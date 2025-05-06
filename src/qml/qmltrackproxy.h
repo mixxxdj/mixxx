@@ -1,19 +1,18 @@
 #pragma once
-#include <qglobal.h>
-#include <qobject.h>
-
 #include <QColor>
 #include <QObject>
 #include <QPointer>
 #include <QQmlEngine>
 #include <QString>
 #include <QUrl>
+#include <QtGlobal>
 
 #include "mixer/basetrackplayer.h"
 #include "qml/qmlbeatsmodel.h"
 #include "qml/qmlcuesmodel.h"
 #include "qml/qmlstemsmodel.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 
 namespace mixxx {
 namespace qml {
@@ -42,8 +41,8 @@ class QmlTrackProxy : public QObject {
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
 
-    Q_PROPERTY(mixxx::qml::QmlBeatsModel* beatsModel MEMBER m_pBeatsModel CONSTANT);
-    Q_PROPERTY(mixxx::qml::QmlCuesModel* hotcuesModel MEMBER m_pHotcuesModel CONSTANT);
+    Q_PROPERTY(mixxx::qml::QmlBeatsModel* beatsModel READ getBeatsModel CONSTANT);
+    Q_PROPERTY(mixxx::qml::QmlCuesModel* hotcuesModel READ getCuesModel CONSTANT);
 #ifdef __STEM__
     Q_PROPERTY(mixxx::qml::QmlStemsModel* stemsModel READ getStemsModel CONSTANT);
 #endif
@@ -72,6 +71,14 @@ class QmlTrackProxy : public QObject {
     int getSampleRate() const;
     QUrl getCoverArtUrl() const;
     QUrl getTrackLocationUrl() const;
+
+    QmlBeatsModel* getBeatsModel() const {
+        return m_pBeatsModel.get();
+    }
+
+    QmlCuesModel* getCuesModel() const {
+        return m_pHotcuesModel.get();
+    }
 
 #ifdef __STEM__
     QmlStemsModel* getStemsModel() const {
@@ -130,14 +137,12 @@ class QmlTrackProxy : public QObject {
 
   private:
     TrackPointer m_pTrack;
-    QmlBeatsModel* m_pBeatsModel;
-    QmlCuesModel* m_pHotcuesModel;
+    parented_ptr<QmlBeatsModel> m_pBeatsModel;
+    parented_ptr<QmlCuesModel> m_pHotcuesModel;
 #ifdef __STEM__
-    std::unique_ptr<QmlStemsModel> m_pStemsModel;
+    parented_ptr<QmlStemsModel> m_pStemsModel;
 #endif
 };
 
 } // namespace qml
 } // namespace mixxx
-
-// Q_DECLARE_METATYPE(mixxx::qml::QmlTrackProxy*)
