@@ -332,18 +332,24 @@ mixxx::Bpm BeatUtils::roundBpmWithinRange(
         return snapBpm;
     }
 
-    // Probe the reasonable multipliers for 0.5
-    const double roundBpmWidth = maxBpm - minBpm;
-    if (roundBpmWidth > 0.5) {
-        // 0.5 BPM are only reasonable if the double value is not insane
-        // or the 2/3 value is not too small.
-        if (centerBpm < mixxx::Bpm(85.0)) {
-            // this cane be actually up to 175 BPM
-            // allow halve BPM values
-            return mixxx::Bpm(round(centerBpm.value() * 2) / 2);
-        } else if (centerBpm > mixxx::Bpm(127.0)) {
-            // optimize for 2/3 going down to 85
-            return mixxx::Bpm(round(centerBpm.value() / 3 * 2) * 3 / 2);
+    // 0.5 BPM are only reasonable if the double value is not insane
+    // else other factors below are more typical
+    if (centerBpm < mixxx::Bpm(85.0)) {
+        // this cane be actually up to 175 BPM
+        // allow halve BPM values
+        snapBpm = mixxx::Bpm(round(centerBpm.value() * 2) / 2);
+        if (snapBpm > minBpm && snapBpm < maxBpm) {
+            // Success
+            return snapBpm;
+        }
+    }
+
+    if (centerBpm > mixxx::Bpm(127.0)) {
+        // optimize for 2/3 going down to 85
+        // else other factors below are more typical
+        snapBpm = mixxx::Bpm(round(centerBpm.value() / 3 * 2) * 3 / 2);
+        if (snapBpm > minBpm && snapBpm < maxBpm) {
+            return snapBpm;
         }
     }
 
