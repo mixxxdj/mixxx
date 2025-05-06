@@ -14,14 +14,7 @@ QmlSettingGroup::QmlSettingGroup(QQuickItem* parent)
         : QQuickItem(parent) {
 }
 QmlSettingParameter::QmlSettingParameter(QQuickItem* parent)
-        : QmlSettingGroup(parent),
-          m_pManager(nullptr) {
-}
-
-QmlSettingParameter::~QmlSettingParameter() {
-    if (m_pManager) {
-        m_pManager->deregisterSettingParamater(this);
-    }
+        : QmlSettingGroup(parent) {
 }
 
 void QmlSettingParameter::componentComplete() {
@@ -29,9 +22,9 @@ void QmlSettingParameter::componentComplete() {
     QList<QmlSettingGroup*> pathItems;
     auto* pParent = parentItem();
     while (pParent != nullptr) {
-        m_pManager = qobject_cast<QmlSettingParameterManager*>(pParent);
-        if (m_pManager) {
-            m_pManager->registerSettingParamater(this, pathItems);
+        auto* pManager = qobject_cast<QmlSettingParameterManager*>(pParent);
+        if (pManager) {
+            pManager->registerSettingParamater(this, pathItems);
             return;
         }
         auto* pGroup = qobject_cast<QmlSettingGroup*>(pParent);
@@ -63,25 +56,16 @@ void QmlSettingParameterManager::registerSettingParamater(QmlSettingParameter* p
     pathItems.append(pParameter);
 
     auto* pItem = new QStandardItem(pParameter->label());
-    pItem->setData(QVariant::fromValue(pParameter));
     pItem->setData(path.join(" > "), Qt::WhatsThisRole);
     pItem->setData(QVariant::fromValue(pathItems), Qt::ToolTipRole);
     m_sourceModel.appendRow(QList<QStandardItem*>{pItem,
             new QStandardItem(pParameter->label() + path.join(" > "))});
+    auto rowIndex = m_sourceModel.index(m_sourceModel.rowCount() - 1, 0);
+    connect(pParameter, &QObject::destroyed, this, [this, rowIndex](QObject*) {
+        m_sourceModel.removeRow(rowIndex.row());
+    });
 }
 
-void QmlSettingParameterManager::deregisterSettingParamater(QmlSettingParameter* pParameter) {
-    QList<QStandardItem*> pItems = m_sourceModel.findItems(pParameter->label());
-    for (auto* pItem : std::as_const(pItems)) {
-        // Handling duplicated items
-        auto* pData = pItem->data().view<QmlSettingParameter*>();
-        if (pData == pParameter) {
-            m_sourceModel.removeRows(pItem->row(), 1);
-            return;
-        }
-    }
-    DEBUG_ASSERT(!"Couldn't find item!");
-}
 void QmlSettingParameterManager::search(const QString& criteria) {
     m_model.setFilterFixedString(criteria);
 }

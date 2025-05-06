@@ -1,10 +1,8 @@
 #pragma once
-#include <qglobal.h>
-#include <qquickitem.h>
-#include <qsortfilterproxymodel.h>
-#include <qstandarditemmodel.h>
-
 #include <QQuickItem>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+#include <QtGlobal>
 
 namespace mixxx {
 namespace qml {
@@ -34,7 +32,6 @@ class QmlSettingParameter : public QmlSettingGroup {
     Q_INTERFACES(QQmlParserStatus)
   public:
     explicit QmlSettingParameter(QQuickItem* parent = nullptr);
-    ~QmlSettingParameter();
 
     void componentComplete() override;
 
@@ -44,7 +41,6 @@ class QmlSettingParameter : public QmlSettingGroup {
 
   private:
     QStringList m_keywords;
-    mixxx::qml::QmlSettingParameterManager* m_pManager;
 };
 
 class QmlSettingParameterManager : public QQuickItem {
@@ -56,7 +52,6 @@ class QmlSettingParameterManager : public QQuickItem {
     ~QmlSettingParameterManager();
 
     void registerSettingParamater(QmlSettingParameter* parameter, QList<QmlSettingGroup*>);
-    void deregisterSettingParamater(QmlSettingParameter* parameter);
     Q_INVOKABLE void search(const QString& criteria);
 
     QSortFilterProxyModel* model() {
