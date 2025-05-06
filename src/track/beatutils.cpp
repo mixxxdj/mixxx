@@ -353,20 +353,23 @@ mixxx::Bpm BeatUtils::roundBpmWithinRange(
         }
     }
 
-    if (roundBpmWidth > 1.0 / 12) {
-        // this covers all sorts of 1/2 2/3 and 3/4 multiplier
-        return mixxx::Bpm(round(centerBpm.value() * 12) / 12);
-    } else {
-        // We are here if we have more that ~75 beats and ~30 s
-        // try to snap to a 1/12 Bpm
-        snapBpm = mixxx::Bpm(round(centerBpm.value() * 12) / 12);
-        if (snapBpm > minBpm && snapBpm < maxBpm) {
-            // Success
-            return snapBpm;
-        }
-        // else give up and use the original BPM value.
+    // try to snap to a 1/3 Bpm
+    // This covers all sorts of 3/2 and 3/4 multiplier
+    snapBpm = mixxx::Bpm(round(centerBpm.value() * 3) / 3);
+    if (snapBpm > minBpm && snapBpm < maxBpm) {
+        // Success
+        return snapBpm;
     }
 
+    // try to snap to a 1/12 Bpm
+    // This covers all other sorts of typical multiplier
+    snapBpm = mixxx::Bpm(round(centerBpm.value() * 12) / 12);
+    if (snapBpm > minBpm && snapBpm < maxBpm) {
+        // Success
+        return snapBpm;
+    }
+
+    // else give up and use the original BPM value.
     return centerBpm;
 }
 
