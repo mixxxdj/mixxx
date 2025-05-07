@@ -126,7 +126,7 @@ repos:
       - id: prettier
         types: [yaml]
   - repo: https://github.com/qarmin/qml_formatter.git
-    rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
+    rev: 16f651d727652dffff92678f4b602df9bfb45eb7 # No release tag yet including #7 fix
     hooks:
       - id: qml_formatter
   - repo: https://github.com/BlankSpruce/gersemi
