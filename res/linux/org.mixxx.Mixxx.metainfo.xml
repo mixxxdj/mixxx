@@ -103,6 +103,278 @@
     <release version="2.6.0" type="development" date="2025-04-29" timestamp="1745953440">
       <description>
  <p>
+  STEM file support
+ </p>
+ <ul>
+  <li>
+   Add simple support for STEM files
+   #13044
+  </li>
+  <li>
+   Add stem controls
+   #13086
+  </li>
+  <li>
+   Add analyser support for stem
+   #13106
+  </li>
+  <li>
+   Add quick effect support on stem
+   #13123
+  </li>
+  <li>
+   Add advanced stem loading COs
+   #13268
+  </li>
+  <li>
+   Multithreaded Rubberband
+   #13143
+   #13649
+  </li>
+  <li>
+   Add support for stem in the engine
+   #13070
+   #14244
+  </li>
+  <li>
+   Add stem files to the taglib lookup table
+   #13612
+  </li>
+  <li>
+   Stem controls for LateNight
+   #13537
+  </li>
+  <li>
+   Fix: make "stem_group,mute" a powerwindow button
+   #13751
+   #13749
+  </li>
+  <li>
+   Stem control test fix
+   #13960
+  </li>
+  <li>
+   Solves problem with special characters in path to stems
+   #13784
+  </li>
+  <li>
+   Enable FFmpeg (free) on Windows.
+   #14695
+  </li>
+  <li>
+   FFmpeg: Use internal aac decoder. If not available give a hint.
+   #14645
+  </li>
+  <li>
+   Fix build with -DSTEM=OFF
+   #13948
+  </li>
+  <li>
+   Fix warning when building without STEM support
+   #14551
+  </li>
+  <li>
+   Fix: exclude stem samples for QML waveform
+   #13655
+  </li>
+  <li>
+   Fix: use generic way to get the group on stem waveform renderer
+   #14291
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Add color coding for Key column
+   #13390
+  </li>
+  <li>
+   Add Key Color Palettes
+   #13497
+  </li>
+  <li>
+   Add overview column with small waveform
+   #14140
+  </li>
+  <li>
+   Add a rebindable keyboard shortcut for editing items as a replacement for F2
+   #13148
+  </li>
+  <li>
+   CmdlineArgs: Add
+   --rescan-library
+   for rescanning on startup
+   #13661
+  </li>
+  <li>
+   Add case-insensitive parsing for Lancelot key notation
+   #14318
+  </li>
+  <li>
+   iTunes: Add iOS importer using the Media Player framework
+   #12690
+  </li>
+  <li>
+   Add Shuffle action to track table header menu
+   #13392
+  </li>
+  <li>
+   Library scan: log summary and show popup
+   #13427
+   #10720
+  </li>
+  <li>
+   Search: add BPM lock filter
+   bpm:locked
+   #14590
+   #14583
+  </li>
+  <li>
+   Track menu, purge: allow to hide further success popups in the current session
+   #13807
+  </li>
+  <li>
+   Track Info dialogs: move metadata buttons below color picker
+   #13632
+  </li>
+  <li>
+   Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons
+   #13614
+  </li>
+  <li>
+   Fix: restore BPM and Bitrate column width
+   #13571
+  </li>
+  <li>
+   Elide key text from the right
+   #13475
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   Compressor effect: Adjust Makeup Time constant calculation
+   #13261
+   #13237
+  </li>
+  <li>
+   Fix: prevent quickFX model out of bound
+   #13668
+  </li>
+ </ul>
+ <p>
+  Waveforms
+ </p>
+ <ul>
+  <li>
+   Simplify waveform combobox in preferences
+   #13220
+   #6428
+   #13226
+  </li>
+  <li>
+   Add minute markers on horizontal waveform overview
+   #13401
+   #5843
+   #13648
+   #13489
+  </li>
+  <li>
+   Add slip waveform to Textured/'High details' type
+   #14039
+  </li>
+  <li>
+   Disable textured waveforms when using OpenGL ES
+   #13381
+   #13380
+  </li>
+  <li>
+   Waveform Overview: Scale by ReplayGain
+   #14309
+   #14331
+  </li>
+  <li>
+   feat: improve screen rendering framework
+   #13737
+  </li>
+  <li>
+   Rendergraph: Add rendergraph library and use if for waveform rendering
+   #14007
+   #14021
+   #14191
+   #14185
+   #14188
+   #14192
+   #14190
+   #14186
+   #14189
+   #14187
+   #13470
+   #14461
+  </li>
+  <li>
+   Improve apperrance of marks on the waveforms
+   #13969
+  </li>
+  <li>
+   ControllerRenderingEngine: Patch out unavailable APIs when using GL ES
+   #13382
+  </li>
+  <li>
+   Fix high details waveforms wrapping around after visual index 65K
+   #13491
+  </li>
+  <li>
+   Fix: support for new WaveformData struct in shaders
+   #13474
+   #13472
+  </li>
+  <li>
+   Fix: remove scaleSignal in waveform analyzer
+   #13416
+  </li>
+  <li>
+   Fix: prevent double free on DigitsRenderer
+   #13859
+  </li>
+  <li>
+   Fix: waveform overview seeking
+   #13947
+   #13946
+  </li>
+  <li>
+   Fix invalid slip render marker
+   #13422
+  </li>
+  <li>
+   Fix waveform marker image alignment
+   #14656
+   #14037
+  </li>
+ </ul>
+ <p>
+  Auto-DJ
+ </p>
+ <ul>
+  <li>
+   Add transition mode 'Skip Silence, Start with Xfader centered'
+   #13628
+  </li>
+  <li>
+   Add crossafder recenter option when turning off (default off)
+   #13303
+   #11571
+  </li>
+  <li>
+   Add context menu action for enabling/disabling the Auto DJ
+   #13593
+  </li>
+ </ul>
+ <p>
   Controller Mappings
  </p>
  <ul>
@@ -140,9 +412,17 @@
    #13460
   </li>
   <li>
-   Don't return in JogWheelBasic on deck absent in option
-   #13425
-   #14106
+   Add New CO "beats_translate_half" to move beatgrid a half beat
+   #14279
+   #10811
+  </li>
+  <li>
+   Settings: Add a file and color controller setting types
+   #13669
+  </li>
+  <li>
+   Allow to enable MIDI Through Port in non-developer sessions
+   #13909
   </li>
   <li>
    Refactor: modernize softtakeover code
@@ -161,14 +441,6 @@
   <li>
    Prevent deadlock with BULK transfer and reduce log noise
    #13735
-  </li>
-  <li>
-   Settings: Add a file and color controller setting types
-   #13669
-  </li>
-  <li>
-   Allow to enable MIDI Through Port in non-developer sessions
-   #13909
   </li>
   <li>
    Expose convertCharset convenience function to controllers
@@ -198,9 +470,9 @@
    #14324
   </li>
   <li>
-   Add New CO "beats_translate_half" to move beatgrid a half beat
-   #14279
-   #10811
+   Fix: Don't return in JogWheelBasic on deck absent in option
+   #13425
+   #14106
   </li>
  </ul>
  <p>
@@ -208,21 +480,17 @@
  </p>
  <ul>
   <li>
-   fix: sync rate using the current BPM instead of the file one
+   Fix: sync rate using the current BPM instead of the file one
    #13671
    #12738
   </li>
   <li>
-   sync: prefer playing inaudible decks over stopped non-sync decks
+   Sync: prefer playing inaudible decks over stopped non-sync decks
    #14580
   </li>
   <li>
-   fix: prevent null CO access when cloning sampler or preview
+   Fix: prevent null CO access when cloning sampler or preview
    #13740
-  </li>
-  <li>
-   Tooltips: Fix cue mode setting location
-   #14045
   </li>
   <li>
    Use correct detected channel count on CoreAudio
@@ -234,55 +502,47 @@
  </p>
  <ul>
   <li>
-   Sound Preferences: Don't set m_settingsModified in update slots
-   #13450
+   Waveforms: Group options, adjust tabstops, reorder ui file
+   #13615
   </li>
   <li>
-   Track Search Preferences: Fix accidental use of wrong preference controls
-   #13592
+   Controllers: Make extended controller information available for device selection
   </li>
   <li>
-   Mixer Preferences: Fix crossader graph
+   Controllers: Reorganize content into tabs
+  </li>
+  <li>
+   Mixer: Show 'real' crossfader configuration
+   #14124
+  </li>
+  <li>
+   Mixer: Fix crossader graph
    #13848
-  </li>
-  <li>
-   Controller Preferences: Make extended controller information available for device selection
    #13896
-  </li>
-  <li>
-   Controller Preferences: Reorganize content into tabs
    #14006
    #14354
   </li>
   <li>
-   Waveform Preferences: Group options, adjust tabstops, reorder ui file
-   #13615
-  </li>
-  <li>
-   Preferences Effects: left/right key in effect lists trigger hide/unhide
+   Effects: Left/Right key in effect lists trigger hide/unhide
    #14205
   </li>
   <li>
-   Open sound preferences with sprecific I/O tab selected
+   Sound Hardware: Open with sprecific I/O tab selected
    #14346
   </li>
   <li>
-   Show 'real' xfader configuration
-   #14124
+   Sound Hardware: Don't set m_settingsModified in update slots
+   #13450
+  </li>
+  <li>
+   Library, Track Search: Fix accidental use of wrong preference controls
+   #13592
   </li>
  </ul>
  <p>
   Skins
  </p>
  <ul>
-  <li>
-   LegacySkinParser: Short-circuit if template fails to open
-   #13488
-  </li>
-  <li>
-   Update waveforms_container.xml
-   #13501
-  </li>
   <li>
    Allow swapping hotcues via dragging and dropping hotcue buttons
    #13394
@@ -304,271 +564,16 @@
    #14078
   </li>
   <li>
-   Usability/Keyboard: Add a rebindable keyboard shortcut for editing items as a replacement for F2
-   #13148
-  </li>
- </ul>
- <p>
-  Library
- </p>
- <ul>
-  <li>
-   Add color coding for key column
-   #13390
+   Update waveforms_container.xml
+   #13501
   </li>
   <li>
-   Add overview column with small waveform
-   #14140
+   LegacySkinParser: Short-circuit if template fails to open
+   #13488
   </li>
   <li>
-   Elide key text form the right
-   #13475
-  </li>
-  <li>
-   Add Key Color Palettes
-   #13497
-  </li>
-  <li>
-   Fix BPM and Bitrate columns were wider than normal
-   #13571
-  </li>
-  <li>
-   Track Info dialogs: move metadata buttons below color picker
-   #13632
-  </li>
-  <li>
-   CmdlineArgs: Add
-   --rescan-library
-   for rescanning on startup
-   #13661
-  </li>
-  <li>
-   Track menu, purge: allow to hide further success popups in the current session
-   #13807
-  </li>
-  <li>
-   Add case-insensitive parsing for Lancelot key notation
-   #14318
-  </li>
-  <li>
-   iTunes: Add iOS importer using the Media Player framework
-   #12690
-  </li>
-  <li>
-   Add Shuffle action to track table header menu
-   #13392
-  </li>
-  <li>
-   Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons
-   #13614
-  </li>
-  <li>
-   Library scan: log summary and show popup
-   #13427
-   #10720
-  </li>
-  <li>
-   Search: add BPM lock filter
-   bpm:locked
-   #14590
-   #14583
-  </li>
- </ul>
- <p>
-  Effects
- </p>
- <ul>
-  <li>
-   Compressor effect: Adjust Makeup Time constant calculation
-   #13261
-   #13237
-  </li>
-  <li>
-   fix: prevent quickFX model out of bound
-   #13668
-  </li>
- </ul>
- <p>
-  Waveforms
- </p>
- <ul>
-  <li>
-   Simplify waveform combobox in preferences
-   #13220
-   #6428
-   #13226
-  </li>
-  <li>
-   Disable textured waveforms when using OpenGL ES
-   #13381
-   #13380
-  </li>
-  <li>
-   ControllerRenderingEngine: Patch out unavailable APIs when using GL ES
-   #13382
-  </li>
-  <li>
-   Add minute markers on horizontal waveform overview
-   #13401
-   #5843
-   #13648
-  </li>
-  <li>
-   Fix high details waveforms wrapping around after visual index 65K
-   #13491
-  </li>
-  <li>
-   Fix: support for new WaveformData struct in shaders
-   #13474
-   #13472
-  </li>
-  <li>
-   Overview waveform: draw minute markers on top of played overlay
-   #13489
-  </li>
-  <li>
-   fix: remove scaleSignal in waveform analyzer
-   #13416
-  </li>
-  <li>
-   feat: improve screen rendering framework
-   #13737
-  </li>
-  <li>
-   fix: prevent double free on DigitsRenderer
-   #13859
-  </li>
-  <li>
-   fix: waveform overview seeking
-   #13947
-   #13946
-  </li>
-  <li>
-   Rendergraph: Add rendergraph library and use if for waveform rendering
-   #14007
-   #14021
-   #14191
-   #14185
-   #14188
-   #14192
-   #14190
-   #14186
-   #14189
-   #14187
-   #13470
-   #14461
-  </li>
-  <li>
-   Improve apperrance of marks on the waveforms
-   #13969
-  </li>
-  <li>
-   Waveform Overview: Scale by ReplayGain
-   #14309
-   #14331
-  </li>
-  <li>
-   Fix invalid slip render marker
-   #13422
-  </li>
-  <li>
-   Add slip waveform to Textured/'High details' type
-   #14039
-  </li>
-  <li>
-   Fix waveform marker image alignment
-   #14656
-   #14037
-  </li>
- </ul>
- <p>
-  STEM file support
- </p>
- <ul>
-  <li>
-   Add simple support for STEM files
-   #13044
-  </li>
-  <li>
-   Multithreaded Rubberband
-   #13143
-   #13649
-  </li>
-  <li>
-   Add support for stem in the engine
-   #13070
-   #14244
-  </li>
-  <li>
-   Add analyser support for stem
-   #13106
-  </li>
-  <li>
-   Add stem controls
-   #13086
-  </li>
-  <li>
-   Add quick effect support on stem
-   #13123
-  </li>
-  <li>
-   Add stem files to the taglib lookup table
-   #13612
-  </li>
-  <li>
-   fix: exclude stem samples for QML waveform
-   #13655
-  </li>
-  <li>
-   Non-floating stem controls for LateNight
-   #13537
-  </li>
-  <li>
-   (fix) make "stem_group,mute" a powerwindow button
-   #13751
-   #13749
-  </li>
-  <li>
-   feat: add advanced stem loading COs
-   #13268
-  </li>
-  <li>
-   Fix build with -DSTEM=OFF
-   #13948
-  </li>
-  <li>
-   Stem control test fix
-   #13960
-  </li>
-  <li>
-   Solves problem with special characters in path to stems
-   #13784
-  </li>
-  <li>
-   Enable FFmpeg (free) on Windows.
-   #14695
-  </li>
-  <li>
-   FFmpeg: Use internal aac decoder. If not available give a hint.
-   #14645
-  </li>
- </ul>
- <p>
-  Auto-DJ
- </p>
- <ul>
-  <li>
-   Add AutoDJ xfader recenter option (default off)
-   #13303
-   #11571
-  </li>
-  <li>
-   Auto DJ: Add context menu action for enabling/disabling the Auto DJ
-   #13593
-  </li>
-  <li>
-   Auto DJ Cross fader center
-   #13628
+   Tooltips: Fix cue mode setting location
+   #14045
   </li>
  </ul>
  <p>
@@ -588,12 +593,12 @@
    #13494
   </li>
   <li>
-   set QQuickStyle to "basic"
+   Set QQuickStyle to "basic"
    #13696
    #13600
   </li>
   <li>
-   fix: trigger QML waveform slot at init
+   Fix: trigger QML waveform slot at init
    #13736
   </li>
   <li>
@@ -614,7 +619,7 @@
  </p>
  <ul>
   <li>
-   DlgPrefSound: Add missing ifdefs for building without Rubberband
+   Sound preferences: Add missing ifdefs for building without Rubberband
    #13577
   </li>
   <li>
@@ -643,7 +648,7 @@
    #14300
   </li>
   <li>
-   add QGLES2 option for UNIX
+   Add QGLES2 option for UNIX
    #14489
   </li>
   <li>
@@ -752,40 +757,36 @@
    #13369
   </li>
   <li>
-   Removed unused setSVG and hash functionality from pixmapsource
+   Remove unused setSVG and hash functionality from pixmapsource
    #13423
   </li>
   <li>
-   remove FAQ from Readme.md
+   Remove FAQ from Readme.md
    #13453
   </li>
   <li>
    #13452
   </li>
   <li>
-   Paintable cleanup
-   #13435
+   Make Paintable::DrawMode an enum class
+   #13424
   </li>
   <li>
-   Made Paintable::DrawMode an enum class
-   #13424
+   Paintable cleanup
+   #13435
   </li>
   <li>
    hash clean up
    #13458
   </li>
   <li>
-   clang-format: Indent Objective-C blocks with 4 spaces
-   #13503
-  </li>
-  <li>
-   fix(basetracktablemodel): Fix
+   BaseTrackTableModel: Fix
    -Wimplicit-fallthrough
    warning on GCC 14.1.1
    #13505
   </li>
   <li>
-   Refactor fix trivial cpp coreguideline violations
+   Refactor: fix trivial cpp coreguideline violations
    #13552
   </li>
   <li>
@@ -842,7 +843,7 @@
    #13816
   </li>
   <li>
-   Refactor:
+   Refactor
    MovingInterquartileMean
    #13730
   </li>
@@ -851,17 +852,17 @@
    #13819
   </li>
   <li>
-   refactor: use higher-level
+   Refactor: use higher-level
    std::span
    based logic
    #13654
   </li>
   <li>
-   tsan fix pll vars data race
+   VSyncThread: tsan fix pll vars data race
    #13873
   </li>
   <li>
-   use atomic to fix tsan detected data race condition of blink value in control indicator
+   Control Indicator: Use atomic to fix tsan detected data race condition of blink value
    #13875
   </li>
   <li>
@@ -869,7 +870,7 @@
    #13884
   </li>
   <li>
-   use atomic for m_bWakeScheduler, protect m_bQuit with mutex
+   Use atomic for m_bWakeScheduler, protect m_bQuit with mutex
    #13898
   </li>
   <li>
@@ -880,7 +881,7 @@
    #13853
   </li>
   <li>
-   avoid data race on m_pStream
+   Avoid data race on m_pStream
    #13899
   </li>
   <li>
@@ -896,20 +897,35 @@
    #14086
   </li>
   <li>
-   ci(pre-commit): Add cmake-lint hook
+   Github CI(clang-format): Indent Objective-C blocks with 4 spaces
+   #13503
+  </li>
+  <li>
+   Github CI(pre-commit): Add cmake-lint hook
    #13932
   </li>
   <li>
-   refactor: remove samplew_autogen.h
+   Github CI(labeler): Add
+   developer experience
+   issue label
+   #14343
+  </li>
+  <li>
+   Github CI(labeler): add Dev Tools to
+   developer experience
+   #14475
+  </li>
+  <li>
+   Refactor: remove samplew_autogen.h
    #13988
    #14005
   </li>
   <li>
-   fix clang-tidy complain
+   Fix clang-tidy complain
    #14029
   </li>
   <li>
-   ci(dependabot): Open PRs against 2.5 branch instead of main
+   Github CI(dependabot): Open PRs against 2.5 branch instead of main
    #14060
   </li>
   <li>
@@ -921,7 +937,7 @@
    #14102
   </li>
   <li>
-   fix: Add
+   Fix: Add
    QT_VERSION_CHECK
    ed
    QCheckBox::checkStateChanged
@@ -946,7 +962,7 @@
    #14176
   </li>
   <li>
-   (cleanup) remove obsolete focusOutEvent() from WPushButton
+   WPushButton: remove obsolete focusOutEvent()
    #14177
   </li>
   <li>
@@ -958,15 +974,15 @@
    #14241
   </li>
   <li>
-   fix: use generic way to get the group on stem waveform renderer
-   #14291
+   Fix recently introduced clazy warnings
+   #14336
   </li>
   <li>
    Fix calculation of m_resourcePath in the testing case
    #14110
   </li>
   <li>
-   borrowable_ptr, a threadsafe callback solution
+   Add borrowable_ptr, a threadsafe callback solution
    #1713
   </li>
   <li>
@@ -978,12 +994,8 @@
    #13952
   </li>
   <li>
-   qsscheck.py -&gt; added utf-8 in open()
+   Github CI(pre-commit): qsscheck.py -&gt; added utf-8 in open()
    #14320
-  </li>
-  <li>
-   chore: fix recently introduced clazy warnings
-   #14336
   </li>
   <li>
    Small grammar fix for comment in
@@ -995,18 +1007,8 @@
    #14342
   </li>
   <li>
-   Labeler: Add
-   developer experience
-   issue label
-   #14343
-  </li>
-  <li>
    Log Test fixes and refactoring.
    #14111
-  </li>
-  <li>
-   Add softfix.yml
-   #14341
   </li>
   <li>
    chore: lint CMakeLists.txt
@@ -1017,17 +1019,12 @@
    #14058
   </li>
   <li>
-   DlgPrefController: Cond-compile out HID settings when building without HID
+   Controller preferences: Cond-compile out HID settings when building without HID
    #14376
   </li>
   <li>
-   added missing space to engine controller API documentation
+   Add missing space to engine controller API documentation
    #14384
-  </li>
-  <li>
-   Automatically open PRs to sync branches
-   #13767
-   #14415
   </li>
   <li>
    Fix prettier pre commit
@@ -1038,12 +1035,7 @@
    #14413
   </li>
   <li>
-   github labeler: add Dev Tools to
-   developer experience
-   #14475
-  </li>
-  <li>
-   chore: clean up README.md
+   clean up README.md
    #14471
   </li>
   <li>
@@ -1055,11 +1047,7 @@
    #14577
   </li>
   <li>
-   fix warning when building without STEM support
-   #14551
-  </li>
-  <li>
-   scenegraph is conditioned to QML=ON
+   Scenegraph: condition to QML=ON
    #14487
   </li>
   <li>
@@ -1067,7 +1055,7 @@
    #14678
   </li>
   <li>
-   fix: import proper QtQml.Models module instead of qmllabs
+   Fix: import proper QtQml.Models module instead of qmllabs
    #14675
   </li>
   <li>
