@@ -102,6 +102,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectSelector(const QDomElement& node);
     QWidget* parseHotcueButton(const QDomElement& node);
     QWidget* parsePlayButton(const QDomElement& node);
+    QWidget* parseCueButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
