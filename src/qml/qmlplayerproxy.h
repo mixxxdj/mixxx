@@ -1,7 +1,4 @@
 #pragma once
-#include <qglobal.h>
-#include <qobject.h>
-
 #include <QColor>
 #include <QObject>
 #include <QPointer>
@@ -36,8 +33,6 @@ class QmlPlayerProxy : public QObject {
     Q_INVOKABLE void loadTrackFromLocation(const QString& trackLocation, bool play = false);
     Q_INVOKABLE void loadTrackFromLocationUrl(const QUrl& trackLocationUrl, bool play = false);
 
-    QmlTrackProxy* currentTrack();
-
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
     void slotTrackUnloaded(TrackPointer pOldTrack);
@@ -58,6 +53,8 @@ class QmlPlayerProxy : public QObject {
             bool play);
 
   private:
+    QmlTrackProxy* currentTrack();
+
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
 };

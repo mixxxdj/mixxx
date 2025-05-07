@@ -1,8 +1,7 @@
 #include "qml/qmlplayerproxy.h"
 
-#include <qqmlengine.h>
-
 #include <QBuffer>
+#include <QQmlEngine>
 
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlplayerproxy.cpp"
@@ -62,11 +61,11 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void QmlPlayerProxy::slotTrackUnloaded(TrackPointer pOldTrack) {
-    // VERIFY_OR_DEBUG_ASSERT(pOldTrack == m_pCurrentTrack) {
-    //     qWarning() << "QML Player proxy was expected to contain "
-    //                << pOldTrack.get() << "as active track but got"
-    //                << m_pCurrentTrack.get();
-    // }
+    VERIFY_OR_DEBUG_ASSERT(pOldTrack == m_pCurrentTrack) {
+        qWarning() << "QML Player proxy was expected to contain "
+                   << pOldTrack.get() << "as active track but got"
+                   << m_pCurrentTrack.get();
+    }
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
