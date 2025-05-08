@@ -23,6 +23,9 @@ class WHotcueButton : public WPushButton {
     Q_PROPERTY(bool light MEMBER m_bCueColorIsLight);
     Q_PROPERTY(bool dark MEMBER m_bCueColorIsDark);
     Q_PROPERTY(QString type MEMBER m_type);
+    Q_PROPERTY(bool active READ isActive);
+
+    bool isActive() const;
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -45,6 +48,7 @@ class WHotcueButton : public WPushButton {
     bool m_hoverCueColor;
     parented_ptr<ControlProxy> m_pCoColor;
     parented_ptr<ControlProxy> m_pCoType;
+    parented_ptr<ControlProxy> m_pCoActive;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     int m_cueColorDimThreshold;
     bool m_bCueColorDimmed;

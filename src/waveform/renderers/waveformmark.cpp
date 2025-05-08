@@ -131,7 +131,7 @@ WaveformMark::WaveformMark(const QString& group,
     }
     if (!endPositionControl.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
-        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+        m_typeCO = PollingControlProxy(group, typeControl);
     }
 
     if (!visibilityControl.isEmpty()) {
@@ -173,16 +173,20 @@ WaveformMark::WaveformMark(const QString& group,
           m_offset{},
           m_breadth{},
           m_level{},
+          m_typeCO(ControlFlag::AllowMissingOrInvalid),
+          m_statusCO(ControlFlag::AllowMissingOrInvalid),
           m_iPriority(priority),
           m_iHotCue(hotCue),
           m_showUntilNext{} {
     QString positionControl;
     QString endPositionControl;
     QString typeControl;
+    QString statusControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
         typeControl = "hotcue_" + QString::number(hotCue + 1) + "_type";
+        statusControl = "hotcue_" + QString::number(hotCue + 1) + "_status";
         m_showUntilNext = true;
     } else {
         positionControl = context.selectString(node, "Control");
@@ -194,7 +198,8 @@ WaveformMark::WaveformMark(const QString& group,
     }
     if (!endPositionControl.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
-        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+        m_typeCO = PollingControlProxy(group, typeControl);
+        m_statusCO = PollingControlProxy(group, statusControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");
@@ -238,6 +243,14 @@ WaveformMark::WaveformMark(const QString& group,
     if (!m_iconPath.isEmpty()) {
         m_iconPath = context.makeSkinPath(m_iconPath);
     }
+
+    m_endIconPath = context.selectString(node, "EndIcon");
+    if (!m_endIconPath.isEmpty()) {
+        m_endIconPath = context.makeSkinPath(m_endIconPath);
+    }
+
+    m_enabledOpacity = context.selectDouble(node, "EnabledOpacity", 1);
+    m_disabledOpacity = context.selectDouble(node, "DisabledOpacity", 0.5);
 }
 
 WaveformMark::~WaveformMark() = default;
@@ -559,6 +572,81 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
             painter.drawText(pos, label);
         }
+    }
+
+    painter.end();
+
+    return image;
+}
+
+QImage WaveformMark::generateEndImage(float devicePixelRatio) {
+    assert(needsEndImageUpdate());
+
+    const bool useIcon = m_endIconPath != "";
+
+    // Determine drawing geometries
+    const MarkerGeometry markerGeometry{"", useIcon, m_align, m_breadth, m_level};
+
+    m_label.setAreaRect(markerGeometry.labelRect());
+
+    // Create the image
+    QImage image{markerGeometry.getImageSize(devicePixelRatio),
+            QImage::Format_ARGB32_Premultiplied};
+    image.setDevicePixelRatio(devicePixelRatio);
+
+    // Fill with transparent pixels
+    image.fill(Qt::transparent);
+
+    QPainter painter;
+
+    painter.begin(&image);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    painter.setWorldMatrixEnabled(false);
+
+    // Draw marker lines
+    const auto hcenter = markerGeometry.imageSize().width() / 2.f;
+    m_linePosition = static_cast<float>(hcenter);
+
+    // Draw the center line
+    painter.setPen(fillColor());
+    painter.drawLine(QLineF(hcenter, 0.f, hcenter, markerGeometry.imageSize().height()));
+
+    painter.setPen(borderColor());
+    painter.drawLine(QLineF(hcenter - 1.f,
+            0.f,
+            hcenter - 1.f,
+            markerGeometry.imageSize().height()));
+    painter.drawLine(QLineF(hcenter + 1.f,
+            0.f,
+            hcenter + 1.f,
+            markerGeometry.imageSize().height()));
+
+    if (useIcon) {
+        painter.setPen(borderColor());
+
+        // Draw the label rounded rect with border
+        QPainterPath path;
+        path.addRoundedRect(markerGeometry.labelRect(), 2.f, 2.f);
+        painter.fillPath(path, fillColor());
+        painter.drawPath(path);
+
+        // Center m_contentRect.width() and m_contentRect.height() inside m_labelRect
+        // and apply the offset x,y so the text ends up in the centered width,height.
+        QPointF pos(markerGeometry.labelRect().x() +
+                        (markerGeometry.labelRect().width() -
+                                markerGeometry.contentRect().width()) /
+                                2.f -
+                        markerGeometry.contentRect().x(),
+                markerGeometry.labelRect().y() +
+                        (markerGeometry.labelRect().height() -
+                                markerGeometry.contentRect().height()) /
+                                2.f -
+                        markerGeometry.contentRect().y());
+
+        QSvgRenderer svgRenderer(m_endIconPath);
+        svgRenderer.render(&painter, QRectF(pos, markerGeometry.contentRect().size()));
     }
 
     painter.end();
