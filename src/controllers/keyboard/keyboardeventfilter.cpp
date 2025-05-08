@@ -110,7 +110,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
 
-        int clearModifiers = 0;
+        Qt::KeyboardModifiers clearModifiers = Qt::NoModifier;
 #ifdef __APPLE__
         // OS X apparently doesn't deliver KeyRelease events when you are
         // holding Ctrl. So release all key-presses that were triggered with
@@ -126,7 +126,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             const KeyDownInformation& keyDownInfo = m_qActiveKeyList[i];
             ControlObject* pControl = keyDownInfo.pControl;
             if (keyDownInfo.keyId == keyId ||
-                    (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
+                    (clearModifiers != Qt::NoModifier &&
+                            keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
                     //qDebug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
                     pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);

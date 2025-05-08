@@ -35,14 +35,14 @@ class KeyboardEventFilter : public QObject {
 
   private:
     struct KeyDownInformation {
-        KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)
+        KeyDownInformation(int keyId, Qt::KeyboardModifiers modifiers, ControlObject* pControl)
                 : keyId(keyId),
                   modifiers(modifiers),
                   pControl(pControl) {
         }
 
         int keyId;
-        int modifiers;
+        Qt::KeyboardModifiers modifiers;
         ControlObject* pControl;
     };
 
