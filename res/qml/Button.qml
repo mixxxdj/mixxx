@@ -6,116 +6,152 @@ import "Theme"
 AbstractButton {
     id: root
 
-    property color normalColor: Theme.buttonNormalColor
     required property color activeColor
-    property color pressedColor: activeColor
     property bool highlight: false
+    property color normalColor: Theme.buttonNormalColor
+    property color pressedColor: activeColor
 
-    implicitWidth: 52
     implicitHeight: 26
+    implicitWidth: 52
+
+    background: Item {
+        anchors.fill: parent
+
+        Rectangle {
+            id: backgroundImage
+            anchors.fill: parent
+            color: Theme.darkGray2
+            radius: 0
+        }
+        InnerShadow {
+            id: bottomInnerEffect
+            anchors.fill: parent
+            color: "transparent"
+            horizontalOffset: -1
+            radius: 8
+            samples: 16
+            source: backgroundImage
+            spread: 0.3
+            verticalOffset: -1
+        }
+        InnerShadow {
+            id: topInnerEffect
+            anchors.fill: parent
+            color: "transparent"
+            horizontalOffset: 1
+            radius: 8
+            samples: 16
+            source: bottomInnerEffect
+            spread: 0.3
+            verticalOffset: 1
+        }
+        DropShadow {
+            id: dropEffect
+            anchors.fill: parent
+            color: Theme.darkGray
+            horizontalOffset: 0
+            radius: 4.0
+            source: topInnerEffect
+            verticalOffset: 0
+        }
+    }
+    contentItem: Item {
+        anchors.fill: parent
+
+        Glow {
+            id: labelGlow
+            anchors.fill: parent
+            color: label.color
+            radius: 1
+            source: label
+            spread: 0.1
+        }
+        Label {
+            id: label
+            anchors.fill: parent
+            color: root.normalColor
+            font.bold: true
+            font.capitalization: Font.AllUppercase
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.buttonFontPixelSize
+            horizontalAlignment: Text.AlignHCenter
+            text: root.text
+            verticalAlignment: Text.AlignVCenter
+            visible: root.text != null
+        }
+        Image {
+            id: image
+            anchors.centerIn: parent
+            asynchronous: true
+            fillMode: Image.PreserveAspectFit
+            height: icon.height
+            source: icon.source
+            visible: false
+            width: icon.width
+        }
+        ColorOverlay {
+            anchors.fill: image
+            antialiasing: true
+            color: root.normalColor
+            source: image
+            visible: icon.source != null
+        }
+    }
     states: [
         State {
             name: "pressed"
             when: root.pressed
 
             PropertyChanges {
+                color: root.checked ? Theme.accentColor : Theme.darkGray3
                 target: backgroundImage
-                source: Theme.imgButtonPressed
             }
-
             PropertyChanges {
-                target: label
                 color: root.pressedColor
+                target: label
             }
-
             PropertyChanges {
                 target: labelGlow
                 visible: true
             }
-
         },
         State {
             name: "active"
             when: (root.highlight || root.checked) && !root.pressed
 
             PropertyChanges {
+                color: Theme.accentColor
                 target: backgroundImage
-                source: Theme.imgButton
             }
-
             PropertyChanges {
-                target: label
                 color: root.activeColor
+                target: label
             }
-
             PropertyChanges {
                 target: labelGlow
                 visible: true
             }
-
+            PropertyChanges {
+                color: Qt.darker(Theme.accentColor, 3)
+                target: bottomInnerEffect
+            }
+            PropertyChanges {
+                color: Qt.darker(Theme.accentColor, 3)
+                target: topInnerEffect
+            }
         },
         State {
             name: "inactive"
             when: !root.checked && !root.highlight && !root.pressed
 
             PropertyChanges {
-                target: backgroundImage
-                source: Theme.imgButton
-            }
-
-            PropertyChanges {
-                target: label
                 color: root.normalColor
+                target: label
             }
-
             PropertyChanges {
                 target: labelGlow
                 visible: false
             }
         }
     ]
-
-    background: BorderImage {
-        id: backgroundImage
-
-        anchors.fill: parent
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
-        source: Theme.imgButton
-
-        border {
-            top: 10
-            left: 10
-            right: 10
-            bottom: 10
-        }
-    }
-
-    contentItem: Item {
-        anchors.fill: parent
-
-        Glow {
-            id: labelGlow
-
-            anchors.fill: parent
-            radius: 5
-            spread: 0.1
-            color: label.color
-            source: label
-        }
-
-        Label {
-            id: label
-
-            anchors.fill: parent
-            text: root.text
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.family: Theme.fontFamily
-            font.capitalization: Font.AllUppercase
-            font.bold: true
-            font.pixelSize: Theme.buttonFontPixelSize
-            color: root.normalColor
-        }
-    }
 }
