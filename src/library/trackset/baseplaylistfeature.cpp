@@ -69,23 +69,23 @@ BasePlaylistFeature::BasePlaylistFeature(
 }
 
 void BasePlaylistFeature::initActions() {
-    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
+    m_pCreatePlaylistAction = make_parented<QAction>(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreatePlaylist);
 
-    m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
+    m_pRenamePlaylistAction = make_parented<QAction>(tr("Rename"), this);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotRenamePlaylist);
-    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
+    m_pDuplicatePlaylistAction = make_parented<QAction>(tr("Duplicate"), this);
     connect(m_pDuplicatePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotDuplicatePlaylist);
-    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
+    m_pDeletePlaylistAction = make_parented<QAction>(tr("Remove"), this);
     const auto removeKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
             QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
@@ -95,50 +95,51 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotDeletePlaylist);
-    m_pLockPlaylistAction = new QAction(tr("Lock"), this);
+    m_pLockPlaylistAction = make_parented<QAction>(tr("Lock"), this);
     connect(m_pLockPlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotTogglePlaylistLock);
 
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
+    m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJ);
-    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
+    m_pAddToAutoDJTopAction = make_parented<QAction>(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAddToAutoDJTopAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJTop);
-    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    m_pAddToAutoDJReplaceAction =
+            make_parented<QAction>(tr("Add to Auto DJ Queue (replace)"), this);
     connect(m_pAddToAutoDJReplaceAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJReplace);
 
-    m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
+    m_pAnalyzePlaylistAction = make_parented<QAction>(tr("Analyze entire Playlist"), this);
     connect(m_pAnalyzePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAnalyzePlaylist);
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    m_pImportPlaylistAction = make_parented<QAction>(tr("Import Playlist"), this);
     connect(m_pImportPlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotImportPlaylist);
-    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    m_pCreateImportPlaylistAction = make_parented<QAction>(tr("Import Playlist"), this);
     connect(m_pCreateImportPlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreateImportPlaylist);
-    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
+    m_pExportPlaylistAction = make_parented<QAction>(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotExportPlaylist);
-    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
+    m_pExportTrackFilesAction = make_parented<QAction>(tr("Export Track Files"), this);
     connect(m_pExportTrackFilesAction,
             &QAction::triggered,
             this,
