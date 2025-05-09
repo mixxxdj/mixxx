@@ -8,6 +8,7 @@
 #include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
 #include "util/parented_ptr.h"
+#include "widget/wmenucheckbox.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
@@ -110,9 +111,9 @@ void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
 }
 
 void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
-    TrackModel* oldTrackModel = getTrackModel();
+    TrackModel* pOldTrackModel = getTrackModel();
 
-    if (dynamic_cast<QAbstractItemModel*>(oldTrackModel) == model) {
+    if (dynamic_cast<QAbstractItemModel*>(pOldTrackModel) == model) {
         // If the models are the same, do nothing but the redundant call.
         QHeaderView::setModel(model);
         return;
@@ -131,9 +132,9 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     QHeaderView::setModel(model);
 
     // Now build actions for the new TrackModel
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model);
 
-    if (!trackModel) {
+    if (!pTrackModel) {
         return;
     }
 
@@ -158,13 +159,14 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // * toggle and close by pressing Return on a selected box
     int columns = model->columnCount();
     for (int i = 0; i < columns; ++i) {
-        if (trackModel->isColumnInternal(i)) {
+        if (pTrackModel->isColumnInternal(i)) {
             continue;
         }
 
         QString title = model->headerData(i, orientation()).toString();
 
-        auto pCheckBox = make_parented<QCheckBox>(title, &m_menu);
+        // Custom QCheckBox with fixed hover behavior
+        auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
         // Keep a map of checkboxes and columns
         m_columnCheckBoxes.insert(i, pCheckBox.get());
         connect(pCheckBox.get(),
@@ -177,7 +179,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         // due to database schema evolution we gonna hide all columns that may
         // contain a potential large number of NULL values.  Here we uncheck
         // the items that are hidden by default (e.g., key column).
-        if (!hasPersistedHeaderState() && trackModel->isColumnHiddenByDefault(i)) {
+        if (!hasPersistedHeaderState() && pTrackModel->isColumnHiddenByDefault(i)) {
             pCheckBox->setChecked(false);
         } else {
             pCheckBox->setChecked(!isSectionHidden(i));
@@ -204,6 +206,19 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         }
     }
 
+    m_menu.addSeparator();
+
+    // Only show the shuffle action in models that allow sorting.
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting)) {
+        auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), &m_menu);
+        connect(pShuffleAction,
+                &QAction::triggered,
+                this,
+                &WTrackTableViewHeader::shuffle,
+                /*signal-to-signal*/ Qt::DirectConnection);
+        m_menu.addAction(pShuffleAction);
+    }
+
     // Safety check against someone getting stuck with all columns hidden
     // (produces an empty library table). Just re-show them all.
     if (hiddenCount() == columns) {
@@ -214,24 +229,24 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
-    TrackModel* track_model = getTrackModel();
-    if (!track_model) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    track_model->setModelSetting("header_state_pb", view_state.saveState());
+    pTrackModel->setModelSetting("header_state_pb", view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
-    TrackModel* track_model = getTrackModel();
+    TrackModel* pTrackModel = getTrackModel();
 
-    if (!track_model) {
+    if (!pTrackModel) {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
     if (headerStateString.isNull()) {
         loadDefaultHeaderState();
     } else {
@@ -260,11 +275,11 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
 }
 
 bool WTrackTableViewHeader::hasPersistedHeaderState() {
-    TrackModel* track_model = getTrackModel();
-    if (!track_model) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
     return !headerStateString.isNull();
 }
 

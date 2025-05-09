@@ -193,7 +193,8 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
             Capability::AddToAutoDJ |
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
-            Capability::LoadToSampler;
+            Capability::LoadToSampler |
+            Capability::Sorting;
 }
 
 QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {

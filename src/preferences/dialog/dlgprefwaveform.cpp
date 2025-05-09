@@ -8,9 +8,9 @@
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "widget/woverview.h"
 
 namespace {
 const ConfigKey kOverviewTypeCfgKey(QStringLiteral("[Waveform]"),
@@ -28,20 +28,20 @@ DlgPrefWaveform::DlgPrefWaveform(
 
     // Waveform overview init
     waveformOverviewComboBox->addItem(
-            tr("Filtered"), QVariant::fromValue(WOverview::Type::Filtered));
-    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(WOverview::Type::HSV));
-    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(WOverview::Type::RGB));
+            tr("Filtered"), QVariant::fromValue(mixxx::OverviewType::Filtered));
+    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(mixxx::OverviewType::HSV));
+    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(mixxx::OverviewType::RGB));
     m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
-    m_pTypeControl->setStates(QMetaEnum::fromType<WOverview::Type>().keyCount());
+    m_pTypeControl->setStates(QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
     m_pTypeControl->setReadOnly();
     // Update the control with the config value
-    WOverview::Type overviewType =
-            m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
+    mixxx::OverviewType overviewType =
+            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
     int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
     if (cfgTypeIndex == -1) {
         // Invalid config value, set default type RGB and write it to config
         waveformOverviewComboBox->setCurrentIndex(
-                waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
+                waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
         m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
     } else {
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
@@ -285,10 +285,10 @@ void DlgPrefWaveform::slotUpdate() {
     endOfTrackWarningTimeSpinBox->setValue(factory->getEndOfTrackWarningTime());
     endOfTrackWarningTimeSlider->setValue(factory->getEndOfTrackWarningTime());
     synchronizeZoomCheckBox->setChecked(factory->isZoomSync());
-    allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
-    lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
-    midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
-    highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
+    allVisualGain->setValue(factory->getVisualGain(BandIndex::AllBand));
+    lowVisualGain->setValue(factory->getVisualGain(BandIndex::Low));
+    midVisualGain->setValue(factory->getVisualGain(BandIndex::Mid));
+    highVisualGain->setValue(factory->getVisualGain(BandIndex::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
@@ -306,10 +306,10 @@ void DlgPrefWaveform::slotUpdate() {
             WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(
                     factory->getUntilMarkTextHeightLimit()));
 
-    WOverview::Type cfgOverviewType =
-            m_pConfig->getValue<WOverview::Type>(kOverviewTypeCfgKey, WOverview::Type::RGB);
+    mixxx::OverviewType cfgOverviewType =
+            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
     // Assumes the combobox index is in sync with the ControlPushButton
-    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<WOverview::Type>()) {
+    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<mixxx::OverviewType>()) {
         int cfgOverviewTypeIndex =
                 waveformOverviewComboBox->findData(QVariant::fromValue(cfgOverviewType));
         waveformOverviewComboBox->setCurrentIndex(cfgOverviewTypeIndex);
@@ -372,7 +372,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
-            waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
+            waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
@@ -583,8 +583,8 @@ void DlgPrefWaveform::updateWaveformGainEnabled() {
 void DlgPrefWaveform::slotSetWaveformOverviewType() {
     // Apply immediately
     QVariant comboboxData = waveformOverviewComboBox->currentData();
-    DEBUG_ASSERT(comboboxData.canConvert<WOverview::Type>());
-    auto type = comboboxData.value<WOverview::Type>();
+    DEBUG_ASSERT(comboboxData.canConvert<mixxx::OverviewType>());
+    auto type = comboboxData.value<mixxx::OverviewType>();
     m_pConfig->setValue(kOverviewTypeCfgKey, type);
     m_pTypeControl->forceSet(static_cast<double>(type));
 }
@@ -598,19 +598,19 @@ void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetVisualGainAll(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(BandIndex::AllBand, gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainLow(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(BandIndex::Low, gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainMid(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(BandIndex::Mid, gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(BandIndex::High, gain);
 }
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {

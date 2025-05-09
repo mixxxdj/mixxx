@@ -88,7 +88,7 @@ StantonSCS1d.deckSignals = [    ["CurrentChannel", "rateRange", "StantonSCS1d.pi
                                 ["CurrentChannel", "loop_enabled", "StantonSCS1d.loopEnabled"],
                                 ["CurrentChannel", "reloop_exit", "StantonSCS1d.activateLoop"],
                                 ["CurrentChannel", "bpm_tap", "StantonSCS1d.bpmLED"],
-                                ["CurrentChannel", "visual_playposition", "StantonSCS1d.circleBars"],
+                                ["CurrentChannel", "playposition", "StantonSCS1d.circleBars"],
                                 ["CurrentChannel", "duration","StantonSCS1d.durationChange"]
                             ];
 // When Mixxx gets multiple loop capability, just change the key values here for the respective buttons
@@ -284,6 +284,7 @@ StantonSCS1d.inboundSysex = function (data, length) {
         }
     }
 }
+StantonSCS1d.incomingData = StantonSCS1d.inboundSysex;
 
 StantonSCS1d.checkInSetup = function () {
   if (StantonSCS1d.inSetup) print ("StantonSCS1d: In setup mode, ignoring command.");
@@ -850,9 +851,9 @@ StantonSCS1d.DeckChangeFinish = function(channel) {
     else midi.sendShortMsg(byte1,64,32); // Deck select button green
     StantonSCS1d.connectDeckSignals(channel);    // Connect static signals
     // Update jog circle
-    StantonSCS1d.durationChange(engine.getValue("[Channel"+StantonSCS1d.deck+"]","duration"));
+    StantonSCS1d.durationChange(engine.getValue(`[Channel${StantonSCS1d.deck}]`, "duration"));
     StantonSCS1d.lastLight[StantonSCS1d.deck]=-1;
-    StantonSCS1d.circleBars(engine.getValue("[Channel"+StantonSCS1d.deck+"]","visual_playposition"));
+    StantonSCS1d.circleBars(engine.getValue(`[Channel${StantonSCS1d.deck}]`, "playposition"));
 }
 
 StantonSCS1d.DeckChangeP2 = function (channel, value) {

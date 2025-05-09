@@ -156,8 +156,9 @@ void WMainMenuBar::initialize() {
     pLibraryMenu->addAction(pLibraryRescan);
 
 #ifdef __ENGINEPRIME__
-    QString exportTitle = tr("E&xport Library to Engine Prime");
-    QString exportText = tr("Export the library to the Engine Prime format");
+    //: "Engine DJ" must not be translated
+    QString exportTitle = tr("E&xport Library to Engine DJ");
+    QString exportText = tr("Export the library to the Engine DJ format");
     auto* pLibraryExport = new QAction(exportTitle, this);
     pLibraryExport->setStatusTip(exportText);
     pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
@@ -165,6 +166,34 @@ void WMainMenuBar::initialize() {
     connect(pLibraryExport, &QAction::triggered, this, &WMainMenuBar::exportLibrary);
     pLibraryMenu->addAction(pLibraryExport);
 #endif
+
+    pLibraryMenu->addSeparator();
+
+    QString searchHereTitle = tr("Search in Current View...");
+    QString searchHereText = tr("Search for tracks in the current library view");
+    auto* pSearchHere = new QAction(searchHereTitle, this);
+    pSearchHere->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_SearchInCurrentView"),
+            tr("Ctrl+f"))));
+    pSearchHere->setShortcutContext(Qt::ApplicationShortcut);
+    pSearchHere->setStatusTip(searchHereText);
+    pSearchHere->setWhatsThis(buildWhatsThis(searchHereTitle, searchHereText));
+    connect(pSearchHere, &QAction::triggered, this, &WMainMenuBar::searchInCurrentView);
+    pLibraryMenu->addAction(pSearchHere);
+
+    QString searchAllTitle = tr("Search in Tracks Library...");
+    QString searchAllText =
+            tr("Search in the internal track collection under \"Tracks\" in "
+               "the library");
+    auto* pSearchAll = new QAction(searchAllTitle, this);
+    pSearchAll->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_SearchInAllTracks"),
+            tr("Ctrl+Shift+F"))));
+    pSearchAll->setShortcutContext(Qt::ApplicationShortcut);
+    pSearchAll->setStatusTip(searchAllText);
+    pSearchAll->setWhatsThis(buildWhatsThis(searchAllText, searchAllText));
+    connect(pSearchAll, &QAction::triggered, this, &WMainMenuBar::searchInAllTracks);
+    pLibraryMenu->addAction(pSearchAll);
 
     pLibraryMenu->addSeparator();
 

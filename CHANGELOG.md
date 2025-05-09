@@ -1,42 +1,63 @@
 # Changelog
 
+## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
-### Engine
+### STEM file support
 
-* fix: sync rate using the current BPM instead of the file one
-  [#13671](https://github.com/mixxxdj/mixxx/pull/13671)
-  [#12738](https://github.com/mixxxdj/mixxx/issues/12738)
-* fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
-* Tooltips: fix cue mode setting location [#14045](https://github.com/mixxxdj/mixxx/pull/14045)
-
-### Preferences
-
-* (fix) Sound preferences: don't set m_settingsModified in update slots [#13450](https://github.com/mixxxdj/mixxx/pull/13450)
-* Track Search Preferences: Fix accidental use of wrong preference controls [#13592](https://github.com/mixxxdj/mixxx/pull/13592)
-* (fix) Pref Mixer: fix crossader graph [#13848](https://github.com/mixxxdj/mixxx/pull/13848)
-* Make extended controller information available for device selection [#13896](https://github.com/mixxxdj/mixxx/pull/13896)
-
-### Skins
-
-* LegacySkinParser: Short-circuit if template fails to open [#13488](https://github.com/mixxxdj/mixxx/pull/13488)
-* Update waveforms_container.xml [#13501](https://github.com/mixxxdj/mixxx/pull/13501)
+* Add simple support for STEM files [#13044](https://github.com/mixxxdj/mixxx/pull/13044)
+* Add stem controls [#13086](https://github.com/mixxxdj/mixxx/pull/13086)
+* Add analyser support for stem [#13106](https://github.com/mixxxdj/mixxx/pull/13106)
+* Add quick effect support on stem [#13123](https://github.com/mixxxdj/mixxx/pull/13123)
+* Add advanced stem loading COs [#13268](https://github.com/mixxxdj/mixxx/pull/13268)
+* Multithreaded Rubberband
+  [#13143](https://github.com/mixxxdj/mixxx/pull/13143)
+  [#13649](https://github.com/mixxxdj/mixxx/pull/13649)
+* Add support for stem in the engine
+  [#13070](https://github.com/mixxxdj/mixxx/pull/13070)
+  [#14244](https://github.com/mixxxdj/mixxx/pull/14244)
+* Add stem files to the taglib lookup table [#13612](https://github.com/mixxxdj/mixxx/pull/13612)
+* Stem controls for LateNight [#13537](https://github.com/mixxxdj/mixxx/pull/13537)
+* Fix: make "stem_group,mute" a powerwindow button
+  [#13751](https://github.com/mixxxdj/mixxx/pull/13751)
+  [#13749](https://github.com/mixxxdj/mixxx/issues/13749)
+* Stem control test fix [#13960](https://github.com/mixxxdj/mixxx/pull/13960)
+* Solves problem with special characters in path to stems [#13784](https://github.com/mixxxdj/mixxx/pull/13784)
+* Enable FFmpeg (free) on Windows. [#14695](https://github.com/mixxxdj/mixxx/pull/14695)
+* FFmpeg: Use internal aac decoder. If not available give a hint. [#14645](https://github.com/mixxxdj/mixxx/pull/14645)
+* Fix build with -DSTEM=OFF [#13948](https://github.com/mixxxdj/mixxx/pull/13948)
+* Fix warning when building without STEM support [#14551](https://github.com/mixxxdj/mixxx/pull/14551)
+* Fix: exclude stem samples for QML waveform [#13655](https://github.com/mixxxdj/mixxx/pull/13655)
+* Fix: use generic way to get the group on stem waveform renderer [#14291](https://github.com/mixxxdj/mixxx/pull/14291)
 
 ### Library
 
-* feat: static color coding for key column [#13390](https://github.com/mixxxdj/mixxx/pull/13390)
-* fix: Key text is elided from left, should be right [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
+* Add color coding for Key column [#13390](https://github.com/mixxxdj/mixxx/pull/13390)
 * Add Key Color Palettes [#13497](https://github.com/mixxxdj/mixxx/pull/13497)
-* Fix BPM and Bitrate columns were wider than normal [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
-* Track Info dialogs: move metadata buttons below color picker [#13632](https://github.com/mixxxdj/mixxx/pull/13632)
+* Add overview column with small waveform [#14140](https://github.com/mixxxdj/mixxx/pull/14140)
+* Add a rebindable keyboard shortcut for editing items as a replacement for F2 [#13148](https://github.com/mixxxdj/mixxx/pull/13148)
 * CmdlineArgs: Add `--rescan-library` for rescanning on startup [#13661](https://github.com/mixxxdj/mixxx/pull/13661)
+* Add case-insensitive parsing for Lancelot key notation [#14318](https://github.com/mixxxdj/mixxx/pull/14318)
+* iTunes: Add iOS importer using the Media Player framework [#12690](https://github.com/mixxxdj/mixxx/pull/12690)
+* Add Shuffle action to track table header menu [#13392](https://github.com/mixxxdj/mixxx/pull/13392)
+* Library scan: log summary and show popup
+  [#13427](https://github.com/mixxxdj/mixxx/pull/13427)
+  [#10720](https://github.com/mixxxdj/mixxx/issues/10720)
+* Search: add BPM lock filter `bpm:locked`
+  [#14590](https://github.com/mixxxdj/mixxx/pull/14590)
+  [#14583](https://github.com/mixxxdj/mixxx/issues/14583)
 * Track menu, purge: allow to hide further success popups in the current session [#13807](https://github.com/mixxxdj/mixxx/pull/13807)
+* Track Info dialogs: move metadata buttons below color picker [#13632](https://github.com/mixxxdj/mixxx/pull/13632)
+* Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons [#13614](https://github.com/mixxxdj/mixxx/pull/13614)
+* Fix: restore BPM and Bitrate column width [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
+* Elide key text from the right [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
 
 ### Effects
 
 * Compressor effect: Adjust Makeup Time constant calculation [#13261](https://github.com/mixxxdj/mixxx/pull/13261)
 [#13237](https://github.com/mixxxdj/mixxx/issues/13237)
-* fix: prevent quickFX model out of bound [#13668](https://github.com/mixxxdj/mixxx/pull/13668)
+* Fix: prevent quickFX model out of bound [#13668](https://github.com/mixxxdj/mixxx/pull/13668)
 
 ### Waveforms
 
@@ -44,49 +65,62 @@
   [#13220](https://github.com/mixxxdj/mixxx/issues/13220)
   [#6428](https://github.com/mixxxdj/mixxx/issues/6428)
   [#13226](https://github.com/mixxxdj/mixxx/issues/13226)
-* Disable textured waveforms when using OpenGL ES
-  [#13381](https://github.com/mixxxdj/mixxx/pull/13381)
-  [#13380](https://github.com/mixxxdj/mixxx/issues/13380)
-* ControllerRenderingEngine: Patch out unavailable APIs when using GL ES [#13382](https://github.com/mixxxdj/mixxx/pull/13382)
-* fix: invalid slip render marker [#13422](https://github.com/mixxxdj/mixxx/pull/13422)
 * Add minute markers on horizontal waveform overview
   [#13401](https://github.com/mixxxdj/mixxx/pull/13401)
   [#5843](https://github.com/mixxxdj/mixxx/issues/5843)
   [#13648](https://github.com/mixxxdj/mixxx/pull/13648)
+  [#13489](https://github.com/mixxxdj/mixxx/pull/13489)
+* Add slip waveform to Textured/'High details' type [#14039](https://github.com/mixxxdj/mixxx/pull/14039)
+* Disable textured waveforms when using OpenGL ES
+  [#13381](https://github.com/mixxxdj/mixxx/pull/13381)
+  [#13380](https://github.com/mixxxdj/mixxx/issues/13380)
+* Waveform Overview: Scale by ReplayGain
+  [#14309](https://github.com/mixxxdj/mixxx/pull/14309)
+  [#14331](https://github.com/mixxxdj/mixxx/pull/14331)
+* feat: improve screen rendering framework [#13737](https://github.com/mixxxdj/mixxx/pull/13737)
+* Rendergraph: Add rendergraph library and use if for waveform rendering
+  [#14007](https://github.com/mixxxdj/mixxx/pull/14007)
+  [#14021](https://github.com/mixxxdj/mixxx/pull/14021)
+  [#14191](https://github.com/mixxxdj/mixxx/pull/14191)
+  [#14185](https://github.com/mixxxdj/mixxx/pull/14185)
+  [#14188](https://github.com/mixxxdj/mixxx/pull/14188)
+  [#14192](https://github.com/mixxxdj/mixxx/pull/14192)
+  [#14190](https://github.com/mixxxdj/mixxx/pull/14190)
+  [#14186](https://github.com/mixxxdj/mixxx/pull/14186)
+  [#14189](https://github.com/mixxxdj/mixxx/pull/14189)
+  [#14187](https://github.com/mixxxdj/mixxx/pull/14187)
+  [#13470](https://github.com/mixxxdj/mixxx/pull/13470)
+  [#14461](https://github.com/mixxxdj/mixxx/pull/14461)
+* Improve apperrance of marks on the waveforms [#13969](https://github.com/mixxxdj/mixxx/pull/13969)
+* ControllerRenderingEngine: Patch out unavailable APIs when using GL ES [#13382](https://github.com/mixxxdj/mixxx/pull/13382)
 * Fix high details waveforms wrapping around after visual index 65K [#13491](https://github.com/mixxxdj/mixxx/pull/13491)
 * Fix: support for new WaveformData struct in shaders
   [#13474](https://github.com/mixxxdj/mixxx/pull/13474)
   [#13472](https://github.com/mixxxdj/mixxx/issues/13472)
-* Overview waveform: draw minute markers on top of played overlay [#13489](https://github.com/mixxxdj/mixxx/pull/13489)
-* fix: remove scaleSignal in waveform analyzer [#13416](https://github.com/mixxxdj/mixxx/pull/13416)
-* feat: improve screen rendering framework [#13737](https://github.com/mixxxdj/mixxx/pull/13737)
-* fix: prevent double free on DigitsRenderer [#13859](https://github.com/mixxxdj/mixxx/pull/13859)
-* fix: waveform overview seeking
+* Fix: remove scaleSignal in waveform analyzer [#13416](https://github.com/mixxxdj/mixxx/pull/13416)
+* Fix: prevent double free on DigitsRenderer [#13859](https://github.com/mixxxdj/mixxx/pull/13859)
+* Fix: waveform overview seeking
   [#13947](https://github.com/mixxxdj/mixxx/pull/13947)
   [#13946](https://github.com/mixxxdj/mixxx/issues/13946)
-* rendergraph: add rendergraph library [#14007](https://github.com/mixxxdj/mixxx/pull/14007)
-* mark rendering improvements [#13969](https://github.com/mixxxdj/mixxx/pull/13969)
+* Fix invalid slip render marker [#13422](https://github.com/mixxxdj/mixxx/pull/13422)
+* Fix waveform marker image alignment
+  [#14656](https://github.com/mixxxdj/mixxx/pull/14656)
+  [#14037](https://github.com/mixxxdj/mixxx/issues/14037)
 
-### STEM support
+### Auto-DJ
 
-* Add simple support for STEM files [#13044](https://github.com/mixxxdj/mixxx/pull/13044)
-* Multithreaded Rubberband
-  [#13143](https://github.com/mixxxdj/mixxx/pull/13143)
-  [#13649](https://github.com/mixxxdj/mixxx/pull/13649)
-* Add support for stem in the engine [#13070](https://github.com/mixxxdj/mixxx/pull/13070)
-* Add analyser support for stem [#13106](https://github.com/mixxxdj/mixxx/pull/13106)
-* Add stem controls [#13086](https://github.com/mixxxdj/mixxx/pull/13086)
-* Add quick effect support on stem [#13123](https://github.com/mixxxdj/mixxx/pull/13123)
-* Add stem files to the taglib lookup table [#13612](https://github.com/mixxxdj/mixxx/pull/13612)
-* fix: exclude stem samples for QML waveform [#13655](https://github.com/mixxxdj/mixxx/pull/13655)
-* Non-floating stem controls for LateNight [#13537](https://github.com/mixxxdj/mixxx/pull/13537)
-* (fix) make "stem_group,mute" a powerwindow button
-  [#13751](https://github.com/mixxxdj/mixxx/pull/13751)
-  [#13749](https://github.com/mixxxdj/mixxx/issues/13749)
-* feat: add advanced stem loading COs [#13268](https://github.com/mixxxdj/mixxx/pull/13268)
-* Fix build with -DSTEM=OFF [#13948](https://github.com/mixxxdj/mixxx/pull/13948)
-* Stem control test fix [#13960](https://github.com/mixxxdj/mixxx/pull/13960)
-* Solves problem with special characters in path to stems [#13784](https://github.com/mixxxdj/mixxx/pull/13784)
+* Add transition mode 'Skip Silence, Start with Xfader centered' [#13628](https://github.com/mixxxdj/mixxx/pull/13628)
+* Add crossafder recenter option when turning off (default off)
+  [#13303](https://github.com/mixxxdj/mixxx/pull/13303)
+  [#11571](https://github.com/mixxxdj/mixxx/issues/11571)
+* Add context menu action for enabling/disabling the Auto DJ [#13593](https://github.com/mixxxdj/mixxx/pull/13593)
+
+### Controller Mappings
+
+* Behringer DDM4000 & BCR2000: Remove XML input declarations from mapping [#14285](https://github.com/mixxxdj/mixxx/pull/14285)
+* Hercules DJ Control Starlight: Add EffectChain superknob control [#14126](https://github.com/mixxxdj/mixxx/pull/14126)
+* Numark Mixtrack 3: Update scripts [#14193](https://github.com/mixxxdj/mixxx/pull/14193)
+* Traktor S3: Small updates and fixes [#14340](https://github.com/mixxxdj/mixxx/pull/14340)
 
 ### Controller Backend
 
@@ -94,39 +128,93 @@
   [#11407](https://github.com/mixxxdj/mixxx/pull/11407)
   [#13334](https://github.com/mixxxdj/mixxx/pull/13334)
 * Deprecate `lodash.mixxx.js`, and `script.deepMerge` [#13460](https://github.com/mixxxdj/mixxx/pull/13460)
-* Don't return in JogWheelBasic on deck absent in option [#13425](https://github.com/mixxxdj/mixxx/pull/13425)
+* Add New CO "beats_translate_half" to move beatgrid a half beat
+  [#14279](https://github.com/mixxxdj/mixxx/pull/14279)
+  [#10811](https://github.com/mixxxdj/mixxx/issues/10811)
+* Settings: Add a file and color controller setting types [#13669](https://github.com/mixxxdj/mixxx/pull/13669)
+* Allow to enable MIDI Through Port in non-developer sessions [#13909](https://github.com/mixxxdj/mixxx/pull/13909)
 * Refactor: modernize softtakeover code [#13553](https://github.com/mixxxdj/mixxx/pull/13553)
 * document `ScriptConnection` readonly properties & slight cleanup [#13630](https://github.com/mixxxdj/mixxx/pull/13630)
 * Modernize Hid/Bulk Lists [#13622](https://github.com/mixxxdj/mixxx/pull/13622)
 * Prevent deadlock with BULK transfer and reduce log noise [#13735](https://github.com/mixxxdj/mixxx/pull/13735)
-* feat: add file and color controller setting types [#13669](https://github.com/mixxxdj/mixxx/pull/13669)
-* Controllers: allow to enable MIDI Through Port in non-developer sessions [#13909](https://github.com/mixxxdj/mixxx/pull/13909)
-* Expose convertCharset convenience function to controllers [#13935](https://github.com/mixxxdj/mixxx/pull/13935)
+* Expose convertCharset convenience function to controllers
+  [#13935](https://github.com/mixxxdj/mixxx/pull/13935)
+  [#14108](https://github.com/mixxxdj/mixxx/pull/14108)
+* Add HID error message upon failed open [#14184](https://github.com/mixxxdj/mixxx/pull/14184)
+* Remove boilerplate and duplication in controller setting definition [#13920](https://github.com/mixxxdj/mixxx/pull/13920)
+* Allow feedback on every release of a `powerWindow` button [#14335](https://github.com/mixxxdj/mixxx/pull/14335)
+* Controller Settings: Improve click event filter [#14355](https://github.com/mixxxdj/mixxx/pull/14355)
+* Controller Settings: Add a collapsible group box [#14324](https://github.com/mixxxdj/mixxx/pull/14324)
+* Fix: Don't return in JogWheelBasic on deck absent in option
+  [#13425](https://github.com/mixxxdj/mixxx/pull/13425)
+  [#14106](https://github.com/mixxxdj/mixxx/pull/14106)
 
-### Auto-DJ
+### Engine
 
-* Add AutoDJ xfader recenter option (default off)
-  [#13303](https://github.com/mixxxdj/mixxx/pull/13303)
-  [#11571](https://github.com/mixxxdj/mixxx/issues/11571)
-* Auto DJ: Add context menu action for enabling/disabling the Auto DJ [#13593](https://github.com/mixxxdj/mixxx/pull/13593)
-* Auto DJ Cross fader center [#13628](https://github.com/mixxxdj/mixxx/pull/13628)
+* Fix: sync rate using the current BPM instead of the file one
+  [#13671](https://github.com/mixxxdj/mixxx/pull/13671)
+  [#12738](https://github.com/mixxxdj/mixxx/issues/12738)
+* Sync: prefer playing inaudible decks over stopped non-sync decks [#14580](https://github.com/mixxxdj/mixxx/pull/14580)
+* Fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
+* Use correct detected channel count on CoreAudio [#14372](https://github.com/mixxxdj/mixxx/pull/14372)
+
+### Preferences
+
+* Waveforms: Group options, adjust tabstops, reorder ui file [#13615](https://github.com/mixxxdj/mixxx/pull/13615)
+* Controllers: Make extended controller information available for device selection
+* Controllers: Reorganize content into tabs
+* Mixer: Show 'real' crossfader configuration [#14124](https://github.com/mixxxdj/mixxx/pull/14124)
+* Mixer: Fix crossader graph [#13848](https://github.com/mixxxdj/mixxx/pull/13848)
+  [#13896](https://github.com/mixxxdj/mixxx/pull/13896)
+  [#14006](https://github.com/mixxxdj/mixxx/pull/14006)
+  [#14354](https://github.com/mixxxdj/mixxx/pull/14354)
+* Effects: Left/Right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
+* Sound Hardware: Open with sprecific I/O tab selected [#14346](https://github.com/mixxxdj/mixxx/pull/14346)
+* Sound Hardware: Don't set m_settingsModified in update slots [#13450](https://github.com/mixxxdj/mixxx/pull/13450)
+* Library, Track Search: Fix accidental use of wrong preference controls [#13592](https://github.com/mixxxdj/mixxx/pull/13592)
+
+### Skins
+
+* Allow swapping hotcues via dragging and dropping hotcue buttons
+  [#13394](https://github.com/mixxxdj/mixxx/pull/13394)
+  [#14367](https://github.com/mixxxdj/mixxx/pull/14367)
+* Add controls to order Hotcues by position in the track
+  [#13808](https://github.com/mixxxdj/mixxx/pull/13808)
+  [#14423](https://github.com/mixxxdj/mixxx/pull/14423)
+* Drop Hotcue onto Play button to latch `play`
+  [#14179](https://github.com/mixxxdj/mixxx/pull/14179)
+  [#14178](https://github.com/mixxxdj/mixxx/pull/14178)
+* Always show tooltips if Ctrl key is pressed [#14078](https://github.com/mixxxdj/mixxx/pull/14078)
+* Update waveforms_container.xml [#13501](https://github.com/mixxxdj/mixxx/pull/13501)
+* LegacySkinParser: Short-circuit if template fails to open [#13488](https://github.com/mixxxdj/mixxx/pull/13488)
+* Tooltips: Fix cue mode setting location [#14045](https://github.com/mixxxdj/mixxx/pull/14045)
 
 ### Experimental Features
 
 * SoundManagerIOS: Remove unsupported/redundant options [#13487](https://github.com/mixxxdj/mixxx/pull/13487)
 * ControllerRenderingEngine: Disable BGRA when targeting Wasm [#13502](https://github.com/mixxxdj/mixxx/pull/13502)
 * BaseTrackTableModel: Disable inline track editing on iOS [#13494](https://github.com/mixxxdj/mixxx/pull/13494)
-* set QQuickStyle to "basic" [#13696](https://github.com/mixxxdj/mixxx/pull/13696)
+* Set QQuickStyle to "basic" [#13696](https://github.com/mixxxdj/mixxx/pull/13696)
   [#13600](https://github.com/mixxxdj/mixxx/issues/13600)
-* fix: trigger QML waveform slot at init [#13736](https://github.com/mixxxdj/mixxx/pull/13736)
+* Fix: trigger QML waveform slot at init [#13736](https://github.com/mixxxdj/mixxx/pull/13736)
+* CoreServices: Default to `~/Music` as a music directory on WASM and iOS [#13498](https://github.com/mixxxdj/mixxx/pull/13498)
+* CMakeLists: Disable `QTlsBackendOpenSSLPlugin` on iOS [#14375](https://github.com/mixxxdj/mixxx/pull/14375)
 
 ### Target support
 
-* DlgPrefSound: Add missing ifdefs for building without Rubberband [#13577](https://github.com/mixxxdj/mixxx/pull/13577)
+* Sound preferences: Add missing ifdefs for building without Rubberband [#13577](https://github.com/mixxxdj/mixxx/pull/13577)
 * Update Linux-GitHub runner to Ubuntu 24.04.01 LTS
   [#13781](https://github.com/mixxxdj/mixxx/pull/13781)
   [#13880](https://github.com/mixxxdj/mixxx/pull/13880)
-* Add missing qt6-declarative-private-dev and qt6-base-private-dev package [#13904](https://github.com/mixxxdj/mixxx/pull/13904)
+* Debiam: Add missing qt6-declarative-private-dev and qt6-base-private-dev package
+  [#13904](https://github.com/mixxxdj/mixxx/pull/13904)
+* RPM: Add missing deps [#14183](https://github.com/mixxxdj/mixxx/pull/14183)
+* Show translator file path in debug message [#14209](https://github.com/mixxxdj/mixxx/pull/14209)
+* Building without tests-tools [#14268](https://github.com/mixxxdj/mixxx/pull/14268)
+* Remove unmaintained shell.nix [#14300](https://github.com/mixxxdj/mixxx/pull/14300)
+* Add QGLES2 option for UNIX [#14489](https://github.com/mixxxdj/mixxx/pull/14489)
+* Don't set GL_BGRA if QT_OPENGL_ES_2 [#14488](https://github.com/mixxxdj/mixxx/pull/14488)
+* Windows and macOS: Update to Qt 6.8.3 (requires MSVC 2022) [#14655](https://github.com/mixxxdj/mixxx/pull/14655)
 
 ### Misc Refactorings
 
@@ -147,17 +235,20 @@
 * Bump coverallsapp/github-action from 2.3.0 to 2.3.1 [#13766](https://github.com/mixxxdj/mixxx/pull/13766)
 * Bump coverallsapp/github-action from 2.3.1 to 2.3.3 [#13793](https://github.com/mixxxdj/mixxx/pull/13793)
 * Bump coverallsapp/github-action from 2.3.3 to 2.3.4 [#13811](https://github.com/mixxxdj/mixxx/pull/13811)
+* Bump actions/upload-artifact from 4.3.3 to 4.6.0 [#14167](https://github.com/mixxxdj/mixxx/pull/14167)
+* Bump azure/trusted-signing-action from 0.5.0 to 0.5.1 [#14168](https://github.com/mixxxdj/mixxx/pull/14168)
+* Bump coverallsapp/github-action from 2.3.4 to 2.3.6 [#14246](https://github.com/mixxxdj/mixxx/pull/14246)
+* Bump actions/upload-artifact from 4.6.0 to 4.6.1 [#14406](https://github.com/mixxxdj/mixxx/pull/14406)
 * chore: update the donate button label [#13353](https://github.com/mixxxdj/mixxx/pull/13353)
 * WPixmapStore: Change getPixmapNoCache to std::unique_ptr and further optimizations [#13369](https://github.com/mixxxdj/mixxx/pull/13369)
-* Removed unused setSVG and hash functionality from pixmapsource [#13423](https://github.com/mixxxdj/mixxx/pull/13423)
-* remove FAQ from Readme.md [#13453](https://github.com/mixxxdj/mixxx/pull/13453)
+* Remove unused setSVG and hash functionality from pixmapsource [#13423](https://github.com/mixxxdj/mixxx/pull/13423)
+* Remove FAQ from Readme.md [#13453](https://github.com/mixxxdj/mixxx/pull/13453)
 * [#13452](https://github.com/mixxxdj/mixxx/pull/13452)
+* Make Paintable::DrawMode an enum class [#13424](https://github.com/mixxxdj/mixxx/pull/13424)
 * Paintable cleanup [#13435](https://github.com/mixxxdj/mixxx/pull/13435)
-* Made Paintable::DrawMode an enum class [#13424](https://github.com/mixxxdj/mixxx/pull/13424)
 * hash clean up [#13458](https://github.com/mixxxdj/mixxx/pull/13458)
-* clang-format: Indent Objective-C blocks with 4 spaces [#13503](https://github.com/mixxxdj/mixxx/pull/13503)
-* fix(basetracktablemodel): Fix `-Wimplicit-fallthrough` warning on GCC 14.1.1 [#13505](https://github.com/mixxxdj/mixxx/pull/13505)
-* Refactor fix trivial cpp coreguideline violations [#13552](https://github.com/mixxxdj/mixxx/pull/13552)
+* BaseTrackTableModel: Fix `-Wimplicit-fallthrough` warning on GCC 14.1.1 [#13505](https://github.com/mixxxdj/mixxx/pull/13505)
+* Refactor: fix trivial cpp coreguideline violations [#13552](https://github.com/mixxxdj/mixxx/pull/13552)
 * Refactor `EngineMixer`  [#13568](https://github.com/mixxxdj/mixxx/pull/13568)
 * more `ControlDoublePrivate` optimization [#13581](https://github.com/mixxxdj/mixxx/pull/13581)
 * Modernize `ControlValueAtomic`  [#13574](https://github.com/mixxxdj/mixxx/pull/13574)
@@ -172,15 +263,15 @@
   [#13755](https://github.com/mixxxdj/mixxx/issues/13755)
 * Fix Clazy v1.12 errors in main [#13770](https://github.com/mixxxdj/mixxx/pull/13770)
 * Code cleanup in SidebarModel and WLibrarySidebar [#13816](https://github.com/mixxxdj/mixxx/pull/13816)
-* Refactor: `MovingInterquartileMean` [#13730](https://github.com/mixxxdj/mixxx/pull/13730)
+* Refactor `MovingInterquartileMean` [#13730](https://github.com/mixxxdj/mixxx/pull/13730)
 * Improved comments in enginecontrol and use of std::size_t for bufferSize across the codebase [#13819](https://github.com/mixxxdj/mixxx/pull/13819)
-* refactor: use higher-level `std::span` based logic [#13654](https://github.com/mixxxdj/mixxx/pull/13654)
-* tsan fix pll vars data race [#13873](https://github.com/mixxxdj/mixxx/pull/13873)
-* use atomic to fix tsan detected data race condition of blink value in control indicator [#13875](https://github.com/mixxxdj/mixxx/pull/13875)
+* Refactor: use higher-level `std::span` based logic [#13654](https://github.com/mixxxdj/mixxx/pull/13654)
+* VSyncThread: tsan fix pll vars data race [#13873](https://github.com/mixxxdj/mixxx/pull/13873)
+* Control Indicator: Use atomic to fix tsan detected data race condition of blink value [#13875](https://github.com/mixxxdj/mixxx/pull/13875)
 * Fix undefined behaviour of infinity() [#13884](https://github.com/mixxxdj/mixxx/pull/13884)
-* use atomic for m_bWakeScheduler, protect m_bQuit with mutex [#13898](https://github.com/mixxxdj/mixxx/pull/13898)
+* Use atomic for m_bWakeScheduler, protect m_bQuit with mutex [#13898](https://github.com/mixxxdj/mixxx/pull/13898)
 * Refactor `ValueTransformer` and `WBaseWidget` [#13853](https://github.com/mixxxdj/mixxx/pull/13853)
-* avoid data race on m_pStream [#13899](https://github.com/mixxxdj/mixxx/pull/13899)
+* Avoid data race on m_pStream [#13899](https://github.com/mixxxdj/mixxx/pull/13899)
 * Cleanup and deprecate more `util/` classes
   [#13687](https://github.com/mixxxdj/mixxx/pull/13687)
   [#13968](https://github.com/mixxxdj/mixxx/pull/13968)
@@ -189,36 +280,136 @@
   [#14095](https://github.com/mixxxdj/mixxx/issues/14095)
   [#14087](https://github.com/mixxxdj/mixxx/pull/14087)
   [#14086](https://github.com/mixxxdj/mixxx/issues/14086)
-* ci(pre-commit): Add cmake-lint hook [#13932](https://github.com/mixxxdj/mixxx/pull/13932)
-* refactor: remove samplew_autogen.h
+* Github CI(clang-format): Indent Objective-C blocks with 4 spaces [#13503](https://github.com/mixxxdj/mixxx/pull/13503)
+* Github CI(pre-commit): Add cmake-lint hook [#13932](https://github.com/mixxxdj/mixxx/pull/13932)
+* Github CI(labeler): Add `developer experience` issue label [#14343](https://github.com/mixxxdj/mixxx/pull/14343)
+* Github CI(labeler): add Dev Tools to `developer experience` [#14475](https://github.com/mixxxdj/mixxx/pull/14475)
+* Refactor: remove samplew_autogen.h
   [#13988](https://github.com/mixxxdj/mixxx/pull/13988)
   [#14005](https://github.com/mixxxdj/mixxx/pull/14005)
-* fix clang-tidy complain [#14029](https://github.com/mixxxdj/mixxx/pull/14029)
-* ci(dependabot): Open PRs against 2.5 branch instead of main [#14060](https://github.com/mixxxdj/mixxx/pull/14060)
+* Fix clang-tidy complain [#14029](https://github.com/mixxxdj/mixxx/pull/14029)
+* Github CI(dependabot): Open PRs against 2.5 branch instead of main [#14060](https://github.com/mixxxdj/mixxx/pull/14060)
 * Happy New Year 2025! [#14098](https://github.com/mixxxdj/mixxx/pull/14098)
+* Fix warning in Auto DJ test  [#14102](https://github.com/mixxxdj/mixxx/pull/14102)
+* Fix: Add `QT_VERSION_CHECK`ed `QCheckBox::checkStateChanged` handlers [#14104](https://github.com/mixxxdj/mixxx/pull/14104)
+* Remove warning introduced in [#13339](https://github.com/mixxxdj/mixxx/pull/13339) [#14109](https://github.com/mixxxdj/mixxx/pull/14109)
+* Fix wrong access to ENV var MIXXX_VCPKG_ROOT instead of CMake setting MIXXX_VCPKG_ROOT [#14146](https://github.com/mixxxdj/mixxx/pull/14146)
+* WOverview: remove unused coefficients [#14145](https://github.com/mixxxdj/mixxx/pull/14145)
+* Fix missing initialization in Rotary() [#14176](https://github.com/mixxxdj/mixxx/pull/14176)
+* WPushButton: remove obsolete focusOutEvent() [#14177](https://github.com/mixxxdj/mixxx/pull/14177)
+* Fix memory leak and use parented_ptr in WTrackMenu [#14199](https://github.com/mixxxdj/mixxx/pull/14199)
+* Fix Clazy warning in main [#14241](https://github.com/mixxxdj/mixxx/pull/14241)
+* Fix recently introduced clazy warnings [#14336](https://github.com/mixxxdj/mixxx/pull/14336)
+* Fix calculation of m_resourcePath in the testing case [#14110](https://github.com/mixxxdj/mixxx/pull/14110)
+* Add borrowable_ptr, a threadsafe callback solution [#1713](https://github.com/mixxxdj/mixxx/pull/1713)
+* Include QtConcurrentRun [#14303](https://github.com/mixxxdj/mixxx/pull/14303)
+* Optimized tooltip generation in WBaseWidget [#13952](https://github.com/mixxxdj/mixxx/pull/13952)
+* Github CI(pre-commit): qsscheck.py -> added utf-8 in open() [#14320](https://github.com/mixxxdj/mixxx/pull/14320)
+* Small grammar fix for comment in `BpmControl::slotUpdateRateSlider` [#14344](https://github.com/mixxxdj/mixxx/pull/14344)
+* Add links to important guidelines to CONTRIBUTING.md [#14342](https://github.com/mixxxdj/mixxx/pull/14342)
+* Log Test fixes and refactoring.  [#14111](https://github.com/mixxxdj/mixxx/pull/14111)
+* chore: lint CMakeLists.txt [#14369](https://github.com/mixxxdj/mixxx/pull/14369)
+* RateControl/Position ScratchController: use std::unique_ptr, PollingControlProxy etc. [#14058](https://github.com/mixxxdj/mixxx/pull/14058)
+* Controller preferences: Cond-compile out HID settings when building without HID [#14376](https://github.com/mixxxdj/mixxx/pull/14376)
+* Add missing space to engine controller API documentation [#14384](https://github.com/mixxxdj/mixxx/pull/14384)
+* Fix prettier pre commit [#14416](https://github.com/mixxxdj/mixxx/pull/14416)
+* Use std::shared_ptr in  controller settings to fix memory leak [#14413](https://github.com/mixxxdj/mixxx/pull/14413)
+* clean up README.md [#14471](https://github.com/mixxxdj/mixxx/pull/14471)
+* Fix type safety warnings [#14613](https://github.com/mixxxdj/mixxx/pull/14613)
+* CMake: Join project() with enable_language() [#14577](https://github.com/mixxxdj/mixxx/pull/14577)
+* Scenegraph: condition to QML=ON  [#14487](https://github.com/mixxxdj/mixxx/pull/14487)
+* Fix building with Qt 6.9 [#14678](https://github.com/mixxxdj/mixxx/pull/14678)
+* Fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
+* qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
-## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (unreleased)
+## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 
 ### Controller Mappings
 
-* Behringer DDM4000 & BCR2000: Update mappings to 2.5 [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
-* Hercules Inpulse 300: add toneplay, slicer, and beatmatch functionalities
+* Behringer DDM4000 & BCR2000: Update mappings to 2.5
+  [#14232](https://github.com/mixxxdj/mixxx/pull/14232)
+  [#14349](https://github.com/mixxxdj/mixxx/pull/14349)
+* DJ TechTools MIDI Fighter Spectra: Add controller mapping
+  [#14559](https://github.com/mixxxdj/mixxx/pull/14559)
+* Hercules DJControl Inpulse 300: add toneplay, slicer, and beatmatch functionalities
   [#14051](https://github.com/mixxxdj/mixxx/pull/14051)
   [#14057](https://github.com/mixxxdj/mixxx/pull/14057)
+* Hercules DJControl Inpulse 500: New mapping
+  [#14491](https://github.com/mixxxdj/mixxx/pull/14491)
+  [#14510](https://github.com/mixxxdj/mixxx/pull/14510)
+* Hercules DJ Console Mk1: Fix pitch bend buttons [#14447](https://github.com/mixxxdj/mixxx/pull/14447)
+* M-Vave SMC-Mixer: Add controller mapping
+  [#14411](https://github.com/mixxxdj/mixxx/pull/14411)
+  [#14448](https://github.com/mixxxdj/mixxx/pull/14448)
+  [#14457](https://github.com/mixxxdj/mixxx/pull/14457)
+  [#14458](https://github.com/mixxxdj/mixxx/pull/14458)
+* M-Vave SMK-25 II: Piano keyboard mapping
+  [#14412](https://github.com/mixxxdj/mixxx/pull/14412)
+  [#14484](https://github.com/mixxxdj/mixxx/pull/14484)
+* Numark Mixtrack Platinum: Fix VU Meters [#14575](https://github.com/mixxxdj/mixxx/pull/14575)
 * Numark NS6II: New mapping [#11075](https://github.com/mixxxdj/mixxx/pull/11075)
 * Numark Platinum FX: New mapping [#12872](https://github.com/mixxxdj/mixxx/pull/12872)
 * Pioneer-DDJ-SB3: Fixes slip mode and adds missing knob controls [#11307](https://github.com/mixxxdj/mixxx/pull/11307)
-* Reloop Digital Jockey 2 IE: New mapping [#4614](https://github.com/mixxxdj/mixxx/pull/4614)
+* Reloop Digital Jockey 2 IE: New mapping
+  [#4614](https://github.com/mixxxdj/mixxx/pull/4614)
+  [#14328](https://github.com/mixxxdj/mixxx/pull/14328)
 * Traktor S4mk3: Set 4 decks, avoid CO warnings for decks 3/4, eg. VU meter
   [#14249](https://github.com/mixxxdj/mixxx/pull/14249)
-* Traktor S4mk3: Smooth xfader curve for Const Power mode [#14305](https://github.com/mixxxdj/mixxx/pull/14305)
+* Traktor S4mk3: Smooth xfader curve for Const Power mode
+  [#14305](https://github.com/mixxxdj/mixxx/pull/14305)
+  [#14329](https://github.com/mixxxdj/mixxx/pull/14329)
+  [#14103](https://github.com/mixxxdj/mixxx/issues/14103)
+* Traktor S4mk3: stop wheel led blinking when track is over/stopped
+  [#14028](https://github.com/mixxxdj/mixxx/pull/14028)
+  [#13995](https://github.com/mixxxdj/mixxx/issues/13995)
 * Traktor Kontrol S3: Use pitch absolute mode as described in the manual [#14123](https://github.com/mixxxdj/mixxx/pull/14123)
+* Stanton SCS.1m/d; Keith McMillen QuNeo; EKS Otus: use `playposition` instead of non-existent `visual_playposition`
+  [#14609](https://github.com/mixxxdj/mixxx/pull/14609)
+  [#14603](https://github.com/mixxxdj/mixxx/issues/14603)
+
+### Controller Backend
+
+* Controllers: Avoid timer warning on button release [#14323](https://github.com/mixxxdj/mixxx/pull/14323)
+* Controller preferences: Fix notify of pending changes when closing preferences [#14234](https://github.com/mixxxdj/mixxx/pull/14234)
+  [#14220](https://github.com/mixxxdj/mixxx/issues/14220)
+* Controller preferences: Fix broken overwrite dialog ('Save as..' not working) [#14263](https://github.com/mixxxdj/mixxx/pull/14263)
+* Controller preferences: Don't break support link texts [#14079](https://github.com/mixxxdj/mixxx/pull/14079)
+* Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
+  [#14281](https://github.com/mixxxdj/mixxx/pull/14281)
+  [#14280](https://github.com/mixxxdj/mixxx/issues/14280)
+  [#14292](https://github.com/mixxxdj/mixxx/pull/14292)
+* Controller mapping info: Fix cropped description text
+  [#14332](https://github.com/mixxxdj/mixxx/pull/14332)
+  [#14117](https://github.com/mixxxdj/mixxx/issues/14117)
+* MIDI controller learning: Make control box search usable [#14260](https://github.com/mixxxdj/mixxx/pull/14260)
+* MIDI controller learning: Don't reload mapping after learn [#14253](https://github.com/mixxxdj/mixxx/pull/14253)
+* MIDI controller learning: Correct skin control for mic/aux section [#14221](https://github.com/mixxxdj/mixxx/pull/14221)
+* MIDI controller learning: Add more cue controls for samplers
+  [#14419](https://github.com/mixxxdj/mixxx/pull/14419)
+* MIDI controller learning: Continue after the maximum learning time is over [#14429](https://github.com/mixxxdj/mixxx/pull/14429)
+* Allow `midino` 0 in `MidiController::makeInputHandler()
+  [#14266](https://github.com/mixxxdj/mixxx/pull/14266)
+  [#14265](https://github.com/mixxxdj/mixxx/issues/14265)
+* Fix: provide `incomingData` to MIDI sysex mappings
+  [#14368](https://github.com/mixxxdj/mixxx/pull/14368)
+  [#13133](https://github.com/mixxxdj/mixxx/issues/13133)
+* Fix log spam when using Midi for light mapping
+  [#14326](https://github.com/mixxxdj/mixxx/issues/14326)
+  [#14327](https://github.com/mixxxdj/mixxx/pull/14327)
+  [#14333](https://github.com/mixxxdj/mixxx/pull/14333)
+  [#14338](https://github.com/mixxxdj/mixxx/pull/14338)
+  [#14371](https://github.com/mixxxdj/mixxx/pull/14371)
+* Fix for `TypeError` in `midi-components-0.0.js`
+  [#14203](https://github.com/mixxxdj/mixxx/pull/14203)
+  [#14197](https://github.com/mixxxdj/mixxx/issues/14197)
+* Fix crash due to concurrent access in MidiController [#14159](https://github.com/mixxxdj/mixxx/pull/14159)
 
 ### Skins
 
-* Deere (64 samplers): Bring back library in regular view
+* Deere/LateNight (64 samplers): Bring back library in regular view
   [#14101](https://github.com/mixxxdj/mixxx/pull/14101)
   [#14097](https://github.com/mixxxdj/mixxx/issues/14097)
+  [#14700](https://github.com/mixxxdj/mixxx/issues/14700)
 * Fix crash when hiding waveforms in Deere
   [#14170](https://github.com/mixxxdj/mixxx/pull/14170)
 * Waveform Overview: Abort play pos dragging if cursor is released outside the valid area
@@ -229,44 +420,84 @@
 * Key Wheel: Move to View menu and make it a floating tool window
   [#14256](https://github.com/mixxxdj/mixxx/pull/14256)
   [#14239](https://github.com/mixxxdj/mixxx/pull/14239)
+* Center effect parameter names [#14598](https://github.com/mixxxdj/mixxx/pull/14598)
+* Track menu: highlight row when hovering checkbox
+  [#14636](https://github.com/mixxxdj/mixxx/pull/14636)
+  [#14680](https://github.com/mixxxdj/mixxx/pull/14680)
 
-### Fixes
+### Library
 
-* Enable R3 time-stretching with Rubberband 4.0.0 API version numbers [#14100](https://github.com/mixxxdj/mixxx/pull/14100)
-* Library: Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
+* Add Ctrl+Shift+C to copy the content of the selected cell(s) (The Mxxx 2.4 behaviour of Ctrl+C).
   [#14114](https://github.com/mixxxdj/mixxx/pull/14114)
   [#14065](https://github.com/mixxxdj/mixxx/issues/14065)
-* Preferences Effects: add Hide/Unhide (move) buttons to Effects tab [#13329](https://github.com/mixxxdj/mixxx/pull/13329)
 * Fix MusicBrainz lookup on Windows and macOS [#14216](https://github.com/mixxxdj/mixxx/pull/14216)
-* Controller Learning: Correct skin control for mic/aux section [#14221](https://github.com/mixxxdj/mixxx/pull/14221)
-* Apply talkover ducking after master effects to allow using a compressor effect
-  [#13844](https://github.com/mixxxdj/mixxx/pull/13844)
-  [#12451](https://github.com/mixxxdj/mixxx/issues/12451)
-* Fix for `TypeError` in `midi-components-0.0.js`
-  [#14203](https://github.com/mixxxdj/mixxx/pull/14203)
-  [#14197](https://github.com/mixxxdj/mixxx/issues/14197)
 * Library scanner: Update cached 'missing' flag when file is redicovered
   [#14250](https://github.com/mixxxdj/mixxx/pull/14250)
-* Controller preference: Fix notify of pending changes when closing preferences [#14234](https://github.com/mixxxdj/mixxx/pull/14234)
-  [#14220](https://github.com/mixxxdj/mixxx/issues/14220)
-* Controller preferences: Fix broken overwrite dialog ('Save as..' not working) [#14263](https://github.com/mixxxdj/mixxx/pull/14263)
-* Controller preferences: Don't break support link texts [#14079](https://github.com/mixxxdj/mixxx/pull/14079)
-* MIDI controller learning: Make control box search usable [#14260](https://github.com/mixxxdj/mixxx/pull/14260)
 * Hidden Tracks: Allow 'load to' via track context manu [#14077](https://github.com/mixxxdj/mixxx/pull/14077)
-* MIDI controller learning: don't reload mapping after learn [#14253](https://github.com/mixxxdj/mixxx/pull/14253)
-* Controller preferences: Fix wrong mapping change confirmation request caused by MidiController::makeInputHandler()
-  [#14281](https://github.com/mixxxdj/mixxx/pull/14281)
-  [#14280](https://github.com/mixxxdj/mixxx/issues/14280)
-  [#14292](https://github.com/mixxxdj/mixxx/pull/14292)
-* Allow `midino` 0 in `MidiController::makeInputHandler()
-  [#14266](https://github.com/mixxxdj/mixxx/pull/14266)
-  [#14265](https://github.com/mixxxdj/mixxx/issues/14265)
 * Update to libdjinterop 0.24.3 - support for Engine 4.1/4.2
   [#14172](https://github.com/mixxxdj/mixxx/pull/14172)
   [#14289](https://github.com/mixxxdj/mixxx/pull/14289)
+* Fix writing metadata via symlink [#13711](https://github.com/mixxxdj/mixxx/pull/13711)
+* Library menu: change "Engine DJ Prime" to "Engine DJ"
+  [#14248](https://github.com/mixxxdj/mixxx/pull/14248)
+  [#14682](https://github.com/mixxxdj/mixxx/pull/14682)
+* Fix file extension handling during playlist export [#14381](https://github.com/mixxxdj/mixxx/pull/14381)
+* Fix manual key metadata editing in track properties dialog
+  [#14022](https://github.com/mixxxdj/mixxx/pull/14022)
+  [#14400](https://github.com/mixxxdj/mixxx/issues/14400)
+  [#14295](https://github.com/mixxxdj/mixxx/pull/14295)
+  [#14294](https://github.com/mixxxdj/mixxx/issues/14294)
+* History: Don't allow joining with locked previous playlist
+  [#14401](https://github.com/mixxxdj/mixxx/pull/14401)
+  [#14399](https://github.com/mixxxdj/mixxx/issues/14399)
+* Track info dialog: fixed cover label (max) size [#14418](https://github.com/mixxxdj/mixxx/pull/14418)
+* Track Menu: Reset `eject` after moving track file to trash [#14402](https://github.com/mixxxdj/mixxx/pull/14402)
+* Fix AutoDJ "Remove Crate" action
+  [#14426](https://github.com/mixxxdj/mixxx/pull/14426)
+  [#14425](https://github.com/mixxxdj/mixxx/issues/14425)
+* Fix scrolling issue with coverart columns visible
+  [#13719](https://github.com/mixxxdj/mixxx/pull/13719)
+  [#14631](https://github.com/mixxxdj/mixxx/pull/14631)
+* Developer Tools: multi-word search, no Tab navigation in controls table [#14474](https://github.com/mixxxdj/mixxx/pull/14474)
+* Analyze feature: respect New / All selection when searching
+  [#14660](https://github.com/mixxxdj/mixxx/pull/14660)
+  [#14659](https://github.com/mixxxdj/mixxx/issues/14659)
+* Stop populating Computer library feature when Mixxx should close [#14573](https://github.com/mixxxdj/mixxx/pull/14573)
+* Tracks: apply played/missing text color also to selected tracks [#13583](https://github.com/mixxxdj/mixxx/pull/13583)
+* Tracks: `show_track_menu` at index position [#14385](https://github.com/mixxxdj/mixxx/pull/14385)
+* Search related menu: improve checkbox click UX [#14637](https://github.com/mixxxdj/mixxx/pull/14637)
+* Avoid false missing tracks due to db inconsistency
+  [#14615](https://github.com/mixxxdj/mixxx/pull/14615)
+  [#14513](https://github.com/mixxxdj/mixxx/issues/14513)
+* Fix automatic trimming of search bar text
+  [#14497](https://github.com/mixxxdj/mixxx/pull/14497)
+  [#14486](https://github.com/mixxxdj/mixxx/issues/14486)
+* Avoid crash after removing Quick Link
+  [#14556](https://github.com/mixxxdj/mixxx/pull/14556)
+  [#8270](https://github.com/mixxxdj/mixxx/issues/8270)
+
+### Other Fixes
+
+* Enable R3 time-stretching with Rubberband 4.0.0 API version numbers [#14100](https://github.com/mixxxdj/mixxx/pull/14100)
+* Preferences Effects: add Hide/Unhide (move) buttons to Effects tab [#13329](https://github.com/mixxxdj/mixxx/pull/13329)
+* Preferences Effects: left/right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
+* Fix beat sync in Flanger effect [#14351](https://github.com/mixxxdj/mixxx/pull/14351)
+* Apply talkover ducking after main effects to allow using a compressor effect
+  [#13844](https://github.com/mixxxdj/mixxx/pull/13844)
+  [#12451](https://github.com/mixxxdj/mixxx/issues/12451)
 * Fix sporadic deadlocks when closing Mixxx or changing sound devices
   [#14208](https://github.com/mixxxdj/mixxx/pull/14208)
   [#14055](https://github.com/mixxxdj/mixxx/issues/14055)
+* PositionScratchController: Fix loop wrap-around case [#14379](https://github.com/mixxxdj/mixxx/pull/14379)
+* Allow seeking to a hotcue during waveform scratching
+  [#14357](https://github.com/mixxxdj/mixxx/pull/14357)
+  [#13981](https://github.com/mixxxdj/mixxx/issues/13981)
+* Reset saved loop when toggling off after switching cue type
+  [#14661](https://github.com/mixxxdj/mixxx/pull/14661)
+  [#14657](https://github.com/mixxxdj/mixxx/issues/14657)
+* Fix leaks from fid_design()
+  [#14567](https://github.com/mixxxdj/mixxx/pull/14567)
+  [#9470](https://github.com/mixxxdj/mixxx/issues/9470)
 
 ### Target support
 
@@ -278,6 +509,8 @@
   [#14071](https://github.com/mixxxdj/mixxx/issues/14071)
   [#14200](https://github.com/mixxxdj/mixxx/pull/14200)
   [#14204](https://github.com/mixxxdj/mixxx/pull/14204)
+  [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+  [#14518](https://github.com/mixxxdj/mixxx/pull/14518)
 * Welcome Ubuntu Plucky Puffin; Good bye Mantic Minotaur
   [#14148](https://github.com/mixxxdj/mixxx/pull/14148)
   [#14158](https://github.com/mixxxdj/mixxx/pull/14158)
@@ -290,6 +523,14 @@
   [#13931](https://github.com/mixxxdj/mixxx/issues/13931)
 * Allow building without tests-tools via new CMake options BUILD_TESTING and BUILD_BENCH
   [#14269](https://github.com/mixxxdj/mixxx/pull/14269)
+* Fix and improve "missing env" error message [#14321](https://github.com/mixxxdj/mixxx/pull/14321)
+* Qt 6.8: Ensure Mixxx uses "windowsvista" Qt style on Windows [#14228](https://github.com/mixxxdj/mixxx/pull/14228)
+* Raise macOS target version to 11 (Qt 6.5 requirement). [#14440](https://github.com/mixxxdj/mixxx/pull/14440)
+* Fail early when building on WSL [#14481](https://github.com/mixxxdj/mixxx/pull/14481)
+* Remove useless udev rule [#14630](https://github.com/mixxxdj/mixxx/pull/14630)
+* Handle new " / " from taglib 2.0
+  [#12854](https://github.com/mixxxdj/mixxx/pull/12854)
+  [#12790](https://github.com/mixxxdj/mixxx/issues/12790)
 
 ## [2.5.0](https://github.com/mixxxdj/mixxx/issues?q=milestone%3A2.5.0) (2024-12-24)
 
@@ -666,7 +907,7 @@
 * Intech TEK2: Add initial mapping [#13521](https://github.com/mixxxdj/mixxx/pull/13521)
 * Korg Kaoss DJ: Update script [#12683](https://github.com/mixxxdj/mixxx/pull/12683)
 * MIDI for light: Fix unsound timer handling [#13117](https://github.com/mixxxdj/mixxx/pull/13117)
-* Novation Dicer: Remove flanger mapping with quickeffect toggle
+* Novation Dicer: Remove Flanger mapping with quickeffect toggle
   [#13196](https://github.com/mixxxdj/mixxx/pull/13196)
   [#13134](https://github.com/mixxxdj/mixxx/issues/13134)
 * Novation Launchpad X: Fix detection on macOS
@@ -2448,8 +2689,7 @@ announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
 
-* Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
-  Program](https://support.microsoft.com/en-us/help/2601726)
+* Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a Program
 * Windows 10: [Start > Control Panel > Programs > Programs And Features >
   look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 

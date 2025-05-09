@@ -40,12 +40,11 @@ const ConfigKey kVScrollBarPosConfigKey{
 
 } // anonymous namespace
 
-WTrackTableView::WTrackTableView(QWidget* parent,
+WTrackTableView::WTrackTableView(QWidget* pParent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        double backgroundColorOpacity,
-        bool sorting)
-        : WLibraryTableView(parent, pConfig),
+        double backgroundColorOpacity)
+        : WLibraryTableView(pParent, pConfig),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
@@ -53,7 +52,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_focusBorderColor(Qt::white),
           m_trackPlayedColor(QColor(kDefaultTrackPlayedColor)),
           m_trackMissingColor(QColor(kDefaultTrackMissingColor)),
-          m_sorting(sorting),
+          m_sorting(false),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Connect slots and signals to make the world go 'round.
@@ -89,7 +88,7 @@ void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit onlyCachedCoverArt(true);
+        emit onlyCachedCoversAndOverviews(true);
         m_loadCachedOnly = true;
     }
     m_lastUserAction = mixxx::Time::elapsed();
@@ -153,7 +152,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
         // This allows CoverArtDelegate to request that we load covers from disk
         // (as opposed to only serving them from cache).
-        emit onlyCachedCoverArt(false);
+        emit onlyCachedCoversAndOverviews(false);
         m_loadCachedOnly = false;
     }
 }
@@ -175,6 +174,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         return;
     }
 
+    m_sorting = pTrackModel->hasCapabilities(TrackModel::Capability::Sorting);
+
     // If the model has not changed there's no need to exchange the headers
     // which would cause a small GUI freeze
     if (getTrackModel() == pTrackModel) {
@@ -192,10 +193,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     setVisible(false);
 
     // Save the previous track model's header state
-    WTrackTableViewHeader* oldHeader =
+    WTrackTableViewHeader* pOldheader =
             qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (oldHeader) {
-        oldHeader->saveHeaderState();
+    if (pOldheader) {
+        pOldheader->saveHeaderState();
     }
 
     // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
@@ -203,7 +204,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
-    auto* header = new WTrackTableViewHeader(Qt::Horizontal, this);
+    auto* pHeader = new WTrackTableViewHeader(Qt::Horizontal, this);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
@@ -229,17 +230,17 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     setHorizontalHeader(tempHeader);
 
     setModel(model);
-    setHorizontalHeader(header);
-    header->setSectionsMovable(true);
-    header->setSectionsClickable(true);
+    setHorizontalHeader(pHeader);
+    pHeader->setSectionsMovable(true);
+    pHeader->setSectionsClickable(true);
     // Setting this to true would render all column labels BOLD as soon as the
     // tableview is focused -- and would not restore the previous style when
     // it's unfocused. This can not be overwritten with qss, so it can screw up
     // the skin design. Also, due to selectionModel()->selectedRows() it is not
     // even useful to indicate the focused column because all columns are highlighted.
-    header->setHighlightSections(false);
-    header->setSortIndicatorShown(m_sorting);
-    header->setDefaultAlignment(Qt::AlignLeft);
+    pHeader->setHighlightSections(false);
+    pHeader->setSortIndicatorShown(m_sorting);
+    pHeader->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -263,7 +264,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         // contain a potential large number of NULL values.  This will hide the
         // key column by default unless the user brings it to front
         if (pTrackModel->isColumnHiddenByDefault(i) &&
-                !header->hasPersistedHeaderState()) {
+                !pHeader->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
@@ -279,6 +280,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
                 this,
                 &WTrackTableView::slotSortingChanged,
                 Qt::AutoConnection);
+        connect(pHeader,
+                &WTrackTableViewHeader::shuffle,
+                this,
+                &WTrackTableView::slotRandomSorting);
 
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
@@ -501,42 +506,85 @@ void WTrackTableView::slotUnhide() {
 
 void WTrackTableView::slotShowHideTrackMenu(bool show) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
-        return;
+        initTrackMenu();
     }
     if (show == m_pTrackMenu->isVisible()) {
         emit trackMenuVisible(show);
         return;
     }
     if (show) {
-        QContextMenuEvent event(QContextMenuEvent::Mouse,
-                mapFromGlobal(QCursor::pos()),
-                QCursor::pos());
-        contextMenuEvent(&event);
+        const auto selectedIndices = selectionModel()->selectedIndexes();
+        if (selectedIndices.isEmpty()) {
+            // If selection is empty, contextMenuEvent() won't work anyway.
+            return;
+        }
+
+        // Show at current index if it's valid. When using only a controller for
+        // for track selection, there's only on row selected.
+        // If it's not part of the selection, like when Ctrl+click was used to
+        // deselect a row, we use the first selected row and the column of the
+        // current index.
+        // Else show at cursor position.
+        QPoint evPos;
+        const auto currIdx = currentIndex();
+        if (currIdx.isValid()) {
+            if (selectedIndices.contains(currIdx)) {
+                evPos = visualRect(currIdx).center();
+            } else {
+                // use first selected row and column of current index
+                const QList<int> rows = getSelectedRowNumbers();
+                const QModelIndex tempIdx = currIdx.siblingAtRow(rows.first());
+                evPos = visualRect(tempIdx).center();
+            }
+            // If the selected row is outside the table's viewport (above or below),
+            // let the menu unfold from the bottom center to hopefully clarify
+            // that the menu belongs to the library and not to some deck widget.
+            if (!viewport()->rect().contains(evPos)) {
+                evPos = QPoint(viewport()->rect().center().x(),
+                        viewport()->rect().bottom());
+            } else {
+                // The viewports start below the header, but mapToGlobal() uses
+                // the rect() as reference. Add header height to y and we're good.
+                // Assumes the view shows at least one row which is at least as tall
+                // as the header, else we'll end up below the viewport, then it's
+                // up to QMenu to find an adequate popup position.
+                evPos += QPoint(0, horizontalHeader()->height());
+            }
+            evPos = mapToGlobal(evPos);
+        } else {
+            evPos = QCursor::pos();
+        }
+        showTrackMenu(evPos, indexAt(evPos));
     } else {
         m_pTrackMenu->close();
     }
 }
 
-void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
+void WTrackTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         initTrackMenu();
     }
-    event->accept();
+    pEvent->accept();
+
+    showTrackMenu(pEvent->globalPos(), indexAt(pEvent->pos()));
+}
+
+void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
+        return;
+    }
     // Update track indices in context menu
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
     }
-    // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi?
-    // They could then focus the respective edit field.
     m_pTrackMenu->loadTrackModelIndices(indices);
-    const QModelIndex clickedIdx = indexAt(event->pos());
-    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(clickedIdx));
+    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
 
-    m_pTrackMenu->popup(event->globalPos());
-    // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
+    m_pTrackMenu->popup(pos);
+    // WTrackmenu emits restoreCurrentViewStateOrIndex() on hide if required
 }
 
 QString WTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
@@ -1766,6 +1814,15 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     if (sortingChanged) {
         applySortingIfVisible();
     }
+}
+
+void WTrackTableView::slotRandomSorting() {
+    // There's no need to remove the shuffle feature of the Preview column
+    // (and replace it with a dedicated randomize slot to BaseSqltableModel),
+    // so we simply abuse that column.
+    auto previewCol = TrackModel::SortColumnId::Preview;
+    m_pSortColumn->set(static_cast<int>(previewCol));
+    applySortingIfVisible();
 }
 
 bool WTrackTableView::hasFocus() const {

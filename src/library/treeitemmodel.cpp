@@ -143,13 +143,13 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
         return 0;
     }
 
-    TreeItem* parentItem;
+    TreeItem* pParentItem;
     if (parent.isValid()) {
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        pParentItem = static_cast<TreeItem*>(parent.internalPointer());
     } else {
-        parentItem = getRootItem();
+        pParentItem = getRootItem();
     }
-    return parentItem->childRows();
+    return pParentItem->childRows();
 }
 
 // Populates the model and notifies the view.

@@ -452,11 +452,19 @@ void WaveformRendererTextured::paintGL() {
 
         glBegin(GL_QUADS);
         {
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+            if (m_isSlipRenderer && m_waveformRenderer->isSlipActive()) {
+                glTexCoord2f(0.0, 0.5);
+                glVertex3f(firstVisualIndex, 0.0f, 0.0f);
 
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+                glTexCoord2f(1.0, 0.5);
+                glVertex3f(lastVisualIndex, 0.0f, 0.0f);
+            } else {
+                glTexCoord2f(0.0, 0.0);
+                glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+
+                glTexCoord2f(1.0, 0.0);
+                glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+            }
 
             glTexCoord2f(1.0, 1.0);
             glVertex3f(lastVisualIndex, 1.0f, 0.0f);

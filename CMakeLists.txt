@@ -111,6 +111,20 @@ function(fatal_error_missing_env)
   endif()
 endfunction()
 
+if(UNIX AND NOT APPLE)
+  execute_process(
+    COMMAND uname -r
+    OUTPUT_VARIABLE UNAME_R
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(UNAME_R MATCHES ".*[Mm]icrosoft.*" OR UNAME_R MATCHES ".*WSL.*")
+    message(
+      FATAL_ERROR
+      "Building on Windows Subsystem for Linux (WSL) is not supported. If you want to build Mixxx from command line on Windows, you need to use the \"x64 Native Tools Command Prompt for VS 2022\"!"
+    )
+  endif()
+endif()
+
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 # Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
@@ -288,10 +302,10 @@ elseif(APPLE)
       )
     else()
       if(QT6)
-        # Minimum macOS version supported by Qt 6
+        # Minimum macOS version supported by Qt 6.5
         set(
           CMAKE_OSX_DEPLOYMENT_TARGET
-          10.15
+          11.0
           CACHE STRING
           "Minimum macOS version the build will be able to run on"
         )
@@ -324,8 +338,7 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.6.0)
-enable_language(C CXX)
+project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
@@ -397,6 +410,16 @@ if(MSVC)
   # Remove unreferenced code and data
   # Since c++11 they can safely be removed to speed up linking.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
+
+  if(NOT DEFINED MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION VERSION_LESS 143)
+    message(
+      FATAL_ERROR
+      "MSVC_TOOLSET_VERSION is ${MSVC_TOOLSET_VERSION}.\n"
+      "Mixxx requires the Microsoft Visual C++ Redistributable toolset of version 143 (VS2022) or greater, "
+      "as the VCPKG buildenv is built with this version.\n"
+      "Please use the Visual Studio 2022 toolset therefore!"
+    )
+  endif()
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
@@ -1214,6 +1237,7 @@ add_library(
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
   src/library/dlgtagfetcher.cpp
@@ -1247,6 +1271,7 @@ add_library(
   src/library/missing_hidden/hiddentablemodel.cpp
   src/library/missing_hidden/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/overviewcache.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
@@ -1276,6 +1301,7 @@ add_library(
   src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
+  src/library/tabledelegates/overviewdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -1499,11 +1525,13 @@ add_library(
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
+  src/waveform/overviewtype.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
   src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
+  src/waveform/renderers/waveformoverviewrenderer.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
@@ -1545,6 +1573,7 @@ add_library(
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
+  src/widget/wcollapsiblegroupbox.cpp
   src/widget/wcolorpicker.cpp
   src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
@@ -1577,6 +1606,7 @@ add_library(
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wmenucheckbox.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp
@@ -2232,7 +2262,9 @@ endif()
 if(WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
   if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_UCRT_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
   include(InstallRequiredSystemLibraries)
 endif()
@@ -2245,10 +2277,8 @@ install(
 
 # Script for cpu pinning of the engine thread
 install(
-  FILES
-    tools/mixxx-isolate.py
-  DESTINATION
-    "${MIXXX_INSTALL_BINDIR}"
+  FILES tools/mixxx-isolate.py
+  DESTINATION "${MIXXX_INSTALL_BINDIR}"
   RENAME "mixxx-isolate"
 )
 
@@ -2776,7 +2806,11 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
+find_package(Chromaprint)
+if(NOT Chromaprint_FOUND)
+  # Fail verbose, because with Qt Creator, the verbose error message for Qt is bypassed.
+  fatal_error_missing_env()
+endif()
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
@@ -3112,6 +3146,9 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
+# With gcc >= 14 and -flto some code is inlined to fast-math code and then
+# optimized away. Disable it explicit for all compiler just in case.
+set_target_properties(FpClassify PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
 
 if(
   CMAKE_CXX_COMPILER_ID MATCHES "Clang"
@@ -3177,6 +3214,7 @@ target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
 
 # OpenGL
+option(QGLES2 "Use GLES 2.0 (or higher) instead of full OpenGL for UNIX" OFF)
 if(IOS)
   target_link_libraries(mixxx-lib PRIVATE "-framework OpenGLES")
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -3204,6 +3242,9 @@ else()
     )
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
+  if(UNIX AND QGLES2)
+    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
   endif()
   if(APPLE)
     # Restore the previous CMAKE_FIND_FRAMEWORK value
@@ -3297,8 +3338,17 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+  endif()
+  if(QT_VERSION VERSION_LESS 6.8)
+    # From Qt 6.8 integrated in Qml via QmlMeta
+    list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
+  endif()
 endif()
 find_package(
   Qt${QT_VERSION_MAJOR}
@@ -3391,6 +3441,7 @@ if(QML)
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
+      res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
   target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
@@ -3416,6 +3467,21 @@ if(QML)
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlwaveformoverview.cpp
       src/qml/qmlmixxxcontrollerscreen.cpp
+      src/qml/qmlwaveformdisplay.cpp
+      src/qml/qmlwaveformrenderer.cpp
+      src/waveform/renderers/allshader/digitsrenderer.cpp
+      src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderer.cpp
+      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+      src/waveform/renderers/allshader/waveformrendermark.cpp
+      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+      src/waveform/renderers/allshader/waveformrendererslipmode.cpp
+      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererhsv.cpp
+      src/waveform/renderers/allshader/waveformrenderersimple.cpp
       # The following sources need to be in this target to get QML_ELEMENT properly interpreted
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
@@ -3616,21 +3682,38 @@ else()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickControls2
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickControls2Impl
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
           applocal
       )
+
+      if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2Basic
+            Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
+            Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
+            Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
+
+      if(QT_VERSION VERSION_LESS 6.8)
+        # From Qt 6.8 integrated in Qml via QmlMeta
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -3650,23 +3733,17 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickTemplates2
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
-
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QmlWorkerScript
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickTemplates2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -4085,12 +4162,6 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
-if(NOT TagLib_VERSION VERSION_LESS 2.0.0)
-  message(
-    WARNING
-    "Installed Taglib ${TagLib_VERSION} is not supported and might lead to data loss (https://github.com/mixxxdj/mixxx/issues/12708). Use version >= 1.11 and < 2.0 instead."
-  )
-endif()
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if(QML)
   target_link_libraries(mixxx-qml-lib PUBLIC TagLib::TagLib)
@@ -4378,7 +4449,12 @@ if(STEM)
   endif()
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
-    target_sources(mixxx-qml-lib PRIVATE src/qml/qmlstemsmodel.cpp)
+    target_sources(
+      mixxx-qml-lib
+      PRIVATE
+        src/waveform/renderers/allshader/waveformrendererstem.cpp
+        src/qml/qmlstemsmodel.cpp
+    )
   endif()
 endif()
 
@@ -4733,8 +4809,26 @@ endif()
 
 # rendergraph
 add_subdirectory(src/rendergraph)
+target_compile_definitions(
+  rendergraph_gl
+  PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+)
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 target_compile_definitions(mixxx-lib PUBLIC rendergraph=rendergraph_gl)
+target_compile_definitions(mixxx-lib PRIVATE allshader=allshader_gl)
+if(BUILD_TESTING)
+  target_compile_definitions(mixxx-test PRIVATE allshader=allshader_gl)
+endif()
+if(QML)
+  target_compile_definitions(
+    rendergraph_sg
+    PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
+  )
+  target_link_libraries(mixxx-qml-lib PRIVATE rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
+  target_compile_definitions(mixxx-qml-lib PRIVATE __SCENEGRAPH__)
+  target_compile_definitions(mixxx-qml-lib PRIVATE allshader=allshader_sg)
+endif()
 
 # WavPack audio file support
 find_package(wavpack)
@@ -4873,7 +4967,14 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy noble oracular plucky)
+set(
+  CPACK_DEBIAN_DISTRIBUTION_RELEASES
+  jammy
+  noble
+  oracular
+  plucky
+  questing
+)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
@@ -4929,7 +5030,9 @@ endif()
 
 if(APPLE AND MACOS_BUNDLE)
   set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-  set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
+  foreach(PREFIX ${CMAKE_PREFIX_PATH})
+    list(APPEND BUNDLE_DIRS "${PREFIX}/lib")
+  endforeach()
   set(
     APPLE_CODESIGN_ENTITLEMENTS
     "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements"
