@@ -69,7 +69,7 @@ class WaveformMarkSet {
         return m_marksToRender.cend();
     }
 
-    // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
+    // hotCue must be valid (>= 0 and < kMaxNumberOfHotcues)
     WaveformMarkPointer getHotCueMark(int hotCue) const;
     WaveformMarkPointer getDefaultMark() const;
     WaveformMarkPointer findHoveredMark(QPoint point, Qt::Orientation orientation) const;

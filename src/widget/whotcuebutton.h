@@ -6,6 +6,10 @@
 #include "widget/wcuemenupopup.h"
 #include "widget/wpushbutton.h"
 
+/// Pushbutton with hotcue controls and cue menu popup on right-click.
+/// This button can be dropped onto other WHotcueButtons to swap their hotcues.
+/// Can also be dropped onto WPlayButton in order to easily switch from hotcue
+/// previewing to regular play.
 class WHotcueButton : public WPushButton {
     Q_OBJECT
   public:
