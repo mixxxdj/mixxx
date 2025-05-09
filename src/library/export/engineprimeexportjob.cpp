@@ -385,9 +385,22 @@ void exportPlaylist(
     // Loop through all track ids and add.  If the playlist already existed,
     // clear out all prior entries.
     extPlaylist.clear_tracks();
-    for (const auto& trackId : trackIds) {
-        const auto extTrack = *mixxxToExtTrackMap[trackId];
-        extPlaylist.add_track_back(extTrack);
+    if (pDb->supports_feature(djinterop::feature::playlists_support_duplicate_tracks)) {
+        for (const auto& trackId : trackIds) {
+            const auto extTrack = *mixxxToExtTrackMap[trackId];
+            extPlaylist.add_track_back(extTrack);
+        }
+    } else {
+        // The database doesn't support the same track being added multiple
+        // times to the playlist, so (silently) omit duplicates.
+        QSet<TrackId> trackIdsAdded;
+        for (const auto& trackId : trackIds) {
+            if (!trackIdsAdded.contains(trackId)) {
+                const auto extTrack = *mixxxToExtTrackMap[trackId];
+                extPlaylist.add_track_back(extTrack);
+                trackIdsAdded.insert(trackId);
+            }
+        }
     }
 }
 
