@@ -14,7 +14,6 @@
 struct ProductInfo {
     QString friendlyName;
     QUrl visualUrl;
-    QRegularExpression serialNumberParser;
 
     QString protocol;
     QString vendor_id;

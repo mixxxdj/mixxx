@@ -114,6 +114,8 @@ class AbstractLegacyControllerSetting : public QObject {
     }
 
 #ifdef MIXXX_USE_QML
+    /// @brief The setting type in human readable form.
+    /// @return a string
     virtual QString getType() const = 0;
 #endif
 

@@ -29,8 +29,7 @@ bool operator==(const ProductInfo& a, const ProductInfo& b) {
 }
 
 size_t qHash(const ProductInfo& product) {
-    return qHash(product.serialNumberParser) +
-            qHash(product.protocol) +
+    return qHash(product.protocol) +
             qHash(product.vendor_id) +
             qHash(product.product_id) +
             qHash(product.interface_number) +
@@ -160,7 +159,6 @@ ProductInfo MappingInfo::parseGenericProduct(const QDomElement& element) const {
     product.friendlyName = element.attribute("friendly_name");
 
     product.visualUrl = QUrl(element.attribute("image"));
-    product.serialNumberParser = QRegularExpression(element.attribute("serial_number_parser"));
     return product;
 }
 

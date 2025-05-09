@@ -169,14 +169,7 @@ QString QmlControllerDeviceProxy::serialNumber() const {
     if (!sn.isEmpty()){
         return sn;
     }
-    if (!m_productInfo.has_value() || !m_productInfo.value().serialNumberParser.isValid()) {
-        return QStringLiteral("N/A");
-    }
-    auto match = m_productInfo.value().serialNumberParser.match(m_pInternal->getName());
-    if (!match.hasMatch()){
-        return QStringLiteral("N/A");
-    }
-    return match.captured(1);
+    return QStringLiteral("N/A");
 }
 QString QmlControllerDeviceProxy::getSinceVersion() const {
     QVersionNumber version;
