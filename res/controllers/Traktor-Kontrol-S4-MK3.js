@@ -116,7 +116,7 @@ const BeatLoopRolls = [
 // Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the scratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
-const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;
+const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3; // aka 100/3
 
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
@@ -265,6 +265,7 @@ class HIDInputReport {
     }
 }
 
+// I don't think HIDOutputReport is ever used -ZT
 class HIDOutputReport {
     constructor(reportId, length) {
         this.reportId = reportId;
@@ -1388,7 +1389,7 @@ const wheelRelativeMax = 2 ** 32 - 1;
 const wheelAbsoluteMax = 2879;
 
 const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
+const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns (100MHz)
 
 const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
 const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
@@ -1769,6 +1770,7 @@ class S4Mk3Deck extends Deck {
                     this.indicator(false);
                     const wheelOutput = new Uint8Array(40).fill(0);
                     wheelOutput[0] = decks[0] - 1;
+                    // Different function definition from the other calls in this file:
                     controller.sendOutputReport(wheelOutput.buffer, null, 50, true);
                     if (!skipRestore) {
                         this.deck.wheelMode = this.previousWheelMode;
@@ -2345,12 +2347,11 @@ class S4Mk3Deck extends Deck {
                     switchPadLayer(this.deck, this.deck.keyboard);
                     this.deck.currentPadLayer = this.deck.padLayers.keyboard;
                 }
-                this.deck.lightPadMode();
-            },
-            onLongRelease: function() {
-                if (this.previousMoveMode !== null && !this.deck.keyboardPlayMode) {
-                    this.deck.moveMode = this.previousMoveMode;
-                    this.previousMoveMode = null;
+                this.deck.lights HID OutputReport to HID devicefunction() {
+                    if (this.previousMoveMode !== null && !this.deck.keyboardPlayMode) {
+                        this.deck.moveMode = this.previousMoveMode;
+                        this.previousMoveMode = null;
+                    }
                 }
             },
             // hack to switch the LED color when changing decks
@@ -2459,26 +2460,25 @@ class S4Mk3Deck extends Deck {
                 if (timestamp < oldTimestamp) {
                     oldTimestamp -= wheelTimerMax;
                 }
-
-                // Calculate the 1st derivative of angular position --> angular velocity
+                
+                // First, unwrap over/under-runs in the position signal
                 let diff = value - oldValue;
-                // unwrap over/under-runs
                 if (diff > wheelRelativeMax / 2) {
                     oldValue += wheelRelativeMax;
                 } else if (diff < -wheelRelativeMax / 2) {
                     oldValue -= wheelRelativeMax;
                 }
                 
-                // Tie the derivative to the time reference for real speed
+                
+                // Using the unwrapped position reference, calculate 1st derivative
+                // (angular velocity)
                 const currentSpeed = (value - oldValue)/(timestamp - oldTimestamp);
                 if ((currentSpeed <= 0) === (speed <= 0)) {
-                    speed = (speed + currentSpeed)/2;
+                    speed = (speed + currentSpeed)/2; // ???: what is this doing
                 } else {
                     speed = currentSpeed;
                 }
                 this.oldValue = [value, timestamp, speed];
-                this.speed = wheelAbsoluteMax*speed*10;
-
                 if (this.speed === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
@@ -2560,19 +2560,27 @@ class S4Mk3Deck extends Deck {
                     return;
                 }
                 // Emit cue haptic feedback if enabled
+
+                // samplePos aka currentPos
                 const samplePos = Math.round(fractionOfTrack * engine.getValue(this.group, "track_samples"));
                 if (this.deck.wheelTouch.touched && CueHapticFeedback) {
                     const cuePos = engine.getValue(this.group, "cue_point");
+                    // forward == clockwise rotation
                     const forward = this.lastPos <= samplePos;
                     let fired = false;
+                    // Stage a motor instruction with forward direction and max wheel force
                     const motorDeckData = new Uint8Array([
                         1, 0x20, 1, MaxWheelForce & 0xff, MaxWheelForce >> 8,
                     ]);
+                    // if the cue position is between the current and last position,
+                    // then fire the haptic bump
+                    // clockwise check: last < cue < current
                     if (forward && this.lastPos < cuePos && cuePos < samplePos) {
                         fired = true;
+                    // counter-clockwise check: current < cue < last
                     } else if (!forward && cuePos < this.lastPos && samplePos <= cuePos) {
-                        motorDeckData[1] = 0xe0;
-                        motorDeckData[2] = 0xfe;
+                        motorDeckData[1] = 0xe0; // ???: what does this mean? set backwards direction I assume
+                        motorDeckData[2] = 0xfe; // ???: what does this mean? set backwards direction I assume
                         fired = true;
                     }
                     if (fired) {
@@ -2580,6 +2588,8 @@ class S4Mk3Deck extends Deck {
                             1, 0x20, 1, 0, 0,
                             1, 0x20, 1, 0, 0,
                         ]);
+                        // overwrite one or the other of the 5-byte motor instructions
+                        // with 
                         if (this.deck === TraktorS4MK3.leftDeck) {
                             motorData.set(motorDeckData);
                         } else {
@@ -2596,6 +2606,7 @@ class S4Mk3Deck extends Deck {
                 const fractionalRevolution = revolutions - Math.floor(revolutions);
                 const LEDposition = fractionalRevolution * wheelAbsoluteMax;
 
+                // send commands to the wheel ring LEDs
                 const wheelOutput = new Uint8Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
                 wheelOutput[4] = this.color + Button.prototype.brightnessOn;
@@ -2701,12 +2712,17 @@ class S4Mk3MotorManager {
 
         let expectedSpeed = 0;
 
+        // currentSpeed is normalized to a reference value of baseRPS (100/3/60 for 33.3rpm)
         const currentSpeed = this.deck.wheelRelative.speed / baseRevolutionsPerSecond;
 
         if (this.deck.wheelMode === wheelModes.motor
             && engine.getValue(this.deck.group, "play")) {
+            // expectedSpeed references nominal playrate of 1.0 (not including pitch adjustments)
             expectedSpeed = engine.getValue(this.deck.group, "rate_ratio");
+            // normalisationFactor doesn't appear to be used anywhere
             const normalisationFactor = 1/expectedSpeed/5;
+            //???: what is going on in this velocity calculation?
+            // it looks like it might be a smoothing filter of some sort
             velocity = expectedSpeed + Math.pow(-5 * (expectedSpeed / 1) * (currentSpeed - expectedSpeed), 3);
         } else if (this.deck.wheelMode !== wheelModes.motor) {
             if (TightnessFactor > 0.5) {
@@ -2729,13 +2745,26 @@ class S4Mk3MotorManager {
         velocity *= this.baseFactor;
 
         if (velocity < 0) {
+            // if velocity is negative, set the wheel direction codes
             motorData[1] = 0xe0;
             motorData[2] = 0xfe;
+            // and then make the outgoing velocity command positive
             velocity = -velocity;
         } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
+            // if going forwards, add the "zero speed force" which is the
+            // nominal force required to keep spinning at the desired RPM
+            // when no other force is applied by the user
+            //
+            // ...not sure if this is necessary if we implement a proper control system
+            // because it should find its own "zero speed force" in that case
+            // (this might explain the "swimming" playback btw) 
             velocity += this.zeroSpeedForce;
         }
 
+        // detecting if the user is stopping the disc from rotating
+        // I really don't think this is necessary if we implement a physical model
+        // to detect relative velocity of [virtual] platter rotation versus
+        // [measured] disc rotation during the slip-state
         if (!this.isBlockedByUser() && velocity > MaxWheelForce) {
             this.userHold++;
         } else if (velocity < MaxWheelForce / 2 && this.userHold > 0) {
@@ -2743,22 +2772,31 @@ class S4Mk3MotorManager {
         }
 
         if (this.isBlockedByUser()) {
+            // if the user is blocking the disc rotation, maintain scratch mode
             engine.setValue(this.deck.group, "scratch2_enable", true);
             this.currentMaxWheelForce = this.zeroSpeedForce + parseInt(this.baseFactor * expectedSpeed);
         } else if (expectedSpeed && this.userHold === 0 && !this.deck.wheelTouch.touched) {
+            // if the user has let go, turn off scratch mode and drive the motor hard
+            // to get back to the base rotation speed
             engine.setValue(this.deck.group, "scratch2_enable", false);
             this.currentMaxWheelForce = MaxWheelForce;
         }
 
+        // clip the output to the max output if overdriving
+        // and/or convert velocity to integer for output to motors
         velocity = Math.min(
             this.currentMaxWheelForce,
             Math.floor(velocity)
         );
 
-        motorData[3] = velocity & 0xff;
-        motorData[4] = velocity >> 8;
+        // Write the calculated motor force to the output buffer
+        // (big endian bytes)
+        motorData[3] = velocity & 0xff; // low byte first
+        motorData[4] = velocity >> 8; // high byte second
         return motorData;
     }
+    // function that tells us when the user is arresting the disc rotation
+    // (should not be necessary with a physical model)
     isBlockedByUser() {
         return this.userHold >= 10;
     }
@@ -2933,7 +2971,7 @@ class S4MK3 {
         // in them such as the wheel tension.
 
         this.outReports = [];
-        this.outReports[128] = new HIDOutputReport(128, 94);
+        this.outReports[128] = new Report(128, 94); // needs more descriptive names, not hardcoded numbers -ZT
 
         this.effectUnit1 = new S4Mk3EffectUnit(1, this.inReports, this.outReports[128],
             {
