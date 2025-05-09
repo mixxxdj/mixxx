@@ -1,19 +1,24 @@
 #pragma once
 
-#include "library/browse/browsetablemodel.h"
 #include "library/libraryview.h"
-#include "library/proxytrackmodel.h"
 #include "library/recording/ui_dlgrecording.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
+#include "util/parented_ptr.h"
 
+class BrowseTableModel;
+class BrowseLibraryTableModel;
+class KeyboardEventFilter;
+class Library;
+class ProxyTrackModel;
+class RecordingManager;
+class TrackCollection;
+class TrackModel;
 class WLibrary;
 class WTrackTableView;
-class Library;
-class KeyboardEventFilter;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
@@ -27,7 +32,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void onShow() override{};
     bool hasFocus() const override;
     void setFocus() override;
-    inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
+    QString currentSearch() const;
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
 
@@ -37,6 +42,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void refreshBrowseModel();
     void slotRestoreSearch();
     void slotDurationRecorded(const QString& durationRecorded);
+
+    void slotLoadTrack(TrackPointer pTrack);
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -53,14 +60,20 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   private:
     UserSettingsPointer m_pConfig;
-    WTrackTableView* m_pTrackTableView;
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
+    TrackCollection* const m_pTrackCollection;
+
+    parented_ptr<WTrackTableView> m_pTrackTableView;
+    parented_ptr<BrowseTableModel> m_pBrowseModel;
+    ProxyTrackModel* m_pProxyModel;
+    parented_ptr<BrowseLibraryTableModel> m_pLibraryTableModel;
+    TrackModel* m_pCurrentTrackModel;
 
     void refreshLabels();
     void slotRecButtonClicked(bool checked);
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
+
+    TrackPointer m_currentRecTrack;
 
     RecordingManager* m_pRecordingManager;
 };
