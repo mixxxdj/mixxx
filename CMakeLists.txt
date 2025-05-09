@@ -3452,6 +3452,8 @@ if(QML)
       src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlwaveformdisplay.cpp
       src/qml/qmlwaveformrenderer.cpp
+      src/qml/qmlsettingparameter.cpp
+      src/qml/qmlpreferencesproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
@@ -3808,6 +3810,22 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
         COMPONENT applocal
       )
+
+      # install qml6-module-qtquick-dialogs
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Dialogs"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # install qml6-module-qt-labs-folderlistmodel
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/folderlistmodel"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
+        COMPONENT applocal
+      )
     endif()
 
     if(WIN32)
@@ -4117,6 +4135,10 @@ if(RUBBERBAND)
   find_package(rubberband REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
   target_compile_definitions(mixxx-lib PUBLIC __RUBBERBAND__)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE rubberband::rubberband)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __RUBBERBAND__)
+  endif()
   target_sources(
     mixxx-lib
     PRIVATE
@@ -4894,7 +4916,7 @@ if(QT6)
   if(QML)
     set(
       CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins, qml6-module-qt5compat-graphicaleffects, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-qtquick-nativestyle, qml6-module-qtquick-templates, qml6-module-qtquick-window, qml6-module-qt-labs-qmlmodels, qml6-module-qtquick-shapes, qml6-module-qtqml-workerscript"
+      "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins, qml6-module-qt5compat-graphicaleffects, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-qtquick-nativestyle, qml6-module-qtquick-templates, qml6-module-qtquick-window, qml6-module-qt-labs-qmlmodels, qml6-module-qtquick-dialogs, qml6-module-qtquick-shapes, qml6-module-qtqml-workerscript"
     )
   else()
     set(
