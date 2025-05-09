@@ -87,7 +87,8 @@ DlgPrefController::DlgPrefController(
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
-          m_screensTabIndex(-1) {
+          m_screensTabIndex(-1),
+          m_hidReportTabsManager(nullptr) {
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
     createLinkColor();
@@ -191,6 +192,12 @@ DlgPrefController::DlgPrefController(
         m_ui.labelHidUsagePageValue->setVisible(true);
         m_ui.labelHidUsage->setVisible(true);
         m_ui.labelHidUsageValue->setVisible(true);
+
+        // Create HID report tabs
+        m_hidReportTabsManager =
+                std::make_unique<ControllerHidReportTabsManager>(
+                        m_ui.controllerTabs, hidController);
+        m_hidReportTabsManager->createReportTypeTabs();
     } else
 #endif
     {
@@ -1158,7 +1165,7 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
     }
 #endif
 
-    // Inputs tab
+    // MIDI Inputs tab
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this,
                     m_pControlPickerMenu,
@@ -1186,7 +1193,7 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
     // Trigger search when the model was recreated after hitting Apply
     slotInputControlSearch();
 
-    // Outputs tab
+    // MIDI Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this,
                     m_pControlPickerMenu,

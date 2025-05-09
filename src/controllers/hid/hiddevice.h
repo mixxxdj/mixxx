@@ -1,8 +1,12 @@
 #pragma once
 
+#include <hidapi.h>
+
 #include <QObject>
 #include <QString>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "controllers/controller.h"
 #include "controllers/hid/hidusagetables.h"
@@ -101,6 +105,8 @@ class DeviceInfo final {
         return mixxx::hid::HidUsageTables::getUsageDescription(usage_page, usage);
     }
 
+    std::optional<std::vector<uint8_t>> fetchRawReportDescriptor(hid_device* pHidDevice);
+
     bool isValid() const {
         return !getProductString().isNull() && !getSerialNumber().isNull();
     }
@@ -131,6 +137,8 @@ class DeviceInfo final {
     QString m_manufacturerString;
     QString m_productString;
     QString m_serialNumber;
+
+    std::optional<std::vector<uint8_t>> m_reportDescriptor;
 };
 
 } // namespace hid

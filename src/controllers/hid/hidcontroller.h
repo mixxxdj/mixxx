@@ -3,6 +3,7 @@
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidiothread.h"
+#include "controllers/hid/hidreportdescriptor.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
 /// HID controller backend
@@ -70,6 +71,15 @@ class HidController final : public Controller {
     QString getUsageDescription() const {
         return m_deviceInfo.getUsageDescription();
     }
+
+    const std::optional<hid::reportDescriptor::HIDReportDescriptor>& getReportDescriptor() const {
+        return m_reportDescriptor;
+    }
+
+    HidIoThread* getHidIoThread() const {
+        return m_pHidIoThread.get();
+    }
+
     bool isMappable() const override {
         if (!m_pMapping) {
             return false;
@@ -87,7 +97,11 @@ class HidController final : public Controller {
     // 0x0.
     bool sendBytes(const QByteArray& data) override;
 
-    const mixxx::hid::DeviceInfo m_deviceInfo;
+    mixxx::hid::DeviceInfo m_deviceInfo;
+    // These optional members are not set before opening the device
+    std::optional<std::vector<uint8_t>> m_rawReportDescriptor;
+    std::optional<hid::reportDescriptor::HIDReportDescriptor> m_reportDescriptor;
+    std::optional<bool> m_deviceHasReportIds;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
