@@ -807,15 +807,6 @@ std::shared_ptr<ConfigObject<ConfigValueKbd>> CoreServices::getKeyboardConfig() 
     return m_pKeyboardEventFilter->getKeyboardConfig();
 }
 
-void CoreServices::slotOptionsKeyboard(bool toggle) {
-    if (toggle) {
-        qDebug() << "Enable keyboard shortcuts/mappings";
-    } else {
-        qDebug() << "Disable keyboard shortcuts/mappings";
-    }
-    m_pKeyboardEventFilter->setEnabled(toggle);
-}
-
 bool CoreServices::initializeDatabase() {
     kLogger.info() << "Connecting to database";
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);

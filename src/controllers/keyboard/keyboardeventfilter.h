@@ -33,7 +33,6 @@ class KeyboardEventFilter : public QObject {
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
 
-    void setEnabled(bool enabled);
     bool isEnabled() {
         return m_enabled;
     }
@@ -54,6 +53,7 @@ class KeyboardEventFilter : public QObject {
     void updateMenuBarActionShortcuts();
 
   public slots:
+    void setEnabled(bool enabled);
     void reloadKeyboardConfig();
 
   signals:

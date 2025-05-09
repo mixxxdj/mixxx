@@ -871,13 +871,6 @@ void MixxxMainWindow::connectMenuBar() {
     // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
     m_pMenuBar->onFullScreenStateChange(isFullScreen());
 
-    // Keyboard shortcuts
-    connect(m_pMenuBar,
-            &WMainMenuBar::toggleKeyboardShortcuts,
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::slotOptionsKeyboard,
-            Qt::UniqueConnection);
-
     // Help
     connect(m_pMenuBar,
             &WMainMenuBar::showAbout,

@@ -106,9 +106,6 @@ class CoreServices : public QObject {
     void initializationProgressUpdate(int progress, const QString& serviceName);
     void libraryScanSummary(const LibraryScanResultSummary& result);
 
-  public slots:
-    void slotOptionsKeyboard(bool toggle);
-
   private:
     bool initializeDatabase();
     void initializeKeyboard();
