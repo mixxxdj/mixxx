@@ -89,53 +89,6 @@ void BackUpWorker::performBackUp() {
                     archivePath.toStdString());
         }
 
-        // std::map<std::wstring, std::wstring> fileMap;
-        // QDirIterator it(settingsDir, QDir::Files | QDir::NoDotAndDotDot,
-        // QDirIterator::Subdirectories);
-
-        // const QString rootDirName = originalDirName + "-" + timestamp + "/";
-        // const std::wstring archiveRootDir = rootDirName.toStdWString();
-
-        // const QString settingsDirWithSlash = settingsDir + "/"; // Ensure trailing slash
-        ////const size_t prefixLength = settingsDir.length() + 1;
-        // emit progressChanged(30);
-
-        // while (it.hasNext()) {
-        //    QString srcPath = it.next();
-        //    QString relativePath = srcPath.mid(settingsDirWithSlash.length());
-
-        //    // Skip analysis folders at any level
-        //    if (relativePath.contains("/analysis/") ||
-        //            relativePath.startsWith("analysis/") ||
-        //            relativePath.endsWith("/analysis")) {
-        //        continue;
-        //    }
-
-        //    std::wstring absolutePath = srcPath.toStdWString();
-        //    fileMap[absolutePath] = archiveRootDir + relativePath.toStdWString();
-        //}
-
-        // if (!fileMap.empty()) {
-        //     compressor.compressDirectory(
-        //             settingsDir.toStdString(),
-        //             archivePath.toStdString());
-        // }
-
-        // while (it.hasNext()) {
-        //     QString srcPath = it.next();
-        //     if (!srcPath.contains("/analysis/", Qt::CaseInsensitive)) {
-        //         std::wstring absolutePath = srcPath.toStdWString();
-        //         QString relativePath = srcPath.mid(prefixLength);
-        //         fileMap[absolutePath] = archiveRootDir + relativePath.toStdWString();
-        //     }
-        // }
-
-        // if (!fileMap.empty()) {
-        //     compressor.compressDirectory(
-        //             settingsDir.toStdString(),
-        //             archivePath.toStdString());
-        // }
-
         emit progressChanged(80);
         emit backUpFinished(true, archivePath);
         emit progressChanged(100);
