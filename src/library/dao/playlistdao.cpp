@@ -155,7 +155,7 @@ QList<TrackId> PlaylistDAO::getTrackIdsInPlaylistOrder(const int playlistId) con
 
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
-            "SELECT DISTINCT track_id FROM PlaylistTracks "
+            "SELECT track_id FROM PlaylistTracks "
             "WHERE playlist_id = :id ORDER BY position ASC"));
     query.bindValue(":id", playlistId);
     if (!query.exec()) {
