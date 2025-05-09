@@ -8,6 +8,7 @@
 #include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
 #include "util/parented_ptr.h"
+#include "widget/wmenucheckbox.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
@@ -164,7 +165,8 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
         QString title = model->headerData(i, orientation()).toString();
 
-        auto pCheckBox = make_parented<QCheckBox>(title, &m_menu);
+        // Custom QCheckBox with fixed hover behavior
+        auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
         // Keep a map of checkboxes and columns
         m_columnCheckBoxes.insert(i, pCheckBox.get());
         connect(pCheckBox.get(),

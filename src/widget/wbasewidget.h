@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "util/string.h"
+
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
 
@@ -26,17 +28,17 @@ class WBaseWidget {
     }
 
     void appendBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.append(tooltip.trimmed());
+        m_baseTooltip.append(mixxx::removeTrailingWhitespaces(tooltip));
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void prependBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.prepend(tooltip.trimmed());
+        m_baseTooltip.prepend(mixxx::removeTrailingWhitespaces(tooltip));
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void setBaseTooltip(const QString& tooltip) {
-        m_baseTooltip = tooltip.trimmed();
+        m_baseTooltip = mixxx::removeTrailingWhitespaces(tooltip);
         m_pWidget->setToolTip(m_baseTooltip);
     }
 

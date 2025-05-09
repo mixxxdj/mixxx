@@ -43,6 +43,13 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
+    // Set the color for the star polygons.
+    // Only remaining very minor issue: if the editor is active while the played
+    // state changes, the polygon color will not be updated (though that's a
+    // confusing situation anyway since changed index (row) data will trigger a
+    // paint event which resets the pending (unsaved) rating anyway.
+    setHighlightedTextColor(newOption, index);
+
     StarEditor* editor =
             new StarEditor(parent, m_pTableView, index, newOption, m_focusBorderColor);
     connect(editor,

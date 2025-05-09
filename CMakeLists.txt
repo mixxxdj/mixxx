@@ -338,8 +338,7 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.6.0)
-enable_language(C CXX)
+project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
@@ -411,6 +410,16 @@ if(MSVC)
   # Remove unreferenced code and data
   # Since c++11 they can safely be removed to speed up linking.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
+
+  if(NOT DEFINED MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION VERSION_LESS 143)
+    message(
+      FATAL_ERROR
+      "MSVC_TOOLSET_VERSION is ${MSVC_TOOLSET_VERSION}.\n"
+      "Mixxx requires the Microsoft Visual C++ Redistributable toolset of version 143 (VS2022) or greater, "
+      "as the VCPKG buildenv is built with this version.\n"
+      "Please use the Visual Studio 2022 toolset therefore!"
+    )
+  endif()
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
@@ -1219,6 +1228,7 @@ add_library(
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
   src/library/dlgtagfetcher.cpp
@@ -1252,6 +1262,7 @@ add_library(
   src/library/missing_hidden/hiddentablemodel.cpp
   src/library/missing_hidden/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/overviewcache.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
@@ -1281,6 +1292,7 @@ add_library(
   src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
+  src/library/tabledelegates/overviewdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -1503,11 +1515,13 @@ add_library(
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
+  src/waveform/overviewtype.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
   src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
+  src/waveform/renderers/waveformoverviewrenderer.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
@@ -1582,6 +1596,7 @@ add_library(
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wmenucheckbox.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp
@@ -2237,7 +2252,9 @@ endif()
 if(WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
   if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_UCRT_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
   include(InstallRequiredSystemLibraries)
 endif()
@@ -2772,7 +2789,11 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
+find_package(Chromaprint)
+if(NOT Chromaprint_FOUND)
+  # Fail verbose, because with Qt Creator, the verbose error message for Qt is bypassed.
+  fatal_error_missing_env()
+endif()
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
@@ -3108,6 +3129,9 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
+# With gcc >= 14 and -flto some code is inlined to fast-math code and then
+# optimized away. Disable it explicit for all compiler just in case.
+set_target_properties(FpClassify PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
 
 if(
   CMAKE_CXX_COMPILER_ID MATCHES "Clang"
@@ -3297,8 +3321,17 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+  endif()
+  if(QT_VERSION VERSION_LESS 6.8)
+    # From Qt 6.8 integrated in Qml via QmlMeta
+    list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
+  endif()
 endif()
 find_package(
   Qt${QT_VERSION_MAJOR}
@@ -3639,6 +3672,32 @@ else()
           applocal
       )
 
+      if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2Basic
+            Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
+            Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
+            Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
+
+      if(QT_VERSION VERSION_LESS 6.8)
+        # From Qt 6.8 integrated in Qml via QmlMeta
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
+
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickLayouts
@@ -3657,14 +3716,17 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QmlWorkerScript
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickTemplates2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -4083,12 +4145,6 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
-if(NOT TagLib_VERSION VERSION_LESS 2.0.0)
-  message(
-    WARNING
-    "Installed Taglib ${TagLib_VERSION} is not supported and might lead to data loss (https://github.com/mixxxdj/mixxx/issues/12708). Use version >= 1.11 and < 2.0 instead."
-  )
-endif()
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if(QML)
   target_link_libraries(mixxx-qml-lib PUBLIC TagLib::TagLib)
@@ -4894,7 +4950,14 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy noble oracular plucky)
+set(
+  CPACK_DEBIAN_DISTRIBUTION_RELEASES
+  jammy
+  noble
+  oracular
+  plucky
+  questing
+)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
@@ -4950,7 +5013,9 @@ endif()
 
 if(APPLE AND MACOS_BUNDLE)
   set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-  set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
+  foreach(PREFIX ${CMAKE_PREFIX_PATH})
+    list(APPEND BUNDLE_DIRS "${PREFIX}/lib")
+  endforeach()
   set(
     APPLE_CODESIGN_ENTITLEMENTS
     "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements"

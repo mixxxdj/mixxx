@@ -454,7 +454,7 @@
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
-                      <SizePolicy>me,max</SizePolicy>
+                      <SizePolicy>me,min</SizePolicy>
                       <Children>
                         <Template src="skins:LateNight/waveforms_container.xml"/>
                       </Children>

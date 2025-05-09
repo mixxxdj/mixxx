@@ -23,7 +23,6 @@
 #include "widget/wlibrarysidebar.h"
 #endif
 
-
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
@@ -70,7 +69,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_COVERART_LOCATION,
             LIBRARYTABLE_COVERART_COLOR,
             LIBRARYTABLE_COVERART_DIGEST,
-            LIBRARYTABLE_COVERART_HASH};
+            LIBRARYTABLE_COVERART_HASH,
+            LIBRARYTABLE_WAVESUMMARYHEX};
     QStringList searchColumns = {
             LIBRARYTABLE_ARTIST,
             LIBRARYTABLE_ALBUM,
@@ -121,7 +121,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pSidebarModel->setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
-    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportLibraryAction.get(),
             &QAction::triggered,
             this,
@@ -173,7 +173,7 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
         return;
     }
     m_pLibraryTableModel->search(query);
-    activate();
+    selectAndActivate();
 }
 
 #ifdef __ENGINEPRIME__

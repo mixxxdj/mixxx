@@ -56,6 +56,3 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="054c", TAG+="uaccess"
 
 # Missing:
 # - American Musical Supply (AMS/Mixars)
-
-# Only some distribuions require the below
-KERNEL=="hiddev*", NAME="usb/%k", GROUP="uaccess"

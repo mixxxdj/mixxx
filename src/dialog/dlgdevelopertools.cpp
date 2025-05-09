@@ -38,7 +38,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         qWarning() << "ERROR: Could not open log file:" << logFileName;
     }
 
-    // Set up the control search box
+    // Set up the control search
+    m_controlProxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     connect(controlSearch,
             &WSearchLineEdit::search,
             this,
@@ -103,7 +104,13 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
 }
 
 void DlgDeveloperTools::slotControlSearch(const QString& search) {
-    m_controlProxyModel.setFilterFixedString(search);
+    QStringList words = search.split(' ');
+    if (words.size() > 1) {
+        QString combo = words.join(QStringLiteral(".*"));
+        m_controlProxyModel.setFilterRegularExpression(combo);
+    } else {
+        m_controlProxyModel.setFilterFixedString(search);
+    }
 }
 
 void DlgDeveloperTools::slotControlDump() {

@@ -122,12 +122,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slotClearSearch);
 
-    QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            &WSearchLineEdit::slotSetShortcutFocus);
-
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
@@ -217,31 +211,35 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     setPalette(pal);
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
-            tr("Clear the search bar input field") + "\n\n" +
+            tr("Clear the search bar input field"));
+}
 
-            tr("Shortcut") + ": \n" +
-            tr("Ctrl+Backspace"));
-
+void WSearchLineEdit::setupToolTip(const QString& searchInCurrentViewShortcut,
+        const QString& searchInAllTracksShortcut) {
     setBaseTooltip(tr("Search", "noun") + "\n" +
-            tr("Enter a string to search for") + "\n" +
-            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
-            "\n" + tr("For more information see User Manual > Mixxx Library") +
-            "\n\n" +
-            tr("Shortcuts") + ": \n" +
-            tr("Ctrl+F") + "  " +
-            tr("Focus", "Give search bar input focus") + "\n" +
-            tr("Return") + " " +
-            tr("Trigger search before search-as-you-type timeout or"
-               "jump to tracks view afterwards") +
+            tr("Enter a string to search for.") + " " +
+            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990.") +
+            "\n" + tr("See User Manual > Mixxx Library for more information.") +
+            "\n\n" + searchInCurrentViewShortcut + ": " +
+            tr("Focus/Select All (Search in current view)",
+                    "Give search bar input focus") +
+            "\n" + searchInAllTracksShortcut + ": " +
+            tr("Focus/Select All (Search in \'Tracks\' library view)") +
+            "\n\n" + tr("Additional Shortcuts When Focused:") + "\n" +
+            tr("Return") + ": " +
+            tr("Trigger search before search-as-you-type timeout or "
+               "focus tracks view afterwards") +
             "\n" +
-            tr("Ctrl+Backspace") + "  " +
-            tr("Clear input", "Clear the search bar input field") + "\n" +
-            tr("Ctrl+Space") + "  " +
+            tr("Esc or Ctrl+Return") + ": " +
+            tr("Immediately trigger search and focus tracks view",
+                    "Exit search bar and leave focus") +
+            "\n" + tr("Ctrl+Space") + ": " +
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
-            tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
-            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+            tr("Delete or Backspace") +
+            " (" + tr("in search history") + "): " +
+            tr("Delete query from history"));
 }
 
 void WSearchLineEdit::loadQueriesFromConfig() {
@@ -311,15 +309,12 @@ QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
         QString text = currentText();
-        QCompleter* pCompleter = completer();
-        if (pCompleter && hasSelectedText()) {
-            if (text.startsWith(pCompleter->completionPrefix()) &&
-                    pCompleter->completionPrefix().size() == lineEdit()->cursorPosition()) {
-                // Search for the entered text until the user has accepted the
-                // completion by pressing Enter or changed/deselected the selected
-                // completion text with Right or Left key
-                return pCompleter->completionPrefix();
-            }
+        QString completionPrefix;
+        if (hasCompletionAvailable(&completionPrefix)) {
+            // Search for the entered text until the user has accepted the
+            // completion by pressing Enter or changed/deselected the selected
+            // completion text with Right or Left key
+            return completionPrefix;
         }
         return text;
     } else {
@@ -402,7 +397,12 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
-        if (hasSelectedText()) {
+        if (keyEvent->modifiers() & Qt::ControlModifier) {
+            // Esc and Ctrl+Enter should have the same effect
+            emit setLibraryFocus(FocusWidget::TracksTable);
+            return;
+        }
+        if (hasCompletionAvailable()) {
             QComboBox::keyPressEvent(keyEvent);
             slotTriggerSearch();
             return;
@@ -543,7 +543,8 @@ void WSearchLineEdit::slotTriggerSearch() {
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
     m_saveTimer.stop();
-    QString cText = currentText().trimmed();
+    // Keep original text for UI, potentially with trailing spaces
+    QString cText = currentText();
     int cIndex = findCurrentTextIndex();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -562,13 +563,16 @@ void WSearchLineEdit::slotSaveSearch() {
     }
     if (cIndex > 0 || cIndex == -1) {
         // If the query doesn't exist yet or was not at top, insert it at the top
-        insertItem(0, cText);
+        insertItem(0, cText.trimmed());
     }
     setCurrentIndex(0);
 
     while (count() > kMaxSearchEntries) {
         removeItem(kMaxSearchEntries);
     }
+
+    // Set the text without spaces for UI
+    setTextBlockSignals(cText);
 }
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
@@ -789,11 +793,18 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
     m_saveTimer.start(kSaveTimeoutMillis);
 }
 
-void WSearchLineEdit::slotSetShortcutFocus() {
-    if (hasFocus()) {
+void WSearchLineEdit::setFocus(Qt::FocusReason focusReason) {
+    if (!hasFocus()) {
+        // selectAll will be called by setFocus - but only if hasFocus
+        // was false previously and focusReason is Tab, Backtab or Shortcut
+        QWidget::setFocus(focusReason);
+    } else if (focusReason == Qt::TabFocusReason ||
+            focusReason == Qt::BacktabFocusReason ||
+            focusReason == Qt::ShortcutFocusReason) {
+        // If this widget already had focus (which can happen when the user
+        // presses the shortcut key while already in the searchbox),
+        // we need to manually simulate this behavior instead.
         lineEdit()->selectAll();
-    } else {
-        setFocus(Qt::ShortcutFocusReason);
     }
 }
 
@@ -808,4 +819,18 @@ void WSearchLineEdit::slotSetFont(const QFont& font) {
 
 bool WSearchLineEdit::hasSelectedText() const {
     return lineEdit()->hasSelectedText();
+}
+
+bool WSearchLineEdit::hasCompletionAvailable(QString* completionPrefix) const {
+    QCompleter* pCompleter = completer();
+    QString prefix = pCompleter ? pCompleter->completionPrefix() : QString();
+    if (!prefix.isEmpty() && hasSelectedText() &&
+            lineEdit()->text().startsWith(prefix) &&
+            prefix.size() == lineEdit()->cursorPosition()) {
+        if (completionPrefix) {
+            *completionPrefix = prefix;
+        }
+        return true;
+    }
+    return false;
 }

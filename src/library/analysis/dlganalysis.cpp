@@ -54,11 +54,11 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
     connect(radioButtonRecentlyAdded,
             &QRadioButton::clicked,
             this,
-            &DlgAnalysis::showRecentSongs);
+            &DlgAnalysis::slotShowRecentSongs);
     connect(radioButtonAllSongs,
             &QRadioButton::clicked,
             this,
-            &DlgAnalysis::showAllSongs);
+            &DlgAnalysis::slotShowAllSongs);
     // Don't click those radio buttons now reduce skin loading time.
     // 'RecentlyAdded' is clicked in onShow()
 
@@ -113,7 +113,8 @@ void DlgAnalysis::setFocus() {
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
-    m_pAnalysisLibraryTableModel->search(text);
+    m_pAnalysisLibraryTableModel->searchCurrentTrackSet(
+            text, radioButtonRecentlyAdded->isChecked());
 }
 
 void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
@@ -190,11 +191,11 @@ void DlgAnalysis::onTrackAnalysisSchedulerFinished() {
     slotAnalysisActive(false);
 }
 
-void DlgAnalysis::showRecentSongs() {
+void DlgAnalysis::slotShowRecentSongs() {
     m_pAnalysisLibraryTableModel->showRecentSongs();
 }
 
-void DlgAnalysis::showAllSongs() {
+void DlgAnalysis::slotShowAllSongs() {
     m_pAnalysisLibraryTableModel->showAllSongs();
 }
 

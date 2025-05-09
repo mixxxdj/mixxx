@@ -20,7 +20,9 @@
 #endif
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
+#include "library/overviewcache.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -372,6 +374,12 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
 
+    OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
+    connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
+            &TrackDAO::waveformSummaryUpdated,
+            pOverviewCache,
+            &OverviewCache::onTrackSummaryChanged);
+
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has
     // been created. Otherwise Mixxx might hang when accessing
@@ -458,10 +466,16 @@ void CoreServices::initialize(QApplication* pApp) {
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             supportedFileSuffixes.join(","));
 
+    // Forward the scanner signal so MixxxMainWindow can display a summary popup.
+    connect(m_pTrackCollectionManager.get(),
+            &TrackCollectionManager::libraryScanSummary,
+            this,
+            &CoreServices::libraryScanSummary,
+            Qt::UniqueConnection);
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pTrackCollectionManager->startLibraryScan();
+        m_pTrackCollectionManager->startLibraryAutoScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
