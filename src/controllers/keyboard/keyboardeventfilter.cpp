@@ -7,6 +7,12 @@
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 
+namespace {
+const QString mappingFilePath(const QString& dir, const QString& fileName) {
+    return QDir(dir).filePath(fileName + QStringLiteral(".kbd.cfg"));
+}
+} // anonymous namespace
+
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
         const QLocale& locale,
         QObject* pParent)
@@ -222,24 +228,22 @@ void KeyboardEventFilter::setEnabled(bool enabled) {
 void KeyboardEventFilter::createKeyboardConfig() {
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
+    QString keyboardFile = mappingFilePath(m_pConfig->getSettingsPath(), QStringLiteral("Custom"));
     if (QFile::exists(keyboardFile)) {
         qDebug() << "Found and will use custom keyboard mapping" << keyboardFile;
     } else {
         // check if a default keyboard exists
-        QString resourcePath = m_pConfig->getResourcePath();
-        keyboardFile = QString(resourcePath).append("keyboard/");
-        keyboardFile += m_locale.name();
-        keyboardFile += ".kbd.cfg";
-        if (!QFile::exists(keyboardFile)) {
-            qDebug() << keyboardFile << " not found, using en_US.kbd.cfg";
-            keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
+        const QString resourcePath = m_pConfig->getResourcePath() + QStringLiteral("keyboard/");
+        keyboardFile = mappingFilePath(resourcePath, m_locale.name());
+        if (QFile::exists(keyboardFile)) {
+            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
+        } else {
+            qDebug() << keyboardFile << " not found, try to use en_US.kbd.cfg";
+            keyboardFile = mappingFilePath(resourcePath, QStringLiteral("en_US"));
             if (!QFile::exists(keyboardFile)) {
                 qDebug() << keyboardFile << " not found, starting without shortcuts";
                 keyboardFile = "";
             }
-        } else {
-            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
         }
     }
 
