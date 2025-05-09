@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-04-29" timestamp="1745953440">
+    <release version="2.6.0" type="development" date="2025-05-09" timestamp="1746769384">
       <description>
  <p>
   STEM file support
@@ -139,6 +139,7 @@
   <li>
    Stem controls for LateNight
    #13537
+   #14745
   </li>
   <li>
    Fix: make "stem_group,mute" a powerwindow button
@@ -247,6 +248,11 @@
    Elide key text from the right
    #13475
   </li>
+  <li>
+   Playlists: add 'Unlock all' and 'Delete all unlocked' menu actions
+   #14091
+   #8960
+  </li>
  </ul>
  <p>
   Effects
@@ -311,6 +317,8 @@
    #14187
    #13470
    #14461
+   #14726
+   #14706
   </li>
   <li>
    Improve apperrance of marks on the waveforms
