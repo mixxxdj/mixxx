@@ -1,27 +1,98 @@
+#include "preferences/BackUp/backupsettings.h"
+
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QThread>
 
+#include "moc_backupsettings.cpp"
+#include "preferences/BackUp/backupworker.h"
 #include "preferences/usersettings.h"
+
+// Starts a backup of the Mixxx settings directory if enabled in config.
+// Excludes the "analysis" subfolder, and saves the archive to ~/Documents/Mixxx-BackUps.
+// When a the config -> version is different then LastMixxxVersionBU
+// a BackUp will be created even if BackUp is disabled
 
 const QString kConfigGroup = "[BackUp]";
 const QString kBackUpEnabled = "BackUpEnabled";
 const QString kBackUpFrequency = "BackUpFrequency";
 const QString kLastBackUp = "LastBackUp";
+const QString kLastMixxxVersionBU = "LastMixxxVersionBU";
+const QString kKeepXBUs = "KeepXBUs";
 
-void createSettingsBackUp(UserSettingsPointer m_pConfig) {
+BackUpSettings::BackUpSettings(
+        UserSettingsPointer config,
+        QObject* parent)
+        : QObject(parent),
+          m_pConfig(config) {
+    lastMixxxVersionBU = m_pConfig->getValue(ConfigKey(kConfigGroup, kLastMixxxVersionBU));
+    currentMixxxVersion = m_pConfig->getValue(ConfigKey("[Config]", "Version"));
+    upgradeBU = (lastMixxxVersionBU != currentMixxxVersion);
+    startBU = false;
+}
+
+void BackUpSettings::startBackUpWorker(UserSettingsPointer config) {
+    int keepXBUs = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kKeepXBUs));
+    qDebug() << "[BackUp] -> version upgrade ? " << upgradeBU;
+
+    QThread* thread = new QThread();
+    BackUpWorker* worker = new BackUpWorker(config, keepXBUs, upgradeBU);
+
+    worker->moveToThread(thread);
+
+    auto handler = [](bool success, const QString& msg) {
+        qDebug() << (success ? "[BackUp] -> Succeeded:" : "[BackUp] -> Failed:") << msg;
+    };
+
+    connect(thread, &QThread::started, worker, &BackUpWorker::performBackUp);
+    connect(worker, &BackUpWorker::backUpFinished, this, [](bool success, QString path) {
+        qDebug() << (success ? "[BackUp] -> Succeeded:" : "[BackUp] -> Failed:") << path;
+    });
+    connect(worker, &BackUpWorker::progressChanged, this, [](int percent) {
+        qDebug() << "[BackUp] -> Creation: " << percent << "%";
+    });
+
+    if (!upgradeBU) {
+        if (keepXBUs > 0) {
+            connect(thread, &QThread::started, worker, &BackUpWorker::deleteOldBackUps);
+            connect(worker, &BackUpWorker::backUpRemoved, this, [keepXBUs](QString removedBU) {
+                qDebug() << "[BackUp] -> Removing Old BackUp(s) "
+                         << removedBU << " (Only " << keepXBUs << " BUs are kept) ";
+            });
+        }
+    }
+
+    connect(worker, &BackUpWorker::backUpFinished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, worker, &BackUpWorker::deleteLater);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+    thread->start();
+}
+
+void BackUpSettings::createSettingsBackUp(UserSettingsPointer m_pConfig) {
     // default the BackUp is set to enabled
     if (!m_pConfig->exists(ConfigKey(kConfigGroup, kBackUpEnabled))) {
         m_pConfig->set(ConfigKey(kConfigGroup, kBackUpEnabled), ConfigValue((int)1));
     }
-    // default the BckUp frequency is set to always = on every start, can be daily to
+    // default the BckUp frequency is set to daily = 1 a day / can also be always
     if (!m_pConfig->exists(ConfigKey(kConfigGroup, kBackUpFrequency))) {
-        m_pConfig->set(ConfigKey(kConfigGroup, kBackUpFrequency), ConfigValue("always"));
+        m_pConfig->set(ConfigKey(kConfigGroup, kBackUpFrequency), ConfigValue("daily"));
     }
     if (!m_pConfig->exists(ConfigKey(kConfigGroup, kLastBackUp))) {
         m_pConfig->set(ConfigKey(kConfigGroup, kLastBackUp), ConfigValue(""));
+    }
+    if (!m_pConfig->exists(ConfigKey(kConfigGroup, kLastMixxxVersionBU))) {
+        m_pConfig->set(ConfigKey(kConfigGroup, kLastMixxxVersionBU),
+                ConfigValue(currentMixxxVersion));
+    }
+    // default 5 BackUps are kept, delete happens after creation
+    if (!m_pConfig->exists(ConfigKey(kConfigGroup, kKeepXBUs))) {
+        m_pConfig->set(ConfigKey(kConfigGroup, kKeepXBUs), ConfigValue((int)5));
     }
 
     qDebug() << "[BackUp] -> BackUp enabled: "
@@ -30,154 +101,49 @@ void createSettingsBackUp(UserSettingsPointer m_pConfig) {
     qDebug() << "[BackUp] -> BackUp frequency: "
              << m_pConfig->getValue(ConfigKey(kConfigGroup, kBackUpFrequency));
 
-    // enabled?
-    if (!m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kBackUpEnabled))) {
-        qDebug() << "[BackUp] -> BackUp disabled in settings.";
-        return;
-    }
-
-    // BackUpFrequencies: always or daily
+    bool startBU = false;
     QDate today = QDate::currentDate();
     qDebug() << "[BackUp] -> today: " << today;
 
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup, kBackUpFrequency)) == "daily") {
-        QString lastBackupStr = m_pConfig->getValue(ConfigKey(kConfigGroup, kLastBackUp), "");
-        QDate lastDate = QDate::fromString(lastBackupStr, "yyyyMMdd");
-        qDebug() << "[BackUp] -> lastDate: " << lastDate;
+    // enabled?
+    if (!m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kBackUpEnabled))) {
+        qDebug() << "[BackUp] -> BackUp disabled in settings.";
+        startBU = false;
+        // BackUpFrequencies: always or daily
+    } else {
+        if (m_pConfig->getValue(ConfigKey(kConfigGroup, kBackUpFrequency)) == "daily") {
+            QString lastBackUpStr = m_pConfig->getValue(ConfigKey(kConfigGroup, kLastBackUp), "");
+            QDate lastDate = QDate::fromString(lastBackUpStr, "yyyyMMdd");
+            qDebug() << "[BackUp] -> lastDate: " << lastDate;
 
-        if (lastDate == today) {
-            qDebug() << "[BackUp] -> BackUp already performed today. Skipping.";
-            return;
+            if (lastDate == today) {
+                qDebug() << "[BackUp] -> BackUp already performed today. Skipping.";
+                startBU = false;
+            } else {
+                qDebug() << "[BackUp] -> 1st Start of Mixxx today -> BackUp will be created.";
+                startBU = true;
+            }
+        }
+        if (m_pConfig->getValue(ConfigKey(kConfigGroup, kBackUpFrequency)) == "always") {
+            qDebug() << "[BackUp] -> always when Mixxx starts -> BackUp will be created.";
+            startBU = true;
         }
     }
 
-    QString settingsDir = m_pConfig->getSettingsPath();
+    if (upgradeBU) {
+        qDebug() << "[BackUp] -> Version upgrade -> BackUp will be created.";
+        startBU = true;
+    }
+
+    const QString settingsDir = m_pConfig->getSettingsPath();
     if (!QDir(settingsDir).exists()) {
         qWarning() << "[BackUp] -> Settings directory not found:" << settingsDir;
-        return;
+        startBU = false;
     }
-
-    QString documentsDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    QString backupFolder = documentsDir + "/Mixxx-BackUps";
-    QDir().mkpath(backupFolder);
-
-    QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
-
-    QString zipExecutable;
-    QStringList arguments;
-    QString zipFilePath;
-
-#if defined(Q_OS_MACOS)
-    // using zip that is in macOS -> can be called in sandbox
-    zipExecutable = "/usr/bin/zip";
-    zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".zip";
-
-    // the settings directory is added to the BackUp except the analysis folder (can be to big)
-    // I thought about excluding the log files to but these can be useful for to find bugs
-    // as the logs are constantly overwritten
-    arguments << "-r" << zipFilePath << settingsDir << "-x" << settingsDir + "/analysis/*";
-#elif defined(Q_OS_WIN) || defined(Q_OS_LINUX)
-    // Windows & Linux: use 7z
-    zipExecutable = QStandardPaths::findExecutable("7z");
-    zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".7z";
-
-    // the settings directory is added to the BackUp except the analysis folder (can be to big)
-    // I thought about excluding the log files to but these can be useful for to find bugs
-    // as the logs are constantly overwritten
-    arguments << "a" << "-t7z" << zipFilePath << settingsDir << "-xr!analysis";
-
-// Linux
-#if defined(Q_OS_LINUX)
-    if (zipExecutable.isEmpty()) {
-        const QStringList linuxPaths = {"/usr/bin/7z", "/usr/local/bin/7z", "/bin/7z"};
-        for (const QString& path : linuxPaths) {
-            if (QFile::exists(path)) {
-                zipExecutable = path;
-                break;
-            }
-        }
-    }
-#endif
-
-// Windows PowerShell fallback
-#if defined(Q_OS_WIN)
-    if (zipExecutable.isEmpty()) {
-        QString psPath = QStandardPaths::findExecutable("powershell");
-        if (psPath.isEmpty()) {
-            qWarning() << "[BackUp] -> PowerShell not found. Cannot create backup.";
-            return;
-        }
-
-        zipExecutable = psPath;
-        zipFilePath = backupFolder + "/Mixxx-BackUp-" + timestamp + ".zip";
-
-        QString tempBackupPath = QDir::tempPath() + "/mixxx_backup_temp";
-        QDir(tempBackupPath).removeRecursively(); // cleanup
-        QDir().mkpath(tempBackupPath);
-
-        // Copy the settings directory except the analysis folder (can be too big)
-        QDir sourceDir(settingsDir);
-        const QStringList entries = sourceDir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries);
-        for (const QString& entry : entries) {
-            if (entry.compare("analysis", Qt::CaseInsensitive) == 0) {
-                continue;
-            }
-            QString sourcePath = sourceDir.filePath(entry);
-            QString destPath = tempBackupPath + "/" + entry;
-            QFileInfo entryInfo(sourcePath);
-            if (entryInfo.isDir()) {
-                QDir().mkpath(destPath);
-                QDir subDir(sourcePath);
-                for (const QFileInfo& subEntry : subDir.entryInfoList(
-                             QDir::NoDotAndDotDot | QDir::AllEntries)) {
-                    QFile::copy(subEntry.absoluteFilePath(), destPath + "/" + subEntry.fileName());
-                }
-            } else {
-                QFile::copy(sourcePath, destPath);
-            }
-        }
-
-        // PowerShell script -> temp file
-        QString psScriptPath = QDir::tempPath() + "/mixxx_backup.ps1";
-        QFile psScript(psScriptPath);
-        if (psScript.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream out(&psScript);
-            out << "$ErrorActionPreference = 'Stop'\n";
-            out << "Compress-Archive -Path \"" << tempBackupPath << "\\*\" "
-                << "-DestinationPath \"" << zipFilePath << "\" -Force\n";
-            out << "if (!(Test-Path \"" << zipFilePath << "\")) {\n";
-            out << "    Write-Error \"Backup failed: Archive not created.\"\n";
-            out << "    exit 1\n";
-            out << "}\n";
-            psScript.close();
-        } else {
-            qWarning() << "[BackUp] -> Failed to write PowerShell script.";
-            return;
-        }
-
-        arguments.clear();
-        arguments << "-NoProfile" << "-ExecutionPolicy" << "Bypass"
-                  << "-File" << psScriptPath;
-    }
-#endif
-
-#endif
-
-    // where is the 7z we use?
-    if (zipExecutable.isEmpty()) {
-        qWarning() << "[BackUp] -> 7z/Zip not found in PATH or fallback locations. "
-                      "Cannot create backup.";
-        return;
-    } else {
-        qDebug() << "[BackUp] -> 7z/Zip found in: " << zipExecutable;
-        qDebug() << "[BackUp] -> Executing:" << zipExecutable << arguments.join(" ");
-    }
-
-    bool started = QProcess::startDetached(zipExecutable, arguments);
-    if (started) {
-        qDebug() << "[BackUp] -> Settings backup started to:" << zipFilePath;
+    if (startBU) {
+        startBackUpWorker(m_pConfig);
         m_pConfig->setValue(ConfigKey(kConfigGroup, kLastBackUp), today.toString("yyyyMMdd"));
-    } else {
-        qWarning() << "[BackUp] -> Failed to launch 7z backup process.";
+        m_pConfig->set(ConfigKey(kConfigGroup, kLastMixxxVersionBU),
+                ConfigValue(currentMixxxVersion));
     }
 }

@@ -139,8 +139,13 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
-    createSettingsBackUp(m_pSettingsManager->settings());
-    // Only record stats in developer mode.
+
+    BackUpSettings* backUp = new BackUpSettings(m_pSettingsManager->settings());
+    backUp->createSettingsBackUp(m_pSettingsManager->settings());
+
+    // createSettingsBackUp(m_pSettingsManager->settings())
+    // createSettingsBackUp(m_pSettingsManager->settings());
+    //  Only record stats in developer mode.
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::createInstance();
     }

@@ -1348,6 +1348,7 @@ add_library(
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
   src/preferences/backup/backupsettings.cpp
+  src/preferences/backup/backupworker.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -2783,6 +2784,26 @@ if(WIN32)
       "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   )
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+
+#7zip
+find_package(7zip REQUIRED)
+target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
+target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
+
+#bit7z
+find_package(unofficial-bit7z CONFIG REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+if(WIN32)
+  add_custom_command(
+    TARGET mixxx-lib
+    POST_BUILD
+    COMMAND
+      ${CMAKE_COMMAND} -E copy
+      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
+      $<TARGET_FILE_DIR:mixxx-lib>
+  )
 endif()
 
 # Chromaprint
