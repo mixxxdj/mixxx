@@ -33,7 +33,7 @@ void BackUpWorker::performBackUp() {
     QString archivePathZipExt;
     const QString settingsDir = m_pConfig->getSettingsPath();
     QString zipExecutable;
-    // QStringList arguments;
+
     if (m_upgradeBU) {
         backupDir = QStandardPaths::writableLocation(
                             QStandardPaths::DocumentsLocation) +
@@ -166,7 +166,7 @@ void BackUpWorker::performBackUp() {
         QDir(tempBackupDir).removeRecursively();
 
 #elif defined(Q_OS_MACOS)
-
+        QStringList arguments;
         arguments << "-r" << archivePathZipExt << settingsDir << "-x"
                   << settingsDir + "/analysis/*";
         qDebug() << "[BackUp] -> Executing:" << zipExecutable << arguments.join(" ");
