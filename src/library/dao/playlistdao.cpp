@@ -13,7 +13,8 @@
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
-        : m_pAutoDJProcessor(nullptr) {
+        : m_pAutoDJProcessor(nullptr),
+          m_prepPlaylistId(kInvalidPlaylistId) {
 }
 
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
@@ -363,6 +364,11 @@ int PlaylistDAO::setPlaylistsLocked(const QSet<int>& playlistIds, const bool loc
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return -1;
+    }
+
+    // Unset Prep playlist
+    if (m_prepPlaylistId != kInvalidPlaylistId && playlistIds.contains(m_prepPlaylistId)) {
+        togglePrepPlaylist(m_prepPlaylistId);
     }
 
     emit lockChanged(playlistIds);
@@ -1333,5 +1339,34 @@ void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJS
             appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
         }
         break;
+    }
+}
+
+void PlaylistDAO::appendTrackToPrepPlaylist(TrackId id) {
+    if (!id.isValid()) {
+        return;
+    }
+    if (m_prepPlaylistId == kInvalidPlaylistId) {
+        // append to AutoDJQueue?
+        // Just to make append controls more versatile?
+        return;
+    }
+    if (isPlaylistLocked(m_prepPlaylistId)) {
+        return;
+    }
+    if (!isTrackInPlaylist(id, m_prepPlaylistId)) {
+        appendTracksToPlaylist(QList<TrackId>{id}, m_prepPlaylistId);
+    }
+}
+
+/// use kInvalidPlaylistId to unset
+void PlaylistDAO::togglePrepPlaylist(int playlistId) {
+    if (isPlaylistLocked(playlistId)) {
+        return;
+    }
+    if (m_prepPlaylistId == playlistId) {
+        m_prepPlaylistId = kInvalidPlaylistId;
+    } else {
+        m_prepPlaylistId = playlistId;
     }
 }
