@@ -141,7 +141,7 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     initializeLogging();
 
     BackUpSettings* backUp = new BackUpSettings(m_pSettingsManager->settings());
-    backUp->createSettingsBackUp(m_pSettingsManager->settings());
+    backUp->createSettingsBackUp();
 
     // createSettingsBackUp(m_pSettingsManager->settings())
     // createSettingsBackUp(m_pSettingsManager->settings());

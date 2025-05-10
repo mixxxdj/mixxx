@@ -18,12 +18,12 @@
 // When a the config -> version is different then LastMixxxVersionBU
 // a BackUp will be created even if BackUp is disabled
 
-const QString kConfigGroup = "[BackUp]";
-const QString kBackUpEnabled = "BackUpEnabled";
-const QString kBackUpFrequency = "BackUpFrequency";
-const QString kLastBackUp = "LastBackUp";
-const QString kLastMixxxVersionBU = "LastMixxxVersionBU";
-const QString kKeepXBUs = "KeepXBUs";
+const QString kConfigGroup = QStringLiteral("[BackUp]");
+const QString kBackUpEnabled = QStringLiteral("BackUpEnabled");
+const QString kBackUpFrequency = QStringLiteral("BackUpFrequency");
+const QString kLastBackUp = QStringLiteral("LastBackUp");
+const QString kLastMixxxVersionBU = QStringLiteral("LastMixxxVersionBU");
+const QString kKeepXBUs = QStringLiteral("KeepXBUs");
 
 BackUpSettings::BackUpSettings(
         UserSettingsPointer config,
@@ -36,12 +36,13 @@ BackUpSettings::BackUpSettings(
     startBU = false;
 }
 
-void BackUpSettings::startBackUpWorker(UserSettingsPointer config) {
+void BackUpSettings::startBackUpWorker() {
     int keepXBUs = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kKeepXBUs));
+    bool backUpSucces = false;
     qDebug() << "[BackUp] -> version upgrade ? " << upgradeBU;
 
     QThread* thread = new QThread();
-    BackUpWorker* worker = new BackUpWorker(config, keepXBUs, upgradeBU);
+    BackUpWorker* worker = new BackUpWorker(m_pConfig, keepXBUs, upgradeBU);
 
     worker->moveToThread(thread);
 
@@ -50,22 +51,36 @@ void BackUpSettings::startBackUpWorker(UserSettingsPointer config) {
     };
 
     connect(thread, &QThread::started, worker, &BackUpWorker::performBackUp);
-    connect(worker, &BackUpWorker::backUpFinished, this, [](bool success, QString path) {
-        qDebug() << (success ? "[BackUp] -> Succeeded:" : "[BackUp] -> Failed:") << path;
-    });
+    // connect(worker, &BackUpWorker::backUpFinished, this, [&backUpSucces](bool
+    // success, QString path) {
+    //     qDebug() << (success ? "[BackUp] -> Succeeded:" : "[BackUp] ->
+    //     Failed:") << path; backUpSucces = success;
+    // });
     connect(worker, &BackUpWorker::progressChanged, this, [](int percent) {
         qDebug() << "[BackUp] -> Creation: " << percent << "%";
     });
 
     if (!upgradeBU) {
-        if (keepXBUs > 0) {
-            connect(thread, &QThread::started, worker, &BackUpWorker::deleteOldBackUps);
-            connect(worker, &BackUpWorker::backUpRemoved, this, [keepXBUs](QString removedBU) {
-                qDebug() << "[BackUp] -> Removing Old BackUp(s) "
-                         << removedBU << " (Only " << keepXBUs << " BUs are kept) ";
-            });
-        }
+        connect(worker, &BackUpWorker::backUpFinished, this, [this, keepXBUs, worker]() {
+            if (keepXBUs > 0) {
+                worker->deleteOldBackUps();
+                connect(worker, &BackUpWorker::backUpRemoved, this, [keepXBUs](QString removedBU) {
+                    qDebug() << "[BackUp] -> Removing Old BackUp(s) "
+                             << removedBU << " (Only " << keepXBUs << " BUs are kept) ";
+                });
+            }
+        });
     }
+
+    // if (!upgradeBU) {
+    //     if ((keepXBUs > 0) && (backUpSucces)) {
+    //         connect(thread, &QThread::started, worker, &BackUpWorker::deleteOldBackUps);
+    //         connect(worker, &BackUpWorker::backUpRemoved, this, [keepXBUs](QString removedBU) {
+    //             qDebug() << "[BackUp] -> Removing Old BackUp(s) "
+    //                      << removedBU << " (Only " << keepXBUs << " BUs are kept) ";
+    //         });
+    //     }
+    // }
 
     connect(worker, &BackUpWorker::backUpFinished, thread, &QThread::quit);
     connect(thread, &QThread::finished, worker, &BackUpWorker::deleteLater);
@@ -74,7 +89,7 @@ void BackUpSettings::startBackUpWorker(UserSettingsPointer config) {
     thread->start();
 }
 
-void BackUpSettings::createSettingsBackUp(UserSettingsPointer m_pConfig) {
+void BackUpSettings::createSettingsBackUp() {
     // default the BackUp is set to enabled
     if (!m_pConfig->exists(ConfigKey(kConfigGroup, kBackUpEnabled))) {
         m_pConfig->set(ConfigKey(kConfigGroup, kBackUpEnabled), ConfigValue((int)1));
@@ -141,7 +156,7 @@ void BackUpSettings::createSettingsBackUp(UserSettingsPointer m_pConfig) {
         startBU = false;
     }
     if (startBU) {
-        startBackUpWorker(m_pConfig);
+        startBackUpWorker();
         m_pConfig->setValue(ConfigKey(kConfigGroup, kLastBackUp), today.toString("yyyyMMdd"));
         m_pConfig->set(ConfigKey(kConfigGroup, kLastMixxxVersionBU),
                 ConfigValue(currentMixxxVersion));

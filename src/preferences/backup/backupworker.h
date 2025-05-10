@@ -31,4 +31,5 @@ class BackUpWorker : public QObject {
     int m_keepBackUps;
     bool m_upgradeBU;
     QString currentMixxxVersion;
+    bool useBit7z;
 };

@@ -19,8 +19,8 @@ class BackUpSettings : public QObject {
     ~BackUpSettings() = default;
 
   public slots:
-    void createSettingsBackUp(UserSettingsPointer m_pConfig);
-    void startBackUpWorker(UserSettingsPointer config);
+    void createSettingsBackUp();
+    void startBackUpWorker();
 
   private:
     UserSettingsPointer m_pConfig;
