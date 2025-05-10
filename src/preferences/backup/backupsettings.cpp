@@ -10,7 +10,7 @@
 #include <QThread>
 
 #include "moc_backupsettings.cpp"
-#include "preferences/BackUp/backupworker.h"
+#include "preferences/backup/backupworker.h"
 #include "preferences/usersettings.h"
 
 // Starts a backup of the Mixxx settings directory if enabled in config.

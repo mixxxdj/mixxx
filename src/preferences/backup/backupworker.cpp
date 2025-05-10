@@ -95,26 +95,20 @@ void BackUpWorker::performBackUp() {
 
     if (!zipExecutable.isEmpty()) {
         qDebug() << "[BackUp] -> 7z/Zip found in: " << zipExecutable;
-
-#if defined(Q_OS_WIN)
         QString tempBackupDir = archivePath + "_temp";
         QDir().mkpath(tempBackupDir);
+#if defined(Q_OS_WIN)
         QProcess robocopy;
         robocopy.start("robocopy",
                 {QDir::toNativeSeparators(settingsDir),
                         QDir::toNativeSeparators(tempBackupDir),
-                        "/E",
-                        // exclude analysis
+                        "/E", // show dirs
                         "/XD",
-                        "analysis",
-                        // retry 3 times if file is locked
-                        "/R:3",
-                        // wait 2 seconds between retries
-                        "/W:2",
-                        // progress display off
-                        "/NP",
-                        // write log file -> can be quoted later
-                        "/LOG+:" +
+                        "analysis", // exclude analysis
+                        "/R:3",     // retry 3 times if file is locked
+                        "/W:2",     // wait 2 seconds between retries
+                        "/NP",      // progress display off
+                        "/LOG+:" +  // write log file -> can be quoted later
                                 QDir::toNativeSeparators(
                                         archivePath + "_robocopy.log")});
 
@@ -128,10 +122,8 @@ void BackUpWorker::performBackUp() {
         QProcess rsync;
         rsync.start("rsync", {// archive mode
                                      "-a",
-                                     // exclude analysis
-                                     "--exclude=analysis/",
-                                     // retry 3 times if file is locked
-                                     "--retries=3",
+                                     "--exclude=analysis/", // exclude analysis
+                                     "--retries=3",         // retry 3 times if file is locked
                                      settingsDir + "/",
                                      tempBackupDir + "/"});
 
@@ -146,15 +138,12 @@ void BackUpWorker::performBackUp() {
         process.setProcessChannelMode(QProcess::MergedChannels);
         process.start(zipExecutable,
                 {"a",
-                        "-t7z",
-                        // archive path with ext
-                        archivePath7zExt,
-                        // temp copy as source
-                        tempBackupDir + "/*",
-                        // exclude analysis, repeet for safety
-                        "-xr!analysis",
-                        // compression level, set to 4 for speed/quality, 9
-                        // takes too long
+                        "-t7z",           // archive path with ext
+                        archivePath7zExt, // temp copy as source
+                        tempBackupDir +
+                                "/*",   // exclude analysis, repeet for safety
+                        "-xr!analysis", // compression level, set to 4 for
+                                        // speed/quality, 9 takes too long
                         "-mx=6"});
         if (!process.waitForFinished(300000)) {
             qCritical() << "7z compression timed out!";
