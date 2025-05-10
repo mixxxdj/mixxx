@@ -52,6 +52,7 @@ class TrackModel {
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
         Properties = 1u << 18u,
+        Sorting = 1u << 19u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
