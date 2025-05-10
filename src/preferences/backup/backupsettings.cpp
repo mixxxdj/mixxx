@@ -1,4 +1,4 @@
-#include "preferences/BackUp/backupsettings.h"
+#include "preferences/backup/backupsettings.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
