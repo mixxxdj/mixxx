@@ -38,7 +38,7 @@ BackUpSettings::BackUpSettings(
 
 void BackUpSettings::startBackUpWorker() {
     int keepXBUs = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kKeepXBUs));
-    bool backUpSucces = false;
+    // bool backUpSucces = false;
     qDebug() << "[BackUp] -> version upgrade ? " << upgradeBU;
 
     QThread* thread = new QThread();
@@ -46,9 +46,9 @@ void BackUpSettings::startBackUpWorker() {
 
     worker->moveToThread(thread);
 
-    auto handler = [](bool success, const QString& msg) {
-        qDebug() << (success ? "[BackUp] -> Succeeded:" : "[BackUp] -> Failed:") << msg;
-    };
+    // auto handler = [](bool success, const QString& msg) {
+    //     qDebug() << (success ? "[BackUp] -> Succeeded:" : "[BackUp] -> Failed:") << msg;
+    // };
 
     connect(thread, &QThread::started, worker, &BackUpWorker::performBackUp);
     // connect(worker, &BackUpWorker::backUpFinished, this, [&backUpSucces](bool
@@ -64,10 +64,14 @@ void BackUpSettings::startBackUpWorker() {
         connect(worker, &BackUpWorker::backUpFinished, this, [this, keepXBUs, worker]() {
             if (keepXBUs > 0) {
                 worker->deleteOldBackUps();
-                connect(worker, &BackUpWorker::backUpRemoved, this, [keepXBUs](QString removedBU) {
-                    qDebug() << "[BackUp] -> Removing Old BackUp(s) "
-                             << removedBU << " (Only " << keepXBUs << " BUs are kept) ";
-                });
+                connect(worker,
+                        &BackUpWorker::backUpRemoved,
+                        this,
+                        [keepXBUs](const QString& removedBU) {
+                            qDebug() << "[BackUp] -> Removing Old BackUp(s) "
+                                     << removedBU << " (Only " << keepXBUs
+                                     << " BUs are kept) ";
+                        });
             }
         });
     }

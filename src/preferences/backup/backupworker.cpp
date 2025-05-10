@@ -33,7 +33,7 @@ void BackUpWorker::performBackUp() {
     QString archivePathZipExt;
     const QString settingsDir = m_pConfig->getSettingsPath();
     QString zipExecutable;
-    QStringList arguments;
+    // QStringList arguments;
     if (m_upgradeBU) {
         backupDir = QStandardPaths::writableLocation(
                             QStandardPaths::DocumentsLocation) +
@@ -54,7 +54,7 @@ void BackUpWorker::performBackUp() {
     }
 
     QDir().mkpath(backupDir);
-    const QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
+    // const QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
 
 #if defined(Q_OS_MACOS)
     zipExecutable = "/usr/bin/zip";
