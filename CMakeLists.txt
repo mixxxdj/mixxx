@@ -4983,6 +4983,23 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake")
 if(WIN32)
   # override not working default NSIS
   set(CPACK_GENERATOR WIX)
+
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64")
+    if(${CMAKE_VERSION} VERSION_LESS "3.24")
+      message(FATAL_ERROR "WIX: Need CMake version >= 3.24 for ARM64")
+    endif()
+    set(CPACK_WIX_ARCHITECTURE "ARM64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
+    set(CPACK_WIX_ARCHITECTURE "x64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+    set(CPACK_WIX_ARCHITECTURE "x86")
+  else()
+    message(
+      FATAL_ERROR
+      "WIX: Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}"
+    )
+  endif()
+
   # uses CMAKE_PROJECT_VERSION
   configure_file(packaging/wix/LICENSE.rtf.in packaging/wix/LICENSE.rtf @ONLY)
 endif()
