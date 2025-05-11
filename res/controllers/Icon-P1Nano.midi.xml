@@ -76,8 +76,8 @@
 
       <!-- Knobs -->
       <control>
-        <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knob[0].input</key>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[0].input</key>
         <description>Knob 1.</description>
         <status>0xB0</status>
         <midino>0x10</midino>
@@ -86,8 +86,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knob[1].input</key>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[1].input</key>
         <description>Knob 2.</description>
         <status>0xB0</status>
         <midino>0x11</midino>
@@ -96,8 +96,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knob[2].input</key>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[2].input</key>
         <description>Knob 3.</description>
         <status>0xB0</status>
         <midino>0x12</midino>
@@ -106,8 +106,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knob[3].input</key>
+        <group>[Master]</group>
+        <key>P1Nano.controller.knob[3].input</key>
         <description>Knob 4.</description>
         <status>0xB0</status>
         <midino>0x13</midino>
@@ -117,47 +117,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knob[4].input</key>
-        <description>Knob 5.</description>
-        <status>0xB0</status>
-        <midino>0x14</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>P1Nano.controller.knob[0].input</key>
-        <description>Knob 6.</description>
-        <status>0xB0</status>
-        <midino>0x15</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>P1Nano.controller.knob[1].input</key>
-        <description>Knob 7.</description>
-        <status>0xB0</status>
-        <midino>0x16</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>P1Nano.controller.knob[2].input</key>
-        <description>Knob 8.</description>
-        <status>0xB0</status>
-        <midino>0x17</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knobPress[0].input</key>
+        <key>P1Nano.controller.knobPress[0].input</key>
         <description>Knob button 1.</description>
         <status>0x90</status>
         <midino>0x20</midino>
@@ -167,7 +127,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knobPress[1].input</key>
+        <key>P1Nano.controller.knobPress[1].input</key>
         <description>Knob button 2.</description>
         <status>0x90</status>
         <midino>0x21</midino>
@@ -177,7 +137,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knobPress[2].input</key>
+        <key>P1Nano.controller.knobPress[2].input</key>
         <description>Knob button 3.</description>
         <status>0x90</status>
         <midino>0x22</midino>
@@ -187,50 +147,10 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knobPress[3].input</key>
+        <key>P1Nano.controller.knobPress[3].input</key>
         <description>Knob button 4.</description>
         <status>0x90</status>
         <midino>0x23</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.knobPress[4].input</key>
-        <description>Knob button 5.</description>
-        <status>0x90</status>
-        <midino>0x24</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>P1Nano.controller.knobPress[0].input</key>
-        <description>Knob button 6.</description>
-        <status>0x90</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>P1Nano.controller.knobPress[1].input</key>
-        <description>Knob button 7.</description>
-        <status>0x90</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>P1Nano.controller.knobPress[2].input</key>
-        <description>Knob button 8.</description>
-        <status>0x90</status>
-        <midino>0x27</midino>
         <options>
           <script-binding/>
         </options>
@@ -301,7 +221,7 @@
       <!-- Deck Selection -->
       <control>
         <group>[Channel3]</group>
-        <key>P1Nano.controller.activeDeck.deckSelectInput</key>
+        <key>P1Nano.controller.deckSelectInput</key>
         <description>Deck 3 (volume) selected on controller.</description>
         <status>0x90</status>
         <midino>0x18</midino>
@@ -311,7 +231,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>P1Nano.controller.activeDeck.deckSelectInput</key>
+        <key>P1Nano.controller.deckSelectInput</key>
         <description>Deck 1 (volume) selected on controller.</description>
         <status>0x90</status>
         <midino>0x19</midino>
@@ -321,7 +241,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>P1Nano.controller.activeDeck.deckSelectInput</key>
+        <key>P1Nano.controller.deckSelectInput</key>
         <description>Deck 2 (volume) selected on controller.</description>
         <status>0x90</status>
         <midino>0x1A</midino>
@@ -331,7 +251,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>P1Nano.controller.activeDeck.deckSelectInput</key>
+        <key>P1Nano.controller.deckSelectInput</key>
         <description>Deck 4 (volume) selected on controller.</description>
         <status>0x90</status>
         <midino>0x1B</midino>
@@ -451,6 +371,46 @@
         <description>"M" button.</description>
         <status>0x90</status>
         <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>P1Nano.controller.soloButton[0].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>P1Nano.controller.soloButton[1].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>P1Nano.controller.soloButton[2].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>P1Nano.controller.soloButton[3].input</key>
+        <description>"S" button.</description>
+        <status>0x90</status>
+        <midino>0x0B</midino>
         <options>
           <script-binding/>
         </options>

@@ -79,6 +79,7 @@ var P1Nano;
             console.log(`Trimmed text longer than ${maxLen} bytes: "${name}"`);
             name = name.slice(0, maxLen);
         }
+        name = name.padEnd(7, " ");
         midi.sendSysexMsg(MCUHeader
             .concat([0x12, (idx * maxLen) + (row * 56)])
             .concat(name.toInt())
@@ -277,11 +278,54 @@ var P1Nano;
             this.send(this.outValueScale(value));
             const groupNo = /\[Channel(\d+)\]/.exec(this.group);
             if (groupNo) {
-                const deck = `Deck ${groupNo[1]}`.padEnd(7, " ");
+                const selectedIndicator = this.selected ? "*" : "";
+                const deck = `Deck ${groupNo[1]}${selectedIndicator}`.padEnd(7, " ");
                 printScreenName(this.screen, deck);
             } else {
                 printScreenName(this.screen, "Main".padEnd(7, " "));
             }
+        }
+        input(channel, control, value, status, group) {
+            // If we're not shifted, just call the normal input function.
+            if (!this.isShifted) {
+                return components.Encoder.prototype.input.bind(this)(channel, control, value, status, group);
+            }
+
+            // If we are shifted, update the parameter that the knob changes.
+            const deckResult = /\[Channel(\d+)\]/.exec(this.group);
+            const deck = (deckResult && deckResult.length > 0) ? deckResult[1] : undefined;
+            const params = Object.freeze([
+                {group: `[Channel${deck}]`, key: "pregain", name: "Gain"},
+                {group: `[EqualizerRack1_[Channel${deck}]_Effect1]`, key: "parameter3", name: "High"},
+                {group: `[EqualizerRack1_[Channel${deck}]_Effect1]`, key: "parameter2", name: "Mid"},
+                {group: `[EqualizerRack1_[Channel${deck}]_Effect1]`, key: "parameter1", name: "Low"},
+                {group: `[QuickEffectRack1_[Channel${deck}]]`, key: "super1", name: "FX"},
+            ]);
+            for (let i = 0; i < params.length; i++) {
+                const param = params[i];
+                if (param.key === this.key) {
+                    const offset = value < 0x40 ? 1 : -1;
+                    const newParam = params[script.posMod(i + offset, params.length)];
+                    Object.assign(this, newParam);
+                    if (this.key !== undefined) {
+                        this.outKey = this.key;
+                        this.inKey = this.key;
+                    }
+                    printScreenName(this.screen, this.name, 1);
+                    if (typeof this.setKnobPressKey === "function") {
+                        this.setKnobPressKey(`${this.key}_set_default`, this.group);
+                    }
+                    break;
+                }
+            }
+        }
+        shift() {
+            this.disconnect();
+            this.isShifted = true;
+        }
+        unshift() {
+            this.isShifted = false;
+            this.connect();
         }
     }
 
@@ -355,119 +399,6 @@ var P1Nano;
                 group: "[Channel3]",
             });
 
-            this.knob = [
-                new VelocityEncoder({
-                    group: "[Channel3]",
-                    screen: 0,
-                    key: "pregain",
-                    name: "Gain",
-                    midi: [0xB0, 0x10],
-                }),
-                new VelocityEncoder({
-                    group: "[EqualizerRack1_[Channel3]_Effect1]",
-                    key: "parameter3",
-                    screen: 1,
-                    name: "High",
-                    midi: [0xB0, 0x11],
-                }),
-                new VelocityEncoder({
-                    group: "[EqualizerRack1_[Channel3]_Effect1]",
-                    key: "parameter2",
-                    screen: 2,
-                    name: "Mid",
-                    midi: [0xB0, 0x12],
-                }),
-                new VelocityEncoder({
-                    group: "[EqualizerRack1_[Channel3]_Effect1]",
-                    key: "parameter1",
-                    screen: 3,
-                    name: "Low",
-                    midi: [0xB0, 0x13],
-                }),
-                new VelocityEncoder({
-                    group: "[QuickEffectRack1_[Channel3]]",
-                    key: "super1",
-                    screen: 4,
-                    name: "FX",
-                    midi: [0xB0, 0x14],
-                }),
-            ];
-            this.knobPress = [
-                new components.Button({
-                    group: "[Channel3]",
-                    key: "pregain_set_default",
-                    midi: [0x90, 0x20],
-                }),
-                new components.Button({
-                    group: "[EqualizerRack1_[Channel3]_Effect1]",
-                    key: "parameter3_set_default",
-                    midi: [0x90, 0x21],
-                    shift: function() {
-                        this.type = components.Button.prototype.types.toggle;
-                        this.key = "button_parameter3";
-                        this.inKey = "button_parameter3";
-                        this.outKey = "button_parameter3";
-                    },
-                    unshift: function() {
-                        this.type = components.Button.prototype.types.push;
-                        this.key = "parameter3_set_default";
-                        this.inKey = "parameter3_set_default";
-                        this.outKey = "parameter3_set_default";
-                    },
-                }),
-                new components.Button({
-                    group: "[EqualizerRack1_[Channel3]_Effect1]",
-                    key: "parameter2_set_default",
-                    midi: [0x90, 0x22],
-                    shift: function() {
-                        this.type = components.Button.prototype.types.toggle;
-                        this.key = "button_parameter2";
-                        this.inKey = "button_parameter2";
-                        this.outKey = "button_parameter2";
-                    },
-                    unshift: function() {
-                        this.type = components.Button.prototype.types.push;
-                        this.key = "parameter2_set_default";
-                        this.inKey = "parameter2_set_default";
-                        this.outKey = "parameter2_set_default";
-                    },
-                }),
-                new components.Button({
-                    group: "[EqualizerRack1_[Channel3]_Effect1]",
-                    key: "parameter1_set_default",
-                    midi: [0x90, 0x23],
-                    shift: function() {
-                        this.type = components.Button.prototype.types.toggle;
-                        this.key = "button_parameter1";
-                        this.inKey = "button_parameter1";
-                        this.outKey = "button_parameter1";
-                    },
-                    unshift: function() {
-                        this.type = components.Button.prototype.types.push;
-                        this.key = "parameter1_set_default";
-                        this.inKey = "parameter1_set_default";
-                        this.outKey = "parameter1_set_default";
-                    },
-                }),
-                new components.Button({
-                    group: "[QuickEffectRack1_[Channel3]]",
-                    key: "super1_set_default",
-                    midi: [0x90, 0x24],
-                    shift: function() {
-                        this.type = components.Button.prototype.types.toggle;
-                        this.key = "enabled";
-                        this.inKey = "enabled";
-                        this.outKey = "enabled";
-                    },
-                    unshift: function() {
-                        this.type = components.Button.prototype.types.push;
-                        this.key = "super1_set_default";
-                        this.inKey = "super1_set_default";
-                        this.outKey = "super1_set_default";
-                    },
-                }),
-            ];
-
             // Transport buttons
             this.playButton = new components.PlayButton({
                 group: "[Channel3]",
@@ -502,14 +433,6 @@ var P1Nano;
             midi.sendShortMsg(0x90, 0x18 + mapChannelToIndex(newGroup), 0x7F);
             components.Deck.prototype.setCurrentDeck.bind(this)(newGroup);
         }
-        deckSelectInput(_channel, _control, value, _status, group) {
-            if (value === 0x00) {
-                // No need to select the deck on press and then re-select it on
-                // release.
-                return;
-            }
-            this.setCurrentDeck(group);
-        }
     }
 
     class Controller extends components.ComponentContainer {
@@ -518,44 +441,72 @@ var P1Nano;
 
             this.activeDeck = new Deck();
 
-            this.knob = [
-                new VelocityEncoder({
-                    group: "[Master]",
-                    key: "balance",
-                    screen: 5,
-                    name: "Balance",
-                    midi: [0xB0, 0x15],
-                }),
-                new VelocityEncoder({
-                    group: "[Master]",
-                    key: "headGain",
-                    screen: 6,
-                    name: "Head",
-                    midi: [0xB0, 0x16],
-                }),
-                new VelocityEncoder({
-                    group: "[Master]",
-                    key: "headMix",
-                    screen: 7,
-                    name: "Mix",
-                    midi: [0xB0, 0x17],
-                }),
-            ];
             this.knobPress = [
                 new components.Button({
-                    group: "[Master]",
-                    key: "balance_set_default",
-                    midi: [0x90, 0x25],
+                    group: "[Channel3]",
+                    key: "pregain_set_default",
+                    midi: [0x90, 0x20],
                 }),
                 new components.Button({
-                    group: "[Master]",
-                    key: "headGain_set_default",
-                    midi: [0x90, 0x26],
+                    group: "[Channel1]",
+                    key: "pregain_set_default",
+                    midi: [0x90, 0x21],
                 }),
                 new components.Button({
-                    group: "[Master]",
-                    key: "headMix_set_default",
-                    midi: [0x90, 0x27],
+                    group: "[Channel2]",
+                    key: "pregain_set_default",
+                    midi: [0x90, 0x22],
+                }),
+                new components.Button({
+                    group: "[Channel4]",
+                    key: "pregain_set_default",
+                    midi: [0x90, 0x23],
+                }),
+            ];
+            const setKnobPressKey = function(_this, i) {
+                return (key, group) => {
+                    _this.knobPress[i].group = group;
+                    _this.knobPress[i].key = key;
+                    _this.knobPress[i].inKey = key;
+                    _this.knobPress[i].outKey = key;
+                    _this.knobPress[i].disconnect();
+                    _this.knobPress[i].connect();
+                    _this.knobPress[i].trigger();
+                };
+            };
+            this.knob = [
+                new VelocityEncoder({
+                    group: "[Channel3]",
+                    screen: 0,
+                    selected: true,
+                    key: "pregain",
+                    name: "Gain",
+                    midi: [0xB0, 0x10],
+                    setKnobPressKey: setKnobPressKey(this, 0),
+                }),
+                new VelocityEncoder({
+                    group: "[Channel1]",
+                    screen: 1,
+                    key: "pregain",
+                    name: "Gain",
+                    midi: [0xB0, 0x11],
+                    setKnobPressKey: setKnobPressKey(this, 1),
+                }),
+                new VelocityEncoder({
+                    group: "[Channel2]",
+                    screen: 2,
+                    key: "pregain",
+                    name: "Gain",
+                    midi: [0xB0, 0x12],
+                    setKnobPressKey: setKnobPressKey(this, 2),
+                }),
+                new VelocityEncoder({
+                    group: "[Channel4]",
+                    screen: 3,
+                    key: "pregain",
+                    name: "Gain",
+                    midi: [0xB0, 0x13],
+                    setKnobPressKey: setKnobPressKey(this, 3),
                 }),
             ];
 
@@ -653,6 +604,7 @@ var P1Nano;
             this.bpmMeters = [];
             this.fader = [];
             this.muteButton = [];
+            this.soloButton = [];
             this.recordButton = [];
             for (let i = 0; i < 4; i++) {
                 this.trackColors[i] = new components.Component({
@@ -705,6 +657,11 @@ var P1Nano;
                     midi: [0x90, 0x10 + i],
                     key: "mute",
                     type: components.Button.prototype.types.toggle,
+                });
+                this.soloButton[i] = new components.Button({
+                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    midi: [0x90, 0x08 + i],
+                    key: "beats_translate_curpos",
                 });
 
                 this.recordButton[i] = new components.Button({
@@ -786,6 +743,20 @@ var P1Nano;
                 group: "[Master]",
                 midi: [0xD1],
             }));
+        }
+
+        deckSelectInput(_channel, _control, value, _status, group) {
+            if (value === 0x00) {
+                // No need to select the deck on press and then re-select it on
+                // release.
+                return;
+            }
+            this.activeDeck.setCurrentDeck(group);
+            const deck = script.deckFromGroup(group);
+            for (let i = 0; i < 4; i++) {
+                this.knob[i].selected = mapChannelToIndex(deck) === i;
+                this.knob[i].trigger();
+            }
         }
     }
 
