@@ -282,7 +282,6 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
 
