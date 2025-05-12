@@ -168,6 +168,8 @@ repos:
         language: system
         types: [text]
         files: ^.*\.qml$
+        stages:
+          - manual
       - id: metainfo
         name: metainfo
         description: Update AppStream metainfo releases from CHANGELOG.md.
