@@ -129,6 +129,8 @@ repos:
     rev: 16f651d727652dffff92678f4b602df9bfb45eb7 # No release tag yet including #7 fix
     hooks:
       - id: qml_formatter
+        stages:
+          - manual
   - repo: https://github.com/BlankSpruce/gersemi
     rev: 0.17.1
     hooks:
@@ -168,6 +170,8 @@ repos:
         language: system
         types: [text]
         files: ^.*\.qml$
+        stages:
+          - manual
       - id: metainfo
         name: metainfo
         description: Update AppStream metainfo releases from CHANGELOG.md.
