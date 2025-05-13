@@ -22,16 +22,16 @@
       </description>
       <value label="Off" default="true">off</value>
       <value label="Firmware Default">127</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="peakColor" type="enum" label="Peak Indicator Color">
       <description>
@@ -39,98 +39,98 @@
       </description>
       <value label="Off">off</value>
       <value label="Firmware Default">127</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red" default="true">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red" default="true">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="defColor" type="enum" label="Default Value/Pushed Color">
       <value label="Firmware Default" default="true">127</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="relColor" type="enum" label="Released Color">
       <value label="Firmware Default" default="true">0</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="superOffColor" type="enum" label="Quick Effect Switch On Color">
       <description>The color of the activated quick effect kill switch.</description>
       <value label="Firmware Default" default="true">0</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="superOnColor" type="enum" label="Quick Effect Switch Off Color">
       <description>The color of the inactive quick effect kill switch.</description>
       <value label="Firmware Default">127</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green" default="true">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green" default="true">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="eqOffColor" type="enum" label="EQ Kill Switch On Color">
       <description>The color of the activated EQ kill switch.</description>
       <value label="Firmware Default" default="true">0</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
     <option variable="eqOnColor" type="enum" label="EQ Kill Switch Off Color">
       <description>The color of the inactive EQ kill switch.</description>
       <value label="Firmware Default">127</value>
-      <value label="Blue">1</value>
-      <value label="Celeste">32</value>
-      <value label="Teal">40</value>
-      <value label="Green">50</value>
-      <value label="Lime">60</value>
-      <value label="Yellow">66</value>
-      <value label="Orange">74</value>
-      <value label="Red" default="true">85</value>
-      <value label="Fuscia">100</value>
-      <value label="Purple">108</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red" default="true">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
     </option>
   </settings>
   <controller id="DJ TechTools MIDI Fighter Twister">
