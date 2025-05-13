@@ -88,7 +88,7 @@ bool applyLogicalValue(QByteArray& reportData, const Control& control, int32_t c
 
 QString getScaledUnitString(uint32_t unit) {
     struct UnitInfo {
-        const char* physicalQuantity[5];
+        const char* pPhysicalQuantity[5];
     };
 
     const UnitInfo unitInfos[] = {
@@ -110,7 +110,7 @@ QString getScaledUnitString(uint32_t unit) {
             if (!unitString.isEmpty()) {
                 unitString += "*";
             }
-            unitString += unitInfo.physicalQuantity[(unit & 0xF)];
+            unitString += unitInfo.pPhysicalQuantity[(unit & 0xF)];
             if (exponents[value] != 1) {
                 unitString += "^" + QString::number(exponents[value]);
             }
@@ -185,8 +185,8 @@ const Report* Collection::getReport(
 }
 
 // HID Report Descriptor Parser
-HIDReportDescriptor::HIDReportDescriptor(const uint8_t* data, size_t length)
-        : m_data(data),
+HIDReportDescriptor::HIDReportDescriptor(const uint8_t* pData, size_t length)
+        : m_pData(pData),
           m_length(length),
           m_pos(0),
           m_deviceHasReportIds(kNotSet),
@@ -194,7 +194,7 @@ HIDReportDescriptor::HIDReportDescriptor(const uint8_t* data, size_t length)
 }
 
 std::pair<HidItemTag, HidItemSize> HIDReportDescriptor::readTag() {
-    uint8_t byte = m_data[m_pos++];
+    uint8_t byte = m_pData[m_pos++];
 
     VERIFY_OR_DEBUG_ASSERT(byte !=
             static_cast<uint8_t>(HidItemSize::LongItemKeyword)){
@@ -220,22 +220,22 @@ uint32_t HIDReportDescriptor::readPayload(HidItemSize payloadSize) {
         VERIFY_OR_DEBUG_ASSERT(m_pos + 1 <= m_length) {
             return 0;
         }
-        return m_data[m_pos++];
+        return m_pData[m_pos++];
     case HidItemSize::TwoBytePayload:
         VERIFY_OR_DEBUG_ASSERT(m_pos + 2 <= m_length) {
             return 0;
         }
-        payload = m_data[m_pos++];
-        payload |= m_data[m_pos++] << 8;
+        payload = m_pData[m_pos++];
+        payload |= m_pData[m_pos++] << 8;
         return payload;
     case HidItemSize::FourBytePayload:
         VERIFY_OR_DEBUG_ASSERT(m_pos + 4 <= m_length) {
             return 0;
         }
-        payload = m_data[m_pos++];
-        payload |= m_data[m_pos++] << 8;
-        payload |= m_data[m_pos++] << 16;
-        payload |= m_data[m_pos++] << 24;
+        payload = m_pData[m_pos++];
+        payload |= m_pData[m_pos++] << 8;
+        payload |= m_pData[m_pos++] << 16;
+        payload |= m_pData[m_pos++] << 24;
         return payload;
     default:
         DEBUG_ASSERT(true);
@@ -297,8 +297,8 @@ HidReportType HIDReportDescriptor::getReportType(HidItemTag tag) {
 }
 
 Collection HIDReportDescriptor::parse() {
-    Collection collection;                           // Top level collection
-    std::unique_ptr<Report> currentReport = nullptr; // Use a unique_ptr for currentReport
+    Collection collection;                            // Top level collection
+    std::unique_ptr<Report> pCurrentReport = nullptr; // Use a unique_ptr for pCurrentReport
 
     // Global item values
     GlobalItems globalItems;
@@ -394,19 +394,19 @@ Collection HIDReportDescriptor::parse() {
         case HidItemTag::Input:
         case HidItemTag::Output:
         case HidItemTag::Feature: {
-            if (currentReport == nullptr) {
+            if (pCurrentReport == nullptr) {
                 // First control of this device
                 if (globalItems.reportId == kNoReportId) {
                     m_deviceHasReportIds = false;
                 } else {
                     m_deviceHasReportIds = true;
                 }
-                currentReport = std::make_unique<Report>(getReportType(tag), globalItems.reportId);
-            } else if (currentReport->m_reportType != getReportType(tag) ||
-                    globalItems.reportId != currentReport->m_reportId) {
+                pCurrentReport = std::make_unique<Report>(getReportType(tag), globalItems.reportId);
+            } else if (pCurrentReport->m_reportType != getReportType(tag) ||
+                    globalItems.reportId != pCurrentReport->m_reportId) {
                 // First control of a new report
-                collection.addReport(*currentReport);
-                currentReport = std::make_unique<Report>(getReportType(tag), globalItems.reportId);
+                collection.addReport(*pCurrentReport);
+                pCurrentReport = std::make_unique<Report>(getReportType(tag), globalItems.reportId);
             }
 
             int32_t physicalMinimum, physicalMaximum;
@@ -424,12 +424,12 @@ Collection HIDReportDescriptor::parse() {
 
             if (flags.data_constant == 1) {
                 // Constant value padding - Usually for byte alignment
-                currentReport->increasePosition(globalItems.reportSize * globalItems.reportCount);
+                pCurrentReport->increasePosition(globalItems.reportSize * globalItems.reportCount);
             } else if (flags.array_variable == 0) {
                 // Array (e.g. list of pressed keys of a computer keyboard)
                 // NOT IMPLEMENTED as not relevant for mapping wizard,
                 // but could be implemented by overloaded Control class
-                currentReport->increasePosition(globalItems.reportSize * globalItems.reportCount);
+                pCurrentReport->increasePosition(globalItems.reportSize * globalItems.reportCount);
             } else {
                 // Normal variable control
                 uint32_t usage = 0;
@@ -453,7 +453,7 @@ Collection HIDReportDescriptor::parse() {
                         usage = localItems.Usage.front();
                         localItems.Usage.erase(localItems.Usage.begin());
                     }
-                    auto [lastBytePos, lastBitPos] = currentReport->getLastPosition();
+                    auto [lastBytePos, lastBitPos] = pCurrentReport->getLastPosition();
 
                     Control control(flags,
                             usage,
@@ -466,10 +466,10 @@ Collection HIDReportDescriptor::parse() {
                             lastBytePos,
                             lastBitPos,
                             globalItems.reportSize);
-                    currentReport->addControl(control);
-                    currentReport->increasePosition(globalItems.reportSize);
+                    pCurrentReport->addControl(control);
+                    pCurrentReport->increasePosition(globalItems.reportSize);
                 }
-                currentReport->increasePosition(
+                pCurrentReport->increasePosition(
                         (globalItems.reportCount - numOfControls) *
                         globalItems.reportSize);
             }
@@ -491,9 +491,9 @@ Collection HIDReportDescriptor::parse() {
             break;
         case HidItemTag::EndCollection:
             if (m_collectionLevel == 1) {
-                if (currentReport) {
-                    collection.addReport(*currentReport);
-                    currentReport.reset();
+                if (pCurrentReport) {
+                    collection.addReport(*pCurrentReport);
+                    pCurrentReport.reset();
                 }
                 m_topLevelCollections.push_back(collection);
                 collection = Collection();
@@ -509,8 +509,8 @@ Collection HIDReportDescriptor::parse() {
         }
     }
 
-    if (currentReport) {
-        collection.addReport(*currentReport);
+    if (pCurrentReport) {
+        collection.addReport(*pCurrentReport);
     }
 
     return collection;

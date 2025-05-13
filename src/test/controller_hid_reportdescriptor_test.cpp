@@ -51,15 +51,15 @@ TEST(HidReportDescriptorParserTest, ParseReportDescriptor) {
     ASSERT_EQ(collectionIdx, 0);
 
     // Use getReport to get the report
-    const Report* report = parser.getReport(reportType, reportId);
-    ASSERT_NE(report, nullptr);
+    const Report* pReport = parser.getReport(reportType, reportId);
+    ASSERT_NE(pReport, nullptr);
 
     // Validate Report fields
-    ASSERT_EQ(report->m_reportType, reportType);
-    ASSERT_EQ(report->m_reportId, reportId);
+    ASSERT_EQ(pReport->m_reportType, reportType);
+    ASSERT_EQ(pReport->m_reportId, reportId);
 
     // Validate all Control fields
-    const std::vector<Control>& controls = report->getControls();
+    const std::vector<Control>& controls = pReport->getControls();
     ASSERT_EQ(controls.size(), 5);
 
     // Mouse Button 1

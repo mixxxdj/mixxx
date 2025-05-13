@@ -12,19 +12,20 @@ class ControllerHidReportTabsManager : public QObject {
     Q_OBJECT
 
   public:
-    ControllerHidReportTabsManager(QTabWidget* parentTabWidget, HidController* hidController);
+    ControllerHidReportTabsManager(QTabWidget* pParentTabWidget, HidController* pHidController);
 
     void createReportTypeTabs();
-    void createHidReportTab(QTabWidget* parentTab, hid::reportDescriptor::HidReportType reportType);
-    void slotSendReport(QTableWidget* table,
+    void createHidReportTab(QTabWidget* pParentTab,
+            hid::reportDescriptor::HidReportType reportType);
+    void slotSendReport(QTableWidget* pTable,
             quint8 reportId,
             hid::reportDescriptor::HidReportType reportType);
-    void populateHidReportTable(QTableWidget* table,
+    void populateHidReportTable(QTableWidget* pTable,
             const hid::reportDescriptor::Report& report,
             hid::reportDescriptor::HidReportType reportType);
 
   private slots:
-    void slotReadReport(QTableWidget* table,
+    void slotReadReport(QTableWidget* pTable,
             quint8 reportId,
             hid::reportDescriptor::HidReportType reportType);
 
@@ -32,7 +33,7 @@ class ControllerHidReportTabsManager : public QObject {
     void slotProcessInputReport(quint8 reportId, const QByteArray& reportData);
 
   private:
-    void updateTableWithReportData(QTableWidget* table, const QByteArray& reportData);
+    void updateTableWithReportData(QTableWidget* pTable, const QByteArray& reportData);
     QTabWidget* m_pParentControllerTab;
     HidController* m_pHidController;
     std::unordered_map<quint8, QTableWidget*> m_reportIdToTableMap;
@@ -42,11 +43,11 @@ class ValueItemDelegate : public QStyledItemDelegate {
   public:
     using QStyledItemDelegate::QStyledItemDelegate;
 
-    QWidget* createEditor(QWidget* parent,
+    QWidget* createEditor(QWidget* pParent,
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
 
-    void setModelData(QWidget* editor,
-            QAbstractItemModel* model,
+    void setModelData(QWidget* pEditor,
+            QAbstractItemModel* pModel,
             const QModelIndex& index) const override;
 };

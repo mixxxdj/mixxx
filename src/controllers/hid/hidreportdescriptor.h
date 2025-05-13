@@ -195,7 +195,7 @@ class Collection {
 // Class for parsing HID report descriptors
 class HIDReportDescriptor {
   public:
-    HIDReportDescriptor(const uint8_t* data, size_t length);
+    HIDReportDescriptor(const uint8_t* pData, size_t length);
 
     bool isDeviceWithReportIds() const {
         return m_deviceHasReportIds;
@@ -241,7 +241,7 @@ class HIDReportDescriptor {
 
     HidReportType getReportType(HidItemTag tag);
 
-    const uint8_t* m_data;
+    const uint8_t* m_pData;
     size_t m_length;
     size_t m_pos;
 

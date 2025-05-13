@@ -12,9 +12,9 @@
 #include "moc_controllerhidreporttabsmanager.cpp"
 
 ControllerHidReportTabsManager::ControllerHidReportTabsManager(
-        QTabWidget* parentTabWidget, HidController* hidController)
-        : m_pParentControllerTab(parentTabWidget),
-          m_pHidController(hidController) {
+        QTabWidget* pParentTabWidget, HidController* pHidController)
+        : m_pParentControllerTab(pParentTabWidget),
+          m_pHidController(pHidController) {
 }
 
 void ControllerHidReportTabsManager::createReportTypeTabs() {
@@ -36,7 +36,7 @@ void ControllerHidReportTabsManager::createReportTypeTabs() {
     }
 }
 
-void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* parentReportTypeTab,
+void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentReportTypeTab,
         hid::reportDescriptor::HidReportType reportType) {
     const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
     if (!reportDescriptorTemp.has_value()) {
@@ -56,65 +56,65 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* parentReport
                                                       .rightJustified(2, '0')
                                                       .toUpper());
 
-            auto* tabWidget = new QWidget(parentReportTypeTab);
-            auto* layout = new QVBoxLayout(tabWidget);
-            auto* topWidgetRow = new QHBoxLayout();
+            auto* pTabWidget = new QWidget(pParentReportTypeTab);
+            auto* pLayout = new QVBoxLayout(pTabWidget);
+            auto* pTopWidgetRow = new QHBoxLayout();
 
             // Create buttons
-            auto* readButton = new QPushButton(QStringLiteral("Read"), tabWidget);
-            auto* sendButton = new QPushButton(QStringLiteral("Send"), tabWidget);
+            auto* pReadButton = new QPushButton(QStringLiteral("Read"), pTabWidget);
+            auto* pSendButton = new QPushButton(QStringLiteral("Send"), pTabWidget);
 
             // Adjust visibility/enable state based on the report type
             if (reportType == hid::reportDescriptor::HidReportType::Input) {
-                sendButton->hide();
-                readButton->hide();
+                pSendButton->hide();
+                pReadButton->hide();
             } else if (reportType == hid::reportDescriptor::HidReportType::Output) {
-                readButton->hide();
+                pReadButton->hide();
             }
 
-            topWidgetRow->addWidget(readButton);
-            topWidgetRow->addWidget(sendButton);
-            layout->addLayout(topWidgetRow);
+            pTopWidgetRow->addWidget(pReadButton);
+            pTopWidgetRow->addWidget(pSendButton);
+            pLayout->addLayout(pTopWidgetRow);
 
-            auto* table = new QTableWidget(tabWidget);
-            layout->addWidget(table);
+            auto* pTable = new QTableWidget(pTabWidget);
+            pLayout->addWidget(pTable);
 
-            auto report = reportDescriptor.getReport(reportType, reportId);
-            if (report) {
+            auto* pReport = reportDescriptor.getReport(reportType, reportId);
+            if (pReport) {
                 // Show payload size
-                auto* sizeLabel = new QLabel(tabWidget);
-                sizeLabel->setText(
+                auto* pSizeLabel = new QLabel(pTabWidget);
+                pSizeLabel->setText(
                         QStringLiteral("Payload Size: <b>%1 bytes</b>")
-                                .arg(report->getReportSize()));
-                topWidgetRow->insertWidget(0, sizeLabel);
+                                .arg(pReport->getReportSize()));
+                pTopWidgetRow->insertWidget(0, pSizeLabel);
 
-                populateHidReportTable(table, *report, reportType);
+                populateHidReportTable(pTable, *pReport, reportType);
             }
 
             if (reportType != hid::reportDescriptor::HidReportType::Output) {
-                connect(readButton,
+                connect(pReadButton,
                         &QPushButton::clicked,
                         this,
-                        [this, table, reportId, reportType]() {
-                            slotReadReport(table, reportId, reportType);
+                        [this, pTable, reportId, reportType]() {
+                            slotReadReport(pTable, reportId, reportType);
                         });
                 // Read once on tab creation
-                slotReadReport(table, reportId, reportType);
+                slotReadReport(pTable, reportId, reportType);
             }
             if (reportType != hid::reportDescriptor::HidReportType::Input) {
-                connect(sendButton,
+                connect(pSendButton,
                         &QPushButton::clicked,
                         this,
-                        [this, table, reportId, reportType]() {
-                            slotSendReport(table, reportId, reportType);
+                        [this, pTable, reportId, reportType]() {
+                            slotSendReport(pTable, reportId, reportType);
                         });
             }
 
-            parentReportTypeTab->addTab(tabWidget, tabName);
+            pParentReportTypeTab->addTab(pTabWidget, tabName);
 
             if (reportType == hid::reportDescriptor::HidReportType::Input) {
-                // Store the table pointer associated with the reportId
-                m_reportIdToTableMap[reportId] = table;
+                // Store the pTable pointer associated with the reportId
+                m_reportIdToTableMap[reportId] = pTable;
             }
 
             // Connect the signal for the reportId
@@ -128,31 +128,31 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* parentReport
 }
 
 void ControllerHidReportTabsManager::updateTableWithReportData(
-        QTableWidget* table,
+        QTableWidget* pTable,
         const QByteArray& reportData) {
     // Temporarily disable updates to speed up processing
-    table->setUpdatesEnabled(false);
+    pTable->setUpdatesEnabled(false);
 
     // Process the report data and update the table
-    for (int row = 0; row < table->rowCount(); ++row) {
-        auto* item = table->item(row, 5); // Value column is at index 5
+    for (int row = 0; row < pTable->rowCount(); ++row) {
+        auto* item = pTable->item(row, 5); // Value column is at index 5
         if (item) {
             // Retrieve custom data from the first cell
-            QVariant customData = table->item(row, 0)->data(Qt::UserRole + 1);
+            QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
-                auto control =
+                auto pControl =
                         static_cast<const hid::reportDescriptor::Control*>(
                                 customData.value<const void*>());
                 // Use the custom data as needed
                 int64_t controlValue =
                         hid::reportDescriptor::extractLogicalValue(
-                                reportData, *control);
+                                reportData, *pControl);
                 item->setText(QString::number(controlValue));
             }
         }
     }
 
-    table->setUpdatesEnabled(true);
+    pTable->setUpdatesEnabled(true);
 }
 
 void ControllerHidReportTabsManager::slotProcessInputReport(
@@ -163,16 +163,17 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
         qWarning() << "No table found for reportId" << reportId;
         return;
     }
-    QTableWidget* table = it->second;
+    QTableWidget* pTable = it->second;
 
     const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
-    auto report = reportDescriptor.getReport(hid::reportDescriptor::HidReportType::Input, reportId);
-    if (report) {
-        updateTableWithReportData(table, data);
+    auto pReport = reportDescriptor.getReport(
+            hid::reportDescriptor::HidReportType::Input, reportId);
+    if (pReport) {
+        updateTableWithReportData(pTable, data);
     }
 }
 
-void ControllerHidReportTabsManager::slotReadReport(QTableWidget* table,
+void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
         quint8 reportId,
         hid::reportDescriptor::HidReportType reportType) {
     if (!m_pHidController->isOpen()) {
@@ -180,37 +181,38 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* table,
         return;
     }
 
-    HidControllerJSProxy* jsProxy = static_cast<HidControllerJSProxy*>(m_pHidController->jsProxy());
-    VERIFY_OR_DEBUG_ASSERT(jsProxy) {
+    HidControllerJSProxy* pJsProxy =
+            static_cast<HidControllerJSProxy*>(m_pHidController->jsProxy());
+    VERIFY_OR_DEBUG_ASSERT(pJsProxy) {
         return;
     }
 
     const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
-    auto report = reportDescriptor.getReport(reportType, reportId);
-    VERIFY_OR_DEBUG_ASSERT(report) {
+    auto pReport = reportDescriptor.getReport(reportType, reportId);
+    VERIFY_OR_DEBUG_ASSERT(pReport) {
         return;
     }
 
     QByteArray reportData;
     if (reportType == hid::reportDescriptor::HidReportType::Input) {
-        reportData = jsProxy->getInputReport(reportId);
+        reportData = pJsProxy->getInputReport(reportId);
     } else if (reportType == hid::reportDescriptor::HidReportType::Feature) {
-        reportData = jsProxy->getFeatureReport(reportId);
+        reportData = pJsProxy->getFeatureReport(reportId);
     } else {
         return;
     }
 
-    if (reportData.size() < report->getReportSize()) {
+    if (reportData.size() < pReport->getReportSize()) {
         qWarning() << "Failed to get report. Read only " << reportData.size()
-                   << " instead of expected " << report->getReportSize()
+                   << " instead of expected " << pReport->getReportSize()
                    << " bytes.";
         return;
     }
 
-    updateTableWithReportData(table, reportData);
+    updateTableWithReportData(pTable, reportData);
 }
 
-void ControllerHidReportTabsManager::slotSendReport(QTableWidget* table,
+void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
         quint8 reportId,
         hid::reportDescriptor::HidReportType reportType) {
     if (!m_pHidController->isOpen()) {
@@ -218,34 +220,35 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* table,
         return;
     }
 
-    HidControllerJSProxy* jsProxy = static_cast<HidControllerJSProxy*>(m_pHidController->jsProxy());
-    VERIFY_OR_DEBUG_ASSERT(jsProxy) {
+    HidControllerJSProxy* pJsProxy =
+            static_cast<HidControllerJSProxy*>(m_pHidController->jsProxy());
+    VERIFY_OR_DEBUG_ASSERT(pJsProxy) {
         return;
     }
 
     const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
 
-    auto report = reportDescriptor.getReport(reportType, reportId);
-    VERIFY_OR_DEBUG_ASSERT(report) {
+    auto pReport = reportDescriptor.getReport(reportType, reportId);
+    VERIFY_OR_DEBUG_ASSERT(pReport) {
         return;
     }
 
     // Create a QByteArray of the size of the report
-    QByteArray reportData(report->getReportSize(), 0);
+    QByteArray reportData(pReport->getReportSize(), 0);
 
     // Iterate through each row in the table
-    for (int row = 0; row < table->rowCount(); ++row) {
-        auto* item = table->item(row, 5); // Value column is at index 5
+    for (int row = 0; row < pTable->rowCount(); ++row) {
+        auto* item = pTable->item(row, 5); // Value column is at index 5
         if (item) {
             // Retrieve custom data from the first cell
-            QVariant customData = table->item(row, 0)->data(Qt::UserRole + 1);
+            QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
-                auto control =
+                auto pControl =
                         reinterpret_cast<hid::reportDescriptor::Control*>(
                                 customData.value<void*>());
                 // Set the control value in the reportData
                 bool success = hid::reportDescriptor::applyLogicalValue(
-                        reportData, *control, item->text().toLongLong());
+                        reportData, *pControl, item->text().toLongLong());
                 if (!success) {
                     qWarning() << "Failed to set control value for row" << row;
                     continue;
@@ -256,26 +259,26 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* table,
 
     // Send the reportData
     if (reportType == hid::reportDescriptor::HidReportType::Feature) {
-        jsProxy->sendFeatureReport(reportId, reportData);
+        pJsProxy->sendFeatureReport(reportId, reportData);
     } else if (reportType == hid::reportDescriptor::HidReportType::Output) {
-        jsProxy->sendOutputReport(reportId, reportData);
+        pJsProxy->sendOutputReport(reportId, reportData);
     }
 }
 
 void ControllerHidReportTabsManager::populateHidReportTable(
-        QTableWidget* table,
-        const hid::reportDescriptor::Report& report,
+        QTableWidget* pTable,
+        const hid::reportDescriptor::Report& pReport,
         hid::reportDescriptor::HidReportType reportType) {
     // Temporarily disable updates to speed up populating
-    table->setUpdatesEnabled(false);
+    pTable->setUpdatesEnabled(false);
 
     // Reserve rows up-front
-    const auto& controls = report.getControls();
-    table->setRowCount(static_cast<int>(controls.size()));
+    const auto& controls = pReport.getControls();
+    pTable->setRowCount(static_cast<int>(controls.size()));
 
     // Set the delegate once if needed
     if (reportType != hid::reportDescriptor::HidReportType::Input) {
-        table->setItemDelegateForColumn(5, new ValueItemDelegate(table));
+        pTable->setItemDelegateForColumn(5, new ValueItemDelegate(pTable));
     }
 
     bool showVolatileColumn = (reportType == hid::reportDescriptor::HidReportType::Feature ||
@@ -302,9 +305,9 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     }
     headers << QStringLiteral("Usage Page") << QStringLiteral("Usage");
 
-    table->setColumnCount(headers.size());
-    table->setHorizontalHeaderLabels(headers);
-    table->verticalHeader()->setVisible(false);
+    pTable->setColumnCount(headers.size());
+    pTable->setHorizontalHeaderLabels(headers);
+    pTable->verticalHeader()->setVisible(false);
 
     // Helpers
     auto createReadOnlyItem = [](const QString& text, bool rightAlign = false) {
@@ -330,90 +333,99 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     };
 
     int row = 0;
-    for (const auto& control : controls) {
+    for (const auto& pControl : controls) {
         // Column 0 - Byte Position
         auto* bytePositionItem = createReadOnlyItem(QStringLiteral("0x%1").arg(QString::number(
-                                                            control.m_bytePosition, 16)
+                                                            pControl.m_bytePosition, 16)
                                                                     .rightJustified(2, '0')
                                                                     .toUpper()),
                 true);
-        table->setItem(row, 0, bytePositionItem);
+        pTable->setItem(row, 0, bytePositionItem);
         // Store custom data for the row in the first cell
         bytePositionItem->setData(Qt::UserRole + 1,
                 QVariant::fromValue(reinterpret_cast<void*>(
                         const_cast<hid::reportDescriptor::Control*>(
-                                &control))));
+                                &pControl))));
 
         // Column 1 - Bit Position
-        table->setItem(row, 1, createReadOnlyItem(QString::number(control.m_bitPosition), true));
+        pTable->setItem(row, 1, createReadOnlyItem(QString::number(pControl.m_bitPosition), true));
         // Column 2 - Bit Size
-        table->setItem(row, 2, createReadOnlyItem(QString::number(control.m_bitSize), true));
+        pTable->setItem(row, 2, createReadOnlyItem(QString::number(pControl.m_bitSize), true));
         // Column 3 - Logical Min
-        table->setItem(row, 3, createReadOnlyItem(QString::number(control.m_logicalMinimum), true));
+        pTable->setItem(row,
+                3,
+                createReadOnlyItem(
+                        QString::number(pControl.m_logicalMinimum), true));
         // Column 4 - Logical Max
-        table->setItem(row, 4, createReadOnlyItem(QString::number(control.m_logicalMaximum), true));
+        pTable->setItem(row,
+                4,
+                createReadOnlyItem(
+                        QString::number(pControl.m_logicalMaximum), true));
         // Column 5 - Value
-        table->setItem(row, 5, createValueItem(control.m_logicalMinimum, control.m_logicalMaximum));
+        pTable->setItem(row,
+                5,
+                createValueItem(
+                        pControl.m_logicalMinimum, pControl.m_logicalMaximum));
         // Column 6 - Physical Min
-        table->setItem(row,
+        pTable->setItem(row,
                 6,
                 createReadOnlyItem(
-                        QString::number(control.m_physicalMinimum), true));
+                        QString::number(pControl.m_physicalMinimum), true));
         // Column 7 - Physical Max
-        table->setItem(row,
+        pTable->setItem(row,
                 7,
                 createReadOnlyItem(
-                        QString::number(control.m_physicalMaximum), true));
+                        QString::number(pControl.m_physicalMaximum), true));
         // Column 8 - Unit Scaling
-        table->setItem(row,
+        pTable->setItem(row,
                 8,
-                createReadOnlyItem(control.m_unitExponent != 0
+                createReadOnlyItem(pControl.m_unitExponent != 0
                                 ? QStringLiteral("10^%1").arg(
-                                          control.m_unitExponent)
+                                          pControl.m_unitExponent)
                                 : QString(),
                         true));
         // Column 9 - Unit
-        table->setItem(row,
+        pTable->setItem(row,
                 9,
                 createReadOnlyItem(hid::reportDescriptor::getScaledUnitString(
-                        control.m_unit)));
+                        pControl.m_unit)));
         // Column 10 - Abs/Rel
-        table->setItem(row,
+        pTable->setItem(row,
                 10,
-                createReadOnlyItem(control.m_flags.absolute_relative
+                createReadOnlyItem(pControl.m_flags.absolute_relative
                                 ? QStringLiteral("Relative")
                                 : QStringLiteral("Absolute")));
         // Column 11 - Wrap
-        table->setItem(row,
+        pTable->setItem(row,
                 11,
-                createReadOnlyItem(control.m_flags.no_wrap_wrap
+                createReadOnlyItem(pControl.m_flags.no_wrap_wrap
                                 ? QStringLiteral("Wrap")
                                 : QStringLiteral("No Wrap")));
         // Column 12 - Linear
-        table->setItem(row,
+        pTable->setItem(row,
                 12,
-                createReadOnlyItem(control.m_flags.linear_non_linear
+                createReadOnlyItem(pControl.m_flags.linear_non_linear
                                 ? QStringLiteral("Non Linear")
                                 : QStringLiteral("Linear")));
         // Column 13 - Preferred
-        table->setItem(row,
+        pTable->setItem(row,
                 13,
-                createReadOnlyItem(control.m_flags.preferred_no_preferred
+                createReadOnlyItem(pControl.m_flags.preferred_no_preferred
                                 ? QStringLiteral("No Preferred")
                                 : QStringLiteral("Preferred")));
         // Column 14 - Null
-        table->setItem(row,
+        pTable->setItem(row,
                 14,
-                createReadOnlyItem(control.m_flags.no_null_null
+                createReadOnlyItem(pControl.m_flags.no_null_null
                                 ? QStringLiteral("Null")
                                 : QStringLiteral("No Null")));
 
         // Volatile column (if present)
         int volatileIndex = (showVolatileColumn ? 15 : -1);
         if (volatileIndex != -1) {
-            table->setItem(row,
+            pTable->setItem(row,
                     volatileIndex,
-                    createReadOnlyItem(control.m_flags.non_volatile_volatile
+                    createReadOnlyItem(pControl.m_flags.non_volatile_volatile
                                     ? QStringLiteral("Volatile")
                                     : QStringLiteral("Non Volatile")));
         }
@@ -421,15 +433,15 @@ void ControllerHidReportTabsManager::populateHidReportTable(
         // Usage Page / Usage
         int usagePageIdx = showVolatileColumn ? 16 : 15;
         int usageDescIdx = showVolatileColumn ? 17 : 16;
-        uint16_t usagePage = static_cast<uint16_t>((control.m_usage & 0xFFFF0000) >> 16);
-        uint16_t usage = static_cast<uint16_t>(control.m_usage & 0x0000FFFF);
+        uint16_t usagePage = static_cast<uint16_t>((pControl.m_usage & 0xFFFF0000) >> 16);
+        uint16_t usage = static_cast<uint16_t>(pControl.m_usage & 0x0000FFFF);
 
-        table->setItem(row,
+        pTable->setItem(row,
                 usagePageIdx,
                 createReadOnlyItem(
                         mixxx::hid::HidUsageTables::getUsagePageDescription(
                                 usagePage)));
-        table->setItem(row,
+        pTable->setItem(row,
                 usageDescIdx,
                 createReadOnlyItem(
                         mixxx::hid::HidUsageTables::getUsageDescription(
@@ -439,50 +451,50 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     }
 
     // Resize columns to contents once, store width and set column width fixed for performance
-    for (int colIdx = 0; colIdx < table->columnCount(); ++colIdx) {
-        table->horizontalHeader()->setSectionResizeMode(colIdx, QHeaderView::ResizeToContents);
+    for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
+        pTable->horizontalHeader()->setSectionResizeMode(colIdx, QHeaderView::ResizeToContents);
     }
-    QVector<int> columnWidths(table->columnCount());
-    for (int colIdx = 0; colIdx < table->columnCount(); ++colIdx) {
-        columnWidths[colIdx] = table->columnWidth(colIdx);
+    QVector<int> columnWidths(pTable->columnCount());
+    for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
+        columnWidths[colIdx] = pTable->columnWidth(colIdx);
     }
     // Set the width of the value column (5) to fit 11 digits (int32 minimum in decimal)
-    QFontMetrics metrics(table->font());
+    QFontMetrics metrics(pTable->font());
     int width = metrics.horizontalAdvance(QStringLiteral("0").repeated(11));
     columnWidths[5] = width;
-    for (int colIdx = 0; colIdx < table->columnCount(); ++colIdx) {
-        table->horizontalHeader()->setSectionResizeMode(colIdx, QHeaderView::Fixed);
-        table->setColumnWidth(colIdx, columnWidths[colIdx]);
+    for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
+        pTable->horizontalHeader()->setSectionResizeMode(colIdx, QHeaderView::Fixed);
+        pTable->setColumnWidth(colIdx, columnWidths[colIdx]);
     }
 
-    table->setUpdatesEnabled(true);
+    pTable->setUpdatesEnabled(true);
 }
 
-QWidget* ValueItemDelegate::createEditor(QWidget* parent,
+QWidget* ValueItemDelegate::createEditor(QWidget* pParent,
         const QStyleOptionViewItem&,
         const QModelIndex& index) const {
     // Create a line edit restricted by (logical min, logical max)
     auto dataRange = index.data(Qt::UserRole).value<QPair<int, int>>();
-    auto* editor = new QLineEdit(parent);
-    editor->setValidator(new QIntValidator(dataRange.first, dataRange.second, editor));
-    return editor;
+    auto* pEditor = new QLineEdit(pParent);
+    pEditor->setValidator(new QIntValidator(dataRange.first, dataRange.second, pEditor));
+    return pEditor;
 }
 
-void ValueItemDelegate::setModelData(QWidget* editor,
-        QAbstractItemModel* model,
+void ValueItemDelegate::setModelData(QWidget* pEditor,
+        QAbstractItemModel* pModel,
         const QModelIndex& index) const {
-    auto* lineEdit = qobject_cast<QLineEdit*>(editor);
-    if (!lineEdit) {
+    auto* pLineEdit = qobject_cast<QLineEdit*>(pEditor);
+    if (!pLineEdit) {
         return;
     }
 
     // Confirm the text is an integer within the expected range
     bool ok = false;
-    const int value = lineEdit->text().toInt(&ok);
+    const int value = pLineEdit->text().toInt(&ok);
     if (ok) {
         auto dataRange = index.data(Qt::UserRole).value<QPair<int, int>>();
         if (value >= dataRange.first && value <= dataRange.second) {
-            model->setData(index, value, Qt::EditRole);
+            pModel->setData(index, value, Qt::EditRole);
         }
     }
 }
