@@ -91,8 +91,11 @@ QString getScaledUnitString(uint32_t unit) {
         const char* pPhysicalQuantity[5];
     };
 
+    // This table of physical units is derived from the unit item table
+    // in chapter 6.2.2.7 of HID class definition 1.11
+    // These official unit symbols are not translateable
     const UnitInfo unitInfos[] = {
-            {"", "cm", "radian", "inch", "degree"},
+            {"", "cm", "rad", "″", "°"},    // length/angle
             {"", "g", "g", "slug", "slug"}, // mass
             {"", "s", "s", "s", "s"},       // time
             {"", "K", "K", "°F", "°F"},     // temperature
