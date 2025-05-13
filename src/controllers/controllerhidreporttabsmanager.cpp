@@ -79,7 +79,7 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
             auto* pTable = new QTableWidget(pTabWidget);
             pLayout->addWidget(pTable);
 
-            auto* pReport = reportDescriptor.getReport(reportType, reportId);
+            const auto* pReport = reportDescriptor.getReport(reportType, reportId);
             if (pReport) {
                 // Show payload size
                 auto* pSizeLabel = new QLabel(pTabWidget);
@@ -187,12 +187,6 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
         return;
     }
 
-    const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
-    auto pReport = reportDescriptor.getReport(reportType, reportId);
-    VERIFY_OR_DEBUG_ASSERT(pReport) {
-        return;
-    }
-
     QByteArray reportData;
     if (reportType == hid::reportDescriptor::HidReportType::Input) {
         reportData = pJsProxy->getInputReport(reportId);
@@ -202,6 +196,11 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
         return;
     }
 
+    const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
+    const auto* pReport = reportDescriptor.getReport(reportType, reportId);
+    VERIFY_OR_DEBUG_ASSERT(pReport) {
+        return;
+    }
     if (reportData.size() < pReport->getReportSize()) {
         qWarning() << "Failed to get report. Read only " << reportData.size()
                    << " instead of expected " << pReport->getReportSize()
