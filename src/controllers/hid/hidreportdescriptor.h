@@ -158,8 +158,11 @@ class Report {
 
     void addControl(const Control& item);
     void increasePosition(unsigned int bitSize);
-    std::pair<uint16_t, uint8_t> getLastPosition() const {
-        return {m_lastBytePosition, m_lastBitPosition};
+    uint16_t getLastBytePosition() const {
+        return m_lastBytePosition;
+    }
+    uint8_t getLastBitPosition() const {
+        return m_lastBitPosition;
     }
 
     const std::vector<Control>& getControls() const {

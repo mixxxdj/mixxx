@@ -453,7 +453,6 @@ Collection HIDReportDescriptor::parse() {
                         usage = localItems.Usage.front();
                         localItems.Usage.erase(localItems.Usage.begin());
                     }
-                    auto [lastBytePos, lastBitPos] = pCurrentReport->getLastPosition();
 
                     Control control(flags,
                             usage,
@@ -463,8 +462,8 @@ Collection HIDReportDescriptor::parse() {
                             physicalMaximum,
                             globalItems.unitExponent,
                             globalItems.unit,
-                            lastBytePos,
-                            lastBitPos,
+                            pCurrentReport->getLastBytePosition(),
+                            pCurrentReport->getLastBitPosition(),
                             globalItems.reportSize);
                     pCurrentReport->addControl(control);
                     pCurrentReport->increasePosition(globalItems.reportSize);
