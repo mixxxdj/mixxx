@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QModelIndex>
+#include <QSplashScreen>
+#include <QTimer>
 #include <QWindow>
 #include <QtDebug>
 
@@ -11,8 +13,12 @@
 #include "control/controlpushbutton.h"
 #include "library/library.h"
 #include "library/libraryview.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_librarycontrol.cpp"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -23,8 +29,8 @@ namespace {
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
-LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
-        : QObject(pParent),
+LoadToGroupController::LoadToGroupController(LibraryControl* pLibraryControl, const QString& group)
+        : QObject(pLibraryControl),
           m_group(group) {
     m_pLoadControl = std::make_unique<ControlPushButton>(ConfigKey(group, "LoadSelectedTrack"));
     connect(m_pLoadControl.get(),
@@ -56,8 +62,18 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
 
     connect(this,
             &LoadToGroupController::loadToGroup,
-            pParent,
+            pLibraryControl,
             &LibraryControl::slotLoadSelectedTrackToGroup);
+
+    m_pAppendLoadedTrackToPrepPlaylistControl =
+            std::make_unique<ControlPushButton>(
+                    ConfigKey(m_group, "append_deck_track_to_prep_playlist"));
+    connect(m_pAppendLoadedTrackToPrepPlaylistControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this, pLibraryControl](double value) {
+                pLibraryControl->slotAppendDeckTrackToPrepPlaylist(value, m_group);
+            });
 }
 
 LoadToGroupController::~LoadToGroupController() = default;
@@ -522,6 +538,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
 
+    m_pAppendSelectedTrackToPrepPlaylistControl =
+            std::make_unique<ControlPushButton>(
+                    ConfigKey("[Library]", "append_selected_track_to_prep_playlist"));
+    connect(m_pAppendSelectedTrackToPrepPlaylistControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotAppendSelectedTrackToPrepPlaylist);
+
 #ifdef MIXXX_USE_QML
     if (!CmdlineArgs::Instance().isQml())
 #endif
@@ -700,6 +724,51 @@ void LibraryControl::slotAutoDjAddReplace(double v) {
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
         pTrackTableView->addToAutoDJReplace();
+    }
+}
+
+void LibraryControl::slotAppendDeckTrackToPrepPlaylist(double value, const QString& group) {
+    if (value <= 0) {
+        return;
+    }
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
+    if (!pTrack) {
+        return;
+    }
+    TrackId id = pTrack->getId();
+    appendTrackToPrepPlaylist(id);
+}
+
+void LibraryControl::slotAppendSelectedTrackToPrepPlaylist(double value) {
+    if (value <= 0) {
+        return;
+    }
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (!pTrackTableView) {
+        return;
+    }
+    TrackId id = pTrackTableView->getCurrentTrackId();
+    appendTrackToPrepPlaylist(id);
+}
+
+void LibraryControl::appendTrackToPrepPlaylist(TrackId id) {
+    if (!id.isValid()) {
+        return;
+    }
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
+    if (playlistDao.appendTrackToPrepPlaylist(id)) {
+        // Show floating heart icon for 1.5 s
+        QPixmap heart(":/images/library/ic_heart_cyan_xxl.svg");
+        QSplashScreen* pSplash = new QSplashScreen(heart);
+        pSplash->resize(100, 100); // SVG is 100x100
+        pSplash->show();
+        QTimer::singleShot(1500, this, [pSplash]() { pSplash->close(); });
     }
 }
 
