@@ -36,6 +36,7 @@ const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString kForceHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
 
 // TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
@@ -206,6 +207,9 @@ DlgPrefInterface::DlgPrefInterface(
         m_multiSampling = m_pConfig->getValue<mixxx::preferences::MultiSamplingMode>(
                 ConfigKey(kPreferencesGroup, kMultiSamplingKey),
                 mixxx::preferences::MultiSamplingMode::Four);
+        m_forceHardwareAcceleration = m_pConfig->getValue<bool>(
+                ConfigKey(kPreferencesGroup, kForceHardwareAccelerationKey),
+                false);
         int multiSamplingIndex = multiSamplingComboBox->findData(
                 QVariant::fromValue((m_multiSampling)));
         if (multiSamplingIndex != -1) {
@@ -223,6 +227,7 @@ DlgPrefInterface::DlgPrefInterface(
 #endif
         multiSamplingLabel->hide();
         multiSamplingComboBox->hide();
+        checkBoxForceHardwareAcceleration->hide();
     }
 
     // Tooltip configuration
@@ -358,6 +363,8 @@ void DlgPrefInterface::slotResetToDefaults() {
     multiSamplingComboBox->setCurrentIndex(
             multiSamplingComboBox->findData(QVariant::fromValue(
                     mixxx::preferences::MultiSamplingMode::Four))); // 4x MSAA
+    checkBoxForceHardwareAcceleration->setChecked(
+            false);
 #endif
 
 #ifdef Q_OS_IOS
@@ -489,11 +496,20 @@ void DlgPrefInterface::slotApply() {
                     .value<mixxx::preferences::MultiSamplingMode>();
     m_pConfig->setValue<mixxx::preferences::MultiSamplingMode>(
             ConfigKey(kPreferencesGroup, kMultiSamplingKey), multiSampling);
+    bool forceHardwareAcceleration = checkBoxForceHardwareAcceleration->isChecked();
+    if (m_pConfig->exists(
+                ConfigKey(kPreferencesGroup, kForceHardwareAccelerationKey)) ||
+            forceHardwareAcceleration) {
+        m_pConfig->setValue(
+                ConfigKey(kPreferencesGroup, kForceHardwareAccelerationKey),
+                forceHardwareAcceleration);
+    }
 #endif
 
     if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
 #ifdef MIXXX_USE_QML
-            || multiSampling != m_multiSampling
+            || multiSampling != m_multiSampling ||
+            forceHardwareAcceleration != m_forceHardwareAcceleration
 #endif
     ) {
         notifyRebootNecessary();
@@ -502,6 +518,7 @@ void DlgPrefInterface::slotApply() {
         m_dScaleFactor = scaleFactor;
 #ifdef MIXXX_USE_QML
         m_multiSampling = multiSampling;
+        m_forceHardwareAcceleration = forceHardwareAcceleration;
 #endif
     }
 
