@@ -1443,21 +1443,22 @@ void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJS
     }
 }
 
-void PlaylistDAO::appendTrackToPrepPlaylist(TrackId id) {
+bool PlaylistDAO::appendTrackToPrepPlaylist(TrackId id) {
     if (!id.isValid()) {
-        return;
+        return false;
     }
     if (m_prepPlaylistId == kInvalidPlaylistId) {
         // append to AutoDJQueue?
-        // Just to make append controls more versatile?
-        return;
+        // Just to make append control more versatile?
+        return false;
     }
     if (isPlaylistLocked(m_prepPlaylistId)) {
-        return;
+        return false;
     }
-    if (!isTrackInPlaylist(id, m_prepPlaylistId)) {
-        appendTracksToPlaylist(QList<TrackId>{id}, m_prepPlaylistId);
+    if (isTrackInPlaylist(id, m_prepPlaylistId)) {
+        return false;
     }
+    return appendTracksToPlaylist(QList<TrackId>{id}, m_prepPlaylistId);
 }
 
 /// use kInvalidPlaylistId to unset

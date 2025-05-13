@@ -124,7 +124,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int getPrepPlaylistId() {
         return m_prepPlaylistId;
     }
-    void appendTrackToPrepPlaylist(TrackId id);
+    bool appendTrackToPrepPlaylist(TrackId id);
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 

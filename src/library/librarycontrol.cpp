@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QModelIndex>
+#include <QSplashScreen>
+#include <QTimer>
 #include <QWindow>
 #include <QtDebug>
 
@@ -18,6 +20,7 @@
 #include "moc_librarycontrol.cpp"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#include "util/widgethelper.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -68,6 +71,7 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pLibraryControl, co
                     ConfigKey(m_group, "append_deck_track_to_prep_playlist"));
     connect(m_pAppendLoadedTrackToPrepPlaylistControl.get(),
             &ControlObject::valueChanged,
+            this,
             [this, pLibraryControl](double value) {
                 pLibraryControl->slotAppendDeckTrackToPrepPlaylist(value, m_group);
             });
@@ -535,7 +539,6 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
 
-    // TODO Create control per deck in slotNumDecksChanged
     m_pAppendSelectedTrackToPrepPlaylistControl =
             std::make_unique<ControlPushButton>(
                     ConfigKey("[Library]", "append_selected_track_to_prep_playlist"));
@@ -760,8 +763,29 @@ void LibraryControl::appendTrackToPrepPlaylist(TrackId id) {
     PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
-    // TODO Show warning when no prep playlist is set
-    playlistDao.appendTrackToPrepPlaylist(id);
+    if (!playlistDao.appendTrackToPrepPlaylist(id)) {
+        qWarning() << "Appending track %1 to Prep playlist failed!";
+        return;
+    }
+    // Show floating heart icon for 1.5 s
+    QScreen* pScreen = mixxx::widgethelper::getMainScreen();
+    if (!pScreen) {
+        return;
+    }
+    QPixmap heart(":/images/library/ic_heart_cyan_xxl.png");
+    // For some reason the splashscreen won't be shown on top the fullscreen
+    // main window when it's constructed like this:
+    // QSplashScreen(pScreen, heart, flags)
+    QSplashScreen* pSplash = new QSplashScreen(heart);
+    pSplash->setScreen(pScreen);
+    pSplash->setWindowFlags(Qt::WindowStaysOnTopHint |
+            Qt::WindowDoesNotAcceptFocus |
+            // required to make it visible with fullscreen main window
+            Qt::FramelessWindowHint);
+    pSplash->resize(280, 235); // blur needs space to fade out without cut edges
+    pSplash->show();
+    pSplash->raise();
+    QTimer::singleShot(5000, this, [pSplash]() { pSplash->close(); });
 }
 
 void LibraryControl::slotSelectNextTrack(double v) {
