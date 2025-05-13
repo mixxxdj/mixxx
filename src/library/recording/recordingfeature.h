@@ -1,10 +1,12 @@
 #pragma once
 
-#include "preferences/usersettings.h"
 #include "library/libraryfeature.h"
+#include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
-class RecordingManager;
+class DlgRecording;
 class FolderTreeModel;
+class RecordingManager;
 
 class RecordingFeature final : public LibraryFeature {
     Q_OBJECT
@@ -31,6 +33,6 @@ class RecordingFeature final : public LibraryFeature {
 
   private:
     RecordingManager* const m_pRecordingManager;
-
+    parented_ptr<DlgRecording> m_pRecordingView;
     FolderTreeModel* m_pSidebarModel;
 };
