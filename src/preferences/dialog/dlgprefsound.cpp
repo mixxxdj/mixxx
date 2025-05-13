@@ -83,7 +83,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
-          m_loading(false) {
+          m_loading(false),
+          m_configValid(true) {
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -362,9 +363,13 @@ void DlgPrefSound::slotApply() {
         }
 #endif
         status = m_pSoundManager->setConfig(m_config);
+        m_configValid = (status == SoundDeviceStatus::Ok);
+        qDebug() << "DlgPrefSound - m_configValid set to" << m_configValid;
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
+        qDebug() << "Sound configuration error:" << error;
+        qDebug() << "Error status:" << static_cast<int>(status);
         QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
@@ -1046,4 +1051,9 @@ void DlgPrefSound::checkLatencyCompensation() {
         latencyCompensationSpinBox->setEnabled(false);
         latencyCompensationWarningLabel->hide();
     }
+}
+
+bool DlgPrefSound::okayToClose() const {
+    qDebug() << "DlgPrefSound::okayToClose() called, returning:" << m_configValid;
+    return m_configValid;
 }
