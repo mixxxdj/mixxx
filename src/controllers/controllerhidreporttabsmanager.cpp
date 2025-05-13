@@ -18,19 +18,19 @@ ControllerHidReportTabsManager::ControllerHidReportTabsManager(
 }
 
 void ControllerHidReportTabsManager::createReportTypeTabs() {
-    auto reportTypeTabs = std::make_unique<QTabWidget>(m_pParentControllerTab);
+    auto reportTypeTabs = make_parented<QTabWidget>(m_pParentControllerTab);
 
     QMetaEnum metaEnum = QMetaEnum::fromType<hid::reportDescriptor::HidReportType>();
 
     for (int reportTypeIdx = 0; reportTypeIdx < metaEnum.keyCount(); ++reportTypeIdx) {
         auto reportType = static_cast<hid::reportDescriptor::HidReportType>(
                 metaEnum.value(reportTypeIdx));
-        auto reportTypeTab = std::make_unique<QTabWidget>(reportTypeTabs.get());
+        auto reportTypeTab = make_parented<QTabWidget>(reportTypeTabs.get());
         createHidReportTab(reportTypeTab.get(), reportType);
         if (reportTypeTab->count() > 0) {
             QString tabName = QStringLiteral("%1 Reports")
                                       .arg(metaEnum.key(reportTypeIdx));
-            m_pParentControllerTab->addTab(reportTypeTab.release(), tabName);
+            m_pParentControllerTab->addTab(std::move(reportTypeTab), tabName);
         }
     }
 }
