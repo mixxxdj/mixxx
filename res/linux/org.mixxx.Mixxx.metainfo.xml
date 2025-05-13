@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-04-29" timestamp="1745934102">
+    <release version="2.6.0" type="development" date="2025-05-13" timestamp="1747172357">
       <description>
  <p>
   Controller Mappings
@@ -290,10 +290,11 @@
    #14423
   </li>
   <li>
-   Drop Hotcue onto Play button to latch
+   Drop Hotcue or main Cue button onto Play button to latch
    play
    #14179
    #14178
+   #14753
   </li>
   <li>
    Always show tooltips if Ctrl key is pressed

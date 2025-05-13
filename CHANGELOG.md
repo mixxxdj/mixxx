@@ -71,9 +71,10 @@
 * Add controls to order Hotcues by position in the track
   [#13808](https://github.com/mixxxdj/mixxx/pull/13808)
   [#14423](https://github.com/mixxxdj/mixxx/pull/14423)
-* Drop Hotcue onto Play button to latch `play`
+* Drop Hotcue or main Cue button onto Play button to latch `play`
   [#14179](https://github.com/mixxxdj/mixxx/pull/14179)
   [#14178](https://github.com/mixxxdj/mixxx/pull/14178)
+  [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
 * Always show tooltips if Ctrl key is pressed [#14078](https://github.com/mixxxdj/mixxx/pull/14078)
 * Usability/Keyboard: Add a rebindable keyboard shortcut for editing items as a replacement for F2 [#13148](https://github.com/mixxxdj/mixxx/pull/13148)
 
