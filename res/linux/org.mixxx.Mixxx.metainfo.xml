@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-05-13" timestamp="1747172357">
+    <release version="2.6.0" type="development" date="2025-05-13" timestamp="1747172530">
       <description>
  <p>
   Controller Mappings
@@ -223,6 +223,10 @@
   <li>
    Use correct detected channel count on CoreAudio
    #14372
+  </li>
+  <li>
+   Fix: revert to max. 36 hotcues, fix one-off issue
+   #14753
   </li>
  </ul>
  <p>
