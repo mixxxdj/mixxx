@@ -29,8 +29,7 @@ void ControllerHidReportTabsManager::createReportTypeTabs() {
         createHidReportTab(reportTypeTab.get(), reportType);
         if (reportTypeTab->count() > 0) {
             QString tabName = QStringLiteral("%1 Reports")
-                                      .arg(metaEnum.valueToKey(
-                                              static_cast<int>(reportType)));
+                                      .arg(metaEnum.key(reportTypeIdx));
             m_pParentControllerTab->addTab(reportTypeTab.release(), tabName);
         }
     }
