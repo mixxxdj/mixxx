@@ -343,20 +343,30 @@ jobs:
           Expand-7Zip -ArchiveFileName $localPath -TargetPath '.'
         working-directory: build
 
-      - name: "Run QML UI tests"
+      - name: "[Windows] Run QML UI tests"
         id: uitest
-        if: runner.os != 'Linux' && matrix.qml == 'ON'
+        if: runner.os == 'Windows' && matrix.qml == 'ON'
         timeout-minutes: 2
         run: |
+          Start-Process -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -i desktop output.mp4 -y'
           ./mixxx-test --ui --log-level debug --developer
+          Stop-Process -Name ffmpeg
         working-directory: build
+        env:
+          FFMPEG_BIN: ${{ env.GITHUB_WORKSPACE }}/buildenv/${{ env.BUILDENV_NAME }}/installed/x64-windows/tools/ffmpeg/ffmpeg
 
       - name: "[Ubuntu] Run QML UI tests"
         id: uitest_linux
         if: runner.os == 'Linux' && matrix.qml == 'ON'
         timeout-minutes: 2
         run: |
-          xvfb-run -s "-screen 0 1920x1080x16" -e /dev/stdout ./mixxx-test --ui --log-level debug --developer
+          Xvfb :44 -ac -screen 0 1920x1080x24 -auth /dev/null &
+          ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v libx264 -r 30 output.mp4 -y &
+          FFMPEG_PID=$(jobs -p "%ffmpeg")
+          DISPLAY=:44 ./mixxx-test --ui --log-level debug --developer
+          kill $(jobs -p "%ffmpeg")
+          wait $(jobs -p "%ffmpeg")
+          kill $(jobs -p "%Xvfb")
         working-directory: build
 
       - name: "Upload QML UI tests artifact"
@@ -366,6 +376,7 @@ jobs:
           name: ui-tests-${{ runner.os }}
           path: |
             build/screenshots
+            build/output.mp4
           retention-days: 1
 
       - name: "[Ubuntu] Generate Coverage Report"
