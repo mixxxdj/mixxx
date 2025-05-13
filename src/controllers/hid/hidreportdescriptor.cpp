@@ -409,7 +409,8 @@ Collection HIDReportDescriptor::parse() {
                 pCurrentReport = std::make_unique<Report>(getReportType(tag), globalItems.reportId);
             }
 
-            int32_t physicalMinimum, physicalMaximum;
+            int32_t physicalMinimum;
+            int32_t physicalMaximum;
             if (globalItems.physicalMinimum == 0 && globalItems.physicalMaximum == 0) {
                 // According remark in chapter 6.2.2.7 of HID class definition 1.11
                 physicalMinimum = globalItems.logicalMinimum;
