@@ -8,6 +8,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -23,8 +24,6 @@ constexpr double CUE_MODE_CUP = 5.0;
 
 /// This is the position of a fresh loaded tack without any seek
 constexpr int kNoHotCueNumber = 0;
-/// Used for a common tracking of the previewing Hotcue in m_currentlyPreviewingIndex
-constexpr int kMainCueIndex = NUM_HOT_CUES;
 
 // Helper function to convert control values (i.e. doubles) into RgbColor
 // instances (or nullopt if value < 0). This happens by using the integer
@@ -96,7 +95,6 @@ CueControl::CueControl(const QString& group,
           m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
-          m_iNumHotCues(NUM_HOT_CUES),
           m_pCurrentSavedLoopControl(nullptr),
           m_trackMutex(QT_RECURSIVE_MUTEX_INIT) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
@@ -221,7 +219,7 @@ void CueControl::createControls() {
             ConfigKey(m_group, "hotcue_focus_color_next"));
 
     // Create hotcue controls
-    for (int i = 0; i < m_iNumHotCues; ++i) {
+    for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
         HotcueControl* pControl = new HotcueControl(m_group, i);
         m_hotcueControls.append(pControl);
     }
@@ -714,7 +712,7 @@ void CueControl::loadCuesFromTrack() {
     }
 
     // Detach all hotcues that are no longer present
-    for (int hotCueIndex = 0; hotCueIndex < m_iNumHotCues; ++hotCueIndex) {
+    for (int hotCueIndex = 0; hotCueIndex < kMaxNumberOfHotcues; ++hotCueIndex) {
         if (!active_hotcues.contains(hotCueIndex)) {
             HotcueControl* pControl = m_hotcueControls.at(hotCueIndex);
             detachCue(pControl);
@@ -1216,7 +1214,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
 
 void CueControl::updateCurrentlyPreviewingIndex(int hotcueIndex) {
     int oldPreviewingIndex = m_currentlyPreviewingIndex.fetchAndStoreRelease(hotcueIndex);
-    if (oldPreviewingIndex >= 0 && oldPreviewingIndex < m_iNumHotCues) {
+    if (oldPreviewingIndex >= 0 && oldPreviewingIndex < kMaxNumberOfHotcues) {
         // We where already in previewing state, clean up ..
         HotcueControl* pLastControl = m_hotcueControls.at(oldPreviewingIndex);
         mixxx::CueType lastType = pLastControl->getPreviewingType();
@@ -1252,7 +1250,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
 void CueControl::hotcueSwap(HotcueControl* pControl, double v) {
     // 1-based GUI/human index to 0-based internal index
     int newCuenum = static_cast<int>(v) - 1;
-    if (newCuenum < mixxx::kFirstHotCueIndex || newCuenum >= m_iNumHotCues) {
+    if (newCuenum < mixxx::kFirstHotCueIndex || newCuenum >= kMaxNumberOfHotcues) {
         return;
     }
 
@@ -2083,7 +2081,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(
             int oldPreviewingIndex =
                     m_currentlyPreviewingIndex.fetchAndStoreRelease(
                             Cue::kNoHotCue);
-            if (oldPreviewingIndex >= 0 && oldPreviewingIndex < m_iNumHotCues) {
+            if (oldPreviewingIndex >= 0 && oldPreviewingIndex < kMaxNumberOfHotcues) {
                 HotcueControl* pLastControl = m_hotcueControls.at(oldPreviewingIndex);
                 mixxx::CueType lastType = pLastControl->getPreviewingType();
                 if (lastType != mixxx::CueType::Loop) {

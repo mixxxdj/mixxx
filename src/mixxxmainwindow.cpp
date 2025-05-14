@@ -1195,7 +1195,7 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         if (result.numNewMissingTracks != 0) {
             summary += tr("%1 tracks are missing (%2 total)")
                                .arg(QString::number(result.numNewMissingTracks),
-                                       result.numMissingTracks);
+                                       QString::number(result.numMissingTracks));
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +

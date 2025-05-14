@@ -18,7 +18,9 @@
   [#13070](https://github.com/mixxxdj/mixxx/pull/13070)
   [#14244](https://github.com/mixxxdj/mixxx/pull/14244)
 * Add stem files to the taglib lookup table [#13612](https://github.com/mixxxdj/mixxx/pull/13612)
-* Stem controls for LateNight [#13537](https://github.com/mixxxdj/mixxx/pull/13537)
+* Stem controls for LateNight
+  [#13537](https://github.com/mixxxdj/mixxx/pull/13537)
+  [#14745](https://github.com/mixxxdj/mixxx/pull/14745)
 * Fix: make "stem_group,mute" a powerwindow button
   [#13751](https://github.com/mixxxdj/mixxx/pull/13751)
   [#13749](https://github.com/mixxxdj/mixxx/issues/13749)
@@ -52,6 +54,9 @@
 * Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons [#13614](https://github.com/mixxxdj/mixxx/pull/13614)
 * Fix: restore BPM and Bitrate column width [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
 * Elide key text from the right [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
+* Playlists: add 'Unlock all' and 'Delete all unlocked' menu actions
+  [#14091](https://github.com/mixxxdj/mixxx/pull/14091)
+  [#8960](https://github.com/mixxxdj/mixxx/issues/8960)
 
 ### Effects
 
@@ -91,6 +96,8 @@
   [#14187](https://github.com/mixxxdj/mixxx/pull/14187)
   [#13470](https://github.com/mixxxdj/mixxx/pull/13470)
   [#14461](https://github.com/mixxxdj/mixxx/pull/14461)
+  [#14726](https://github.com/mixxxdj/mixxx/pull/14726)
+  [#14706](https://github.com/mixxxdj/mixxx/issues/14706)
 * Improve apperrance of marks on the waveforms [#13969](https://github.com/mixxxdj/mixxx/pull/13969)
 * ControllerRenderingEngine: Patch out unavailable APIs when using GL ES [#13382](https://github.com/mixxxdj/mixxx/pull/13382)
 * Fix high details waveforms wrapping around after visual index 65K [#13491](https://github.com/mixxxdj/mixxx/pull/13491)
@@ -157,6 +164,7 @@
 * Sync: prefer playing inaudible decks over stopped non-sync decks [#14580](https://github.com/mixxxdj/mixxx/pull/14580)
 * Fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
 * Use correct detected channel count on CoreAudio [#14372](https://github.com/mixxxdj/mixxx/pull/14372)
+* Fix: revert to max. 36 hotcues, fix one-off issue [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
 
 ### Preferences
 
@@ -181,9 +189,10 @@
 * Add controls to order Hotcues by position in the track
   [#13808](https://github.com/mixxxdj/mixxx/pull/13808)
   [#14423](https://github.com/mixxxdj/mixxx/pull/14423)
-* Drop Hotcue onto Play button to latch `play`
+* Drop Hotcue or main Cue button onto Play button to latch `play`
   [#14179](https://github.com/mixxxdj/mixxx/pull/14179)
   [#14178](https://github.com/mixxxdj/mixxx/pull/14178)
+  [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
 * Always show tooltips if Ctrl key is pressed [#14078](https://github.com/mixxxdj/mixxx/pull/14078)
 * Update waveforms_container.xml [#13501](https://github.com/mixxxdj/mixxx/pull/13501)
 * LegacySkinParser: Short-circuit if template fails to open [#13488](https://github.com/mixxxdj/mixxx/pull/13488)
