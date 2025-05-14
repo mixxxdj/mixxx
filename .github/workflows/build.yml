@@ -43,7 +43,7 @@ jobs:
             os: macos-13
             cmake_args: >-
               -DCOREAUDIO=ON
-              -BUILD_UI_TEST=OFF
+              -DBUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
@@ -65,7 +65,7 @@ jobs:
             os: macos-13
             cmake_args: >-
               -DCOREAUDIO=ON
-              -BUILD_UI_TEST=OFF
+              -DBUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
@@ -364,6 +364,7 @@ jobs:
           ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v libx264 -r 30 output.mp4 -y &
           FFMPEG_PID=$(jobs -p "%ffmpeg")
           DISPLAY=:44 ./mixxx-test --ui --log-level debug --developer
+          set -x
           kill $(jobs -p "%ffmpeg")
           wait $(jobs -p "%ffmpeg")
           kill $(jobs -p "%Xvfb")
