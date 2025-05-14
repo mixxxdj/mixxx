@@ -145,13 +145,13 @@ void BasePlaylistFeature::initActions() {
             this,
             &BasePlaylistFeature::slotExportTrackFiles);
 #ifdef __ENGINEPRIME__
-    // Note: "Engine DJ" is a product name and must not be translated.
+    //: "Engine DJ" is a product name and must not be translated.
     m_pExportAllPlaylistsToEngineAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportAllPlaylistsToEngineAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::exportAllPlaylists);
-    // Note: "Engine DJ" is a product name and must not be translated.
+    //: "Engine DJ" is a product name and must not be translated.
     m_pExportPlaylistToEngineAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportPlaylistToEngineAction,
             &QAction::triggered,
