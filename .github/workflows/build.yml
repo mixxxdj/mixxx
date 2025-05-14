@@ -218,16 +218,6 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           # BUILDENV_RELEASE: TRUE
 
-      - name: "[Windows] test path"
-        run: |
-          ls ${{ env.MIXXX_VCPKG_ROOT }}
-          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed
-          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows
-          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools
-          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg
-          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg\ffmpeg.exe
-        if: runner.os == 'windows'
-
       - name: "[Ubuntu/macOS] Set up ccache"
         # GitHub Actions gives us 10 GB of cache.
         # 4 runs * 2 GB = 8 GB
@@ -363,7 +353,7 @@ jobs:
           Stop-Process -Name ffmpeg
         working-directory: build
         env:
-          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg\ffmpeg
+          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg\ffmpeg.exe
 
       - name: "[Ubuntu] Run QML UI tests"
         id: uitest_linux
