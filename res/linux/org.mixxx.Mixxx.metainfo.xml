@@ -96,6 +96,56 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.5.2" type="development" date="2025-05-12" timestamp="1747001240">
+      <description>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Fix playlist export when name contains a dot
+   #14737
+  </li>
+ </ul>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
+   #14722
+  </li>
+  <li>
+   Traktor S2 Mk3: Fixed LED issue
+   #14717
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Control picker: Allow to learn MIDI Aux/Mic enable controls
+   #14720
+   #14718
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Fix building with a CMake multi-config setup
+   #14614
+  </li>
+  <li>
+   Fix building with gcc &gt;= 14 with LTO and clang &gt;= 19 (fpclassify)
+   #14749
+   #14749
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.5.1" type="stable" date="2025-04-27" timestamp="1745712000">
       <description>
  <p>

@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (unreleased)
+
+### Library
+
+* Fix playlist export when name contains a dot [#14737](https://github.com/mixxxdj/mixxx/pull/14737)
+
+### Controller Mappings
+
+* Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
+  [#14722](https://github.com/mixxxdj/mixxx/pull/14722)
+* Traktor S2 Mk3: Fixed LED issue [#14717](https://github.com/mixxxdj/mixxx/pull/14717)
+
+### Controller Backend
+
+* Control picker: Allow to learn MIDI Aux/Mic enable controls
+  [#14720](https://github.com/mixxxdj/mixxx/pull/14720)
+  [#14718](https://github.com/mixxxdj/mixxx/issues/14718)
+
+### Target support
+
+* Fix building with a CMake multi-config setup [#14614](https://github.com/mixxxdj/mixxx/pull/14614)
+* Fix building with gcc >= 14 with LTO and clang >= 19 (fpclassify)
+  [#14749](https://github.com/mixxxdj/mixxx/pull/14749)
+  [#14749](https://github.com/mixxxdj/mixxx/issues/14716)
+
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 
 ### Controller Mappings
