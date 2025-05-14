@@ -220,8 +220,12 @@ jobs:
 
       - name: "[Windows] test path"
         run: |
-          $ffmpegBin = "${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows\tools\ffmpeg\"
-          ls $ffmpegBin
+          ls "${env:GITHUB_WORKSPACE}\buildenv"
+          ls "${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())"
+          ls "${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed"
+          ls "${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows"
+          ls "${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows\tools"
+          ls "${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows\tools\ffmpeg"
         if: runner.os == 'windows'
 
       - name: "[Ubuntu/macOS] Set up ccache"
