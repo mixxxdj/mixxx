@@ -815,6 +815,22 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
             </widget>
            </item>
            <item row="4" column="0">
+            <widget class="QPushButton" name="bpmFiveFourths">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 125% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>5/4 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
             <widget class="QPushButton" name="bpmThreeHalves">
              <property name="minimumSize">
               <size>
@@ -830,7 +846,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="0">
             <widget class="QPushButton" name="bpmFourThirds">
              <property name="minimumSize">
               <size>
