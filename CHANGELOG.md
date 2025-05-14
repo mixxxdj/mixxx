@@ -162,6 +162,7 @@
 * Sync: prefer playing inaudible decks over stopped non-sync decks [#14580](https://github.com/mixxxdj/mixxx/pull/14580)
 * Fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
 * Use correct detected channel count on CoreAudio [#14372](https://github.com/mixxxdj/mixxx/pull/14372)
+* Fix: revert to max. 36 hotcues, fix one-off issue [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
 
 ### Preferences
 
@@ -186,9 +187,10 @@
 * Add controls to order Hotcues by position in the track
   [#13808](https://github.com/mixxxdj/mixxx/pull/13808)
   [#14423](https://github.com/mixxxdj/mixxx/pull/14423)
-* Drop Hotcue onto Play button to latch `play`
+* Drop Hotcue or main Cue button onto Play button to latch `play`
   [#14179](https://github.com/mixxxdj/mixxx/pull/14179)
   [#14178](https://github.com/mixxxdj/mixxx/pull/14178)
+  [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
 * Always show tooltips if Ctrl key is pressed [#14078](https://github.com/mixxxdj/mixxx/pull/14078)
 * Update waveforms_container.xml [#13501](https://github.com/mixxxdj/mixxx/pull/13501)
 * LegacySkinParser: Short-circuit if template fails to open [#13488](https://github.com/mixxxdj/mixxx/pull/13488)
