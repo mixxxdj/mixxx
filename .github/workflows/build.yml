@@ -366,7 +366,7 @@ jobs:
           function finish() {
               set -x
               kill $(jobs -p "%ffmpeg")
-              wait $(jobs -p "%ffmpeg")
+              wait -f $(jobs -p "%ffmpeg") || true
               kill $(jobs -p "%Xvfb") || true
           }
 
