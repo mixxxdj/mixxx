@@ -315,7 +315,7 @@ jobs:
       - name: "[Ubuntu] Setup UI dependencies for QML UI Test"
         if: runner.os == 'Linux' && matrix.qml == 'ON'
         run: |
-          sudo apt-get update && sudo apt-get install -y xvfb
+          sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
           echo "QT_QPA_PLATFORM=xcb" >> "$GITHUB_ENV"
         working-directory: build
 
