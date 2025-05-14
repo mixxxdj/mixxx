@@ -220,13 +220,12 @@ jobs:
 
       - name: "[Windows] test path"
         run: |
-          ls .
-          ls .\buildenv
-          ls .\buildenv\$($env:BUILDENV_NAME.Trim())
-          ls .\buildenv\$($env:BUILDENV_NAME.Trim())\installed
-          ls .\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows
-          ls .\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows\tools
-          ls .\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows\tools\ffmpeg
+          ls ${{ env.MIXXX_VCPKG_ROOT }}
+          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed
+          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows
+          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools
+          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg
+          ls ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg\ffmpeg.exe
         if: runner.os == 'windows'
 
       - name: "[Ubuntu/macOS] Set up ccache"
@@ -352,12 +351,10 @@ jobs:
           Install-Module -Name 7Zip4PowerShell -Force
 
           Expand-7Zip -ArchiveFileName $localPath -TargetPath '.'
-
-          echo "FFMPEG_BIN=${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed\x64-windows\tools\ffmpeg\ffmpeg" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         working-directory: build
 
       - name: "[Windows] Run QML UI tests"
-        id: uitest
+        id: uitest_windows
         if: runner.os == 'Windows' && matrix.qml == 'ON'
         timeout-minutes: 2
         run: |
@@ -365,6 +362,8 @@ jobs:
           ./mixxx-test --ui --log-level debug --developer
           Stop-Process -Name ffmpeg
         working-directory: build
+        env:
+          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg\ffmpeg
 
       - name: "[Ubuntu] Run QML UI tests"
         id: uitest_linux
@@ -386,7 +385,7 @@ jobs:
         working-directory: build
 
       - name: "Upload QML UI tests artifact"
-        if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest.outcome != 'skipped')
+        if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest_windows.outcome != 'skipped')
         uses: actions/upload-artifact@v4.6.0
         with:
           name: ui-tests-${{ runner.os }}
