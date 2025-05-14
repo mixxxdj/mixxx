@@ -487,6 +487,8 @@ TrackPointer GlobalTrackCache::lookupByRef(
                     << "cached =" << cachedTrackRef;
         }
     }
+    // Lookup failed, either because the TrackRef did not specify an id or canonical location,
+    // or because the database contains multiple tracks with that canonical location.
     return {};
 }
 
