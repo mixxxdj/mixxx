@@ -90,6 +90,11 @@ TEST(BeatGridTest, Scale) {
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FiveFourths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 5 / 4,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
     pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
     EXPECT_DOUBLE_EQ(bpm.value(),
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)

@@ -133,6 +133,9 @@ void DlgTrackInfo::init() {
     connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
     });
+    connect(bpmFiveFourths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FiveFourths);
+    });
     connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
     });
