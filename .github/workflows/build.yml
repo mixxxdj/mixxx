@@ -361,6 +361,7 @@ jobs:
         timeout-minutes: 2
         run: |
           Xvfb :44 -ac -screen 0 1920x1080x24 -auth /dev/null &
+          sleep 3
           ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v libx264 -r 30 output.mp4 -y &
           FFMPEG_PID=$(jobs -p "%ffmpeg")
           DISPLAY=:44 ./mixxx-test --ui --log-level debug --developer
