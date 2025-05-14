@@ -220,6 +220,7 @@ jobs:
 
       - name: "[Windows] test path"
         run: |
+          ls ${env:GITHUB_WORKSPACE}
           ls ${env:GITHUB_WORKSPACE}\buildenv
           ls ${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())
           ls ${env:GITHUB_WORKSPACE}\buildenv\$($env:BUILDENV_NAME.Trim())\installed
