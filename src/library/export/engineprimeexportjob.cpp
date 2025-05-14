@@ -781,7 +781,7 @@ void EnginePrimeExportJob::run() {
     }
 
     // Export all Mixxx playlists
-    for (const auto& idAndName : qAsConst(m_playlistIdsAndNames)) {
+    for (const auto& idAndName : std::as_const(m_playlistIdsAndNames)) {
         // Load the current crate.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
