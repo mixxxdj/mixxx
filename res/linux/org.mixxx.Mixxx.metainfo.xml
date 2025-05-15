@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-05-13" timestamp="1747172530">
+    <release version="2.6.0" type="development" date="2025-05-14" timestamp="1747200202">
       <description>
  <p>
   STEM file support
@@ -198,6 +198,10 @@
   <li>
    Add a rebindable keyboard shortcut for editing items as a replacement for F2
    #13148
+  </li>
+  <li>
+   DeveloperTools: restore searchbar shortcut Ctrl+F
+   #14761
   </li>
   <li>
    CmdlineArgs: Add
