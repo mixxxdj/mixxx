@@ -139,9 +139,7 @@ void ControllerHidReportTabsManager::updateTableWithReportData(
             // Retrieve custom data from the first cell
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
-                const auto* pControl =
-                        static_cast<const hid::reportDescriptor::Control*>(
-                                customData.value<const void*>());
+                const auto* pControl = customData.value<const hid::reportDescriptor::Control*>();
                 // Use the custom data as needed
                 int64_t controlValue =
                         hid::reportDescriptor::extractLogicalValue(
@@ -241,9 +239,7 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
             // Retrieve custom data from the first cell
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
-                const auto* pControl =
-                        static_cast<const hid::reportDescriptor::Control*>(
-                                customData.value<const void*>());
+                const auto* pControl = customData.value<const hid::reportDescriptor::Control*>();
                 // Set the control value in the reportData
                 bool success = hid::reportDescriptor::applyLogicalValue(
                         reportData, *pControl, item->text().toLongLong());
@@ -341,9 +337,7 @@ void ControllerHidReportTabsManager::populateHidReportTable(
         pTable->setItem(row, 0, bytePositionItem);
         // Store custom data for the row in the first cell
         bytePositionItem->setData(Qt::UserRole + 1,
-                QVariant::fromValue(reinterpret_cast<void*>(
-                        const_cast<hid::reportDescriptor::Control*>(
-                                &pControl))));
+                QVariant::fromValue(&pControl));
 
         // Column 1 - Bit Position
         pTable->setItem(row, 1, createReadOnlyItem(QString::number(pControl.m_bitPosition), true));
