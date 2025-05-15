@@ -423,8 +423,7 @@ Collection HIDReportDescriptor::parse() {
                 physicalMaximum = globalItems.physicalMaximum;
             }
 
-            ControlFlags flags;
-            flags.payload = payload;
+            auto flags = std::bit_cast<ControlFlags>(payload);
 
             if (flags.data_constant == 1) {
                 // Constant value padding - Usually for byte alignment

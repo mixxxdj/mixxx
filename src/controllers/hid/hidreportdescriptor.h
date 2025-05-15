@@ -101,20 +101,17 @@ enum class CollectionType : uint8_t {
 };
 // clang-format on
 
-union ControlFlags {
-    struct {
-        uint32_t data_constant : 1;          // Data (0) | Constant (1)
-        uint32_t array_variable : 1;         // Array (0) | Variable (1)
-        uint32_t absolute_relative : 1;      // Absolute (0) | Relative (1)
-        uint32_t no_wrap_wrap : 1;           // No Wrap (0) | Wrap (1)
-        uint32_t linear_non_linear : 1;      // Linear (0) | Non Linear (1)
-        uint32_t preferred_no_preferred : 1; // Preferred State (0) | No Preferred (1)
-        uint32_t no_null_null : 1;           // No Null position (0) | Null state(1)
-        uint32_t non_volatile_volatile : 1;  // Non Volatile (0) | Volatile (1)
-        uint32_t bit_field_buffered : 1;     // Bit Field (0) | Buffered Bytes (1)
-        uint32_t reserved : 23;
-    };
-    uint32_t payload;
+struct ControlFlags {
+    uint32_t data_constant : 1;          // Data (0) | Constant (1)
+    uint32_t array_variable : 1;         // Array (0) | Variable (1)
+    uint32_t absolute_relative : 1;      // Absolute (0) | Relative (1)
+    uint32_t no_wrap_wrap : 1;           // No Wrap (0) | Wrap (1)
+    uint32_t linear_non_linear : 1;      // Linear (0) | Non Linear (1)
+    uint32_t preferred_no_preferred : 1; // Preferred State (0) | No Preferred (1)
+    uint32_t no_null_null : 1;           // No Null position (0) | Null state(1)
+    uint32_t non_volatile_volatile : 1;  // Non Volatile (0) | Volatile (1)
+    uint32_t bit_field_buffered : 1;     // Bit Field (0) | Buffered Bytes (1)
+    uint32_t reserved : 23;
 };
 
 // Class representing a control described in the HID report descriptor

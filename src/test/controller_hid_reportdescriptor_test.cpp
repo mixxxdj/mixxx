@@ -125,17 +125,17 @@ TEST(HidReportDescriptorParserTest, ParseReportDescriptor) {
 
 TEST(HIDReportDescriptorTest, ControlValue_1Bit) {
     auto reportData = QByteArray::fromHex("81'00'00'FF'01");
-    Control control({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, // Flags
-            0x0009'0001,                              // UsagePage/Usage
-            0,                                        // LogicalMinimum
-            1,                                        // LogicalMaximum
-            0,                                        // PhysicalMinimum
-            1,                                        // PhysicalMaximum
-            0,                                        // UnitExponent
-            0,                                        // Unit
-            3,                                        // BytePosition
-            0,                                        // BitPosition
-            1);                                       // BitSize
+    Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
+            0x0009'0001,                            // UsagePage/Usage
+            0,                                      // LogicalMinimum
+            1,                                      // LogicalMaximum
+            0,                                      // PhysicalMinimum
+            1,                                      // PhysicalMaximum
+            0,                                      // UnitExponent
+            0,                                      // Unit
+            3,                                      // BytePosition
+            0,                                      // BitPosition
+            1);                                     // BitSize
 
     int32_t value = extractLogicalValue(reportData, control);
     EXPECT_EQ(value, 0x1);
@@ -150,17 +150,17 @@ TEST(HIDReportDescriptorTest, ControlValue_1Bit) {
 
 TEST(HIDReportDescriptorTest, ControlValue_unsigned11Bits) {
     auto reportData = QByteArray::fromHex("81'30'46'00'01");
-    Control control({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, // Flags
-            0x0009'0001,                              // UsagePage/Usage
-            0,                                        // LogicalMinimum
-            2047,                                     // LogicalMaximum
-            0,                                        // PhysicalMinimum
-            2047,                                     // PhysicalMaximum
-            0,                                        // UnitExponent
-            0,                                        // Unit
-            1,                                        // BytePosition
-            2,                                        // BitPosition
-            11);                                      // BitSize
+    Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
+            0x0009'0001,                            // UsagePage/Usage
+            0,                                      // LogicalMinimum
+            2047,                                   // LogicalMaximum
+            0,                                      // PhysicalMinimum
+            2047,                                   // PhysicalMaximum
+            0,                                      // UnitExponent
+            0,                                      // Unit
+            1,                                      // BytePosition
+            2,                                      // BitPosition
+            11);                                    // BitSize
 
     int32_t value = extractLogicalValue(reportData, control);
     EXPECT_EQ(value, 0b001'1000'1100);
@@ -175,17 +175,17 @@ TEST(HIDReportDescriptorTest, ControlValue_unsigned11Bits) {
 
 TEST(HIDReportDescriptorTest, ControlValue_signed11Bits) {
     auto reportData = QByteArray::fromHex("AA'BB'CC'DD'EE");
-    Control control({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, // Flags
-            0x0009'0001,                              // UsagePage/Usage
-            -1000,                                    // LogicalMinimum
-            1000,                                     // LogicalMaximum
-            -10,                                      // PhysicalMinimum
-            10,                                       // PhysicalMaximum
-            0,                                        // UnitExponent
-            0,                                        // Unit
-            2,                                        // BytePosition
-            0,                                        // BitPosition
-            11);                                      // BitSize
+    Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
+            0x0009'0001,                            // UsagePage/Usage
+            -1000,                                  // LogicalMinimum
+            1000,                                   // LogicalMaximum
+            -10,                                    // PhysicalMinimum
+            10,                                     // PhysicalMaximum
+            0,                                      // UnitExponent
+            0,                                      // Unit
+            2,                                      // BytePosition
+            0,                                      // BitPosition
+            11);                                    // BitSize
 
     int32_t value = extractLogicalValue(reportData, control);
     EXPECT_EQ(value, -564);
@@ -207,17 +207,17 @@ TEST(HIDReportDescriptorTest, ControlValue_signed11Bits) {
 
 TEST(HIDReportDescriptorTest, ControlValue_unsigned32Bits) {
     auto reportData = QByteArray::fromHex("0A'21'43'65'B7");
-    Control control({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, // Flags
-            0x0009'0001,                              // UsagePage/Usage
-            0,                                        // LogicalMinimum
-            0x7FFFFFFF,                               // LogicalMaximum
-            0,                                        // PhysicalMinimum
-            0x7FFFFFFF,                               // PhysicalMaximum
-            0,                                        // UnitExponent
-            0,                                        // Unit
-            0,                                        // BytePosition
-            4,                                        // BitPosition
-            32);                                      // BitSize
+    Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
+            0x0009'0001,                            // UsagePage/Usage
+            0,                                      // LogicalMinimum
+            0x7FFFFFFF,                             // LogicalMaximum
+            0,                                      // PhysicalMinimum
+            0x7FFFFFFF,                             // PhysicalMaximum
+            0,                                      // UnitExponent
+            0,                                      // Unit
+            0,                                      // BytePosition
+            4,                                      // BitPosition
+            32);                                    // BitSize
 
     int32_t value = extractLogicalValue(reportData, control);
     EXPECT_EQ(value, 0x76'54'32'10);
@@ -232,17 +232,17 @@ TEST(HIDReportDescriptorTest, ControlValue_unsigned32Bits) {
 
 TEST(HIDReportDescriptorTest, ControlValue_signed32Bits) {
     auto reportData = QByteArray::fromHex("0A'21'43'65'B7");
-    Control control({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, // Flags
-            0x0009'0001,                              // UsagePage/Usage
-            std::numeric_limits<int32_t>::min(),      // LogicalMinimum
-            std::numeric_limits<int32_t>::max(),      // LogicalMaximum
-            10,                                       // PhysicalMinimum
-            10,                                       // PhysicalMaximum
-            0,                                        // UnitExponent
-            0,                                        // Unit
-            0,                                        // BytePosition
-            4,                                        // BitPosition
-            32);                                      // BitSize
+    Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
+            0x0009'0001,                            // UsagePage/Usage
+            std::numeric_limits<int32_t>::min(),    // LogicalMinimum
+            std::numeric_limits<int32_t>::max(),    // LogicalMaximum
+            10,                                     // PhysicalMinimum
+            10,                                     // PhysicalMaximum
+            0,                                      // UnitExponent
+            0,                                      // Unit
+            0,                                      // BytePosition
+            4,                                      // BitPosition
+            32);                                    // BitSize
 
     int32_t value = extractLogicalValue(reportData, control);
     EXPECT_EQ(value, 0x76'54'32'10);
@@ -264,17 +264,17 @@ TEST(HIDReportDescriptorTest, ControlValue_signed32Bits) {
 
 TEST(HIDReportDescriptorTest, SetControlValue_OutOfRange) {
     auto reportData = QByteArray::fromHex("81'00'00'00'01");
-    Control control({{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}, // Flags
-            0x0009'0001,                              // UsagePage/Usage
-            0,                                        // LogicalMinimum
-            2047,                                     // LogicalMaximum
-            0,                                        // PhysicalMinimum
-            2047,                                     // PhysicalMaximum
-            0,                                        // UnitExponent
-            0,                                        // Unit
-            0,                                        // BytePosition
-            0,                                        // BitPosition
-            11);                                      // BitSize
+    Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
+            0x0009'0001,                            // UsagePage/Usage
+            0,                                      // LogicalMinimum
+            2047,                                   // LogicalMaximum
+            0,                                      // PhysicalMinimum
+            2047,                                   // PhysicalMaximum
+            0,                                      // UnitExponent
+            0,                                      // Unit
+            0,                                      // BytePosition
+            0,                                      // BitPosition
+            11);                                    // BitSize
 
     bool result = applyLogicalValue(reportData, control, 3000);
     EXPECT_FALSE(result);
