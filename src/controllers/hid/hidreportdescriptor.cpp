@@ -179,7 +179,7 @@ void Collection::addReport(const Report& report) {
 }
 const Report* Collection::getReport(
         const HidReportType& reportType, const uint8_t& reportId) const {
-    for (auto& report : m_reports) {
+    for (const auto& report : m_reports) {
         if (report.m_reportType == reportType && report.m_reportId == reportId) {
             return &report;
         }
@@ -520,7 +520,7 @@ Collection HIDReportDescriptor::parse() {
 
 const Report* HIDReportDescriptor::getReport(
         const HidReportType& reportType, const uint8_t& reportId) const {
-    for (auto& collection : m_topLevelCollections) {
+    for (const auto& collection : m_topLevelCollections) {
         const Report* report = collection.getReport(reportType, reportId);
         if (report != nullptr) {
             return report;

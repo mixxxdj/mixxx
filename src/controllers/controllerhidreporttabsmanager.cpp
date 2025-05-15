@@ -139,7 +139,7 @@ void ControllerHidReportTabsManager::updateTableWithReportData(
             // Retrieve custom data from the first cell
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
-                auto pControl =
+                const auto* pControl =
                         static_cast<const hid::reportDescriptor::Control*>(
                                 customData.value<const void*>());
                 // Use the custom data as needed
@@ -165,7 +165,7 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
     QTableWidget* pTable = it->second;
 
     const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
-    auto pReport = reportDescriptor.getReport(
+    const auto* pReport = reportDescriptor.getReport(
             hid::reportDescriptor::HidReportType::Input, reportId);
     if (pReport) {
         updateTableWithReportData(pTable, data);
@@ -226,7 +226,7 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
 
     const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
 
-    auto pReport = reportDescriptor.getReport(reportType, reportId);
+    const auto* pReport = reportDescriptor.getReport(reportType, reportId);
     VERIFY_OR_DEBUG_ASSERT(pReport) {
         return;
     }
@@ -241,9 +241,9 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
             // Retrieve custom data from the first cell
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
-                auto pControl =
-                        reinterpret_cast<hid::reportDescriptor::Control*>(
-                                customData.value<void*>());
+                const auto* pControl =
+                        static_cast<const hid::reportDescriptor::Control*>(
+                                customData.value<const void*>());
                 // Set the control value in the reportData
                 bool success = hid::reportDescriptor::applyLogicalValue(
                         reportData, *pControl, item->text().toLongLong());
