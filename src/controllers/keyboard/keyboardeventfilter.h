@@ -54,6 +54,7 @@ class KeyboardEventFilter : public QObject {
 
   public slots:
     void setEnabled(bool enabled);
+    void setShowOnlyKbdShortcuts(bool enabled);
     void reloadKeyboardConfig();
 
   signals:
@@ -62,6 +63,7 @@ class KeyboardEventFilter : public QObject {
 #endif
     // We're only the relay here: CoreServices -> this -> WBaseWidget
     void shortcutsEnabled(bool enabled);
+    void showOnlyKbdShortcuts(bool enabled);
 
   private:
     struct KeyDownInformation {
@@ -103,6 +105,7 @@ class KeyboardEventFilter : public QObject {
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     QLocale m_locale;
     bool m_enabled;
+    bool m_showOnlyKeyboardShortcuts;
 
     AutoFileReloader m_autoReloader;
 

@@ -7,7 +7,8 @@
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pDisplayConnection(nullptr),
           m_pWidget(pWidget),
-          m_showKeyboardShortcuts(false) {
+          m_showKeyboardShortcuts(false),
+          m_showOnlyKeyboardShortcuts(false) {
 }
 
 WBaseWidget::~WBaseWidget() = default;
@@ -141,9 +142,18 @@ void WBaseWidget::setControlParameterRightUp(double v) {
 
 void WBaseWidget::updateBaseTooltipOptShortcuts() {
     QString tooltip;
-    tooltip += m_baseTooltip;
+    if (!m_showOnlyKeyboardShortcuts) {
+        tooltip += m_baseTooltip;
+    }
+    // TODO Construct & localize kbd shortcuts here (somewhere in WBaseWidget
+    // So, in case of OnlyKbdShortcuts, we can show
+    // control (key only): shortcut
+    // Currently, we see to shortcuts but not which controls they trigger.
+    // This is relevant only for the right-click action, thouhg.
     if (m_showKeyboardShortcuts && !m_shortcutTooltip.isEmpty()) {
-        tooltip += "\n";
+        if (!m_showOnlyKeyboardShortcuts) {
+            tooltip += "\n";
+        }
         tooltip += m_shortcutTooltip;
     }
     m_baseTooltipOptShortcuts = tooltip;

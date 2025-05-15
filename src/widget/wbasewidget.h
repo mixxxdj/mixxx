@@ -109,6 +109,14 @@ class WBaseWidget {
         updateBaseTooltipOptShortcuts();
     }
 
+    void toggleShowOnlyKeyboardShortcuts(bool show) {
+        if (m_showOnlyKeyboardShortcuts == show) {
+            return;
+        }
+        m_showOnlyKeyboardShortcuts = show;
+        updateBaseTooltipOptShortcuts();
+    }
+
     void updateBaseTooltipOptShortcuts();
 
   protected:
@@ -153,6 +161,7 @@ class WBaseWidget {
     QList<std::pair<ConfigKey, QString>> m_shortcutControlsAndCommands;
 
     bool m_showKeyboardShortcuts;
+    bool m_showOnlyKeyboardShortcuts;
 
     friend class ControlParameterWidgetConnection;
 };
