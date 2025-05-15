@@ -58,6 +58,8 @@ To build Mixxx, run
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
 
+Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
+
 ## Documentation
 
 For help using Mixxx, there are a variety of options:
