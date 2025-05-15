@@ -134,8 +134,8 @@ void ControllerHidReportTabsManager::updateTableWithReportData(
 
     // Process the report data and update the table
     for (int row = 0; row < pTable->rowCount(); ++row) {
-        auto* item = pTable->item(row, 5); // Value column is at index 5
-        if (item) {
+        auto* pItem = pTable->item(row, 5); // Value column is at index 5
+        if (pItem) {
             // Retrieve custom data from the first cell
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
@@ -144,7 +144,7 @@ void ControllerHidReportTabsManager::updateTableWithReportData(
                 int64_t controlValue =
                         hid::reportDescriptor::extractLogicalValue(
                                 reportData, *pControl);
-                item->setText(QString::number(controlValue));
+                pItem->setText(QString::number(controlValue));
             }
         }
     }
@@ -234,15 +234,15 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
 
     // Iterate through each row in the table
     for (int row = 0; row < pTable->rowCount(); ++row) {
-        auto* item = pTable->item(row, 5); // Value column is at index 5
-        if (item) {
+        auto* pItem = pTable->item(row, 5); // Value column is at index 5
+        if (pItem) {
             // Retrieve custom data from the first cell
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
                 const auto* pControl = customData.value<const hid::reportDescriptor::Control*>();
                 // Set the control value in the reportData
                 bool success = hid::reportDescriptor::applyLogicalValue(
-                        reportData, *pControl, item->text().toLongLong());
+                        reportData, *pControl, pItem->text().toLongLong());
                 if (!success) {
                     qWarning() << "Failed to set control value for row" << row;
                     continue;
@@ -329,10 +329,11 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     int row = 0;
     for (const auto& pControl : controls) {
         // Column 0 - Byte Position
-        auto* bytePositionItem = createReadOnlyItem(QStringLiteral("0x%1").arg(QString::number(
-                                                            pControl.m_bytePosition, 16)
-                                                                    .rightJustified(2, '0')
-                                                                    .toUpper()),
+        QTableWidgetItem* bytePositionItem = createReadOnlyItem(
+                QStringLiteral("0x%1").arg(
+                        QString::number(pControl.m_bytePosition, 16)
+                                .rightJustified(2, '0')
+                                .toUpper()),
                 true);
         pTable->setItem(row, 0, bytePositionItem);
         // Store custom data for the row in the first cell

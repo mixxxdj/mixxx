@@ -72,7 +72,7 @@ class HidController final : public Controller {
         return m_deviceInfo.getUsageDescription();
     }
 
-    const std::optional<hid::reportDescriptor::HIDReportDescriptor>& getReportDescriptor() const {
+    const std::optional<hid::reportDescriptor::HidReportDescriptor>& getReportDescriptor() const {
         return m_reportDescriptor;
     }
 
@@ -100,7 +100,7 @@ class HidController final : public Controller {
     mixxx::hid::DeviceInfo m_deviceInfo;
     // These optional members are not set before opening the device
     std::optional<std::vector<uint8_t>> m_rawReportDescriptor;
-    std::optional<hid::reportDescriptor::HIDReportDescriptor> m_reportDescriptor;
+    std::optional<hid::reportDescriptor::HidReportDescriptor> m_reportDescriptor;
     std::optional<bool> m_deviceHasReportIds;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;

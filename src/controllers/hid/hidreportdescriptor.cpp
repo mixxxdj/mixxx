@@ -188,7 +188,7 @@ const Report* Collection::getReport(
 }
 
 // HID Report Descriptor Parser
-HIDReportDescriptor::HIDReportDescriptor(const uint8_t* pData, size_t length)
+HidReportDescriptor::HidReportDescriptor(const uint8_t* pData, size_t length)
         : m_pData(pData),
           m_length(length),
           m_pos(0),
@@ -196,7 +196,7 @@ HIDReportDescriptor::HIDReportDescriptor(const uint8_t* pData, size_t length)
           m_collectionLevel(0) {
 }
 
-std::pair<HidItemTag, HidItemSize> HIDReportDescriptor::readTag() {
+std::pair<HidItemTag, HidItemSize> HidReportDescriptor::readTag() {
     uint8_t byte = m_pData[m_pos++];
 
     VERIFY_OR_DEBUG_ASSERT(byte !=
@@ -213,7 +213,7 @@ std::pair<HidItemTag, HidItemSize> HIDReportDescriptor::readTag() {
     return {tag, size};
 }
 
-uint32_t HIDReportDescriptor::readPayload(HidItemSize payloadSize) {
+uint32_t HidReportDescriptor::readPayload(HidItemSize payloadSize) {
     uint32_t payload;
 
     switch (payloadSize) {
@@ -246,7 +246,7 @@ uint32_t HIDReportDescriptor::readPayload(HidItemSize payloadSize) {
     }
 }
 
-int32_t HIDReportDescriptor::getSignedValue(uint32_t payload, HidItemSize payloadSize) {
+int32_t HidReportDescriptor::getSignedValue(uint32_t payload, HidItemSize payloadSize) {
     switch (payloadSize) {
     case HidItemSize::ZeroBytePayload:
         return 0;
@@ -268,7 +268,7 @@ int32_t HIDReportDescriptor::getSignedValue(uint32_t payload, HidItemSize payloa
     }
 }
 
-uint32_t HIDReportDescriptor::getDecodedUsage(
+uint32_t HidReportDescriptor::getDecodedUsage(
         uint16_t usagePage, uint32_t usage, HidItemSize usageSize) {
     switch (usageSize) {
     case HidItemSize::ZeroBytePayload:
@@ -284,7 +284,7 @@ uint32_t HIDReportDescriptor::getDecodedUsage(
     }
 }
 
-HidReportType HIDReportDescriptor::getReportType(HidItemTag tag) {
+HidReportType HidReportDescriptor::getReportType(HidItemTag tag) {
     switch (tag) {
     case HidItemTag::Input:
         return HidReportType::Input;
@@ -299,7 +299,7 @@ HidReportType HIDReportDescriptor::getReportType(HidItemTag tag) {
     }
 }
 
-Collection HIDReportDescriptor::parse() {
+Collection HidReportDescriptor::parse() {
     Collection collection;                            // Top level collection
     std::unique_ptr<Report> pCurrentReport = nullptr; // Use a unique_ptr for pCurrentReport
 
@@ -518,7 +518,7 @@ Collection HIDReportDescriptor::parse() {
     return collection;
 }
 
-const Report* HIDReportDescriptor::getReport(
+const Report* HidReportDescriptor::getReport(
         const HidReportType& reportType, const uint8_t& reportId) const {
     for (const auto& collection : m_topLevelCollections) {
         const Report* report = collection.getReport(reportType, reportId);
@@ -530,7 +530,7 @@ const Report* HIDReportDescriptor::getReport(
 }
 
 const std::vector<std::tuple<size_t, HidReportType, uint8_t>>
-HIDReportDescriptor::getListOfReports() const {
+HidReportDescriptor::getListOfReports() const {
     std::vector<std::tuple<size_t, HidReportType, uint8_t>> orderedList;
     for (size_t i = 0; i < m_topLevelCollections.size(); ++i) {
         for (const auto& report : m_topLevelCollections[i].getReports()) {

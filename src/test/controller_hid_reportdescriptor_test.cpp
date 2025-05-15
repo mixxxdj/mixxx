@@ -40,7 +40,7 @@ uint8_t reportDescriptor[] = {
 // clang-format on
 
 TEST(HidReportDescriptorParserTest, ParseReportDescriptor) {
-    HIDReportDescriptor parser(reportDescriptor, sizeof(reportDescriptor));
+    HidReportDescriptor parser(reportDescriptor, sizeof(reportDescriptor));
     Collection collection = parser.parse();
 
     // Use getListOfReports to get the list of reports
@@ -123,7 +123,7 @@ TEST(HidReportDescriptorParserTest, ParseReportDescriptor) {
     ASSERT_EQ(controls[4].m_bitPosition, 0);
 }
 
-TEST(HIDReportDescriptorTest, ControlValue_1Bit) {
+TEST(HidReportDescriptorTest, ControlValue_1Bit) {
     auto reportData = QByteArray::fromHex("81'00'00'FF'01");
     Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
             0x0009'0001,                            // UsagePage/Usage
@@ -148,7 +148,7 @@ TEST(HIDReportDescriptorTest, ControlValue_1Bit) {
     EXPECT_EQ(value2, 0x0);
 }
 
-TEST(HIDReportDescriptorTest, ControlValue_unsigned11Bits) {
+TEST(HidReportDescriptorTest, ControlValue_unsigned11Bits) {
     auto reportData = QByteArray::fromHex("81'30'46'00'01");
     Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
             0x0009'0001,                            // UsagePage/Usage
@@ -173,7 +173,7 @@ TEST(HIDReportDescriptorTest, ControlValue_unsigned11Bits) {
     EXPECT_EQ(value2, 0b010'1010'1010);
 }
 
-TEST(HIDReportDescriptorTest, ControlValue_signed11Bits) {
+TEST(HidReportDescriptorTest, ControlValue_signed11Bits) {
     auto reportData = QByteArray::fromHex("AA'BB'CC'DD'EE");
     Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
             0x0009'0001,                            // UsagePage/Usage
@@ -205,7 +205,7 @@ TEST(HIDReportDescriptorTest, ControlValue_signed11Bits) {
     EXPECT_EQ(value3, -200);
 }
 
-TEST(HIDReportDescriptorTest, ControlValue_unsigned32Bits) {
+TEST(HidReportDescriptorTest, ControlValue_unsigned32Bits) {
     auto reportData = QByteArray::fromHex("0A'21'43'65'B7");
     Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
             0x0009'0001,                            // UsagePage/Usage
@@ -230,7 +230,7 @@ TEST(HIDReportDescriptorTest, ControlValue_unsigned32Bits) {
     EXPECT_EQ(value2, 0x01'23'45'67);
 }
 
-TEST(HIDReportDescriptorTest, ControlValue_signed32Bits) {
+TEST(HidReportDescriptorTest, ControlValue_signed32Bits) {
     auto reportData = QByteArray::fromHex("0A'21'43'65'B7");
     Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
             0x0009'0001,                            // UsagePage/Usage
@@ -262,7 +262,7 @@ TEST(HIDReportDescriptorTest, ControlValue_signed32Bits) {
     EXPECT_EQ(value3, std::numeric_limits<int32_t>::max());
 }
 
-TEST(HIDReportDescriptorTest, SetControlValue_OutOfRange) {
+TEST(HidReportDescriptorTest, SetControlValue_OutOfRange) {
     auto reportData = QByteArray::fromHex("81'00'00'00'01");
     Control control({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Flags
             0x0009'0001,                            // UsagePage/Usage
