@@ -26,6 +26,7 @@ DlgRelations::DlgRelations(
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           relationPairView)),
+          m_pLibrary(pLibrary),
           m_bRelationPairView(relationPairView) {
     setupUi(this);
     m_pRelationTableView->installEventFilter(pKeyboard);
@@ -44,7 +45,8 @@ DlgRelations::DlgRelations(
     m_pRelationTableView->loadTrackModel(m_pRelationTableModel);
 
     connect(pushButtonLoad, &QPushButton::clicked, this, &DlgRelations::slotLoadRelationToDecks);
-    connect(pushButtonEdit, &QPushButton::clicked, this, &DlgRelations::slotShowDlgRelationInfo);
+    connect(pushButtonInfo, &QPushButton::clicked, this, &DlgRelations::slotShowDlgRelationInfo);
+    connect(pushButtonDelete, &QPushButton::clicked, this, &DlgRelations::slotDeleteRelation);
 
     connect(m_pRelationTableView,
             &WRelationTableView::trackSelected,
@@ -79,8 +81,8 @@ DlgRelations::~DlgRelations() {
 }
 
 void DlgRelations::slotShowDlgRelationInfo() {
-    Relation* relation; // Get selected relation
-    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation);
+    Relation* relation;
+    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation, m_pLibrary);
     connect(m_pDlgRelationInfo.get(),
             &QDialog::finished,
             this,
@@ -95,11 +97,15 @@ void DlgRelations::slotShowDlgRelationInfo() {
 void DlgRelations::slotLoadRelationToDecks() {
 }
 
+void DlgRelations::slotDeleteRelation() {
+}
+
 void DlgRelations::onShow() {
     m_pRelationTableModel->select();
 }
 
 void DlgRelations::onSearch(const QString& text) {
+    // TODO: override search in RelationTableModel
     m_pRelationTableModel->search(text);
 }
 

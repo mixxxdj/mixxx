@@ -15,6 +15,8 @@ class RelationsTableModel final : public BaseSqlTableModel {
     bool isColumnInternal(int column) override;
     bool isColumnHiddenByDefault(int column) override;
 
+    DbId getRelationId(const QModelIndex& index) const;
+
     void showRelatedTracks(TrackPointer pTrack);
 
     Capabilities getCapabilities() const final;

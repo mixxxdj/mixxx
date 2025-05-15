@@ -37,6 +37,7 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
     void showRelatedTracks(TrackPointer pTrack);
     void slotShowDlgRelationInfo();
     void slotLoadRelationToDecks();
+    void slotDeleteRelation();
 
   signals:
     void trackSelected(TrackPointer pTrack);
@@ -46,6 +47,8 @@ class DlgRelations : public QWidget, public Ui::DlgRelations, public LibraryView
   private:
     WRelationTableView* m_pRelationTableView;
     RelationsTableModel* m_pRelationTableModel;
+
+    Library* m_pLibrary;
 
     std::unique_ptr<DlgRelationInfo> m_pDlgRelationInfo;
 

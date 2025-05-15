@@ -47,6 +47,17 @@ bool RelationsTableModel::isColumnHiddenByDefault(int column) {
             BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
+DbId RelationsTableModel::getRelationId(const QModelIndex& index) const {
+    if (index.isValid()) {
+        return DbId(
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::COLUMN_RELATIONTABLE_ID))
+                        .data());
+    } else {
+        return DbId();
+    }
+}
+
 void RelationsTableModel::showRelatedTracks(TrackPointer pTrack) {
     if (!pTrack) {
         return;

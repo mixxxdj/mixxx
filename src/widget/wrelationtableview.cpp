@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "library/relations/relationstablemodel.h"
 #include "moc_wrelationtableview.cpp"
 
 const int SEPERATOR_SIZE = 1;
@@ -22,17 +23,28 @@ WRelationTableView::WRelationTableView(
 }
 
 // Need getSelectedRows and getTrackModel to be public.
-// QList<DbId> WRelationTableView::getSelectedRelationIds() const {
-//     Need getTrackModel to be pul
-//     TrackModel* pTrackModel = getTrackModel();
-//     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
-//         qWarning() << "No track model available";
-//         return {};
-//     }
+QList<DbId> WRelationTableView::getSelectedRelationIds() const {
+    TrackModel* pTrackModel = getTrackModel();
+    RelationsTableModel* pRelationTableModel = dynamic_cast<RelationsTableModel*>(pTrackModel);
+    VERIFY_OR_DEBUG_ASSERT(!pRelationTableModel) {
+        qWarning() << "No track model available";
+        return {};
+    }
 
-//     const QModelIndexList rows = getSelectedRows();
+    const QModelIndexList rows = getSelectedRows();
+    QList<DbId> relationIds;
+    relationIds.reserve(rows.size());
+    for (const QModelIndex& row : rows) {
+        const DbId relationId = pRelationTableModel->getRelationId(row);
+        if (relationId.isValid()) {
+            relationIds.append(relationId);
+        } else {
+            qDebug() << "Skipping row" << row << "with invalid relation id";
+        }
+    }
 
-// }
+    return relationIds;
+}
 
 bool isSeperatorRow(int row) {
     return row % 2 == 0;
