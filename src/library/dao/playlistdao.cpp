@@ -19,7 +19,11 @@ PlaylistDAO::PlaylistDAO()
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
     DAO::initialize(database);
     populatePlaylistMembershipCache();
+
+    // Load playlists into internal cache after DB initialization
+    loadAllPlaylists();
 }
+
 
 void PlaylistDAO::populatePlaylistMembershipCache() {
     // Minor optimization: reserve space in m_playlistsTrackIsIn.
@@ -149,6 +153,34 @@ QList<TrackId> PlaylistDAO::getTrackIds(const int playlistId) const {
     }
     return trackIds;
 }
+
+void PlaylistDAO::loadAllPlaylists() { //added
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id, name FROM Playlists");
+
+    if (!query.exec()) {
+        qWarning() << "Failed to load playlists from DB:" << query.lastError();
+        return;
+    }
+
+    // Clear current cache
+    m_playlistIdNameMap.clear();
+
+    while (query.next()) {
+        int id = query.value(0).toInt();
+        QString name = query.value(1).toString();
+        m_playlistIdNameMap.insert(id, name);
+    }
+
+    qDebug() << "Playlists loaded. Total:" << m_playlistIdNameMap.size();
+}
+
+//added
+QSet<int> PlaylistDAO::getAllPlaylistIds() const {
+    return QSet<int>(m_playlistIdNameMap.keys().begin(), m_playlistIdNameMap.keys().end());
+}
+
+
 
 int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
     //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();

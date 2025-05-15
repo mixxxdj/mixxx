@@ -3,6 +3,7 @@
 #include <QHash>
 #include <QObject>
 #include <QSet>
+#include <QMap>
 
 #include "library/dao/dao.h"
 #include "track/trackid.h"
@@ -61,6 +62,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool appendTrackToPlaylist(TrackId trackId, const int playlistId);
     // Find out how many playlists exist.
     unsigned int playlistCount() const;
+    
+ 
+    void loadAllPlaylists();  // Reload playlists from the database
+    QSet<int> getAllPlaylistIds() const;  // Return set of all playlist IDs
+
+
     // Get all playlist ids and names of a specific type
     QList<QPair<int, QString>> getPlaylists(const HiddenType hidden) const;
     // Find out the name of the playlist at the given Id
@@ -147,5 +154,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     AutoDJProcessor* m_pAutoDJProcessor;
+
+    // Internal cache for loaded playlists
+    QMap<int, QString> m_playlistIdNameMap;
+
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };

@@ -6,6 +6,10 @@
 #include <QList>
 #include <QSqlTableModel>
 #include <QStandardPaths>
+#include <QDir>
+
+#include <QSqlDatabase>//added
+#include <QDebug>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -26,6 +30,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "util/autofilereloader.h"//header file
 
 namespace {
 constexpr QChar kUnsafeFilenameReplacement = '-';
@@ -55,6 +60,23 @@ BasePlaylistFeature::BasePlaylistFeature(
 
     initActions();
     connectPlaylistDAO();
+
+    //added
+    QString databasePath = QSqlDatabase::database().databaseName();
+
+    if (!QFileInfo::exists(databasePath)) {
+        qWarning() << "Database file does not exist:" << databasePath;
+    } else {
+        qDebug() << "Watching database file:" << databasePath;
+
+        m_pDbReloader = std::make_unique<AutoFileReloader>(databasePath);
+        connect(m_pDbReloader.get(), &AutoFileReloader::fileChanged,
+                this, &BasePlaylistFeature::onDatabaseChanged);
+
+        m_pDbReloader->addPath(databasePath);
+    }
+    
+
     connect(m_pLibrary,
             &Library::trackSelected,
             this,
@@ -67,6 +89,7 @@ BasePlaylistFeature::BasePlaylistFeature(
             this,
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
+
 
 void BasePlaylistFeature::initActions() {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
@@ -878,4 +901,18 @@ QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
+}
+//added
+void BasePlaylistFeature::onDatabaseChanged() {
+    qDebug() << "[Mixxx] Detected external DB change. Reloading playlists...";
+
+    // Reload playlists from DB through DAO
+    m_playlistDao.loadAllPlaylists();  // Reload playlists internally
+
+    // Update sidebar/tree view with new playlists
+    updateChildModel(m_playlistDao.getAllPlaylistIds());
+
+     // Re-add the DB path for watching again
+    QString databasePath = QSqlDatabase::database().databaseName();
+    m_pDbReloader->addPath(databasePath); 
 }

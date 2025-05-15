@@ -4,10 +4,12 @@
 #include <QPointer>
 #include <QSet>
 #include <QString>
+#include <memory>
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
 #include "track/trackid.h"
+#include "util/autofilereloader.h"  // include for AutoFileReloader
 
 class WLibrary;
 class KeyboardEventFilter;
@@ -70,9 +72,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
-    // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
     void slotAnalyzePlaylist();
+    void onDatabaseChanged();  // to handle DB file change
 
   protected:
     struct IdAndLabel {
@@ -82,17 +84,12 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
-
-    /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     int playlistIdFromIndex(const QModelIndex& index) const;
-    // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
-    // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
     bool isChildIndexSelectedInSidebar(const QModelIndex& index);
-
     QString createPlaylistLabel(const QString& name, int count, int duration) const;
 
     PlaylistDAO& m_playlistDao;
@@ -131,6 +128,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void markTreeItem(TreeItem* pTreeItem);
     QString fetchPlaylistLabel(int playlistId);
 
-
     const bool m_keepHiddenTracks;
+
+    std::unique_ptr<AutoFileReloader> m_pDbReloader;  //  File watcher for DB
 };
+

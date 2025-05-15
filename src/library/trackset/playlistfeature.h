@@ -22,6 +22,8 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     QVariant title() override;
 
+    void reloadPlaylists();//declaration
+
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
             QObject* pSource) override;
@@ -46,4 +48,6 @@ class PlaylistFeature : public BasePlaylistFeature {
     QString getRootViewHtml() const override;
 
     QAction* m_pShufflePlaylistAction;
+
+    QAction* m_pReloadPlaylistsAction;
 };

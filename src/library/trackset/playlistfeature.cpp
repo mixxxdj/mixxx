@@ -38,6 +38,11 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotShufflePlaylist);
+
+            m_pReloadPlaylistsAction = new QAction(tr("Reload Playlists"), this);
+connect(m_pReloadPlaylistsAction, &QAction::triggered,
+        this, &PlaylistFeature::reloadPlaylists);
+
 }
 
 QVariant PlaylistFeature::title() {
@@ -50,8 +55,11 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
+    menu.addSeparator();  
+    menu.addAction(m_pReloadPlaylistsAction); 
     menu.exec(globalPos);
 }
+
 
 void PlaylistFeature::onRightClickChild(
         const QPoint& globalPos, const QModelIndex& index) {
@@ -335,6 +343,28 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& ne
         slotPlaylistTableChanged(playlistId);
     }
 }
+
+//for reloading the playlists
+void PlaylistFeature::reloadPlaylists() {
+    int selectedPlaylistId = kInvalidPlaylistId;
+
+    // Preserve the currently selected playlist (if any)
+    if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+        selectedPlaylistId = playlistIdFromIndex(m_lastClickedIndex);
+    }
+
+    // Clear the current sidebar tree
+    clearChildModel();
+
+    // Rebuild the tree from database
+    QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+
+    // Restore selection if still valid
+    if (selectedPlaylistId != kInvalidPlaylistId && newIndex.isValid()) {
+        selectAndActivate(newIndex);
+    }
+}
+
 
 QString PlaylistFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("Playlists");
