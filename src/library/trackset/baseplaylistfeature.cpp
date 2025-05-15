@@ -144,6 +144,25 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotExportTrackFiles);
+#ifdef __ENGINEPRIME__
+    //: "Engine DJ" is a product name and must not be translated.
+    m_pExportAllPlaylistsToEngineAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
+    connect(m_pExportAllPlaylistsToEngineAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::exportAllPlaylists);
+    //: "Engine DJ" is a product name and must not be translated.
+    m_pExportPlaylistToEngineAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
+    connect(m_pExportPlaylistToEngineAction,
+            &QAction::triggered,
+            this,
+            [this]() {
+                int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+                if (playlistId != kInvalidPlaylistId) {
+                    emit exportPlaylist(playlistId);
+                }
+            });
+#endif
 }
 
 void BasePlaylistFeature::connectPlaylistDAO() {
