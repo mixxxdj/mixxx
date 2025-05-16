@@ -208,16 +208,16 @@ class HidReportDescriptor {
   private:
     // Define the struct for global items
     struct GlobalItems {
-        uint16_t usagePage = 0;
         int32_t logicalMinimum = 0;
         int32_t logicalMaximum = 0;
         int32_t physicalMinimum = 0;
         int32_t physicalMaximum = 0;
-        int8_t unitExponent = 0;
-        uint32_t unit = 0;
         uint32_t reportSize = 0;
-        uint8_t reportId = 0;
         uint32_t reportCount = 0;
+        uint32_t unit = 0;
+        int8_t unitExponent = 0;
+        uint8_t reportId = 0;
+        uint16_t usagePage = 0;
     };
 
     struct LocalItems {
