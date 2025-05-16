@@ -12,7 +12,7 @@ ReadAheadManager::ReadAheadManager()
           m_currentPosition(0),
           m_pReader(nullptr),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_cacheMissHappened(false) {
+          m_cacheMissCount(0) {
     // For testing only: ReadAheadManagerMock
 }
 
@@ -23,7 +23,7 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader,
           m_currentPosition(0),
           m_pReader(pReader),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_cacheMissHappened(false) {
+          m_cacheMissCount(0) {
     DEBUG_ASSERT(m_pLoopingControl != nullptr);
     DEBUG_ASSERT(m_pReader != nullptr);
 }
@@ -93,8 +93,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         SampleUtil::clear(pOutput, samples_from_reader);
         // Set the cache miss flag to decide when to apply ramping
         // after the following read attempts.
-        m_cacheMissHappened = true;
-    } else if (m_cacheMissHappened) {
+        m_cacheMissCount++;
+    } else if (m_cacheMissCount > 0) {
         // Previous read was a cache miss, but now we got something back.
         // Apply ramping gain, because the last buffer has unwanted silence
         // and new samples without fading are causing a pop.
@@ -103,7 +103,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                 CSAMPLE_GAIN_ONE,
                 samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
-        m_cacheMissHappened = false;
+        m_cacheMissCount = 0;
     }
 
     // Increment or decrement current read-ahead position
@@ -179,7 +179,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                 SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
                 // Set the cache miss flag to decide when to apply ramping
                 // after the following read attempts.
-                m_cacheMissHappened = true;
+                m_cacheMissCount++;
             }
 
             // do crossfade from the current buffer into the new loop beginning
@@ -209,16 +209,8 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 // Not thread-save, call from engine thread only
 void ReadAheadManager::notifySeek(double seekPosition) {
     m_currentPosition = seekPosition;
-    m_cacheMissHappened = false;
+    m_cacheMissCount = 0;
     m_readAheadLog.clear();
-
-    // TODO(XXX) notifySeek on the engine controls. EngineBuffer currently does
-    // a fine job of this so it isn't really necessary but eventually I think
-    // RAMAN should do this job. rryan 11/2011
-
-    // foreach (EngineControl* pControl, m_sEngineControls) {
-    //     pControl->notifySeek(iSeekPosition);
-    // }
 }
 
 void ReadAheadManager::hintReader(double dRate, gsl::not_null<HintVector*> pHintList) {
