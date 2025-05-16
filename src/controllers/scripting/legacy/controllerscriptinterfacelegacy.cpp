@@ -509,10 +509,10 @@ int ControllerScriptInterfaceLegacy::beginTimer(
         return 0;
     }
 
-    if (intervalMillis < 20) {
+    if (intervalMillis < 2) {
         qCWarning(m_logger) << "Timer request for" << intervalMillis
                             << "ms is too short. Setting to the minimum of 20ms.";
-        intervalMillis = 20;
+        intervalMillis = 2;
     }
 
     // This makes use of every QObject's internal timer mechanism. Nice, clean,

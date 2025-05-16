@@ -134,7 +134,8 @@ const TightnessFactor = engine.getSetting("tightnessFactor") || 0.5;
 
 // Define how much force can the motor use. This defines how much the wheel will "fight" you when you block it in TT mode
 // This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
-const MaxWheelForce = engine.getSetting("maxWheelForce") || 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
+const MaxWheelForce = engine.getSetting("maxWheelForce") || 60000;  // Traktor seems to cap the max value at 60000, which just sounds insane
+// But insane or not, it makes sense to follow the manufacturer's spec
 
 // Map the mixer potentiometers to different components of the software mixer in Mixxx, on top of the physical control of the hardware
 // mixer embedded in the S4 Mk3. This is useful if you are not using certain S4 Mk3 outputs.
@@ -188,6 +189,10 @@ const SamplerCrossfaderAssign = true;
 
 const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
+
+//----------------------------------------------------------------
+//-----------------------CLASS DEFINITIONS------------------------
+//----------------------------------------------------------------
 
 /*
  * HID report parsing library
@@ -1385,13 +1390,17 @@ Button.prototype.colorMap = new ColorMapper({
     0xCCCCCC: LedColors.white,
 });
 
-const wheelRelativeMax = 2 ** 32 - 1;
-const wheelAbsoluteMax = 2879;
+//FIXME: All of these consts should go up to the header right? or are they sorted by function here
+const wheelRelativeMax = 2 ** 32 - 1; //FIXME: nomenclature
+const wheelAbsoluteMax = 2879; //FIXME: nomenclature
 
 const wheelTimerMax = 2 ** 32 - 1;
 const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns (100MHz)
 
 const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
+const baseDegreesPerSecond = baseRevolutionsPerSecond * 360;
+const baseEncoderTicksPerSecond = baseDegreesPerSecond * 8;
+
 const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
 const wheelLEDmodes = {
@@ -2697,33 +2706,53 @@ class S4Mk3Deck extends Deck {
 class S4Mk3MotorManager {
     constructor(deck) {
         this.deck = deck;
-        this.userHold = 0;
+        this.userHold = 0; // REMOVE
         this.oldValue = [0, 0];
-        this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute);
-        this.zeroSpeedForce = 1650;
+        this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute); //FIXME: hardcoded
+        this.zeroSpeedForce = 1650; //FIXME: move hardcoded value to header
         this.currentMaxWheelForce = MaxWheelForce;
     }
     tick() {
+        //REMOVE: Can be optimized --- point to a single premade instance variable
         const motorData = new Uint8Array([
             1, 0x20, 1, 0, 0,
         ]);
-        const maxVelocity = 10;
-        let velocity = 0;
 
-        let expectedSpeed = 0;
+        // Declaring local constant
+        const maxVelocity = 10; //FIXME: hardcoded
 
         // currentSpeed is normalized to a reference value of baseRPS (100/3/60 for 33.3rpm)
+        // Declaring local variables
+        let velocity = 0; //FIXME: nomenclature
+        let expectedSpeed = 0; //FIXME: nomenclature
+
+        // is there a more efficient way to access the angular velocity data?
         const currentSpeed = this.deck.wheelRelative.speed / baseRevolutionsPerSecond;
 
         if (this.deck.wheelMode === wheelModes.motor
             && engine.getValue(this.deck.group, "play")) {
             // expectedSpeed references nominal playrate of 1.0 (not including pitch adjustments)
+        // Determine target (relative) angular velocity based on wheel mode
+        if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
+            
+            // expectedSpeed is 1.0 +/- pitch adjustment. So +8% pitch is expectedSpeed 1.08
             expectedSpeed = engine.getValue(this.deck.group, "rate_ratio");
-            // normalisationFactor doesn't appear to be used anywhere
+            
+            // normalisationFactor doesn't appear to be in use
             const normalisationFactor = 1/expectedSpeed/5;
             //???: what is going on in this velocity calculation?
             // it looks like it might be a smoothing filter of some sort
+            
+            // Original motor controller:
+            // Apply a simple smoothing function to pull the current velocity
+            // towards the expected velocity. Not clear if this filter is tuned to a specific
+            // cutoff or lag.
+            // FIXME: nomenclature.
             velocity = expectedSpeed + Math.pow(-5 * (expectedSpeed / 1) * (currentSpeed - expectedSpeed), 3);
+
+            // New motor controller:
+
+        // In any other wheel mode, the motor only provides resistance to scrubbing/scratching
         } else if (this.deck.wheelMode !== wheelModes.motor) {
             if (TightnessFactor > 0.5) {
                 // Super loose
@@ -2742,35 +2771,114 @@ class S4Mk3MotorManager {
             }
         }
 
-        velocity *= this.baseFactor;
+        // Convert the target velocity to a physical measurement from the sensor data.
+        // The optical encoders report 8 ticks for each degree of rotation.
+        // So for 33+1/3 RPM, which is 200 degrees per second, our target velocity will be:
+        // 200 * 8 = 1600 ticks per second
+        velocity *= baseEncoderTicksPerSecond;
 
+        // ==========================
+        // SLIPMAT PHYSICAL MODELING:
+        // ==========================
+        // Calculate the outgoing motor torque using a simulated turntable/slipmat.
+        //
+        // -----------
+        // Parameters:
+        // -----------
+        // Disc/platter radius (m) and mass (kg)
+        //      --- for a 12" disc, 0.15m and 0.15--0.2kg
+        // Slipmat coefficients of static and kinetic friction (no unit)
+        //      --- not sure of exact coeff. for a given slipmat material, but I would choose
+        //          one that can *just* handle the motor torque without slipping
+        // Maximum motor torque (Nm)
+        //      --- for a T1200 this is around 0.15Nm
+        //
+        // -------
+        // SUMMARY
+        // -------
+        // There are two primary states of the simulation: STICK and SLIP.
+        // - The disc and platter STICK together unless the performer touches the disc AND
+        //       alters the angular velocity of the jogwheel enough for the disc to SLIP.
+        // - The disc remains in the SLIP state until its angular velocity returns
+        //       to within a margin of the target velocity, at which point it STICKs again.
+        //
+        // ------------
+        // STICK state:
+        // ------------
+        // The vinyl disc, slipmat, and platter are stuck to each other and move together.
+        // In this state, the jogwheel represents the entire assembly. The crown/edge of the
+        // jogwheel represents the crown/edge of the platter. The performer can hinder or help
+        // the rotation of the jogwheel, and the motor works to correct any deviation from
+        // the target angular velocity.
+        //     If the performer perturbs the rotation of the jogwheel while touching the disc
+        // surface, the same behaviour applies UNLESS the perturbation is large enough to
+        // defeat the force of friction that keeps everything stuck together. In other words,
+        // the target and measured velocity are too far apart. At this point, the simulated
+        // rotation of disc and platter decouple from each other and we enter the SLIP state.
+        //
+        // -----------
+        // SLIP state:
+        // -----------
+        // The vinyl disc moves at a different rate than the motor, and only (kinetic) friction
+        // works to bring them back in sync. In this state, **the jogwheel only represents the
+        // rotation of the disc**. The platter is abstracted and we assume that it rotates at
+        // the target velocity.
+        //     The torque applied to the jogwheel motor represents the force of friction, which
+        // pulls in the direction of the target angular velocity. This means that when the 
+        // performer is scratching, the motor is sometimes helping, if the scratch is moving the
+        // disc closer to synchrony with the platter.
+        //     Anytime the disc and platter velocity are nearly matched, the simulated platter
+        // regains its influence---in other words, within a certain margin the system returns
+        // to the STICK state, even if only for a fraction of a second.
+        //    Finally, whether by manually bringing the disc to the target velocity or allowing
+        // the simulated friction force to do it, the system syncs up and re-enters the STICK
+        // state. We don't care if the performer is still touching the disc, as long as they
+        // aren't bringing it out of sync again.
+        //
+        // NOTE:
+        // -----
+        // Missing from this simulation is the modeling of the torque transfer *from* the
+        // disc *to* the platter, as well as the mass/inertia of the platter.
+        // For example: when a turntable motor is off, spinning the record will transfer some 
+        // torque across the slipmat and the platter will start spinning as well. However,
+        // adding the platter dynamics to the model will increase the computational complexity
+        // for what amounts to an edge case at this point. For now, the platter is massless and
+        // the motor is frictionless for the purposes of the slipmat physics.
+        //    Of course, the jogwheel is *not* frictionless *nor* massless, but my hope is that
+        // the control system will automatically account for this in practice as it will
+        // naturally reach a steady-state in its attempts to regulate the jogwheel's angular
+        // velocity. 
+        
+        // NOTE 2:
+        // -------
+        // After extensive study and simulation of USB traffic between the S4Mk3 and Traktor,
+        // I have tuned the input filter, output PID controller and output smoothing filters
+        // to closely match the behaviour of Traktor. The tuned parameters are not yet linked
+        // to physical dynamics per se, as the first step is to recreate the commercial system
+        // before breaking down the control parameters into physical constants.
+
+        // Formatting and writing the output data:
+        // Convert signed angular velocity to unsigned angular speed + direction code
         if (velocity < 0) {
-            // if velocity is negative, set the wheel direction codes
-            motorData[1] = 0xe0;
-            motorData[2] = 0xfe;
-            // and then make the outgoing velocity command positive
-            velocity = -velocity;
+            motorData[1] = 0xe0; // negative/CCW direction code 1
+            motorData[2] = 0xfe; // negative/CCW direction code 2
+            velocity = -velocity; // invert the sign to make it positive
         } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
-            // if going forwards, add the "zero speed force" which is the
-            // nominal force required to keep spinning at the desired RPM
-            // when no other force is applied by the user
-            //
-            // ...not sure if this is necessary if we implement a proper control system
-            // because it should find its own "zero speed force" in that case
-            // (this might explain the "swimming" playback btw) 
-            velocity += this.zeroSpeedForce;
+            velocity += this.zeroSpeedForce; // REMOVE: Don't think this condition is necessary for physical model
         }
 
         // detecting if the user is stopping the disc from rotating
         // I really don't think this is necessary if we implement a physical model
         // to detect relative velocity of [virtual] platter rotation versus
         // [measured] disc rotation during the slip-state
+        // REMOVE for physical model implementation
         if (!this.isBlockedByUser() && velocity > MaxWheelForce) {
             this.userHold++;
         } else if (velocity < MaxWheelForce / 2 && this.userHold > 0) {
             this.userHold--;
         }
 
+        // REMOVE for physical model implementation
         if (this.isBlockedByUser()) {
             // if the user is blocking the disc rotation, maintain scratch mode
             engine.setValue(this.deck.group, "scratch2_enable", true);
@@ -2784,20 +2892,18 @@ class S4Mk3MotorManager {
 
         // clip the output to the max output if overdriving
         // and/or convert velocity to integer for output to motors
+        // Clip the outgoing wheel force to a set maximum, or truncate to int
         velocity = Math.min(
             this.currentMaxWheelForce,
             Math.floor(velocity)
         );
 
-        // Write the calculated motor force to the output buffer
-        // (big endian bytes)
-        motorData[3] = velocity & 0xff; // low byte first
-        motorData[4] = velocity >> 8; // high byte second
+        // Write to the output buffer. Optimize: should be writing to an instance array
+        motorData[3] = velocity & 0xff;
+        motorData[4] = velocity >> 8;
         return motorData;
     }
-    // function that tells us when the user is arresting the disc rotation
-    // (should not be necessary with a physical model)
-    isBlockedByUser() {
+    isBlockedByUser() { // REMOVE with physical model implementation
         return this.userHold >= 10;
     }
 }
@@ -3014,6 +3120,11 @@ class S4MK3 {
         // There is no consistent offset between the left and right deck,
         // so every single components' IO needs to be specified individually
         // for both decks.
+        // TODO: FIX ALL BYTE OFFSETS AND PUT IN HEADER. THIS IS VERY BAD
+        // SOME OF THEM ARE OFFSET BY 1 BYTE, SOME ARE NOT, DEPENDING ON THE
+        // INPUT REPORT. ALL BECAUSE OF A SLICE OPERATION ON THE INPUT. BAD!
+        // THIS CAUSED LARGE AMOUNTS OF CONFUSION AND WASTED TIME TRYING TO
+        // UNDERSTAND THE REAL HARDWARE SPEC FOR ANALYZING TRAFFIC
         this.leftDeck = new S4Mk3Deck(
             [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
             this.inReports, this.outReports[128],
@@ -3159,11 +3270,16 @@ class S4MK3 {
         if (UseMotors) {
             this.leftMotor = new S4Mk3MotorManager(this.leftDeck);
             this.rightMotor = new S4Mk3MotorManager(this.rightDeck);
+            // Requesting a timer interval of 1ms, but this will capped at 20ms
+            // in controllerscriptinterfacelegacy.cpp :
             engine.beginTimer(1, this.motorCallback.bind(this));
+            // Even if we remove the cap, QT can't guarantee that any given system
+            // will maintain a sub-20ms timer period. See:
+            // https://doc.qt.io/qt-5/qobject.html#startTimer
         }
     }
     motorCallback() {
-        var motorData = new Uint8Array(10);
+        var motorData = new Uint8Array(10); // Can be optimized --- define as instance variable
         motorData.set(this.leftMotor.tick());
         motorData.set(this.rightMotor.tick(), 5);
         controller.sendOutputReport(49, motorData.buffer, true);
