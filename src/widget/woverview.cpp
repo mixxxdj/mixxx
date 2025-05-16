@@ -33,6 +33,8 @@ constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
 } // anonymous namespace
 
+using namespace mixxx;
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -101,20 +103,16 @@ WOverview::WOverview(
     m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
     slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
 
-    // Update immediately when the normalize option or the visual gain have been
+    // Update immediately when the scale mode or the custom gain have been
     // changed in the preferences.
     WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overviewNormalizeChanged,
+            &WaveformWidgetFactory::overviewScalingChanged,
             this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    connect(pWidgetFactory,
-            &WaveformWidgetFactory::visualGainChanged,
-            this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
+            &WOverview::slotScalingChanged);
     // Also listen to ReplayGain changes to scale the waveform
     m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
-    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotScalingChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -458,7 +456,7 @@ void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
 
-void WOverview::slotNormalizeOrVisualGainChanged() {
+void WOverview::slotScalingChanged() {
     update();
 }
 
@@ -734,12 +732,21 @@ void WOverview::drawAxis(QPainter* pPainter) {
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
     if (!m_waveformSourceImage.isNull()) {
+        float diffGain = 0.0f;
         WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
-        float diffGain;
-        bool normalize = pWidgetFactory->isOverviewNormalized();
-        if (normalize && m_pixmapDone && m_waveformPeak > 1) {
-            diffGain = 255 - m_waveformPeak - 1;
-        } else {
+        OverviewScaleMode scaleMode = pWidgetFactory->getOverviewScaleMode();
+        switch (scaleMode) {
+        case OverviewScaleMode::FileGain: {
+            // use original waveform image
+            break;
+        }
+        case OverviewScaleMode::Normalize: {
+            if (m_pixmapDone && m_waveformPeak > 1) {
+                diffGain = 255 - m_waveformPeak - 1;
+            }
+            break;
+        }
+        case OverviewScaleMode::AllGainReplayGain: {
             DEBUG_ASSERT(m_pCurrentTrack);
             const auto replayGain = m_pCurrentTrack->getReplayGain();
             const auto visualGain = static_cast<float>(
@@ -748,10 +755,18 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
                                     ? replayGain.getRatio()
                                     : 1.0));
             diffGain = 255.0f - (255.0f / visualGain);
+            break;
+        }
+        case OverviewScaleMode::Custom: {
+            const auto customGain = static_cast<float>(
+                    pWidgetFactory->getOverviewCustomGain());
+            diffGain = 255.0f - (255.0f / customGain);
+            break;
+        }
         }
 
         if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            QRect sourceRect(0,
+            const QRect sourceRect(0,
                     static_cast<int>(diffGain),
                     m_waveformSourceImage.width(),
                     m_waveformSourceImage.height() -

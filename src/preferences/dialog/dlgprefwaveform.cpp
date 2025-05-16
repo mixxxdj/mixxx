@@ -17,6 +17,9 @@ const ConfigKey kOverviewTypeCfgKey(QStringLiteral("[Waveform]"),
         QStringLiteral("WaveformOverviewType"));
 } // namespace
 
+// for OverviewScaleMode from waveform/waveformwidgetfactory.h
+using namespace mixxx;
+
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -173,14 +176,17 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &DlgPrefWaveform::slotSetVisualGainHigh);
-    connect(normalizeOverviewCheckBox,
-            &QCheckBox::toggled,
+
+    connect(overview_scale_options,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
-            &DlgPrefWaveform::slotSetNormalizeOverview);
-    connect(overviewMinuteMarkersCheckBox,
-            &QCheckBox::toggled,
+            QOverload<QAbstractButton*>::of(
+                    &DlgPrefWaveform::slotSetOverviewScaling));
+    connect(overview_scale_custom_spinbox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
-            &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+            &DlgPrefWaveform::slotSetOverviewCustomScaling);
+
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
             this,
@@ -289,7 +295,6 @@ void DlgPrefWaveform::slotUpdate() {
     lowVisualGain->setValue(factory->getVisualGain(BandIndex::Low));
     midVisualGain->setValue(factory->getVisualGain(BandIndex::Mid));
     highVisualGain->setValue(factory->getVisualGain(BandIndex::High));
-    normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
@@ -315,6 +320,21 @@ void DlgPrefWaveform::slotUpdate() {
         waveformOverviewComboBox->setCurrentIndex(cfgOverviewTypeIndex);
     }
 
+    auto* pWidgetFactory = WaveformWidgetFactory::instance();
+    const OverviewScaleMode mode = pWidgetFactory->getOverviewScaleMode();
+    if (mode == OverviewScaleMode::FileGain) {
+        overview_scale_fileGain->setChecked(true);
+    } else if (mode == OverviewScaleMode::Normalize) {
+        overview_scale_normalize->setChecked(true);
+    } else if (mode == OverviewScaleMode::AllGainReplayGain) {
+        overview_scale_allReplayGain->setChecked(true);
+    } else { // OverviewScaleMode::Custom
+        overview_scale_custom_button->setChecked(true);
+    }
+
+    double customGain = pWidgetFactory->getOverviewCustomGain();
+    overview_scale_custom_spinbox->setValue(customGain);
+
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey("[Waveform]", "draw_overview_minute_markers"), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
@@ -328,6 +348,7 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
+    // All other settings have already been applied instantly for preview purpose
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -374,11 +395,14 @@ void DlgPrefWaveform::slotResetToDefaults() {
     waveformOverviewComboBox->setCurrentIndex(
             waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
 
-    // Don't normalize overview.
-    normalizeOverviewCheckBox->setChecked(false);
-
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
+
+    // Use file gain
+    overview_scale_fileGain->setChecked(false);
+
+    // load custom gain
+    overview_scale_custom_spinbox->setValue(1.0);
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
@@ -572,12 +596,12 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
 }
 
 void DlgPrefWaveform::updateWaveformGainEnabled() {
-    bool enabled = useWaveformCheckBox->isChecked() ||
-            !normalizeOverviewCheckBox->isChecked();
-    allVisualGain->setEnabled(enabled);
-    lowVisualGain->setEnabled(enabled);
-    midVisualGain->setEnabled(enabled);
-    highVisualGain->setEnabled(enabled);
+    bool waveformsEnabled = useWaveformCheckBox->isChecked();
+    bool allGainEnabled = waveformsEnabled || overview_scale_allReplayGain->isChecked();
+    allVisualGain->setEnabled(allGainEnabled);
+    lowVisualGain->setEnabled(waveformsEnabled);
+    midVisualGain->setEnabled(waveformsEnabled);
+    highVisualGain->setEnabled(waveformsEnabled);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType() {
@@ -613,9 +637,24 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::High, gain);
 }
 
-void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
-    WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+void DlgPrefWaveform::slotSetOverviewScaling(QAbstractButton* b) {
+    auto* pWidgetFactory = WaveformWidgetFactory::instance();
+    if (b == overview_scale_fileGain) {
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::FileGain);
+    } else if (b == overview_scale_normalize) {
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::Normalize);
+    } else if (b == overview_scale_allReplayGain) {
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::AllGainReplayGain);
+    } else { // b == overview_scale_custom_button
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::Custom);
+    }
+    overview_scale_custom_spinbox->setEnabled(b == overview_scale_custom_button);
     updateWaveformGainEnabled();
+}
+
+void DlgPrefWaveform::slotSetOverviewCustomScaling(double gain) {
+    // TODO validate 0 < v < 5 here or in WaveformWidgetFactory ?
+    WaveformWidgetFactory::instance()->setOverviewCustomGain(gain);
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
