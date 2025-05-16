@@ -1,52 +1,10 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 
-const LedColors = {
-    off: 0,
-    red: 4,
-    carrot: 8,
-    orange: 12,
-    honey: 16,
-    yellow: 20,
-    lime: 24,
-    green: 28,
-    aqua: 32,
-    celeste: 36,
-    sky: 40,
-    blue: 44,
-    purple: 48,
-    fuscia: 52,
-    magenta: 56,
-    azalea: 60,
-    salmon: 64,
-    white: 68,
-};
+/********************************************************
+                USER CONFIGURABLE SETTINGS
 
-
-// This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
-const KeyboardColors = [
-    LedColors.green,
-    LedColors.off,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-];
-
-// Constant used to define custom default pad layout
-const DefaultPadLayoutHotcue = "hotcue";
-const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
-const DefaultPadLayoutKeyboard = "keyboard";
-
-/*
- * USER CONFIGURABLE SETTINGS
- * Change settings in the preferences
- */
+ Change these settings in the Mixxx preferences
+ *******************************************************/
 
 const DeckColors = [
     LedColors[engine.getSetting("deckA")] || LedColors.red,
@@ -146,6 +104,46 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
+/********************************************************
+                LED Color Constants
+ *******************************************************/
+// Color codes for controller RGB LEDs
+const LedColors = {
+    off: 0,
+    red: 4,
+    carrot: 8,
+    orange: 12,
+    honey: 16,
+    yellow: 20,
+    lime: 24,
+    green: 28,
+    aqua: 32,
+    celeste: 36,
+    sky: 40,
+    blue: 44,
+    purple: 48,
+    fuscia: 52,
+    magenta: 56,
+    azalea: 60,
+    salmon: 64,
+    white: 68,
+};
+
+// This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
+const KeyboardColors = [
+    LedColors.green,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+];
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
@@ -184,15 +182,183 @@ const QuickEffectPresetColors = [
     LedColors.fuscia + 1,
 ];
 
+/********************************************************
+                PAD LAYOUT CONSTANTS
+ *******************************************************/
+// Constant used to define custom default pad layout
+const DefaultPadLayoutHotcue = "hotcue";
+const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
+const DefaultPadLayoutKeyboard = "keyboard";
+
+/********************************************************
+                MIXER CONSTANTS
+ *******************************************************/
 // assign samplers to the crossfader on startup
 const SamplerCrossfaderAssign = true;
 
+
+/********************************************************
+                JOGWHEEL-RELATED CONSTANTS
+ *******************************************************/
+// motor wind up/down
 const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
 
-//----------------------------------------------------------------
-//-----------------------CLASS DEFINITIONS------------------------
-//----------------------------------------------------------------
+// input filtering. Coefficients generated in scipy
+// for a 5-tap 100Hz filter given a sampling rate of 500Hz
+// and applying a hamming window
+const VelFilterTaps = 5;
+const VelFilterCoeffs = [0.02840647, 0.23700821, 0.46917063, 0.23700821, 0.02840647];
+
+//FIXME: All of these consts should go up to the header right? or are they sorted by function here
+const wheelPositionMax = 2 ** 32 - 1;
+//const wheelAbsoluteMax = 2879; //FIXME: nomenclature
+// I think it's safe to make this 2880 as it should be.
+// AFAICT the fractional revolution that gets multiplied
+// with this value cannot in practice reach 2880
+const wheelAbsoluteMax = 2880; //FIXME: nomenclature
+
+const wheelTimerMax = 2 ** 32 - 1;
+const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns (100MHz)
+
+const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
+const baseDegreesPerSecond = baseRevolutionsPerSecond * 360;
+const baseEncoderTicksPerSecond = baseDegreesPerSecond * 8;
+
+const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
+
+const wheelLEDmodes = {
+    off: 0,
+    dimFlash: 1,
+    spot: 2,
+    ringFlash: 3,
+    dimSpot: 4,
+    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
+};
+
+// The mode available, which the wheel can be used for.
+const wheelModes = {
+    jog: 0,
+    vinyl: 1,
+    motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const moveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
+};
+
+// tracks state across input reports
+let wheelTimer = null;
+// This is a global variable so the S4Mk3Deck Components have access
+// to it and it is guaranteed to be calculated before processing
+// input for the Components.
+let wheelTimerDelta = 0;
+
+/********************************************************
+                HID REPORT IDs
+ *******************************************************/
+// =======
+// INPUTS:
+// =======
+// There are 3 types of input reports. Components in the
+// mapping get associated with one of these three reports,
+// or if left undefined, have a default association given
+// by their class constructor.
+
+// All button/boolean interface elements
+const HID_INREPT_BUTTONS = 1
+
+// Potentiometers, and a couple of FX select buttons
+const HID_INREPT_POTS = 2
+
+// Wheel position and timing data
+// Also includes touch sensors
+// (touch sensors are also sent along with button report)
+const HID_INREPT_WHEELS = 3
+
+// =======
+// OUTPUTS:
+// =======
+const HID_OUTRPT_MOTORS = 49
+
+/********************************************************
+                HARDWARE ADDRESSES
+ *******************************************************/
+//TODO
+
+/*
+ ========================================================
+
+                CLASS DEFINITIONS
+
+ ========================================================
+*/
+
+
+ /*
+ * Circular buffer for running FIR filter.
+ * This is used for low-passing the incoming velocity data
+ * before it reaches the motor controller. Uses a 
+ * weighted moving-average to implement a
+ * FIR filter whose coefficients were generated separately
+ * in Python with Scipy
+ * 
+ * Resource links and Python code:
+ * https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.firwin.html
+ * https://howthefouriertransformworks.com/2022/12/23/how-fir-filters-work-applying-the-filter/
+ * filt_taps = 5
+ * filt_cutoff = 50 # Hertz
+ * filt_samplingFreq = 500 # Hertz. Assumes the position is coming in every 2ms
+ * filt_window = 'hamming'
+ * filt_lpf = scipy.signal.firwin(filt_taps,filt_cutoff,window=filt_window,fs=filt_samplingFreq)
+ */
+class FilterBuffer {
+    constructor(numElements, filterCoefficients) {
+        this.size = numElements;
+        this.data = Float64Array(numElements);
+        // filterCoefficients should be an array of floats
+        // the same size as the buffer
+        this.coeffs = filterCoefficients
+        // this buffer will run 'backwards' to make
+        // convolution simpler, so the pointer
+        // starts at the end of the buffer. Doesn't
+        // really matter though, it could start anywhere
+        this.writept = this.size-1;
+
+        // initialize the buffer with zeros
+        for (let i = 0; i < this.size; i++) {
+            this.data[i] = 0;
+        } 
+    }
+    // Produce the next filtered sample
+    runFilter() {
+        runningSum = 0;
+        // Starting at the write pointer,
+        // multiply the next N elements
+        // with sequential values from the
+        // coefficients array, summing the
+        // results.
+        for (let i = 0; i < this.size; i++) {
+            runningSum += this.coeffs[i] * this.data[(writept + i)%this.size];
+        }
+        return runningSum;
+    }
+    // Write a new value to the buffer, forgetting the oldest one
+    insert(newVel) {
+        // First decrement (and wrap) the write pointer
+        this.writept--;
+        if (this.writept < 0) {
+            this.writept = this.size-1;
+        }
+        // Second replace the value at the write pointer
+        this.contents[this.writept] = newVel;
+    }
+}
 
 /*
  * HID report parsing library
@@ -270,7 +436,7 @@ class HIDInputReport {
     }
 }
 
-// I don't think HIDOutputReport is ever used -ZT
+// Is HIDOutputReport ever used?
 class HIDOutputReport {
     constructor(reportId, length) {
         this.reportId = reportId;
@@ -1124,7 +1290,7 @@ class Mixer extends ComponentContainer {
             group: "[Master]",
             inKey: "crossfader",
             inByte: 0,
-            inReport: inReports[2],
+            inReport: inReports[HID_INREPT_POTS],
         });
         this.crossfaderCurveSwitch = new Component({
             inByte: 18,
@@ -1158,7 +1324,7 @@ class Mixer extends ComponentContainer {
                 inKey: "gain",
                 inByte: 22,
                 bitLength: 12,
-                inReport: inReports[2]
+                inReport: inReports[HID_INREPT_POTS]
             });
         }
         if (SoftwareMixerBooth) {
@@ -1167,7 +1333,7 @@ class Mixer extends ComponentContainer {
                 inKey: "booth_gain",
                 inByte: 24,
                 bitLength: 12,
-                inReport: inReports[2]
+                inReport: inReports[HID_INREPT_POTS]
             });
         }
         if (SoftwareMixerHeadphone) {
@@ -1176,7 +1342,7 @@ class Mixer extends ComponentContainer {
                 inKey: "headMix",
                 inByte: 28,
                 bitLength: 12,
-                inReport: inReports[2]
+                inReport: inReports[HID_INREPT_POTS]
             });
 
             this.pflGain = new Pot({
@@ -1184,13 +1350,13 @@ class Mixer extends ComponentContainer {
                 inKey: "headGain",
                 inByte: 26,
                 bitLength: 12,
-                inReport: inReports[2]
+                inReport: inReports[HID_INREPT_POTS]
             });
         }
 
         for (const component of this) {
             if (component.inReport === undefined) {
-                component.inReport = inReports[1];
+                component.inReport = inReports[HID_INREPT_BUTTONS];
             }
             component.outReport = this.outReport;
             component.inConnect();
@@ -1390,51 +1556,6 @@ Button.prototype.colorMap = new ColorMapper({
     0xCCCCCC: LedColors.white,
 });
 
-//FIXME: All of these consts should go up to the header right? or are they sorted by function here
-const wheelRelativeMax = 2 ** 32 - 1; //FIXME: nomenclature
-const wheelAbsoluteMax = 2879; //FIXME: nomenclature
-
-const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns (100MHz)
-
-const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
-const baseDegreesPerSecond = baseRevolutionsPerSecond * 360;
-const baseEncoderTicksPerSecond = baseDegreesPerSecond * 8;
-
-const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
-
-const wheelLEDmodes = {
-    off: 0,
-    dimFlash: 1,
-    spot: 2,
-    ringFlash: 3,
-    dimSpot: 4,
-    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
-};
-
-// The mode available, which the wheel can be used for.
-const wheelModes = {
-    jog: 0,
-    vinyl: 1,
-    motor: 2,
-    loopIn: 3,
-    loopOut: 4,
-};
-
-const moveModes = {
-    beat: 0,
-    bpm: 1,
-    grid: 2,
-    keyboard: 3,
-};
-
-// tracks state across input reports
-let wheelTimer = null;
-// This is a global variable so the S4Mk3Deck Components have access
-// to it and it is guaranteed to be calculated before processing
-// input for the Components.
-let wheelTimerDelta = 0;
-
 /*
  * Kontrol S4 Mk3 hardware specific mapping logic
  */
@@ -1449,13 +1570,13 @@ class S4Mk3EffectUnit extends ComponentContainer {
         this.mixKnob = new Pot({
             inKey: "mix",
             group: this.group,
-            inReport: inReports[2],
+            inReport: inReports[HID_INREPT_POTS],
             inByte: io.mixKnob.inByte,
         });
 
         this.mainButton = new PowerWindowButton({
             unit: this,
-            inReport: inReports[1],
+            inReport: inReports[HID_INREPT_BUTTONS],
             inByte: io.mainButton.inByte,
             inBit: io.mainButton.inBit,
             outByte: io.mainButton.outByte,
@@ -1497,14 +1618,14 @@ class S4Mk3EffectUnit extends ComponentContainer {
             this.knobs[index] = new Pot({
                 inKey: "meta",
                 group: effectGroup,
-                inReport: inReports[2],
+                inReport: inReports[HID_INREPT_POTS],
                 inByte: io.knobs[index].inByte,
             });
             this.buttons[index] = new Button({
                 unit: this,
                 key: "enabled",
                 group: effectGroup,
-                inReport: inReports[1],
+                inReport: inReports[HID_INREPT_BUTTONS],
                 inByte: io.buttons[index].inByte,
                 inBit: io.buttons[index].inBit,
                 outByte: io.buttons[index].outByte,
@@ -1579,6 +1700,9 @@ class S4Mk3EffectUnit extends ComponentContainer {
 class S4Mk3Deck extends Deck {
     constructor(decks, colors, effectUnit, mixer, inReports, outReport, io) {
         super(decks, colors);
+
+        // buffer used for lowpassing the input velocity
+        this.velFilter = new FilterBuffer(VelFilterTaps,VelFilterCoeffs)
 
         this.playButton = new PlayButton({
             output: InactiveLightsAlwaysBacklit ? undefined : Button.prototype.uncoloredOutput
@@ -2244,7 +2368,7 @@ class S4Mk3Deck extends Deck {
                     pad.group = deck.group;
                 }
                 if (pad.inReport === undefined) {
-                    pad.inReport = inReports[1];
+                    pad.inReport = inReports[HID_INREPT_BUTTONS];
                 }
                 pad.outReport = outReport;
                 pad.inConnect();
@@ -2356,11 +2480,12 @@ class S4Mk3Deck extends Deck {
                     switchPadLayer(this.deck, this.deck.keyboard);
                     this.deck.currentPadLayer = this.deck.padLayers.keyboard;
                 }
-                this.deck.lights HID OutputReport to HID devicefunction() {
-                    if (this.previousMoveMode !== null && !this.deck.keyboardPlayMode) {
-                        this.deck.moveMode = this.previousMoveMode;
-                        this.previousMoveMode = null;
-                    }
+                this.deck.lightPadMode();
+            },
+            onLongRelease: function() {
+                if (this.previousMoveMode !== null && !this.deck.keyboardPlayMode) {
+                    this.deck.moveMode = this.previousMoveMode;
+                    this.previousMoveMode = null;
                 }
             },
             // hack to switch the LED color when changing decks
@@ -2448,12 +2573,12 @@ class S4Mk3Deck extends Deck {
             }
         });
 
-        // The relative and absolute position inputs have the same resolution but direction
-        // cannot be determined reliably with the absolute position because it is easily
-        // possible to spin the wheel fast enough that it spins more than half a revolution
-        // between input reports. So there is no need to process the absolution position
-        // at all; the relative position is sufficient.
-        this.wheelRelative = new Component({
+        // There are two position inputs reported in the USB data, with identical
+        // resolution. The first one is a cleaned up (unwrapped and sometimes corrected)
+        // version of the second one, which appears to be the raw sensor data and wraps
+        // every 2880 ticks (one full rotation).
+        // Therefore we only care about the first position input.
+        this.wheelPosition = new Component({
             oldValue: null,
             deck: this,
             speed: 0,
@@ -2472,22 +2597,30 @@ class S4Mk3Deck extends Deck {
                 
                 // First, unwrap over/under-runs in the position signal
                 let diff = value - oldValue;
-                if (diff > wheelRelativeMax / 2) {
-                    oldValue += wheelRelativeMax;
-                } else if (diff < -wheelRelativeMax / 2) {
-                    oldValue -= wheelRelativeMax;
+                if (diff > wheelPositionMax / 2) {
+                    oldValue += wheelPositionMax;
+                } else if (diff < -wheelPositionMax / 2) {
+                    oldValue -= wheelPositionMax;
                 }
-                
                 
                 // Using the unwrapped position reference, calculate 1st derivative
                 // (angular velocity)
                 const currentSpeed = (value - oldValue)/(timestamp - oldTimestamp);
-                if ((currentSpeed <= 0) === (speed <= 0)) {
-                    speed = (speed + currentSpeed)/2; // ???: what is this doing
-                } else {
-                    speed = currentSpeed;
-                }
+                
+                // Removing this conditional assignment because it seems off.
+                // if ((currentSpeed <= 0) === (speed <= 0)) {
+                //     speed = (speed + currentSpeed)/2; // ???: what is this doing
+                // } else {
+                //     speed = currentSpeed;
+                // }
+                
+                // New input filtering
+                this.velFilter.insert(currentSpeed);
+                speed = this.velFilter.runFilter();
+
                 this.oldValue = [value, timestamp, speed];
+                
+                // If we're not scratching, jogging, or motoring then leave (???)
                 if (this.speed === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
@@ -2645,7 +2778,7 @@ class S4Mk3Deck extends Deck {
                 if (component instanceof Component) {
                     Object.assign(component, io[property]);
                     if (component.inReport === undefined) {
-                        component.inReport = inReports[1];
+                        component.inReport = inReports[HID_INREPT_BUTTONS];
                     }
                     component.outReport = outReport;
                     if (component.group === undefined) {
@@ -2727,11 +2860,8 @@ class S4Mk3MotorManager {
         let expectedSpeed = 0; //FIXME: nomenclature
 
         // is there a more efficient way to access the angular velocity data?
-        const currentSpeed = this.deck.wheelRelative.speed / baseRevolutionsPerSecond;
+        const currentSpeed = this.deck.wheelPosition.speed / baseRevolutionsPerSecond;
 
-        if (this.deck.wheelMode === wheelModes.motor
-            && engine.getValue(this.deck.group, "play")) {
-            // expectedSpeed references nominal playrate of 1.0 (not including pitch adjustments)
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
             
@@ -2988,9 +3118,9 @@ class S4Mk3MixerColumn extends ComponentContainer {
                 if (component instanceof Component) {
                     Object.assign(component, io[property]);
                     if (component instanceof Pot) {
-                        component.inReport = inReports[2];
+                        component.inReport = inReports[HID_INREPT_POTS];
                     } else {
-                        component.inReport = inReports[1];
+                        component.inReport = inReports[HID_INREPT_BUTTONS];
                     }
                     component.outReport = outReport;
 
@@ -3066,11 +3196,11 @@ class S4MK3 {
         }
 
         this.inReports = [];
-        this.inReports[1] = new HIDInputReport(1);
+        this.inReports[HID_INREPT_BUTTONS] = new HIDInputReport(HID_INREPT_POTS);
         // The master volume, booth volume, headphone mix, and headphone volume knobs
         // control the controller's audio interface in hardware, so they are not mapped.
-        this.inReports[2] = new HIDInputReport(2);
-        this.inReports[3] = new HIDInputReport(3);
+        this.inReports[HID_INREPT_POTS] = new HIDInputReport(HID_INREPT_MIXER2);
+        this.inReports[HID_INREPT_WHEELS] = new HIDInputReport(HID_INREPT_WHEELS);
 
         // There are various of other HID report which doesn't seem to have any
         // immediate use but it is likely that some useful settings may be found
@@ -3169,10 +3299,10 @@ class S4MK3 {
                     {inByte: 3, inBit: 1, outByte: 6},
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[HID_INREPT_POTS]},
                 // the relative wheel value here is one byte offset from its position in the raw data, and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
-                wheelRelative: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
-                wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelPosition: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[HID_INREPT_WHEELS]},
+                wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[HID_INREPT_WHEELS]},
                 wheelTouch: {inByte: 16, inBit: 4},
             }
         );
@@ -3221,10 +3351,10 @@ class S4MK3 {
                     {inByte: 13, inBit: 1, outByte: 29},
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[HID_INREPT_POTS]},
                 // the relative wheel value here is one byte offset from its position in the raw data, and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
-                wheelRelative: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
-                wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
+                wheelPosition: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[HID_INREPT_WHEELS]},
+                wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[HID_INREPT_WHEELS]},
                 wheelTouch: {inByte: 16, inBit: 5},
             }
         );
@@ -3286,9 +3416,11 @@ class S4MK3 {
     }
     incomingData(data) {
         const reportId = data[0];
-        if (reportId in this.inReports && reportId !== 3) {
+        if (reportId in this.inReports && reportId !== HID_INREPT_WHEELS) {
+            // Slicing out the first data point is actively harmful to code legibility later on.
+            // FIXME: PASS FULL DATA BUFFER TO INPUT HANDLER
             this.inReports[reportId].handleInput(data.buffer.slice(1));
-        } else if (reportId === 3) {
+        } else if (reportId === HID_INREPT_WHEELS) {
             // The 32 bit unsigned ints at bytes 8 and 36 always have exactly the same value,
             // so only process one of them. This must be processed before the wheel positions.
             const oldWheelTimer = wheelTimer;
@@ -3303,8 +3435,8 @@ class S4MK3 {
                 wheelTimerDelta += wheelTimerMax;
             }
             // the byte offsets below don't match with the ones in the deck definitions. this should all be harmonized somehow. ZT
-            this.leftDeck.wheelRelative.input(view.getUint32(12, true), view.getUint32(8, true));
-            this.rightDeck.wheelRelative.input(view.getUint32(40, true), view.getUint32(36, true));
+            this.leftDeck.wheelPosition.input(view.getUint32(12, true), view.getUint32(8, true));
+            this.rightDeck.wheelPosition.input(view.getUint32(40, true), view.getUint32(36, true));
         } else {
             console.warn(`Unsupported HID repord with ID ${reportId}. Contains: ${data}`);
         }
