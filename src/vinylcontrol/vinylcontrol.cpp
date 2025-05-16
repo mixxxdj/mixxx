@@ -40,6 +40,9 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
     signalenabled = new ControlProxy(
             group, "vinylcontrol_signal_enabled", this);
     reverseButton = new ControlProxy(group, "reverse", this);
+    m_passthroughEnabled = PollingControlProxy(group, QStringLiteral("passthrough"));
+    m_scratchPositionEnabled = PollingControlProxy(
+            group, QStringLiteral("scratch_position_enable"));
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
     m_bIsEnabled = wantenabled->get() > 0.0;
