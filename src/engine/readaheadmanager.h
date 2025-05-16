@@ -124,4 +124,5 @@ class ReadAheadManager {
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
     int m_cacheMissCount;
+    bool m_cacheMissExpected;
 };

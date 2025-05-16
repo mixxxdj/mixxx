@@ -12,7 +12,8 @@ ReadAheadManager::ReadAheadManager()
           m_currentPosition(0),
           m_pReader(nullptr),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_cacheMissCount(0) {
+          m_cacheMissCount(0),
+          m_cacheMissExpected(false) {
     // For testing only: ReadAheadManagerMock
 }
 
@@ -23,7 +24,8 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader,
           m_currentPosition(0),
           m_pReader(pReader),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_cacheMissCount(0) {
+          m_cacheMissCount(0),
+          m_cacheMissExpected(false) {
     DEBUG_ASSERT(m_pLoopingControl != nullptr);
     DEBUG_ASSERT(m_pReader != nullptr);
 }
@@ -103,7 +105,11 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                 CSAMPLE_GAIN_ONE,
                 samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
+        if (!m_cacheMissExpected) {
+            qDebug() << "ReadAheadManager: continue after number cache misses:" << m_cacheMissCount;
+        }
         m_cacheMissCount = 0;
+        m_cacheMissExpected = false;
     }
 
     // Increment or decrement current read-ahead position
@@ -210,6 +216,7 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 void ReadAheadManager::notifySeek(double seekPosition) {
     m_currentPosition = seekPosition;
     m_cacheMissCount = 0;
+    m_cacheMissExpected = true;
     m_readAheadLog.clear();
 }
 
