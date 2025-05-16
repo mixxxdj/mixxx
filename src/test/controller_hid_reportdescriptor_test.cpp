@@ -63,64 +63,64 @@ TEST(HidReportDescriptorParserTest, ParseReportDescriptor) {
     ASSERT_EQ(controls.size(), 5);
 
     // Mouse Button 1
-    ASSERT_EQ(controls[0].m_usage, 0x0009'0001);
-    ASSERT_EQ(controls[0].m_logicalMinimum, 0);
-    ASSERT_EQ(controls[0].m_logicalMaximum, 1);
-    ASSERT_EQ(controls[0].m_physicalMinimum, 0);
-    ASSERT_EQ(controls[0].m_physicalMaximum, 1);
-    ASSERT_EQ(controls[0].m_unitExponent, 0);
-    ASSERT_EQ(controls[0].m_unit, 0);
-    ASSERT_EQ(controls[0].m_bytePosition, 0);
-    ASSERT_EQ(controls[0].m_bitPosition, 0);
-    ASSERT_EQ(controls[0].m_bitSize, 1);
+    EXPECT_EQ(controls[0].m_usage, 0x0009'0001);
+    EXPECT_EQ(controls[0].m_logicalMinimum, 0);
+    EXPECT_EQ(controls[0].m_logicalMaximum, 1);
+    EXPECT_EQ(controls[0].m_physicalMinimum, 0);
+    EXPECT_EQ(controls[0].m_physicalMaximum, 1);
+    EXPECT_EQ(controls[0].m_unitExponent, 0);
+    EXPECT_EQ(controls[0].m_unit, 0);
+    EXPECT_EQ(controls[0].m_bytePosition, 0);
+    EXPECT_EQ(controls[0].m_bitPosition, 0);
+    EXPECT_EQ(controls[0].m_bitSize, 1);
 
     // Mouse Button 2
-    ASSERT_EQ(controls[1].m_usage, 0x0009'0002);
-    ASSERT_EQ(controls[1].m_logicalMinimum, 0);
-    ASSERT_EQ(controls[1].m_logicalMaximum, 1);
-    ASSERT_EQ(controls[1].m_physicalMinimum, 0);
-    ASSERT_EQ(controls[1].m_physicalMaximum, 1);
-    ASSERT_EQ(controls[1].m_unitExponent, 0);
-    ASSERT_EQ(controls[1].m_unit, 0);
-    ASSERT_EQ(controls[1].m_bytePosition, 0);
-    ASSERT_EQ(controls[1].m_bitPosition, 1);
-    ASSERT_EQ(controls[1].m_bitSize, 1);
+    EXPECT_EQ(controls[1].m_usage, 0x0009'0002);
+    EXPECT_EQ(controls[1].m_logicalMinimum, 0);
+    EXPECT_EQ(controls[1].m_logicalMaximum, 1);
+    EXPECT_EQ(controls[1].m_physicalMinimum, 0);
+    EXPECT_EQ(controls[1].m_physicalMaximum, 1);
+    EXPECT_EQ(controls[1].m_unitExponent, 0);
+    EXPECT_EQ(controls[1].m_unit, 0);
+    EXPECT_EQ(controls[1].m_bytePosition, 0);
+    EXPECT_EQ(controls[1].m_bitPosition, 1);
+    EXPECT_EQ(controls[1].m_bitSize, 1);
 
     // Mouse Button 3
-    ASSERT_EQ(controls[2].m_usage, 0x0009'0003);
-    ASSERT_EQ(controls[2].m_logicalMinimum, 0);
-    ASSERT_EQ(controls[2].m_logicalMaximum, 1);
-    ASSERT_EQ(controls[2].m_physicalMinimum, 0);
-    ASSERT_EQ(controls[2].m_physicalMaximum, 1);
-    ASSERT_EQ(controls[2].m_unitExponent, 0);
-    ASSERT_EQ(controls[2].m_unit, 0);
-    ASSERT_EQ(controls[2].m_bytePosition, 0);
-    ASSERT_EQ(controls[2].m_bitPosition, 2);
-    ASSERT_EQ(controls[2].m_bitSize, 1);
+    EXPECT_EQ(controls[2].m_usage, 0x0009'0003);
+    EXPECT_EQ(controls[2].m_logicalMinimum, 0);
+    EXPECT_EQ(controls[2].m_logicalMaximum, 1);
+    EXPECT_EQ(controls[2].m_physicalMinimum, 0);
+    EXPECT_EQ(controls[2].m_physicalMaximum, 1);
+    EXPECT_EQ(controls[2].m_unitExponent, 0);
+    EXPECT_EQ(controls[2].m_unit, 0);
+    EXPECT_EQ(controls[2].m_bytePosition, 0);
+    EXPECT_EQ(controls[2].m_bitPosition, 2);
+    EXPECT_EQ(controls[2].m_bitSize, 1);
 
     // Mouse Movement X
-    ASSERT_EQ(controls[3].m_usage, 0x0001'0030);
-    ASSERT_EQ(controls[3].m_logicalMinimum, -127);
-    ASSERT_EQ(controls[3].m_logicalMaximum, 127);
-    ASSERT_EQ(controls[3].m_physicalMinimum, -127);
-    ASSERT_EQ(controls[3].m_physicalMaximum, 127);
-    ASSERT_EQ(controls[3].m_unitExponent, 0);
-    ASSERT_EQ(controls[3].m_unit, 0);
-    ASSERT_EQ(controls[3].m_bitSize, 8);
-    ASSERT_EQ(controls[3].m_bytePosition, 1);
-    ASSERT_EQ(controls[3].m_bitPosition, 0);
+    EXPECT_EQ(controls[3].m_usage, 0x0001'0030);
+    EXPECT_EQ(controls[3].m_logicalMinimum, -127);
+    EXPECT_EQ(controls[3].m_logicalMaximum, 127);
+    EXPECT_EQ(controls[3].m_physicalMinimum, -127);
+    EXPECT_EQ(controls[3].m_physicalMaximum, 127);
+    EXPECT_EQ(controls[3].m_unitExponent, 0);
+    EXPECT_EQ(controls[3].m_unit, 0);
+    EXPECT_EQ(controls[3].m_bitSize, 8);
+    EXPECT_EQ(controls[3].m_bytePosition, 1);
+    EXPECT_EQ(controls[3].m_bitPosition, 0);
 
     // Mouse Movement Y
-    ASSERT_EQ(controls[4].m_usage, 0x0001'0031);
-    ASSERT_EQ(controls[4].m_logicalMinimum, -127);
-    ASSERT_EQ(controls[4].m_logicalMaximum, 127);
-    ASSERT_EQ(controls[4].m_physicalMinimum, -127);
-    ASSERT_EQ(controls[4].m_physicalMaximum, 127);
-    ASSERT_EQ(controls[4].m_unitExponent, 0);
-    ASSERT_EQ(controls[4].m_unit, 0);
-    ASSERT_EQ(controls[4].m_bitSize, 8);
-    ASSERT_EQ(controls[4].m_bytePosition, 2);
-    ASSERT_EQ(controls[4].m_bitPosition, 0);
+    EXPECT_EQ(controls[4].m_usage, 0x0001'0031);
+    EXPECT_EQ(controls[4].m_logicalMinimum, -127);
+    EXPECT_EQ(controls[4].m_logicalMaximum, 127);
+    EXPECT_EQ(controls[4].m_physicalMinimum, -127);
+    EXPECT_EQ(controls[4].m_physicalMaximum, 127);
+    EXPECT_EQ(controls[4].m_unitExponent, 0);
+    EXPECT_EQ(controls[4].m_unit, 0);
+    EXPECT_EQ(controls[4].m_bitSize, 8);
+    EXPECT_EQ(controls[4].m_bytePosition, 2);
+    EXPECT_EQ(controls[4].m_bitPosition, 0);
 }
 
 TEST(HidReportDescriptorTest, ControlValue_1Bit) {
