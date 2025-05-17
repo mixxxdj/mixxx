@@ -2796,18 +2796,25 @@ endif()
 #bit7z
 
 ### changed  find_package(unofficial-bit7z CONFIG REQUIRED)
+# find_package(unofficial-bit7z REQUIRED)
+# target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+# if(WIN32)
+# add_custom_command(
+#   TARGET mixxx-lib
+#   POST_BUILD
+#   COMMAND
+#     ${CMAKE_COMMAND} -E copy
+#     "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
+#     $<TARGET_FILE_DIR:mixxx-lib>
+# )
+# endif()
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(unofficial-bit7z REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-if(WIN32)
-  add_custom_command(
-    TARGET mixxx-lib
-    POST_BUILD
-    COMMAND
-      ${CMAKE_COMMAND} -E copy
-      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
-      $<TARGET_FILE_DIR:mixxx-lib>
-  )
-endif()
+message(STATUS "BIT7Z_INCLUDE_DIR: ${BIT7Z_INCLUDE_DIR}")
+message(STATUS "BIT7Z_LIBRARY: ${BIT7Z_LIBRARY}")
 
 # Chromaprint
 find_package(Chromaprint)
