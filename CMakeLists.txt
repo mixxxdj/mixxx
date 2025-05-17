@@ -2788,6 +2788,11 @@ endif()
 
 #7zip
 # Eve: next lines must be uncommented when bit7z and 7zip are in dependencies
+#find_package(7zip REQUIRED)
+#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
+#target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
+
 find_package(7zip REQUIRED)
 target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
