@@ -2793,10 +2793,17 @@ endif()
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
 #target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
 
-find_package(7zip REQUIRED)
-target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
-target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
+#find_package(7zip REQUIRED)
+#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
+#target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
+
+#if(WIN32)
+#    set(PLATFORM_7ZIP_LIB 7z)
+#elseif(APPLE OR UNIX)
+#    set(PLATFORM_7ZIP_LIB lzma)
+#endif()
+#target_link_libraries(mixxx-lib PRIVATE ${PLATFORM_7ZIP_LIB})
 
 #bit7z
 find_package(unofficial-bit7z CONFIG REQUIRED)
