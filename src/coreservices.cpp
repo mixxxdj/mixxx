@@ -101,7 +101,13 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 inline QLocale inputLocale() {
     // Use the default config for local keyboard
     QInputMethod* pInputMethod = QGuiApplication::inputMethod();
-    return pInputMethod ? pInputMethod->locale() : QLocale(QLocale::English);
+    if (pInputMethod) {
+        qDebug() << "Detected input method locale:" << pInputMethod->locale().name();
+        return pInputMethod->locale();
+    } else {
+        qWarning() << "Input method could not be detected. Using default en_US";
+        return QLocale(QLocale::English);
+    }
 }
 } // anonymous namespace
 
@@ -477,13 +483,17 @@ void CoreServices::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
+        qDebug() << "Trying to use default keyboard mapping" << defaultKeyboard;
 
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
+        if (QFile::exists(defaultKeyboard)) {
+            qDebug() << "Found and will use keyboard mapping" << defaultKeyboard;
+        } else {
+            qWarning() << defaultKeyboard << " not found, trying to use en_US.kbd.cfg";
             defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
+            if (QFile::exists(defaultKeyboard)) {
+                qDebug() << "Found and will use keyboard mapping" << defaultKeyboard;
+            } else {
+                qWarning() << defaultKeyboard << " not found, starting without shortcuts";
                 defaultKeyboard = "";
             }
         }
