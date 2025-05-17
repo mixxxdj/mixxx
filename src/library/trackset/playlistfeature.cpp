@@ -25,6 +25,8 @@ const QString kUnsetPrepPlaylistTitle = QObject::tr("Unset Quick Prep playlist")
 const QIcon kSetPrepPlaylistIcon(":/images/library/ic_heart_beige.svg");
 const QIcon kSetPrepPlaylistDisabledIcon(":/images/library/ic_heart_disabled.svg");
 const QIcon kUnsetPrepPlaylistIcon(":/images/library/ic_heart_beige_crossed.svg");
+
+const QString kPrepPlaylistModelKey(QStringLiteral("PrepPlaylistId"));
 } // anonymous namespace
 
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
@@ -67,6 +69,18 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotTogglePrepPlaylist);
+
+    // Restore the Prep playlist
+    QString prepPlaylistIdStr = m_pPlaylistTableModel->getModelSetting(kPrepPlaylistModelKey);
+    bool okay = false;
+    int prepPlaylistId = prepPlaylistIdStr.toInt(&okay);
+    if (okay && prepPlaylistId != kInvalidPlaylistId) {
+        // Returns kInvalidPlaylistId on failure
+        prepPlaylistId = m_playlistDao.togglePrepPlaylist(prepPlaylistId);
+        if (prepPlaylistId != kInvalidPlaylistId) {
+            updateChildModel(QSet<int>{prepPlaylistId});
+        }
+    }
 }
 
 QVariant PlaylistFeature::title() {
@@ -355,9 +369,11 @@ void PlaylistFeature::slotTogglePrepPlaylist() {
 
     // TODO is toggle, ie. setting same pl again unsets it (plId = -1)
     // Adjust action name accordingly + crossed heart
-    m_playlistDao.togglePrepPlaylist(playlistId);
+    int prepPlaylistId = m_playlistDao.togglePrepPlaylist(playlistId);
     QSet<int> allIds = m_playlistDao.getPlaylistIds(PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN);
     updateChildModel(allIds);
+    // Store the id for the next session
+    m_pPlaylistTableModel->setModelSetting(kPrepPlaylistModelKey, prepPlaylistId);
 }
 
 /// Purpose: When inserting or removing playlists,

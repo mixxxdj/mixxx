@@ -1462,13 +1462,13 @@ bool PlaylistDAO::appendTrackToPrepPlaylist(TrackId id) {
 }
 
 /// use kInvalidPlaylistId to unset
-void PlaylistDAO::togglePrepPlaylist(int playlistId) {
-    if (isPlaylistLocked(playlistId)) {
-        return;
+int PlaylistDAO::togglePrepPlaylist(int playlistId) {
+    if (!isPlaylistLocked(playlistId)) {
+        if (m_prepPlaylistId == playlistId) {
+            m_prepPlaylistId = kInvalidPlaylistId;
+        } else {
+            m_prepPlaylistId = playlistId;
+        }
     }
-    if (m_prepPlaylistId == playlistId) {
-        m_prepPlaylistId = kInvalidPlaylistId;
-    } else {
-        m_prepPlaylistId = playlistId;
-    }
+    return m_prepPlaylistId;
 }

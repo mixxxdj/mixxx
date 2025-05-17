@@ -120,7 +120,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
-    void togglePrepPlaylist(int playlistId);
+    int togglePrepPlaylist(int playlistId);
     int getPrepPlaylistId() {
         return m_prepPlaylistId;
     }
