@@ -2809,12 +2809,15 @@ endif()
 # )
 # endif()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# find_package(unofficial-bit7z REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
 
-find_package(unofficial-bit7z REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-message(STATUS "BIT7Z_INCLUDE_DIR: ${BIT7Z_INCLUDE_DIR}")
-message(STATUS "BIT7Z_LIBRARY: ${BIT7Z_LIBRARY}")
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+#find_package(unofficial-bit7z REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+#message(STATUS "BIT7Z_INCLUDE_DIR: ${BIT7Z_INCLUDE_DIR}")
+#message(STATUS "BIT7Z_LIBRARY: ${BIT7Z_LIBRARY}")
 
 # Chromaprint
 find_package(Chromaprint)
