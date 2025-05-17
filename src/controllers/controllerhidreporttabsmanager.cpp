@@ -144,6 +144,9 @@ void ControllerHidReportTabsManager::updateTableWithReportData(
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
                 const auto* pControl = customData.value<const hid::reportDescriptor::Control*>();
+                VERIFY_OR_DEBUG_ASSERT(pControl) {
+                    continue;
+                }
                 // Use the custom data as needed
                 int64_t controlValue =
                         hid::reportDescriptor::extractLogicalValue(
@@ -215,6 +218,9 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
 void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
         quint8 reportId,
         hid::reportDescriptor::HidReportType reportType) {
+    VERIFY_OR_DEBUG_ASSERT(m_pHidController) {
+        return;
+    }
     if (!m_pHidController->isOpen()) {
         qWarning() << "HID controller is not open.";
         return;
@@ -244,7 +250,9 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
             QVariant customData = pTable->item(row, 0)->data(Qt::UserRole + 1);
             if (customData.isValid()) {
                 const auto* pControl = customData.value<const hid::reportDescriptor::Control*>();
-                // Set the control value in the reportData
+                VERIFY_OR_DEBUG_ASSERT(pControl) {
+                    continue;
+                }
                 bool success = hid::reportDescriptor::applyLogicalValue(
                         reportData, *pControl, pItem->text().toLongLong());
                 if (!success) {
