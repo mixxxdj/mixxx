@@ -49,6 +49,7 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
     for (const auto& reportInfo : reportDescriptor.getListOfReports()) {
         auto [index, type, reportId] = reportInfo;
         if (type == reportType) {
+            // Report is a fixed HID term and shouldn't be translated
             QString tabName = QStringLiteral("%1 Report 0x%2")
                                       .arg(metaEnum.valueToKey(static_cast<int>(
                                                    reportType)),
@@ -61,8 +62,8 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
             auto* pTopWidgetRow = new QHBoxLayout();
 
             // Create buttons
-            auto pReadButton = make_parented<QPushButton>(QStringLiteral("Read"), pTabWidget);
-            auto pSendButton = make_parented<QPushButton>(QStringLiteral("Send"), pTabWidget);
+            auto pReadButton = make_parented<QPushButton>(tr("Read"), pTabWidget);
+            auto pSendButton = make_parented<QPushButton>(tr("Send"), pTabWidget);
 
             // Adjust visibility/enable state based on the report type
             if (reportType == hid::reportDescriptor::HidReportType::Input) {
@@ -84,8 +85,10 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
                 // Show payload size
                 auto pSizeLabel = make_parented<QLabel>(pTabWidget);
                 pSizeLabel->setText(
-                        QStringLiteral("Payload Size: <b>%1 bytes</b>")
-                                .arg(pReport->getReportSize()));
+                        QStringLiteral("%1: <b>%2</b> %3")
+                                .arg(tr("Payload Size"))
+                                .arg(pReport->getReportSize())
+                                .arg(tr("bytes")));
                 pTopWidgetRow->insertWidget(0, pSizeLabel);
 
                 populateHidReportTable(pTable, *pReport, reportType);
@@ -280,25 +283,25 @@ void ControllerHidReportTabsManager::populateHidReportTable(
             reportType == hid::reportDescriptor::HidReportType::Output);
 
     // Set headers
-    QStringList headers = {QStringLiteral("Byte Position"),
-            QStringLiteral("Bit Position"),
-            QStringLiteral("Bit Size"),
-            QStringLiteral("Logical Min"),
-            QStringLiteral("Logical Max"),
-            QStringLiteral("Value"),
-            QStringLiteral("Physical Min"),
-            QStringLiteral("Physical Max"),
-            QStringLiteral("Unit Scaling"),
-            QStringLiteral("Unit"),
-            QStringLiteral("Abs/Rel"),
-            QStringLiteral("Wrap"),
-            QStringLiteral("Linear"),
-            QStringLiteral("Preferred"),
-            QStringLiteral("Null")};
+    QStringList headers = {tr("Byte Position"),
+            tr("Bit Position"),
+            tr("Bit Size"),
+            tr("Logical Min"),
+            tr("Logical Max"),
+            tr("Value"),
+            tr("Physical Min"),
+            tr("Physical Max"),
+            tr("Unit Scaling"),
+            tr("Unit"),
+            tr("Abs/Rel"),
+            tr("Wrap"),
+            tr("Linear"),
+            tr("Preferred"),
+            tr("Null")};
     if (showVolatileColumn) {
-        headers << QStringLiteral("Volatile");
+        headers << tr("Volatile");
     }
-    headers << QStringLiteral("Usage Page") << QStringLiteral("Usage");
+    headers << tr("Usage Page") << tr("Usage");
 
     pTable->setColumnCount(headers.size());
     pTable->setHorizontalHeaderLabels(headers);
@@ -387,32 +390,32 @@ void ControllerHidReportTabsManager::populateHidReportTable(
         pTable->setItem(row,
                 10,
                 createReadOnlyItem(pControl.m_flags.absolute_relative
-                                ? QStringLiteral("Relative")
-                                : QStringLiteral("Absolute")));
+                                ? tr("Relative")
+                                : tr("Absolute")));
         // Column 11 - Wrap
         pTable->setItem(row,
                 11,
                 createReadOnlyItem(pControl.m_flags.no_wrap_wrap
-                                ? QStringLiteral("Wrap")
-                                : QStringLiteral("No Wrap")));
+                                ? tr("Wrap")
+                                : tr("No Wrap")));
         // Column 12 - Linear
         pTable->setItem(row,
                 12,
                 createReadOnlyItem(pControl.m_flags.linear_non_linear
-                                ? QStringLiteral("Non Linear")
-                                : QStringLiteral("Linear")));
+                                ? tr("Non Linear")
+                                : tr("Linear")));
         // Column 13 - Preferred
         pTable->setItem(row,
                 13,
                 createReadOnlyItem(pControl.m_flags.preferred_no_preferred
-                                ? QStringLiteral("No Preferred")
-                                : QStringLiteral("Preferred")));
+                                ? tr("No Preferred")
+                                : tr("Preferred")));
         // Column 14 - Null
         pTable->setItem(row,
                 14,
                 createReadOnlyItem(pControl.m_flags.no_null_null
-                                ? QStringLiteral("Null")
-                                : QStringLiteral("No Null")));
+                                ? tr("Null")
+                                : tr("No Null")));
 
         // Volatile column (if present)
         int volatileIndex = (showVolatileColumn ? 15 : -1);
@@ -420,8 +423,8 @@ void ControllerHidReportTabsManager::populateHidReportTable(
             pTable->setItem(row,
                     volatileIndex,
                     createReadOnlyItem(pControl.m_flags.non_volatile_volatile
-                                    ? QStringLiteral("Volatile")
-                                    : QStringLiteral("Non Volatile")));
+                                    ? tr("Volatile")
+                                    : tr("Non Volatile")));
         }
 
         // Usage Page / Usage
