@@ -73,6 +73,23 @@ QVariant PlaylistFeature::title() {
     return tr("Playlists");
 }
 
+void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    BasePlaylistFeature::bindSidebarWidget(pSidebarWidget);
+    // Now we have a valid m_pSidebarWidget.
+    connect(m_pSidebarWidget,
+            &WLibrarySidebar::togglePrepPlaylist,
+            this,
+            [this]() {
+                // Check if the selected sidebar item is one of ours.
+                // If yes, adopt it as m_lastRightClickedIndex and
+                // toggle the prep playlist.
+                if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+                    m_lastRightClickedIndex = m_lastClickedIndex;
+                    slotTogglePrepPlaylist();
+                }
+            });
+}
+
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
