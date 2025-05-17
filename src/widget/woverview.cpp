@@ -985,7 +985,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         QRectF rect;
         double sampleEndPosition = pMark->getSampleEndPosition();
-        if (sampleEndPosition > 0) {
+        if (sampleEndPosition > 0 && !pMark->isJump()) {
             const float markEndPosition = math_clamp(
                     offset + static_cast<float>(sampleEndPosition) * gain,
                     0.0f,

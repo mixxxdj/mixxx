@@ -79,6 +79,9 @@ void WaveformRenderMarkBase::updateMarksFromCues() {
         QColor newColor = mixxx::RgbColor::toQColor(pCue->getColor());
         pMark->setText(newLabel);
         pMark->setBaseColor(newColor, dimBrightThreshold);
+        if (pMark->isJump()) {
+            pMark->setNeedsImageUpdate();
+        }
     }
 
     updateMarks();
@@ -95,6 +98,9 @@ void WaveformRenderMarkBase::updateMarkImages() {
     for (const auto& pMark : m_marks) {
         if (pMark->needsImageUpdate()) {
             updateMarkImage(pMark);
+        }
+        if (pMark->needsEndImageUpdate()) {
+            updateEndMarkImage(pMark);
         }
     }
 }
