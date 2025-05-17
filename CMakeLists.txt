@@ -1349,6 +1349,8 @@ add_library(
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
+  src/preferences/backup/backupsettings.cpp
+  src/preferences/backup/backupworker.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -2787,6 +2789,39 @@ if(WIN32)
   )
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
+
+#7zip
+# Eve: next lines must be uncommented when bit7z and 7zip are in dependencies
+#find_package(7zip REQUIRED)
+#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
+#target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
+#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+#bit7z
+
+### changed  find_package(unofficial-bit7z CONFIG REQUIRED)
+# find_package(unofficial-bit7z REQUIRED)
+# target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+# if(WIN32)
+# add_custom_command(
+#   TARGET mixxx-lib
+#   POST_BUILD
+#   COMMAND
+#     ${CMAKE_COMMAND} -E copy
+#     "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
+#     $<TARGET_FILE_DIR:mixxx-lib>
+# )
+# endif()
+
+# find_package(unofficial-bit7z REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+#find_package(unofficial-bit7z REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+#message(STATUS "BIT7Z_INCLUDE_DIR: ${BIT7Z_INCLUDE_DIR}")
+#message(STATUS "BIT7Z_LIBRARY: ${BIT7Z_LIBRARY}")
 
 # Chromaprint
 find_package(Chromaprint)
