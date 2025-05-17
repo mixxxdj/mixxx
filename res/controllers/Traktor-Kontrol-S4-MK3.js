@@ -74,7 +74,7 @@ const BeatLoopRolls = [
 // Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the scratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
-const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3; // aka 100/3
+const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 100/3; // aka 33 + 1/3
 
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
@@ -227,6 +227,15 @@ const baseEncoderTicksPerSecond = baseDegreesPerSecond * 8;
 
 const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
+// Output torque controller and smoothing filter constants:
+// Note that in testing, I found that a PI controller was sufficient
+// therefore the derivative gain is set to zero
+// and I am excluding it from the PID math later on
+const MOTORPID_PROPORTIONAL_GAIN = 100000;
+const MOTORPID_INTEGRATIVE_GAIN = 1000;
+const MOTORPID_DERIVATIVE_GAIN = 0;
+const MOTOROUT_SMOOTHING_FACTOR = 0.5;
+
 const wheelLEDmodes = {
     off: 0,
     dimFlash: 1,
@@ -357,6 +366,101 @@ class FilterBuffer {
         }
         // Second replace the value at the write pointer
         this.contents[this.writept] = newVel;
+    }
+}
+
+/*
+ * Motor output buffer manager
+ * 
+ * This initializes and manages a single data buffer
+ * for the jogwheel motor commands. It takes care of
+ * using the correct codes for CW/CCW rotation, and
+ * streamlines the data access so that we don't have
+ * to declare unnecessary Uint8Arrays in the time-sensitive
+ * code blocks such as S4Mk3MotorManager.tick()
+ */
+const MOTORBUFF_ID_L = 0;
+const MOTORBUFF_ID_R = 1;
+const MOTORBUFF_TORQUEOUT_OFFSET_L = 0;
+const MOTORBUFF_TORQUEOUT_OFFSET_R = 5;
+// There are 2 instruction bytes that specify forward or reverse
+// motor direction.
+const MOTORBUFF_FWD_CODE_1 = 0x20;
+const MOTORBUFF_FWD_CODE_2 = 0x01;
+const MOTORBUFF_REV_CODE_1 = 0xe0;
+const MOTORBUFF_REV_CODE_2 = 0xfe;
+
+class MotorOutputBuffMgr {
+    constructor() {
+        // the output buffer itself:
+        this.outputBuffer = new Uint8Array([
+            1, MOTORBUFF_FWD_CODE_1, MOTORBUFF_FWD_CODE_2, 0, 0,
+            1, MOTORBUFF_FWD_CODE_1, MOTORBUFF_FWD_CODE_2, 0, 0,
+        ]);
+        this.dir = new Uint8Array([0,0]);
+        this.maxTorque = MaxWheelForce;
+    }
+    getArray() {
+        return this.outputBuffer;
+    }
+    setMaxTorque(newMaxTorque) {
+        // Set a different maximum output torque.
+        // This is used during slip mode to simulate
+        // slipmat friction force 
+        // instead of direct drive motor force
+        if (newMaxTorque > 0 && newMaxTorque < MaxWheelForce) {
+            this.maxTorque = newMaxTorque;
+        }
+        // if it's not within a valid range,
+        // set it to default.
+        else {
+            this.maxTorque = MaxWheelForce;
+        }
+    }
+    setMotorOutput(motorID,torque=0) {
+        let offset = 0;
+
+        // Make sure the output torque is an integer:
+        torque = Math.round(torque);
+
+        // Set the correct offset for this motor's data in the output buffer
+        if (motorID == MOTORBUFF_ID_L) {
+            offset = MOTORBUFF_TORQUEOUT_OFFSET_L;
+        }
+        else if (motorID == MOTORBUFF_ID_R) {
+            offset = MOTORBUFF_TORQUEOUT_OFFSET_R;
+        }
+        else {
+            // invalid motor ID
+            return -1; // error
+        }
+
+        // Setting the direction of the motor.
+        // If the torque is negative
+        if (torque < 0) {
+            // remove the negative sign
+            torque = -torque;
+            // if the direction was previously forward, set reverse
+            if (this.dir[motorID] == 0) {
+                this.outputBuffer[offset + 1] = MOTORBUFF_REV_CODE_1;
+                this.outputBuffer[offset + 2] = MOTORBUFF_REV_CODE_2;
+            }
+        }
+        // Otherwise, the torque is zero or positive
+        else {
+            // if the direction was previously reverse, set forward
+            if (this.dir[motorID] == 1) {
+                this.outputBuffer[offset + 1] = MOTORBUFF_FWD_CODE_1;
+                this.outputBuffer[offset + 2] = MOTORBUFF_FWD_CODE_2;
+            }
+        }
+
+        // Finally, write the torque data into the output buffer.
+        // It is little endian, so write the 2 bytes thusly
+        this.outputBuffer[offset + 3] = torque & 0xff;
+        this.outputBuffer[offset + 4] = torque >> 8;
+
+        return 0;
     }
 }
 
@@ -1698,11 +1802,14 @@ class S4Mk3EffectUnit extends ComponentContainer {
 }
 
 class S4Mk3Deck extends Deck {
-    constructor(decks, colors, effectUnit, mixer, inReports, outReport, io) {
+    constructor(decks, colors, effectUnit, mixer, inReports, outReport, motorBuffMgr, io) {
         super(decks, colors);
 
         // buffer used for lowpassing the input velocity
         this.velFilter = new FilterBuffer(VelFilterTaps,VelFilterCoeffs)
+
+        // manager for the motor output buffer on this deck
+        this.motorBuffMgr = motorBuffMgr;
 
         this.playButton = new PlayButton({
             output: InactiveLightsAlwaysBacklit ? undefined : Button.prototype.uncoloredOutput
@@ -2581,7 +2688,7 @@ class S4Mk3Deck extends Deck {
         this.wheelPosition = new Component({
             oldValue: null,
             deck: this,
-            speed: 0,
+            velocity: 0,
             input: function(value, timestamp) {
                 if (this.oldValue === null) {
                     // This is to avoid the issue where the first time, we diff with 0, leading to the absolute value
@@ -2605,7 +2712,9 @@ class S4Mk3Deck extends Deck {
                 
                 // Using the unwrapped position reference, calculate 1st derivative
                 // (angular velocity)
-                const currentSpeed = (value - oldValue)/(timestamp - oldTimestamp);
+                // IMPORTANT: the unit of measure for this value is:
+                // wheel sensor ticks per second
+                const currentVelocity = (value - oldValue)/(timestamp - oldTimestamp);
                 
                 // Removing this conditional assignment because it seems off.
                 // if ((currentSpeed <= 0) === (speed <= 0)) {
@@ -2615,13 +2724,13 @@ class S4Mk3Deck extends Deck {
                 // }
                 
                 // New input filtering
-                this.velFilter.insert(currentSpeed);
-                speed = this.velFilter.runFilter();
+                this.velFilter.insert(currentVelocity);
+                velocity = this.velFilter.runFilter();
 
-                this.oldValue = [value, timestamp, speed];
+                this.oldValue = [value, timestamp, velocity];
                 
                 // If we're not scratching, jogging, or motoring then leave (???)
-                if (this.speed === 0 &&
+                if (this.velocity === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
                     this.deck.wheelMode !== wheelModes.motor) {
@@ -2721,8 +2830,8 @@ class S4Mk3Deck extends Deck {
                         fired = true;
                     // counter-clockwise check: current < cue < last
                     } else if (!forward && cuePos < this.lastPos && samplePos <= cuePos) {
-                        motorDeckData[1] = 0xe0; // ???: what does this mean? set backwards direction I assume
-                        motorDeckData[2] = 0xfe; // ???: what does this mean? set backwards direction I assume
+                        motorDeckData[1] = 0xe0; // set reverse direction
+                        motorDeckData[2] = 0xfe; // set reverse direction (byte 2)
                         fired = true;
                     }
                     if (fired) {
@@ -2839,37 +2948,59 @@ class S4Mk3Deck extends Deck {
 class S4Mk3MotorManager {
     constructor(deck) {
         this.deck = deck;
+        // Set the Left/Right motor identifier
+        // NOTE: THIS ASSUMES THAT THE FIRST DECK ON THE LEFT IS 1
+        //       AND THE FIRST DECK ON THE RIGHT IS 2
+        if (this.deck.decks[0] == 1) {
+            this.deckMotorID = MOTORBUFF_ID_L;
+        }
+        else if (this.deck.decks[0] == 2) {
+            this.deckMotorID = MOTORBUFF_ID_R;
+        }
+        else {
+            this_is_an_error = true; // TODO: proper handling
+        }
+
         this.userHold = 0; // REMOVE
         this.oldValue = [0, 0];
-        this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute); //FIXME: hardcoded
-        this.zeroSpeedForce = 1650; //FIXME: move hardcoded value to header
+        // this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute); //FIXME: hardcoded
+        // this.zeroSpeedForce = 1650; //FIXME: move hardcoded value to header
         this.currentMaxWheelForce = MaxWheelForce;
+        this.P_term = 0;
+        this.I_accumulator = 0;
+        this.outputTorque_prev = 0;
     }
     tick() {
         //REMOVE: Can be optimized --- point to a single premade instance variable
-        const motorData = new Uint8Array([
-            1, 0x20, 1, 0, 0,
-        ]);
+        // const motorData = new Uint8Array([
+        //     1, 0x20, 1, 0, 0,
+        // ]);
 
         // Declaring local constant
-        const maxVelocity = 10; //FIXME: hardcoded
+        // const maxVelocity = 10; //FIXME: hardcoded
 
         // currentSpeed is normalized to a reference value of baseRPS (100/3/60 for 33.3rpm)
         // Declaring local variables
-        let velocity = 0; //FIXME: nomenclature
-        let expectedSpeed = 0; //FIXME: nomenclature
+        // let playbackRate = 0;
+        let playbackError = 0;
+        let torqueDiff = 0;
+        let outputTorque = 0;
+        // let expectedSpeed = 0; //FIXME: nomenclature
 
-        // is there a more efficient way to access the angular velocity data?
-        const currentSpeed = this.deck.wheelPosition.speed / baseRevolutionsPerSecond;
+        // normalize the velocity relative to the target sensor ticks per second
+        // which for 33.3rpm will be 1600
+        // ie., when this.deck.wheelPosition.velocity = 1600, normalizedVelocity = 1.0
+        const normalizedVelocity = this.deck.wheelPosition.velocity / baseEncoderTicksPerSecond;
+
 
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
             
-            // expectedSpeed is 1.0 +/- pitch adjustment. So +8% pitch is expectedSpeed 1.08
-            expectedSpeed = engine.getValue(this.deck.group, "rate_ratio");
+            // targetRate is 1.0 +/- pitch adjustment. So +8% pitch means targetRate == 1.08
+            targetRate = engine.getValue(this.deck.group, "rate_ratio");
             
             // normalisationFactor doesn't appear to be in use
-            const normalisationFactor = 1/expectedSpeed/5;
+            // const normalisationFactor = 1/expectedSpeed/5;
             //???: what is going on in this velocity calculation?
             // it looks like it might be a smoothing filter of some sort
             
@@ -2878,20 +3009,31 @@ class S4Mk3MotorManager {
             // towards the expected velocity. Not clear if this filter is tuned to a specific
             // cutoff or lag.
             // FIXME: nomenclature.
-            velocity = expectedSpeed + Math.pow(-5 * (expectedSpeed / 1) * (currentSpeed - expectedSpeed), 3);
+            // velocity = targetRate + Math.pow(-5 * (targetRate / 1) * (currentSpeed - targetRate), 3);
 
-            // New motor controller:
+            // New motor controller: a PI followed by a very simple smoothing filter
+            // First, determine the error between target vs measured
+            playbackError = targetRate - normalizedVelocity;
+            // Now calculate the PI controller terms and sum them
+            this.P_term = playbackError * MOTORPID_PROPORTIONAL_GAIN;
+            this.I_accumulator += playbackError * MOTORPID_INTEGRATIVE_GAIN;
+            outputTorque = this.P_term + this.I_accumulator;
+            // Apply a smoothing filter
+            torqueDiff = outputTorque - this.outputTorque_prev;
+            outputTorque = outputTorque + (torqueDiff * MOTOROUT_SMOOTHING_FACTOR);
+            // New torque becomes old torque
+            this.outputTorque_prev = outputTorque;
 
         // In any other wheel mode, the motor only provides resistance to scrubbing/scratching
         } else if (this.deck.wheelMode !== wheelModes.motor) {
             if (TightnessFactor > 0.5) {
                 // Super loose
                 const reduceFactor = (Math.min(0.5, TightnessFactor - 0.5) / 0.5) * 0.7;
-                velocity = currentSpeed * reduceFactor;
+                outputTorque = currentSpeed * reduceFactor;
             } else if (TightnessFactor < 0.5) {
                 // Super tight
                 const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
-                velocity = expectedSpeed + Math.min(
+                outputTorque = expectedSpeed + Math.min(
                     maxVelocity,
                     Math.max(
                         -maxVelocity,
@@ -2900,12 +3042,6 @@ class S4Mk3MotorManager {
                 );
             }
         }
-
-        // Convert the target velocity to a physical measurement from the sensor data.
-        // The optical encoders report 8 ticks for each degree of rotation.
-        // So for 33+1/3 RPM, which is 200 degrees per second, our target velocity will be:
-        // 200 * 8 = 1600 ticks per second
-        velocity *= baseEncoderTicksPerSecond;
 
         // ==========================
         // SLIPMAT PHYSICAL MODELING:
@@ -2988,50 +3124,58 @@ class S4Mk3MotorManager {
         // before breaking down the control parameters into physical constants.
 
         // Formatting and writing the output data:
+        // NEW CODE:
+
+
+        // OLD CODE:
         // Convert signed angular velocity to unsigned angular speed + direction code
-        if (velocity < 0) {
-            motorData[1] = 0xe0; // negative/CCW direction code 1
-            motorData[2] = 0xfe; // negative/CCW direction code 2
-            velocity = -velocity; // invert the sign to make it positive
-        } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
-            velocity += this.zeroSpeedForce; // REMOVE: Don't think this condition is necessary for physical model
-        }
+        // if (velocity < 0) {
+        //     motorData[1] = 0xe0; // negative/CCW direction code 1
+        //     motorData[2] = 0xfe; // negative/CCW direction code 2
+        //     velocity = -velocity; // invert the sign to make it positive
+        // } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
+        //     velocity += this.zeroSpeedForce; // REMOVE: Don't think this condition is necessary for physical model
+        // }
 
         // detecting if the user is stopping the disc from rotating
         // I really don't think this is necessary if we implement a physical model
         // to detect relative velocity of [virtual] platter rotation versus
         // [measured] disc rotation during the slip-state
         // REMOVE for physical model implementation
-        if (!this.isBlockedByUser() && velocity > MaxWheelForce) {
-            this.userHold++;
-        } else if (velocity < MaxWheelForce / 2 && this.userHold > 0) {
-            this.userHold--;
-        }
+        // if (!this.isBlockedByUser() && velocity > MaxWheelForce) {
+        //     this.userHold++;
+        // } else if (velocity < MaxWheelForce / 2 && this.userHold > 0) {
+        //     this.userHold--;
+        // }
 
         // REMOVE for physical model implementation
-        if (this.isBlockedByUser()) {
-            // if the user is blocking the disc rotation, maintain scratch mode
-            engine.setValue(this.deck.group, "scratch2_enable", true);
-            this.currentMaxWheelForce = this.zeroSpeedForce + parseInt(this.baseFactor * expectedSpeed);
-        } else if (expectedSpeed && this.userHold === 0 && !this.deck.wheelTouch.touched) {
-            // if the user has let go, turn off scratch mode and drive the motor hard
-            // to get back to the base rotation speed
-            engine.setValue(this.deck.group, "scratch2_enable", false);
-            this.currentMaxWheelForce = MaxWheelForce;
-        }
+        // if (this.isBlockedByUser()) {
+        //     // if the user is blocking the disc rotation, maintain scratch mode
+        //     engine.setValue(this.deck.group, "scratch2_enable", true);
+        //     this.currentMaxWheelForce = this.zeroSpeedForce + parseInt(this.baseFactor * expectedSpeed);
+        // } else if (expectedSpeed && this.userHold === 0 && !this.deck.wheelTouch.touched) {
+        //     // if the user has let go, turn off scratch mode and drive the motor hard
+        //     // to get back to the base rotation speed
+        //     engine.setValue(this.deck.group, "scratch2_enable", false);
+        //     this.currentMaxWheelForce = MaxWheelForce;
+        // }
 
         // clip the output to the max output if overdriving
         // and/or convert velocity to integer for output to motors
         // Clip the outgoing wheel force to a set maximum, or truncate to int
-        velocity = Math.min(
-            this.currentMaxWheelForce,
-            Math.floor(velocity)
-        );
+        // velocity = Math.min(
+        //     this.currentMaxWheelForce,
+        //     Math.floor(velocity)
+        // );
 
         // Write to the output buffer. Optimize: should be writing to an instance array
-        motorData[3] = velocity & 0xff;
-        motorData[4] = velocity >> 8;
-        return motorData;
+        // motorData[3] = velocity & 0xff;
+        // motorData[4] = velocity >> 8;
+
+        // Write this to the motor output buffer
+        this.motorBuffMgr.setMotorOutput(this.deckMotorID,outputTorque);
+
+        return true;
     }
     isBlockedByUser() { // REMOVE with physical model implementation
         return this.userHold >= 10;
@@ -3209,6 +3353,9 @@ class S4MK3 {
         this.outReports = [];
         this.outReports[128] = new Report(128, 94); // needs more descriptive names, not hardcoded numbers -ZT
 
+        // Single motor output buffer for both wheels
+        this.motorBuffMgr = new MotorOutputBuffMgr();
+
         this.effectUnit1 = new S4Mk3EffectUnit(1, this.inReports, this.outReports[128],
             {
                 mixKnob: {inByte: 30},
@@ -3257,7 +3404,7 @@ class S4MK3 {
         // UNDERSTAND THE REAL HARDWARE SPEC FOR ANALYZING TRAFFIC
         this.leftDeck = new S4Mk3Deck(
             [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
-            this.inReports, this.outReports[128],
+            this.inReports, this.outReports[128], this.motorBuffMgr,
             {
                 playButton: {inByte: 4, inBit: 0, outByte: 55},
                 cueButton: {inByte: 4, inBit: 1, outByte: 8},
@@ -3309,7 +3456,7 @@ class S4MK3 {
 
         this.rightDeck = new S4Mk3Deck(
             [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2, this.mixer,
-            this.inReports, this.outReports[128],
+            this.inReports, this.outReports[128], this.motorBuffMgr,
             {
                 playButton: {inByte: 12, inBit: 0, outByte: 66},
                 cueButton: {inByte: 14, inBit: 5, outByte: 31},
@@ -3409,9 +3556,9 @@ class S4MK3 {
         }
     }
     motorCallback() {
-        var motorData = new Uint8Array(10); // Can be optimized --- define as instance variable
-        motorData.set(this.leftMotor.tick());
-        motorData.set(this.rightMotor.tick(), 5);
+        this.leftMotor.tick();
+        this.rightMotor.tick();
+        motorData = this.motorBuffMgr.getArray();
         controller.sendOutputReport(49, motorData.buffer, true);
     }
     incomingData(data) {
