@@ -6,11 +6,11 @@
 #include "effects/defs.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
 #include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -574,14 +574,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     int moreMenuThreshold = 4;
     QMenu* pParentMenu = pHotcueMainMenu;
     QMenu* pHotcueMoreMenu = nullptr;
-    bool moreHotcues = NUM_HOT_CUES >= preferredHotcuesVisible + moreMenuThreshold;
+    bool moreHotcues = kMaxNumberOfHotcues >= preferredHotcuesVisible + moreMenuThreshold;
     if (moreHotcues) {
         // populate menu here, add it below #preferredHotcuesVisible
         pHotcueMoreMenu = new QMenu(
-                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(NUM_HOT_CUES),
+                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(kMaxNumberOfHotcues),
                 pHotcueMainMenu);
     }
-    for (int i = 1; i <= NUM_HOT_CUES; ++i) {
+    for (int i = 1; i <= kMaxNumberOfHotcues; ++i) {
         if (moreHotcues && i > preferredHotcuesVisible) {
             pParentMenu = pHotcueMoreMenu;
         }
