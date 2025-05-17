@@ -10,6 +10,7 @@
 
 #include "controllers/hid/hidusagetables.h"
 #include "moc_controllerhidreporttabsmanager.cpp"
+#include "util/parented_ptr.h"
 
 ControllerHidReportTabsManager::ControllerHidReportTabsManager(
         QTabWidget* pParentTabWidget, HidController* pHidController)
@@ -55,13 +56,13 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
                                                       .rightJustified(2, '0')
                                                       .toUpper());
 
-            auto* pTabWidget = new QWidget(pParentReportTypeTab);
-            auto* pLayout = new QVBoxLayout(pTabWidget);
+            auto pTabWidget = make_parented<QWidget>(pParentReportTypeTab);
+            auto pLayout = make_parented<QVBoxLayout>(pTabWidget);
             auto* pTopWidgetRow = new QHBoxLayout();
 
             // Create buttons
-            auto* pReadButton = new QPushButton(QStringLiteral("Read"), pTabWidget);
-            auto* pSendButton = new QPushButton(QStringLiteral("Send"), pTabWidget);
+            auto pReadButton = make_parented<QPushButton>(QStringLiteral("Read"), pTabWidget);
+            auto pSendButton = make_parented<QPushButton>(QStringLiteral("Send"), pTabWidget);
 
             // Adjust visibility/enable state based on the report type
             if (reportType == hid::reportDescriptor::HidReportType::Input) {
@@ -75,13 +76,13 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
             pTopWidgetRow->addWidget(pSendButton);
             pLayout->addLayout(pTopWidgetRow);
 
-            auto* pTable = new QTableWidget(pTabWidget);
+            auto pTable = make_parented<QTableWidget>(pTabWidget);
             pLayout->addWidget(pTable);
 
             const auto* pReport = reportDescriptor.getReport(reportType, reportId);
             if (pReport) {
                 // Show payload size
-                auto* pSizeLabel = new QLabel(pTabWidget);
+                auto pSizeLabel = make_parented<QLabel>(pTabWidget);
                 pSizeLabel->setText(
                         QStringLiteral("Payload Size: <b>%1 bytes</b>")
                                 .arg(pReport->getReportSize()));
@@ -94,7 +95,7 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
                 connect(pReadButton,
                         &QPushButton::clicked,
                         this,
-                        [this, pTable, reportId, reportType]() {
+                        [this, pTable = pTable.get(), reportId, reportType]() {
                             slotReadReport(pTable, reportId, reportType);
                         });
                 // Read once on tab creation
@@ -104,7 +105,7 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
                 connect(pSendButton,
                         &QPushButton::clicked,
                         this,
-                        [this, pTable, reportId, reportType]() {
+                        [this, pTable = pTable.get(), reportId, reportType]() {
                             slotSendReport(pTable, reportId, reportType);
                         });
             }
@@ -272,7 +273,7 @@ void ControllerHidReportTabsManager::populateHidReportTable(
 
     // Set the delegate once if needed
     if (reportType != hid::reportDescriptor::HidReportType::Input) {
-        pTable->setItemDelegateForColumn(5, new ValueItemDelegate(pTable));
+        pTable->setItemDelegateForColumn(5, make_parented<ValueItemDelegate>(pTable));
     }
 
     bool showVolatileColumn = (reportType == hid::reportDescriptor::HidReportType::Feature ||
@@ -468,8 +469,8 @@ QWidget* ValueItemDelegate::createEditor(QWidget* pParent,
         const QModelIndex& index) const {
     // Create a line edit restricted by (logical min, logical max)
     auto dataRange = index.data(Qt::UserRole).value<QPair<int, int>>();
-    auto* pEditor = new QLineEdit(pParent);
-    pEditor->setValidator(new QIntValidator(dataRange.first, dataRange.second, pEditor));
+    auto pEditor = make_parented<QLineEdit>(pParent);
+    pEditor->setValidator(make_parented<QIntValidator>(dataRange.first, dataRange.second, pEditor));
     return pEditor;
 }
 
