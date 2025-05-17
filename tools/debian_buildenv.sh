@@ -97,6 +97,7 @@ case "$1" in
             libwavpack-dev \
             lv2-dev \
             markdown \
+            p7zip-full \
             portaudio19-dev \
             protobuf-compiler \
             qtkeychain-qt6-dev \
