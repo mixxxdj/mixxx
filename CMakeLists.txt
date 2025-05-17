@@ -2795,7 +2795,8 @@ endif()
 #target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
 #bit7z
 
-find_package(unofficial-bit7z CONFIG REQUIRED)
+### changed  find_package(unofficial-bit7z CONFIG REQUIRED)
+find_package(unofficial-bit7z REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
 if(WIN32)
   add_custom_command(
