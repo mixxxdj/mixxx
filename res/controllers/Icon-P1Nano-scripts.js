@@ -186,7 +186,7 @@ var P1Nano;
     class VuMeter extends components.Component {
         constructor(options) {
             super(Object.assign({
-                key: "VuMeter",
+                key: "vu_meter",
                 // The channel pressure message is used by default, however we
                 // may override this (eg. for the mains meter which uses 0xD1).
                 midi: [0xD0],
@@ -194,6 +194,20 @@ var P1Nano;
             }, options));
         }
 
+        connect() {
+            // If we're creating the main output vumeter, Mixxx had some bugs
+            // were the name of the control got changed. Try both and see which
+            // one binds so that we ensure support for both 2.5.0 and 2.5.1 (and
+            // hopefully other versions going forward).
+            if (this.group === "[Main]" && typeof this.output === "function") {
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                if (this.connections[0] === undefined) {
+                    this.connections[0] = engine.makeConnection("[Master]", "VuMeter", this.output.bind(this));
+                }
+                return;
+            }
+            return components.Component.prototype.connect.bind(this)();
+        }
         outValueScale(value) {
             // TODO: 0xD is 100% (> 0 dB) while 0xC is clipping at 0 dB. If
             // we're going to do this linear approximation should we scale to
@@ -216,7 +230,7 @@ var P1Nano;
                 return;
             }
             let idx = 0;
-            if (this.group !== "[Master]") {
+            if (this.group !== "[Master]" && this.group !== "[Main]") {
                 idx = script.deckFromGroup(this.group) - 1;
             }
             // Set the first nibble of the value to the number of the channel.
@@ -646,7 +660,6 @@ var P1Nano;
                     midi: [0x90, 0x08 + i],
                     key: "beats_translate_curpos",
                 });
-
                 this.recordButton[i] = new components.Button({
                     group: `[Channel${i + 1}]`,
                     midi: [0x90, i],
@@ -723,7 +736,7 @@ var P1Nano;
                 },
             }));
             this.vuMeters.push(new VuMeter({
-                group: "[Master]",
+                group: "[Main]",
                 midi: [0xD1],
             }));
         }
