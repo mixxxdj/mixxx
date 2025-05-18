@@ -15,4 +15,6 @@ class LegacyHidControllerMappingFileHandler : public LegacyControllerMappingFile
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingsPath);
+
+    FRIEND_TEST(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile);
 };

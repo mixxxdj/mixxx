@@ -28,4 +28,6 @@ class LegacyMidiControllerMappingFileHandler : public LegacyControllerMappingFil
 
     QDomElement outputMappingToXML(QDomDocument* doc,
             const MidiOutputMapping& mapping) const;
+
+    FRIEND_TEST(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile);
 };
