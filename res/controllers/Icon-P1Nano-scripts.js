@@ -3,23 +3,6 @@
 // eslint-disable-next-line no-var
 var P1Nano;
 (function(P1Nano) {
-    const mapIndexToChannel = function(index) {
-        switch (Math.abs(index) % 4) {
-        case 0: return 3;
-        case 1: return 1;
-        case 2: return 2;
-        case 3: return 4;
-        }
-    };
-    const mapChannelToIndex = function(channel) {
-        switch (channel) {
-        case 3: return 0;
-        case 1: return 1;
-        case 2: return 2;
-        case 4: return 3;
-        }
-    };
-
     const SysexHeader = [0xF0, 0x00, 0x02, 0x4E];
     const MCUHeader = [0xF0, 0x00, 0x00, 0x66, 0x14];
 
@@ -234,7 +217,7 @@ var P1Nano;
             }
             let idx = 0;
             if (this.group !== "[Master]") {
-                idx = mapChannelToIndex(script.deckFromGroup(this.group));
+                idx = script.deckFromGroup(this.group) - 1;
             }
             // Set the first nibble of the value to the number of the channel.
             // The second nibble is the value of the meter in the range 0x0 (<
@@ -396,41 +379,41 @@ var P1Nano;
             });
 
             this.playPosition = new PlayPosition({
-                group: "[Channel3]",
+                group: "[Channel1]",
             });
 
             // Transport buttons
             this.playButton = new components.PlayButton({
-                group: "[Channel3]",
+                group: "[Channel1]",
                 midi: [0x90, 0x5E],
                 type: components.Button.prototype.types.toggle,
             });
             this.cueButton = new components.CueButton({
-                group: "[Channel3]",
+                group: "[Channel1]",
                 midi: [0x90, 0x5D],
             });
             this.backButton = new components.Button({
-                group: "[Channel3]",
+                group: "[Channel1]",
                 midi: [0x90, 0x5B],
                 key: "beatjump_backward",
             });
             this.forwardButton = new components.Button({
-                group: "[Channel3]",
+                group: "[Channel1]",
                 midi: [0x90, 0x5C],
                 key: "beatjump_forward",
             });
             this.loopButton = new components.Button({
-                group: "[Channel3]",
+                group: "[Channel1]",
                 midi: [0x90, 0x56],
                 inKey: "beatloop_activate",
                 outKey: "loop_enabled",
             });
 
-            this.setCurrentDeck("[Channel3]");
+            this.setCurrentDeck("[Channel1]");
         }
 
         setCurrentDeck(newGroup) {
-            midi.sendShortMsg(0x90, 0x18 + mapChannelToIndex(newGroup), 0x7F);
+            midi.sendShortMsg(0x90, 0x18 + (newGroup - 1), 0x7F);
             components.Deck.prototype.setCurrentDeck.bind(this)(newGroup);
         }
     }
@@ -443,17 +426,17 @@ var P1Nano;
 
             this.knobPress = [
                 new components.Button({
-                    group: "[Channel3]",
+                    group: "[Channel1]",
                     key: "pregain_set_default",
                     midi: [0x90, 0x20],
                 }),
                 new components.Button({
-                    group: "[Channel1]",
+                    group: "[Channel2]",
                     key: "pregain_set_default",
                     midi: [0x90, 0x21],
                 }),
                 new components.Button({
-                    group: "[Channel2]",
+                    group: "[Channel3]",
                     key: "pregain_set_default",
                     midi: [0x90, 0x22],
                 }),
@@ -476,7 +459,7 @@ var P1Nano;
             };
             this.knob = [
                 new VelocityEncoder({
-                    group: "[Channel3]",
+                    group: "[Channel1]",
                     screen: 0,
                     selected: true,
                     key: "pregain",
@@ -485,7 +468,7 @@ var P1Nano;
                     setKnobPressKey: setKnobPressKey(this, 0),
                 }),
                 new VelocityEncoder({
-                    group: "[Channel1]",
+                    group: "[Channel2]",
                     screen: 1,
                     key: "pregain",
                     name: "Gain",
@@ -493,7 +476,7 @@ var P1Nano;
                     setKnobPressKey: setKnobPressKey(this, 1),
                 }),
                 new VelocityEncoder({
-                    group: "[Channel2]",
+                    group: "[Channel3]",
                     screen: 2,
                     key: "pregain",
                     name: "Gain",
@@ -608,12 +591,12 @@ var P1Nano;
             this.recordButton = [];
             for (let i = 0; i < 4; i++) {
                 this.trackColors[i] = new components.Component({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                     key: "track_color",
                     output: function() {
                         const cmd = [0xf0, 0x00, 0x02, 0x4e, 0x16, 0x14];
                         for (let i = 0; i < 4; i++) {
-                            const trackColor = engine.getValue(`[Channel${mapIndexToChannel(i)}]`, this.key);
+                            const trackColor = engine.getValue(`[Channel${i + 1}]`, this.key);
                             if (trackColor === -1) {
                                 cmd.push(0x00, 0x00, 0x00);
                             } else {
@@ -637,10 +620,10 @@ var P1Nano;
                     },
                 });
                 this.vuMeters[i] = new VuMeter({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                 });
                 this.bpmMeters[i] = new components.Component({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                     midi: [0x90, 0x10],
                     outKey: "bpm",
                     output: function(value) {
@@ -653,19 +636,19 @@ var P1Nano;
                 });
 
                 this.muteButton[i] = new components.Button({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                     midi: [0x90, 0x10 + i],
                     key: "mute",
                     type: components.Button.prototype.types.toggle,
                 });
                 this.soloButton[i] = new components.Button({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                     midi: [0x90, 0x08 + i],
                     key: "beats_translate_curpos",
                 });
 
                 this.recordButton[i] = new components.Button({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                     midi: [0x90, i],
                     inKey: "bpm_tap",
                     outKey: (() => {
@@ -681,7 +664,7 @@ var P1Nano;
                 // "jumps" after you move it to whatever the output value is
                 // telling it to be at.
                 this.fader[i] = new components.Encoder({
-                    group: `[Channel${mapIndexToChannel(i)}]`,
+                    group: `[Channel${i + 1}]`,
                     key: "volume",
                     midi: [0xE0 + i, 0x00],
                     softTakeover: false,
@@ -754,7 +737,7 @@ var P1Nano;
             this.activeDeck.setCurrentDeck(group);
             const deck = script.deckFromGroup(group);
             for (let i = 0; i < 4; i++) {
-                this.knob[i].selected = mapChannelToIndex(deck) === i;
+                this.knob[i].selected = deck === (i + 1);
                 this.knob[i].trigger();
             }
         }
