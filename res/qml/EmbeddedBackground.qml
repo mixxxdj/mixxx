@@ -6,6 +6,6 @@ Rectangle {
 
     border.width: 2
     border.color: Theme.deckBackgroundColor
-    radius: 5
+    radius: 8
     color: Theme.embeddedBackgroundColor
 }
