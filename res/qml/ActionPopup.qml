@@ -9,61 +9,92 @@ import "Theme"
 
 Popup {
     id: root
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
-    width: 200
 
-    padding: 0
-    margins: 0
-    leftInset: 0
+    enum Facing {
+        Left,
+        Top,
+        Right,
+        Bottom
+    }
 
     default property alias children: content.children
+    property variant facing: ActionPopup.Facing.Left
 
-    contentItem: Item {
-        ColumnLayout {
-            spacing: 2
-            anchors.fill: parent
-            anchors.leftMargin: 20
-            id: content
-        }
-    }
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+    leftInset: 0
+    margins: 0
+    padding: 0
+    width: 200
 
     background: Item {
         Item {
             id: content3
+
             anchors.fill: parent
+
             Shape {
-                anchors.left: parent.left
+                anchors.left: root.facing == ActionPopup.Facing.Left ? parent.left : undefined
+                anchors.right: root.facing == ActionPopup.Facing.Right ? parent.right : undefined
                 anchors.verticalCenter: parent.verticalCenter
                 implicitHeight: 20
+                rotation: {
+                    switch (root.facing) {
+                    case ActionPopup.Facing.Right:
+                        return 180;
+                    default:
+                        return 0;
+                    }
+                }
+                transformOrigin: Item.Center
+
                 ShapePath {
-                    strokeWidth: 0
-                    strokeColor: 'transparent'
                     fillColor: Theme.backgroundColor
                     fillRule: ShapePath.OddEvenFill
-
                     startX: 0
                     startY: 10
-                    PathLine { x: 20; y: 0 }
-                    PathLine { x: 20; y: 20 }
-                    PathLine { x: 0; y: 10 }
+                    strokeColor: 'transparent'
+                    strokeWidth: 0
+
+                    PathLine {
+                        x: 20
+                        y: 0
+                    }
+                    PathLine {
+                        x: 20
+                        y: 20
+                    }
+                    PathLine {
+                        x: 0
+                        y: 10
+                    }
                 }
             }
             Rectangle {
                 anchors.fill: parent
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                anchors.leftMargin: root.facing == ActionPopup.Facing.Left ? 20 : 0
+                anchors.rightMargin: root.facing == ActionPopup.Facing.Right ? 20 : 0
                 border.width: 0
-                radius: 8
                 color: Theme.backgroundColor
+                radius: 8
             }
         }
         DropShadow {
             anchors.fill: parent
-            source: content3
-            horizontalOffset: 0
-            verticalOffset: 0
-            radius: 8.0
             color: "#80000000"
+            horizontalOffset: 0
+            radius: 8.0
+            source: content3
+            verticalOffset: 0
+        }
+    }
+    contentItem: Item {
+        ColumnLayout {
+            id: content
+
+            anchors.fill: parent
+            anchors.leftMargin: root.facing == ActionPopup.Facing.Left ? 20 : 0
+            anchors.rightMargin: root.facing == ActionPopup.Facing.Right ? 20 : 0
+            spacing: 2
         }
     }
 }
