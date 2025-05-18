@@ -529,7 +529,7 @@ const Report* HidReportDescriptor::getReport(
     return nullptr;
 }
 
-const std::vector<std::tuple<size_t, HidReportType, uint8_t>>
+std::vector<std::tuple<size_t, HidReportType, uint8_t>>
 HidReportDescriptor::getListOfReports() const {
     std::vector<std::tuple<size_t, HidReportType, uint8_t>> orderedList;
     for (size_t i = 0; i < m_topLevelCollections.size(); ++i) {

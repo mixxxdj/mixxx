@@ -204,8 +204,7 @@ class HidReportDescriptor {
 
     Collection parse();
     const Report* getReport(const HidReportType& reportType, const std::uint8_t& reportId) const;
-    const std::vector<std::tuple<std::size_t, HidReportType, std::uint8_t>>
-    getListOfReports() const;
+    std::vector<std::tuple<std::size_t, HidReportType, std::uint8_t>> getListOfReports() const;
 
   private:
     // Define the struct for global items
