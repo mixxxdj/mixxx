@@ -25,7 +25,7 @@ class HidIoThread : public QThread {
   public:
     HidIoThread(hid_device* pDevice,
             const mixxx::hid::DeviceInfo& deviceInfo,
-            std::optional<bool> deviceHasReportIds);
+            std::optional<bool> deviceUsesReportIds);
     ~HidIoThread() override;
 
     void run() override;
@@ -83,7 +83,7 @@ class HidIoThread : public QThread {
     int m_pollingBufferIndex;
     bool m_hidReadErrorLogged;
 
-    std::optional<bool> m_deviceHasReportIds;
+    std::optional<bool> m_deviceUsesReportIds;
 
     /// Must be locked when a operation changes the size of the m_outputReports map,
     /// or when modify the m_outputReportIterator

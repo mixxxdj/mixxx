@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidiothread.h"
@@ -72,7 +74,7 @@ class HidController final : public Controller {
         return m_deviceInfo.getUsageDescription();
     }
 
-    const std::optional<hid::reportDescriptor::HidReportDescriptor>& getReportDescriptor() const {
+    std::shared_ptr<const hid::reportDescriptor::HidReportDescriptor> getReportDescriptor() const {
         return m_reportDescriptor;
     }
 
@@ -99,9 +101,8 @@ class HidController final : public Controller {
 
     mixxx::hid::DeviceInfo m_deviceInfo;
     // These optional members are not set before opening the device
-    std::optional<std::vector<uint8_t>> m_rawReportDescriptor;
-    std::optional<hid::reportDescriptor::HidReportDescriptor> m_reportDescriptor;
-    std::optional<bool> m_deviceHasReportIds;
+    std::shared_ptr<hid::reportDescriptor::HidReportDescriptor> m_reportDescriptor;
+    std::optional<bool> m_deviceUsesReportIds;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;

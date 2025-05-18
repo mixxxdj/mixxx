@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <limits>
+#include <vector>
 
 #include "controllers/hid/hidreportdescriptor.h"
 
@@ -40,14 +41,16 @@ uint8_t reportDescriptor[] = {
 // clang-format on
 
 TEST(HidReportDescriptorParserTest, ParseReportDescriptor) {
-    HidReportDescriptor parser(reportDescriptor, sizeof(reportDescriptor));
+    const std::vector<uint8_t> reportDescriptorVector(
+            reportDescriptor, reportDescriptor + sizeof(reportDescriptor));
+    HidReportDescriptor parser(reportDescriptorVector);
     Collection collection = parser.parse();
 
     // Use getListOfReports to get the list of reports
     auto reportsList = parser.getListOfReports();
     ASSERT_EQ(reportsList.size(), 1);
 
-    auto [collectionIdx, reportType, reportId] = reportsList[0];
+    auto& [collectionIdx, reportType, reportId] = reportsList[0];
     ASSERT_EQ(collectionIdx, 0);
 
     // Use getReport to get the report

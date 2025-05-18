@@ -200,10 +200,10 @@ class Collection {
 // Class for parsing HID report descriptors
 class HidReportDescriptor {
   public:
-    HidReportDescriptor(const std::uint8_t* pData, std::size_t length);
+    explicit HidReportDescriptor(const std::vector<uint8_t>& data);
 
     bool isDeviceWithReportIds() const {
-        return m_deviceHasReportIds;
+        return m_deviceUsesReportIds;
     }
 
     Collection parse();
@@ -250,11 +250,10 @@ class HidReportDescriptor {
 
     HidReportType getReportType(HidItemTag tag);
 
-    const std::uint8_t* m_pData;
-    std::size_t m_length;
+    const std::vector<uint8_t>& m_data;
     std::size_t m_pos;
 
-    bool m_deviceHasReportIds;
+    bool m_deviceUsesReportIds;
 
     std::vector<GlobalItems> globalItemsStack;
 

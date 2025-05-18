@@ -191,16 +191,15 @@ Collection::getReport(
 }
 
 // HID Report Descriptor Parser
-HidReportDescriptor::HidReportDescriptor(const uint8_t* pData, size_t length)
-        : m_pData(pData),
-          m_length(length),
+HidReportDescriptor::HidReportDescriptor(const std::vector<uint8_t>& data)
+        : m_data(data),
           m_pos(0),
-          m_deviceHasReportIds(kNotSet),
+          m_deviceUsesReportIds(kNotSet),
           m_collectionLevel(0) {
 }
 
 std::pair<HidItemTag, HidItemSize> HidReportDescriptor::readTag() {
-    uint8_t byte = m_pData[m_pos++];
+    uint8_t byte = m_data[m_pos++];
 
     VERIFY_OR_DEBUG_ASSERT(byte !=
             static_cast<uint8_t>(HidItemSize::LongItemKeyword)){
@@ -223,25 +222,25 @@ uint32_t HidReportDescriptor::readPayload(HidItemSize payloadSize) {
     case HidItemSize::ZeroBytePayload:
         return 0;
     case HidItemSize::OneBytePayload:
-        VERIFY_OR_DEBUG_ASSERT(m_pos + 1 <= m_length) {
+        VERIFY_OR_DEBUG_ASSERT(m_pos + 1 <= m_data.size()) {
             return 0;
         }
-        return m_pData[m_pos++];
+        return m_data[m_pos++];
     case HidItemSize::TwoBytePayload:
-        VERIFY_OR_DEBUG_ASSERT(m_pos + 2 <= m_length) {
+        VERIFY_OR_DEBUG_ASSERT(m_pos + 2 <= m_data.size()) {
             return 0;
         }
-        payload = m_pData[m_pos++];
-        payload |= m_pData[m_pos++] << 8;
+        payload = m_data[m_pos++];
+        payload |= m_data[m_pos++] << 8;
         return payload;
     case HidItemSize::FourBytePayload:
-        VERIFY_OR_DEBUG_ASSERT(m_pos + 4 <= m_length) {
+        VERIFY_OR_DEBUG_ASSERT(m_pos + 4 <= m_data.size()) {
             return 0;
         }
-        payload = m_pData[m_pos++];
-        payload |= m_pData[m_pos++] << 8;
-        payload |= m_pData[m_pos++] << 16;
-        payload |= m_pData[m_pos++] << 24;
+        payload = m_data[m_pos++];
+        payload |= m_data[m_pos++] << 8;
+        payload |= m_data[m_pos++] << 16;
+        payload |= m_data[m_pos++] << 24;
         return payload;
     default:
         DEBUG_ASSERT(true);
@@ -312,7 +311,7 @@ Collection HidReportDescriptor::parse() {
     // Local item values
     LocalItems localItems;
 
-    while (m_pos < m_length) {
+    while (m_pos < m_data.size()) {
         auto [tag, size] = readTag();
         auto payload = readPayload(size);
 
@@ -403,9 +402,9 @@ Collection HidReportDescriptor::parse() {
             if (pCurrentReport == nullptr) {
                 // First control of this device
                 if (globalItems.reportId == kNoReportId) {
-                    m_deviceHasReportIds = false;
+                    m_deviceUsesReportIds = false;
                 } else {
-                    m_deviceHasReportIds = true;
+                    m_deviceUsesReportIds = true;
                 }
                 pCurrentReport = std::make_unique<Report>(getReportType(tag), globalItems.reportId);
             } else if (pCurrentReport->m_reportType != getReportType(tag) ||

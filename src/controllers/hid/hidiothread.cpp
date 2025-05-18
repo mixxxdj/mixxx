@@ -29,7 +29,7 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 
 HidIoThread::HidIoThread(hid_device* pHidDevice,
         const mixxx::hid::DeviceInfo& deviceInfo,
-        std::optional<bool> deviceHasReportIds)
+        std::optional<bool> deviceUsesReportIds)
         : QThread(),
           m_deviceInfo(deviceInfo),
           // Defining RuntimeLoggingCategories locally in this thread improves
@@ -43,7 +43,7 @@ HidIoThread::HidIoThread(hid_device* pHidDevice,
           m_lastPollSize(0),
           m_pollingBufferIndex(0),
           m_hidReadErrorLogged(false),
-          m_deviceHasReportIds(deviceHasReportIds),
+          m_deviceUsesReportIds(deviceUsesReportIds),
           m_globalOutputReportFifo(),
           m_runLoopSemaphore(1) {
     // Initializing isn't strictly necessary but is good practice.
@@ -155,8 +155,8 @@ void HidIoThread::processInputReport(int bytesRead) {
                          bytesRead),
             mixxx::Time::elapsed());
 
-    if (m_deviceHasReportIds.has_value() && bytesRead > 0) {
-        if (m_deviceHasReportIds.value()) {
+    if (m_deviceUsesReportIds.has_value() && bytesRead > 0) {
+        if (m_deviceUsesReportIds.value()) {
             // Extract the ReportId from the buffer
             quint8 reportId = pCurrentBuffer[0];
             emit reportReceived(reportId,

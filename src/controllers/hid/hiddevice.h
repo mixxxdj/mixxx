@@ -108,7 +108,7 @@ class DeviceInfo final {
     // We need an opened hid_device here,
     // but the lifetime of the data is as long as DeviceInfo exists,
     // means the reportDescriptor data remains valid after closing the hid_device
-    std::optional<std::vector<uint8_t>> fetchRawReportDescriptor(hid_device* pHidDevice);
+    const std::vector<uint8_t>& fetchRawReportDescriptor(hid_device* pHidDevice);
 
     bool isValid() const {
         return !getProductString().isNull() && !getSerialNumber().isNull();
@@ -141,7 +141,7 @@ class DeviceInfo final {
     QString m_productString;
     QString m_serialNumber;
 
-    std::optional<std::vector<uint8_t>> m_reportDescriptor;
+    std::vector<uint8_t> m_reportDescriptor;
 };
 
 } // namespace hid

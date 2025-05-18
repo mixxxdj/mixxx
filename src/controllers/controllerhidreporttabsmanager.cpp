@@ -66,15 +66,14 @@ void ControllerHidReportTabsManager::createReportTypeTabs() {
 
 void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentReportTypeTab,
         hid::reportDescriptor::HidReportType reportType) {
-    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
-    if (!reportDescriptorTemp.has_value()) {
+    auto reportDescriptor = m_pHidController->getReportDescriptor();
+    if (!reportDescriptor) {
         return;
     }
-    const auto& reportDescriptor = *reportDescriptorTemp;
 
     QMetaEnum metaEnum = QMetaEnum::fromType<hid::reportDescriptor::HidReportType>();
 
-    for (const auto& reportInfo : reportDescriptor.getListOfReports()) {
+    for (const auto& reportInfo : reportDescriptor->getListOfReports()) {
         auto [index, type, reportId] = reportInfo;
         if (type == reportType) {
             // Report is a fixed HID term and shouldn't be translated
@@ -108,7 +107,7 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
             auto pTable = make_parented<QTableWidget>(pTabWidget);
             pLayout->addWidget(pTable);
 
-            auto reportOpt = reportDescriptor.getReport(reportType, reportId);
+            auto reportOpt = reportDescriptor->getReport(reportType, reportId);
             if (reportOpt) {
                 const auto& report = reportOpt->get();
                 // Show payload size
@@ -198,13 +197,12 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
     }
     QTableWidget* pTable = it->second;
 
-    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
-    if (!reportDescriptorTemp.has_value()) {
+    auto reportDescriptor = m_pHidController->getReportDescriptor();
+    if (!reportDescriptor) {
         return;
     }
-    const auto& reportDescriptor = *reportDescriptorTemp;
 
-    auto reportOpt = reportDescriptor.getReport(
+    auto reportOpt = reportDescriptor->getReport(
             hid::reportDescriptor::HidReportType::Input, reportId);
     if (reportOpt) {
         updateTableWithReportData(pTable, data);
@@ -234,13 +232,12 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
         return;
     }
 
-    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
-    if (!reportDescriptorTemp.has_value()) {
+    auto reportDescriptor = m_pHidController->getReportDescriptor();
+    if (!reportDescriptor) {
         return;
     }
-    const auto& reportDescriptor = *reportDescriptorTemp;
 
-    auto reportOpt = reportDescriptor.getReport(reportType, reportId);
+    auto reportOpt = reportDescriptor->getReport(reportType, reportId);
     VERIFY_OR_DEBUG_ASSERT(reportOpt) {
         return;
     }
@@ -272,13 +269,12 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
         return;
     }
 
-    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
-    if (!reportDescriptorTemp.has_value()) {
+    auto reportDescriptor = m_pHidController->getReportDescriptor();
+    if (!reportDescriptor) {
         return;
     }
-    const auto& reportDescriptor = *reportDescriptorTemp;
 
-    auto reportOpt = reportDescriptor.getReport(reportType, reportId);
+    auto reportOpt = reportDescriptor->getReport(reportType, reportId);
     VERIFY_OR_DEBUG_ASSERT(reportOpt) {
         return;
     }
