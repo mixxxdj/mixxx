@@ -108,18 +108,19 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
             auto pTable = make_parented<QTableWidget>(pTabWidget);
             pLayout->addWidget(pTable);
 
-            const auto* pReport = reportDescriptor.getReport(reportType, reportId);
-            if (pReport) {
+            auto reportOpt = reportDescriptor.getReport(reportType, reportId);
+            if (reportOpt) {
+                const auto& report = reportOpt->get();
                 // Show payload size
                 auto pSizeLabel = make_parented<QLabel>(pTabWidget);
                 pSizeLabel->setText(
                         QStringLiteral("%1: <b>%2</b> %3")
                                 .arg(tr("Payload Size"))
-                                .arg(pReport->getReportSize())
+                                .arg(report.getReportSize())
                                 .arg(tr("bytes")));
                 pTopWidgetRow->insertWidget(0, pSizeLabel);
 
-                populateHidReportTable(pTable, *pReport, reportType);
+                populateHidReportTable(pTable, report, reportType);
             }
 
             if (reportType != hid::reportDescriptor::HidReportType::Output) {
@@ -203,9 +204,9 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
     }
     const auto& reportDescriptor = *reportDescriptorTemp;
 
-    const auto* pReport = reportDescriptor.getReport(
+    auto reportOpt = reportDescriptor.getReport(
             hid::reportDescriptor::HidReportType::Input, reportId);
-    if (pReport) {
+    if (reportOpt) {
         updateTableWithReportData(pTable, data);
     }
 }
@@ -239,13 +240,14 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
     }
     const auto& reportDescriptor = *reportDescriptorTemp;
 
-    const auto* pReport = reportDescriptor.getReport(reportType, reportId);
-    VERIFY_OR_DEBUG_ASSERT(pReport) {
+    auto reportOpt = reportDescriptor.getReport(reportType, reportId);
+    VERIFY_OR_DEBUG_ASSERT(reportOpt) {
         return;
     }
-    if (reportData.size() < pReport->getReportSize()) {
+    const auto& report = reportOpt->get();
+    if (reportData.size() < report.getReportSize()) {
         qWarning() << "Failed to get report. Read only " << reportData.size()
-                   << " instead of expected " << pReport->getReportSize()
+                   << " instead of expected " << report.getReportSize()
                    << " bytes.";
         return;
     }
@@ -276,13 +278,14 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
     }
     const auto& reportDescriptor = *reportDescriptorTemp;
 
-    const auto* pReport = reportDescriptor.getReport(reportType, reportId);
-    VERIFY_OR_DEBUG_ASSERT(pReport) {
+    auto reportOpt = reportDescriptor.getReport(reportType, reportId);
+    VERIFY_OR_DEBUG_ASSERT(reportOpt) {
         return;
     }
+    const auto& report = reportOpt->get();
 
     // Create a QByteArray of the size of the report
-    QByteArray reportData(pReport->getReportSize(), 0);
+    QByteArray reportData(report.getReportSize(), 0);
 
     // Iterate through each row in the table
     for (int row = 0; row < pTable->rowCount(); ++row) {

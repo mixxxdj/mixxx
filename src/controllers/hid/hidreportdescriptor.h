@@ -6,6 +6,8 @@
 #include <QString>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
+#include <optional>
 #include <vector>
 
 namespace hid::reportDescriptor {
@@ -184,7 +186,9 @@ class Collection {
   public:
     Collection() = default;
     void addReport(const Report& report);
-    const Report* getReport(const HidReportType& reportType, const std::uint8_t& reportId) const;
+    std::optional<std::reference_wrapper<const Report>> getReport(
+            const HidReportType& reportType,
+            const std::uint8_t& reportId) const;
     const std::vector<Report>& getReports() const {
         return m_reports;
     }
@@ -203,7 +207,9 @@ class HidReportDescriptor {
     }
 
     Collection parse();
-    const Report* getReport(const HidReportType& reportType, const std::uint8_t& reportId) const;
+    std::optional<std::reference_wrapper<const Report>> getReport(
+            const HidReportType& reportType,
+            const std::uint8_t& reportId) const;
     std::vector<std::tuple<std::size_t, HidReportType, std::uint8_t>> getListOfReports() const;
 
   private:

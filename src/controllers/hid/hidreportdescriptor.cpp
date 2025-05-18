@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 
 #include "moc_hidreportdescriptor.cpp"
 #include "util/assert.h"
@@ -177,14 +178,16 @@ void Report::increasePosition(unsigned int bitSize) {
 void Collection::addReport(const Report& report) {
     m_reports.push_back(report);
 }
-const Report* Collection::getReport(
+
+std::optional<std::reference_wrapper<const hid::reportDescriptor::Report>>
+Collection::getReport(
         const HidReportType& reportType, const uint8_t& reportId) const {
     for (const auto& report : m_reports) {
         if (report.m_reportType == reportType && report.m_reportId == reportId) {
-            return &report;
+            return report;
         }
     }
-    return nullptr;
+    return std::nullopt;
 }
 
 // HID Report Descriptor Parser
@@ -518,15 +521,16 @@ Collection HidReportDescriptor::parse() {
     return collection;
 }
 
-const Report* HidReportDescriptor::getReport(
+std::optional<std::reference_wrapper<const hid::reportDescriptor::Report>>
+HidReportDescriptor::getReport(
         const HidReportType& reportType, const uint8_t& reportId) const {
     for (const auto& collection : m_topLevelCollections) {
-        const Report* report = collection.getReport(reportType, reportId);
-        if (report != nullptr) {
+        auto report = collection.getReport(reportType, reportId);
+        if (report) {
             return report;
         }
     }
-    return nullptr;
+    return std::nullopt;
 }
 
 std::vector<std::tuple<size_t, HidReportType, uint8_t>>
