@@ -46,6 +46,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_iVCMode(static_cast<int>(mode->get())),
           m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
           m_dOldFilePos(0.0),
+          m_deltaFilePos(0.0),
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
           m_bWasReversed(false),
@@ -62,6 +63,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dLastTrackSelectPos(0.0),
           m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
+          m_initialRelativeDriftAmt(0.0),
+          m_deltaRelativeDriftAmount(0.0),
           m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
@@ -466,6 +469,11 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //save the absolute amount of drift for when we need to estimate vinyl position
             m_dDriftAmt = m_dVinylPosition - filePosition;
 
+            if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
+                m_deltaFilePos = filePosition - m_dOldFilePos;
+                m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(m_deltaFilePos);
+            }
+
             //qDebug() << "drift" << m_dDriftAmt;
 
             if (m_bForceResync) {
@@ -516,10 +524,19 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             // Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
             // (This is caused by the manufacturing process of the vinyl.)
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    fabs(m_dDriftAmt) > 0.1 && fabs(m_dDriftAmt) < 5.0) {
+                    std::fabs(m_dDriftAmt) > 0.03 && std::fabs(m_dDriftAmt) < 5.0) {
                 dDriftControl = m_dDriftAmt * .01;
             } else {
-                dDriftControl = 0.0;
+                // Apply relative drift control
+                if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
+                    if (std::fabs(m_deltaRelativeDriftAmount) > 0.006 &&
+                            std::fabs(m_deltaRelativeDriftAmount) < 1.0 &&
+                            std::fabs(m_deltaFilePos) < 0.03) {
+                        dDriftControl = m_deltaRelativeDriftAmount * 0.3;
+                    }
+                } else {
+                    dDriftControl = 0.0;
+                }
             }
 
             m_dVinylPositionOld = m_dVinylPosition;
@@ -582,7 +599,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             averagePitch = dVinylPitch;
         }
 
-        m_pVCRate->set(averagePitch + dDriftControl);
+        m_pVCRate->set(dVinylPitch + dDriftControl);
         if (uiUpdateTime(filePosition)) {
             double true_pitch = averagePitch + dDriftControl;
             double pitch_difference = true_pitch - m_dDisplayPitch;
@@ -648,6 +665,20 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             vinylStatus->set(VINYL_STATUS_OK);
         }
     }
+}
+
+// returns the delta between the current drift amount and the last reset value of the drift amount.
+double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
+    // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
+    // when passthrough is enabled or is playing in reverse
+    if (std::fabs(m_deltaRelativeDriftAmount) > 1.5 ||
+            std::fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
+            m_passthroughEnabled.toBool() || reverseButton->toBool() ||
+            m_scratchPositionEnabled.toBool()) {
+        m_initialRelativeDriftAmt = m_dDriftAmt;
+    }
+
+    return m_dDriftAmt - m_initialRelativeDriftAmt;
 }
 
 void VinylControlXwax::enableRecordEndMode() {
