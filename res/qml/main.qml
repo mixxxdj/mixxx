@@ -19,6 +19,11 @@ ApplicationWindow {
     visible: true
     width: 1920
 
+    // TODO to be removed before merging
+    Component.onCompleted: {
+        settingsPopup.open();
+    }
+
     Column {
         id: content
         anchors.fill: parent

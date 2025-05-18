@@ -1,7 +1,9 @@
 import Qt5Compat.GraphicalEffects
-import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick 2
+import QtQuick.Controls 2
 import "Theme"
+
+//FIXME GraphicalEffects are segfaulting on controller rendering at shutdown (double free?). Nullifying the source is fixing the problem
 
 AbstractButton {
     id: root

@@ -11,6 +11,8 @@
 #include <bit>
 #include <chrono>
 #include <memory>
+
+#include "controllers/controllermappinginfo.h"
 #ifdef MIXXX_USE_QML
 #include <bit>
 #endif
@@ -30,8 +32,8 @@ class LegacyControllerMapping {
               m_deviceDirection(DeviceDirection::Bidirectionnal) {
     }
     LegacyControllerMapping(const LegacyControllerMapping& other)
-            : m_productMatches(other.m_productMatches),
-              m_bDirty(other.m_bDirty),
+            : m_bDirty(other.m_bDirty),
+              m_productInfo(other.m_productInfo),
               m_deviceId(other.m_deviceId),
               m_filePath(other.m_filePath),
               m_name(other.m_name),
@@ -66,6 +68,7 @@ class LegacyControllerMapping {
             Qml,
 #endif
         };
+        Q_ENUMS(Type);
 
         QString name;       // Name of the script file to add.
         QString identifier; // The script's function prefix with Javascript OR
@@ -109,6 +112,7 @@ class LegacyControllerMapping {
             Big = static_cast<int>(std::endian::big),
             Little = static_cast<int>(std::endian::little),
         };
+        Q_ENUMS(ColorEndian)
 
         QString identifier; // The screen identifier.
         QSize size;         // The size of the screen.
@@ -180,7 +184,7 @@ class LegacyControllerMapping {
         return false;
     }
 
-    LegacyControllerSettingsLayoutElement* getSettingsLayout() {
+    LegacyControllerSettingsLayoutElement* getSettingsLayout() const {
         return m_settingsLayout.get();
     }
 
@@ -331,17 +335,27 @@ class LegacyControllerMapping {
     }
 
     inline void setMixxxVersion(const QString& mixxxVersion) {
-        m_mixxxVersion = mixxxVersion;
+        m_mixxxVersion = QVersionNumber::fromString(mixxxVersion);
+        DEBUG_ASSERT(!m_mixxxVersion.isNull());
         setDirty(true);
     }
 
     inline QString mixxxVersion() const {
-        return m_mixxxVersion;
+        return m_mixxxVersion.isNull() ? "" : m_mixxxVersion.toString();
     }
 
-    inline void addProductMatch(const QHash<QString, QString>& match) {
-        m_productMatches.append(match);
+    inline void addProductMatch(const ProductInfo& productInfo) {
+        m_productInfo.insert(productInfo);
         setDirty(true);
+    }
+
+    inline void removeProductMatch(const ProductInfo& productInfo) {
+        m_productInfo.remove(productInfo);
+        setDirty(true);
+    }
+
+    inline const QSet<ProductInfo>& productMatch() const {
+        return m_productInfo;
     }
 
     virtual bool saveMapping(const QString& filename) const = 0;
@@ -354,11 +368,11 @@ class LegacyControllerMapping {
             const QString& controllerName) const;
     void resetSettings();
 
-    // Optional list of controller device match details
-    QList<QHash<QString, QString>> m_productMatches;
-
   private:
     bool m_bDirty;
+
+    // Optional list of controller device match details
+    QSet<ProductInfo> m_productInfo;
 
     QString m_deviceId;
     QString m_filePath;
@@ -369,7 +383,7 @@ class LegacyControllerMapping {
     QString m_manualPage;
     QString m_wikilink;
     QString m_schemaVersion;
-    QString m_mixxxVersion;
+    QVersionNumber m_mixxxVersion;
 
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
     std::unique_ptr<LegacyControllerSettingsLayoutElement> m_settingsLayout;
@@ -379,4 +393,20 @@ class LegacyControllerMapping {
 #endif
     QList<ScriptFileInfo> m_scripts;
     DeviceDirections m_deviceDirection;
+
+    friend class LegacyControllerMappingFileHandlerTest;
+
+    friend QDebug operator<<(QDebug dbg, const LegacyControllerMapping& product);
 };
+
+QDebug operator<<(QDebug dbg, const LegacyControllerMapping& product);
+QDebug operator<<(QDebug dbg, const LegacyControllerMapping& product);
+QDebug operator<<(QDebug dbg, const LegacyControllerMapping& product);
+QDebug operator<<(QDebug dbg, const LegacyControllerMapping& product);
+
+bool operator==(const LegacyControllerMapping::QMLModuleInfo& e1,
+        const LegacyControllerMapping::QMLModuleInfo& e2);
+bool operator==(const LegacyControllerMapping::ScriptFileInfo& e1,
+        const LegacyControllerMapping::ScriptFileInfo& e2);
+bool operator==(const LegacyControllerMapping::ScreenInfo& e1,
+        const LegacyControllerMapping::ScreenInfo& e2);

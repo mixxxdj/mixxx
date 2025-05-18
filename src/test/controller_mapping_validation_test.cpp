@@ -6,6 +6,7 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #ifdef MIXXX_USE_QML
 #include "effects/effectsmanager.h"
