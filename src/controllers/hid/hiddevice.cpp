@@ -52,9 +52,6 @@ DeviceInfo::DeviceInfo(const hid_device_info& device_info)
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
 }
 
-// We need an opened hid_device here,
-// but the lifetime of the data is as long as DeviceInfo exists,
-// means the reportDescriptor data remains valid after closing the hid_device
 std::optional<std::vector<uint8_t>> DeviceInfo::fetchRawReportDescriptor(hid_device* pHidDevice) {
     if (!m_reportDescriptor) {
         if (!pHidDevice) {

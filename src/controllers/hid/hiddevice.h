@@ -105,6 +105,9 @@ class DeviceInfo final {
         return mixxx::hid::HidUsageTables::getUsageDescription(usage_page, usage);
     }
 
+    // We need an opened hid_device here,
+    // but the lifetime of the data is as long as DeviceInfo exists,
+    // means the reportDescriptor data remains valid after closing the hid_device
     std::optional<std::vector<uint8_t>> fetchRawReportDescriptor(hid_device* pHidDevice);
 
     bool isValid() const {
