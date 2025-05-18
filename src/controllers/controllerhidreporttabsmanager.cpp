@@ -197,7 +197,12 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
     }
     QTableWidget* pTable = it->second;
 
-    const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
+    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
+    if (!reportDescriptorTemp.has_value()) {
+        return;
+    }
+    const auto& reportDescriptor = *reportDescriptorTemp;
+
     const auto* pReport = reportDescriptor.getReport(
             hid::reportDescriptor::HidReportType::Input, reportId);
     if (pReport) {
@@ -228,7 +233,12 @@ void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
         return;
     }
 
-    const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
+    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
+    if (!reportDescriptorTemp.has_value()) {
+        return;
+    }
+    const auto& reportDescriptor = *reportDescriptorTemp;
+
     const auto* pReport = reportDescriptor.getReport(reportType, reportId);
     VERIFY_OR_DEBUG_ASSERT(pReport) {
         return;
@@ -260,7 +270,11 @@ void ControllerHidReportTabsManager::slotSendReport(QTableWidget* pTable,
         return;
     }
 
-    const auto& reportDescriptor = *m_pHidController->getReportDescriptor();
+    const auto& reportDescriptorTemp = m_pHidController->getReportDescriptor();
+    if (!reportDescriptorTemp.has_value()) {
+        return;
+    }
+    const auto& reportDescriptor = *reportDescriptorTemp;
 
     const auto* pReport = reportDescriptor.getReport(reportType, reportId);
     VERIFY_OR_DEBUG_ASSERT(pReport) {
