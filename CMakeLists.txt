@@ -340,7 +340,7 @@ endif()
 
 project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
-set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
+set(MIXXX_VERSION_PRERELEASE "beta") # set to "alpha" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(
@@ -1571,6 +1571,7 @@ add_library(
   src/widget/wcoverartlabel.cpp
   src/widget/wcoverartmenu.cpp
   src/widget/wcuemenupopup.cpp
+  src/widget/wcuebutton.cpp
   src/widget/wdisplay.cpp
   src/widget/weffectbuttonparametername.cpp
   src/widget/weffectchain.cpp
@@ -4951,14 +4952,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(
-  CPACK_DEBIAN_DISTRIBUTION_RELEASES
-  jammy
-  noble
-  oracular
-  plucky
-  questing
-)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble oracular plucky questing)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

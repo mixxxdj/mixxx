@@ -283,7 +283,6 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
 
@@ -366,7 +365,7 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"

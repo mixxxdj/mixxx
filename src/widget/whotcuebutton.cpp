@@ -13,6 +13,7 @@
 #include "moc_whotcuebutton.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "util/defs.h"
 #include "util/dnd.h"
 #include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
@@ -43,13 +44,15 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     bool ok;
     int hotcue = context.selectInt(node, QStringLiteral("Hotcue"), &ok);
-    if (ok && hotcue > 0) {
+    if (ok && hotcue > 0 && hotcue <= kMaxNumberOfHotcues) {
         m_hotcue = hotcue - 1;
     } else {
+        // HotcueControls are created only for 0..kMaxNumberOfHotcues-1
         SKIN_WARNING(node,
                 context,
-                QStringLiteral("Hotcue index '%1' invalid")
-                        .arg(context.selectString(node, QStringLiteral("Hotcue"))));
+                QStringLiteral("Hotcue index '%1' invalid. Valid range is 1..%2")
+                        .arg(context.selectString(node, QStringLiteral("Hotcue")),
+                                kMaxNumberOfHotcues));
     }
 
     bool okay;
@@ -63,6 +66,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     // For dnd/swapping hotcues we use the rendered widget pixmap as dnd cursor.
     // Unfortnately the margin that constraints the bg color is not considered,
     // so we shrink the rect by custom margins.
+    // TODO Turn this into a qproperty, set in qss
     okay = false;
     int dndMargin = context.selectInt(node, QStringLiteral("DndRectMargin"), &okay);
     if (okay && dndMargin > 0) {
@@ -212,7 +216,7 @@ void WHotcueButton::mouseMoveEvent(QMouseEvent* pEvent) {
 }
 
 void WHotcueButton::dragEnterEvent(QDragEnterEvent* pEvent) {
-    if (isValidHotcueDragEvent(pEvent, m_group, m_hotcue)) {
+    if (isValidHotcueDragEvent(pEvent, m_group, QList<int>{kMainCueIndex})) {
         pEvent->acceptProposedAction();
     } else {
         pEvent->ignore();
@@ -227,7 +231,7 @@ void WHotcueButton::dropEvent(QDropEvent* pEvent) {
                     pEvent,
                     m_group,
                     this,
-                    m_hotcue,
+                    QList<int>{m_hotcue, kMainCueIndex},
                     &dragData)) {
         pTrack->swapHotcues(dragData.hotcue, m_hotcue);
     } else {
