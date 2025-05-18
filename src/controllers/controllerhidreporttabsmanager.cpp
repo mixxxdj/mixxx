@@ -12,6 +12,34 @@
 #include "moc_controllerhidreporttabsmanager.cpp"
 #include "util/parented_ptr.h"
 
+namespace {
+QTableWidgetItem* createReadOnlyItem(const QString& text, bool rightAlign = false) {
+    auto* item = new QTableWidgetItem(text);
+    item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+    if (rightAlign) {
+        item->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    }
+    return item;
+}
+
+QTableWidgetItem* createValueItem(
+        hid::reportDescriptor::HidReportType reportType,
+        int minVal,
+        int maxVal) {
+    auto* item = new QTableWidgetItem;
+    QFont font = item->font();
+    font.setBold(true);
+    item->setFont(font);
+    if (reportType == hid::reportDescriptor::HidReportType::Input) {
+        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+    } else {
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        item->setData(Qt::UserRole, QVariant::fromValue(QPair<int, int>(minVal, maxVal)));
+    }
+    return item;
+}
+} // anonymous namespace
+
 ControllerHidReportTabsManager::ControllerHidReportTabsManager(
         QTabWidget* pParentTabWidget, HidController* pHidController)
         : m_pParentControllerTab(pParentTabWidget),
@@ -315,29 +343,6 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     pTable->setHorizontalHeaderLabels(headers);
     pTable->verticalHeader()->setVisible(false);
 
-    // Helpers
-    auto createReadOnlyItem = [](const QString& text, bool rightAlign = false) {
-        auto* item = new QTableWidgetItem(text);
-        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        if (rightAlign) {
-            item->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        }
-        return item;
-    };
-    auto createValueItem = [reportType](int minVal, int maxVal) {
-        auto* item = new QTableWidgetItem;
-        QFont font = item->font();
-        font.setBold(true);
-        item->setFont(font);
-        if (reportType == hid::reportDescriptor::HidReportType::Input) {
-            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-        } else {
-            item->setFlags(item->flags() | Qt::ItemIsEditable);
-            item->setData(Qt::UserRole, QVariant::fromValue(QPair<int, int>(minVal, maxVal)));
-        }
-        return item;
-    };
-
     int row = 0;
     for (const auto& pControl : controls) {
         // Column 0 - Byte Position
@@ -369,8 +374,7 @@ void ControllerHidReportTabsManager::populateHidReportTable(
         // Column 5 - Value
         pTable->setItem(row,
                 5,
-                createValueItem(
-                        pControl.m_logicalMinimum, pControl.m_logicalMaximum));
+                createValueItem(reportType, pControl.m_logicalMinimum, pControl.m_logicalMaximum));
         // Column 6 - Physical Min
         pTable->setItem(row,
                 6,
