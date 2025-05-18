@@ -3758,6 +3758,7 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickDialogs2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
@@ -4219,6 +4220,40 @@ else()
           applocal
       )
 
+      # FIXME: Install using IMPORTED_RUNTIME_ARTIFACTS seems to create plugins in the wrong place, leading to packaging issue and runtime problems.
+      install(
+        DIRECTORY "${Qt6_DIR}/../../Qt${QT_VERSION_MAJOR}/plugins/multimedia"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt${QT_VERSION_MAJOR}/plugins"
+        COMPONENT applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2QuickImpl
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2Utils
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
       #install qml6-module-qt5compat-graphicaleffects
       install(
         DIRECTORY
@@ -4234,6 +4269,13 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
         COMPONENT applocal
       )
+      # Qt6MultimediaQuick doesn't seem to be included in any defined target but it is required.
+      install(
+        FILES
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/bin/Qt6MultimediaQuick$<$<CONFIG:Debug>:d>${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal
+      )
 
       # install qml6-module-qtqml-workerscript
       install(
@@ -4247,6 +4289,14 @@ else()
       install(
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Controls"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # install qml6-module-qtquick-dialogs
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Dialogs"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
         COMPONENT applocal
       )
@@ -5144,6 +5194,9 @@ if(HID)
     )
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __HID__)
+  endif()
 endif()
 
 # USB Bulk controller support
@@ -5171,6 +5224,9 @@ if(BULK)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __BULK__)
   target_link_libraries(mixxx-lib PRIVATE LibUSB::LibUSB)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __BULK__)
+  endif()
 endif()
 
 # Vinyl Control
