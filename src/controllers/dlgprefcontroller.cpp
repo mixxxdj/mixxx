@@ -90,9 +90,14 @@ DlgPrefController::DlgPrefController(
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
-          m_screensTabIndex(-1),
+          m_screensTabIndex(-1)
+#ifdef __HID__
+          ,
           m_hidReportTabsManager(nullptr) {
     qRegisterMetaType<const hid::reportDescriptor::Control*>();
+#else
+{
+#endif
 
     m_ui.setupUi(this);
     // Create text color for the file and wiki links

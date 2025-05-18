@@ -2,7 +2,9 @@
 
 #include <memory>
 
+#ifdef __HID__
 #include "controllers/controllerhidreporttabsmanager.h"
+#endif
 #include "controllers/controllermappinginfo.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
@@ -149,5 +151,7 @@ class DlgPrefController : public DlgPreferencePage {
     int m_screensTabIndex;        // Index of the screens tab
     QHash<QString, bool> m_settingsCollapsedStates;
 
+#ifdef __HID__
     std::unique_ptr<ControllerHidReportTabsManager> m_hidReportTabsManager;
+#endif
 };
