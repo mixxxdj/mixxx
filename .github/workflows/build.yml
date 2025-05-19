@@ -354,8 +354,8 @@ jobs:
             ./mixxx-test --ui --log-level debug --developer
           }
           finally {
-            Stop-Process -Name ffmpeg
-            $p.WaitForExit(10000)  # Wait for up to 10 seconds
+            Stop-Process -Id $ffmpeg.Id
+            $ffmpeg.WaitForExit(10000)  # Wait for up to 10 seconds
           }
         working-directory: build
         env:
