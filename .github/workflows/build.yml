@@ -354,7 +354,7 @@ jobs:
           Stop-Process -Name ffmpeg
         working-directory: build
         env:
-          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows\tools\ffmpeg\ffmpeg.exe
+          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows-release\tools\ffmpeg\ffmpeg.exe
 
       - name: "[Ubuntu] Run QML UI tests"
         id: uitest_linux
