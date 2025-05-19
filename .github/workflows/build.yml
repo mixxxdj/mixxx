@@ -383,7 +383,7 @@ jobs:
           path: |
             build/screenshots
             build/output.mp4
-          retention-days: 1
+          retention-days: 7
 
       - name: "[Ubuntu] Generate Coverage Report"
         if: runner.os == 'Linux'
