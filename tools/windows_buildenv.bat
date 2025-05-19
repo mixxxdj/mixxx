@@ -24,12 +24,12 @@ IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.6-rel
     SET VCPKG_TARGET_TRIPLET=x64-windows-release
     vcpkg_update_main
-    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
+    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-da4c207
     SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
 ) ELSE (
     SET BUILDENV_BRANCH=2.6
     SET VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-7cc6152
+    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-c2def9b
     SET BUILDENV_SHA256=44b0fc493959ffec09dc48af3b4400d3e550aed970187222f95558942a42e066
 )
 

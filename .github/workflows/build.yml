@@ -60,7 +60,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-            qml: ON
+            # FIXME: QML deployment on Mac appears to be incomplete (#12527)
+            qml: OFF
           - name: macOS 13 arm64
             os: macos-13
             cmake_args: >-
@@ -236,7 +237,7 @@ jobs:
           -DBATTERY=ON
           -DBROADCAST=ON
           -DBULK=ON
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'Release' }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'RelWithDebInfo' }}
           -DOPTIMIZE=${{ matrix.optimize || 'portable' }}
           -DCOVERAGE=${{ matrix.coverage || 'OFF' }}
           -DWARNINGS_FATAL=${{ matrix.warning_fatal || 'ON' }}
