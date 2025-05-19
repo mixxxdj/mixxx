@@ -94,8 +94,8 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DVCPKG_TARGET_TRIPLET=x64-windows
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows
+              -DVCPKG_TARGET_TRIPLET=x64-windows-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
@@ -217,7 +217,7 @@ jobs:
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
-          # BUILDENV_RELEASE: TRUE
+          BUILDENV_RELEASE: TRUE
 
       - name: "[Ubuntu/macOS] Set up ccache"
         # GitHub Actions gives us 10 GB of cache.
