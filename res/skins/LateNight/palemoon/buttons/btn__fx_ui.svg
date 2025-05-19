@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="44"
+   height="44"
+   version="1.1"
+   viewBox="0 0 22 22"
+   id="svg4"
+   sodipodi:docname="btn__fx_ui.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="4.7045455"
+     inkscape:cx="-11.797101"
+     inkscape:cy="7.6521739"
+     inkscape:window-width="1824"
+     inkscape:window-height="977"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg4" />
+  <g
+     transform="matrix(0.881636,0,0,0.882853,1.4147372,5.2834623)"
+     fill="#918273"
+     stroke-width="1.13347"
+     id="g4"
+     style="stroke-width:6.30494304;stroke-dasharray:none">
+    <rect
+       style="fill:#918273;fill-opacity:1;stroke:#000000;stroke-width:1.36866853;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5"
+       width="15.188016"
+       height="15.167079"
+       x="3.2781239"
+       y="-1.1084664" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.23432;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path5"
+       cx="6.2788553"
+       cy="1.7373904"
+       rx="1.0548562"
+       ry="1.0534021" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.23432;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path5-9"
+       cx="8.8360825"
+       cy="1.7373904"
+       rx="1.0548562"
+       ry="1.0534021" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:4.23432;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="path5-9-6"
+       cx="11.39331"
+       cy="1.7373904"
+       rx="1.0548562"
+       ry="1.0534021" />
+  </g>
+</svg>

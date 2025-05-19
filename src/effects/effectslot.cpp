@@ -1,6 +1,8 @@
 #include "effects/effectslot.h"
 
 #include <QDebug>
+#include <QPoint>
+#include <optional>
 
 #include "control/controlencoder.h"
 #include "control/controlpushbutton.h"
@@ -73,6 +75,21 @@ EffectSlot::EffectSlot(const QString& group,
             &ControlObject::valueChanged,
             this,
             &EffectSlot::updateEngineState);
+
+    m_pControlUIShown = std::make_unique<ControlPushButton>(ConfigKey(m_group, "ui_shown"));
+    m_pControlUIShown->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+    connect(m_pControlUIShown.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectSlot::updateEffectUI);
+
+    connect(this,
+            &EffectSlot::effectChanged,
+            this,
+            &EffectSlot::updateEffectUI);
+
+    m_pControlUIButtonShown = std::make_unique<ControlObject>(ConfigKey(m_group, "uibutton_shown"));
+    m_pControlUIButtonShown->set(false);
 
     m_pControlNextEffect = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "next_effect"));
@@ -194,6 +211,43 @@ void EffectSlot::updateEngineState() {
             pParameter->updateEngineState();
         }
     }
+}
+
+void EffectSlot::updateEffectUI() {
+    bool uiShown = m_pControlUIShown->toBool();
+    std::optional<QPoint> oldDlgPosition;
+
+    if (m_pEffectUI) {
+        // Carry over the screen position of the dialog to keep the user's
+        // window layout when switching to another effect.
+        oldDlgPosition = m_pEffectUI->pos();
+
+        // Prevent close from retriggering updateControlOnEffectUIClose if we
+        // want to keep showing a UI (e.g. because the effect was switched).
+        m_pEffectUI->setClosesWithoutSignal(uiShown);
+        m_pEffectUI->close();
+    }
+
+    if (uiShown && m_pEngineEffect) {
+        m_pEffectUI = m_pEngineEffect->createUI();
+        m_pEffectUI->show();
+        connect(&*m_pEffectUI,
+                &DlgEffect::closed,
+                this,
+                &EffectSlot::updateControlOnEffectUIClose);
+
+        if (oldDlgPosition.has_value()) {
+            m_pEffectUI->move(oldDlgPosition->x(), oldDlgPosition->y());
+        }
+    } else {
+        m_pEffectUI = nullptr;
+    }
+
+    m_pControlUIButtonShown->set(m_pManifest ? m_pManifest->hasUI() : false);
+}
+
+void EffectSlot::updateControlOnEffectUIClose() {
+    m_pControlUIShown->set(false);
 }
 
 void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
