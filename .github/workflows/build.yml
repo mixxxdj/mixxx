@@ -118,7 +118,7 @@ jobs:
             artifacts_slug: windows-win64
             qt_qpa_platform: windows
             arch: x64
-          - name: Windows 2022 arm64
+          - name: Windows 11 ARM64
             os: windows-11-arm
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
