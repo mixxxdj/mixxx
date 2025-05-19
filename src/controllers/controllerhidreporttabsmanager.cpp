@@ -47,6 +47,9 @@ ControllerHidReportTabsManager::ControllerHidReportTabsManager(
 }
 
 void ControllerHidReportTabsManager::createReportTypeTabs() {
+    VERIFY_OR_DEBUG_ASSERT(m_pParentControllerTab) {
+        return;
+    }
     auto reportTypeTabs = make_parented<QTabWidget>(m_pParentControllerTab);
 
     QMetaEnum metaEnum = QMetaEnum::fromType<hid::reportDescriptor::HidReportType>();
@@ -66,6 +69,9 @@ void ControllerHidReportTabsManager::createReportTypeTabs() {
 
 void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentReportTypeTab,
         hid::reportDescriptor::HidReportType reportType) {
+    VERIFY_OR_DEBUG_ASSERT(m_pHidController) {
+        return;
+    }
     auto reportDescriptor = m_pHidController->getReportDescriptor();
     if (!reportDescriptor) {
         return;
@@ -154,10 +160,12 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
 
             // Connect the signal for the reportId
             HidIoThread* hidIoThread = m_pHidController->getHidIoThread();
-            connect(hidIoThread,
-                    &HidIoThread::reportReceived,
-                    this,
-                    &ControllerHidReportTabsManager::slotProcessInputReport);
+            if (hidIoThread) {
+                connect(hidIoThread,
+                        &HidIoThread::reportReceived,
+                        this,
+                        &ControllerHidReportTabsManager::slotProcessInputReport);
+            }
         }
     }
 }
@@ -193,6 +201,9 @@ void ControllerHidReportTabsManager::updateTableWithReportData(
 
 void ControllerHidReportTabsManager::slotProcessInputReport(
         quint8 reportId, const QByteArray& data) {
+    VERIFY_OR_DEBUG_ASSERT(m_pHidController) {
+        return;
+    }
     // Find the table associated with the reportId
     auto it = m_reportIdToTableMap.find(reportId);
     if (it == m_reportIdToTableMap.end()) {
@@ -220,6 +231,9 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
 void ControllerHidReportTabsManager::slotReadReport(QTableWidget* pTable,
         quint8 reportId,
         hid::reportDescriptor::HidReportType reportType) {
+    VERIFY_OR_DEBUG_ASSERT(m_pHidController) {
+        return;
+    }
     if (!m_pHidController->isOpen()) {
         qWarning() << "HID controller is not open.";
         return;

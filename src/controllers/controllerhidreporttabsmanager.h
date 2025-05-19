@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QPointer>
 #include <QStyledItemDelegate>
 #include <QTabWidget>
 #include <QTableWidget>
@@ -34,8 +35,8 @@ class ControllerHidReportTabsManager : public QObject {
 
   private:
     void updateTableWithReportData(QTableWidget* pTable, const QByteArray& reportData);
-    QTabWidget* m_pParentControllerTab;
-    HidController* m_pHidController;
+    QPointer<QTabWidget> m_pParentControllerTab;
+    QPointer<HidController> m_pHidController;
     std::unordered_map<quint8, QPointer<QTableWidget>> m_reportIdToTableMap;
 };
 

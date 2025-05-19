@@ -190,7 +190,7 @@ DlgPrefController::DlgPrefController(
 
 #ifdef __HID__
     // Display HID UsagePage and Usage if the controller is an HidController
-    if (auto* hidController = dynamic_cast<HidController*>(m_pController)) {
+    if (auto* hidController = qobject_cast<HidController*>(m_pController)) {
         m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
                         .arg(formatHex(hidController->getUsagePage()),
                                 hidController->getUsagePageDescription()));
