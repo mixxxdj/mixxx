@@ -104,6 +104,19 @@ class WaveformWidgetHolder {
 
 //########################################
 
+namespace mixxx {
+Q_NAMESPACE
+
+enum class OverviewScaleMode {
+    FileGain,
+    Normalize,
+    AllGainReplayGain,
+    Custom
+};
+Q_ENUM_NS(OverviewScaleMode);
+
+} // namespace mixxx
+
 class WaveformWidgetFactory : public QObject,
                               public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
@@ -130,6 +143,7 @@ class WaveformWidgetFactory : public QObject,
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    WaveformWidgetBackend getBackendFromConfig() const;
     WaveformWidgetBackend preferredBackend() const;
     static WaveformWidgetType::Type defaultType() {
         return WaveformWidgetType::RGB;
@@ -197,8 +211,10 @@ class WaveformWidgetFactory : public QObject,
     void setVisualGain(BandIndex index, double gain);
     double getVisualGain(BandIndex index) const;
 
-    void setOverviewNormalized(bool normalize);
-    int isOverviewNormalized() const { return m_overviewNormalized;}
+    void setOverviewScaleMode(mixxx::OverviewScaleMode mode);
+    mixxx::OverviewScaleMode getOverviewScaleMode() const;
+    void setOverviewCustomGain(double gain);
+    double getOverviewCustomGain() const;
 
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
@@ -215,6 +231,7 @@ class WaveformWidgetFactory : public QObject,
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
@@ -223,7 +240,6 @@ class WaveformWidgetFactory : public QObject,
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
-    void overviewNormalizeChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
 
     void untilMarkShowBeatsChanged(bool value);
@@ -231,6 +247,7 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkAlignChanged(Qt::Alignment align);
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
+    void overviewScalingChanged();
 
   public slots:
     void slotSkinLoaded();
@@ -285,6 +302,8 @@ class WaveformWidgetFactory : public QObject,
     bool m_zoomSync;
     double m_visualGain[BandCount];
     bool m_overviewNormalized;
+    mixxx::OverviewScaleMode m_overviewScaleMode;
+    double m_overviewCustomGain;
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
