@@ -24,6 +24,8 @@ class QmlConfigProxy : public QObject {
     Q_INVOKABLE QVariantList getTrackColorPalette();
     Q_INVOKABLE int getMultiSamplingLevel();
     Q_INVOKABLE bool useAcceleration();
+    Q_INVOKABLE QVariant getValue(const ConfigKey& key, const QVariant& default_value) const;
+    Q_INVOKABLE void setValue(const ConfigKey& key, const QVariant& value);
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {
