@@ -351,10 +351,15 @@ jobs:
         run: |
           Start-Process -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -i desktop output.mp4 -y'
           ./mixxx-test --ui --log-level debug --developer
-          Stop-Process -Name ffmpeg
         working-directory: build
         env:
           FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows-release\tools\ffmpeg\ffmpeg.exe
+
+      - name: "[Windows] Stop desktop recording"
+        if: always() && runner.os == 'Windows' && matrix.qml == 'ON'
+        timeout-minutes: 2
+        run: |
+          Stop-Process -Name ffmpeg
 
       - name: "[Ubuntu] Run QML UI tests"
         id: uitest_linux
