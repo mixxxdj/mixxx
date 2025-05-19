@@ -367,6 +367,9 @@ jobs:
         if: matrix.os == 'windows-11-arm'
         run: |
           choco install wixtoolset
+          Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+          refreshenv
+          echo "WIX=$env:WIX" >> $env:GITHUB_ENV
 
       - name: "Package"
         id: package
