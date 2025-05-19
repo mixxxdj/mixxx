@@ -36,7 +36,7 @@ class ControllerHidReportTabsManager : public QObject {
     void updateTableWithReportData(QTableWidget* pTable, const QByteArray& reportData);
     QTabWidget* m_pParentControllerTab;
     HidController* m_pHidController;
-    std::unordered_map<quint8, QTableWidget*> m_reportIdToTableMap;
+    std::unordered_map<quint8, QPointer<QTableWidget>> m_reportIdToTableMap;
 };
 
 class ValueItemDelegate : public QStyledItemDelegate {

@@ -146,6 +146,10 @@ void ControllerHidReportTabsManager::createHidReportTab(QTabWidget* pParentRepor
             if (reportType == hid::reportDescriptor::HidReportType::Input) {
                 // Store the pTable pointer associated with the reportId
                 m_reportIdToTableMap[reportId] = pTable;
+                // Ensure that the table entry gets deleted when the table is destroyed
+                connect(pTable, &QObject::destroyed, this, [this, reportId]() {
+                    m_reportIdToTableMap.erase(reportId);
+                });
             }
 
             // Connect the signal for the reportId
@@ -196,6 +200,10 @@ void ControllerHidReportTabsManager::slotProcessInputReport(
         return;
     }
     QTableWidget* pTable = it->second;
+
+    VERIFY_OR_DEBUG_ASSERT(pTable) {
+        return;
+    }
 
     auto reportDescriptor = m_pHidController->getReportDescriptor();
     if (!reportDescriptor) {
