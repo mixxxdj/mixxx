@@ -1,5 +1,6 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick 2
+import QtQuick.Controls
 import QtQuick.Layouts
 import "../Theme"
 
@@ -351,7 +352,6 @@ Rectangle {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: Object.keys(root.inputs)
-                clip: true
                 reuseItems: false
                 spacing: 15
                 delegate: AudioEntity {
@@ -375,7 +375,6 @@ Rectangle {
                                                    advanced: true
                                                    });
                                                    }
-
                             if (channel < item.channels) {
                                 let start = channels[channels.length-1].channels[0]
                                 let channelPicker = [...Array(item.channels - start)]
@@ -410,6 +409,11 @@ Rectangle {
                             inputEntity.scrolled()
                         }
                     }
+                }
+                ScrollBar.vertical: ScrollBar {
+                    policy: ScrollBar.AlwaysOn
+                    anchors.right: inputList.left
+                    anchors.rightMargin: 6
                 }
             }
         }
@@ -505,7 +509,6 @@ Rectangle {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: Object.keys(root.outputs)
-                clip: true
                 reuseItems: false
                 spacing: 15
                 cacheBuffer: Math.max(0, contentHeight) // Disable lazy loading to make sure all item are loaded and can be bounded to connection
@@ -529,7 +532,6 @@ Rectangle {
                                                    type: "sink"
                                                    });
                                                    }
-
                             if (channel < item.channels) {
                                 let start = channels[channels.length-1].channels[0]
                                 let channelPicker = [...Array(item.channels - start)]
@@ -563,6 +565,11 @@ Rectangle {
                             outputEntity.scrolled()
                         }
                     }
+                }
+                ScrollBar.vertical: ScrollBar {
+                    policy: ScrollBar.AlwaysOn
+                    anchors.left: outputList.right
+                    anchors.leftMargin: 6
                 }
             }
 
