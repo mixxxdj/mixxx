@@ -349,7 +349,7 @@ jobs:
         if: runner.os == 'Windows' && matrix.qml == 'ON'
         timeout-minutes: 2
         run: |
-          $ffmpeg = Start-Process -PassThru -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -i desktop -codec:v yuv4 output.mkv -y'
+          $ffmpeg = Start-Process -PassThru -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -i desktop -codec:v mpeg4 output.mkv -y'
           try {
             ./mixxx-test --ui --log-level debug --developer
           }
@@ -368,7 +368,7 @@ jobs:
         run: |
           Xvfb :44 -ac -nocursor -screen 0 1920x1080x24 -auth /dev/null &
           sleep 3
-          ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v yuv4 -r 30 output.mkv -y &
+          ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v mpeg4 -r 30 output.mkv -y &
           function finish() {
               set -x
               kill $(jobs -p "%ffmpeg")
