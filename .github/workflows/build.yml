@@ -352,7 +352,7 @@ jobs:
         run: |
           set -x
           $FFMPEG_BIN -codecs
-          $FFMPEG_BIN -f gdigrab -framerate 30 -i desktop output.mp4 -y &
+          $FFMPEG_BIN -f gdigrab -framerate 30 -codec:v libx264 -i desktop output.mp4 -y &
           ffmpeg_pid=$!
           function finish() {
               set -x
