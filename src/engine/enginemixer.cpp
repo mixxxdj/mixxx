@@ -138,9 +138,8 @@ EngineMixer::EngineMixer(
     m_pHeadMix->set(-1.);
 
     // Main / Headphone split-out mode (for devices with only one output).
-    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
+    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"), true, 0.0);
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pHeadSplitEnabled->set(0.0);
 
     m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
 
