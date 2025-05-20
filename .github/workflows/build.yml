@@ -355,8 +355,8 @@ jobs:
           ffmpeg_pid=$!
           function finish() {
               set -x
-              which kill
-              kill $ffmpeg_pid
+              sleep 5
+              kill -SIGINT $ffmpeg_pid
               wait -f $ffmpeg_pid || true
               sleep 5
           }
