@@ -354,9 +354,8 @@ jobs:
           $FFMPEG_BIN -f gdigrab -framerate 30 -i desktop output.mp4 -y &
           function finish() {
               set -x
-              kill $(jobs -p "%ffmpeg")
-              wait -f $(jobs -p "%ffmpeg") || true
-              kill $(jobs -p "%Xvfb") || true
+              kill $(jobs -p "%ffmpeg.exe")
+              wait -f $(jobs -p "%ffmpeg.exe") || true
           }
 
           trap finish EXIT
