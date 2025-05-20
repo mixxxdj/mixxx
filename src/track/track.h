@@ -338,6 +338,14 @@ class Track : public QObject {
     void swapHotcues(int a, int b);
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
+    int getDownbeatOffset() const {
+        return m_downbeat_offset;
+    }
+
+    void setDownbeatOffset(int offset) {
+        m_downbeat_offset = offset;
+    }
+
 #ifdef __STEM__
     QList<StemInfo> getStemInfo() const {
         const QMutexLocker lock(&m_qMutex);
@@ -605,6 +613,8 @@ class Track : public QObject {
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
+
+    int m_downbeat_offset = 0; // offset in bars
 
 #ifdef __STEM__
     // The list of stem info
