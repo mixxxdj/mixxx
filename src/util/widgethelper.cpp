@@ -1,5 +1,7 @@
 #include "util/widgethelper.h"
 
+#include <QApplication>
+#include <QMainWindow>
 #include <QScreen>
 #include <QStyle>
 
@@ -44,6 +46,17 @@ QWindow* getWindow(
     }
     if (auto* nativeParent = widget.nativeParentWidget()) {
         return nativeParent->windowHandle();
+    }
+    return nullptr;
+}
+
+QScreen* getMainScreen() {
+    QMainWindow* pMainWindow = nullptr;
+    const QWidgetList pwidgets = QApplication::topLevelWidgets();
+    for (auto* pWidget : pwidgets) {
+        if ((pMainWindow = qobject_cast<QMainWindow*>(pWidget))) {
+            return pMainWindow->screen();
+        }
     }
     return nullptr;
 }
