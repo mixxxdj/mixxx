@@ -1,5 +1,87 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 
+// TEMPORARY
+const S4MK3DEBUG = true;
+
+
+/********************************************************
+                LED Color Constants
+ *******************************************************/
+// Color codes for controller RGB LEDs
+const LedColors = {
+    off: 0,
+    red: 4,
+    carrot: 8,
+    orange: 12,
+    honey: 16,
+    yellow: 20,
+    lime: 24,
+    green: 28,
+    aqua: 32,
+    celeste: 36,
+    sky: 40,
+    blue: 44,
+    purple: 48,
+    fuscia: 52,
+    magenta: 56,
+    azalea: 60,
+    salmon: 64,
+    white: 68,
+};
+
+// This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
+const KeyboardColors = [
+    LedColors.green,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+    LedColors.off,
+    LedColors.white,
+];
+
+// The LEDs only support 16 base colors. Adding 1 in addition to
+// the normal 2 for Button.prototype.brightnessOn changes the color
+// slightly, so use that get 25 different colors to include the Filter
+// button as a 5th effect chain preset selector.
+const QuickEffectPresetColors = [
+    LedColors.red,
+    LedColors.green,
+    LedColors.blue,
+    LedColors.yellow,
+    LedColors.orange,
+    LedColors.purple,
+    LedColors.white,
+
+    LedColors.magenta,
+    LedColors.azalea,
+    LedColors.salmon,
+    LedColors.red + 1,
+
+    LedColors.sky,
+    LedColors.celeste,
+    LedColors.fuscia,
+    LedColors.blue + 1,
+
+    LedColors.carrot,
+    LedColors.honey,
+    LedColors.yellow + 1,
+
+    LedColors.lime,
+    LedColors.aqua,
+    LedColors.purple + 1,
+
+    LedColors.magenta + 1,
+    LedColors.azalea + 1,
+    LedColors.salmon + 1,
+    LedColors.fuscia + 1,
+];
+
 /********************************************************
                 USER CONFIGURABLE SETTINGS
 
@@ -104,83 +186,12 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
-/********************************************************
-                LED Color Constants
- *******************************************************/
-// Color codes for controller RGB LEDs
-const LedColors = {
-    off: 0,
-    red: 4,
-    carrot: 8,
-    orange: 12,
-    honey: 16,
-    yellow: 20,
-    lime: 24,
-    green: 28,
-    aqua: 32,
-    celeste: 36,
-    sky: 40,
-    blue: 44,
-    purple: 48,
-    fuscia: 52,
-    magenta: 56,
-    azalea: 60,
-    salmon: 64,
-    white: 68,
-};
+const P_Gain = engine.getSetting("P_Gain");
+const I_Gain = engine.getSetting("I_Gain");
+const D_Gain = engine.getSetting("D_Gain");
+const SLIP_FRICTION_FORCE = engine.getSetting("SLIP_FRICTION_FORCE");
+const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION");
 
-// This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
-const KeyboardColors = [
-    LedColors.green,
-    LedColors.off,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-    LedColors.off,
-    LedColors.white,
-];
-
-// The LEDs only support 16 base colors. Adding 1 in addition to
-// the normal 2 for Button.prototype.brightnessOn changes the color
-// slightly, so use that get 25 different colors to include the Filter
-// button as a 5th effect chain preset selector.
-const QuickEffectPresetColors = [
-    LedColors.red,
-    LedColors.green,
-    LedColors.blue,
-    LedColors.yellow,
-    LedColors.orange,
-    LedColors.purple,
-    LedColors.white,
-
-    LedColors.magenta,
-    LedColors.azalea,
-    LedColors.salmon,
-    LedColors.red + 1,
-
-    LedColors.sky,
-    LedColors.celeste,
-    LedColors.fuscia,
-    LedColors.blue + 1,
-
-    LedColors.carrot,
-    LedColors.honey,
-    LedColors.yellow + 1,
-
-    LedColors.lime,
-    LedColors.aqua,
-    LedColors.purple + 1,
-
-    LedColors.magenta + 1,
-    LedColors.azalea + 1,
-    LedColors.salmon + 1,
-    LedColors.fuscia + 1,
-];
 
 /********************************************************
                 PAD LAYOUT CONSTANTS
@@ -205,12 +216,25 @@ const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
 
 // input filtering. Coefficients generated in scipy
-// for a 5-tap 100Hz filter given a sampling rate of 500Hz
+// for a 5-tap filter given a sampling rate of 500Hz
 // and applying a hamming window
-const VelFilterTaps = 5;
-const VelFilterCoeffs = [0.02840647, 0.23700821, 0.46917063, 0.23700821, 0.02840647];
+// const VelFilterTaps = 5;
+// 50Hz filter
+// const VelFilterCoeffs = [0.02840647, 0.23700821, 0.46917063, 0.23700821, 0.02840647];
+// 10Hz filter
+// const VelFilterCoeffs = [0.03541093, 0.24092353, 0.44733108, 0.24092353, 0.03541093];
 
-//FIXME: All of these consts should go up to the header right? or are they sorted by function here
+// 9-tap filters:
+const VelFilterTaps = 9;
+
+// simple sliding average. If we need a target tick per measure of 3.2, but we can only get
+// whole numbers as inputs, then we need at least 5 samples to get a steady velocity of 3.2
+// const VelFilterCoeffs = [1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9];
+
+// 10Hz weighted average lowpass FIR filter.
+const VelFilterCoeffs = [0.01755602, 0.04801081, 0.12234688, 0.19760069, 0.2289712, 0.19760069, 0.12234688, 0.04801081, 0.01755602]
+
+// Maximum position value for 32-bit unsigned integer
 const wheelPositionMax = 2 ** 32 - 1;
 //const wheelAbsoluteMax = 2879; //FIXME: nomenclature
 // I think it's safe to make this 2880 as it should be.
@@ -219,22 +243,39 @@ const wheelPositionMax = 2 ** 32 - 1;
 const wheelAbsoluteMax = 2880; //FIXME: nomenclature
 
 const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns (100MHz)
+const WHEEL_CLOCK_FREQ = 100000000; // One tick every 10ns (100MHz)
 
-const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
+// TEMPORARY TEST
+let rps = 0;
+// Make sure the RPM for 33.3 is as precise as possible
+if (BaseRevolutionsPerMinute == 33) {
+    rps = (100/3) / 60;
+}
+else {
+    rps = BaseRevolutionsPerMinute / 60;
+}
+const baseRevolutionsPerSecond = rps;
 const baseDegreesPerSecond = baseRevolutionsPerSecond * 360;
-const baseEncoderTicksPerSecond = baseDegreesPerSecond * 8;
+const baseEncoderTicksPerDegree = baseDegreesPerSecond * 8;
 
-const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
+// This constant is never referenced.
+// const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
 // Output torque controller and smoothing filter constants:
 // Note that in testing, I found that a PI controller was sufficient
 // therefore the derivative gain is set to zero
 // and I am excluding it from the PID math later on
-const MOTORPID_PROPORTIONAL_GAIN = 100000;
-const MOTORPID_INTEGRATIVE_GAIN = 1000;
-const MOTORPID_DERIVATIVE_GAIN = 0;
-const MOTOROUT_SMOOTHING_FACTOR = 0.5;
+// const MOTORPID_PROPORTIONAL_GAIN = 100000;
+const MOTORPID_PROPORTIONAL_GAIN = P_Gain;
+const MOTORPID_INTEGRATIVE_GAIN = I_Gain;
+const MOTORPID_DERIVATIVE_GAIN = D_Gain;
+// const MOTORPID_DERIVATIVE_GAIN = 0;
+const MOTOROUT_SMOOTHING_FACTOR = 0.5; // smaller is smoother but slower
+
+// Motor slip threshold
+// const SLIP_FRICTION_FORCE = 0.2 * MaxWheelForce; // based on Traktor tests with max force 60000
+// const SLIP_FRICTION_FORCE = 0; // based on Traktor tests with max force 60000
+const SLIP_ERROR_THRESH = 0.05; // 5% velocity tolerance for slipping
 
 const wheelLEDmodes = {
     off: 0,
@@ -329,7 +370,7 @@ const HID_OUTRPT_MOTORS = 49
 class FilterBuffer {
     constructor(numElements, filterCoefficients) {
         this.size = numElements;
-        this.data = Float64Array(numElements);
+        this.data = new Float64Array(numElements);
         // filterCoefficients should be an array of floats
         // the same size as the buffer
         this.coeffs = filterCoefficients
@@ -339,22 +380,30 @@ class FilterBuffer {
         // really matter though, it could start anywhere
         this.writept = this.size-1;
 
+        // hold the last calculated output value for reference
+        this.vel_filtered = 0;
+
         // initialize the buffer with zeros
         for (let i = 0; i < this.size; i++) {
             this.data[i] = 0;
         } 
     }
+    // get the most recent output result
+    getCurrentVel() {
+        return this.vel_filtered;
+    }
     // Produce the next filtered sample
     runFilter() {
-        runningSum = 0;
+        let runningSum = 0;
         // Starting at the write pointer,
         // multiply the next N elements
         // with sequential values from the
         // coefficients array, summing the
         // results.
         for (let i = 0; i < this.size; i++) {
-            runningSum += this.coeffs[i] * this.data[(writept + i)%this.size];
+            runningSum += this.coeffs[i] * this.data[(this.writept + i)%this.size];
         }
+        this.vel_filtered = runningSum;
         return runningSum;
     }
     // Write a new value to the buffer, forgetting the oldest one
@@ -365,7 +414,7 @@ class FilterBuffer {
             this.writept = this.size-1;
         }
         // Second replace the value at the write pointer
-        this.contents[this.writept] = newVel;
+        this.data[this.writept] = newVel;
     }
 }
 
@@ -381,10 +430,13 @@ class FilterBuffer {
  */
 const MOTORBUFF_ID_L = 0;
 const MOTORBUFF_ID_R = 1;
+
 const MOTORBUFF_TORQUEOUT_OFFSET_L = 0;
 const MOTORBUFF_TORQUEOUT_OFFSET_R = 5;
 // There are 2 instruction bytes that specify forward or reverse
 // motor direction.
+const MOTORDIR_FWD = 0;
+const MOTORDIR_REV = 1;
 const MOTORBUFF_FWD_CODE_1 = 0x20;
 const MOTORBUFF_FWD_CODE_2 = 0x01;
 const MOTORBUFF_REV_CODE_1 = 0xe0;
@@ -397,11 +449,11 @@ class MotorOutputBuffMgr {
             1, MOTORBUFF_FWD_CODE_1, MOTORBUFF_FWD_CODE_2, 0, 0,
             1, MOTORBUFF_FWD_CODE_1, MOTORBUFF_FWD_CODE_2, 0, 0,
         ]);
-        this.dir = new Uint8Array([0,0]);
+        this.dir = new Uint8Array([MOTORDIR_FWD,MOTORDIR_FWD]);
         this.maxTorque = MaxWheelForce;
     }
-    getArray() {
-        return this.outputBuffer;
+    getBuff() {
+        return this.outputBuffer.buffer;
     }
     setMaxTorque(newMaxTorque) {
         // Set a different maximum output torque.
@@ -421,7 +473,7 @@ class MotorOutputBuffMgr {
         let offset = 0;
 
         // Make sure the output torque is an integer:
-        torque = Math.round(torque);
+        let torque_int = Math.round(torque);
 
         // Set the correct offset for this motor's data in the output buffer
         if (motorID == MOTORBUFF_ID_L) {
@@ -437,11 +489,13 @@ class MotorOutputBuffMgr {
 
         // Setting the direction of the motor.
         // If the torque is negative
-        if (torque < 0) {
+        if (torque_int < 0) {
             // remove the negative sign
-            torque = -torque;
+            torque_int = -torque_int;
             // if the direction was previously forward, set reverse
-            if (this.dir[motorID] == 0) {
+            // and update the direction code
+            if (this.dir[motorID] == MOTORDIR_FWD) {
+                this.dir[motorID] = MOTORDIR_REV;
                 this.outputBuffer[offset + 1] = MOTORBUFF_REV_CODE_1;
                 this.outputBuffer[offset + 2] = MOTORBUFF_REV_CODE_2;
             }
@@ -449,7 +503,9 @@ class MotorOutputBuffMgr {
         // Otherwise, the torque is zero or positive
         else {
             // if the direction was previously reverse, set forward
-            if (this.dir[motorID] == 1) {
+            // and update the direction code
+            if (this.dir[motorID] == MOTORDIR_REV) {
+                this.dir[motorID] = MOTORDIR_FWD;
                 this.outputBuffer[offset + 1] = MOTORBUFF_FWD_CODE_1;
                 this.outputBuffer[offset + 2] = MOTORBUFF_FWD_CODE_2;
             }
@@ -457,8 +513,8 @@ class MotorOutputBuffMgr {
 
         // Finally, write the torque data into the output buffer.
         // It is little endian, so write the 2 bytes thusly
-        this.outputBuffer[offset + 3] = torque & 0xff;
-        this.outputBuffer[offset + 4] = torque >> 8;
+        this.outputBuffer[offset + 3] = torque_int & 0xff;
+        this.outputBuffer[offset + 4] = torque_int >> 8;
 
         return 0;
     }
@@ -540,7 +596,8 @@ class HIDInputReport {
     }
 }
 
-// Is HIDOutputReport ever used?
+// Q: Is HIDOutputReport ever used?
+// A: only once, in this script, and nowhere else in Mixxx's codebase
 class HIDOutputReport {
     constructor(reportId, length) {
         this.reportId = reportId;
@@ -2613,6 +2670,7 @@ class S4Mk3Deck extends Deck {
                         engine.setValue(this.group, "scratch2_enable", false);
                     } else {
                         this.deck.wheelMode = wheelModes.motor;
+                        engine.setValue(this.group, "scratch2_enable", true);
                         const group = this.group;
                     }
                     this.outTrigger();
@@ -2655,19 +2713,18 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(touched) {
                 this.touched = touched;
-                if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
-                    if (touched) {
-                        engine.setValue(this.group, "scratch2_enable", true);
-                    } else {
-                        this.stopScratchWhenOver();
-                    }
-                }
+                // if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
+                //     if (touched) {
+                //         engine.setValue(this.group, "scratch2_enable", true);
+                //     } else {
+                //         this.stopScratchWhenOver();
+                //     }
+                // }
             },
             stopScratchWhenOver: function() {
                 if (this.touched) {
                     return;
                 }
-
                 if (engine.getValue(this.group, "play") &&
                     engine.getValue(this.group, "scratch2") < 1.5 * baseRevolutionsPerSecond &&
                     engine.getValue(this.group, "scratch2") > 0) {
@@ -2686,50 +2743,82 @@ class S4Mk3Deck extends Deck {
         // every 2880 ticks (one full rotation).
         // Therefore we only care about the first position input.
         this.wheelPosition = new Component({
-            oldValue: null,
+            prev_data: null,
             deck: this,
             velocity: 0,
-            input: function(value, timestamp) {
-                if (this.oldValue === null) {
-                    // This is to avoid the issue where the first time, we diff with 0, leading to the absolute value
-                    this.oldValue = [value, timestamp, 0];
-                    return;
+            vFilter: this.velFilter,
+            input: function(in_position, in_timestamp) {
+                // The input to the wheel is pulled from the HID input report #3
+                // value: 16-bit integer that indicates angular position. Every step
+                //        represents 1/8th of a degree of rotation.
+                // timestamp: 32-bit counter used by the hardware, so is "immune"
+                //        from USB transport jitter
+                
+                // Since we're calculating velocity as difference in position,
+                // we have to init the previous value to zero
+                if (this.prev_data === null) {
+                    this.prev_data = [in_position, in_timestamp, 0];
+                    return; // velocity is implicitly zero here on the return
                 }
-                let [oldValue, oldTimestamp, speed] = this.oldValue;
+
+                // After the 1st iteration, proceed as normal. Save the previous data
+                let [prev_position, prev_timestamp] = this.prev_data;
 
                 // Unwrap the previous counter value if the new one rolls over to zero
-                if (timestamp < oldTimestamp) {
-                    oldTimestamp -= wheelTimerMax;
+                if (in_timestamp < prev_timestamp) {
+                    prev_timestamp -= wheelTimerMax;
                 }
                 
-                // First, unwrap over/under-runs in the position signal
-                let diff = value - oldValue;
+                // Unwrap over/under-runs in the position signal
+                let diff = in_position - prev_position;
                 if (diff > wheelPositionMax / 2) {
-                    oldValue += wheelPositionMax;
+                    prev_position += wheelPositionMax;
                 } else if (diff < -wheelPositionMax / 2) {
-                    oldValue -= wheelPositionMax;
+                    prev_position -= wheelPositionMax;
                 }
                 
                 // Using the unwrapped position reference, calculate 1st derivative
                 // (angular velocity)
-                // IMPORTANT: the unit of measure for this value is:
-                // wheel sensor ticks per second
-                const currentVelocity = (value - oldValue)/(timestamp - oldTimestamp);
+                // first, calculate the velocity in ticks (1/8th degree) per second
+                // in_position and prev_position are both in 1/8th degrees
+                // in_timestamp and prev_timestamp are both in clock ticks (10ns per)
+                // WHEEL_CLOCK_FREQ converts clock ticks to seconds
+                // example: position difference of 3 and timestamp difference of 2ms = 200000ns
+                //          results in 1.5e-05 or 0.000015
+                //          multiply by 100MHz or 100000000 produces 1500 ticks per second
+                const currentVelocity_tickspersecond = WHEEL_CLOCK_FREQ * (in_position - prev_position)/(in_timestamp - prev_timestamp);
+                
+                // then, normalize it with reference to the target rotation speed of the platter
+                // regardless of how the pitch is being adjusted. In other words, the "rate_ratio"
+                // is not a consideration here because we are only concerned with how fast the
+                // platter is spinning relative to the playback rate of 1.0
+                //     Therefore we simply divide the ticks per second by the ticks per degree
+                // which eliminates the units of measure and leaves us with a ratio.
+                const currentVelocity_normalized = currentVelocity_tickspersecond / baseEncoderTicksPerDegree;
                 
                 // Removing this conditional assignment because it seems off.
-                // if ((currentSpeed <= 0) === (speed <= 0)) {
-                //     speed = (speed + currentSpeed)/2; // ???: what is this doing
+                // if ((currentVelocity <= 0) === (oldVelocity <= 0)) {
+                //     oldVelocity = (oldVelocity + currentVelocity)/2; // ???: what is this doing
                 // } else {
-                //     speed = currentSpeed;
+                //     oldVelocity = currentVelocity;
                 // }
+                // this.speed = wheelAbsoluteMax*speed*10;???
                 
-                // New input filtering
-                this.velFilter.insert(currentVelocity);
-                velocity = this.velFilter.runFilter();
+                // New input filtering:
+                // Using a weighted average convolution filter ie., an FIR filter,
+                // applly a lowpass to the velocity which is otherwise quite noisy.
+                this.vFilter.insert(currentVelocity_normalized); // push/pop to the circular buffer
+                this.velocity = this.vFilter.runFilter(); // sum of products with filter coeffs
 
-                this.oldValue = [value, timestamp, velocity];
+                // Overwrite the previous position/time data with the current values
+                this.prev_data = [in_position, in_timestamp];
+
+                // At this point, all of our velocity computation is complete.
+                // Now, we decide what to do with this information.
                 
-                // If we're not scratching, jogging, or motoring then leave (???)
+                // If the velocity is zero
+                // and we are neither scratching, jogging, nor motoring,
+                // stop here. The velocity is irrelevant to the system state.
                 if (this.velocity === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
@@ -2737,15 +2826,19 @@ class S4Mk3Deck extends Deck {
                     return;
                 }
 
+                // Otherwise, interpret/report the velocity differently
+                // depending on the wheel mode
                 switch (this.deck.wheelMode) {
                 case wheelModes.motor:
-                    engine.setValue(this.group, "scratch2", this.speed);
+                    // for motorized platters, we are "always scratching",
+                    // so we simply send the normalized velocity up the line
+                    engine.setValue(this.group, "scratch2", this.velocity);
                     break;
                 case wheelModes.loopIn:
                     {
                         const loopStartPosition = engine.getValue(this.group, "loop_start_position");
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
-                        const value = Math.min(loopStartPosition + (this.speed * LoopWheelMoveFactor), loopEndPosition - LoopWheelMoveFactor);
+                        const value = Math.min(loopStartPosition + (this.velocity * LoopWheelMoveFactor), loopEndPosition - LoopWheelMoveFactor);
                         engine.setValue(
                             this.group,
                             "loop_start_position",
@@ -2756,7 +2849,7 @@ class S4Mk3Deck extends Deck {
                 case wheelModes.loopOut:
                     {
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
-                        const value = loopEndPosition + (this.speed * LoopWheelMoveFactor);
+                        const value = loopEndPosition + (this.velocity * LoopWheelMoveFactor);
                         engine.setValue(
                             this.group,
                             "loop_end_position",
@@ -2766,13 +2859,13 @@ class S4Mk3Deck extends Deck {
                     break;
                 case wheelModes.vinyl:
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
-                        engine.setValue(this.group, "scratch2", this.speed);
+                        engine.setValue(this.group, "scratch2", this.velocity);
                     } else {
-                        engine.setValue(this.group, "jog", this.speed);
+                        engine.setValue(this.group, "jog", this.velocity);
                     }
                     break;
                 default:
-                    engine.setValue(this.group, "jog", this.speed);
+                    engine.setValue(this.group, "jog", this.velocity);
                 }
             },
         });
@@ -2960,15 +3053,19 @@ class S4Mk3MotorManager {
         else {
             this_is_an_error = true; // TODO: proper handling
         }
+        this.motorBuffMgr = this.deck.motorBuffMgr;
 
         this.userHold = 0; // REMOVE
         this.oldValue = [0, 0];
         // this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute); //FIXME: hardcoded
         // this.zeroSpeedForce = 1650; //FIXME: move hardcoded value to header
         this.currentMaxWheelForce = MaxWheelForce;
+        this.prev_playbackError = 0;
         this.P_term = 0;
         this.I_accumulator = 0;
+        this.D_term = 0;
         this.outputTorque_prev = 0;
+        this.isSlipping = false;
     }
     tick() {
         //REMOVE: Can be optimized --- point to a single premade instance variable
@@ -2977,11 +3074,13 @@ class S4Mk3MotorManager {
         // ]);
 
         // Declaring local constant
-        // const maxVelocity = 10; //FIXME: hardcoded
+        const maxVelocity = 10; //FIXME: hardcoded
 
         // currentSpeed is normalized to a reference value of baseRPS (100/3/60 for 33.3rpm)
         // Declaring local variables
         // let playbackRate = 0;
+        // let current_velocity = 0;
+        let targetRate = 0;
         let playbackError = 0;
         let torqueDiff = 0;
         let outputTorque = 0;
@@ -2990,8 +3089,9 @@ class S4Mk3MotorManager {
         // normalize the velocity relative to the target sensor ticks per second
         // which for 33.3rpm will be 1600
         // ie., when this.deck.wheelPosition.velocity = 1600, normalizedVelocity = 1.0
-        const normalizedVelocity = this.deck.wheelPosition.velocity / baseEncoderTicksPerSecond;
-
+        // const normalizedVelocity = this.deck.wheelPosition.velocity / baseEncoderTicksPerSecond;
+        // const normalizedVelocity = this.deck.wheelPosition.velocity;
+        const normalizedVelocity = this.deck.velFilter.getCurrentVel()
 
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
@@ -3011,25 +3111,51 @@ class S4Mk3MotorManager {
             // FIXME: nomenclature.
             // velocity = targetRate + Math.pow(-5 * (targetRate / 1) * (currentSpeed - targetRate), 3);
 
-            // New motor controller: a PI followed by a very simple smoothing filter
             // First, determine the error between target vs measured
             playbackError = targetRate - normalizedVelocity;
-            // Now calculate the PI controller terms and sum them
-            this.P_term = playbackError * MOTORPID_PROPORTIONAL_GAIN;
-            this.I_accumulator += playbackError * MOTORPID_INTEGRATIVE_GAIN;
-            outputTorque = this.P_term + this.I_accumulator;
-            // Apply a smoothing filter
-            torqueDiff = outputTorque - this.outputTorque_prev;
-            outputTorque = outputTorque + (torqueDiff * MOTOROUT_SMOOTHING_FACTOR);
+
+            // If we are touching the disc AND the playbackError goes beyond
+            // the slipping threshold, apply the slip force only
+            if (this.deck.wheelTouch.touched && Math.abs(playbackError) > SLIP_ERROR_THRESH){
+                this.isSlipping = true;
+            } else if (this.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
+                this.isSlipping = false;
+            }
+
+            if (this.isSlipping) {
+                if (playbackError > 0) {
+                    outputTorque = SLIP_FRICTION_FORCE;
+                }
+                else {
+                    outputTorque = -SLIP_FRICTION_FORCE;
+                }
+                // keep the accumulator suppressed so it doesn't go crazy
+                this.I_accumulator = 0;
+            }
+            // Otherwise, we aren't slipping. Apply new motor controller
+            else {
+                // New motor controller: a PI followed by a very simple smoothing filter
+                this.P_term = playbackError * MOTORPID_PROPORTIONAL_GAIN;
+                this.I_accumulator += playbackError * MOTORPID_INTEGRATIVE_GAIN;
+                this.D_term = (playbackError - this.prev_playbackError) * MOTORPID_DERIVATIVE_GAIN;
+                outputTorque = this.P_term + this.I_accumulator - this.D_term;
+                // outputTorque = playbackError * MOTORPID_PROPORTIONAL_GAIN;
+
+                // Apply a smoothing filter
+                torqueDiff = outputTorque - this.outputTorque_prev;
+                outputTorque = this.outputTorque_prev + (torqueDiff * MOTOROUT_SMOOTHING_FACTOR);
+            }
             // New torque becomes old torque
             this.outputTorque_prev = outputTorque;
+            // Apply additional forward force to compensate for friction
+            outputTorque += MOTOR_FRICTION_COMPENSATION;
 
         // In any other wheel mode, the motor only provides resistance to scrubbing/scratching
         } else if (this.deck.wheelMode !== wheelModes.motor) {
             if (TightnessFactor > 0.5) {
                 // Super loose
                 const reduceFactor = (Math.min(0.5, TightnessFactor - 0.5) / 0.5) * 0.7;
-                outputTorque = currentSpeed * reduceFactor;
+                outputTorque = normalizedVelocity * reduceFactor;
             } else if (TightnessFactor < 0.5) {
                 // Super tight
                 const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
@@ -3037,7 +3163,7 @@ class S4Mk3MotorManager {
                     maxVelocity,
                     Math.max(
                         -maxVelocity,
-                        (expectedSpeed - currentSpeed) * reduceFactor
+                        (expectedSpeed - normalizedVelocity) * reduceFactor
                     )
                 );
             }
@@ -3172,14 +3298,14 @@ class S4Mk3MotorManager {
         // motorData[3] = velocity & 0xff;
         // motorData[4] = velocity >> 8;
 
-        // Write this to the motor output buffer
+        // Write the calculated value to the motor output buffer
         this.motorBuffMgr.setMotorOutput(this.deckMotorID,outputTorque);
 
         return true;
     }
-    isBlockedByUser() { // REMOVE with physical model implementation
-        return this.userHold >= 10;
-    }
+    // isBlockedByUser() { // REMOVE with physical model implementation
+    //     return this.userHold >= 10;
+    // }
 }
 
 class S4Mk3MixerColumn extends ComponentContainer {
@@ -3340,10 +3466,10 @@ class S4MK3 {
         }
 
         this.inReports = [];
-        this.inReports[HID_INREPT_BUTTONS] = new HIDInputReport(HID_INREPT_POTS);
+        this.inReports[HID_INREPT_BUTTONS] = new HIDInputReport(HID_INREPT_BUTTONS);
         // The master volume, booth volume, headphone mix, and headphone volume knobs
         // control the controller's audio interface in hardware, so they are not mapped.
-        this.inReports[HID_INREPT_POTS] = new HIDInputReport(HID_INREPT_MIXER2);
+        this.inReports[HID_INREPT_POTS] = new HIDInputReport(HID_INREPT_POTS);
         this.inReports[HID_INREPT_WHEELS] = new HIDInputReport(HID_INREPT_WHEELS);
 
         // There are various of other HID report which doesn't seem to have any
@@ -3351,7 +3477,7 @@ class S4MK3 {
         // in them such as the wheel tension.
 
         this.outReports = [];
-        this.outReports[128] = new Report(128, 94); // needs more descriptive names, not hardcoded numbers -ZT
+        this.outReports[128] = new HIDOutputReport(128, 94); // FIXME: hardcoded
 
         // Single motor output buffer for both wheels
         this.motorBuffMgr = new MotorOutputBuffMgr();
@@ -3558,30 +3684,37 @@ class S4MK3 {
     motorCallback() {
         this.leftMotor.tick();
         this.rightMotor.tick();
-        motorData = this.motorBuffMgr.getArray();
-        controller.sendOutputReport(49, motorData.buffer, true);
+        controller.sendOutputReport(49, this.motorBuffMgr.getBuff(), true);
     }
     incomingData(data) {
+        // The first byte of the HID report is the reportID
         const reportId = data[0];
         if (reportId in this.inReports && reportId !== HID_INREPT_WHEELS) {
             // Slicing out the first data point is actively harmful to code legibility later on.
             // FIXME: PASS FULL DATA BUFFER TO INPUT HANDLER
             this.inReports[reportId].handleInput(data.buffer.slice(1));
         } else if (reportId === HID_INREPT_WHEELS) {
+            // FIXME: input report # 3 comes the most frequently, so it should
+            //        be at the start of the conditional block for optimization:
+            //        saves a multi-condition check every time an input comes in.
             // The 32 bit unsigned ints at bytes 8 and 36 always have exactly the same value,
             // so only process one of them. This must be processed before the wheel positions.
             const oldWheelTimer = wheelTimer;
             const view = new DataView(data.buffer);
             wheelTimer = view.getUint32(8, true);
+
+            // WheelTimerDelta code appears unused. Commenting out.
             // Processing first value; no previous value to compare with.
-            if (oldWheelTimer === null) {
-                return;
-            }
-            wheelTimerDelta = wheelTimer - oldWheelTimer;
-            if (wheelTimerDelta < 0) {
-                wheelTimerDelta += wheelTimerMax;
-            }
-            // the byte offsets below don't match with the ones in the deck definitions. this should all be harmonized somehow. ZT
+            // if (oldWheelTimer === null) {
+            //     return;
+            // }
+            // wheelTimerDelta = wheelTimer - oldWheelTimer;
+            // if (wheelTimerDelta < 0) {
+            //     wheelTimerDelta += wheelTimerMax;
+            // }
+
+            // FIXME: the byte offsets below don't match with the ones in the deck definitions
+            //        the offsets here are the correct ones with reference to the entire HID report
             this.leftDeck.wheelPosition.input(view.getUint32(12, true), view.getUint32(8, true));
             this.rightDeck.wheelPosition.input(view.getUint32(40, true), view.getUint32(36, true));
         } else {

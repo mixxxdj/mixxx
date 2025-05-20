@@ -511,7 +511,7 @@ int ControllerScriptInterfaceLegacy::beginTimer(
 
     if (intervalMillis < 2) {
         qCWarning(m_logger) << "Timer request for" << intervalMillis
-                            << "ms is too short. Setting to the minimum of 20ms.";
+                            << "ms is too short. Setting to the (hacked) minimum of 2ms.";
         intervalMillis = 2;
     }
 
