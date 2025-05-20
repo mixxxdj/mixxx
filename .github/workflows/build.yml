@@ -352,10 +352,11 @@ jobs:
         run: |
           set -x
           $FFMPEG_BIN -f gdigrab -framerate 30 -i desktop output.mp4 -y &
+          ffmpeg_pid=$!
           function finish() {
               set -x
-              kill $(jobs -p "%ffmpeg.exe")
-              wait -f $(jobs -p "%ffmpeg.exe") || true
+              kill $ffmpeg_pid
+              wait -f $ffmpeg_pid || true
           }
 
           trap finish EXIT
