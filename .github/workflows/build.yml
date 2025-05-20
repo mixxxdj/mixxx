@@ -352,7 +352,7 @@ jobs:
         run: |
           set -x
           $FFMPEG_BIN -codecs
-          $FFMPEG_BIN -f gdigrab -framerate 30 -i desktop -codec:v yuv4 output.mp4 -y &
+          $FFMPEG_BIN -f gdigrab -framerate 30 -i desktop -codec:v yuv4 output.mkv -y &
           ffmpeg_pid=$!
           function finish() {
               set -x
@@ -375,7 +375,7 @@ jobs:
         run: |
           Xvfb :44 -ac -nocursor -screen 0 1920x1080x24 -auth /dev/null &
           sleep 3
-          ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v yuv4 -r 30 output.mp4 -y &
+          ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v yuv4 -r 30 output.mkv -y &
           function finish() {
               set -x
               kill $(jobs -p "%ffmpeg")
@@ -394,7 +394,7 @@ jobs:
           name: ui-tests-${{ runner.os }}
           path: |
             build/screenshots
-            build/output.mp4
+            build/output.mkv
           retention-days: 7
 
       - name: "[Ubuntu] Generate Coverage Report"
