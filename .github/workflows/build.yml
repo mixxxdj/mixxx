@@ -348,22 +348,15 @@ jobs:
         id: uitest_windows
         if: runner.os == 'Windows' && matrix.qml == 'ON'
         timeout-minutes: 2
-        shell: bash
         run: |
-          set -x
-          $FFMPEG_BIN -codecs
-          $FFMPEG_BIN -f gdigrab -framerate 30 -i desktop -codec:v yuv4 output.mkv -y &
-          ffmpeg_pid=$!
-          function finish() {
-              set -x
-              sleep 5
-              kill -SIGINT $ffmpeg_pid
-              wait -f $ffmpeg_pid || true
-              sleep 5
+          $ffmpeg = Start-Process -PassThru -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -i desktop -codec:v yuv4 output.mkv -y'
+          try {
+            ./mixxx-test --ui --log-level debug --developer
           }
-
-          trap finish EXIT
-          ./mixxx-test --ui --log-level debug --developer
+          finally {
+            Stop-Process -Id $ffmpeg.Id
+            $ffmpeg.WaitForExit(10000)  # Wait for up to 10 seconds
+          }
         working-directory: build
         env:
           FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows-release\tools\ffmpeg\ffmpeg.exe
