@@ -1885,6 +1885,25 @@ int matchStringSuffix(const QString& str1, const QString& str2) {
     }
     return matchLength;
 }
+
+// Computed the longest match from the right of both strings
+int matchStringPrefix(const QString& str1, const QString& str2) {
+    int matchLength = 0;
+    int minLength = math_min(str1.length(), str2.length());
+    kLogger.warning() << "  matchStringPrefix, minLength:" << minLength;
+    kLogger.warning() << "    str1:" << str1;
+    kLogger.warning() << "    str2:" << str2;
+    while (matchLength < minLength) {
+        kLogger.warning() << "    run" << matchLength << str1[matchLength] << str2[matchLength];
+        if (str1[matchLength] != str2[matchLength]) {
+            // first mismatch
+            break;
+        }
+        ++matchLength;
+    }
+    kLogger.warning() << "  return" << matchLength;
+    return matchLength;
+}
 } // namespace
 
 // Look for moved files. Look for files that have been marked as
@@ -1927,6 +1946,7 @@ bool TrackDAO::detectMovedTracks(
     newTrackQuery.prepare(QStringLiteral(
             "SELECT library.id as %1, track_locations.id as %2, "
             "track_locations.location, track_locations.directory, title, filename "
+            // + bitrate + samplerate + filetype + track number
             "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
             "WHERE track_locations.location IN (%3) AND "
             "(filename=:filename OR title=:title) AND "
@@ -1989,7 +2009,7 @@ bool TrackDAO::detectMovedTracks(
         const auto newTrackLocationColumn = newTrackQuery.record().indexOf(LIBRARYTABLE_LOCATION);
         const auto newTrackFilenameColumn = newTrackQuery.record().indexOf(TRACKLOCATIONSTABLE_FILENAME);
         const auto newTrackDirectoryColumn = newTrackQuery.record().indexOf(TRACKLOCATIONSTABLE_DIRECTORY);
-        int newTrackLocationMatch = 0;
+        int lastTrackLocationMatch = 0;
         int nextTrackLocationMatch = 0;
         TrackId newTrackId;
         DbId newTrackLocationId;
@@ -2027,17 +2047,23 @@ bool TrackDAO::detectMovedTracks(
                         newTrackQuery.value(newTrackDirectoryColumn).toString();
                 kLogger.info() << "Title match, check directory match:" << oldDirectory;
                 kLogger.info() << "                               new:" << nextTrackDirectory;
+                // Compare old/new directory from the left
+                // TODO On Windows this will return 0 for tracks that have been
+                // renamed AND moved to another drive (path starts with drive letter).
+                // Invoncenient for single tracks -- for entire directories users
+                // should use Relink anyway.
+                // ifdef __WINDOWS__ // chop characters 0-2 ? (C:\)
                 const auto nextDirectoryMatch =
-                        matchStringSuffix(nextTrackDirectory, oldDirectory);
+                        matchStringPrefix(nextTrackDirectory, oldDirectory);
                 nextTrackLocationMatch = nextDirectoryMatch;
                 kLogger.info() << "--- found better directory match:"
                                << nextDirectoryMatch << nextTrackDirectory;
             }
 
-            if (newTrackLocationMatch < nextTrackLocationMatch) {
+            if (nextTrackLocationMatch > lastTrackLocationMatch) {
                 // We found a better match than the previous one (initially 0).
                 // Point to the new matching track.
-                newTrackLocationMatch = nextTrackLocationMatch;
+                lastTrackLocationMatch = nextTrackLocationMatch;
                 newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
                 newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
                 newTrackLocation = nextTrackLocation;
