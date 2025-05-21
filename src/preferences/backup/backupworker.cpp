@@ -9,7 +9,7 @@
 #include <QTemporaryDir>
 // Needs to be uncommented when bit7z and 7z are in the dependencies
 // and th parts in the CMakeLists are uncommented too.
-// #include <bit7z/bit7z.hpp>
+#include <bit7z/bit7z.hpp>
 
 #include "moc_backupworker.cpp"
 
@@ -26,39 +26,106 @@ BackUpWorker::BackUpWorker(
     useBit7z = false;
 }
 
+bool BackUpWorker::copySettingsToTempDir(const QString& settingsDir, const QString& tempDirPath) {
+#if defined(Q_OS_WIN)
+    QProcess robocopy;
+    qDebug() << "[BackUp] -> [BAckUpWorker] -> start creation tempdir robocopy/rsync";
+    robocopy.start("robocopy",
+            {QDir::toNativeSeparators(settingsDir),
+                    QDir::toNativeSeparators(tempDirPath),
+                    "/E", // show dirs
+                    "/XD",
+                    "analysis", // exclude analysis
+                    "/XD",
+                    "lut",     // exclude timecode lut
+                    "/R:3",    // retry 3 times if file is locked
+                    "/W:2",    // wait 2 seconds between retries
+                    "/NP",     // progress display off
+                    "/LOG+:" + // write log file -> can be quoted later
+                            QDir::toNativeSeparators(
+                                    tempDirPath + "_robocopy.log")});
+
+    if (!robocopy.waitForFinished(30000) || robocopy.exitCode() >= 8) {
+        qCritical()
+                << "[BackUp] -> [BAckUpWorker] -> File copy failed! Check log:"
+                << tempDirPath + "_robocopy.log";
+        return false;
+    }
+    return true;
+
+#elif defined(Q_OS_LINUX)
+    QProcess rsync;
+    rsync.start("rsync", {// archive mode
+                                 "-a",
+                                 "--exclude=analysis/", // exclude analysis
+                                 "--exclude=lut/",      // exclude timecode lut
+                                 "--retries=3",         // retry 3 times if file is locked
+                                 settingsDir + "/",
+                                 tempDirPath + "/"});
+
+    if (!rsync.waitForFinished() || rsync.exitCode() != 0) {
+        qCritical() << "[BackUp] -> [BAckUpWorker] -> rsync failed!";
+        return false;
+    }
+    return true;
+#else
+    // For macOS or other platforms, use Qt's file copy
+    QDirIterator it(settingsDir,
+            QDir::Files | QDir::NoDotAndDotDot,
+            QDirIterator::Subdirectories);
+
+    while (it.hasNext()) {
+        QString srcPath = it.next();
+        QString relativePath = QDir(settingsDir).relativeFilePath(srcPath);
+
+        // Skip analysis folders at any level
+        if (relativePath.contains("analysis/") ||
+                relativePath.startsWith("analysis/") ||
+                relativePath.endsWith("/analysis")) {
+            continue;
+        }
+        // Skip lut folders at any level
+        if (relativePath.contains("lut/") ||
+                relativePath.startsWith("lut/") ||
+                relativePath.endsWith("/lut")) {
+            continue;
+        }
+
+        QString destPath = tempDirPath + "/" + relativePath;
+        QFileInfo(destPath).dir().mkpath(".");
+        if (!QFile::copy(srcPath, destPath)) {
+            qCritical() << "Failed to copy file:" << srcPath << "to" << destPath;
+            return false;
+        }
+    }
+    return true;
+#endif
+}
+
 void BackUpWorker::performBackUp() {
-    QString backupDir;
-    QString archivePath;
-    QString archivePath7zExt;
-    QString archivePathZipExt;
+    QString backupDir, archivePath, archivePath7zExt, archivePathZipExt, zipExecutable;
     const QString settingsDir = m_pConfig->getSettingsPath();
-    QString zipExecutable;
+    const QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
 
     if (m_upgradeBU) {
         backupDir = QStandardPaths::writableLocation(
                             QStandardPaths::DocumentsLocation) +
                 "/Mixxx-BackUps/UpgradeBUs";
         archivePath = backupDir + "/MixxxSettings-Upgrrade-" +
-                currentMixxxVersion + "-" +
-                QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
-        archivePath7zExt = archivePath + ".7z";
-        archivePathZipExt = archivePath + ".zip";
+                currentMixxxVersion + "-" + timestamp;
     } else {
         backupDir = QStandardPaths::writableLocation(
                             QStandardPaths::DocumentsLocation) +
                 "/Mixxx-BackUps";
-        archivePath = backupDir + "/MixxxSettings-" +
-                QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
-        archivePath7zExt = archivePath + ".7z";
-        archivePathZipExt = archivePath + ".zip";
+        archivePath = backupDir + "/MixxxSettings-" + timestamp;
     }
 
+    archivePath7zExt = archivePath + ".7z";
+    archivePathZipExt = archivePath + ".zip";
     QDir().mkpath(backupDir);
-    // const QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss");
 
 #if defined(Q_OS_MACOS)
     zipExecutable = "/usr/bin/zip";
-
 #endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
@@ -68,12 +135,10 @@ void BackUpWorker::performBackUp() {
     // If not found in PATH -> check additional locations
     if (zipExecutable.isEmpty()) {
 #if defined(Q_OS_WIN)
-        QStringList winPaths;
-        QString scoopPath = QDir::homePath() + "/scoop/apps/7zip/current/7z.exe";
-        winPaths << scoopPath;
-        winPaths << "C:\\Program Files\\7-Zip\\7z.exe";
-        winPaths << "C:\\Program Files (x86)\\7-Zip\\7z.exe";
-
+        const QStringList winPaths = {
+                QDir::homePath() + "/scoop/apps/7zip/current/7z.exe",
+                "C:\\Program Files\\7-Zip\\7z.exe",
+                "C:\\Program Files (x86)\\7-Zip\\7z.exe"};
         for (const QString& path : winPaths) {
             if (QFile::exists(path)) {
                 zipExecutable = path;
@@ -94,155 +159,116 @@ void BackUpWorker::performBackUp() {
 #endif
 
     if (!zipExecutable.isEmpty()) {
-        qDebug() << "[BackUp] -> 7z/Zip found in: " << zipExecutable;
+        qDebug() << "[BackUp] -> [BAckUpWorker] -> 7z/Zip found in: " << zipExecutable;
         QString tempBackupDir = archivePath + "_temp";
         QDir().mkpath(tempBackupDir);
-#if defined(Q_OS_WIN)
-        QProcess robocopy;
-        robocopy.start("robocopy",
-                {QDir::toNativeSeparators(settingsDir),
-                        QDir::toNativeSeparators(tempBackupDir),
-                        "/E", // show dirs
-                        "/XD",
-                        "analysis", // exclude analysis
-                        "/R:3",     // retry 3 times if file is locked
-                        "/W:2",     // wait 2 seconds between retries
-                        "/NP",      // progress display off
-                        "/LOG+:" +  // write log file -> can be quoted later
-                                QDir::toNativeSeparators(
-                                        archivePath + "_robocopy.log")});
 
-        if (!robocopy.waitForFinished(30000) || robocopy.exitCode() >= 8) {
-            qCritical() << "File copy failed! Check log:" << archivePath + "_robocopy.log";
+        if (!copySettingsToTempDir(settingsDir, tempBackupDir)) {
             QDir(tempBackupDir).removeRecursively();
+            qDebug() << "[BackUp] -> [BAckUpWorker] -> error creating tempdir";
             return;
         }
-
-#elif defined(Q_OS_LINUX)
-        QProcess rsync;
-        rsync.start("rsync", {// archive mode
-                                     "-a",
-                                     "--exclude=analysis/", // exclude analysis
-                                     "--retries=3",         // retry 3 times if file is locked
-                                     settingsDir + "/",
-                                     tempBackupDir + "/"});
-
-        if (!rsync.waitForFinished() || rsync.exitCode() != 0) {
-            qCritical() << "rsync failed!";
-            return;
-        }
-#endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
         QProcess process;
         process.setProcessChannelMode(QProcess::MergedChannels);
         process.start(zipExecutable,
                 {"a",
-                        "-t7z",           // archive path with ext
-                        archivePath7zExt, // temp copy as source
-                        tempBackupDir +
-                                "/*",   // exclude analysis, repeet for safety
-                        "-xr!analysis", // compression level, set to 4 for
-                                        // speed/quality, 9 takes too long
+                        "-t7z",
+                        archivePath7zExt,
+                        tempBackupDir + "/*",
+                        "-xr!analysis",
+                        "-xr!lut",
                         "-mx=6"});
+
         if (!process.waitForFinished(300000)) {
-            qCritical() << "7z compression timed out!";
+            qCritical() << "[BackUp] -> [BAckUpWorker] -> 7z compression timed out!";
             process.kill();
-            // Needs to be uncommented when bit7z and 7z are in the dependencies
-            // and the parts in the CMakeLists are uncommented too.
-            // useBit7z = true;
+            useBit7z = true;
         } else if (process.exitCode() != 0) {
-            qCritical() << "7z failed:" << process.readAllStandardOutput();
-            // Needs to be uncommented when bit7z and 7z are in the dependencies
-            // and the parts in the CMakeLists are uncommented too.
-            // useBit7z = true;
+            qCritical() << "[BackUp] -> [BAckUpWorker] -> 7z failed:"
+                        << process.readAllStandardOutput();
+            useBit7z = true;
         } else {
-            qDebug() << "Backup succeeded! Archive:" << archivePath + ".7z";
-            useBit7z = false;
-            // if BackUp Succeeds we don't need to try bit7z -> emit
+            qDebug() << "[BackUp] -> [BAckUpWorker] -> Backup succeeded! "
+                        "Archive:"
+                     << archivePath7zExt;
             emit backUpFinished(true, archivePath);
+            useBit7z = false;
         }
 
         QDir(tempBackupDir).removeRecursively();
+        return;
 
 #elif defined(Q_OS_MACOS)
-        QStringList arguments;
-        arguments << "-r" << archivePathZipExt << settingsDir << "-x"
-                  << settingsDir + "/analysis/*";
-        qDebug() << "[BackUp] -> Executing:" << zipExecutable << arguments.join(" ");
+        QStringList arguments = {"-r",
+                archivePathZipExt,
+                settingsDir,
+                "-x",
+                settingsDir + "/analysis/*",
+                "-x",
+                settingsDir + "/lut/*"};
+        qDebug() << "[BackUp] -> [BAckUpWorker] -> Executing:" << zipExecutable
+                 << arguments.join(" ");
         bool started = QProcess::startDetached(zipExecutable, arguments);
         if (started) {
-            qDebug() << "[BackUp] -> MacOS Settings backup started to:" << archivePathZipExt;
-            useBit7z = false;
+            qDebug() << "[BackUp] -> [BAckUpWorker] -> MacOS zip backup "
+                        "started to:"
+                     << archivePathZipExt;
+            emit backUpFinished(true, archivePath);
         } else {
-            qWarning() << "[BackUp] -> MacOS Failed to launch zip backup process.";
-            useBit7z = false;
+            qWarning() << "[BackUp] -> [BAckUpWorker] -> MacOS zip backup failed.";
+            useBit7z = true;
         }
-        // needs some results from the zip exec for deteleting the old BackUps
+        return;
 #endif
 
     } else {
-        qWarning() << "[BackUp] -> 7z/Zip not found in PATH or fallback locations. "
+        qWarning() << "[BackUp] -> [BAckUpWorker] -> 7z/Zip not found in PATH "
+                      "or fallback locations. "
                       "-> using  7zip bit7z from internal library.";
-        useBit7z = false;
+        useBit7z = true;
     }
 
     if (useBit7z) {
         // All next lines need to be uncommented when bit7z and 7z are in the dependencies
         // and the parts in the CMakeLists are uncommented too.
+        qDebug() << "[BackUp] -> [BAckUpWorker] -> Bit7z started";
+        try {
+            emit progressChanged(10);
+            const QString originalDirName = QFileInfo(settingsDir).fileName();
 
-        //        try {
-        //            emit progressChanged(10);
-        //            const QString originalDirName = QFileInfo(settingsDir).fileName();
+            bit7z::Bit7zLibrary lib("7zip.dll");
+            bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
 
-        //            bit7z::Bit7zLibrary lib("7zip.dll");
-        //            bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
+            QTemporaryDir tempDir;
+            if (tempDir.isValid()) {
+                QString tempBackupDir = archivePath + "_temp";
+                QDir().mkpath(tempBackupDir);
 
-        //            QTemporaryDir tempDir;
-        //            if (tempDir.isValid()) {
-        //                // Create target directory structure
-        //                const QString tempRoot = tempDir.path() + "/" +
-        //                originalDirName + "-" + timestamp;
-        //                QDir().mkpath(tempRoot);
+                if (!copySettingsToTempDir(settingsDir, tempBackupDir)) {
+                    emit errorOccurred("Could not create temporary directory for backup.");
+                    emit backUpFinished(false, "Backup failed");
+                    return;
+                }
 
-        // Copy files excluding analysis
-        // thinking of robocopy to
+                archivePath7zExt = archivePath + ".7z";
+                compressor.compressDirectory(
+                        tempBackupDir.toStdString(),
+                        archivePath7zExt.toStdString());
+                QDir(tempBackupDir).removeRecursively();
+            }
 
-        //                QDirIterator it(settingsDir,
-        //                        QDir::Files | QDir::NoDotAndDotDot,
-        //                        QDirIterator::Subdirectories);
+            emit progressChanged(80);
+            emit backUpFinished(true, archivePath);
+            emit progressChanged(100);
 
-        //                while (it.hasNext()) {
-        //                    QString srcPath = it.next();
-        //                    QString relativePath = QDir(settingsDir).relativeFilePath(srcPath);
+        } catch (const bit7z::BitException& ex) {
+            emit errorOccurred(QString::fromStdString(ex.what()));
+            emit backUpFinished(false, "Backup failed");
+        }
 
-        // Skip analysis folders at any level
-        //                    if (relativePath.contains("analysis/") ||
-        //                            relativePath.startsWith("analysis/") ||
-        //                            relativePath.endsWith("/analysis")) {
-        //                        continue;
-        //                    }
-
-        //                    QString destPath = tempRoot + "/" + relativePath;
-        //                    QFileInfo(destPath).dir().mkpath(".");
-        //                    QFile::copy(srcPath, destPath);
-        //                }
-
-        // Needs to be uncommented when bit7z and 7z are in the dependencies
-        // and the parts in the CMakeLists are uncommented too.
-        //                compressor.compressDirectory(
-        //                        tempRoot.toStdString(),
-        //                        archivePath.toStdString());
-        //            }
-
-        //            emit progressChanged(80);
-        //            emit backUpFinished(true, archivePath);
-        //            emit progressChanged(100);
-
-        //          } catch (const bit7z::BitException& ex) {
-        //             emit errorOccurred(QString::fromStdString(ex.what()));
-        //             emit backUpFinished(false, "Backup failed");
-        //        }
+        qDebug() << "[BAckUpWorker] --> Bit7z ended";
     }
 }
 

@@ -19,6 +19,7 @@ class BackUpWorker : public QObject {
   public slots:
     void performBackUp();
     void deleteOldBackUps();
+    bool copySettingsToTempDir(const QString& settingsDir, const QString& tempDirPath);
 
   signals:
     void progressChanged(int percentage);
