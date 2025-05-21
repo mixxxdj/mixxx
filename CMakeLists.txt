@@ -2798,6 +2798,7 @@ find_package(7zip)
 if(NOT 7zip_FOUND)
   fatal_error_missing_env()
 endif()
+target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
 target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
 
 #find_package(7zip REQUIRED)
