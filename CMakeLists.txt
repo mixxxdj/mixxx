@@ -486,6 +486,7 @@ set_property(
 )
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
 # We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) to save
@@ -504,7 +505,7 @@ message(STATUS "Optimization level: ${OPTIMIZE}")
 if(MSVC)
   # Microsoft Visual Studio Compiler
   add_compile_options(/UTF8)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
     message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -557,7 +558,7 @@ if(MSVC)
     # unless link time code generation (like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
+      # Optimize Debug Builds as well, to have "normal" behavior of Mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
       string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -627,7 +628,7 @@ if(MSVC)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -637,7 +638,7 @@ if(MSVC)
       endif()
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling optimizations for native system, specified by user")
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -652,9 +653,9 @@ if(MSVC)
       )
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
         message("Enabling pure x64 instruction set (without AVX etc.)")
-      else()
+      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
       endif()
     else()
@@ -666,7 +667,7 @@ if(MSVC)
   else()
     # OPTIMIZE=off
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-      #Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -686,7 +687,7 @@ if(MSVC)
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-      #Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -4984,6 +4985,23 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake")
 if(WIN32)
   # override not working default NSIS
   set(CPACK_GENERATOR WIX)
+
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64")
+    if(${CMAKE_VERSION} VERSION_LESS "3.24")
+      message(FATAL_ERROR "WIX: Need CMake version >= 3.24 for ARM64")
+    endif()
+    set(CPACK_WIX_ARCHITECTURE "ARM64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
+    set(CPACK_WIX_ARCHITECTURE "x64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+    set(CPACK_WIX_ARCHITECTURE "x86")
+  else()
+    message(
+      FATAL_ERROR
+      "WIX: Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}"
+    )
+  endif()
+
   # uses CMAKE_PROJECT_VERSION
   configure_file(packaging/wix/LICENSE.rtf.in packaging/wix/LICENSE.rtf @ONLY)
 endif()
