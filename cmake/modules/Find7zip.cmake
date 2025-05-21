@@ -1,54 +1,51 @@
-# Find7zip.cmake - Locate the 7-Zip SDK
-#
-# Defines:
-#   7zip_FOUND          - TRUE if 7zip was found
-#   7zip_INCLUDE_DIR    - Path to 7zip headers
-#   7zip_LIBRARY        - Path to 7zip static or shared library
-#
-# Usage:
-#   find_package(7zip REQUIRED)
-#   target_include_directories(your_target PRIVATE ${7zip_INCLUDE_DIR})
-#   target_link_libraries(your_target PRIVATE ${7zip_LIBRARY})
+#[=======================================================================[.rst:
+Find7zip
+--------
+
+Finds the 7-Zip library (7z.dll or lib7z.so and import library).
+
+Imported Targets
+^^^^^^^^^^^^^^^^
+``7zip::7zip``
+
+Result Variables
+^^^^^^^^^^^^^^^^
+``7zip_FOUND``, ``7zip_INCLUDE_DIRS``, ``7zip_LIBRARIES``
+
+#]=======================================================================]
+
+include(IsStaticLibrary)
 
 find_path(
   7zip_INCLUDE_DIR
-  # NAMES 7z.h
-  NAMES 7z.h 7zpp.h
-  PATHS
-    # B:/vcpkg-git/vcpkg/vcpkg_installed/x64-windows/include/7zip/C
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include"
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/7zip"
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/7zpp"
-  PATH_SUFFIXES 7zip 7zpp C
+  NAMES 7zVersion.h
+  PATH_SUFFIXES 7zip 7-Zip CPP
+  DOC "7-Zip include directory"
 )
 
-# Output the path being searched for headers
-message(STATUS "Searching for 7zip headers in: ${7zip_INCLUDE_DIR}")
-
-# Find 7zip library
-find_library(
-  7zip_LIBRARY
-  # NAMES 7zip
-  NAMES 7z 7zip 7zpp 7zxa 7zra 7zr 7za
-  PATHS
-    # B:/vcpkg-git/vcpkg/vcpkg_installed/x64-windows/lib
-    # B:/vcpkg-git/vcpkg/vcpkg_installed/x64-windows/debug/lib
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib"
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib"
-)
-
-# Output the path being searched for libraries
-message(STATUS "Searching for 7zip libraries in: ${7zip_LIBRARY}")
+find_library(7zip_LIBRARY NAMES 7z 7zip DOC "7-Zip library")
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   7zip
-  REQUIRED_VARS 7zip_INCLUDE_DIR 7zip_LIBRARY
+  REQUIRED_VARS 7zip_LIBRARY 7zip_INCLUDE_DIR
 )
 
 if(7zip_FOUND)
-  message(STATUS "Found 7zip includes: ${7zip_INCLUDE_DIR}")
-  message(STATUS "Found 7zip library: ${7zip_LIBRARY}")
-endif()
+  set(7zip_LIBRARIES "${7zip_LIBRARY}")
+  set(7zip_INCLUDE_DIRS "${7zip_INCLUDE_DIR}")
 
-mark_as_advanced(7zip_INCLUDE_DIR 7zip_LIBRARY)
+  if(NOT TARGET 7zip::7zip)
+    add_library(7zip::7zip UNKNOWN IMPORTED)
+    set_target_properties(
+      7zip::7zip
+      PROPERTIES
+        IMPORTED_LOCATION "${7zip_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${7zip_INCLUDE_DIR}"
+    )
+    is_static_library(7zip_IS_STATIC 7zip::7zip)
+    if(7zip_IS_STATIC AND WIN32)
+      # Optional: Define anything specific for static linking on Windows.
+    endif()
+  endif()
+endif()
