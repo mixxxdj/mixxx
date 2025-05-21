@@ -294,6 +294,8 @@ void BpmControl::slotForwardDownBeatsMarker(double v) {
         return;
     }
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack)
+        return;
     int downbeatOffset = pTrack->getDownbeatOffset();
     downbeatOffset == 7 ? downbeatOffset = 0 : ++downbeatOffset;
     pTrack->setDownbeatOffset(downbeatOffset);
@@ -304,6 +306,8 @@ void BpmControl::slotBackwardDownBeatsMarker(double v) {
         return;
     }
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack)
+        return;
     int downbeatOffset = pTrack->getDownbeatOffset();
     if (downbeatOffset == 0)
         downbeatOffset = 8;
