@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.2" type="development" date="2025-05-14" timestamp="1747202007">
+    <release version="2.5.2" type="development" date="2025-05-21" timestamp="1747806201">
       <description>
  <p>
   Library
@@ -106,18 +106,49 @@
    Fix playlist export when name contains a dot
    #14737
   </li>
+  <li>
+   Fix loading the wrong track via drag and drop when using symlinks
+   #13708
+   #13706
+  </li>
+  <li>
+   Fix: byte order in hotcue comments imported from rekordbox
+   #14808
+   #14789
+  </li>
  </ul>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
+   Denon MC7000: slicer mode TypeError
+   #14804
+  </li>
+  <li>
+   Denon MC7000: crossfader curve using wrong parameter
+   #14803
+  </li>
+  <li>
    Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
    #14722
   </li>
   <li>
-   Traktor S2 Mk3: Fixed LED issue
+   Numark Mixtrack Platinium FX: Fix 4 steps browsing issue
+   #14778
+  </li>
+  <li>
+   Traktor S2 MK3: Fixed LED issue
    #14717
+  </li>
+  <li>
+   Traktor S4 MK2: Use engine settings API for configuration
+   #14781
+  </li>
+  <li>
+   Traktor S4 MK3: prevent sync lockup, add setting for tempo center snap
+   #14735
+   #14721
   </li>
  </ul>
  <p>
@@ -128,6 +159,30 @@
    Control picker: Allow to learn MIDI Aux/Mic enable controls
    #14720
    #14718
+  </li>
+  <li>
+   Make
+   [Main],headSplit
+   CO persistent across restart
+   #14817
+  </li>
+  <li>
+   Fix MIDI Controller button learning
+   #14816
+   #14805
+  </li>
+  <li>
+   Fix learning with "No Mapping" selected
+   #14829
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   Vinyl Control: Reduce sticker drift
+   #14435
   </li>
  </ul>
  <p>
@@ -141,7 +196,23 @@
   <li>
    Fix building with gcc &gt;= 14 with LTO and clang &gt;= 19 (fpclassify)
    #14749
-   #14749
+   #14716
+  </li>
+  <li>
+   Fix: gcc
+   -Warray-bounds=
+   in fidlib by using a flexible member
+   #14798
+  </li>
+  <li>
+   Added Linux Mint Codenames to debian_buildenv.sh
+   #14709
+  </li>
+  <li>
+   Add hidden
+   [Config],notify_max_dbg_time
+   setting to reduce warnings in developer mode
+   #14015
   </li>
  </ul>
 </description>
