@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="99"/>
         <source>Clear Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Pulisci Coda Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="115"/>
@@ -41,17 +41,17 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="184"/>
         <source>Confirmation Clear</source>
-        <translation type="unfinished"/>
+        <translation>Conferma rimozione</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="185"/>
         <source>Do you really want to remove all tracks from the Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Vuoi rimuovere tutte le tracce dalla coda dell&apos;Auto DJ?</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="186"/>
         <source>This can not be undone.</source>
-        <translation type="unfinished"/>
+        <translation>Non può essere annullato.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="355"/>
@@ -213,7 +213,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="549"/>
         <source>Export Playlist</source>
         <translation>Esporta Playlist</translation>
     </message>
@@ -260,13 +260,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="368"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="372"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="383"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="523"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="521"/>
         <source>Playlist Creation Failed</source>
         <translation>Creazione della Playlist non Riuscita</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="384"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="524"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="522"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Errore sconosciuto durante la creazione della playlist: </translation>
     </message>
@@ -281,12 +281,12 @@
         <translation>Sei davvero sicuro di voler cancellare la playlist &lt;b&gt;%1&lt;/b&gt;?</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="555"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Playlist M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Testo CSV (*.csv);;File testuale (*.txt)</translation>
     </message>
@@ -3695,7 +3695,7 @@ traccia - Come sopra + Messaggi di profilazione</translation>
         <translation>Importa il Contenitore</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="783"/>
         <source>Export Crate</source>
         <translation>Esporta il Contenitore</translation>
     </message>
@@ -3705,7 +3705,7 @@ traccia - Come sopra + Messaggi di profilazione</translation>
         <translation>Sblocca</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="737"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="735"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Si è verificato un errore sconosciuto durante la creazione del contenitore: </translation>
     </message>
@@ -3731,17 +3731,17 @@ traccia - Come sopra + Messaggi di profilazione</translation>
         <translation>Impossibile Rinominare il Contenitore</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="736"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="734"/>
         <source>Crate Creation Failed</source>
         <translation>Impossibile Creare il Contenitore</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Testo CSV (*.csv);;File testuale (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="789"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Playlist M3U (*.m3u)</translation>
     </message>
@@ -3867,12 +3867,12 @@ traccia - Come sopra + Messaggi di profilazione</translation>
         <translation>Collaboratori passati</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="437"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="438"/>
         <source>Official Website</source>
         <translation>Sito Ufficiale</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="447"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="448"/>
         <source>Donate</source>
         <translation>Dona</translation>
     </message>
@@ -6050,12 +6050,12 @@ Puoi sempre trascinare tracce sullo schermo per clonare un deck.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="317"/>
         <source>❯</source>
-        <translation type="unfinished"/>
+        <translation>❯</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="337"/>
         <source>❮</source>
-        <translation type="unfinished"/>
+        <translation>❮</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="560"/>
@@ -16245,7 +16245,7 @@ Questa azione non può essere annullata!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2380"/>
         <source>Okay</source>
-        <translation type="unfinished"/>
+        <translation>Okay</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2395"/>

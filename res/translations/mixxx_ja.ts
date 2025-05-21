@@ -211,7 +211,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="549"/>
         <source>Export Playlist</source>
         <translation>プレイリストをエクスポート</translation>
     </message>
@@ -258,13 +258,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="368"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="372"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="383"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="523"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="521"/>
         <source>Playlist Creation Failed</source>
         <translation>プレイリストの作成に失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="384"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="524"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="522"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>プレイリストの作成中に不明なエラーが発生しました </translation>
     </message>
@@ -279,12 +279,12 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="555"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>M3U プレイリスト (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3Uプレイリスト (*.m3u);;M3U8プレイリスト (*.m3u8);;PLSプレイリスト (*.pls);;CSVファイル(*.csv);;テキストファイル(*.txt);;</translation>
     </message>
@@ -2335,7 +2335,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="97"/>
         <source>Headphone</source>
-        <translation type="unfinished"/>
+        <translation>ヘッドホン</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="151"/>
@@ -3690,7 +3690,7 @@ trace    - Above + Profiling messages</source>
         <translation>レコードボックスのインポート</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="783"/>
         <source>Export Crate</source>
         <translation>レコードボックスのエクスポート</translation>
     </message>
@@ -3700,7 +3700,7 @@ trace    - Above + Profiling messages</source>
         <translation>ロックを解除</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="737"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="735"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>新しいレコードボックスを作成中にエラーが発生しました </translation>
     </message>
@@ -3726,17 +3726,17 @@ trace    - Above + Profiling messages</source>
         <translation>レコードボックスの名前変更に失敗</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="736"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="734"/>
         <source>Crate Creation Failed</source>
         <translation>レコードボックスの作成に失敗</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3Uプレイリスト (*.m3u);;M3U8プレイリスト (*.m3u8);;PLSプレイリスト (*.pls);;CSVファイル(*.csv);;テキストファイル(*.txt);;</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="789"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>M3U プレイリスト (*.m3u)</translation>
     </message>
@@ -3862,12 +3862,12 @@ trace    - Above + Profiling messages</source>
         <translation>過去の開発</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="437"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="438"/>
         <source>Official Website</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="447"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="448"/>
         <source>Donate</source>
         <translation type="unfinished"/>
     </message>
@@ -8691,12 +8691,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="54"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>タイトル</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="106"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="139"/>
@@ -8706,7 +8706,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="172"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>アルバムアーティスト</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="218"/>
@@ -9106,7 +9106,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="53"/>
         <source>Artist + Title</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト + タイトル</translation>
     </message>
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="59"/>
@@ -9116,7 +9116,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="68"/>
         <source>Artist + Album</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト + </translation>
     </message>
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="73"/>
@@ -9134,7 +9134,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="51"/>
         <source>Artist + Title</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト + タイトル</translation>
     </message>
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="56"/>
@@ -9144,7 +9144,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="65"/>
         <source>Artist + Album</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト + アルバム</translation>
     </message>
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="70"/>
@@ -9162,7 +9162,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="51"/>
         <source>Artist + Title</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト + タイトル</translation>
     </message>
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="56"/>
@@ -9172,7 +9172,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="65"/>
         <source>Artist + Album</source>
-        <translation type="unfinished"/>
+        <translation>アーティスト + アルバム</translation>
     </message>
     <message>
         <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="70"/>
@@ -14144,7 +14144,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="579"/>
         <source>Headphone</source>
-        <translation type="unfinished"/>
+        <translation>ヘッドホン</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="584"/>
@@ -16256,7 +16256,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wtrackproperty.cpp" line="167"/>
         <source>title</source>
-        <translation type="unfinished"/>
+        <translation>タイトル</translation>
     </message>
 </context>
 <context>

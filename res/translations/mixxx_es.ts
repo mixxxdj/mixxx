@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="99"/>
         <source>Clear Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Limpiar la cola de Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="115"/>
@@ -46,12 +46,12 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="185"/>
         <source>Do you really want to remove all tracks from the Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Realmente quieres eliminar todas las pistas de la cola de Auto DJ?</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="186"/>
         <source>This can not be undone.</source>
-        <translation type="unfinished"/>
+        <translation>¡Esto no puede ser revertido!</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="355"/>
@@ -213,7 +213,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="549"/>
         <source>Export Playlist</source>
         <translation>Exportar lista de reproducción</translation>
     </message>
@@ -260,13 +260,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="368"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="372"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="383"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="523"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="521"/>
         <source>Playlist Creation Failed</source>
         <translation>Ha fallado la creación de la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="384"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="524"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="522"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Se ha producido un error desconocido al crear la lista de reproducción: </translation>
     </message>
@@ -281,12 +281,12 @@
         <translation>¿Desea realmente eliminar la lista de reproducción &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="555"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Lista de reproducción M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Lista de reproducción M3U (*.m3u);;Lista de reproducción M3U8 (*.m3u8);;Lista de reproducción PLS (*.pls);;Texto CSV (*.csv);;Texto legible (*.txt)</translation>
     </message>
@@ -3695,7 +3695,7 @@ trace     - Lo anterior + mensajes de perfilaje/rendimiento</translation>
         <translation>Importar caja</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="783"/>
         <source>Export Crate</source>
         <translation>Exportar caja</translation>
     </message>
@@ -3705,7 +3705,7 @@ trace     - Lo anterior + mensajes de perfilaje/rendimiento</translation>
         <translation>Desbloquear</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="737"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="735"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Se ha producido un error desconocido al crear la caja:</translation>
     </message>
@@ -3731,17 +3731,17 @@ trace     - Lo anterior + mensajes de perfilaje/rendimiento</translation>
         <translation>Fallo al renombrar la caja</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="736"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="734"/>
         <source>Crate Creation Failed</source>
         <translation>Fallo al crear la caja</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Lista de reproducción M3U (*.m3u);;Lista de reproducción M3U8 (*.m3u8);;Lista de reproducción PLS (*.pls);;Texto CSV (*.csv);;Texto legible (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="789"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Lista de reproducción M3U (*.m3u)</translation>
     </message>
@@ -3867,12 +3867,12 @@ trace     - Lo anterior + mensajes de perfilaje/rendimiento</translation>
         <translation>Contribuyentes anteriores</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="437"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="438"/>
         <source>Official Website</source>
         <translation>Sitio web oficial</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="447"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="448"/>
         <source>Donate</source>
         <translation>Donar</translation>
     </message>
@@ -5785,7 +5785,7 @@ Siempre puedes arrastrar y tirar pistas en la pantalla para clonar una plataform
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="191"/>
         <source>Double-press Load button to clone playing track</source>
-        <translation type="unfinished"/>
+        <translation>Tocar dos veces botón de Cargar para clonar pista reproduciéndose</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="201"/>
@@ -7912,7 +7912,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="496"/>
         <source>Preferred font size</source>
-        <translation type="unfinished"/>
+        <translation>Tamaño de tipo de letra preferido</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="509"/>
@@ -8223,7 +8223,7 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="368"/>
         <source>No cues matched the specified criteria.</source>
-        <translation type="unfinished"/>
+        <translation>Ninguna marca igualó el criterio especificado.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="375"/>
@@ -12075,7 +12075,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="402"/>
         <source>Broadcasting at 96 kHz with Ogg Vorbis is not currently supported. Please try a different sample rate or switch to a different encoding.</source>
-        <translation type="unfinished"/>
+        <translation>Transmitir a 96 kHz con Ogg Vorbis no está soportado actualmente. Por favor intente una frecuencia de muestreo diferente o cambie a una codificación diferente.</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="405"/>
@@ -13057,7 +13057,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="188"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="193"/>
         <source>Adjusts the main output gain.</source>
-        <translation type="unfinished"/>
+        <translation>Ajusta el volumen principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="203"/>
@@ -13097,7 +13097,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="284"/>
         <source>Hide all skin sections except the decks to have more screen space for the track library.</source>
-        <translation type="unfinished"/>
+        <translation>Ocultar todas las secciones de la presentación excepto las plataformas que tendrán más espacio de pantalla para la biblioteca de pistas.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="291"/>
@@ -13245,7 +13245,7 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="479"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="485"/>
         <source>Shift cues imported from Serato or Rekordbox if they are slightly off time.</source>
-        <translation type="unfinished"/>
+        <translation>Cambia marcas importadas desde Serato o Rekordbox si están ligeramente desfazadas.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="480"/>
@@ -16515,7 +16515,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/coreservices.cpp" line="242"/>
         <source>fonts</source>
-        <translation type="unfinished"/>
+        <translation>tipos de letra</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="246"/>
@@ -16550,7 +16550,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/coreservices.cpp" line="380"/>
         <source>controllers</source>
-        <translation type="unfinished"/>
+        <translation>Controladores</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="520"/>
@@ -16666,7 +16666,7 @@ Pulse Aceptar para salir.</translation>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="58"/>
         <source>Export Completed</source>
-        <translation type="unfinished"/>
+        <translation>Exportación completada</translation>
     </message>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="59"/>
@@ -16689,7 +16689,7 @@ Pulse Aceptar para salir.</translation>
     <message>
         <location filename="../../src/util/taskmonitor.cpp" line="171"/>
         <source>Abort</source>
-        <translation type="unfinished"/>
+        <translation>Abortar</translation>
     </message>
 </context>
 <context>

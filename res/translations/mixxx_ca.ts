@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="99"/>
         <source>Clear Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Neteja la cua d&apos;Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="115"/>
@@ -41,17 +41,17 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="184"/>
         <source>Confirmation Clear</source>
-        <translation type="unfinished"/>
+        <translation>Confirma la neteja</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="185"/>
         <source>Do you really want to remove all tracks from the Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Realment vols esborrar totes les pistes de la cua d&apos;Auto DJ?</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="186"/>
         <source>This can not be undone.</source>
-        <translation type="unfinished"/>
+        <translation>Això no es pot desfer!</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="355"/>
@@ -77,7 +77,7 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="72"/>
         <source>Banshee database file not found at
 </source>
-        <translation>No s&apos;ha trobat la base de dades del Banshee a
+        <translation>No s&apos;ha trobat el fitxer a la base de dades del Banshee 
 </translation>
     </message>
     <message>
@@ -213,7 +213,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="549"/>
         <source>Export Playlist</source>
         <translation>Exporta la llista de reproducció</translation>
     </message>
@@ -260,13 +260,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="368"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="372"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="383"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="523"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="521"/>
         <source>Playlist Creation Failed</source>
         <translation>Ha fallat la creació de la llista de reproducció</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="384"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="524"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="522"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>S&apos;ha produït un error desconegut en crear la llista de reproducció: </translation>
     </message>
@@ -281,12 +281,12 @@
         <translation>Realment vols esborrar la llista de reproducció &lt;b&gt;%1&lt;/b&gt;?</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="555"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Llista de reproducció M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="553"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Llista de repr. M3U (*.m3u);;Llista de repr. M3U8 (*.m3u8);;Llista de repr. PLS (*.pls);;Text CSV (*.csv);;Text llegible (*.txt)</translation>
     </message>
@@ -839,7 +839,7 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="332"/>
         <source>Sets the maximum file size of the mixxx.log file in bytes. Use -1 for unlimited. The default is 100 MB as 1e5 or 100000000.</source>
-        <translation type="unfinished"/>
+        <translation>Estableix la mida màxima, en bytes, del fitxer mixxx.log. Feu servir -1 si no voleu establir un límit. El valor predeterminat és 100 MB com a 1e5 o 100000000.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="344"/>
@@ -849,7 +849,7 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="356"/>
         <source>Overrides the default application GUI style. Possible values: %1</source>
-        <translation type="unfinished"/>
+        <translation>Substitueix l&apos;estil de la GUI de l&apos;aplicació per defecte. Valors possibles: %1</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="367"/>
@@ -2411,7 +2411,7 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>Doble BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="284"/>
@@ -2473,57 +2473,57 @@ traça - Per sobre + Missatges de perfil</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="361"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="362"/>
         <source>Internal Leader BPM</source>
-        <translation type="unfinished"/>
+        <translation>Líder intern BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="366"/>
         <source>Internal Leader BPM +1</source>
-        <translation type="unfinished"/>
+        <translation>Líder intern BPM +1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="367"/>
         <source>Increase internal Leader BPM by 1</source>
-        <translation type="unfinished"/>
+        <translation>Incrementa Líder intern BPM en 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="372"/>
         <source>Internal Leader BPM -1</source>
-        <translation type="unfinished"/>
+        <translation>Líder intern BPM -1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="373"/>
         <source>Decrease internal Leader BPM by 1</source>
-        <translation type="unfinished"/>
+        <translation>Decrementa Líder intern BPM en 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="378"/>
         <source>Internal Leader BPM +0.1</source>
-        <translation type="unfinished"/>
+        <translation>Líder intern BPM +0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="379"/>
         <source>Increase internal Leader BPM by 0.1</source>
-        <translation type="unfinished"/>
+        <translation>Incrementa Líder intern BPM en 0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="383"/>
         <source>Internal Leader BPM -0.1</source>
-        <translation type="unfinished"/>
+        <translation>Líder intern BPM -0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="384"/>
         <source>Decrease internal Leader BPM by 0.1</source>
-        <translation type="unfinished"/>
+        <translation>Decrementa Líder intern BPM en 0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="388"/>
         <source>Sync Leader</source>
-        <translation type="unfinished"/>
+        <translation>Sincronitzar Líder</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="389"/>
         <source>Sync mode 3-state toggle / indicator (Off, Soft Leader, Explicit Leader)</source>
-        <translation type="unfinished"/>
+        <translation>Indicador o commutació de 3 estats del mode de sincronització (desactivat, líder suau, líder explícit)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="394"/>
@@ -2719,7 +2719,7 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="651"/>
         <source>if the track has no beats the unit is seconds</source>
-        <translation type="unfinished"/>
+        <translation>si la pista no té ritmes la unitat són segons</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="652"/>
@@ -2744,22 +2744,22 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="659"/>
         <source>Loop %1 Beats set from its end point</source>
-        <translation type="unfinished"/>
+        <translation>Bucle % 1 Ritmes establerts des del seu punt final</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="661"/>
         <source>Loop Roll %1 Beats set from its end point</source>
-        <translation type="unfinished"/>
+        <translation>Bucle Roll % 1 Ritmes establerts des del seu punt final</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="663"/>
         <source>Create %1-beat loop with the current play position as loop end</source>
-        <translation type="unfinished"/>
+        <translation>Creeu un bucle d&apos;1 ritme amb la posició de reproducció actual com a final del bucle</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="668"/>
         <source>Create temporary %1-beat loop roll with the current play position as loop end</source>
-        <translation type="unfinished"/>
+        <translation>Creeu temporalment %1-beat bucle amb la posició de reproducció actual com a final del bucle</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="693"/>
@@ -2865,12 +2865,12 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="773"/>
         <source>Beat Jump</source>
-        <translation type="unfinished"/>
+        <translation>Salt de ritme</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
         <source>Indicate which loop marker remain static when adjusting the size or is inherited from the current position</source>
-        <translation type="unfinished"/>
+        <translation>Indiqueu quin marcador de bucle roman estàtic quan s&apos;ajusta la mida o s&apos;hereta de la posició actual</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="779"/>
@@ -2895,12 +2895,12 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="824"/>
         <source>Remove Temporary Loop</source>
-        <translation type="unfinished"/>
+        <translation>Elimina bucle temporal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="825"/>
         <source>Remove the temporary loop</source>
-        <translation type="unfinished"/>
+        <translation>Elimina el bucle temporal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="832"/>
@@ -3035,7 +3035,7 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="888"/>
         <source>Sort the column of the cell that is currently focused, equivalent to clicking on its header</source>
-        <translation type="unfinished"/>
+        <translation>Ordena la columna de la cel·la que està actualment activa, equivalent a fer clic a la seva capçalera</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="894"/>
@@ -3106,23 +3106,23 @@ traça - Per sobre + Missatges de perfil</translation>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="943"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1511"/>
         <source>Select Next Color Available</source>
-        <translation type="unfinished"/>
+        <translation>Seleccioneu el següent color disponible</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="944"/>
         <source>Select the next color in the color palette for the first selected track</source>
-        <translation type="unfinished"/>
+        <translation>Seleccioneu el color següent a la paleta de colors per a la primera pista seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="948"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1515"/>
         <source>Select Previous Color Available</source>
-        <translation type="unfinished"/>
+        <translation>Seleccioneu el color anterior disponible</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="949"/>
         <source>Select the previous color in the color palette for the first selected track</source>
-        <translation type="unfinished"/>
+        <translation>Seleccioneu el color anterior a la paleta de colors de la primera pista seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="978"/>
@@ -3315,27 +3315,27 @@ traça - Per sobre + Missatges de perfil</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1492"/>
         <source>Waveform Zoom Reset To Default</source>
-        <translation type="unfinished"/>
+        <translation>El zoom de la forma d&apos;ona restablert al valor predeterminat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1493"/>
         <source>Reset the waveform zoom level to the default value selected in Preferences -&gt; Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Restableix el nivell de zoom de la forma d&apos;ona al valor predeterminat seleccionat a Preferències -&gt; Formes d&apos;ona</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1512"/>
         <source>Select the next color in the color palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Seleccioneu el color següent a la paleta de colors per a la pista carregada.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1516"/>
         <source>Select previous color in the color palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Seleccioneu el color anterior a la paleta de colors per a la pista carregada.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1519"/>
         <source>Navigate Through Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Navegueu pels colors de la pista</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1520"/>
@@ -3696,7 +3696,7 @@ traça - Per sobre + Missatges de perfil</translation>
         <translation>Importa una caixa</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="783"/>
         <source>Export Crate</source>
         <translation>Exporta la caixa</translation>
     </message>
@@ -3706,7 +3706,7 @@ traça - Per sobre + Missatges de perfil</translation>
         <translation>Permet els canvis</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="737"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="735"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Hi ha hagut un error desconegut a l&apos;hora de crear la caixa:</translation>
     </message>
@@ -3732,17 +3732,17 @@ traça - Per sobre + Missatges de perfil</translation>
         <translation>El canvi de nom de la caixa ha fallat</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="736"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="734"/>
         <source>Crate Creation Failed</source>
         <translation>No s&apos;ha pogut crear la caixa</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="785"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Llista de repr. M3U (*.m3u);;Llista de repr. M3U8 (*.m3u8);;Llista de repr. PLS (*.pls);;Text CSV (*.csv);;Text llegible (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="789"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="787"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Llista de reproducció M3U (*.m3u)</translation>
     </message>
@@ -3868,12 +3868,12 @@ traça - Per sobre + Missatges de perfil</translation>
         <translation>Antics Contribuidors</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="437"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="438"/>
         <source>Official Website</source>
         <translation>Lloc web oficial</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="447"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="448"/>
         <source>Donate</source>
         <translation>Donatius</translation>
     </message>
@@ -13192,18 +13192,18 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="453"/>
         <source>Revert last BPM/Beatgrid Change</source>
-        <translation type="unfinished"/>
+        <translation>Reverteix l&apos;últim canvi de BPM/quadrícula de ritme</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="454"/>
         <source>Revert last BPM/Beatgrid Change of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Reverteix l&apos;últim canvi de BPM/quadrícula de ritme de la pista carregada.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="457"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="458"/>
         <source>Toggle the BPM/beatgrid lock</source>
-        <translation type="unfinished"/>
+        <translation>Commuta el bloqueig BPM/quadrícula de ritme</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="468"/>
@@ -16290,7 +16290,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="517"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>Esborra BPM i quadrícula de ritme</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="523"/>
