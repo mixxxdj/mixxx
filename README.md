@@ -30,8 +30,8 @@ Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
 
-First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
-[VS 2019][visualstudio2019]"), download the mixxx
+First, open a terminal (on Windows, use "**x64 Native Tools Command Prompt for
+[VS 2022][visualstudio2022]**"), download the mixxx
 source code and navigate to it:
 
     $ git clone https://github.com/mixxxdj/mixxx.git
@@ -57,6 +57,8 @@ To build Mixxx, run
 
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
+
+Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
 
 ## Documentation
 
@@ -102,7 +104,7 @@ license.
 [blog]: https://mixxx.org/news/
 [manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
-[visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
+[visualstudio2022]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2022
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj

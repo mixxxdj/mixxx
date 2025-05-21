@@ -1,11 +1,10 @@
 #include "qml/qmlwaveformdisplay.h"
 
-#include <qnamespace.h>
-
 #include <QQuickWindow>
 #include <QSGFlatColorMaterial>
 #include <QSGSimpleRectNode>
 #include <QSGVertexColorMaterial>
+#include <Qt>
 #include <QtQuick/QSGGeometryNode>
 #include <QtQuick/QSGMaterial>
 #include <QtQuick/QSGRectangleNode>
@@ -24,7 +23,7 @@ using namespace allshader;
 
 namespace {
 constexpr int kDefaultSyncInternalMs = 100;
-}
+} // namespace
 
 namespace mixxx {
 namespace qml {

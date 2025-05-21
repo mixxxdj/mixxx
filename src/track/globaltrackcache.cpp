@@ -487,6 +487,8 @@ TrackPointer GlobalTrackCache::lookupByRef(
                     << "cached =" << cachedTrackRef;
         }
     }
+    // Lookup failed, either because the TrackRef did not specify an id or canonical location,
+    // or because the database contains multiple tracks with that canonical location.
     return {};
 }
 
@@ -776,8 +778,7 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(pDel);
 
     DEBUG_ASSERT(strongPtr == m_incompleteTrack);
-    m_incompleteTrack = nullptr;
-    m_isTrackCompleted.wakeAll();
+    discardIncompleteTrack();
 
     // Insert item by id
     DEBUG_ASSERT(m_tracksById.find(trackId) == m_tracksById.end());

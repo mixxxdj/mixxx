@@ -46,6 +46,7 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
+#include "widget/wmenucheckbox.h"
 #include "widget/wsearchrelatedtracksmenu.h"
 // WStarRating is required for DlgTrackInfo
 #include "widget/wstarrating.h"
@@ -1630,7 +1631,8 @@ void WTrackMenu::slotPopulateCrateMenu() {
     while (allCrates.populateNext(&crate)) {
         auto pAction = make_parented<QWidgetAction>(
                 m_pCrateMenu);
-        auto pCheckBox = make_parented<QCheckBox>(
+        // Use a custom QCheckBox with fixed hover behavior.
+        auto pCheckBox = make_parented<WMenuCheckBox>(
                 mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));

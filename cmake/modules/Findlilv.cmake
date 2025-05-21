@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2025 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 Findlilv
 --------
@@ -94,7 +89,10 @@ if(lilv_FOUND)
     )
     is_static_library(lilv_IS_STATIC lilv::lilv)
     if(lilv_IS_STATIC)
-      find_package(sord CONFIG REQUIRED)
+      find_package(sord CONFIG)
+      if(NOT sord_FOUND)
+        find_package(sord REQUIRED)
+      endif()
       set_property(
         TARGET lilv::lilv
         APPEND

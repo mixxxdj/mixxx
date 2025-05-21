@@ -25,3 +25,7 @@ void AnalysisLibraryTableModel::showAllSongs() {
     // Clear the recent filter.
     search(currentSearch(), "");
 }
+
+void AnalysisLibraryTableModel::searchCurrentTrackSet(const QString& text, bool useRecentFilter) {
+    search(text, useRecentFilter ? RECENT_FILTER : "");
+}

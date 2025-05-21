@@ -14,6 +14,8 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
   public:
     DlgDeveloperTools(QWidget* pParent, UserSettingsPointer pConfig);
 
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
+
   protected:
     void timerEvent(QTimerEvent* pTimerEvent) override;
 

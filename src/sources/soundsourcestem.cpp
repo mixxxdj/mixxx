@@ -115,6 +115,29 @@ SoundSource::OpenResult SoundSourceSingleSTEM::tryOpen(
 
     DEBUG_ASSERT(pDecoder);
 
+    if (pDecoder->id == AV_CODEC_ID_AAC ||
+            pDecoder->id == AV_CODEC_ID_AAC_LATM) {
+        // We only allow AAC decoders that pass our seeking tests
+        if (std::strcmp(pDecoder->name, "aac") != 0 && std::strcmp(pDecoder->name, "aac_at") != 0) {
+            const AVCodec* pAacDecoder = avcodec_find_decoder_by_name("aac");
+            if (pAacDecoder) {
+                pDecoder = pAacDecoder;
+            } else {
+                kLogger.warning()
+                        << "Internal aac decoder not found in your FFmpeg "
+                           "build."
+                        << "To enable AAC support, please install an FFmpeg "
+                           "version with the internal aac decoder enabled."
+                           "Note 1: The libfdk_aac decoder is no working properly "
+                           "with Mixxx, FFmpeg's internal AAC decoder does."
+                        << "Note 2: AAC decoding may be subject to patent "
+                           "restrictions, depending on your country.";
+            }
+        }
+    }
+
+    kLogger.debug() << "using FFmpeg decoder:" << pDecoder->long_name;
+
     // Select the main mix stream for decoding
     AVStream* pavStream = selectedAudioStream;
     DEBUG_ASSERT(pavStream != nullptr);

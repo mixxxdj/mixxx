@@ -66,7 +66,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 #endif
             bool play = false);
     void trackSelected(TrackPointer pTrack);
-    void onlyCachedCoverArt(bool);
+    void onlyCachedCoversAndOverviews(bool);
     void scrollValueChanged(int);
     FocusWidget setLibraryFocus(FocusWidget newFocus);
 

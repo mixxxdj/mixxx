@@ -26,6 +26,8 @@ TEST_F(EngineFilterBiquadTest, analysisPkBq) {
     char* pDesc = nullptr;
     FidFilter* filt = fid_design(spec_d, 44100, 1000, 0, 0, &pDesc);
     EXPECT_NE(pDesc, nullptr);
+    free(pDesc);
+
     int delay = fid_calc_delay(filt);
     EXPECT_EQ(delay, 0);
 
@@ -41,6 +43,8 @@ TEST_F(EngineFilterBiquadTest, analysisLpBe4) {
     char* pDesc = nullptr;
     FidFilter* filt = fid_design("LpBe4", 44100, 600, 0, 0, &pDesc);
     EXPECT_NE(pDesc, nullptr);
+    free(pDesc);
+
     int delay = fid_calc_delay(filt);
     EXPECT_EQ(delay, 24);
 
