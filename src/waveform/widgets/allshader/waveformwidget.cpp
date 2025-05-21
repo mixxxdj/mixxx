@@ -6,6 +6,7 @@
 
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
+#include "waveform/renderers/allshader/waveformrenderdownbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
 #include "waveform/renderers/allshader/waveformrendererfiltered.h"
 #include "waveform/renderers/allshader/waveformrendererhsv.h"
@@ -56,6 +57,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
     }
     pOpacityNode->appendChildNode(addRendererNode<WaveformRenderBeat>());
+    pOpacityNode->appendChildNode(addRendererNode<WaveformRenderDownBeat>());
     m_pWaveformRenderMark = pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMark>());
 
     // if the added signal renderer supports slip, we add it again, now for
