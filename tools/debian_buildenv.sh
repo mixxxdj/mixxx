@@ -46,6 +46,7 @@ case "$1" in
         fi
 
         sudo apt-get install -y --no-install-recommends -- \
+		    7zip \
             ccache \
             cmake \
             clazy \
@@ -97,7 +98,6 @@ case "$1" in
             libwavpack-dev \
             lv2-dev \
             markdown \
-            p7zip-full \
             portaudio19-dev \
             protobuf-compiler \
             qtkeychain-qt6-dev \
