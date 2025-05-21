@@ -57,7 +57,12 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
     }
     pOpacityNode->appendChildNode(addRendererNode<WaveformRenderBeat>());
-    pOpacityNode->appendChildNode(addRendererNode<WaveformRenderDownBeat>());
+
+    auto pDownBeatOpacityNode = std::make_unique<rendergraph::OpacityNode>();
+    pDownBeatOpacityNode->appendChildNode(addRendererNode<WaveformRenderDownBeat>());
+    m_pDownBeatOpacityNode = pOpacityNode->appendChildNode(std::move(pDownBeatOpacityNode));
+    m_pDownBeatOpacityNode->setOpacity(m_downBeatOpacity);
+
     m_pWaveformRenderMark = pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMark>());
 
     // if the added signal renderer supports slip, we add it again, now for
@@ -91,6 +96,12 @@ WaveformWidget::WaveformWidget(QWidget* parent,
     m_pOpacityNode = pTopNode->appendChildNode(std::move(pOpacityNode));
 
     m_pEngine = std::make_unique<rendergraph::Engine>(std::move(pTopNode));
+
+    connect(
+            ControlObject::getControl(ConfigKey(group, "toggle_downbeats_marker")),
+            &ControlObject::valueChanged,
+            this,
+            &WaveformWidget::toggleDownBeatVisibility);
 }
 
 WaveformWidget::~WaveformWidget() {
@@ -192,6 +203,14 @@ void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
 void WaveformWidget::leaveEvent(QEvent* pEvent) {
     QApplication::sendEvent(parentWidget(), pEvent);
     pEvent->accept();
+}
+
+void WaveformWidget::toggleDownBeatVisibility() {
+    if (m_pDownBeatOpacityNode) {
+        m_downBeatOpacity = (m_downBeatOpacity > 0.0f) ? 0.0f : 1.0f;
+        m_pDownBeatOpacityNode->setOpacity(m_downBeatOpacity);
+        update();
+    }
 }
 
 /* static */
