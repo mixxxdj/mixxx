@@ -31,8 +31,9 @@ mark_as_advanced(7zip_INCLUDE_DIR)
 
 find_library(
   7zip_LIBRARY
-  NAMES 7zip
-  HINTS ${7zip_LIBRARY_DIRS}
+  NAMES 7zip 7z lib7z
+  PATH_SUFFIXES bin lib
+  #HINTS ${7zip_LIBRARY_DIRS}
   DOC "7zip library"
 )
 mark_as_advanced(7zip_LIBRARY)
