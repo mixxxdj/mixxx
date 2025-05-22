@@ -19,6 +19,7 @@ find_path(
   7zip_INCLUDE_DIR
   NAMES 7zVersion.h
   PATH_SUFFIXES 7zip/C 7zip/CPP include/7zip include
+  PATHS /usr/include /usr/local/include
   DOC "7-Zip include directory"
 )
 
