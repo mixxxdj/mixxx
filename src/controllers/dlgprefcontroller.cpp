@@ -511,8 +511,12 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
-    // Force updating the controller settings
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    // Note: this is called by closeDlg() when MIDI learning starts
+    // "No Mapping" is selected but we have a mapping for learning
+    if (m_ui.comboBoxMapping->currentIndex() > kNoMappingIndex || !m_pMapping) {
+        // Force updating the controller settings
+        slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    }
 
     // enumerateMappings() calls slotMappingSelected() which will tick the 'Enabled'
     // checkbox if there is a valid mapping saved in the mixxx.cfg file.
