@@ -2787,6 +2787,15 @@ if(WIN32)
 endif()
 
 #7zip
+#find_package(7zip REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
+
+#find_package(7zip REQUIRED)
+#find_path(7zip_INCLUDE_DIR NAMES "7zip/C/7zip/7z.h")
+#target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
+
+# target_link_libraries(mixxx-lib PRIVATE p7zip::p7zip)
+
 find_package(7zip REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
 
