@@ -13,10 +13,10 @@ Result Variables
 ``7zip_FOUND``, ``7zip_INCLUDE_DIRS``, ``7zip_LIBRARIES``
 #]=======================================================================]
 
-find_package(PkgConfig QUIET)
-if(PkgConfig_FOUND)
-  pkg_check_modules(7zip QUIET 7zip)
-endif()
+# find_package(PkgConfig QUIET)
+# if(PkgConfig_FOUND)
+#   pkg_check_modules(7zip QUIET 7zip)
+# endif()
 
 find_path(
   7zip_INCLUDE_DIR
