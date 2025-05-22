@@ -20,7 +20,10 @@ endif()
 
 find_path(
   7zip_INCLUDE_DIR
-  NAMES 7zip/C/7zip.h
+  # NAMES 7zip/C/7zip.h
+  NAMES 7zVersion.h
+  PATH_SUFFIXES 7zip/C 7zip/CPP include/7zip include
+  PATHS /usr/include /usr/local/include
   HINTS ${PC_7zip_INCLUDE_DIRS}
   DOC "7zip include directory"
 )
