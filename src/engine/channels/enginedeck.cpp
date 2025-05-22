@@ -5,7 +5,6 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
-#include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "util/sample.h"
 
