@@ -2794,11 +2794,29 @@ endif()
 #target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
 
 # 7zip
+#find_package(7zip)
+#if(NOT 7zip_FOUND)
+#  fatal_error_missing_env()
+#endif()
+#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+#target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
+
 find_package(7zip)
 if(NOT 7zip_FOUND)
-  fatal_error_missing_env()
+  # Try pkg-config (Linux/macOS)
+  find_package(PkgConfig)
+  if(PKG_CONFIG_FOUND)
+    pkg_check_modules(7zip lib7zip)
+    if(7zip_FOUND)
+      add_library(7zip::7zip INTERFACE IMPORTED)
+      target_include_directories(7zip::7zip INTERFACE ${7zip_INCLUDE_DIRS})
+      target_link_libraries(7zip::7zip INTERFACE ${7zip_LIBRARIES})
+    else()
+      fatal_error_missing_env() # Fail if nothing works
+    endif()
+  endif()
 endif()
-target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
+
 target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
 
 #find_package(7zip REQUIRED)
