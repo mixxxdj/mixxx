@@ -234,39 +234,39 @@ void BackUpWorker::performBackUp() {
         // All next lines need to be uncommented when bit7z and 7z are in the dependencies
         // and the parts in the CMakeLists are uncommented too.
         qDebug() << "[BackUp] -> [BAckUpWorker] -> Bit7z started";
-        try {
-            emit progressChanged(10);
-            const QString originalDirName = QFileInfo(settingsDir).fileName();
+        // try {
+        //     emit progressChanged(10);
+        //     const QString originalDirName = QFileInfo(settingsDir).fileName();
 
-            bit7z::Bit7zLibrary lib("7zip.dll");
-            bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
+        //    bit7z::Bit7zLibrary lib("7zip.dll");
+        //    bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
 
-            QTemporaryDir tempDir;
-            if (tempDir.isValid()) {
-                QString tempBackupDir = archivePath + "_temp";
-                QDir().mkpath(tempBackupDir);
+        //    QTemporaryDir tempDir;
+        //    if (tempDir.isValid()) {
+        //        QString tempBackupDir = archivePath + "_temp";
+        //        QDir().mkpath(tempBackupDir);
 
-                if (!copySettingsToTempDir(settingsDir, tempBackupDir)) {
-                    emit errorOccurred("Could not create temporary directory for backup.");
-                    emit backUpFinished(false, "Backup failed");
-                    return;
-                }
+        //        if (!copySettingsToTempDir(settingsDir, tempBackupDir)) {
+        //            emit errorOccurred("Could not create temporary directory for backup.");
+        //            emit backUpFinished(false, "Backup failed");
+        //            return;
+        //        }
 
-                archivePath7zExt = archivePath + ".7z";
-                compressor.compressDirectory(
-                        tempBackupDir.toStdString(),
-                        archivePath7zExt.toStdString());
-                emit progressChanged(80);
-                QDir(tempBackupDir).removeRecursively();
-            }
+        //        archivePath7zExt = archivePath + ".7z";
+        //        compressor.compressDirectory(
+        //                tempBackupDir.toStdString(),
+        //                archivePath7zExt.toStdString());
+        //        emit progressChanged(80);
+        //        QDir(tempBackupDir).removeRecursively();
+        //    }
 
-            emit progressChanged(100);
-            emit backUpFinished(true, archivePath);
+        //    emit progressChanged(100);
+        //    emit backUpFinished(true, archivePath);
 
-        } catch (const bit7z::BitException& ex) {
-            emit errorOccurred(QString::fromStdString(ex.what()));
-            emit backUpFinished(false, "Backup failed");
-        }
+        //} catch (const bit7z::BitException& ex) {
+        //    emit errorOccurred(QString::fromStdString(ex.what()));
+        //    emit backUpFinished(false, "Backup failed");
+        //}
 
         qDebug() << "[BAckUpWorker] --> Bit7z ended";
     }

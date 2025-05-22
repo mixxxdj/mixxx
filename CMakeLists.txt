@@ -2791,19 +2791,11 @@ endif()
 #target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
 
 #find_package(7zip REQUIRED)
-#find_path(7zip_INCLUDE_DIR NAMES "7zip/C/7zip/7z.h")
 #target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
 
-# target_link_libraries(mixxx-lib PRIVATE p7zip::p7zip)
-
-find_package(7zip REQUIRED)
-find_library(7ZIP_LIBRARY 7zip PATHS /usr/lib /usr/local/lib)
-find_path(7ZIP_INCLUDE_DIR 7zip.h PATHS /usr/include /usr/local/include)
-target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
-
 #7bit7z
-find_package(unofficial-bit7z CONFIG REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+#find_package(unofficial-bit7z CONFIG REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
 
 # Chromaprint
 find_package(Chromaprint)
