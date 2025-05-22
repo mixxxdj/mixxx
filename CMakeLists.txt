@@ -2846,19 +2846,19 @@ endif()
 #  )
 #endif()
 
-find_package(unofficial-bit7z CONFIG REQUIRED)
-find_package(unofficial-bit7z CONFIG REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-if(WIN32)
-  add_custom_command(
-    TARGET mixxx-lib
-    POST_BUILD
-    COMMAND
-      ${CMAKE_COMMAND} -E copy
-      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
-      $<TARGET_FILE_DIR:mixxx-lib>
-  )
-endif()
+# find_package(unofficial-bit7z CONFIG REQUIRED)
+# find_package(unofficial-bit7z CONFIG REQUIRED)
+# target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+# if(WIN32)
+#   add_custom_command(
+#     TARGET mixxx-lib
+#     POST_BUILD
+#     COMMAND
+#       ${CMAKE_COMMAND} -E copy
+#       "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
+#       $<TARGET_FILE_DIR:mixxx-lib>
+#   )
+# endif()
 
 # Chromaprint
 find_package(Chromaprint)
