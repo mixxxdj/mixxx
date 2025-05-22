@@ -24,7 +24,7 @@ WaveformRenderDownBeat::WaveformRenderDownBeat(WaveformWidgetRenderer* waveformW
 }
 
 void WaveformRenderDownBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
-    m_color = QColor(255, 0, 0);
+    m_color = QColor(skinContext.selectString(node, QStringLiteral("DownbeatColor")));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 

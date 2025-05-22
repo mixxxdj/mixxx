@@ -198,6 +198,7 @@
 
       <SetVariable name="AxesColor">#999</SetVariable>
       <SetVariable name="BeatColor">#999</SetVariable>
+      <SetVariable name="DownbeatColor">#f00</SetVariable>
       <SetVariable name="PlayPosColor">#00c6ff</SetVariable>
       <SetVariable name="CueColor">#ff7a01</SetVariable>
       <SetVariable name="LoopColor">#00b400</SetVariable>
@@ -333,6 +334,7 @@
       <SetVariable name="SignalLowColor">red</SetVariable>
       <SetVariable name="AxesColor">#ffffff</SetVariable>
       <SetVariable name="BeatColor">#ffffff</SetVariable>
+      <SetVariable name="DownbeatColor">#00c8ff</SetVariable>
       <SetVariable name="PlayPosColor">#00c8ff</SetVariable>
       <SetVariable name="CueColor">#ff001c</SetVariable>
       <SetVariable name="LoopColor">#00ff00</SetVariable>
