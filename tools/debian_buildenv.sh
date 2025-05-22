@@ -46,7 +46,6 @@ case "$1" in
         fi
 
         sudo apt-get install -y --no-install-recommends -- \
-		    7zip \
             ccache \
             cmake \
             clazy \

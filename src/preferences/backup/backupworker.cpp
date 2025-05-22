@@ -256,12 +256,12 @@ void BackUpWorker::performBackUp() {
                 compressor.compressDirectory(
                         tempBackupDir.toStdString(),
                         archivePath7zExt.toStdString());
+                emit progressChanged(80);
                 QDir(tempBackupDir).removeRecursively();
             }
 
-            emit progressChanged(80);
-            emit backUpFinished(true, archivePath);
             emit progressChanged(100);
+            emit backUpFinished(true, archivePath);
 
         } catch (const bit7z::BitException& ex) {
             emit errorOccurred(QString::fromStdString(ex.what()));
@@ -283,7 +283,7 @@ void BackUpWorker::deleteOldBackUps() {
     const auto backups = dir.entryInfoList();
     for (int i = m_keepBackUps; i < backups.size(); ++i) {
         dir.remove(backups[i].fileName());
-        dir.remove(backups[i].fileName().replace(".7z", "_robocopy.log"));
+        dir.remove(backups[i].fileName().replace(".7z", "_temp_robocopy.log"));
         emit backUpRemoved(backups[i].fileName());
     }
 }

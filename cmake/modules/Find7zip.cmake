@@ -19,7 +19,7 @@ include(IsStaticLibrary)
 find_path(
   7zip_INCLUDE_DIR
   NAMES 7zVersion.h
-  PATH_SUFFIXES 7zip 7-Zip CPP
+  PATH_SUFFIXES 7zip/C 7zip 7-Zip CPP C
   DOC "7-Zip include directory"
 )
 

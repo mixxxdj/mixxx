@@ -61,6 +61,7 @@ void BackUpSettings::startBackUpWorker() {
     });
 
     if (!upgradeBU) {
+        // qDebug() << "[BackUp] -> BackUp Creation Successful, now deleting old BackUps ";
         connect(worker, &BackUpWorker::backUpFinished, this, [this, keepXBUs, worker]() {
             if (keepXBUs > 0) {
                 worker->deleteOldBackUps();
@@ -74,6 +75,7 @@ void BackUpSettings::startBackUpWorker() {
                         });
             }
         });
+        // qDebug() << "[BackUp] -> Cleaneing up old BackUps finished";
     }
 
     // if (!upgradeBU) {
