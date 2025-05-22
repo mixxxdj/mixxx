@@ -2787,78 +2787,12 @@ if(WIN32)
 endif()
 
 #7zip
-# Eve: next lines must be uncommented when bit7z and 7zip are in dependencies
-#find_package(7zip REQUIRED)
-#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
-#target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
+find_package(7zip REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
 
-# 7zip
-#find_package(7zip)
-#if(NOT 7zip_FOUND)
-#  fatal_error_missing_env()
-#endif()
-#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
-#target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
-
-# find_package(7zip)
-# if(NOT 7zip_FOUND)
-# Try pkg-config (Linux/macOS)
-#   find_package(PkgConfig)
-#   if(PKG_CONFIG_FOUND)
-#     pkg_check_modules(7zip lib7zip)
-#     if(7zip_FOUND)
-#       add_library(7zip::7zip INTERFACE IMPORTED)
-#       target_include_directories(7zip::7zip INTERFACE ${7zip_INCLUDE_DIRS})
-#       target_link_libraries(7zip::7zip INTERFACE ${7zip_LIBRARIES})
-#     else()
-#       fatal_error_missing_env() # Fail if nothing works
-#     endif()
-#   endif()
-# endif()
-
-# target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
-
-#find_package(7zip REQUIRED)
-#target_include_directories(mixxx PRIVATE ${7zip_INCLUDE_DIR})
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/7zip)
-#target_link_libraries(mixxx-lib PRIVATE ${7zip_LIBRARY})
-
-#if(WIN32)
-#    set(PLATFORM_7ZIP_LIB 7z)
-#elseif(APPLE OR UNIX)
-#    set(PLATFORM_7ZIP_LIB lzma)
-#endif()
-#target_link_libraries(mixxx-lib PRIVATE ${PLATFORM_7ZIP_LIB})
-
-#bit7z
-#find_package(unofficial-bit7z CONFIG REQUIRED)
-#find_package(unofficial-bit7z CONFIG REQUIRED)
-#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-#if(WIN32)
-#  add_custom_command(
-#    TARGET mixxx-lib
-#    POST_BUILD
-#    COMMAND
-#      ${CMAKE_COMMAND} -E copy
-#      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
-#      $<TARGET_FILE_DIR:mixxx-lib>
-#  )
-#endif()
-
-# find_package(unofficial-bit7z CONFIG REQUIRED)
-# find_package(unofficial-bit7z CONFIG REQUIRED)
-# target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-# if(WIN32)
-#   add_custom_command(
-#     TARGET mixxx-lib
-#     POST_BUILD
-#     COMMAND
-#       ${CMAKE_COMMAND} -E copy
-#       "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
-#       $<TARGET_FILE_DIR:mixxx-lib>
-#   )
-# endif()
+#7bit7z
+find_package(unofficial-bit7z CONFIG REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
 
 # Chromaprint
 find_package(Chromaprint)
