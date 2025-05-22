@@ -2310,10 +2310,10 @@ WPushButton#PlayDeck[value="0"] {
   #FxFocusButton[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__fx_focus_active.svg) no-repeat center center;
   }
-#ToggleDownbeatsMarker[value="0"] {
+#ToggleDownbeatsMarker[value="1"] {
   image: url(skin:/palemoon/buttons/btn__show_down_beats_marker.svg) no-repeat center center;
   }
-#ToggleDownbeatsMarker[value="1"] {
+#ToggleDownbeatsMarker[value="0"] {
     image: url(skin:/palemoon/buttons/btn__hide_down_beats_marker.svg) no-repeat center center;
   }
 #BeatsForwardDownBeatsMarker[displayValue="0"] {
