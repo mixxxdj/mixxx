@@ -83,11 +83,11 @@ GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
 void GlobalTrackCacheLocker::lockCache() {
     DEBUG_ASSERT(s_pInstance);
     DEBUG_ASSERT(!m_pInstance);
-    if (traceLogEnabled()) {
+    if (kLogger.traceEnabled()) {
         kLogger.trace() << "Locking cache";
     }
     s_pInstance->m_mutex.lock();
-    if (traceLogEnabled()) {
+    if (kLogger.traceEnabled()) {
         kLogger.trace() << "Cache is locked";
     }
     m_pInstance = s_pInstance;
@@ -95,7 +95,7 @@ void GlobalTrackCacheLocker::lockCache() {
 
 void GlobalTrackCacheLocker::unlockCache() {
     if (m_pInstance) {
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace() << "Unlocking cache";
         }
         if (kLogStats && debugLogEnabled()) {
@@ -106,7 +106,7 @@ void GlobalTrackCacheLocker::unlockCache() {
                     << m_pInstance->m_tracksByCanonicalLocation.size();
         }
         m_pInstance->m_mutex.unlock();
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace() << "Cache is unlocked";
         }
         m_pInstance = nullptr;
@@ -446,7 +446,7 @@ TrackPointer GlobalTrackCache::lookupById(
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
         // Cache hit
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Cache hit for"
                     << trackId
@@ -456,7 +456,7 @@ TrackPointer GlobalTrackCache::lookupById(
         DEBUG_ASSERT(trackPtr);
     } else {
         // Cache miss
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Cache miss for"
                     << trackId;
@@ -507,7 +507,7 @@ TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
             m_tracksByCanonicalLocation.find(canonicalLocation));
     if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
         // Cache hit
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Cache hit for"
                     << canonicalLocation
@@ -517,7 +517,7 @@ TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
         DEBUG_ASSERT(trackPtr);
     } else {
         // Cache miss
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Cache miss for"
                     << canonicalLocation;
@@ -539,7 +539,7 @@ TrackPointer GlobalTrackCache::revive(
 
     TrackPointer savingPtr = entryPtr->lock();
     if (savingPtr) {
-        if (traceLogEnabled()) {
+        if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Found alive track"
                     << entryPtr->getPlainPtr();
