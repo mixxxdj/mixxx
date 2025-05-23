@@ -74,6 +74,8 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
             &WTrackTableView::scrollValueChanged,
             this,
             &WTrackTableView::slotScrollValueChanged);
+
+    setInputMethodHints(Qt::ImhNone);
 }
 
 WTrackTableView::~WTrackTableView() {

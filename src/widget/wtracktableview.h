@@ -31,6 +31,8 @@ class WTrackTableView : public WLibraryTableView {
             Library* pLibrary,
             double backgroundColorOpacity);
     ~WTrackTableView() override;
+    // can't use, it's not virtual in QWidget
+    // void setAttribute(Qt::WidgetAttribute attribute, bool on = true) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;

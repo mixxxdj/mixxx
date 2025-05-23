@@ -542,6 +542,8 @@ void CoreServices::initializeKeyboard() {
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
     }
 
+    QLocale locale = inputLocale();
+
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
     QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
@@ -554,7 +556,6 @@ void CoreServices::initializeKeyboard() {
         m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
     } else {
         // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
 
         // check if a default keyboard exists
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");

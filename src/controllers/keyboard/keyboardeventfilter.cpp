@@ -156,6 +156,13 @@ bool KeyboardEventFilter::eventFilter(QObject* obj, QEvent* e) {
         qWarning() << "  kbd filter: KeyboardLayoutChange event" << obj;
     } else if (e->type() == QEvent::InputMethod) {
         qWarning() << "  kbd filter: InputMethod event" << obj;
+        QInputMethodEvent* ime = static_cast<QInputMethodEvent*>(e);
+        qWarning() << "  --commitStr " << ime->commitString();
+        // ä Qt::Key_Adiaeresis
+        // ö Qt::Key_Odiaeresis
+        // ü Qt::Key_Udiaeresis
+        // ß Qt::Key_ssharp
+        qWarning() << "  --preeditStr" << ime->preeditString();
     }
     return false;
 }
