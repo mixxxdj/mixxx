@@ -1,5 +1,6 @@
 #include "backupworker.h"
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
