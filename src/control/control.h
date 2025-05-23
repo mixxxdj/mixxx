@@ -11,6 +11,8 @@
 #include "preferences/usersettings.h"
 
 class ControlObject;
+private:
+    bool m_isExecutingCallback = false;  // Prevents reentrant execution
 
 enum class ControlFlag {
     None = 0,
