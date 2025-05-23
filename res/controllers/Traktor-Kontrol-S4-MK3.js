@@ -212,8 +212,8 @@ const SamplerCrossfaderAssign = true;
                 JOGWHEEL-RELATED CONSTANTS
  *******************************************************/
 // motor wind up/down
-const MotorWindUpMilliseconds = 1200;
-const MotorWindDownMilliseconds = 900;
+const MotorWindUpMilliseconds = 0;
+const MotorWindDownMilliseconds = 0;
 
 // input filtering. Coefficients generated in scipy
 // for a 5-tap filter given a sampling rate of 500Hz
@@ -276,6 +276,22 @@ const MOTOROUT_SMOOTHING_FACTOR = 0.5; // smaller is smoother but slower
 // const SLIP_FRICTION_FORCE = 0.2 * MaxWheelForce; // based on Traktor tests with max force 60000
 // const SLIP_FRICTION_FORCE = 0; // based on Traktor tests with max force 60000
 const SLIP_ERROR_THRESH = 0.05; // 5% velocity tolerance for slipping
+// Integrator suppression slip threshold
+// this is an attempt to stop the cumulative error from causing big overshoots
+// when adjusting via the crown. Without this, the integrator will grow more and more
+// during the adjustment, and when you finally let go it slams back so hard that it can
+// stop the platter. You can feel this as an increasing resistance to the crown adjustment.
+// suppressing the integrator beyond a certain error threshold solves this issue, and
+// causes no detrimental effects as long as the error threshold is large enough. If the
+// threshold is too small (below 0.2 in my testing) the integrator loses its power
+// and the turntable won't be able to reach the target angular velocity.
+const INTEGRATOR_SUPPRESSION_ERROR_THRESH = 0.3;
+
+// Even with a "perfectly" tuned PID controller, there will always be some steady-state
+// oscillation (flutter). So when we're within a certain threshold of the target rate,
+// we will disable scratch mode
+const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
+const PLAYBACK_QUANTIZE_PITCH_STEP = 0.05
 
 const wheelLEDmodes = {
     off: 0,
@@ -3114,12 +3130,27 @@ class S4Mk3MotorManager {
             // First, determine the error between target vs measured
             playbackError = targetRate - normalizedVelocity;
 
+            // close enough to perfect? disable scratch2 mode
+            if (Math.abs(playbackError) < PLAYBACK_QUANTIZE_ERROR_THRESH){
+                engine.setValue(this.deck.group, "scratch2_enable", false);
+            }
+            else {
+                engine.setValue(this.deck.group, "scratch2_enable", true);
+            }
+
             // If we are touching the disc AND the playbackError goes beyond
             // the slipping threshold, apply the slip force only
             if (this.deck.wheelTouch.touched && Math.abs(playbackError) > SLIP_ERROR_THRESH){
                 this.isSlipping = true;
             } else if (this.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
                 this.isSlipping = false;
+            } 
+            // Experimental: if we are beyond a certain error threshold (slip for now),
+            // suppress the error integrator---to help with gracefully restoring rotation
+            // speed without overshoot when adjusting with the crown.
+            else if (Math.abs(playbackError) > INTEGRATOR_SUPPRESSION_ERROR_THRESH){
+                // keep the accumulator suppressed so it doesn't go crazy
+                this.I_accumulator = 0;
             }
 
             if (this.isSlipping) {
@@ -3129,8 +3160,6 @@ class S4Mk3MotorManager {
                 else {
                     outputTorque = -SLIP_FRICTION_FORCE;
                 }
-                // keep the accumulator suppressed so it doesn't go crazy
-                this.I_accumulator = 0;
             }
             // Otherwise, we aren't slipping. Apply new motor controller
             else {
