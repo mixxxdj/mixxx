@@ -290,8 +290,8 @@ const INTEGRATOR_SUPPRESSION_ERROR_THRESH = 0.3;
 // Even with a "perfectly" tuned PID controller, there will always be some steady-state
 // oscillation (flutter). So when we're within a certain threshold of the target rate,
 // we will disable scratch mode
-const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
-const PLAYBACK_QUANTIZE_PITCH_STEP = 0.05
+// const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
+const PLAYBACK_QUANTIZE_ERROR_STEP = 0.2
 
 const wheelLEDmodes = {
     off: 0,
@@ -1879,7 +1879,11 @@ class S4Mk3Deck extends Deck {
         super(decks, colors);
 
         // buffer used for lowpassing the input velocity
-        this.velFilter = new FilterBuffer(VelFilterTaps,VelFilterCoeffs)
+        this.velFilter = new FilterBuffer(VelFilterTaps,VelFilterCoeffs);
+
+        // state variable for whether the disc + slipmat are slipping
+        // FIXME: nomenclature clash with the Mixxx "slip" mode (called "flux" in Traktor)
+        this.isSlipping = false;
 
         // manager for the motor output buffer on this deck
         this.motorBuffMgr = motorBuffMgr;
@@ -2848,6 +2852,14 @@ class S4Mk3Deck extends Deck {
                 case wheelModes.motor:
                     // for motorized platters, we are "always scratching",
                     // so we simply send the normalized velocity up the line
+
+                    // ***NEW*** quantizing the output playback (when not slipping)
+                    if (this.deck.isSlipping == false){
+                        let vel_target = engine.getValue(this.deck.group, "rate_ratio");
+                        let vel_err_quant_steps = Math.round((this.velocity - vel_target)/PLAYBACK_QUANTIZE_ERROR_STEP);
+                        this.velocity = vel_target + (vel_err_quant_steps * PLAYBACK_QUANTIZE_ERROR_STEP);
+                        // this.velocity = 1.25;
+                    }
                     engine.setValue(this.group, "scratch2", this.velocity);
                     break;
                 case wheelModes.loopIn:
@@ -3081,7 +3093,7 @@ class S4Mk3MotorManager {
         this.I_accumulator = 0;
         this.D_term = 0;
         this.outputTorque_prev = 0;
-        this.isSlipping = false;
+        // this.isSlipping = false;
     }
     tick() {
         //REMOVE: Can be optimized --- point to a single premade instance variable
@@ -3131,19 +3143,19 @@ class S4Mk3MotorManager {
             playbackError = targetRate - normalizedVelocity;
 
             // close enough to perfect? disable scratch2 mode
-            if (Math.abs(playbackError) < PLAYBACK_QUANTIZE_ERROR_THRESH){
-                engine.setValue(this.deck.group, "scratch2_enable", false);
-            }
-            else {
-                engine.setValue(this.deck.group, "scratch2_enable", true);
-            }
+            // if (Math.abs(playbackError) < PLAYBACK_QUANTIZE_ERROR_THRESH){
+            //     engine.setValue(this.deck.group, "scratch2_enable", false);
+            // }
+            // else {
+            //     engine.setValue(this.deck.group, "scratch2_enable", true);
+            // }
 
             // If we are touching the disc AND the playbackError goes beyond
             // the slipping threshold, apply the slip force only
             if (this.deck.wheelTouch.touched && Math.abs(playbackError) > SLIP_ERROR_THRESH){
-                this.isSlipping = true;
-            } else if (this.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
-                this.isSlipping = false;
+                this.deck.isSlipping = true;
+            } else if (this.deck.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
+                this.deck.isSlipping = false;
             } 
             // Experimental: if we are beyond a certain error threshold (slip for now),
             // suppress the error integrator---to help with gracefully restoring rotation
@@ -3153,7 +3165,7 @@ class S4Mk3MotorManager {
                 this.I_accumulator = 0;
             }
 
-            if (this.isSlipping) {
+            if (this.deck.isSlipping) {
                 if (playbackError > 0) {
                     outputTorque = SLIP_FRICTION_FORCE;
                 }
@@ -3702,9 +3714,10 @@ class S4MK3 {
         if (UseMotors) {
             this.leftMotor = new S4Mk3MotorManager(this.leftDeck);
             this.rightMotor = new S4Mk3MotorManager(this.rightDeck);
-            // Requesting a timer interval of 1ms, but this will capped at 20ms
-            // in controllerscriptinterfacelegacy.cpp :
-            engine.beginTimer(1, this.motorCallback.bind(this));
+            // Requesting a timer interval of 2ms to match sampling rate of wheel sensors
+            // max value is capped in controllerscriptinterfacelegacy.cpp
+            // normally capped at 20ms but we have removed this cap for motor control
+            engine.beginTimer(2, this.motorCallback.bind(this));
             // Even if we remove the cap, QT can't guarantee that any given system
             // will maintain a sub-20ms timer period. See:
             // https://doc.qt.io/qt-5/qobject.html#startTimer
