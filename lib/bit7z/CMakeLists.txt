@@ -210,6 +210,9 @@ endif()
 target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
                                                  "$<INSTALL_INTERFACE:include>" )
 
+target_include_directories(${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                                                "$<INSTALL_INTERFACE:include>")
+
 # private includes
 target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
                                                   "${PROJECT_SOURCE_DIR}/src" )
