@@ -12,6 +12,11 @@
 #include <bit7z/bit7z.hpp>
 
 #include "moc_backupworker.cpp"
+// #include "registercodecs.cpp"
+// #include "registerhashers.cpp"
+
+// extern "C" void RegisterCodecs();
+// extern "C" void RegisterHashers();
 
 BackUpWorker::BackUpWorker(
         UserSettingsPointer config,
@@ -234,39 +239,54 @@ void BackUpWorker::performBackUp() {
         // All next lines need to be uncommented when bit7z and 7z are in the dependencies
         // and the parts in the CMakeLists are uncommented too.
         qDebug() << "[BackUp] -> [BAckUpWorker] -> Bit7z started";
-        // try {
-        //     emit progressChanged(10);
-        //     const QString originalDirName = QFileInfo(settingsDir).fileName();
+        QString path7z;
+#if defined(Q_OS_WIN)
+        path7z = QCoreApplication::applicationDirPath() + "/7z.dll";
+#else
+        path7z = QCoreApplication::applicationDirPath() + "/7z";
+#endif
 
-        //    bit7z::Bit7zLibrary lib("7zip.dll");
-        //    bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
+        if (!QFile::exists(path7z)) {
+            qWarning() << "7z not found:" << path7z;
+            return;
+        }
+        try {
+            emit progressChanged(10);
+            const QString originalDirName = QFileInfo(settingsDir).fileName();
 
-        //    QTemporaryDir tempDir;
-        //    if (tempDir.isValid()) {
-        //        QString tempBackupDir = archivePath + "_temp";
-        //        QDir().mkpath(tempBackupDir);
+            // bit7z::Bit7zLibrary lib("7zip.dll");
+            // bit7z::Bit7zLibrary lib("7z.dll");
 
-        //        if (!copySettingsToTempDir(settingsDir, tempBackupDir)) {
-        //            emit errorOccurred("Could not create temporary directory for backup.");
-        //            emit backUpFinished(false, "Backup failed");
-        //            return;
-        //        }
+            QTemporaryDir tempDir;
+            if (tempDir.isValid()) {
+                QString tempBackupDir = archivePath + "_temp";
+                QDir().mkpath(tempBackupDir);
 
-        //        archivePath7zExt = archivePath + ".7z";
-        //        compressor.compressDirectory(
-        //                tempBackupDir.toStdString(),
-        //                archivePath7zExt.toStdString());
-        //        emit progressChanged(80);
-        //        QDir(tempBackupDir).removeRecursively();
-        //    }
+                if (!copySettingsToTempDir(settingsDir, tempBackupDir)) {
+                    emit errorOccurred("Could not create temporary directory for backup.");
+                    emit backUpFinished(false, "Backup failed");
+                    return;
+                }
 
-        //    emit progressChanged(100);
-        //    emit backUpFinished(true, archivePath);
+                bit7z::Bit7zLibrary lib(path7z.toStdString());
+                bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
 
-        //} catch (const bit7z::BitException& ex) {
-        //    emit errorOccurred(QString::fromStdString(ex.what()));
-        //    emit backUpFinished(false, "Backup failed");
-        //}
+                archivePath7zExt = archivePath + ".7z";
+                compressor.compressDirectory(
+                        tempBackupDir.toStdString(),
+                        archivePath7zExt.toStdString());
+                emit progressChanged(80);
+                QDir(tempBackupDir).removeRecursively();
+            }
+
+            emit progressChanged(100);
+            emit backUpFinished(true, archivePath);
+
+        } catch (const bit7z::BitException& ex) {
+            emit errorOccurred(QString::fromStdString(ex.what()));
+            qDebug() << "[BackUp] -> [BAckUpWorker] -> error " << QString::fromStdString(ex.what());
+            emit backUpFinished(false, "Backup failed");
+        }
 
         qDebug() << "[BAckUpWorker] --> Bit7z ended";
     }

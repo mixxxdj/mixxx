@@ -2786,16 +2786,72 @@ if(WIN32)
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
-#7zip
-#find_package(7zip REQUIRED)
-#target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
-
-#find_package(7zip REQUIRED)
-#target_link_libraries(mixxx-lib PRIVATE 7zip::7zip)
-
 #7bit7z
-#find_package(unofficial-bit7z CONFIG REQUIRED)
-#target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/bit7z)
+target_link_libraries(mixxx PRIVATE bit7z)
+target_include_directories(mixxx PRIVATE ${CMAKE_SOURCE_DIR}/lib/bit7z/include)
+
+#7zip
+if(WIN32)
+  file(
+    GLOB SEVEN_ZIP_DLL
+    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
+  )
+  if(SEVEN_ZIP_DLL)
+    message(STATUS "Found 7zip.dll at: ${SEVEN_ZIP_DLL}")
+    add_custom_command(
+      TARGET mixxx
+      POST_BUILD
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different "${SEVEN_ZIP_DLL}"
+        "${CMAKE_BINARY_DIR}/7z.dll"
+      COMMENT "Copying 7zip.dll to build ${CMAKE_BINARY_DIR}"
+    )
+    message(STATUS "Copied 7zip.dll to ${CMAKE_BINARY_DIR}/7z.dll")
+    add_custom_command(
+      TARGET mixxx
+      POST_BUILD
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different "${SEVEN_ZIP_DLL}"
+        "${CMAKE_INSTALL_PREFIX}/7z.dll"
+      COMMENT
+        "Copying and renaming 7zip.dll to install/7z.dll - ${CMAKE_INSTALL_PREFIX}"
+    )
+    message(STATUS "Copied 7zip.dll to ${CMAKE_INSTALL_PREFIX}/7z.dll")
+  else()
+    message(WARNING "7zip.dll not found, runtime compression may fail!")
+  endif()
+endif()
+
+if(UNIX)
+  file(
+    GLOB SEVEN_ZIP_BIN
+    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7z"
+  )
+  if(SEVEN_ZIP_BIN)
+    message(STATUS "Found 7z.dll at: ${SEVEN_ZIP_BIN}")
+    add_custom_command(
+      TARGET mixxx
+      POST_BUILD
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different "${SEVEN_ZIP_BIN}"
+        "${CMAKE_BINARY_DIR}"
+      COMMENT "Copying 7z to build ${CMAKE_BINARY_DIR}"
+    )
+    message(STATUS "Copied 7z to ${CMAKE_BINARY_DIR}")
+    add_custom_command(
+      TARGET mixxx
+      POST_BUILD
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different "${SEVEN_ZIP_BIN}"
+        "${CMAKE_INSTALL_PREFIX}"
+      COMMENT "Copying 7z to install - ${CMAKE_INSTALL_PREFIX}"
+    )
+    message(STATUS "Copied 7z to ${CMAKE_INSTALL_PREFIX}")
+  else()
+    message(WARNING "7z not found, runtime compression may fail!")
+  endif()
+endif()
 
 # Chromaprint
 find_package(Chromaprint)
