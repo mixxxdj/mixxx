@@ -22,7 +22,7 @@ KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfi
 KeyboardEventFilter::~KeyboardEventFilter() {
 }
 
-bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
+bool KeyboardEventFilter::eventFilter(QObject* obj, QEvent* e) {
     if (e->type() == QEvent::FocusOut) {
         // If we lose focus, we need to clear out the active key list
         // because we might not get Key Release events.
@@ -153,7 +153,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        //qDebug() << "QEvent::KeyboardLayoutChange";
+        qWarning() << "  kbd filter: KeyboardLayoutChange event" << obj;
+    } else if (e->type() == QEvent::InputMethod) {
+        qWarning() << "  kbd filter: InputMethod event" << obj;
     }
     return false;
 }

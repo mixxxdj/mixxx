@@ -1355,8 +1355,12 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
 /// If applicable, requests that the selected field/item be edited
 /// Does nothing otherwise.
 void WTrackTableView::editSelectedItem() {
+    qWarning() << "----WTTV editSelItem";
     if (state() != EditingState) {
+        qWarning() << "----edit";
         edit(currentIndex(), EditKeyPressed, nullptr);
+    } else {
+        qWarning() << "----!return";
     }
 }
 

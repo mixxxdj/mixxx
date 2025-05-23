@@ -121,7 +121,13 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 inline QLocale inputLocale() {
     // Use the default config for local keyboard
     QInputMethod* pInputMethod = QGuiApplication::inputMethod();
-    return pInputMethod ? pInputMethod->locale() : QLocale(QLocale::English);
+    if (pInputMethod) {
+        qWarning() << "---CoreServices: use inputLocale" << pInputMethod->locale().name();
+        return pInputMethod->locale();
+    } else {
+        qWarning() << "---CoreServices: NO inputLocale, return English";
+        return QLocale(QLocale::English);
+    }
 }
 } // anonymous namespace
 
