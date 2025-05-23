@@ -2789,6 +2789,7 @@ endif()
 #7bit7z
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/bit7z)
 target_link_libraries(mixxx PRIVATE bit7z)
+#target_include_directories(mixxx-lib PRIVATE ${CMAKE_SOURCE_DIR}/lib/bit7z)
 target_include_directories(mixxx PRIVATE ${CMAKE_SOURCE_DIR}/lib/bit7z/include)
 
 #7zip

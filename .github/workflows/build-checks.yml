@@ -155,7 +155,7 @@ jobs:
           --include "${PWD%/*}/src/*"
           --exclude "${PWD%/*}/src/test/*"
           --exclude "${PWD%/*}/build/*"
-          --exclude "${PWD%/*}/lib/*"
+          #--exclude "${PWD%/*}/lib/*"
           --output-file lcov.info
         working-directory: build
       - name: "Upload Coverage Report to coveralls.io"
