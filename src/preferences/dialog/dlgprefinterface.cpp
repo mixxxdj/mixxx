@@ -219,11 +219,13 @@ DlgPrefInterface::DlgPrefInterface(
             m_pConfig->setValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey),
                     mixxx::preferences::MultiSamplingMode::Disabled);
         }
+        checkBoxForceHardwareAcceleration->setChecked(m_forceHardwareAcceleration);
     } else
 #endif
     {
 #ifdef MIXXX_USE_QML
         m_multiSampling = mixxx::preferences::MultiSamplingMode::Disabled;
+        m_forceHardwareAcceleration = false;
 #endif
         multiSamplingLabel->hide();
         multiSamplingComboBox->hide();
