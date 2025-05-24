@@ -780,8 +780,8 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFun
                runTimer() {                  
                   const savedThis = this;
                   this.timerId = engine.beginTimer(20, () => {
-                     if (savedThis !== this) {throw new Error("savedThis should be equal to this");}
-                     if (!(this instanceof MyClass)) {throw new Error("this should be an instance of MyClass");}
+                     if (savedThis !== this) { throw new Error("savedThis should be equal to this"); }
+                     if (!(this instanceof MyClass)) { throw new Error("this should be an instance of MyClass"); }
                      engine.setValue('[Test]', 'co', this.globVar);
                      this.globVar++;
                      engine.setValue('[Test]', 'coTimerId', this.timerId + 10);
