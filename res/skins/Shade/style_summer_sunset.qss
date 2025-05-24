@@ -144,13 +144,14 @@ WEffectSelector::indicator:unchecked:selected,
 	border: 0px solid #f8ba54;
 }
 
-#CueDeleteButton {
+#CueStandardButton,
+  #CueSavedLoopButton,
+  #CueSavedJumpButton {
   background-color: #cdbb5d;
 }
-#CueSavedLoopButton {
-  background-color: #cdbb5d;
-}
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #54fd05;
 }
 #CueLabelEdit {

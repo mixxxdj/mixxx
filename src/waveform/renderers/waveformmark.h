@@ -1,9 +1,12 @@
 #pragma once
 #include <QDomNode>
+#include <QHash>
 #include <QImage>
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
+#include "engine/controls/cuecontrol.h"
 #include "track/cue.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformmarklabel.h"
@@ -44,7 +47,11 @@ class WaveformMark {
             QColor color,
             int priority,
             int hotCue = Cue::kNoHotCue,
-            const WaveformSignalColors& signalColors = {});
+            const WaveformSignalColors& signalColors = {},
+            const QString& endPixmapPath = {},
+            const QString& endIconPath = {},
+            float disabledOpacity = 1.0f,
+            float enabledOpacity = 1.0f);
     ~WaveformMark();
 
     // Disable copying
@@ -61,6 +68,12 @@ class WaveformMark {
     int getPriority() const {
         return m_iPriority;
     };
+    mixxx::CueType getType() const {
+        if (!m_typeCO) {
+            return mixxx::CueType::Invalid;
+        }
+        return static_cast<mixxx::CueType>(m_typeCO->get());
+    }
 
     // The m_pPositionCO related function
     bool isValid() const {
@@ -77,18 +90,44 @@ class WaveformMark {
             m_pEndPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
         }
     };
+    template<typename Receiver, typename Slot>
+    void connectTypeChanged(Receiver receiver, Slot slot) const {
+        if (m_typeCO) {
+            m_typeCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
+        }
+    };
+    template<typename Receiver, typename Slot>
+    void connectStatusChanged(Receiver receiver, Slot slot) const {
+        if (m_statusCO) {
+            m_statusCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
+        }
+    };
+
     double getSamplePosition() const {
         return m_pPositionCO->get();
+    }
+    bool isJump() const {
+        return m_typeCO &&
+                static_cast<mixxx::CueType>(m_typeCO->get()) ==
+                mixxx::CueType::Jump;
+    }
+    bool isLoop() const {
+        return m_typeCO &&
+                static_cast<mixxx::CueType>(m_typeCO->get()) ==
+                mixxx::CueType::Loop;
+    }
+    bool isStandard() const {
+        // A Waveform mark should always have either `isJump`, `isLoop` or
+        // `isNormal` returning true!
+        return !isLoop() && !isJump();
     }
     double getSampleEndPosition() const {
         if (!m_pEndPositionCO ||
                 // A hotcue may have an end position although it isn't a saved
-                // loop anymore. This happens when the user changes the cue
+                // loop or jump anymore. This happens when the user changes the cue
                 // type. However, we persist the end position if the user wants
                 // to restore the cue to a saved loop
-                (m_pTypeCO &&
-                        static_cast<mixxx::CueType>(m_pTypeCO->get()) !=
-                                mixxx::CueType::Loop)) {
+                isStandard()) {
             return Cue::kNoPosition;
         }
         return m_pEndPositionCO->get();
@@ -106,6 +145,13 @@ class WaveformMark {
             return true;
         }
         return m_pVisibleCO->toBool();
+    }
+    // A cue is always considered active if it isn't a saved loop or a saved
+    // jump (a.k.a a "standard" cue)
+    bool isActive() const {
+        return !m_statusCO ||
+                static_cast<HotcueControl::Status>(m_statusCO->get()) ==
+                HotcueControl::Status::Active;
     }
     bool isShowUntilNext() const {
         return m_showUntilNext;
@@ -138,14 +184,25 @@ class WaveformMark {
         return m_labelColor;
     }
 
+    double opacity() const {
+        return isActive() ? m_enabledOpacity : m_disabledOpacity;
+    }
+
     void setNeedsImageUpdate() {
         if (m_pGraphics) {
             m_pGraphics->m_obsolete = true;
+        }
+        if (m_pEndGraphics) {
+            m_pEndGraphics->m_obsolete = true;
         }
     }
 
     bool needsImageUpdate() const {
         return !m_pGraphics || m_pGraphics->m_obsolete;
+    }
+
+    bool needsEndImageUpdate() const {
+        return !m_pEndGraphics || m_pEndGraphics->m_obsolete;
     }
 
     void setBreadth(float breadth) {
@@ -168,12 +225,18 @@ class WaveformMark {
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
     QImage generateImage(float devicePixelRatio);
+    QImage generateEndImage(float devicePixelRatio);
 
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
+    QString m_endPixmapPath;
     QString m_iconPath;
+    QString m_endIconPath;
+
+    double m_enabledOpacity;
+    double m_disabledOpacity;
 
     float m_linePosition;
     float m_offset;
@@ -187,12 +250,20 @@ class WaveformMark {
     WaveformMarkLabel m_label;
 
   private:
+    QImage performImageGeneration(float devicePixelRatio,
+            const QString& pixmapPath,
+            const QString& text,
+            WaveformMarkLabel* labelMark,
+            const QString& iconPath);
+
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
-    std::unique_ptr<ControlProxy> m_pTypeCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+    std::unique_ptr<ControlProxy> m_typeCO;
+    std::unique_ptr<ControlProxy> m_statusCO;
 
     std::unique_ptr<Graphics> m_pGraphics;
+    std::unique_ptr<Graphics> m_pEndGraphics;
 
     int m_iPriority;
     int m_iHotCue;

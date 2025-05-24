@@ -6,7 +6,9 @@
 #include "engine/enginebuffer.h"
 #include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -148,6 +150,77 @@ CueControl::~CueControl() {
     delete m_pCuePoint;
     delete m_pCueMode;
     qDeleteAll(m_hotcueControls);
+}
+
+mixxx::audio::FramePos CueControl::nextTrigger(bool reverse,
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos* pTargetPosition,
+        mixxx::audio::FrameDiff_t lookAheadFrames) {
+    VERIFY_OR_DEBUG_ASSERT(pTargetPosition) {
+        return mixxx::audio::kInvalidFramePos;
+    }
+    *pTargetPosition = mixxx::audio::kInvalidFramePos;
+    mixxx::audio::FramePos triggerPosition = mixxx::audio::kInvalidFramePos;
+    HotcueControl* pNextJump = nullptr;
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        if (!pControl->getCue() ||
+                pControl->getStatus() != HotcueControl::Status::Active ||
+                pControl->getCue()->getType() != mixxx::CueType::Jump ||
+                !pControl->getEndPosition().isValid()) {
+            continue;
+        }
+
+        if (!reverse) {
+            // Saved jumps store the position to jump from as their end position
+            if (pControl->getEndPosition() >= currentPosition &&
+                    (!triggerPosition.isValid() || pControl->getEndPosition() < triggerPosition)) {
+                triggerPosition = pControl->getEndPosition();
+                *pTargetPosition = pControl->getPosition();
+                pNextJump = pControl;
+            }
+        } else {
+            // Saved jumps store the position to jump from as their end
+            // position, but here we want to take the jump backward
+            if (pControl->getPosition() <= currentPosition &&
+                    (!triggerPosition.isValid() || pControl->getPosition() > triggerPosition)) {
+                triggerPosition = pControl->getPosition();
+                *pTargetPosition = pControl->getEndPosition();
+            }
+        }
+    }
+
+    if (pNextJump != nullptr &&
+            pNextJump->getPosition() < pNextJump->getEndPosition() &&
+            currentPosition + lookAheadFrames > pNextJump->getEndPosition()) {
+        // If the saved jump is backward, we reset the Active status after the jump
+        // to prevent jumping again like a loop
+        pNextJump->setStatus(HotcueControl::Status::Set);
+    }
+    return triggerPosition;
+}
+
+void CueControl::notifySeek(mixxx::audio::FramePos position) {
+    // Iterate over all the hotcues to find saved jump. If we sought inside the
+    // jump range, ensure the jump is disabled to prevent double seek
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        const bool isJump = pControl->getCue() &&
+                pControl->getCue()->getType() == mixxx::CueType::Jump;
+        if (!isJump ||
+                pControl->getStatus() != HotcueControl::Status::Active ||
+                !pControl->getEndPosition().isValid()) {
+            continue;
+        }
+        const bool isForwardJump = pControl->getPosition() > pControl->getEndPosition();
+
+        if ((!isForwardJump &&
+                    pControl->getPosition() <= position &&
+                    pControl->getEndPosition() > position) ||
+                (isForwardJump &&
+                        pControl->getPosition() > position &&
+                        pControl->getEndPosition() <= position)) {
+            pControl->setStatus(HotcueControl::Status::Set);
+        }
+    }
 }
 
 void CueControl::createControls() {
@@ -669,6 +742,7 @@ void CueControl::loadCuesFromTrack() {
             pOutroCue = pCue;
             break;
         case mixxx::CueType::HotCue:
+        case mixxx::CueType::Jump:
         case mixxx::CueType::Loop: {
             if (pCue->getHotCue() == Cue::kNoHotCue) {
                 continue;
@@ -706,7 +780,6 @@ void CueControl::loadCuesFromTrack() {
             break;
         }
         case mixxx::CueType::Beat:
-        case mixxx::CueType::Jump:
         case mixxx::CueType::Invalid:
         default:
             break;
@@ -971,6 +1044,13 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         } else {
             color = colorFromConfig(ConfigKey("[Controls]", "LoopDefaultColorIndex"));
         }
+    } else if (cueType == mixxx::CueType::Jump) {
+        ConfigKey autoJumpColorsKey("[Controls]", "auto_jump_colors");
+        if (getConfig()->getValue(autoJumpColorsKey, false)) {
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
+        } else {
+            color = colorFromConfig(ConfigKey("[Controls]", "jump_default_color_index"));
+        }
     } else {
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
         if (getConfig()->getValue(autoHotcueColorsKey, false)) {
@@ -1162,6 +1242,21 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                         setLoop(pos.startPosition, pos.endPosition, !loopActive);
                     }
                     break;
+                case mixxx::CueType::Jump:
+                    // If the play position is after the jump departure (cue
+                    // end), triggering the hotcue will make it behave like a
+                    // normal hotcue
+                    if (getEngineBuffer() != nullptr &&
+                            getEngineBuffer()->getPlayPos() >
+                                    pCue->getEndPosition()) {
+                        hotcueGoto(pControl, value);
+                    } else if (pControl->getStatus() !=
+                            HotcueControl::Status::Active) {
+                        pControl->setStatus(HotcueControl::Status::Active);
+                    } else {
+                        pControl->setStatus(HotcueControl::Status::Set);
+                    }
+                    break;
                 default:
                     DEBUG_ASSERT(!"Invalid CueType!");
                 }
@@ -1333,6 +1428,11 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     // constructor and getPosition()->get() is a ControlObject
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
+        if (pControl->getCue() &&
+                pControl->getCue()->getType() == mixxx::CueType::Jump &&
+                pControl->getStatus() != HotcueControl::Status::Active) {
+            appendCueHint(pHintList, pControl->getEndPosition(), Hint::Type::HotCue);
+        }
     }
 
     appendCueHint(pHintList, m_n60dBSoundStartPosition.getValue(), Hint::Type::FirstSound);
