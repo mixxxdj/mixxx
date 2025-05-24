@@ -246,15 +246,13 @@ void BackUpWorker::performBackUp() {
 #else
         path7z = QCoreApplication::applicationDirPath() + "/7z";
 #endif
-
+        emit progressChanged(0);
         if (!QFile::exists(path7z)) {
             qWarning() << "7z not found:" << path7z;
+            emit backUpFinished(false, "Backup failed");
             return;
         }
         try {
-            emit progressChanged(10);
-            const QString originalDirName = QFileInfo(settingsDir).fileName();
-
             // bit7z::Bit7zLibrary lib("7zip.dll");
             // bit7z::Bit7zLibrary lib("7z.dll");
 
@@ -270,10 +268,12 @@ void BackUpWorker::performBackUp() {
                 }
 
                 bit7z::Bit7zLibrary lib(path7z.toStdString());
+                // bit7z::Bit7zLibrary lib;
                 // bit7z::Bit7zLibrary lib("7zip.dll");
                 bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
 
                 archivePath7zExt = archivePath + ".7z";
+                emit progressChanged(10);
                 compressor.compressDirectory(
                         tempBackupDir.toStdString(),
                         archivePath7zExt.toStdString());
