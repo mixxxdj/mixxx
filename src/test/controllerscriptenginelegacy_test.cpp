@@ -711,7 +711,7 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFun
     // Single shot timer with minimum allowed interval of 20ms
     EXPECT_TRUE(evaluateAndAssert(
             R"(var globVar = 7;
-            timerId = engine.beginTimer(20, ()=> {
+            timerId = engine.beginTimer(20, () => {
                 engine.setValue('[Test]', 'co', this.globVar);
                 this.globVar++;
                 engine.setValue('[Test]', 'coTimerId', timerId + 10);
