@@ -817,7 +817,7 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunct
                   this.globVar = 7;
                }
                stopTimer() {
-                  if (!(this instanceof MyClass)) {throw new Error("this should be an instance of MyClass");}
+                  if (!(this instanceof MyClass)) { throw new Error("this should be an instance of MyClass"); }
                   engine.stopTimer(this.timerId);
                   this.timerId = 0;
                   engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
