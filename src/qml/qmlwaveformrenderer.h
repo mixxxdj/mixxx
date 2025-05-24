@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qqmlcontext.h>
+
 #include <QObject>
 #include <QQmlEngine>
 
@@ -347,8 +349,10 @@ class QmlWaveformMark : public QObject {
     Q_PROPERTY(QString textColor MEMBER m_textColor NOTIFY textColorChanged)
     Q_PROPERTY(QString align MEMBER m_align NOTIFY alignChanged)
     Q_PROPERTY(QString text MEMBER m_text NOTIFY textChanged)
-    Q_PROPERTY(QString pixmap MEMBER m_pixmap NOTIFY pixmapChanged)
-    Q_PROPERTY(QString icon MEMBER m_icon NOTIFY iconChanged)
+    Q_PROPERTY(QUrl pixmap MEMBER m_pixmap NOTIFY pixmapChanged)
+    Q_PROPERTY(QUrl icon MEMBER m_icon NOTIFY iconChanged)
+    Q_PROPERTY(QUrl endPixmap MEMBER m_endPixmap NOTIFY endPixmapChanged)
+    Q_PROPERTY(QUrl endIcon MEMBER m_endIcon NOTIFY endIconChanged)
     QML_NAMED_ELEMENT(WaveformMark)
   public:
     QString control() const {
@@ -369,11 +373,23 @@ class QmlWaveformMark : public QObject {
     QString text() const {
         return m_text;
     }
-    QString pixmap() const {
+    QUrl pixmap() const {
         return m_pixmap;
     }
-    QString icon() const {
+    QUrl icon() const {
         return m_icon;
+    }
+    QUrl endPixmap() const {
+        return m_endPixmap;
+    }
+    QUrl endIcon() const {
+        return m_endIcon;
+    }
+    float disabledOpacity() const {
+        return m_disabledOpacity;
+    }
+    float enabledOpacity() const {
+        return m_enabledOpacity;
     }
 
   signals:
@@ -383,8 +399,12 @@ class QmlWaveformMark : public QObject {
     void textColorChanged(QString textColor);
     void alignChanged(QString align);
     void textChanged(QString text);
-    void pixmapChanged(QString pixmap);
-    void iconChanged(QString icon);
+    void pixmapChanged(QUrl pixmap);
+    void iconChanged(QUrl icon);
+    void endPixmapChanged(QUrl pixmap);
+    void endIconChanged(QUrl icon);
+    void disabledOpacityChanged(float opacity);
+    void enabledOpacityChanged(float opacity);
 
   private:
     QString m_control;
@@ -393,8 +413,12 @@ class QmlWaveformMark : public QObject {
     QString m_textColor;
     QString m_align;
     QString m_text;
-    QString m_pixmap;
-    QString m_icon;
+    QUrl m_pixmap;
+    QUrl m_icon;
+    QUrl m_endPixmap;
+    QUrl m_endIcon;
+    float m_disabledOpacity;
+    float m_enabledOpacity;
 };
 
 class QmlWaveformUntilMark : public QObject {
