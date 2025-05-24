@@ -454,12 +454,55 @@ jobs:
           timestamp-digest: SHA256
           timeout: 600
 
-      - name: "Prepare for deployment"
+      - name: "[Windows] Install rsync via Chocolatey"
+        if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+        shell: pwsh
+        run: |
+          # Install rsync via Chocolatey
+          choco install -y rsync
+
+      - name: "[Windows] Upload build to downloads.mixxx.org using rsync"
+        if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+        shell: pwsh
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+          DESTDIR: public_html/downloads
+        run: |
+          # Check for Windows system OpenSSH and rsync executable presence
+          Get-Command ssh-keyscan
+          Get-Command rsync.exe
+
+          # Write SSH key to a temporary file
+          $keyPath = "$env:USERPROFILE\.ssh\id_rsa"
+          $sshDir = [System.IO.Path]::GetDirectoryName($keyPath)
+          if (!(Test-Path $sshDir)) { New-Item -ItemType Directory -Path $sshDir | Out-Null }
+          # Normalize line endings and write the private key content to the file.
+          [System.IO.File]::WriteAllText($keyPath, $env:SSH_PRIVATE_KEY.Replace("`r`n", "`n"))
+          # Restrict permissions on the private key file to the current user for security.
+          icacls $keyPath /inheritance:r /grant:r "$($env:USERNAME):R"
+
+          # Set up known_hosts to avoid prompt
+          $knownHostsPath = "$env:USERPROFILE\.ssh\known_hosts"
+          if (!(Test-Path $knownHostsPath)) { New-Item -ItemType File -Path $knownHostsPath | Out-Null }
+          ssh-keyscan $env:SSH_HOST | Out-File -Encoding ascii -Append $knownHostsPath
+
+          # Set the RSYNC_RSH environment variable to configure how rsync will connect via SSH.
+          # This configures rsync to use the specified SSH options for authentication and host verification.
+          $env:RSYNC_RSH = "ssh -i $keyPath -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$knownHostsPath"
+          # Executes the file transfer using the above configuration.
+          & rsync.exe --verbose --recursive --checksum --times --delay-updates "deploy/" "$($env:SSH_USER)@$($env:SSH_HOST):$($env:DESTDIR)/"
+
+          # Remove the private key file after use to minimize the risk of key exposure.
+          Remove-Item $keyPath -Force
+
+      - name: "[Linux/macOS] Prepare for deployment"
         # Copy the desired directory structure to the deploy/ directory. This
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
         id: prepare_deploy
-        if: github.event_name == 'push' && matrix.artifacts_path != null
+        if: runner.os != 'Windows' && github.event_name == 'push' && matrix.artifacts_path != null
         shell: bash
         run: >
           if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -475,41 +518,8 @@ jobs:
           --dest-url 'https://downloads.mixxx.org'
           ${{ matrix.artifacts_path }}
 
-      # Warning: do not move this step before restoring caches or it will break caching due to
-      # https://github.com/actions/cache/issues/531
-      - name: "[Windows] Install rsync and openssh"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
-        if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
-        run: |
-          $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
-          pacman -S --noconfirm coreutils bash rsync openssh
-          # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
-          # Bash) does not work properly and leads to errors like these:
-          #
-          #     0 [main] python3 (5248) C:\msys64\usr\bin\python3.exe: *** fatal error - cygheap base mismatch detected - 0x180347408/0x180352408.
-          #
-          # Even when prepending the MSYS2 binary directory to %PATH%, GitHub
-          # Actions will still pick the Git Bash executable over the MSYS2 one
-          # when using `shell: bash`. Since it's not feasible to set `shell` to
-          # an absolute path in a cross-platform build workflow, we overwrite the
-          # git bash executable with the MSYS2 one.
-          #
-          # Also see related issue:
-          # https://github.com/actions/virtual-environments/issues/594
-          Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
-          # By default, MSYS2 uses an
-          # /etc/profile file that changes
-          # the current working directory
-          # when bash is started. We don't
-          # want this behavior,so we just
-          # delete it.
-          Remove-Item -Path "C:\msys64\etc\profile"
-          # Add MSYS2's tools to %PATH%.
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
-
-      - name: "Set up SSH Agent"
-        if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+      - name: "[Linux/macOS] Set up SSH Agent"
+        if: runner.os != 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
         shell: bash
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
