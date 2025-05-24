@@ -8,10 +8,10 @@ const S4MK3MOTORTEST_DOWNTIME = 0; //milliseconds
 const S4MK3MOTORTEST_STARTLVL= 4500;
 const S4MK3MOTORTEST_STEPSIZE = 0;
 const S4MK3MOTORTEST_ENDLVL = 6000;
-const NONSLIP_PITCH_SMOOTHING = 1/20;
-const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
+const NONSLIP_PITCH_SMOOTHING = 0.5;
+// const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
 const TARGET_MOTOR_OUTPUT = 4600; //measured target, not exact
-
+const TT_NUDGE_SENSITIVITY = 0.1;
 
 /********************************************************
                 LED Color Constants
@@ -2742,13 +2742,13 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(touched) {
                 this.touched = touched;
-                // if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
-                //     if (touched) {
-                //         engine.setValue(this.group, "scratch2_enable", true);
-                //     } else {
-                //         this.stopScratchWhenOver();
-                //     }
-                // }
+                if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
+                    if (touched) {
+                        engine.setValue(this.group, "scratch2_enable", true);
+                    } else {
+                        this.stopScratchWhenOver();
+                    }
+                }
             },
             stopScratchWhenOver: function() {
                 if (this.touched) {
@@ -3119,6 +3119,7 @@ class S4Mk3MotorManager {
         this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
         // this.isSlipping = false;
         this.nominal_rate_prenudge = 1.0;
+        this.isUpToSpeed = false;
     }
     tick() {
         let outputTorque = 0;
@@ -3218,7 +3219,7 @@ class S4Mk3MotorManager {
             if (this.deck.wheelTouch.touched && Math.abs(playbackError) > SLIP_ERROR_THRESH){
                 this.deck.isSlipping = true;
                 engine.setValue(this.deck.group, "scratch2_enable", true);
-            } else if (this.deck.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
+            } else if (this.deck.wheelTouch.touched == false && this.deck.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
                 this.deck.isSlipping = false;
                 engine.setValue(this.deck.group, "scratch2_enable", false);
             } 
@@ -3257,17 +3258,23 @@ class S4Mk3MotorManager {
                 outputTracking = this.outputTracking_prev + (trackingDiff * MOTOROUT_SMOOTHING_FACTOR);
                 // Compare the smoothed output to a target expected torque to determine effective output pitch in 
                 // non-slip mode (scratch2 disabled):
-                trackingError = (outputTorque - TARGET_MOTOR_OUTPUT)/TARGET_MOTOR_OUTPUT;
-                trackingError = Math.round(trackingError/PLAYBACK_QUANTIZE_ERROR_STEP);
-                trackingError = (trackingError * PLAYBACK_QUANTIZE_ERROR_STEP);
-                engine.setValue(this.deck.group, "rate", trackingError);
-                console.warn(outputTorque, outputTracking, trackingError);
+                trackingError = (outputTorque - (TARGET_MOTOR_OUTPUT*engine.getValue(this.deck.group, "rate_ratio")))/TARGET_MOTOR_OUTPUT;
+                // trackingError = Math.round(trackingError/PLAYBACK_QUANTIZE_ERROR_STEP);
+                // trackingError = (trackingError * PLAYBACK_QUANTIZE_ERROR_STEP);
+                if (this.isUpToSpeed == true){
+                    engine.setValue(this.deck.group, "jog", -trackingError*TT_NUDGE_SENSITIVITY);
+                    // console.warn(outputTorque, outputTracking, trackingError);
+                } else if (trackingError < 0) {
+                    // if we've spun all the way up, only then act like it's jogging time.
+                    this.isUpToSpeed = true;
+                }
             }
             // New torque becomes old torque
             this.outputTorque_prev = outputTorque;
             // Apply additional forward force to compensate for friction
             outputTorque += MOTOR_FRICTION_COMPENSATION;
-
+        } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
+            this.isUpToSpeed = false;
         // In any other wheel mode, the motor only provides resistance to scrubbing/scratching
         } else if (this.deck.wheelMode !== wheelModes.motor) {
             if (TightnessFactor > 0.5) {
@@ -3277,11 +3284,11 @@ class S4Mk3MotorManager {
             } else if (TightnessFactor < 0.5) {
                 // Super tight
                 const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
-                outputTorque = expectedSpeed + Math.min(
+                outputTorque = targetRate + Math.min(
                     maxVelocity,
                     Math.max(
                         -maxVelocity,
-                        (expectedSpeed - normalizedVelocity) * reduceFactor
+                        (targetRate - normalizedVelocity) * reduceFactor
                     )
                 );
             }
