@@ -2,12 +2,16 @@
 
 // TEMPORARY
 // const S4MK3DEBUG = true;
-const S4MK3MOTORTEST_ENABLE = true;
+const S4MK3MOTORTEST_ENABLE = false;
 const S4MK3MOTORTEST_UPTIME = 5000; //milliseconds
 const S4MK3MOTORTEST_DOWNTIME = 2000; //milliseconds
 const S4MK3MOTORTEST_STARTLVL= 4500;
 const S4MK3MOTORTEST_STEPSIZE = 100;
 const S4MK3MOTORTEST_ENDLVL = 6000;
+const NONSLIP_PITCH_SMOOTHING = 1/20;
+const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
+const TARGET_MOTOR_OUTPUT = 4600; //measured target, not exact
+
 
 /********************************************************
                 LED Color Constants
@@ -2695,7 +2699,7 @@ class S4Mk3Deck extends Deck {
                         engine.setValue(this.group, "scratch2_enable", false);
                     } else {
                         this.deck.wheelMode = wheelModes.motor;
-                        engine.setValue(this.group, "scratch2_enable", true);
+                        engine.setValue(this.group, "scratch2_enable", false);
                         const group = this.group;
                     }
                     this.outTrigger();
@@ -2771,6 +2775,7 @@ class S4Mk3Deck extends Deck {
             prev_data: null,
             deck: this,
             velocity: 0,
+            prev_pitch: 0,
             vFilter: this.velFilter,
             input: function(in_position, in_timestamp) {
                 // The input to the wheel is pulled from the HID input report #3
@@ -2782,7 +2787,7 @@ class S4Mk3Deck extends Deck {
                 // Since we're calculating velocity as difference in position,
                 // we have to init the previous value to zero
                 if (this.prev_data === null) {
-                    this.prev_data = [in_position, in_timestamp, 0];
+                    this.prev_data = [in_position, in_timestamp];
                     return; // velocity is implicitly zero here on the return
                 }
 
@@ -2863,10 +2868,14 @@ class S4Mk3Deck extends Deck {
 
                     // ***NEW*** quantizing the output playback (when not slipping)
                     if (this.deck.isSlipping == false){
-                        let vel_target = engine.getValue(this.deck.group, "rate_ratio");
-                        let vel_err_quant_steps = Math.round((this.velocity - vel_target)/PLAYBACK_QUANTIZE_ERROR_STEP);
-                        this.velocity = vel_target + (vel_err_quant_steps * PLAYBACK_QUANTIZE_ERROR_STEP);
+                        // let vel_target = engine.getValue(this.deck.group, "rate_ratio");
+                        // let vel_err_quant_steps = Math.round((this.velocity - vel_target)/PLAYBACK_QUANTIZE_ERROR_STEP);
+                        // this.velocity = vel_target + (vel_err_quant_steps * PLAYBACK_QUANTIZE_ERROR_STEP);
                         // this.velocity = 1.25;
+
+                        // try aggressive smoothing instead for a second
+                        this.velocity = this.prev_pitch + (NONSLIP_PITCH_SMOOTHING*(this.velocity - this.prev_pitch));
+                        this.prev_pitch = this.velocity;
                     }
                     engine.setValue(this.group, "scratch2", this.velocity);
                     break;
@@ -3101,6 +3110,7 @@ class S4Mk3MotorManager {
         this.I_accumulator = 0;
         this.D_term = 0;
         this.outputTorque_prev = 0;
+        this.outputTracking_prev = 0; // new attempt at nudge tracking
 
         this.motortesting_onOff = false;
         this.motortesting_complete = false;
@@ -3108,12 +3118,16 @@ class S4Mk3MotorManager {
         this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
         this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
         // this.isSlipping = false;
+        this.nominal_rate_prenudge = 1.0;
     }
     tick() {
         let outputTorque = 0;
         let targetRate = 0;
         let playbackError = 0;
         let torqueDiff = 0;
+        let trackingDiff = 0;
+        let outputTracking = 0;
+        let trackingError = 0;
 
         //REMOVE: Can be optimized --- point to a single premade instance variable
         // const motorData = new Uint8Array([
@@ -3203,16 +3217,18 @@ class S4Mk3MotorManager {
             // the slipping threshold, apply the slip force only
             if (this.deck.wheelTouch.touched && Math.abs(playbackError) > SLIP_ERROR_THRESH){
                 this.deck.isSlipping = true;
+                engine.setValue(this.deck.group, "scratch2_enable", true);
             } else if (this.deck.isSlipping && Math.abs(playbackError) < SLIP_ERROR_THRESH) {
                 this.deck.isSlipping = false;
+                engine.setValue(this.deck.group, "scratch2_enable", false);
             } 
             // Experimental: if we are beyond a certain error threshold (slip for now),
             // suppress the error integrator---to help with gracefully restoring rotation
             // speed without overshoot when adjusting with the crown.
-            // else if (Math.abs(playbackError) > INTEGRATOR_SUPPRESSION_ERROR_THRESH){
-            //     // keep the accumulator suppressed so it doesn't go crazy
-            //     this.I_accumulator = 0;
-            // }
+            else if (Math.abs(playbackError) > INTEGRATOR_SUPPRESSION_ERROR_THRESH){
+                // keep the accumulator suppressed so it doesn't go crazy
+                this.I_accumulator = 0;
+            }
 
             if (this.deck.isSlipping) {
                 if (playbackError > 0) {
@@ -3229,11 +3245,23 @@ class S4Mk3MotorManager {
                 this.I_accumulator += playbackError * MOTORPID_INTEGRATIVE_GAIN;
                 this.D_term = (playbackError - this.prev_playbackError) * MOTORPID_DERIVATIVE_GAIN;
                 outputTorque = this.P_term + this.I_accumulator - this.D_term;
+                // outputTracking = outputTorque;
                 // outputTorque = playbackError * MOTORPID_PROPORTIONAL_GAIN;
 
                 // Apply a smoothing filter
                 torqueDiff = outputTorque - this.outputTorque_prev;
+                // Another smoothing filter, only for pitch analysis
+                trackingDiff = outputTorque - this.outputTracking_prev;
+
                 outputTorque = this.outputTorque_prev + (torqueDiff * MOTOROUT_SMOOTHING_FACTOR);
+                outputTracking = this.outputTracking_prev + (trackingDiff * MOTOROUT_SMOOTHING_FACTOR);
+                // Compare the smoothed output to a target expected torque to determine effective output pitch in 
+                // non-slip mode (scratch2 disabled):
+                trackingError = (outputTracking - TARGET_MOTOR_OUTPUT)/TARGET_MOTOR_OUTPUT;
+                trackingError = Math.round(trackingError/PLAYBACK_QUANTIZE_ERROR_STEP);
+                trackingError = (trackingError * PLAYBACK_QUANTIZE_ERROR_STEP);
+                engine.setValue(this.deck.group, "rate", trackingError);
+                console.warn(outputTorque, outputTracking, trackingError);
             }
             // New torque becomes old torque
             this.outputTorque_prev = outputTorque;
