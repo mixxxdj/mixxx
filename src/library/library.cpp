@@ -386,8 +386,7 @@ void Library::bindLibraryWidget(
     WTrackTableView* pTrackTableView = new WTrackTableView(m_pLibraryWidget,
             m_pConfig,
             this,
-            m_pLibraryWidget->getTrackTableBackgroundColorOpacity(),
-            true);
+            m_pLibraryWidget->getTrackTableBackgroundColorOpacity());
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
             &Library::showTrackModel,

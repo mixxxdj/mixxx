@@ -105,7 +105,8 @@ TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::ResetPlayed |
             Capability::Analyze |
-            Capability::Properties;
+            Capability::Properties |
+            Capability::Sorting;
 }
 
 QString HiddenTableModel::modelKey(bool noSearch) const {
