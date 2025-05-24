@@ -2806,10 +2806,10 @@ if(UNIX)
   cpmaddpackage(
     NAME bit7z
     GITHUB_REPOSITORY rikyoz/bit7z
-    GIT_TAG master
+    GIT_TAG v4.2.0
   )
 
-  target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+  target_link_libraries(mixxx-lib PRIVATE bit7z)
   message("bit7z package lines passed for linux mac")
 endif()
 
