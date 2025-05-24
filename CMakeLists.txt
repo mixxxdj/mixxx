@@ -2787,27 +2787,27 @@ if(WIN32)
 endif()
 
 # bit7z
-#if(WIN32)
-#  find_package(unofficial-bit7z CONFIG REQUIRED)
-#  target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-#  message("bit7z package lines passed for windows")
-#endif()
+if(WIN32)
+  find_package(unofficial-bit7z CONFIG REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+  message("bit7z package lines passed for windows")
+endif()
 
-#if(UNIX)
-include(FetchContent)
+if(UNIX)
+  include(FetchContent)
 
-FetchContent_Declare(
-  CPM
-  GIT_REPOSITORY https://github.com/cpm-cmake/CPM.cmake.git
-  GIT_TAG origin/master
-)
-FetchContent_MakeAvailable(CPM)
+  FetchContent_Declare(
+    CPM
+    GIT_REPOSITORY https://github.com/cpm-cmake/CPM.cmake.git
+    GIT_TAG origin/master
+  )
+  FetchContent_MakeAvailable(CPM)
 
-cpmaddpackage("gh:rikyoz/bit7z@4.0.10")
+  cpmaddpackage("gh:rikyoz/bit7z@4.0.10")
 
-target_link_libraries(mixxx-lib PRIVATE bit7z)
-message("bit7z package lines passed for linux mac")
-#endif()
+  target_link_libraries(mixxx-lib PRIVATE bit7z)
+  message("bit7z package lines passed for linux mac")
+endif()
 
 #7zip
 if(WIN32)
