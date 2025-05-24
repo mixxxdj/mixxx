@@ -1,8 +1,12 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 
 // TEMPORARY
-const S4MK3DEBUG = true;
-
+// const S4MK3DEBUG = true;
+const S4MK3MOTORTEST_ENABLE = true;
+const S4MK3MOTORTEST_INTERVAL = 3000; //milliseconds
+const S4MK3MOTORTEST_STARTLVL= 1500;
+const S4MK3MOTORTEST_STEPSIZE = 500;
+const S4MK3MOTORTEST_ENDLVL = 60000;
 
 /********************************************************
                 LED Color Constants
@@ -291,7 +295,7 @@ const INTEGRATOR_SUPPRESSION_ERROR_THRESH = 0.3;
 // oscillation (flutter). So when we're within a certain threshold of the target rate,
 // we will disable scratch mode
 // const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
-const PLAYBACK_QUANTIZE_ERROR_STEP = 0.2
+const PLAYBACK_QUANTIZE_ERROR_STEP = 0.1
 
 const wheelLEDmodes = {
     off: 0,
@@ -2852,6 +2856,9 @@ class S4Mk3Deck extends Deck {
                 case wheelModes.motor:
                     // for motorized platters, we are "always scratching",
                     // so we simply send the normalized velocity up the line
+                    // ***NOTE*** this may change as we zero in on how to 
+                    // switch between scratch and regular modes for pitch stability
+                    // during steady-state and nudging
 
                     // ***NEW*** quantizing the output playback (when not slipping)
                     if (this.deck.isSlipping == false){
@@ -3093,9 +3100,50 @@ class S4Mk3MotorManager {
         this.I_accumulator = 0;
         this.D_term = 0;
         this.outputTorque_prev = 0;
+
+        this.motortesting_onOff = false;
+        this.motortesting_timer = Date.now();
+        this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
         // this.isSlipping = false;
     }
     tick() {
+        let outputTorque = 0;
+        let targetRate = 0;
+        let playbackError = 0;
+        let torqueDiff = 0;
+
+        // Motor calibration testing for determining real output torque
+        if (S4MK3MOTORTEST_ENABLE) {
+            if (Date.now() - this.motortesting_timer > S4MK3MOTORTEST_INTERVAL) {    
+                console.warn(this.deckMotorID, "Motor test level: ",this.motorTesting_currentLevel);
+                console.warn(this.deckMotorID, "Motor output enable: ", this.motortesting_onOff);          
+                this.motortesting_timer = Date.now();
+                // If the output was previously OFF, turn it on
+                if (this.motortesting_onOff == false) {
+                    this.motortesting_onOff = true;
+                    console.warn(this.deckMotorID, "Motor output set1: ", this.motortesting_onOff);
+                // If the output was previously ON, turn it off and increment
+                // for next time
+                } else {
+                    this.motortesting_onOff = false;
+                    console.warn(this.deckMotorID, "Motor output set2: ", this.motortesting_onOff);
+                    if (this.motorTesting_currentLevel > S4MK3MOTORTEST_ENDLVL) {
+                        this.motorTesting_currentLevel = 0;
+                    } else {
+                        this.motorTesting_currentLevel += S4MK3MOTORTEST_STEPSIZE;
+                    }
+                }
+            }
+
+            if (this.motortesting_onOff == true) {
+                outputTorque = this.motorTesting_currentLevel;
+            } else {
+                outputTorque = 0;
+            }
+            // Write the calculated value to the motor output buffer
+            this.motorBuffMgr.setMotorOutput(this.deckMotorID,outputTorque);
+            return true;
+        }
         //REMOVE: Can be optimized --- point to a single premade instance variable
         // const motorData = new Uint8Array([
         //     1, 0x20, 1, 0, 0,
@@ -3108,10 +3156,7 @@ class S4Mk3MotorManager {
         // Declaring local variables
         // let playbackRate = 0;
         // let current_velocity = 0;
-        let targetRate = 0;
-        let playbackError = 0;
-        let torqueDiff = 0;
-        let outputTorque = 0;
+        
         // let expectedSpeed = 0; //FIXME: nomenclature
 
         // normalize the velocity relative to the target sensor ticks per second
@@ -3160,10 +3205,10 @@ class S4Mk3MotorManager {
             // Experimental: if we are beyond a certain error threshold (slip for now),
             // suppress the error integrator---to help with gracefully restoring rotation
             // speed without overshoot when adjusting with the crown.
-            else if (Math.abs(playbackError) > INTEGRATOR_SUPPRESSION_ERROR_THRESH){
-                // keep the accumulator suppressed so it doesn't go crazy
-                this.I_accumulator = 0;
-            }
+            // else if (Math.abs(playbackError) > INTEGRATOR_SUPPRESSION_ERROR_THRESH){
+            //     // keep the accumulator suppressed so it doesn't go crazy
+            //     this.I_accumulator = 0;
+            // }
 
             if (this.deck.isSlipping) {
                 if (playbackError > 0) {
