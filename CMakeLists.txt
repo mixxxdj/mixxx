@@ -2803,11 +2803,12 @@ if(UNIX)
   )
   FetchContent_MakeAvailable(CPM)
 
-  cpmaddpackage(
-    NAME bit7z
-    GITHUB_REPOSITORY rikyoz/bit7z
-    GIT_TAG v4.2.0
-  )
+  #cpmaddpackage(
+  #  NAME bit7z
+  #  GITHUB_REPOSITORY rikyoz/bit7z
+  #  GIT_TAG v4.2.0
+  #)
+  cpmaddpackage("gh:rikyoz/bit7z@4.2.0")
 
   target_link_libraries(mixxx-lib PRIVATE bit7z)
   message("bit7z package lines passed for linux mac")
