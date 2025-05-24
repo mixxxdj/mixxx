@@ -2787,9 +2787,31 @@ if(WIN32)
 endif()
 
 # bit7z
-find_package(unofficial-bit7z CONFIG REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
-message("bit7z package lines passed")
+if(WIN32)
+  find_package(unofficial-bit7z CONFIG REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+  message("bit7z package lines passed for windows")
+endif()
+
+if(UNIX)
+  include(FetchContent)
+
+  FetchContent_Declare(
+    CPM
+    GIT_REPOSITORY https://github.com/cpm-cmake/CPM.cmake.git
+    GIT_TAG origin/master
+  )
+  FetchContent_MakeAvailable(CPM)
+
+  cpmaddpackage(
+    NAME bit7z
+    GITHUB_REPOSITORY rikyoz/bit7z
+    GIT_TAG master
+  )
+
+  target_link_libraries(mixxx-lib PRIVATE bit7z::bit7z)
+  message("bit7z package lines passed for linux mac")
+endif()
 
 #7zip
 if(WIN32)
