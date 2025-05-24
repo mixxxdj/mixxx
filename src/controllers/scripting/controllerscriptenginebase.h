@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "util/runtimeloggingcategory.h"
+#include "javascriptplayerproxy.h"
+#include "mixer/playermanager.h"
 #ifdef MIXXX_USE_QML
 #include "controllers/controllerenginethreadcontrol.h"
 #endif
@@ -32,6 +34,8 @@ class ControllerScriptEngineBase : public QObject {
 
     bool executeFunction(QJSValue* pFunctionObject, const QJSValueList& arguments = {});
 
+    QObject* getPlayer(const QString& deck);
+
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
     void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
@@ -52,6 +56,8 @@ class ControllerScriptEngineBase : public QObject {
     bool isTesting() const {
         return m_bTesting;
     }
+
+    static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager);
 
 #ifdef MIXXX_USE_QML
     static void registerTrackCollectionManager(
@@ -91,8 +97,9 @@ class ControllerScriptEngineBase : public QObject {
 #endif
     bool m_bTesting;
 
-#ifdef MIXXX_USE_QML
   private:
+    static inline std::shared_ptr<PlayerManager> s_pPlayerManager;
+#ifdef MIXXX_USE_QML
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
 
   protected:

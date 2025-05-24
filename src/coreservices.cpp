@@ -495,6 +495,8 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_isInitialized = true;
 
+    ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
+
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();
 }
@@ -636,6 +638,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 #endif
 
     // Stop all pending library operations
