@@ -9,7 +9,8 @@ IF NOT DEFINED PLATFORM (
 )
 
 IF NOT DEFINED BUILDENV_BASEPATH (
-    SET BUILDENV_BASEPATH=%MIXXX_ROOT%\buildenv
+    REM  SET BUILDENV_BASEPATH=%MIXXX_ROOT%\buildenv
+	SET BUILDENV_BASEPATH=B:\\vcpkg-git\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake
 )
 
 IF NOT DEFINED BUILD_ROOT (
@@ -20,23 +21,17 @@ IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
 
-IF DEFINED BUILDENV_RELEASE (
+REM IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.6-rel
     SET VCPKG_TARGET_TRIPLET=x64-windows-release
-    vcpkg_update_main
+    REM vcpkg_update_main
     REM SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
     REM SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
-	SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-da4c207
-	SET BUILDENV_SHA256=62d4d7249a7e49ef96d4b96b380e23426dd714eaa9ae415e7a66a587a71e9a27
-) ELSE (
-    SET BUILDENV_BRANCH=2.6
-    SET VCPKG_TARGET_TRIPLET=x64-windows
-    REM SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
-    REM SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
+REM ) ELSE (
+    REM SET BUILDENV_BRANCH=2.6
+    REM SET VCPKG_TARGET_TRIPLET=x64-windows
     REM SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-12239ed
     REM SET BUILDENV_SHA256=5c60b2c61d6448a99979d7cc997e92f2fd5b4b65f65e2439abfca3fa6fd30f8d
-	SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-c2def9b
-	SET BUILDENV_SHA256=01df9fdc8154f96184281a934e73eb4202e4f29452ecc888053c747f7a745d4f
 )
 
 IF "%~1"=="" (
@@ -48,7 +43,9 @@ IF "%~1"=="" (
 )
 
 REM Make These permanent, not local to the batch script.
+REM ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLET=%VCPKG_DEFAULT_TRIPLET%" & SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=%X_VCPKG_APPLOCAL_DEPS_INSTALL%" & SET "CMAKE_GENERATOR=%CMAKE_GENERATOR%"
 ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLET=%VCPKG_DEFAULT_TRIPLET%" & SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=%X_VCPKG_APPLOCAL_DEPS_INSTALL%" & SET "CMAKE_GENERATOR=%CMAKE_GENERATOR%"
+
 
 EXIT /B 0
 
@@ -198,7 +195,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
 
     echo ^You can now open CMakeSetting.json from Visual Studio
     echo ^or configure cmake from the command line in an EMPTY build directory via:
-    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=!MIXXX_VCPKG_ROOT!\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
+    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=B:\vcpkg-git\vcpkg\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
 
     CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
@@ -217,9 +214,6 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
     CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
-	REM CALL :AddCMakeVar2CMakeSettings_JSON "7zip_dir"                           "BOOL"   "True"
-	REM CALL :AddCMakeVar2CMakeSettings_JSON "7zip_INCLUDE_DIR"                   "BOOL"   "True"
-	REM CALL :AddCMakeVar2CMakeSettings_JSON "7zip_LBRARY     "                   "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
