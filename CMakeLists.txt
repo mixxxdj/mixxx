@@ -2790,6 +2790,13 @@ endif()
 if(WIN32)
   find_package(unofficial-bit7z CONFIG REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+  target_compile_definitions(
+    mixxx-lib
+    PRIVATE
+      BIT7Z_AUTO_FORMAT
+      BIT7Z_AUTO_PREFIX_LONG_PATHS
+      BIT7Z_PATH_SANITIZATION
+  )
   message("bit7z package lines passed for windows")
 endif()
 
@@ -2804,6 +2811,15 @@ if(UNIX)
   FetchContent_MakeAvailable(CPM)
 
   cpmaddpackage("gh:rikyoz/bit7z@4.0.10")
+
+  target_link_libraries(mixxx-lib PRIVATE bit7z)
+  target_compile_definitions(
+    mixxx-lib
+    PRIVATE
+      BIT7Z_AUTO_FORMAT
+      BIT7Z_AUTO_PREFIX_LONG_PATHS
+      BIT7Z_PATH_SANITIZATION
+  )
 
   target_link_libraries(mixxx-lib PRIVATE bit7z)
   message("bit7z package lines passed for linux mac")
