@@ -3,10 +3,11 @@
 // TEMPORARY
 // const S4MK3DEBUG = true;
 const S4MK3MOTORTEST_ENABLE = true;
-const S4MK3MOTORTEST_INTERVAL = 3000; //milliseconds
-const S4MK3MOTORTEST_STARTLVL= 1500;
-const S4MK3MOTORTEST_STEPSIZE = 500;
-const S4MK3MOTORTEST_ENDLVL = 60000;
+const S4MK3MOTORTEST_UPTIME = 5000; //milliseconds
+const S4MK3MOTORTEST_DOWNTIME = 2000; //milliseconds
+const S4MK3MOTORTEST_STARTLVL= 4500;
+const S4MK3MOTORTEST_STEPSIZE = 100;
+const S4MK3MOTORTEST_ENDLVL = 6000;
 
 /********************************************************
                 LED Color Constants
@@ -3102,7 +3103,9 @@ class S4Mk3MotorManager {
         this.outputTorque_prev = 0;
 
         this.motortesting_onOff = false;
+        this.motortesting_complete = false;
         this.motortesting_timer = Date.now();
+        this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
         this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
         // this.isSlipping = false;
     }
@@ -3112,38 +3115,6 @@ class S4Mk3MotorManager {
         let playbackError = 0;
         let torqueDiff = 0;
 
-        // Motor calibration testing for determining real output torque
-        if (S4MK3MOTORTEST_ENABLE) {
-            if (Date.now() - this.motortesting_timer > S4MK3MOTORTEST_INTERVAL) {    
-                console.warn(this.deckMotorID, "Motor test level: ",this.motorTesting_currentLevel);
-                console.warn(this.deckMotorID, "Motor output enable: ", this.motortesting_onOff);          
-                this.motortesting_timer = Date.now();
-                // If the output was previously OFF, turn it on
-                if (this.motortesting_onOff == false) {
-                    this.motortesting_onOff = true;
-                    console.warn(this.deckMotorID, "Motor output set1: ", this.motortesting_onOff);
-                // If the output was previously ON, turn it off and increment
-                // for next time
-                } else {
-                    this.motortesting_onOff = false;
-                    console.warn(this.deckMotorID, "Motor output set2: ", this.motortesting_onOff);
-                    if (this.motorTesting_currentLevel > S4MK3MOTORTEST_ENDLVL) {
-                        this.motorTesting_currentLevel = 0;
-                    } else {
-                        this.motorTesting_currentLevel += S4MK3MOTORTEST_STEPSIZE;
-                    }
-                }
-            }
-
-            if (this.motortesting_onOff == true) {
-                outputTorque = this.motorTesting_currentLevel;
-            } else {
-                outputTorque = 0;
-            }
-            // Write the calculated value to the motor output buffer
-            this.motorBuffMgr.setMotorOutput(this.deckMotorID,outputTorque);
-            return true;
-        }
         //REMOVE: Can be optimized --- point to a single premade instance variable
         // const motorData = new Uint8Array([
         //     1, 0x20, 1, 0, 0,
@@ -3169,6 +3140,39 @@ class S4Mk3MotorManager {
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
             
+            // Motor calibration testing for determining real output torque
+            if (S4MK3MOTORTEST_ENABLE && this.motortesting_complete == false) {
+                if (Date.now() - this.motortesting_timer > this.motortesting_next_interval) {    
+                    console.warn(this.deckMotorID, "Motor test level: ",this.motorTesting_currentLevel);
+                    this.motortesting_timer = Date.now();
+                    // If the output was previously OFF, turn it on
+                    if (this.motortesting_onOff == false) {
+                        this.motortesting_onOff = true;
+                        this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
+                    // If the output was previously ON, turn it off and increment
+                    // for next time
+                    } else {
+                        this.motortesting_onOff = false;
+                        this.motortesting_next_interval = S4MK3MOTORTEST_DOWNTIME;
+                        if (this.motorTesting_currentLevel > S4MK3MOTORTEST_ENDLVL) {
+                            this.motorTesting_currentLevel = 0;
+                            this.motortesting_complete = true;
+                        } else {
+                            this.motorTesting_currentLevel += S4MK3MOTORTEST_STEPSIZE;
+                        }
+                    }
+                }
+
+                if (this.motortesting_onOff == true) {
+                    outputTorque = this.motorTesting_currentLevel;
+                } else {
+                    outputTorque = 0;
+                }
+                // Write the calculated value to the motor output buffer
+                this.motorBuffMgr.setMotorOutput(this.deckMotorID,outputTorque);
+                return true;
+            }
+
             // targetRate is 1.0 +/- pitch adjustment. So +8% pitch means targetRate == 1.08
             targetRate = engine.getValue(this.deck.group, "rate_ratio");
             
