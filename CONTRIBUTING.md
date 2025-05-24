@@ -5,10 +5,15 @@ Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs a
 Table of Contents
 
 1. [Orientation](#orientation)
-   1. [Git Repositories](#git-repositories)
+   1. [Important Guidelines and Policies](#important-guidelines-and-policies)
+   2. [Git Repositories](#git-repositories)
+   3. [Use of AI](#use-of-ai)
 2. [Git Workflow](#git-workflow)
-   1. [All Contributors](#all-contributors)
-   2. [Core Team](#core-team)
+   1. [pre-commit](#pre-commit)
+   2. [All Contributors](#all-contributors)
+   3. [Core Team](#core-team)
+      1. [Change requests](#change-requests)
+      2. [Code owners](#code-owners)
 
 ## Orientation
 
@@ -31,6 +36,15 @@ This repository contains the Mixxx source code, skins, controller mappings, and 
 * [mixxxdj/vcpkg](https://github.com/mixxxdj/vcpkg): dependencies packaged for macOS and Windows
 
 All of these are automatically built and deployed by [GitHub Actions](https://github.com/features/actions) whenever a change is committed. You are welcome to open a pull request in any of these repositories.
+
+### Use of AI
+
+The use of AI assistant is welcome in any contributions, but we expect the author of the PR to precisely understand any changes they would be submitting, thus ask them to review any generated content to ensure it is relevant and hallucination-free. As PR review is a constant challenge due to core member's time, if a Mixxx members suspects a PR to be exclusively vibe-coded and providing no value, they are allowed to close them right away with an automated notice, as following:
+
+> Thanks for your contribution in Mixxx. Unfortunately, it looks like the change you are submitting is exclusively written by AI and does not match with our level of expectation. For this matter, we are going to close this PR, but if you expect this decision to be unfair or incorrect, please feel free to provide a review of your own PR and justify the code diff. We appreciate that you may not be an expert in technologies used in Mixxx, but we believe that our time can be better invested than providing advice to an LLM.
+> Please check the CONTRIBUTING guideline for further details
+
+Please remember that these kind of abusive are particularly disrespectful to the Mixxx contributors, and we reserve ourself the right to ban any users that would repeatedly do so.
 
 ## Git Workflow
 
@@ -94,3 +108,13 @@ Mixxx core team members are contributors who have write access to the [upstream 
 * Merge PRs using a merge, to keep the original commits valid. Keep the default commit message "Merge pull request ..." with the reference to the pull request. In case where the PR contains broken (non-building) commits, back-and-forth commits or commits without a meaningful commit message that are not worth keeping, ask the author to squash the commits before merge. Alternatively you may ask the contributor to check "Allow edits and access to secrets by maintainers". Then you can squash locally or use the `/softfix` comment to squash remotely. See [Softfix](https://github.com/daschuer/softfix/?tab=readme-ov-file#softfix-a-pull-request)
 * Default to open; only post in the private Zulip stream for discussions that have a reason to be private. Most of the time, post to a public Zulip stream so anyone can participate in the discussion.
 * When Mixxx participates in Google Summer of Code, you may volunteer as a mentor if you like.
+
+#### Change requests
+
+We recommend that core members use the `Change request` review state carefully due to the blocking aspect it represent in PRs. When a member submit a change request, they are expected to commit to provide quick feedback once the PR's author has addressed these changes in order not to block the PR. If a core member request changes and doesn't provide a feedback within 15 days following the author actor acting on the this request, another core member can discard their review in order to unblock the PR. We trust the second core member to ensure that the initial change request has correctly been addressed. When in doubt, the initial change request should be kept. Note that the [CODEOWNERS file](.github/CODEOWNERS) can be used to find another member with expertise to help assessing whether or not the initial concerned has been addressed.
+
+#### Code owners
+
+To help with expertise across Mixxx codebase, we use [Github's CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to highlight members who can provide advice and help addressing a thorough review. Beside the filename, code owners do not own the approval, and any core member can decide to merge changes in section they aren't expert in. Once again, we trust core embers will take the right decision and reach out to another core member when in doubt.
+
+Code owners member are initial defined on based on the last two years of contribution, and distributed across all active members. Any core members can add or remove themselves from the list.
