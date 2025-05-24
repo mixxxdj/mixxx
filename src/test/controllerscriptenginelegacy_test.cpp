@@ -823,7 +823,7 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunct
                   engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
                }
                runTimer() {
-                  this.timerId = engine.beginTimer(20, ()=>this.stopTimer(), false);                  
+                  this.timerId = engine.beginTimer(20, () => this.stopTimer(), false);                  
                   engine.setValue('[Test]', 'co', this.globVar);      
                   engine.setValue('[Test]', 'coTimerId', this.timerId);
                }
