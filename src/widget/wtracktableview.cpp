@@ -74,6 +74,20 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
             &WTrackTableView::scrollValueChanged,
             this,
             &WTrackTableView::slotScrollValueChanged);
+
+    setInputMethodHints(Qt::ImhNone);
+}
+
+void WTrackTableView::currentChanged(
+        const QModelIndex& current,
+        const QModelIndex& previous) {
+    QTableView::currentChanged(current, previous);
+    // Reset Qt::WA_InputMethodEnabled right away if no editor is open
+    if (state() != QTableView::EditingState) {
+        // how would currentChanged be called anyway when an editor is open?
+        // Star delegate hovered?
+        setAttribute(Qt::WA_InputMethodEnabled, false);
+    }
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -1117,6 +1131,7 @@ void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
+    qWarning() << "     WTrackTableView keypress:" << QKeySequence(event->key()).toString();
     switch (event->key()) {
     case kPropertiesShortcutKey: {
         // Return invokes the double-click action.
@@ -1207,7 +1222,13 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             return;
         }
     }
+    qWarning() << "     --> passed to QTableView";
     QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::keyboardSearch(const QString& search) {
+    qWarning() << "     --> kbd search" << search;
+    QTableView::keyboardSearch(search);
 }
 
 void WTrackTableView::resizeEvent(QResizeEvent* event) {
@@ -1348,8 +1369,12 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
 /// If applicable, requests that the selected field/item be edited
 /// Does nothing otherwise.
 void WTrackTableView::editSelectedItem() {
+    qWarning() << "----WTTV editSelItem";
     if (state() != EditingState) {
+        qWarning() << "----edit";
         edit(currentIndex(), EditKeyPressed, nullptr);
+    } else {
+        qWarning() << "----!return";
     }
 }
 

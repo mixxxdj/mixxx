@@ -351,10 +351,14 @@ template <class ValueType>
 QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
     QReadLocker lock(&m_valuesLock);
 
+    qWarning() << "   .";
+    qWarning() << "   ConfigObject::transpose, values:";
     QMultiHash<ValueType, ConfigKey> transposedHash;
     for (auto it = m_values.constBegin(); it != m_values.constEnd(); ++it) {
+        qWarning().noquote() << "   " << it.value().value << it.key();
         transposedHash.insert(it.value(), it.key());
     }
+    qWarning() << "   .";
     return transposedHash;
 }
 

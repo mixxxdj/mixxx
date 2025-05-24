@@ -21,6 +21,34 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+
+QString focusWidgetStr(FocusWidget fw) {
+    switch (fw) {
+    case FocusWidget::None: {
+        return "None";
+    }
+    case FocusWidget::Searchbar: {
+        return "Searchbar";
+    }
+    case FocusWidget::Sidebar: {
+        return "Sidebar";
+    }
+    case FocusWidget::TracksTable: {
+        return "TracksTable";
+    }
+    case FocusWidget::ContextMenu: {
+        return "ContextMenu";
+    }
+    case FocusWidget::Dialog: {
+        return "Dialog";
+    }
+    case FocusWidget::Unknown: {
+        return "Unknown";
+    }
+    default:
+        return "---";
+    }
+}
 } // namespace
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
@@ -1017,6 +1045,7 @@ void LibraryControl::slotFocusedWidgetChanged(QWidget* oldW, QWidget* newW) {
 void LibraryControl::updateFocusedWidgetControls() {
     m_focusedWidget = getFocusedWidget();
     // Update "[Library], focused_widget" control
+    qWarning().noquote() << "------- now focused:" << focusWidgetStr(m_focusedWidget);
     double newVal = static_cast<double>(m_focusedWidget);
     m_pFocusedWidgetCO->setAndConfirm(newVal);
 }
