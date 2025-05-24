@@ -270,6 +270,7 @@ void BackUpWorker::performBackUp() {
                 }
 
                 bit7z::Bit7zLibrary lib(path7z.toStdString());
+                // bit7z::Bit7zLibrary lib("7zip.dll");
                 bit7z::BitFileCompressor compressor(lib, bit7z::BitFormat::SevenZip);
 
                 archivePath7zExt = archivePath + ".7z";
