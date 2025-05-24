@@ -2848,11 +2848,11 @@ if(UNIX)
     "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7z"
   )
   if(SEVEN_ZIP_BIN)
-    message(STATUS "Found 7z.dll at: ${SEVEN_ZIP_BIN}")
+    message(STATUS "Found 7z at: ${SEVEN_ZIP_BIN}")
     set(
       _dll_destinations
-      "${CMAKE_BINARY_DIR}/7z.dll"
-      "${CMAKE_INSTALL_PREFIX}/7z.dll"
+      "${CMAKE_BINARY_DIR}"
+      #"${CMAKE_INSTALL_PREFIX}"
     )
     foreach(dst IN LISTS _dll_destinations)
       add_custom_command(
