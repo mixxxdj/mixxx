@@ -2,7 +2,7 @@
 
 // TEMPORARY
 // const S4MK3DEBUG = true;
-const S4MK3MOTORTEST_ENABLE = true;
+const S4MK3MOTORTEST_ENABLE = false;
 const S4MK3MOTORTEST_UPTIME = 10000; //milliseconds
 const S4MK3MOTORTEST_DOWNTIME = 0; //milliseconds
 const S4MK3MOTORTEST_STARTLVL= 4500;
@@ -279,7 +279,7 @@ const MOTORPID_PROPORTIONAL_GAIN = P_Gain;
 const MOTORPID_INTEGRATIVE_GAIN = I_Gain;
 const MOTORPID_DERIVATIVE_GAIN = D_Gain;
 // const MOTORPID_DERIVATIVE_GAIN = 0;
-const MOTOROUT_SMOOTHING_FACTOR = 0.5; // smaller is smoother but slower
+const MOTOROUT_SMOOTHING_FACTOR = 1/5; // 0.5; // smaller is smoother but slower
 
 // Motor slip threshold
 // const SLIP_FRICTION_FORCE = 0.2 * MaxWheelForce; // based on Traktor tests with max force 60000
@@ -300,7 +300,7 @@ const INTEGRATOR_SUPPRESSION_ERROR_THRESH = 0.3;
 // oscillation (flutter). So when we're within a certain threshold of the target rate,
 // we will disable scratch mode
 // const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
-const PLAYBACK_QUANTIZE_ERROR_STEP = 0.1
+const PLAYBACK_QUANTIZE_ERROR_STEP = 0.4
 
 const wheelLEDmodes = {
     off: 0,
@@ -3257,7 +3257,7 @@ class S4Mk3MotorManager {
                 outputTracking = this.outputTracking_prev + (trackingDiff * MOTOROUT_SMOOTHING_FACTOR);
                 // Compare the smoothed output to a target expected torque to determine effective output pitch in 
                 // non-slip mode (scratch2 disabled):
-                trackingError = (outputTracking - TARGET_MOTOR_OUTPUT)/TARGET_MOTOR_OUTPUT;
+                trackingError = (outputTorque - TARGET_MOTOR_OUTPUT)/TARGET_MOTOR_OUTPUT;
                 trackingError = Math.round(trackingError/PLAYBACK_QUANTIZE_ERROR_STEP);
                 trackingError = (trackingError * PLAYBACK_QUANTIZE_ERROR_STEP);
                 engine.setValue(this.deck.group, "rate", trackingError);
