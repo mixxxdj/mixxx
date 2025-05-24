@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-declare interface QtSlot<F extends Function> {
-    connect(callback: F): undefined
+declare interface QtSlot<F extends (...args: any[]) => void> {
+    connect(callback: F): void
 }
 
 /** ScriptConnectionJSProxy */
@@ -49,17 +49,17 @@ declare interface Player {
     trackNumber: string
     trackTotal: string
 
-    trackChanged: QtSlot<() => undefined>
-    artistChanged: QtSlot<(newArtist: string) => undefined>
-    titleChanged: QtSlot<(newTitle: string) => undefined>
-    albumChanged: QtSlot<(newAlbum: string) => undefined>
-    albumArtistChanged: QtSlot<(newAlbumArtist: string) => undefined>
-    genreChanged: QtSlot<(newGenre: string) => undefined>
-    composerChanged: QtSlot<(newComposer: string) => undefined>
-    groupingChanged: QtSlot<(newGrouping: string) => undefined>
-    yearChanged: QtSlot<(newYear: string) => undefined>
-    trackNumberChanged: QtSlot<(newTrackNumber: string) => undefined>
-    trackTotalChanged: QtSlot<(newTrackTotal: string) => undefined>
+    trackChanged: QtSlot<() => void>
+    artistChanged: QtSlot<(newArtist: string) => void>
+    titleChanged: QtSlot<(newTitle: string) => void>
+    albumChanged: QtSlot<(newAlbum: string) => void>
+    albumArtistChanged: QtSlot<(newAlbumArtist: string) => void>
+    genreChanged: QtSlot<(newGenre: string) => void>
+    composerChanged: QtSlot<(newComposer: string) => void>
+    groupingChanged: QtSlot<(newGrouping: string) => void>
+    yearChanged: QtSlot<(newYear: string) => void>
+    trackNumberChanged: QtSlot<(newTrackNumber: string) => void>
+    trackTotalChanged: QtSlot<(newTrackTotal: string) => void>
 }
 
 /** ControllerScriptInterfaceLegacy */

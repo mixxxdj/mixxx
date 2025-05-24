@@ -28,6 +28,7 @@ JavascriptPlayerProxy::JavascriptPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObj
 
 void JavascriptPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     m_pCurrentTrack = pTrack;
+
     if (pTrack != nullptr) {
         connect(pTrack.get(),
                 &Track::artistChanged,

@@ -30,15 +30,15 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 }
 
+void ControllerScriptEngineBase::registerPlayerManager(
+        std::shared_ptr<PlayerManager> pPlayerManager) {
+    ControllerScriptEngineBase::s_pPlayerManager = pPlayerManager;
+}
+
 #ifdef MIXXX_USE_QML
 void ControllerScriptEngineBase::registerTrackCollectionManager(
         std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
-}
-
-void ControllerScriptEngineBase::registerPlayerManager(
-        std::shared_ptr<PlayerManager> pPlayerManager) {
-    ControllerScriptEngineBase::s_pPlayerManager = pPlayerManager;
 }
 
 void ControllerScriptEngineBase::handleQMLErrors(const QList<QQmlError>& qmlErrors) {
@@ -121,6 +121,25 @@ void ControllerScriptEngineBase::reload() {
     initialize();
 }
 
+QObject* ControllerScriptEngineBase::getPlayer(const QString& deck) {
+    VERIFY_OR_DEBUG_ASSERT(s_pPlayerManager != nullptr) {
+        qCritical() << "Uninitialized PlayerManager";
+        return nullptr;
+    }
+    auto* const player = s_pPlayerManager->getPlayer(deck);
+    if (!player) {
+        qWarning() << "PlayerManagerProxy failed to find player for group" << deck;
+        return nullptr;
+    }
+
+    // Don't set a parent here, so that the QML engine deletes the object when
+    // the corresponding JS object is garbage collected.
+    JavascriptPlayerProxy* pPlayerProxy = new JavascriptPlayerProxy(player, nullptr);
+    QJSEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+
+    return pPlayerProxy;
+}
+
 bool ControllerScriptEngineBase::executeFunction(
         QJSValue* pFunctionObject, const QJSValueList& args) {
     // This function is called from outside the controller engine, so we can't
@@ -198,21 +217,6 @@ void ControllerScriptEngineBase::showQMLExceptionDialog(
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, errorText, bFatalError);
     }
-}
-
-QObject* ControllerScriptEngineBase::getPlayer(const QString& deck) {
-    if (!s_pPlayerManager) {
-        qWarning() << "PlayerManagerProxy failed to find player for group" << deck;
-        return nullptr;
-    }
-
-    // Don't set a parent here, so that the QML engine deletes the object when
-    // the corresponding JS object is garbage collected.
-    JavascriptPlayerProxy* pPlayerProxy = new JavascriptPlayerProxy(
-            s_pPlayerManager->getPlayer(deck), nullptr);
-    QJSEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
-
-    return pPlayerProxy;
 }
 #endif
 
