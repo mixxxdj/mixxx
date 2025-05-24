@@ -2809,7 +2809,7 @@ if(UNIX)
     GIT_TAG master
   )
 
-  target_link_libraries(mixxx-lib PRIVATE bit7z::bit7z)
+  target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
   message("bit7z package lines passed for linux mac")
 endif()
 
