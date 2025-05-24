@@ -78,6 +78,18 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
     setInputMethodHints(Qt::ImhNone);
 }
 
+void WTrackTableView::currentChanged(
+        const QModelIndex& current,
+        const QModelIndex& previous) {
+    QTableView::currentChanged(current, previous);
+    // Reset Qt::WA_InputMethodEnabled right away if no editor is open
+    if (state() != QTableView::EditingState) {
+        // how would currentChanged be called anyway when an editor is open?
+        // Star delegate hovered?
+        setAttribute(Qt::WA_InputMethodEnabled, false);
+    }
+}
+
 WTrackTableView::~WTrackTableView() {
     WTrackTableViewHeader* pHeader =
             qobject_cast<WTrackTableViewHeader*>(horizontalHeader());

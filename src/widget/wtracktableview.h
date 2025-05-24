@@ -33,6 +33,9 @@ class WTrackTableView : public WLibraryTableView {
     ~WTrackTableView() override;
     // can't use, it's not virtual in QWidget
     // void setAttribute(Qt::WidgetAttribute attribute, bool on = true) override;
+
+    void currentChanged(const QModelIndex& current, const QModelIndex& previous) override;
+
     void contextMenuEvent(QContextMenuEvent * event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;
