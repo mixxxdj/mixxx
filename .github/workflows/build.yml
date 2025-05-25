@@ -482,7 +482,12 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
         if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
         run: |
-          $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+          if (Test-Path "C:\msys64\usr\bin") {
+            $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
+          } else {
+            choco install msys2 -y
+            $Env:PATH="C:\tools\msys64\usr\bin;$Env:PATH"
+          }
           pacman -S --noconfirm coreutils bash rsync openssh
           # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
           # Bash) does not work properly and leads to errors like these:
