@@ -61,16 +61,20 @@ bool BackUpWorker::copySettingsToTempDir(const QString& settingsDir, const QStri
 
 #elif defined(Q_OS_LINUX)
     QProcess rsync;
-    rsync.start("rsync", {// archive mode
-                                 "-a",
-                                 "--exclude=analysis/", // exclude analysis
-                                 "--exclude=lut/",      // exclude timecode lut
-                                 "--retries=3",         // retry 3 times if file is locked
-                                 settingsDir + "/",
-                                 tempDirPath + "/"});
+    rsync.setProgram("rsync");
+    rsync.setArguments({"-a",
+            "--exclude=analysis/", // exclude analysis
+            "--exclude=lut/",      // exclude timecode lut
+            settingsDir + "/",
+            tempDirPath + "/"});
+    rsync.start();
+    rsync.waitForFinished();
 
-    if (!rsync.waitForFinished() || rsync.exitCode() != 0) {
-        qCritical() << "[BackUp] -> [BAckUpWorker] -> rsync failed!";
+    qDebug() << "stdout:" << rsync.readAllStandardOutput();
+    qDebug() << "stderr:" << rsync.readAllStandardError();
+
+    if (rsync.exitCode() != 0) {
+        qCritical() << "[BackUp] -> [BackUpWorker] -> rsync failed! Exit code:" << rsync.exitCode();
         return false;
     }
     return true;
