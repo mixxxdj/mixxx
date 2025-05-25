@@ -267,11 +267,26 @@ void WCueMenuPopup::slotUpdate() {
         m_pStandardCue->setChecked(m_pCue->getType() == mixxx::CueType::HotCue);
         m_pSavedLoopCue->setChecked(m_pCue->getType() == mixxx::CueType::Loop);
         m_pSavedJumpCue->setChecked(m_pCue->getType() == mixxx::CueType::Jump);
-        m_pSavedJumpCue->setProperty("direction",
-                m_pCue->getType() != mixxx::CueType::Jump ||
-                                m_pCue->getPosition() > m_pCue->getEndPosition()
-                        ? "forward"
-                        : "backward");
+        QString direction;
+        if (m_pCue->getType() == mixxx::CueType::HotCue) {
+            // Use forward/backward icon if the playposition is before/after
+            // the hotcue position
+            auto cueStartEnd = m_pCue->getStartAndEndPosition();
+            auto newPosition = getCurrentPlayPositionWithQuantize();
+            if (!newPosition.has_value() || newPosition < cueStartEnd.startPosition) {
+                direction = "forward";
+            } else {
+                direction = "backward";
+            }
+        } else {
+            // Use forward icon if this is a saved loop, or forward/back if this
+            // already is a jump cue
+            direction = m_pCue->getType() != mixxx::CueType::Jump ||
+                            m_pCue->getPosition() > m_pCue->getEndPosition()
+                    ? "forward"
+                    : "backward";
+        }
+        m_pSavedJumpCue->setProperty("direction", direction);
         m_pSavedJumpCue->style()->polish(m_pSavedJumpCue.get());
         m_pSavedJumpCue->repaint();
     } else {
