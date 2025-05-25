@@ -502,7 +502,11 @@ jobs:
           #
           # Also see related issue:
           # https://github.com/actions/virtual-environments/issues/594
-          Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          if (Test-Path "C:\msys64\usr\bin\bash.exe") {
+            Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          } else {
+            Copy-Item -Path "C:\tools\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          }
           # By default, MSYS2 uses an
           # /etc/profile file that changes
           # the current working directory
