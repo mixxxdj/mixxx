@@ -1690,7 +1690,6 @@ void MixxxMainWindow::oscEnable() {
     }
 }
 
-
 void MixxxMainWindow::onOscThreadFinished() {
     qDebug() << "[MIXXXMAINWINDOW] -> OSC thread finished";
 

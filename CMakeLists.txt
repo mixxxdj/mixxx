@@ -3518,24 +3518,27 @@ endif()
 
 #eve osc
 # liblo
-find_package(liblo REQUIRED)
-#target_sources(mixxx-liblo PRIVATE lib/lo/lo.h)
-target_link_libraries(mixxx-lib PRIVATE liblo::liblo)
-#add_library(liblo STATIC lib/lo/lo.h)
-#add_library(liblo SYSTEM PUBLIC lib/lo/lo.h)
-#target_include_directories(liblo SYSTEM PUBLIC lib/liblo)
-# ${VCPKG_INSTALLED_DIR}
-#target_include_directories(liblo SYSTEM PUBLIC "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lo")
-#include_directories("D:/mixxx-git/mixxx/buildenv/mixxx-deps-2.6-x64-windows-cce5c19/installed/x64-windows/include")
-#link_directories("D:/mixxx-git/mixxx/buildenv/mixxx-deps-2.6-x64-windows-cce5c19/installed/x64-windows/lib")
-#include_directories(
-#  "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/lib/lo"
-#)
-#link_directories("${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
-#add_subdirectory(lib/lo)
-#target_include_directories(liblo SYSTEM PUBLIC lib/lo)
-# target_include_directories(liblo SYSTEM PUBLIC lib/lo)
-#include_directories(${CMAKE_SOURCE_DIR})
+# working on win:
+#find_package(liblo REQUIRED)
+#target_link_libraries(mixxx-lib PRIVATE liblo::liblo)
+
+if(UNIX)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(LIBLO REQUIRED liblo)
+
+  add_library(liblo UNKNOWN IMPORTED)
+  set_target_properties(
+    liblo
+    PROPERTIES
+      IMPORTED_LOCATION ${LIBLO_LINK_LIBRARIES}
+      INTERFACE_INCLUDE_DIRECTORIES ${LIBLO_INCLUDE_DIRS}
+  )
+
+  target_link_libraries(mixxx-lib PRIVATE liblo)
+else()
+  find_package(liblo REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE liblo::liblo)
+endif()
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL lib/kaitai/kaitai/kaitaistream.cpp)
