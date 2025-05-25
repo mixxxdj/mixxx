@@ -140,20 +140,23 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
 
     m_pSavedJumpCue = std::make_unique<CueMenuPushButton>(this);
     m_pSavedJumpCue->setToolTip(
-            //: \n is a linebreak. Try to not to extend the translation beyond the length
-            //: of the longest source line so the tooltip remains compact.
-            tr("Turn this cue into a saved jump, to the current play position \n"
-               "or that minus the current beatjump size") +
+            //: \n is a linebreak. Try to not to extend the translation beyond
+            //: the length of the longest source line so the tooltip remains
+            //: compact.
+            tr("Turn this cue into a saved jump.") + "\n\n" +
+            tr("Left-click: If this is a hotcue, use the current play position "
+               "as jump position\n"
+               "if no previous jump position is known.\n"
+               "If this is saved loop, use the start as jump position and the "
+               "end as cue/target position.\n"
+               "If this is already a jump cue, swap the jump position and the "
+               "cue/target position.") +
             "\n\n" +
-            tr("Left-click: Toggle this cue type to saved beatjump, using \n"
-               "the current play position if not previous jump position was "
-               "known. \nIf "
-               "a previous jump position exists, it will "
-               "swap the jump position and the cue/target position."
-               "\nThe cue type will remain unchanged if the jump position cannot be figured out.") +
+            tr("Right-click: use current play position as the jump position") +
             "\n\n" +
-            tr("Right-click: Set the current play position as the jump \n"
-               "destination and make the cue a saved jump if not"));
+            tr("The cue type will remain unchanged if the play position is at "
+               "the cue position\n"
+               "or jump position cannot be figured out."));
     m_pSavedJumpCue->setObjectName("CueSavedJumpButton");
     m_pSavedJumpCue->setCheckable(true);
     connect(m_pSavedJumpCue.get(),
