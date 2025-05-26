@@ -21,6 +21,8 @@ Mixxx.LibrarySourceTree {
             id: dragArea
             anchors.fill: parent
             capabilities: cell.caps
+            playlists: playlistSource
+            crates: crateSource
 
             onPressed: {
                 if (pressedButtons == Qt.LeftButton) {
@@ -190,5 +192,163 @@ Mixxx.LibrarySourceTree {
     Mixxx.LibraryAllTrackSource {
         label: qsTr("All...")
         columns: root.defaultColumns
+    }
+    Mixxx.LibraryPlaylistSource {
+        id: playlistSource
+        label: qsTr("Playlist")
+        itemName: qsTr("playlist")
+        capabilities: Mixxx.LibrarySource.Capability.Create | Mixxx.LibrarySource.Capability.AddTrack
+        onRequestCreate: (name) => {
+            // TODO create a new item with given name
+            print("onRequestCreate", name)
+        }
+        onRequestAddTrack: (item, track) => {
+            // TODO add track to current item
+            print("onRequestAddTrack", item, track)
+        }
+        icon: "../images/library_playlist.png"
+
+        columns: root.defaultColumns
+    }
+    Mixxx.LibraryCrateSource {
+        id: crateSource
+        label: qsTr("Crate")
+        itemName: qsTr("crate")
+        capabilities: Mixxx.LibrarySource.Capability.Create | Mixxx.LibrarySource.Capability.AddTrack
+        onRequestCreate: (name) => {
+            // TODO create a new item with given name
+            print("onRequestCreate", name)
+        }
+        onRequestAddTrack: (item, track) => {
+            // TODO add track to current item
+            print("onRequestAddTrack", item, track)
+        }
+        icon: "../images/library_crates.png"
+
+        columns: root.defaultColumns
+    }
+    Mixxx.LibraryExplorerSource {
+        label: qsTr("Explorer")
+        icon: "../images/library_explorer.png"
+        columns: [
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Preview")
+                delegate: Rectangle {
+                    color: decoration
+                    implicitHeight: 30
+
+                    Image {
+                        anchors.fill: parent
+                        fillMode: Image.PreserveAspectCrop
+                        source: cover_art
+                        clip: true
+                        asynchronous: true
+                    }
+                }
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Filename")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+                role: Mixxx.TrackListColumn.Role.Artist
+
+                label: qsTr("Artist")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+                role: Mixxx.TrackListColumn.Role.Title
+
+                label: qsTr("Title")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Album")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Track #")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Year")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Genre")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Composer")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Comment")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Duration")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("BPM")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Key")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Type")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Bitrate")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+                role: Mixxx.TrackListColumn.Role.Location
+
+                label: qsTr("Location")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Album Artist")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("Grouping")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("File Modified")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("File Created")
+                delegate: DefaultDelegate {}
+            },
+            Mixxx.TrackListColumn {
+
+                label: qsTr("ReplayGain")
+                delegate: DefaultDelegate {}
+            }
+        ]
     }
 }
