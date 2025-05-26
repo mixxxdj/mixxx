@@ -160,6 +160,7 @@ jobs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
+      artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-arm }}
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4.2.2
