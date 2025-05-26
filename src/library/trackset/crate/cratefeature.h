@@ -41,6 +41,11 @@ class CrateFeature : public BaseTrackSetFeature {
 
     TreeItemModel* sidebarModel() const override;
 
+    TrackCollection* trackCollection() const {
+        return m_pTrackCollection;
+        ;
+    }
+
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;

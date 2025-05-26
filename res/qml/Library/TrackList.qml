@@ -328,6 +328,19 @@ Rectangle {
             DelegateChoice {
                 Cell {
                     track.capabilities: root.sidebar.tracklist ? root.sidebar.tracklist.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
+                    track.playlists: root.model.playlist
+                    track.crates: root.model.crate
+                    // required property bool selected
+
+                    // readonly property alias dragImage: dragImageSource
+
+                    // Drag.dragType: Drag.Automatic
+                    // Drag.mimeData: {
+                    //     "text/uri-list": file_url.toString(),
+                    //     "text/plain": file_url.toString()
+                    // }
+                    // Drag.supportedActions: Qt.CopyAction
+                    // anchors.fill: parent
                     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
                     Text {

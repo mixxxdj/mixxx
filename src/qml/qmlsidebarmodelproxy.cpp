@@ -19,6 +19,8 @@ namespace {
 const QHash<int, QByteArray> kRoleNames = {
         {Qt::DisplayRole, "label"},
         {QmlSidebarModelProxy::IconRole, "icon"},
+        {QmlSidebarModelProxy::ItemNameRole, "itemName"},
+        {QmlSidebarModelProxy::CapabilitiesRole, "capabilities"},
 };
 } // namespace
 
@@ -62,19 +64,67 @@ QmlSidebarModelProxy::QmlSidebarModelProxy(QObject* parent)
 }
 QmlSidebarModelProxy::~QmlSidebarModelProxy() = default;
 
+QVariant QmlSidebarModelProxy::data(const QModelIndex& index, int role) const {
+    if (index.internalPointer() != this) {
+        return SidebarModel::data(index, role);
+    }
+    VERIFY_OR_DEBUG_ASSERT(index.isValid() && index.row() >= 0 &&
+            index.row() < m_pQmlFeatures.length()) {
+        return {};
+    }
+    switch (role) {
+    case Qt::DisplayRole:
+        return m_pQmlFeatures[index.row()]->label();
+    case QmlSidebarModelProxy::IconRole:
+        return m_pQmlFeatures[index.row()]->icon();
+    case QmlSidebarModelProxy::ItemNameRole:
+        return m_pQmlFeatures[index.row()]->itemName();
+    case QmlSidebarModelProxy::CapabilitiesRole:
+        return m_pQmlFeatures[index.row()]->capabilities();
+    default:
+        return SidebarModel::data(index, role);
+    }
+}
+
 void QmlSidebarModelProxy::update(const QList<QmlLibrarySource*>& sources) {
     beginResetModel();
     qDeleteAll(m_sFeatures);
-    for (const auto& librarySource : sources) {
-        VERIFY_OR_DEBUG_ASSERT(librarySource) {
+    qDeleteAll(m_pQmlFeatures);
+    for (auto* pLibrarySource : sources) {
+        VERIFY_OR_DEBUG_ASSERT(pLibrarySource) {
             continue;
         }
-        connect(librarySource,
+        connect(pLibrarySource,
                 &QmlLibrarySource::requestTrackModel,
                 this,
                 &QmlSidebarModelProxy::slotShowTrackModel);
-        auto* pLibrarySource = librarySource->internal();
-        addLibraryFeature(pLibrarySource);
+        m_pQmlFeatures.append(pLibrarySource);
+        addLibraryFeature(pLibrarySource->internal());
+        const auto newIndex = index(m_sFeatures.length() - 1, 0);
+        connect(pLibrarySource,
+                &QmlLibrarySource::labelChanged,
+                this,
+                [this, newIndex]() {
+                    emit dataChanged(newIndex, newIndex, {Qt::DisplayRole});
+                });
+        connect(pLibrarySource,
+                &QmlLibrarySource::itemNameChanged,
+                this,
+                [this, newIndex]() {
+                    emit dataChanged(newIndex, newIndex, {QmlSidebarModelProxy::IconRole});
+                });
+        connect(pLibrarySource,
+                &QmlLibrarySource::iconChanged,
+                this,
+                [this, newIndex]() {
+                    emit dataChanged(newIndex, newIndex, {QmlSidebarModelProxy::ItemNameRole});
+                });
+        connect(pLibrarySource,
+                &QmlLibrarySource::capabilitiesChanged,
+                this,
+                [this, newIndex]() {
+                    emit dataChanged(newIndex, newIndex, {QmlSidebarModelProxy::CapabilitiesRole});
+                });
     }
     endResetModel();
 }
