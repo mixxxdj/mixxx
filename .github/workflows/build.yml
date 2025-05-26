@@ -483,11 +483,12 @@ jobs:
         if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
         run: |
           if (Test-Path "C:\msys64\usr\bin") {
-            $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
+            $msysPath="C:\msys64"
           } else {
             choco install msys2 -y
-            $Env:PATH="C:\tools\msys64\usr\bin;$Env:PATH"
+            $msysPath="C:\tools\msys64"
           }
+          $Env:PATH="$msysPath\usr\bin;$Env:PATH"
           pacman -S --noconfirm coreutils bash rsync openssh
           # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
           # Bash) does not work properly and leads to errors like these:
@@ -502,14 +503,14 @@ jobs:
           #
           # Also see related issue:
           # https://github.com/actions/virtual-environments/issues/594
-          Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          Copy-Item -Path "$msysPath\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
           # By default, MSYS2 uses an
           # /etc/profile file that changes
           # the current working directory
           # when bash is started. We don't
           # want this behavior,so we just
           # delete it.
-          Remove-Item -Path "C:\msys64\etc\profile"
+          Remove-Item -Path "$msysPath\etc\profile"
           # Add MSYS2's tools to %PATH%.
           Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
