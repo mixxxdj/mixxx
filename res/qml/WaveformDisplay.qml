@@ -10,6 +10,8 @@ Item {
     required property string group
     property bool splitStemTracks: false
 
+    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization() ? "[Channel1]" : group
+
     enum MouseStatus {
         Normal,
         Bending,
@@ -21,6 +23,13 @@ Item {
         group: root.group
         zoom: zoomControl.value
         backgroundColor: "#5e000000"
+
+        Behavior on zoom {
+            SmoothedAnimation {
+                duration: 500
+                velocity: -1
+            }
+        }
 
         Mixxx.WaveformRendererEndOfTrack {
             color: '#ff8872'
@@ -180,8 +189,14 @@ Item {
     Mixxx.ControlProxy {
         id: zoomControl
 
-        group: root.group
+        group: root.zoomGroup
         key: "waveform_zoom"
+
+        Component.onCompleted: {
+            if (group == root.group) {
+                value = Mixxx.Config.waveformDefaultZoom()
+            }
+        }
     }
 
     MouseArea {
