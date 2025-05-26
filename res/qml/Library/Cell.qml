@@ -8,12 +8,12 @@ Rectangle {
 
     required property bool selected
 
-    property alias capabilities: track.capabilities
+    property alias track: trackData
 
     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
     LibraryComponent.Track {
-        id: track
+        id: trackData
 
         view: TableView.view
         anchors.fill: parent
@@ -47,7 +47,7 @@ Rectangle {
                     asynchronous: true
                     clip: true
                     fillMode: Image.PreserveAspectFit
-                    source: cover_art
+                    source: cover_art ?? ""
                 }
                 ColumnLayout {
                     Layout.fillHeight: true

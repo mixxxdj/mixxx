@@ -54,7 +54,8 @@ QmlLibraryTrackListModel::QmlLibraryTrackListModel(
                 pColumn->preferredWidth(),
                 pColumn->autoHideWidth(),
                 pColumn->role(),
-                pColumn->columnType()));
+                pColumn->columnType(),
+                pColumn->display()));
     }
 
     auto* pTrackModel = dynamic_cast<TrackModel*>(pModel);

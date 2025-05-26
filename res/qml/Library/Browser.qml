@@ -47,6 +47,10 @@ Rectangle {
                     selectionModel: featureSelection
 
                     delegate: FocusScope {
+                        required property string itemName
+
+                        readonly property bool canCreate: capabilities & Mixxx.LibrarySource.Capability.Create
+                        readonly property bool canAddTrack: capabilities & Mixxx.LibrarySource.Capability.AddTrack
                         required property int column
                         required property bool current
                         required property int depth
@@ -88,7 +92,7 @@ Rectangle {
                             id: background
 
                             anchors.fill: parent
-                            color: depth == 0 ? Theme.midGray2 : 'transparent'
+                            color: row == 0 ? Theme.midGray : depth == 0 ? Theme.darkGray2 : 'transparent'
 
                             TapHandler {
                                 id: rowTapHandler
@@ -107,12 +111,15 @@ Rectangle {
                                 id: rowHoverHandler
                             }
                             Rectangle {
+                                color: current ? Theme.midGray : 'transparent'
+                                anchors.fill: parent
+                            }
+                            Item {
                                 anchors.bottom: parent.bottom
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10 + 15 * depth
                                 anchors.right: parent.right
                                 anchors.top: parent.top
-                                color: current ? Theme.midGray : 'transparent'
                                 width: 25
 
                                 Repeater {
@@ -155,10 +162,10 @@ Rectangle {
                                     text: label
                                 }
                                 Item {
+                                    visible: (rowHoverHandler.hovered || popup.opened) && isTreeNode && canCreate
                                     id: newItem
 
                                     height: parent.height
-                                    visible: rowHoverHandler.hovered && isTreeNode && hasChildren
 
                                     anchors {
                                         right: parent.right
@@ -228,6 +235,63 @@ Rectangle {
                                                 PathLine {
                                                     x: 8
                                                     y: 6
+                                                }
+                                            }
+                                        }
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            onPressed: {
+                                                popup.x = parent.width
+                                                popup.y = parent.height / 2 - popup.height / 2
+                                                popup.open()
+                                                popup.forceActiveFocus(Qt.PopupFocusReason)
+                                            }
+                                            cursorShape: Qt.PointingHandCursor
+                                        }
+                                        Skin.ActionPopup {
+                                            id: popup
+                                            padding: 6
+                                            focus: true
+                                            Text {
+                                                Layout.alignment: Qt.AlignHCenter
+                                                text: qsTr("New %1").arg(itemName)
+                                                font.weight: Font.Bold
+                                                font.pixelSize: 14
+                                                color: Theme.white
+                                            }
+                                            Skin.InputField {
+                                                Layout.fillWidth: true
+                                                Layout.preferredHeight: 36
+                                                Layout.margins: 4
+                                                focus: true
+                                                id: newItemName
+                                                input.onAccepted: {
+                                                    if (input.text) {
+                                                        create(input.text)
+                                                    }
+                                                    popup.close()
+                                                }
+                                            }
+                                            RowLayout {
+                                                Layout.fillWidth: true
+                                                Skin.ActionButton {
+                                                    Layout.fillWidth: true
+                                                    label.text: qsTr("Cancel")
+                                                    onPressed: {
+                                                        popup.close()
+                                                    }
+                                                }
+                                                Skin.ActionButton {
+                                                    Layout.fillWidth: true
+                                                    opacity: newItemName.text || newItemName.input.text ? 1 : 0.4
+                                                    category: Skin.ActionButton.Action
+                                                    label.text: qsTr("Create")
+                                                    onPressed: {
+                                                        if (newItemName.text) {
+                                                            create(input.text)
+                                                            popup.close()
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

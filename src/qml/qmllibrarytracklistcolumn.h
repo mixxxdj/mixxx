@@ -77,6 +77,9 @@ class QmlLibraryTrackListColumn : public QObject {
     ColumnType columnType() const {
         return m_columnType;
     }
+    Display display() const {
+        return m_display;
+    }
     int fillSpan() const {
         return m_fillSpan;
     }

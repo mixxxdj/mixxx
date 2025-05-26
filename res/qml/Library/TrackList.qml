@@ -43,14 +43,14 @@ Rectangle {
         id: columnSelectionMenu
 
         Instantiator {
-            model: root.model.defaultColumns
+            model: root.sidebar.tracklist.columns
 
             delegate: Action {
                 property var data: view.getColumn(index)
 
                 checkable: true
-                checked: (!view.columnShouldAutoHide(data) || data.display == Mixxx.TrackListColumn.Display.Show) && data.display != Mixxx.TrackListColumn.Display.Hide
-                text: qsTr(data.label)
+                checked: (!view.columnShouldAutoHide(data) || data?.display == Mixxx.TrackListColumn.Display.Show) && data?.display != Mixxx.TrackListColumn.Display.Hide
+                text: qsTr(data?.label)
 
                 onTriggered: {
                     // console.log(`columnShouldAutoHide: ${view.columnShouldAutoHide(data)}, want: ${checked}`)
@@ -225,7 +225,7 @@ Rectangle {
 
         function columnShouldAutoHide(column){
             // console.log(`columnShouldAutoHide: ${column.display} ${column.autoHideWidth > 0 && column.autoHideWidth > view.width}`)
-            return column.display == Mixxx.TrackListColumn.Display.Auto && column.autoHideWidth > 0 && column.autoHideWidth > view.width
+            return column?.display == Mixxx.TrackListColumn.Display.Auto && column?.autoHideWidth > 0 && column?.autoHideWidth > view.width
         }
 
         function loadSelectedTrack(group, play) {
@@ -341,7 +341,9 @@ Rectangle {
             }
             DelegateChoice {
                 Cell {
-                    capabilities: root.sidebar.tracklist ? root.sidebar.tracklist.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
+                    track.capabilities: root.sidebar.tracklist ? root.sidebar.tracklist.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
+                    track.playlists: root.model.playlist
+                    track.crates: root.model.crate
                     // required property bool selected
 
                     // readonly property alias dragImage: dragImageSource
@@ -353,7 +355,7 @@ Rectangle {
                     // }
                     // Drag.supportedActions: Qt.CopyAction
                     // anchors.fill: parent
-                    // color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
+                    color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
                     Text {
                         // required property string display

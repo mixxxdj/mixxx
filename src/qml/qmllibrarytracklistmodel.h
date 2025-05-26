@@ -14,7 +14,8 @@ namespace qml {
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_OBJECT
     QML_NAMED_ELEMENT(LibraryTrackListModel)
-    Q_PROPERTY(QQmlListProperty<QmlLibraryTrackListColumn> columns READ columns FINAL)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns
+                    READ columns NOTIFY columnsChanged)
     QML_UNCREATABLE("Only accessible via Mixxx.Library")
 
   public:
@@ -76,6 +77,9 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
             Qt::Orientation orientation,
             int role = Qt::DisplayRole) const override;
     Q_INVOKABLE void sort(int column, Qt::SortOrder order) override;
+
+  signals:
+    void columnsChanged();
 
   private:
     QmlTrackProxy* getOrCreateTrackProxy(int row) const;
