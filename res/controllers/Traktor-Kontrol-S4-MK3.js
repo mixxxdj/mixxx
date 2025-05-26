@@ -1320,9 +1320,8 @@ class Pot extends Component {
         this.hardwarePosition = null;
         this.shiftedHardwarePosition = null;
 
-        if (this.offset === null) {
-            this.offset = 0.0;
-        }
+        // Can't get this to work in "options" without breaking things -ZT
+        this.potZeroOffset = 0.0;
 
         if (this.input === undefined) {
             this.input = this.defaultInput;
@@ -1340,7 +1339,7 @@ class Pot extends Component {
     }
     defaultInput(value) {
         const receivingFirstValue = this.hardwarePosition === null;
-        this.hardwarePosition = (value / this.max) + this.offset; // added option for offset
+        this.hardwarePosition = (value / this.max) + this.potZeroOffset; // added option for offset
         engine.setParameter(this.group, this.inKey, this.hardwarePosition);
         if (receivingFirstValue) {
             engine.softTakeover(this.group, this.inKey, true);
@@ -1972,10 +1971,12 @@ class S4Mk3Deck extends Deck {
                 this.setKey("sync_enabled");
             } : undefined,
         });
+
         this.tempoFader = new Pot({
             inKey: "rate",
-            offset: tempoFaderOffset,
         });
+        this.tempoFader.potZeroOffset = tempoFaderOffset;
+
         this.tempoFaderLED = new Component({
             outKey: "rate",
             centered: false,
@@ -1996,8 +1997,10 @@ class S4Mk3Deck extends Deck {
                     return;
                 }
 
-                const oldCentered = this.centered;
-                if (Math.abs(value) < 0.001) {
+                console.warn(value, parameterValue, this.tempoFader.hardwarePosition);
+
+                // const oldCentered = this.centered;
+                if (Math.abs(parameterValue - 0.5) < this.toleranceWindow) {
                     this.send(this.color + Button.prototype.brightnessOn);
                     // round to precisely 0
                     engine.setValue(this.group, "rate", 0);
