@@ -120,6 +120,9 @@ const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor
 const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
 
+const TempoFaderOffset_L = engine.getSetting("TempoFaderOffset_L") || 0.0;
+const TempoFaderOffset_R = engine.getSetting("TempoFaderOffset_R") || 0.0;
+
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const InactiveLightsAlwaysBacklit = !!engine.getSetting("inactiveLightsAlwaysBacklit");
@@ -1317,6 +1320,10 @@ class Pot extends Component {
         this.hardwarePosition = null;
         this.shiftedHardwarePosition = null;
 
+        if (this.offset === null) {
+            this.offset = 0.0;
+        }
+
         if (this.input === undefined) {
             this.input = this.defaultInput;
         }
@@ -1333,7 +1340,7 @@ class Pot extends Component {
     }
     defaultInput(value) {
         const receivingFirstValue = this.hardwarePosition === null;
-        this.hardwarePosition = value / this.max;
+        this.hardwarePosition = (value / this.max) + this.offset; // added option for offset
         engine.setParameter(this.group, this.inKey, this.hardwarePosition);
         if (receivingFirstValue) {
             engine.softTakeover(this.group, this.inKey, true);
@@ -1887,6 +1894,17 @@ class S4Mk3Deck extends Deck {
     constructor(decks, colors, effectUnit, mixer, inReports, outReport, motorBuffMgr, io) {
         super(decks, colors);
 
+        // Get the deck side for reference. Assumes deck 1 is on the left.
+        // and assign side-specific calibration values
+        let tempoFaderOffset = 0.0; 
+        if (decks[0] == 1){
+            this.isLeftDeck = true;
+            tempoFaderOffset = TempoFaderOffset_L;
+        } else {
+            this.isLeftDeck = false;
+            tempoFaderOffset = TempoFaderOffset_R;
+        }
+
         // buffer used for lowpassing the input velocity
         this.velFilter = new FilterBuffer(VelFilterTaps,VelFilterCoeffs);
 
@@ -1956,6 +1974,7 @@ class S4Mk3Deck extends Deck {
         });
         this.tempoFader = new Pot({
             inKey: "rate",
+            offset: tempoFaderOffset,
         });
         this.tempoFaderLED = new Component({
             outKey: "rate",
