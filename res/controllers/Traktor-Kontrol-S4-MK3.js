@@ -820,7 +820,7 @@ class Deck extends ComponentContainer {
 
             if (this.wheelMode === wheelModes.motor) {
                 engine.beginTimer(MotorWindUpMilliseconds, () => {
-                    engine.setValue(newGroup, "scratch2_enable", true);
+                    engine.setValue(newGroup, "scratch2_enable", false);
                 }, true);
             }
         }
