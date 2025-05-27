@@ -1490,7 +1490,9 @@ WEffectSelector:!editable,
 #CueDeleteButton,
 #CueStandardButton,
 #CueSavedLoopButton,
-#CueSavedJumpButton {
+#CueSavedJumpButton,
+#CueSavedJumpButtonForward,
+#CueSavedJumpButtonBackward {
   outline: none;
   border-width: 2px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
@@ -1525,7 +1527,11 @@ WEffectSelector:!editable,
   #CueSavedLoopButton[pressed="true"],
   #CueSavedLoopButton:checked,
   #CueSavedJumpButton[pressed="true"],
-  #CueSavedJumpButton:checked {
+  #CueSavedJumpButton:checked,
+  #CueSavedJumpButtonForward[pressed="true"],
+  #CueSavedJumpButtonForward:checked,
+  #CueSavedJumpButtonBackward[pressed="true"],
+  #CueSavedJumpButtonBackward:checked {
     border-width: 2px;
     border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -1662,6 +1668,8 @@ WBeatSpinBox::down-button {
   #CueStandardButton,
   #CueSavedLoopButton,
   #CueSavedJumpButton,
+  #CueSavedJumpButtonForward,
+  #CueSavedJumpButtonBackward,
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
   /* library controls */
@@ -2755,37 +2763,19 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 /* widgets in cue popup menu */
-WCueMenuPopup #CueDeleteButton {
+#CueDeleteButton {
   icon: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
   width: 24px;
   height: 24px;
   icon-size: 18px;
 }
-WCueMenuPopup #CueStandardButton {
-  icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later.svg);
+#CueStandardButton,
+#CueSavedLoopButton,
+#CueSavedJumpButtonForward, #CueSavedJumpButtonBackward {
   width: 24px;
-  height: 42px;
+  height: 32px;
   /* make the icon slightly larger than default 16px */
   icon-size: 24px;
-}
-WCueMenuPopup #CueSavedLoopButton {
-  icon: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  icon-size: 24px;
-}
-WCueMenuPopup #CueSavedJumpButton {
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  icon-size: 24px;
-}
-WCueMenuPopup #CueSavedJumpButton[direction="forward"] {
-  icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_right.svg);
-}
-WCueMenuPopup #CueSavedJumpButton[direction="backward"] {
-  icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_left.svg);
 }
 
 #CueDeleteButton:hover {
@@ -2797,26 +2787,41 @@ WCueMenuPopup #CueSavedJumpButton[direction="backward"] {
   outline: none;
 }
 
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueStandardButton:pressed, #CueStandardButton:checked,
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+#CueSavedJumpButtonForward:pressed, #CueSavedJumpButtonForward:checked,
+#CueSavedJumpButtonBackward:pressed, #CueSavedJumpButtonBackward:checked {
   background-color: #b24c12;
   outline: none;
-  icon: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
 }
-#CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
-  background-color: #b24c12;
-  outline: none;
-}
-#CueSavedJumpButton[direction="forward"]:pressed, #CueSavedJumpButton[direction="forward"]:checked {
-  icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_right_active.svg);
-}
-#CueSavedJumpButton[direction="backward"]:pressed, #CueSavedJumpButton[direction="backward"]:checked {
-  icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_left_active.svg);
-}
-#CueStandardButton:pressed, #CueStandardButton:checked {
-  background-color: #b24c12;
-  outline: none;
-  icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg);
-}
+
+#CueStandardButton {
+  icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later.svg);
+  }
+  #CueStandardButton:pressed, #CueStandardButton:checked {
+    icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg);
+  }
+
+#CueSavedLoopButton {
+  icon: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
+  }
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+    icon: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
+  }
+
+#CueSavedJumpButtonForward {
+  icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_right.svg);
+  }
+  #CueSavedJumpButtonForward:pressed, #CueSavedJumpButtonForward:checked {
+    icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_right_active.svg);
+  }
+#CueSavedJumpButtonBackward {
+  icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_left.svg);
+  }
+  #CueSavedJumpButtonBackward:pressed, #CueSavedJumpButtonBackward:checked {
+    icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_left_active.svg);
+  }
+
 
 WCueMenuPopup #CueLabelEdit {
   /*border: 1px solid #c2b3a5;*/

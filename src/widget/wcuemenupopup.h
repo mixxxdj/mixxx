@@ -65,8 +65,6 @@ class WCueMenuPopup : public QWidget {
     void slotDeleteCue();
     void slotUpdate();
     void slotStandardCue();
-    void slotSavedJumpCueManual();
-    void slotSavedJumpCueAuto();
     /// This slot is called when the saved loop button is being left pressed,
     /// which effectively toggle the cue loop between standard cue and saved
     /// loop. If the cue was never a saved loop, it will use the current
@@ -77,6 +75,13 @@ class WCueMenuPopup : public QWidget {
     /// which effectively makes the cue a saved loop and use the current play
     /// position as loop end
     void slotSavedLoopCueManual();
+    void slotSavedJumpCueForwardAuto();
+    void slotSavedJumpCueForwardManual();
+    void savedJumpCueForwardFromPositions(mixxx::audio::FramePos pos1, mixxx::audio::FramePos pos2);
+    void slotSavedJumpCueBackwardAuto();
+    void slotSavedJumpCueBackwardManual();
+    void savedJumpCueBackwardFromPositions(
+            mixxx::audio::FramePos pos1, mixxx::audio::FramePos pos2);
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
@@ -99,7 +104,8 @@ class WCueMenuPopup : public QWidget {
     std::unique_ptr<CueMenuPushButton> m_pDeleteCue;
     std::unique_ptr<CueMenuPushButton> m_pStandardCue;
     std::unique_ptr<CueMenuPushButton> m_pSavedLoopCue;
-    std::unique_ptr<CueMenuPushButton> m_pSavedJumpCue;
+    std::unique_ptr<CueMenuPushButton> m_pSavedJumpCueForward;
+    std::unique_ptr<CueMenuPushButton> m_pSavedJumpCueBackward;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
