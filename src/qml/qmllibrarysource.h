@@ -110,6 +110,3 @@ class QmlLibraryAllTrackSource : public QmlLibrarySource {
 
 } // namespace qml
 } // namespace mixxx
-
-class LibraryTableModel;
-class TreeItemModel;

@@ -136,18 +136,18 @@ Rectangle {
                         threshold: 2
                         onActiveChanged: {
                             if (!drag.active && columnResizeHandler.sizeOffset !== 0) {
-                                view.model.columns[index].preferredWidth = headerDlgt.width + sizeOffset
-                                view.model.updateColumnProperty()
+                                view.model.columns[index].preferredWidth = column.width
                                 columnResizeHandler.sizeOffset = 0
-                                // view.forceLayout()
+                                view.updateColumnSize()
+                                view.forceLayout()
                             }
                         }
                     }
                     cursorShape: Qt.SizeHorCursor
                     onMouseXChanged: {
                         if (drag.active) {
-                            headerDlgt.width = headerDlgt.width + mouseX
-                            sizeOffset = mouseX
+                            column.width += mouseX
+                            sizeOffset += mouseX
                         }
                     }
                 }
@@ -215,11 +215,9 @@ Rectangle {
             }
             if (columnDef.preferredWidth >= 0) {
                 return columnDef.preferredWidth;
-            } else {
-                const span = columnDef.fillSpan || 1;
-                return span * (view.width - view.usedWidth) / view.dynamicColumnCount;
             }
-            return 100;
+            const span = columnDef.fillSpan || 1;
+            return span * (view.width - view.usedWidth) / view.dynamicColumnCount;
         }
 
         selectionModel: ItemSelectionModel {

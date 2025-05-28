@@ -1,10 +1,10 @@
 #pragma once
-#include <qglobal.h>
-
 #include <QObject>
 #include <QQmlEngine>
+#include <Qt>
 #include <memory>
 
+#include "qml_owned_ptr.h"
 #include "qmllibrarytracklistmodel.h"
 
 class Library;
@@ -32,7 +32,7 @@ class QmlLibraryProxy : public QObject {
         return s_pLibrary.get();
     }
 
-    QmlLibraryTrackListModel* model() const;
+    qml_owned_ptr<QmlLibraryTrackListModel> model() const;
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
 
   private:

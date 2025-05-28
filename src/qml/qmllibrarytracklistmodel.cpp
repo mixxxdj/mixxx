@@ -16,6 +16,7 @@
 #include "qmltrackproxy.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/parented_ptr.h"
 
 namespace mixxx {
 namespace qml {
@@ -44,7 +45,17 @@ QmlLibraryTrackListModel::QmlLibraryTrackListModel(
         QAbstractItemModel* pModel,
         QObject* pParent)
         : QIdentityProxyModel(pParent),
-          m_columns(librarySource) { // FIXME need to copy column?
+          m_columns() {
+    m_columns.reserve(librarySource.size());
+    for (const auto* pColumn : std::as_const(librarySource)) {
+        m_columns.emplace_back(make_parented<QmlLibraryTrackListColumn>(this,
+                pColumn->label(),
+                pColumn->fillSpan(),
+                pColumn->columnIdx(),
+                pColumn->preferredWidth(),
+                pColumn->delegate(),
+                pColumn->role()));
+    }
 
     auto* pTrackModel = dynamic_cast<TrackModel*>(pModel);
     VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
@@ -63,14 +74,14 @@ QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role)
         return {};
     }
     auto columnIdx = proxyIndex.column();
-    VERIFY_OR_DEBUG_ASSERT(columnIdx >= 0 || columnIdx < m_columns.length()) {
+    VERIFY_OR_DEBUG_ASSERT(columnIdx >= 0 || columnIdx < m_columns.size()) {
         return {};
     }
 
     auto* const pTrackTableModel = qobject_cast<BaseTrackTableModel*>(sourceModel());
     auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
 
-    auto* pColumn = m_columns[columnIdx];
+    const auto& pColumn = m_columns[columnIdx];
 
     switch (role) {
     case Track: {
@@ -142,12 +153,12 @@ int QmlLibraryTrackListModel::columnCount(const QModelIndex& parent) const {
                                    parent.internalPointer()) != this) {
         return 0;
     }
-    return m_columns.length();
+    return m_columns.size();
 }
 
 QVariant QmlLibraryTrackListModel::headerData(
         int section, Qt::Orientation orientation, int role) const {
-    VERIFY_OR_DEBUG_ASSERT(section >= 0 || section < m_columns.length()) {
+    VERIFY_OR_DEBUG_ASSERT(section >= 0 || section < m_columns.size()) {
         return {};
     }
     // TODO role
@@ -192,10 +203,10 @@ bool QmlLibraryTrackListModel::hasCapabilities(TrackModel::Capabilities caps) co
     return (getCapabilities() & caps) == caps;
 }
 void QmlLibraryTrackListModel::sort(int column, Qt::SortOrder order) {
-    VERIFY_OR_DEBUG_ASSERT(column >= 0 || column < m_columns.length()) {
+    VERIFY_OR_DEBUG_ASSERT(column >= 0 || column < m_columns.size()) {
         return;
     }
-    auto* pColumn = m_columns[column];
+    const auto& pColumn = m_columns[column];
     emit layoutAboutToBeChanged(QList<QPersistentModelIndex>(),
             QAbstractItemModel::VerticalSortHint);
     if (pColumn->columnIdx() < 0) {

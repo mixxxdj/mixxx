@@ -40,6 +40,9 @@ void QmlSidebarModelProxy::activate(const QModelIndex& index) {
         return;
     }
     if (index.internalPointer() == this) {
+        VERIFY_OR_DEBUG_ASSERT(index.row() >= 0 && index.row() < m_sFeatures.length()) {
+            return;
+        }
         m_sFeatures[index.row()]->activate();
     } else {
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());

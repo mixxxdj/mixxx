@@ -3368,7 +3368,7 @@ if(QML)
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   qt_add_library(mixxx-qml-lib STATIC)
 
-  if(WIN)
+  if(WIN32)
     target_compile_definitions(mixxx-qml-lib PUBLIC __WINDOWS__)
   endif()
 

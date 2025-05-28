@@ -45,7 +45,7 @@ class QmlSidebarModelProxy : public SidebarModel {
     void tracklistChanged();
 
   protected slots:
-    void slotShowTrackModel(std::shared_ptr<QmlLibraryTrackListModel> pModel);
+    void slotShowTrackModel(std::shared_ptr<mixxx::qml::QmlLibraryTrackListModel> pModel);
 
   private:
     std::shared_ptr<QmlLibraryTrackListModel> m_tracklist;
