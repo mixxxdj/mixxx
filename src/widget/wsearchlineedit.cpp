@@ -452,20 +452,20 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "focusInEvent";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "focusInEvent";
+    }
     QComboBox::focusInEvent(event);
     updateCompleter();
     updateClearAndDropdownButton(currentText());
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "focusOutEvent";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "focusOutEvent";
+    }
     slotSaveSearch();
     QComboBox::focusOutEvent(event);
     if (m_debouncingTimer.isActive()) {
@@ -477,21 +477,21 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 }
 
 void WSearchLineEdit::setTextBlockSignals(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "setTextBlockSignals"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "setTextBlockSignals"
+                << text;
+    }
     blockSignals(true);
     setCurrentText(text);
     blockSignals(false);
 }
 
 void WSearchLineEdit::slotDisableSearch() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotDisableSearch";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotDisableSearch";
+    }
     if (!isEnabled()) {
         return;
     }
@@ -501,22 +501,22 @@ void WSearchLineEdit::slotDisableSearch() {
 }
 
 void WSearchLineEdit::enableSearch(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "enableSearch"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "enableSearch"
+                << text;
+    }
     // Set enabled BEFORE updating the edit box!
     setEnabled(true);
     updateEditBox(text);
 }
 
 void WSearchLineEdit::slotRestoreSearch(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotRestoreSearch"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotRestoreSearch"
+                << text;
+    }
     // we save the current search before we switch to a new text
     slotSaveSearch();
     enableSearch(text);
@@ -529,11 +529,11 @@ void WSearchLineEdit::triggerSearchDebounced() {
 }
 
 void WSearchLineEdit::slotTriggerSearch() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotTriggerSearch"
-            << getSearchText();
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotTriggerSearch"
+                << getSearchText();
+    }
     DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
@@ -546,13 +546,13 @@ void WSearchLineEdit::slotSaveSearch() {
     // Keep original text for UI, potentially with trailing spaces
     QString cText = currentText();
     int cIndex = findCurrentTextIndex();
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "save search. Text:"
-            << cText
-            << "Index:"
-            << cIndex;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "save search. Text:"
+                << cText
+                << "Index:"
+                << cIndex;
+    }
     if (cText.isEmpty() || !isEnabled()) {
         return;
     }
@@ -629,10 +629,10 @@ void WSearchLineEdit::deleteSelectedListItem() {
 }
 
 void WSearchLineEdit::refreshState() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "refreshState";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "refreshState";
+    }
     if (isEnabled()) {
         enableSearch(getSearchText());
     } else {
@@ -660,11 +660,11 @@ void WSearchLineEdit::showPopup() {
 }
 
 void WSearchLineEdit::updateEditBox(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "updateEditBox"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "updateEditBox"
+                << text;
+    }
     DEBUG_ASSERT(isEnabled());
 
     if (text.isEmpty()) {
@@ -679,11 +679,11 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
 }
 
 void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "updateClearAndDropdownButton"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "updateClearAndDropdownButton"
+                << text;
+    }
     // If the popup is open there's no need to further adjust the style, this is
     // invoked by focusInEvent when the popup is closed.
     // NOTE(ronso0) Also, when changing the text programmatically while the popup
@@ -724,10 +724,10 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 }
 
 void WSearchLineEdit::updateCompleter() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "updateCompleter";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "updateCompleter";
+    }
 
     lineEdit()->setCompleter(s_completionsEnabled ? m_completer.toWeakRef() : nullptr);
 }
@@ -740,10 +740,10 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 }
 
 void WSearchLineEdit::slotClearSearch() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotClearSearch";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotClearSearch";
+    }
     if (!isEnabled()) {
         return;
     }
@@ -777,11 +777,11 @@ void WSearchLineEdit::slotIndexChanged(int index) {
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotTextChanged"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotTextChanged"
+                << text;
+    }
     m_queryEmitted = false;
     if (!isEnabled()) {
         m_debouncingTimer.stop();
