@@ -69,6 +69,8 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_YEAR,
 };
 
+constexpr int kReplayGainPrecision = 2;
+
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
     const auto connectionName =
@@ -898,7 +900,11 @@ QVariant BaseTrackTableModel::roleValue(
                     return QVariant();
                 }
             }
-            return mixxx::ReplayGain::ratioToString(rgRatio);
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return mixxx::ReplayGain::ratioToString(rgRatio);
+            } else {
+                return mixxx::ReplayGain::ratioToString(rgRatio, kReplayGainPrecision);
+            }
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS:
             // Not yet supported
