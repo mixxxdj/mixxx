@@ -143,6 +143,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
             return !(lhs == rhs);
         }
 
+        int beatOffset() const;
+
       private:
         void updateValue();
 
