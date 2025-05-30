@@ -363,6 +363,7 @@ const HID_INREPT_WHEELS = 3
 // OUTPUTS:
 // =======
 const HID_OUTRPT_MOTORS = 49
+const HID_INREPT_VU_METERS = 129;
 
 /********************************************************
                 HARDWARE ADDRESSES
@@ -1026,7 +1027,7 @@ class CueButton extends PushButton {
             if (this.deck.wheelMode === wheelModes.motor) {
                 engine.setValue(this.group, "scratch2_enable", false);
                 engine.beginTimer(MotorWindDownMilliseconds, () => {
-                    engine.setValue(this.group, "scratch2_enable", true);
+                    engine.setValue(this.group, "scratch2_enable", false);
                 }, true);
             }
         }
@@ -1426,6 +1427,7 @@ class Mixer extends ComponentContainer {
         this.secondPressedFxSelector = null;
         this.comboSelected = false;
 
+        // FIXME: hardcoded
         const fxSelectsInputs = [
             {inByte: 8, inBit: 5},
             {inByte: 8, inBit: 1},
@@ -1997,7 +1999,7 @@ class S4Mk3Deck extends Deck {
                     return;
                 }
 
-                console.warn(value, parameterValue, this.tempoFader.hardwarePosition);
+                // console.warn(value, parameterValue, this.tempoFader.hardwarePosition);
 
                 // const oldCentered = this.centered;
                 if (Math.abs(parameterValue - 0.5) < this.toleranceWindow) {
@@ -2776,6 +2778,7 @@ class S4Mk3Deck extends Deck {
                 if (this.touched) {
                     return;
                 }
+                // FIXME: something wierd up in here
                 if (engine.getValue(this.group, "play") &&
                     engine.getValue(this.group, "scratch2") < 1.5 * baseRevolutionsPerSecond &&
                     engine.getValue(this.group, "scratch2") > 0) {
@@ -3142,6 +3145,7 @@ class S4Mk3MotorManager {
         // this.isSlipping = false;
         this.nominal_rate_prenudge = 1.0;
         this.isUpToSpeed = false;
+        this.isStopped = false;
     }
     tick() {
         let outputTorque = 0;
@@ -3151,6 +3155,9 @@ class S4Mk3MotorManager {
         let trackingDiff = 0;
         let outputTracking = 0;
         let trackingError = 0;
+
+        // TESTING
+        // console.warn(engine.getValue(this.deck.group, "scratch2_enable"));
 
         //REMOVE: Can be optimized --- point to a single premade instance variable
         // const motorData = new Uint8Array([
@@ -3174,9 +3181,13 @@ class S4Mk3MotorManager {
         // const normalizedVelocity = this.deck.wheelPosition.velocity;
         const normalizedVelocity = this.deck.velFilter.getCurrentVel()
 
+        // If this deck is currently playing, calculate motor output
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
-            
+            if (this.isStopped == true){
+                this.isStopped = false;
+                engine.setValue(this.deck.group, "scratch2_enable", false);
+            }
             // Motor calibration testing for determining real output torque
             if (S4MK3MOTORTEST_ENABLE && this.motortesting_complete == false) {
                 if (Date.now() - this.motortesting_timer > this.motortesting_next_interval) {    
@@ -3295,8 +3306,12 @@ class S4Mk3MotorManager {
             this.outputTorque_prev = outputTorque;
             // Apply additional forward force to compensate for friction
             outputTorque += MOTOR_FRICTION_COMPENSATION;
+        // If the deck isn't playing, but we're in motor mode, ensure that scratch mode is ON
+        // and reset the "isUpToSpeed" flag
         } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
             this.isUpToSpeed = false;
+            this.isStopped = true;
+            engine.setValue(this.deck.group, "scratch2_enable", true);
         // In any other wheel mode, the motor only provides resistance to scrubbing/scratching
         } else if (this.deck.wheelMode !== wheelModes.motor) {
             if (TightnessFactor > 0.5) {
@@ -3815,7 +3830,7 @@ class S4MK3 {
             // There are more bytes in the report which seem like they should be for the main
             // mix meters, but setting those bytes does not do anything, except for lighting
             // the clip lights on the main mix meters.
-            controller.sendOutputReport(129, deckMeters.buffer);
+            controller.sendOutputReport(HID_INREPT_VU_METERS, deckMeters.buffer);
         });
         if (UseMotors) {
             this.leftMotor = new S4Mk3MotorManager(this.leftDeck);
@@ -3892,7 +3907,7 @@ class S4MK3 {
         controller.sendOutputReport(128, new Uint8Array(94).fill(0).buffer);
 
         // meter LEDs
-        controller.sendOutputReport(129, new Uint8Array(78).fill(0).buffer);
+        controller.sendOutputReport(HID_INREPT_VU_METERS, new Uint8Array(78).fill(0).buffer);
 
         const wheelOutput = new Uint8Array(40).fill(0);
         // left wheel LEDs
