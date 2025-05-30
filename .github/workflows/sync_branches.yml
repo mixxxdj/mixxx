@@ -19,9 +19,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - from_branch: "2.4"
-            to_branch: "2.5"
           - from_branch: "2.5"
+            to_branch: "2.6"
+          - from_branch: "2.6"
             to_branch: "main"
     runs-on: ubuntu-latest
     permissions:
