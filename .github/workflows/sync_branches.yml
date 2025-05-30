@@ -1,12 +1,9 @@
 name: Sync Branches
 on:
   push:
-    #    branches:
-    #      - "2.4"
-    #      - "2.5"
-    #   temporary disabled for all branches
-    branches-ignore:
-      - "*"
+    branches:
+      - "2.5"
+      - "2.6"
   workflow_dispatch:
 
 permissions: {}
@@ -17,6 +14,7 @@ env:
 jobs:
   sync-branches:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - from_branch: "2.5"
@@ -79,14 +77,14 @@ jobs:
             git checkout "${SYNC_BRANCH}"
           else
             git fetch origin "${TO_BRANCH}" "${FROM_BRANCH}"
-            git checkout "origin/${TO_BRANCH}"
+            git checkout "${TO_BRANCH}"
             git checkout -b "${SYNC_BRANCH}"
           fi
           git config --global user.email "${SYNC_COMMITTER_EMAIL}"
           git config --global user.name "${SYNC_COMMITTER_NAME}"
-          git pull --no-edit origin "${FROM_BRANCH}" || true
+          git pull --no-edit origin "origin/${FROM_BRANCH}" || true
           COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
-          COMMIT_MERGE="$(git show --no-patch --format="%h" "origin/${SYNC_BRANCH}")"
+          COMMIT_MERGE="$(git show --no-patch --format="%h" "${SYNC_BRANCH}")"
           git status
           echo "::endgroup::"
           if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
