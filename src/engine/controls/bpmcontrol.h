@@ -158,6 +158,7 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pBeatsHalve;
     std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;
     std::unique_ptr<ControlPushButton> m_pBeatsThreeFourths;
+    std::unique_ptr<ControlPushButton> m_pBeatsFiveFourths;
     std::unique_ptr<ControlPushButton> m_pBeatsFourThirds;
     std::unique_ptr<ControlPushButton> m_pBeatsThreeHalves;
     std::unique_ptr<ControlPushButton> m_pBeatsDouble;
