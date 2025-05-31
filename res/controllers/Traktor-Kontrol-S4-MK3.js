@@ -82,7 +82,7 @@ const TempoFaderTicksPerMm = 4096 / 77; // 53.1948..
 const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
 // Value center may be off the labeled center.
 // Use this setting to compensate per device.
-const TempoCenterValueOffset = engine.getSetting("tempoCenterOffsetMm") || 0.0;
+const TempoCenterValueOffset = (engine.getSetting("tempoCenterOffsetMm") || 0.0) * TempoFaderTicksPerMm;
 const TempoCenterUpper = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
 const TempoCenterLower = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
 
