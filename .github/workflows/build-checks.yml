@@ -17,6 +17,7 @@ jobs:
       checks: write #  to create new checks (coverallsapp/github-action)
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: clazy
