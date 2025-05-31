@@ -12,6 +12,7 @@ import Mixxx 1.0 as Mixxx
 import Mixxx.Controls 1.0 as MixxxControls
 
 import "." as Skin
+import "Theme"
 
 Mixxx.ControllerScreen {
     id: root
@@ -119,17 +120,17 @@ Mixxx.ControllerScreen {
 
             antialiasing: true
 
-            ColumnLayout {
+            GridLayout {
                 id: column
                 anchors.fill: parent
-                anchors.leftMargin: 0
-                anchors.rightMargin: 0
-                anchors.topMargin: 0
-                anchors.bottomMargin: 0
-                spacing: 6
+                rowSpacing: 6
+                columns: 2
+                columnSpacing: 10
 
                 RowLayout {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 80
+                    Layout.columnSpan: 2
                     spacing: 0
 
                     Repeater {
@@ -149,143 +150,104 @@ Mixxx.ControllerScreen {
 
                             color: modelData
                             Layout.fillWidth: true
-                            height: 80
+                            Layout.preferredHeight: 80
                         }
                     }
                 }
 
                 RowLayout {
-                    anchors.leftMargin: 6
-                    anchors.rightMargin: 6
-                    anchors.topMargin: 6
-                    anchors.bottomMargin: 6
-
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
                     spacing: 6
-
-                    Rectangle {
-                        color: 'transparent'
+                    Text {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Text {
-                            text: qsTr("Group")
-                            font.pixelSize: 18
-                            font.family: "Noto Sans"
-                            font.letterSpacing: -1
-                            color: fontColor
-                        }
+                        text: qsTr("Group")
+                        font.pixelSize: 18
+                        font.family: "Noto Sans"
+                        font.letterSpacing: -1
+                        color: fontColor
                     }
-
-                    Rectangle {
-                        color: 'transparent'
+                    Text {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Text {
-                            text: `${root.group}`
-                            font.pixelSize: 18
-                            font.family: "Noto Sans"
-                            font.letterSpacing: -1
-                            color: fontColor
-                        }
+                        text: root.group
+                        font.pixelSize: 18
+                        font.family: "Noto Sans"
+                        font.letterSpacing: -1
+                        color: fontColor
                     }
                 }
 
                 RowLayout {
-                    anchors.leftMargin: 6
-                    anchors.rightMargin: 6
-                    anchors.topMargin: 6
-                    anchors.bottomMargin: 6
-
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
                     spacing: 6
 
-                    Rectangle {
-                        color: 'transparent'
+                    Text {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Text {
-                            text: qsTr("Widget")
-                            font.pixelSize: 18
-                            font.family: "Noto Sans"
-                            font.letterSpacing: -1
-                            color: fontColor
-                        }
+                        text: qsTr("Widget")
+                        font.pixelSize: 18
+                        font.family: "Noto Sans"
+                        font.letterSpacing: -1
+                        color: fontColor
                     }
 
-                    Rectangle {
-                        color: 'transparent'
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        Skin.HotcueButton {
-                            anchors.fill: parent
-
-                            hotcueNumber: 1
-                            group: root.group
-                        }
+                    Skin.HotcueButton {
+                        hotcueNumber: 1
+                        group: root.group
+                    }
+                    Skin.ControlKnob {
+                        width: 42
+                        height: width
+                        arcStart: Knob.ArcStart.Minimum
+                        group: root.group
+                        key: "pregain"
+                        color: Theme.gainKnobColor
                     }
                 }
 
-                Repeater {
-                    model: [{
-                            controllerKey: "beatloop_size",
-                            title: "Beatloop Size"
-                        }, {
-                            controllerKey: "track_samples",
-                            title: "Track sample"
-                        }, {
-                            controllerKey: "track_samplerate",
-                            title: "Track sample rate"
-                        }, {
-                            controllerKey: "playposition",
-                            title: "Play position"
-                        }, {
-                            controllerKey: "rate_ratio",
-                            title: "Rate ratio"
-                        }, {
-                            controllerKey: "waveform_zoom",
-                            title: "Waveform zoom"
-                        }
-                    ]
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Repeater {
+                        model: [{
+                                controllerKey: "beatloop_size",
+                                title: "Beatloop Size"
+                            }, {
+                                controllerKey: "track_samples",
+                                title: "Track sample"
+                            }, {
+                                controllerKey: "track_samplerate",
+                                title: "Track sample rate"
+                            }, {
+                                controllerKey: "playposition",
+                                title: "Play position"
+                            }, {
+                                controllerKey: "rate_ratio",
+                                title: "Rate ratio"
+                            }, {
+                                controllerKey: "waveform_zoom",
+                                title: "Waveform zoom"
+                            }
+                        ]
 
-                    RowLayout {
-                        id: row
-                        anchors.leftMargin: 6
-                        anchors.rightMargin: 6
-                        anchors.topMargin: 6
-                        anchors.bottomMargin: 6
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: 4
-                        required property var modelData
+                        RowLayout {
+                            id: row
+                            spacing: 4
+                            required property var modelData
 
-                        Mixxx.ControlProxy {
-                            id: mixxxValue
-                            group: root.group
-                            key: modelData.controllerKey
-                        }
+                            Mixxx.ControlProxy {
+                                id: mixxxValue
+                                group: root.group
+                                key: modelData.controllerKey
+                            }
 
-                        Rectangle {
-                            color: 'transparent'
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
                             Text {
+                                Layout.fillWidth: true
                                 text: qsTr(modelData.title)
                                 font.pixelSize: 18
                                 font.family: "Noto Sans"
                                 font.letterSpacing: -1
                                 color: fontColor
                             }
-                        }
 
-                        Rectangle {
-                            color: 'transparent'
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
                             Text {
-                                text: `${mixxxValue.value}`
+                                text: mixxxValue.value
                                 font.pixelSize: 18
                                 font.family: "Noto Sans"
                                 font.letterSpacing: -1
@@ -294,12 +256,45 @@ Mixxx.ControllerScreen {
                         }
                     }
                 }
-                RowLayout {
-                    anchors.leftMargin: 6
-                    anchors.rightMargin: 6
-                    anchors.topMargin: 6
-                    anchors.bottomMargin: 6
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Repeater {
+                        model: [
+                                "theme",
+                                "idleBackground",
+                                "accentColor",
+                                "deckA",
+                                "intValue",
+                        ]
 
+                        RowLayout {
+                            spacing: 4
+                            required property var modelData
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: modelData
+                                font.pixelSize: 18
+                                font.family: "Noto Sans"
+                                font.letterSpacing: -1
+                                color: fontColor
+                            }
+
+                            Text {
+                                Layout.maximumWidth: 160
+                                text: engine.getSetting(modelData)
+                                font.pixelSize: 18
+                                font.family: "Noto Sans"
+                                font.letterSpacing: -1
+                                color: fontColor
+                                elide: Text.ElideLeft
+                            }
+                        }
+                    }
+                }
+                RowLayout {
+                    Layout.columnSpan: 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
