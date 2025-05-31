@@ -153,7 +153,8 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #8a8a8a;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
   background-color: #b79d00;
 }
 #CueLabelEdit {

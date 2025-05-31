@@ -12,6 +12,7 @@
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/colorcomponents.h"
 #include "util/roundtopixel.h"
 #include "waveform/renderers/allshader/digitsrenderer.h"
@@ -34,9 +35,14 @@ namespace {
 class WaveformMarkNode : public rendergraph::GeometryNode {
   public:
     WaveformMark* m_pOwner{};
+    bool m_isEndMark{false};
 
-    WaveformMarkNode(WaveformMark* pOwner, rendergraph::Context* pContext, const QImage& image)
-            : m_pOwner(pOwner) {
+    WaveformMarkNode(WaveformMark* pOwner,
+            bool isEndMark,
+            rendergraph::Context* pContext,
+            const QImage& image)
+            : m_pOwner(pOwner),
+              m_isEndMark(isEndMark) {
         initForRectangles<TextureMaterial>(1);
         updateTexture(pContext, image);
     }
@@ -68,6 +74,10 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
         return m_textureHeight;
     }
 
+    void setAlpha(float alpha) {
+        material().setUniform(1, alpha);
+    }
+
   public:
     float m_textureWidth{};
     float m_textureHeight{};
@@ -76,10 +86,11 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
 class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
   public:
     WaveformMarkNodeGraphics(WaveformMark* pOwner,
+            bool isEndMark,
             rendergraph::Context* pContext,
             const QImage& image)
             : m_pNode(std::make_unique<WaveformMarkNode>(
-                      pOwner, pContext, image)) {
+                      pOwner, isEndMark, pContext, image)) {
     }
     void updateTexture(rendergraph::Context* pContext, const QImage& image) {
         waveformMarkNode()->updateTexture(pContext, image);
@@ -92,6 +103,9 @@ class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
     }
     float textureHeight() const {
         return waveformMarkNode()->textureHeight();
+    }
+    void setAlpha(float alpha) {
+        waveformMarkNode()->setAlpha(alpha);
     }
     void attachNode(std::unique_ptr<rendergraph::BaseNode> pNode) {
         DEBUG_ASSERT(!m_pNode);
@@ -282,8 +296,10 @@ void allshader::WaveformRenderMark::update() {
         WaveformMarkNode* pWaveformMarkNode = static_cast<WaveformMarkNode*>(pNode.get());
         // Determine its WaveformMark
         auto* pMark = pWaveformMarkNode->m_pOwner;
-        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
-        // Store the node with the WaveformMark
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(
+                pWaveformMarkNode->m_isEndMark ? pMark->m_pEndGraphics.get()
+                                               : pMark->m_pGraphics.get());
+        // Store the nodes with the WaveformMark
         pGraphics->attachNode(std::move(pNode));
     }
 
@@ -326,13 +342,19 @@ void allshader::WaveformRenderMark::update() {
 
         auto* pMarkGraphics = pMark->m_pGraphics.get();
         auto* pMarkNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkGraphics);
-        if (!pMarkGraphics) { // is this even possible?
+        if (!pMarkNodeGraphics) { // is this even possible?
             continue;
         }
 
         const float currentMarkPos = static_cast<float>(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
                         samplePosition, positionType));
+        auto* pMarkEndGraphics = pMark->m_pEndGraphics.get();
+        auto* pMarkEndNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkEndGraphics);
+        VERIFY_OR_DEBUG_ASSERT(pMarkEndNodeGraphics) {
+            continue;
+        }
+
         if (pMark->isShowUntilNext() &&
                 samplePosition >= playPosition + 1.0 &&
                 samplePosition < nextMarkPosition) {
@@ -362,30 +384,47 @@ void allshader::WaveformRenderMark::update() {
 
         // Check if the range needs to be displayed.
         if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
-            DEBUG_ASSERT(samplePosition < sampleEndPosition);
             const float currentMarkEndPos = static_cast<float>(
                     m_waveformRenderer->transformSamplePositionInRendererWorld(
                             sampleEndPosition, positionType));
+
             if (visible || currentMarkEndPos > 0.f) {
-                QColor color = pMark->fillColor();
-                color.setAlphaF(0.4f);
+                if (pMark->isLoop()) {
+                    // Reuse, or create new when needed
+                    if (!pRangeChild) {
+                        auto pNode = std::make_unique<GeometryNode>();
+                        pNode->initForRectangles<RGBAMaterial>(2);
+                        pRangeChild = pNode.get();
+                        m_pRangeNodesParent->appendChildNode(std::move(pNode));
+                    }
 
-                // Reuse, or create new when needed
-                if (!pRangeChild) {
-                    auto pNode = std::make_unique<GeometryNode>();
-                    pNode->initForRectangles<RGBAMaterial>(2);
-                    pRangeChild = pNode.get();
-                    m_pRangeNodesParent->appendChildNode(std::move(pNode));
+                    QColor color = pMark->fillColor();
+                    color.setAlphaF(0.4f);
+                    updateRangeNode(pRangeChild,
+                            QRectF(QPointF(roundToPixel(currentMarkPos),
+                                           !m_isSlipRenderer && slipActive
+                                                   ? roundToPixel(
+                                                             m_waveformRenderer
+                                                                     ->getBreadth() /
+                                                             2)
+                                                   : 0.f),
+                                    QPointF(roundToPixel(currentMarkEndPos),
+                                            roundToPixel(m_waveformRenderer
+                                                            ->getBreadth()))),
+                            color);
+                    pRangeChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
+                } else {
+                    pMarkEndNodeGraphics->update(
+                            roundToPixel(currentMarkEndPos - markWidth / 2.f),
+                            !m_isSlipRenderer && slipActive
+                                    ? roundToPixel(m_waveformRenderer->getBreadth() / 2)
+                                    : 0,
+                            devicePixelRatio);
+                    pMarkEndNodeGraphics->setAlpha(static_cast<float>(pMark->opacity()));
+                    // transfer back to m_pMarkNodesParent children, for rendering
+                    m_pMarkNodesParent->appendChildNode(pMarkEndNodeGraphics->detachNode());
                 }
-
-                updateRangeNode(pRangeChild,
-                        QRectF(QPointF(roundToPixel(currentMarkPos), 0.f),
-                                QPointF(roundToPixel(currentMarkEndPos),
-                                        roundToPixel(m_waveformRenderer->getBreadth()))),
-                        color);
-
                 visible = true;
-                pRangeChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
             }
         }
 
@@ -564,6 +603,7 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
     if (!pMark->m_pGraphics) {
         pMark->m_pGraphics =
                 std::make_unique<WaveformMarkNodeGraphics>(pMark.get(),
+                        false,
                         m_waveformRenderer->getContext(),
                         pMark->generateImage(
                                 m_waveformRenderer->getDevicePixelRatio()));
@@ -571,6 +611,21 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
         auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pGraphics.get());
         pGraphics->updateTexture(m_waveformRenderer->getContext(),
                 pMark->generateImage(
+                        m_waveformRenderer->getDevicePixelRatio()));
+    }
+}
+void allshader::WaveformRenderMark::updateEndMarkImage(WaveformMarkPointer pMark) {
+    if (!pMark->m_pEndGraphics) {
+        pMark->m_pEndGraphics =
+                std::make_unique<WaveformMarkNodeGraphics>(pMark.get(),
+                        true,
+                        m_waveformRenderer->getContext(),
+                        pMark->generateEndImage(
+                                m_waveformRenderer->getDevicePixelRatio()));
+    } else {
+        auto* pGraphics = static_cast<WaveformMarkNodeGraphics*>(pMark->m_pEndGraphics.get());
+        pGraphics->updateTexture(m_waveformRenderer->getContext(),
+                pMark->generateEndImage(
                         m_waveformRenderer->getDevicePixelRatio()));
     }
 }
