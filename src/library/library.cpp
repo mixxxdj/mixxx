@@ -745,13 +745,27 @@ void Library::setEditMetadataSelectedClick(bool enabled) {
     emit setSelectedClick(enabled);
 }
 
+void Library::slotSearchInCurrentView() {
+    m_pLibraryControl->setLibraryFocus(FocusWidget::Searchbar, Qt::ShortcutFocusReason);
+}
+
+void Library::slotSearchInAllTracks() {
+    searchTracksInCollection();
+}
+
+void Library::searchTracksInCollection() {
+    VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
+        return;
+    }
+    m_pMixxxLibraryFeature->selectAndActivate();
+    m_pLibraryControl->setLibraryFocus(FocusWidget::Searchbar, Qt::ShortcutFocusReason);
+}
+
 void Library::searchTracksInCollection(const QString& query) {
     VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
         return;
     }
     m_pMixxxLibraryFeature->searchAndActivate(query);
-    emit switchToView(m_sTrackViewName);
-    m_pSidebarModel->activateDefaultSelection();
 }
 
 #ifdef __ENGINEPRIME__

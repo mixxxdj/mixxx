@@ -372,8 +372,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         // Else (root item was selected or for some reason no index could be created)
         // there's nothing to do: either no child was selected earlier, or the root
         // was selected and will remain selected after the child model was rebuilt.
-        activateChild(newIndex);
-        emit featureSelect(this, newIndex);
+        selectAndActivate(newIndex);
     }
 }
 

@@ -1,5 +1,7 @@
 # Changelog
 
+## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support
