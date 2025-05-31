@@ -21,8 +21,8 @@ Item {
             id: gainKnob
 
             anchors.centerIn: parent
-            width: 48
-            height: 48
+            width: 42
+            height: 42
             group: root.group
             key: "pregain"
             color: Theme.gainKnobColor
@@ -55,7 +55,7 @@ Item {
             key: "vu_meter_right"
         }
 
-        Skin.ControlSlider {
+        Skin.ControlFader {
             id: volumeSlider
 
             anchors.fill: parent
