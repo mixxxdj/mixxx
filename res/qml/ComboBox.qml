@@ -10,6 +10,7 @@ ComboBox {
 
     property alias popupWidth: popup.width
     property bool clip: false
+    property int popupMaxItem: 3
 
     background: Skin.EmbeddedBackground {
     }
@@ -57,20 +58,20 @@ ComboBox {
         y: root.height/2
         width: root.width - root.indicator.width / 2
         x: root.indicator.width / 2
-        height: Math.min(root.indicator.implicitHeight*3 + root.indicator.width, 150)
+        height: root.indicator.implicitHeight*Math.min(root.popupMaxItem, root.count) + root.indicator.width
 
         padding: 0
 
         contentItem: Item {
-            // implicitHeight: contentHeight
             Item {
                 id: content
                 anchors.fill: parent
                 Shape {
+                    id: arrow
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.rightMargin: 3
-                    width: root.indicator.width-3
+                    width: root.indicator.width-4
                     height: width
                     antialiasing: true
                     layer.enabled: true
@@ -79,7 +80,7 @@ ComboBox {
                         fillColor: Theme.embeddedBackgroundColor
                         strokeColor: Theme.deckBackgroundColor
                         strokeWidth: 2
-                        startX: parent.width/2; startY: 0
+                        startX: arrow.width/2; startY: 0
                         fillRule: ShapePath.WindingFill
                         capStyle: ShapePath.RoundCap
                         PathLine { x: root.indicator.width; y: root.indicator.width }
@@ -88,7 +89,7 @@ ComboBox {
                     }
                 }
                 Skin.EmbeddedBackground {
-                    anchors.topMargin: root.indicator.width
+                    anchors.topMargin: root.indicator.width-6
                     anchors.fill: parent
                     ListView {
                         clip: true
@@ -103,7 +104,8 @@ ComboBox {
                         model: root.popup.visible ? root.delegateModel : null
                         currentIndex: root.highlightedIndex
 
-                        ScrollIndicator.vertical: ScrollIndicator {
+                        ScrollBar.vertical: ScrollBar {
+                            policy: ScrollBar.AlwaysOn
                         }
                     }
                 }
