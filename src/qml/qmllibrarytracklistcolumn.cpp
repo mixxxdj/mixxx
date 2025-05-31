@@ -6,7 +6,7 @@ namespace mixxx {
 namespace qml {
 
 QmlLibraryTrackListColumn::QmlLibraryTrackListColumn(QObject* parent,
-        QString label,
+        const QString& label,
         int fillSpan,
         int columnIdx,
         double preferredWidth,
@@ -14,15 +14,11 @@ QmlLibraryTrackListColumn::QmlLibraryTrackListColumn(QObject* parent,
         Role role)
         : QObject(parent),
           m_label(label),
+          m_role(role),
           m_fillSpan(fillSpan),
           m_columnIdx(columnIdx),
           m_preferredWidth(preferredWidth),
-          m_pDelegate(pDelegate),
-          m_role(role) {
-    if (pDelegate != nullptr) {
-        pDelegate->setParent(this);
-        QQmlEngine::setObjectOwnership(pDelegate, QQmlEngine::CppOwnership);
-    }
+          m_pDelegate(pDelegate) {
 }
 
 } // namespace qml

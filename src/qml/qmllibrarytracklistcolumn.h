@@ -9,6 +9,7 @@
 #include <QVariant>
 
 #include "library/columncache.h"
+#include "qml/qml_owned_ptr.h"
 
 namespace mixxx {
 namespace qml {
@@ -45,7 +46,7 @@ class QmlLibraryTrackListColumn : public QObject {
             : QObject(parent) {
     }
     explicit QmlLibraryTrackListColumn(QObject* parent,
-            QString label,
+            const QString& label,
             int fillSpan,
             int columnIdx,
             double preferredWidth,
@@ -76,7 +77,7 @@ class QmlLibraryTrackListColumn : public QObject {
     int m_fillSpan{0};
     int m_columnIdx{-1};
     double m_preferredWidth{-1};
-    QQmlComponent* m_pDelegate;
+    qml_owned_ptr<QQmlComponent> m_pDelegate;
 };
 } // namespace qml
 } // namespace mixxx

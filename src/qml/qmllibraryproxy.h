@@ -32,7 +32,7 @@ class QmlLibraryProxy : public QObject {
         return s_pLibrary.get();
     }
 
-    qml_owned_ptr<QmlLibraryTrackListModel> model() const;
+    QmlLibraryTrackListModel* model() const;
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
 
   private:

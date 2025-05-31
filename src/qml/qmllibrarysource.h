@@ -85,7 +85,11 @@ class QmlLibrarySource : public QObject {
     void slotShowTrackModel(QAbstractItemModel* pModel);
 
   signals:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
     void requestTrackModel(std::shared_ptr<QmlLibraryTrackListModel> pModel);
+#else
+    void requestTrackModel(std::shared_ptr<mixxx::qml::QmlLibraryTrackListModel> pModel);
+#endif
 
   protected:
     QString m_label;

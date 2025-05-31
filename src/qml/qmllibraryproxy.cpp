@@ -19,9 +19,10 @@ QmlLibraryProxy::QmlLibraryProxy(QObject* parent)
         : QObject(parent) {
 }
 
-qml_owned_ptr<QmlLibraryTrackListModel> QmlLibraryProxy::model() const {
+QmlLibraryTrackListModel* QmlLibraryProxy::model() const {
     return make_qml_owned<QmlLibraryTrackListModel>(
-            QList<QmlLibraryTrackListColumn*>{}, s_pLibrary->trackTableModel());
+            QList<QmlLibraryTrackListColumn*>{}, s_pLibrary->trackTableModel())
+            .get();
 }
 
 void QmlLibraryProxy::analyze(const QmlTrackProxy* track) const {
