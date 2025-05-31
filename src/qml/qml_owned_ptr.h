@@ -27,7 +27,7 @@ class qml_owned_ptr final {
 
     explicit qml_owned_ptr(T* t) noexcept
             : m_ptr{t} {
-        DEBUG_ASSERT(!m_ptr);
+        DEBUG_ASSERT(m_ptr);
         QQmlEngine::setObjectOwnership(m_ptr, QQmlEngine::JavaScriptOwnership);
     }
 

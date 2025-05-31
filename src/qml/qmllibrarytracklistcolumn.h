@@ -20,7 +20,7 @@ class QmlLibraryTrackListColumn : public QObject {
     Q_PROPERTY(int fillSpan MEMBER m_fillSpan FINAL)
     Q_PROPERTY(int columnIdx MEMBER m_columnIdx FINAL)
     Q_PROPERTY(double preferredWidth MEMBER m_preferredWidth FINAL)
-    Q_PROPERTY(QQmlComponent* delegate MEMBER m_pDelegate FINAL)
+    Q_PROPERTY(QQmlComponent* delegate READ delegate WRITE setDelegate FINAL)
     Q_PROPERTY(Role role MEMBER m_role FINAL)
     QML_NAMED_ELEMENT(TrackListColumn)
   public:
@@ -69,6 +69,9 @@ class QmlLibraryTrackListColumn : public QObject {
     }
     QQmlComponent* delegate() const {
         return m_pDelegate;
+    }
+    void setDelegate(QQmlComponent* delegate) {
+        m_pDelegate = qml_owned_ptr(delegate);
     }
 
   private:
