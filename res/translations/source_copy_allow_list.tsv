@@ -302,7 +302,7 @@ ca,es*	Mid/Side
 ca,es*,fr,sl	Triplet
 ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
-ca,de,fr,it,nl,pl,sv	Intro
+ca,de,fr,it,nl,pl,sv,es*	Intro
 cs,de,fr,sl	Formant
 da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv	Auto DJ
 da,fr,nb,nl,nn	Type
@@ -355,7 +355,7 @@ it,nl,pt_BR	Caching
 it,nl	skin
 it	decks
 de	Timer (Fallback)
-de,fr,it,nl,pl,sv	Outro
+de,fr,it,nl,pl,sv,es*	Outro
 de,nl	Loops
 el,pt_BR	Tool tips
 el,es*,eu,id,it,lb,nb,pt*,tr	Scratching
