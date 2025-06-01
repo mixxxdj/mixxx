@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QStandardPaths>
 #include <QtGlobal>
 
@@ -98,11 +100,51 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 
 #endif
 
+#if defined(Q_OS_LINUX)
+inline bool isGnomeSession() {
+    const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
+    return desktop.contains("gnome");
+}
+#endif
+
 inline QLocale inputLocale() {
-    // Use the default config for local keyboard
+#if defined(Q_OS_LINUX)
+    if (isGnomeSession()) {
+        // In a Gnome session QGuiApplication::inputMethod() is not necessarily correct
+        // https://github.com/mixxxdj/mixxx/issues/14838
+        // If this auto detection still fails the user may use a Custom.kb.cfg
+        QProcess sourcesProc;
+        sourcesProc.start("dconf",
+                QStringList()
+                        << "read"
+                        << "/org/gnome/desktop/input-sources/mru-sources");
+        if (sourcesProc.waitForFinished(100)) {
+            QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            // Expecting something like this: [('xkb', 'de'), ('xkb', 'us')]
+            // The first match is the current
+            // This matches entries like ('xkb', 'us') and extracts the layout
+            // code (e.g. 'us', 'de')
+            static const QRegularExpression re(QStringLiteral("\\('xkb',\\s*'([^']+)'\\)"));
+            QRegularExpressionMatch match = re.match(sourcesStr);
+            if (match.hasMatch()) {
+                QString layout = match.captured(1);
+                QLocale locale(layout);
+                qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
+                return locale;
+            } else {
+                qDebug() << "No valid keyboard layout found in dconf:" << sourcesStr;
+            }
+        } else {
+            qDebug() << "Failed to read Keyboard Layout from dconf.";
+        }
+    }
+#endif
+
     QInputMethod* pInputMethod = QGuiApplication::inputMethod();
     return pInputMethod ? pInputMethod->locale() : QLocale(QLocale::English);
 }
+
 } // anonymous namespace
 
 namespace mixxx {
