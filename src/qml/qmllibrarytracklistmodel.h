@@ -2,6 +2,8 @@
 #include <QIdentityProxyModel>
 #include <QQmlEngine>
 
+#include "qml/qmltrackproxy.h"
+
 class LibraryTableModel;
 
 namespace mixxx {
@@ -27,6 +29,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
 
     QVariant data(const QModelIndex& index, int role) const override;
     int columnCount(const QModelIndex& index = QModelIndex()) const override;
+    Q_INVOKABLE QmlTrackProxy* getTrack(int row) const;
     QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE QVariant get(int row) const;
 };
