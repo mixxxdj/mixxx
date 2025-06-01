@@ -10,8 +10,8 @@
 #include "track/track.h"
 #include "util/math.h"
 
-#define kConfigKey "[Auto DJ]"
 namespace {
+const QString kConfigKey = QStringLiteral("[Auto DJ]");
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
