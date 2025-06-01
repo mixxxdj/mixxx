@@ -106,6 +106,12 @@ inline bool isGnomeSession() {
     QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
     return desktop.contains("gnome");
 }
+
+inline bool isXfceSession() {
+    const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
+    return desktop.contains("xfce");
+}
 #endif
 
 inline QLocale inputLocale() {
@@ -120,15 +126,15 @@ inline QLocale inputLocale() {
                         << "read"
                         << "/org/gnome/desktop/input-sources/mru-sources");
         if (sourcesProc.waitForFinished(100)) {
-            QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
             // Expecting something like this: [('xkb', 'de'), ('xkb', 'us')]
-            // The first match is the current
+            // The first match is the current layout.
             // This matches entries like ('xkb', 'us') and extracts the layout
             // code (e.g. 'us', 'de')
             static const QRegularExpression re(QStringLiteral("\\('xkb',\\s*'([^']+)'\\)"));
             QRegularExpressionMatch match = re.match(sourcesStr);
             if (match.hasMatch()) {
-                QString layout = match.captured(1);
+                const QString layout = match.captured(1);
                 QLocale locale(layout);
                 qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
                 return locale;
@@ -137,6 +143,29 @@ inline QLocale inputLocale() {
             }
         } else {
             qDebug() << "Failed to read Keyboard Layout from dconf.";
+        }
+    } else if (isXfceSession()) {
+        // In a Xfce session QGuiApplication::inputMethod() is not necessarily correct
+        // https://github.com/mixxxdj/mixxx/issues/14838
+        // If this auto detection still fails the user may use a Custom.kb.cfg
+        const QStringList args{"-c", "keyboard-layout", "-p", "/Default/XkbLayout"};
+        QProcess sourcesProc;
+        sourcesProc.start("xfconf-query", args);
+        if (sourcesProc.waitForFinished(100)) {
+            QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            // Expecting comma-separated layouts: de,gr,cz
+            // The first is the current layout.
+            if (sourcesStr.length() >= 2) {
+                const QStringList allLayouts = sourcesStr.split(',');
+                const QString currLayout = allLayouts[0];
+                QLocale locale(currLayout);
+                qDebug() << "Keyboard Layout from XFCE xfconf:" << currLayout;
+                return locale;
+            } else {
+                qDebug() << "No valid keyboard layout found in xfconf:" << sourcesStr;
+            }
+        } else {
+            qDebug() << "Failed to read Keyboard Layout from xfconf.";
         }
     }
 #endif
