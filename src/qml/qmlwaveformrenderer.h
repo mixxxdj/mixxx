@@ -85,7 +85,7 @@ class QmlWaveformRendererPreroll
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
-typedef allshader::WaveformRendererSignalBase::Options WaveformRendererSignalBaseOptions;
+using WaveformRendererSignalBaseOptions = allshader::WaveformRendererSignalBase::Options;
 class QmlWaveformRendererSignal
         : public QmlWaveformRendererFactory {
     Q_OBJECT
@@ -385,6 +385,8 @@ class QmlWaveformUntilMark : public QObject {
     Q_PROPERTY(bool showBeats MEMBER m_showBeats NOTIFY showBeatsChanged)
     Q_PROPERTY(Qt::Alignment align MEMBER m_align NOTIFY alignChanged)
     Q_PROPERTY(int textSize MEMBER m_textSize NOTIFY textSizeChanged)
+    Q_PROPERTY(double defaultNextMarkPosition MEMBER m_defaultNextMarkPosition
+                    NOTIFY defaultNextMarkPositionChanged)
 
     QML_NAMED_ELEMENT(WaveformUntilMark)
   public:
@@ -410,11 +412,17 @@ class QmlWaveformUntilMark : public QObject {
         return m_textSize;
     }
 
+    double defaultNextMarkPosition() const {
+        return m_defaultNextMarkPosition;
+    }
+
   signals:
     void showTimeChanged(bool);
     void showBeatsChanged(bool);
     void alignChanged(Qt::Alignment);
     void textSizeChanged(int);
+    void textHeightLimitChanged(int);
+    void defaultNextMarkPositionChanged(double);
 
   private:
     bool m_showTime;
@@ -422,6 +430,7 @@ class QmlWaveformUntilMark : public QObject {
     Qt::Alignment m_align;
     int m_textSize;
     int m_textHeightLimit;
+    double m_defaultNextMarkPosition;
 };
 
 class QmlWaveformRendererMarkRange

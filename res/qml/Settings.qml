@@ -17,7 +17,7 @@ Popup {
 
     background: Rectangle {
         anchors.fill: parent
-        color: Theme.darkGray2
+        color: Theme.darkGray4
         opacity: parent.radius < 0 ? Math.max(0.1, 1 + parent.radius / 8) : 1
         radius: 8
     }
@@ -87,6 +87,7 @@ Popup {
                         focus: true
                         model: sectionProperties
                         visible: !searchSetting.active
+                        currentIndex: 3
 
                         delegate: Rectangle {
                             required property int index

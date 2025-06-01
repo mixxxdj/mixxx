@@ -38,9 +38,19 @@ QVariantList QmlConfigProxy::getHotcueColorPalette() {
     return paletteToQColorList(colorPaletteSettings.getHotcueColorPalette());
 }
 
+QVariantList QmlConfigProxy::getHotcueColorPalette(const QString& paletteName) {
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    return paletteToQColorList(colorPaletteSettings.getHotcueColorPalette(paletteName));
+}
+
 QVariantList QmlConfigProxy::getTrackColorPalette() {
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     return paletteToQColorList(colorPaletteSettings.getTrackColorPalette());
+}
+
+QVariantList QmlConfigProxy::getTrackColorPalette(const QString& paletteName) {
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    return paletteToQColorList(colorPaletteSettings.getTrackColorPalette(paletteName));
 }
 
 int QmlConfigProxy::getMultiSamplingLevel() {

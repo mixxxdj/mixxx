@@ -204,7 +204,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
     connect(this,
             &QmlWaveformRendererBeat::colorChanged,
             pRenderer.get(),
-            [waveformWidget, &pRenderer](const QColor& color) {
+            [waveformWidget, pRenderer = pRenderer.get()](const QColor& color) {
                 waveformWidget->setDisplayBeatGridAlpha(color.alphaF() * 100);
                 pRenderer->setColor(color.rgb());
             });
@@ -270,6 +270,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
     pRenderer->setUntilMarkAlign(m_untilMark->align());
     pRenderer->setUntilMarkTextSize(m_untilMark->textSize());
     pRenderer->setUntilMarkTextHeightLimit(m_untilMark->textHeightLimit());
+    pRenderer->setDefaultNextMarkPosition(m_untilMark->defaultNextMarkPosition());
 
     connect(m_untilMark.get(),
             &QmlWaveformUntilMark::showTimeChanged,
@@ -287,6 +288,10 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
             &QmlWaveformUntilMark::textSizeChanged,
             pRenderer.get(),
             &allshader::WaveformRenderMark::setUntilMarkTextSize);
+    connect(m_untilMark.get(),
+            &QmlWaveformUntilMark::defaultNextMarkPositionChanged,
+            pRenderer.get(),
+            &allshader::WaveformRenderMark::setDefaultNextMarkPosition);
 
     connect(this,
             &QmlWaveformRendererMark::playMarkerColorChanged,

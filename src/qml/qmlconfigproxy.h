@@ -21,7 +21,9 @@ class QmlConfigProxy : public QObject {
     // We use method here instead of properties as there is no way to achieve property binding
     // with UserSettings, since there is no synchronisation upon mutations.
     Q_INVOKABLE QVariantList getHotcueColorPalette();
+    Q_INVOKABLE QVariantList getHotcueColorPalette(const QString& paletteName);
     Q_INVOKABLE QVariantList getTrackColorPalette();
+    Q_INVOKABLE QVariantList getTrackColorPalette(const QString& paletteName);
     Q_INVOKABLE int getMultiSamplingLevel();
     Q_INVOKABLE bool useAcceleration();
 
