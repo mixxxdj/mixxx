@@ -162,7 +162,9 @@ AutoDJProcessor::AutoDJProcessor(
 
 void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
     m_decks.reserve(decks);
-    for (int i = m_decks.size(); i < decks; ++i) {
+    // Add more decks if we have not all yet.
+    // Mixxx does not support reducing the number of deck
+    for (int i = static_cast<int>(m_decks.size()); i < decks; ++i) {
         BaseTrackPlayer* pPlayer = m_pPlayerManager->getDeckBase(i);
         // Shouldn't be possible.
         VERIFY_OR_DEBUG_ASSERT(pPlayer) {
