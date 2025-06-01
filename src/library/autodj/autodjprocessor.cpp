@@ -1,7 +1,6 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "engine/channels/enginedeck.h"
-#include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
@@ -126,8 +125,8 @@ AutoDJProcessor::AutoDJProcessor(
           m_addRandomTrack(ConfigKey(kConfigKey, QStringLiteral("add_random_track"))),
           m_fadeNow(ConfigKey(kConfigKey, QStringLiteral("fade_now"))),
           m_enabledAutoDJ(ConfigKey(kConfigKey, QStringLiteral("enabled"))) {
-    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
-                                                 "mixxx.db.model.autodj");
+    m_pAutoDJTableModel = make_parented<PlaylistTableModel>(
+            this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
     m_pAutoDJTableModel->select();
 
@@ -159,10 +158,6 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_transitionMode = m_pConfig->getValue(
             ConfigKey(kConfigKey, kTransitionModePreferenceName), TransitionMode::FullIntroOutro);
-}
-
-AutoDJProcessor::~AutoDJProcessor() {
-    delete m_pAutoDJTableModel;
 }
 
 void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {

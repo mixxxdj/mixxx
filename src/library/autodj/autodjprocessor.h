@@ -10,14 +10,15 @@
 #include "control/controlpushbutton.h"
 #include "control/pollingcontrolproxy.h"
 #include "engine/channels/enginechannel.h"
+#include "library/playlisttablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/class.h"
+#include "util/parented_ptr.h"
 
 class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
-class PlaylistTableModel;
 typedef QList<QModelIndex> QModelIndexList;
 
 class DeckAttributes : public QObject {
@@ -174,7 +175,7 @@ class AutoDJProcessor : public QObject {
                     PlayerManagerInterface* pPlayerManager,
                     TrackCollectionManager* pTrackCollectionManager,
                     int iAutoDJPlaylistId);
-    virtual ~AutoDJProcessor();
+    virtual ~AutoDJProcessor() = default;
 
     AutoDJState getState() const {
         return m_eState;
@@ -284,7 +285,7 @@ class AutoDJProcessor : public QObject {
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
     void maybeFillRandomTracks();
     UserSettingsPointer m_pConfig;
-    PlaylistTableModel* m_pAutoDJTableModel;
+    parented_ptr<PlaylistTableModel> m_pAutoDJTableModel;
 
     AutoDJState m_eState;
     double m_transitionProgress;
