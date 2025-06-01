@@ -7,12 +7,13 @@
 
 #include "audio/frame.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/class.h"
 
-class ControlPushButton;
 class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
@@ -293,14 +294,14 @@ class AutoDJProcessor : public QObject {
     PlayerManagerInterface* m_pPlayerManager;
     std::vector<std::unique_ptr<DeckAttributes>> m_decks;
 
-    ControlProxy* m_pCOCrossfader;
-    ControlProxy* m_pCOCrossfaderReverse;
+    ControlProxy m_coCrossfader;
+    PollingControlProxy m_coCrossfaderReverse;
 
-    ControlPushButton* m_pSkipNext;
-    ControlPushButton* m_pAddRandomTrack;
-    ControlPushButton* m_pFadeNow;
-    ControlPushButton* m_pShufflePlaylist;
-    ControlPushButton* m_pEnabledAutoDJ;
+    ControlPushButton m_shufflePlaylist;
+    ControlPushButton m_skipNext;
+    ControlPushButton m_addRandomTrack;
+    ControlPushButton m_fadeNow;
+    ControlPushButton m_enabledAutoDJ;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
