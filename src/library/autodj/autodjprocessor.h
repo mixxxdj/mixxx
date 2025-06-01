@@ -2,6 +2,8 @@
 
 #include <QObject>
 #include <QString>
+#include <memory>
+#include <vector>
 
 #include "audio/frame.h"
 #include "control/controlproxy.h"
@@ -289,7 +291,7 @@ class AutoDJProcessor : public QObject {
     TransitionMode m_transitionMode;
 
     PlayerManagerInterface* m_pPlayerManager;
-    QList<DeckAttributes*> m_decks;
+    std::vector<std::unique_ptr<DeckAttributes>> m_decks;
 
     ControlProxy* m_pCOCrossfader;
     ControlProxy* m_pCOCrossfaderReverse;

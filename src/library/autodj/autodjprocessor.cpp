@@ -174,8 +174,6 @@ AutoDJProcessor::AutoDJProcessor(
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
-    qDeleteAll(m_decks);
-    m_decks.clear();
     delete m_pCOCrossfader;
     delete m_pCOCrossfaderReverse;
 
@@ -189,13 +187,14 @@ AutoDJProcessor::~AutoDJProcessor() {
 }
 
 void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
+    m_decks.reserve(decks);
     for (int i = m_decks.size(); i < decks; ++i) {
         BaseTrackPlayer* pPlayer = m_pPlayerManager->getDeckBase(i);
         // Shouldn't be possible.
         VERIFY_OR_DEBUG_ASSERT(pPlayer) {
             return;
         }
-        m_decks.append(new DeckAttributes(i, pPlayer));
+        m_decks.emplace_back(std::make_unique<DeckAttributes>(i, pPlayer));
     }
 }
 
@@ -400,18 +399,18 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             return ADJ_BOTH_DECKS_PLAYING;
         }
         // Auto-DJ needs at least two decks
-        DEBUG_ASSERT(m_decks.length() > 1);
+        DEBUG_ASSERT(m_decks.size() > 1);
 
         // TODO: This is a total band aid for making Auto DJ work with four decks.
         // We should design a nicer way to handle this.
-        for (const auto& pDeck : std::as_const(m_decks)) {
+        for (const auto& pDeck : m_decks) {
             VERIFY_OR_DEBUG_ASSERT(pDeck) {
                 continue;
             }
-            if (pDeck == pLeftDeck) {
+            if (pDeck.get() == pLeftDeck) {
                 continue;
             }
-            if (pDeck == pRightDeck) {
+            if (pDeck.get() == pRightDeck) {
                 continue;
             }
             if (pDeck->isPlaying()) {
@@ -600,7 +599,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &ControlProxy::valueChanged,
                 this,
                 &AutoDJProcessor::crossfaderChanged);
-        for (const auto& pDeck : std::as_const(m_decks)) {
+        for (const auto& pDeck : m_decks) {
             pDeck->disconnect(this);
         }
         emitAutoDJStateChanged(m_eState);
@@ -1780,9 +1779,9 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
 DeckAttributes* AutoDJProcessor::getLeftDeck() {
     // find first left deck
-    for (const auto& pDeck : std::as_const(m_decks)) {
+    for (const auto& pDeck : m_decks) {
         if (pDeck->isLeft()) {
-            return pDeck;
+            return pDeck.get();
         }
     }
     return nullptr;
@@ -1790,9 +1789,9 @@ DeckAttributes* AutoDJProcessor::getLeftDeck() {
 
 DeckAttributes* AutoDJProcessor::getRightDeck() {
     // find first right deck
-    for (const auto& pDeck : std::as_const(m_decks)) {
+    for (const auto& pDeck : m_decks) {
         if (pDeck->isRight()) {
-            return pDeck;
+            return pDeck.get();
         }
     }
     return nullptr;
@@ -1810,9 +1809,9 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
-    for (const auto& pDeck : std::as_const(m_decks)) {
+    for (const auto& pDeck : m_decks) {
         if (pDeck->isFromDeck) {
-            return pDeck;
+            return pDeck.get();
         }
     }
     return nullptr;
