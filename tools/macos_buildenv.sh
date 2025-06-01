@@ -19,19 +19,35 @@ realpath() {
 THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
-if [ -n "${BUILDENV_ARM64_CROSS}" ]; then
-    if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-        BUILDENV_BRANCH="2.6-rel"
-        BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-cross-rel-da4c207"
-        BUILDENV_SHA256="4a6e7a2d83ae2056a89298a0fd6d110d44a4344e3968219dd0c3d34648599233"
-    else
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
-        BUILDENV_BRANCH="2.6"
-        BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-cross-c2def9b"
-        BUILDENV_SHA256="fa38900a64dec28c43888ec6f36421e9a8dc31e37115831fc779beca071014d7"
-    fi
-elif [ -n "${BUILDENV_ARM64}" ]; then
+HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
+
+if [ "$HOST_ARCH" == "x86_64" ]; then
+	if [ -n "${BUILDENV_ARM64_CROSS}" ]; then
+	    if [ -n "${BUILDENV_RELEASE}" ]; then
+	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
+	        BUILDENV_BRANCH="2.6-rel"
+	        BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-cross-rel-da4c207"
+	        BUILDENV_SHA256="4a6e7a2d83ae2056a89298a0fd6d110d44a4344e3968219dd0c3d34648599233"
+	    else
+	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
+	        BUILDENV_BRANCH="2.6"
+	        BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-cross-c2def9b"
+	        BUILDENV_SHA256="fa38900a64dec28c43888ec6f36421e9a8dc31e37115831fc779beca071014d7"
+	    fi
+	else
+	    if [ -n "${BUILDENV_RELEASE}" ]; then
+	        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+	        BUILDENV_BRANCH="2.6-rel"
+	        BUILDENV_NAME="mixxx-deps-2.6-x64-osx-rel-da4c207"
+	        BUILDENV_SHA256="5e7f9a4d5d58a3b720a64d179f9cf72dab109460e74e9e31e9c2ada0885bb4a0"
+	    else
+	        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
+	        BUILDENV_BRANCH="2.6"
+	        BUILDENV_NAME="mixxx-deps-2.6-x64-osx-c2def9b"
+	        BUILDENV_SHA256="0c75b39d6c03e34e794ab95cc460b1d11a0b976d572e31451b7c0798d9035d73"
+	    fi
+	fi
+elif [ "$HOST_ARCH" == "arm64" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
         VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.6-rel"
@@ -44,17 +60,10 @@ elif [ -n "${BUILDENV_ARM64}" ]; then
         BUILDENV_SHA256="c6a00220d9b938dedec4864dbcb4c2db2d1ca9e6f8f60c20883c0008a163db6f"
     fi
 else
-    if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
-        BUILDENV_BRANCH="2.6-rel"
-        BUILDENV_NAME="mixxx-deps-2.6-x64-osx-rel-da4c207"
-        BUILDENV_SHA256="5e7f9a4d5d58a3b720a64d179f9cf72dab109460e74e9e31e9c2ada0885bb4a0"
-    else
-        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
-        BUILDENV_BRANCH="2.6"
-        BUILDENV_NAME="mixxx-deps-2.6-x64-osx-c2def9b"
-        BUILDENV_SHA256="0c75b39d6c03e34e794ab95cc460b1d11a0b976d572e31451b7c0798d9035d73"
-    fi
+    echo "ERROR: Unsupported architecture detected: $HOST_ARCH"
+    echo "Please refer to the following guide to manually build the vcpkg environment:"
+    echo "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    exit 1
 fi
 
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
