@@ -193,7 +193,7 @@ void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
         BaseTrackPlayer* pPlayer = m_pPlayerManager->getDeckBase(i);
         // Shouldn't be possible.
         VERIFY_OR_DEBUG_ASSERT(pPlayer) {
-            continue;
+            return;
         }
         m_decks.append(new DeckAttributes(i, pPlayer));
     }
