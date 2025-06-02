@@ -11,11 +11,19 @@
 * Fix: byte order in hotcue comments imported from rekordbox
   [#14808](https://github.com/mixxxdj/mixxx/pull/14808)
   [#14789](https://github.com/mixxxdj/mixxx/issues/14789)
+* Tracks table: show ReplayGain with max. 2 decimals, full precision in tooltip
+  [#14868](https://github.com/mixxxdj/mixxx/pull/14868)
+  [#14867](https://github.com/mixxxdj/mixxx/issues/14867)
+* Fix keyboard mappings with non-ASCII characters on Linux
+  [#14843](https://github.com/mixxxdj/mixxx/pull/14843)
+  [#14734](https://github.com/mixxxdj/mixxx/issues/14734)
+* Browse feature: enable initial sorting during population [#14688](https://github.com/mixxxdj/mixxx/pull/14688)
 
 ### Controller Mappings
 
 * Denon MC7000: slicer mode TypeError [#14804](https://github.com/mixxxdj/mixxx/pull/14804)
 * Denon MC7000: crossfader curve using wrong parameter [#14803](https://github.com/mixxxdj/mixxx/pull/14803)
+* DJ TechTools MIDI Fighter Twister: support 4 decks [#14557](https://github.com/mixxxdj/mixxx/pull/14557)
 * Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
   [#14722](https://github.com/mixxxdj/mixxx/pull/14722)
 * Numark Mixtrack Platinium FX: Fix 4 steps browsing issue [#14778](https://github.com/mixxxdj/mixxx/pull/14778)
@@ -36,10 +44,6 @@
   [#14805](https://github.com/mixxxdj/mixxx/issues/14805)
 * Fix learning with "No Mapping" selected [#14829](https://github.com/mixxxdj/mixxx/pull/14829)
 
-### Engine
-
-* Vinyl Control: Reduce sticker drift [#14435](https://github.com/mixxxdj/mixxx/pull/14435)
-
 ### Target support
 
 * Fix building with a CMake multi-config setup [#14614](https://github.com/mixxxdj/mixxx/pull/14614)
@@ -49,6 +53,20 @@
 * Fix: gcc `-Warray-bounds=` in fidlib by using a flexible member [#14798](https://github.com/mixxxdj/mixxx/pull/14798)
 * Added Linux Mint Codenames to debian_buildenv.sh [#14709](https://github.com/mixxxdj/mixxx/pull/14709)
 * Add hidden `[Config],notify_max_dbg_time` setting to reduce warnings in developer mode [#14015](https://github.com/mixxxdj/mixxx/pull/14015)
+* Detect arch and fail early if not supported when installing buildenv [#14478](https://github.com/mixxxdj/mixxx/pull/14478)
+
+### Misc
+
+* Vinyl Control: Reduce sticker drift [#14435](https://github.com/mixxxdj/mixxx/pull/14435)
+* Fix infinite number of pop ups of the "No Vinyl|Mic|Aux|Passthrough input configured" dialog
+  [#14841](https://github.com/mixxxdj/mixxx/pull/14841)
+  [#14837](https://github.com/mixxxdj/mixxx/issues/14837)
+* Reduce CPU usage with Trace log messages
+  [#14862](https://github.com/mixxxdj/mixxx/pull/14862)
+  [#14791](https://github.com/mixxxdj/mixxx/issues/14791)
+* Fix adjust Gain after adopting it as ReplayGain only in requesting player
+  [#14812](https://github.com/mixxxdj/mixxx/pull/14812)
+  [#14806](https://github.com/mixxxdj/mixxx/pull/14806)
 
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 

@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.2" type="development" date="2025-05-21" timestamp="1747806201">
+    <release version="2.5.2" type="development" date="2025-06-01" timestamp="1748806698">
       <description>
  <p>
   Library
@@ -116,6 +116,20 @@
    #14808
    #14789
   </li>
+  <li>
+   Tracks table: show ReplayGain with max. 2 decimals, full precision in tooltip
+   #14868
+   #14867
+  </li>
+  <li>
+   Fix keyboard mappings with non-ASCII characters on Linux
+   #14843
+   #14734
+  </li>
+  <li>
+   Browse feature: enable initial sorting during population
+   #14688
+  </li>
  </ul>
  <p>
   Controller Mappings
@@ -128,6 +142,10 @@
   <li>
    Denon MC7000: crossfader curve using wrong parameter
    #14803
+  </li>
+  <li>
+   DJ TechTools MIDI Fighter Twister: support 4 decks
+   #14557
   </li>
   <li>
    Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
@@ -177,15 +195,6 @@
   </li>
  </ul>
  <p>
-  Engine
- </p>
- <ul>
-  <li>
-   Vinyl Control: Reduce sticker drift
-   #14435
-  </li>
- </ul>
- <p>
   Target support
  </p>
  <ul>
@@ -213,6 +222,34 @@
    [Config],notify_max_dbg_time
    setting to reduce warnings in developer mode
    #14015
+  </li>
+  <li>
+   Detect arch and fail early if not supported when installing buildenv
+   #14478
+  </li>
+ </ul>
+ <p>
+  Misc
+ </p>
+ <ul>
+  <li>
+   Vinyl Control: Reduce sticker drift
+   #14435
+  </li>
+  <li>
+   Fix infinite number of pop ups of the "No Vinyl|Mic|Aux|Passthrough input configured" dialog
+   #14841
+   #14837
+  </li>
+  <li>
+   Reduce CPU usage with Trace log messages
+   #14862
+   #14791
+  </li>
+  <li>
+   Fix adjust Gain after adopting it as ReplayGain only in requesting player
+   #14812
+   #14806
   </li>
  </ul>
 </description>
