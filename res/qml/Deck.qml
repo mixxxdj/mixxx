@@ -35,18 +35,18 @@ Item {
         anchors.fill: parent
     }
 
-    Skin.DeckInfoBar {
-        id: infoBar
+    // Skin.DeckInfoBar {
+    //     id: infoBar
 
-        anchors.leftMargin: 5
-        anchors.topMargin: 5
-        anchors.rightMargin: 5
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        group: root.group
-        rightColumnWidth: rateSlider.width
-    }
+    //     anchors.leftMargin: 5
+    //     anchors.topMargin: 5
+    //     anchors.rightMargin: 5
+    //     anchors.top: parent.top
+    //     anchors.left: parent.left
+    //     anchors.right: parent.right
+    //     group: root.group
+    //     rightColumnWidth: rateSlider.width
+    // }
 
     Skin.ControlSlider {
         id: rateSlider
@@ -55,7 +55,7 @@ Item {
         anchors.topMargin: 5
         anchors.rightMargin: 5
         anchors.bottomMargin: 5
-        anchors.top: infoBar.bottom
+        // anchors.top: infoBar.bottom
         anchors.right: parent.right
         anchors.bottom: buttonBar.top
         width: syncButton.width
@@ -110,7 +110,7 @@ Item {
                 anchors.rightMargin: 5
                 anchors.leftMargin: 5
                 height: 2
-                color: infoBar.lineColor
+                // color: infoBar.lineColor
             }
 
             InfoBarButton {
@@ -137,7 +137,7 @@ Item {
                 anchors.left: waveformBarVSeparator.left
                 anchors.leftMargin: rateSlider.width
                 width: 2
-                color: infoBar.lineColor
+                // color: infoBar.lineColor
             }
 
             InfoBarButton {
@@ -163,7 +163,7 @@ Item {
                 anchors.left: waveformBarHSeparator1.right
                 anchors.leftMargin: rateSlider.width
                 width: 2
-                color: infoBar.lineColor
+                // color: infoBar.lineColor
             }
 
             Skin.EmbeddedText {
@@ -230,7 +230,7 @@ Item {
                 anchors.right: waveformBarRightSpace.left
                 anchors.bottomMargin: 5
                 width: 2
-                color: infoBar.lineColor
+                // color: infoBar.lineColor
             }
 
             InfoBarButton {
@@ -265,7 +265,7 @@ Item {
                 anchors.right: waveformBarLeftSpace.left
                 anchors.bottomMargin: 5
                 width: 2
-                color: infoBar.lineColor
+                // color: infoBar.lineColor
             }
 
             InfoBarButton {

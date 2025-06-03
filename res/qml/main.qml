@@ -19,6 +19,11 @@ ApplicationWindow {
     visible: true
     width: 1920
 
+    // TODO to be removed before merging
+    Component.onCompleted: {
+        settingsPopup.open();
+    }
+
     Column {
         id: content
         anchors.fill: parent
@@ -180,15 +185,15 @@ ApplicationWindow {
                 fadeTarget: decks34
             }
         }
-        Skin.SamplerRow {
-            id: samplers
-            visible: root.showSamplers
-            width: parent.width
+        // Skin.SamplerRow {
+        //     id: samplers
+        //     visible: root.showSamplers
+        //     width: parent.width
 
-            Skin.FadeBehavior on visible  {
-                fadeTarget: samplers
-            }
-        }
+        //     Skin.FadeBehavior on visible  {
+        //         fadeTarget: samplers
+        //     }
+        // }
         Skin.EffectRow {
             id: effects
             visible: root.showEffects
