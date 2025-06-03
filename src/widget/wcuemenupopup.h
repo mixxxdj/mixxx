@@ -15,10 +15,10 @@
 class ControlProxy;
 
 // Custom PushButton which emit a custom signal when right-clicked
-class CueTypePushButton : public QPushButton {
+class CueMenuPushButton : public QPushButton {
     Q_OBJECT
   public:
-    explicit CueTypePushButton(QWidget* parent = 0)
+    explicit CueMenuPushButton(QWidget* parent = 0)
             : QPushButton(parent) {
     }
 
@@ -64,6 +64,7 @@ class WCueMenuPopup : public QWidget {
     void slotEditLabel();
     void slotDeleteCue();
     void slotUpdate();
+    void slotStandardCue();
     /// This slot is called when the saved loop button is being left pressed,
     /// which effectively toggle the cue loop between standard cue and saved
     /// loop. If the cue was never a saved loop, it will use the current
@@ -74,9 +75,20 @@ class WCueMenuPopup : public QWidget {
     /// which effectively makes the cue a saved loop and use the current play
     /// position as loop end
     void slotSavedLoopCueManual();
+    void slotSavedJumpCueForwardAuto();
+    void slotSavedJumpCueForwardManual();
+    void savedJumpCueForwardFromPositions(mixxx::audio::FramePos pos1, mixxx::audio::FramePos pos2);
+    void slotSavedJumpCueBackwardAuto();
+    void slotSavedJumpCueBackwardManual();
+    void savedJumpCueBackwardFromPositions(
+            mixxx::audio::FramePos pos1, mixxx::audio::FramePos pos2);
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
+    void updateTypeAndColorIfDefault(mixxx::CueType newType);
+    std::optional<mixxx::audio::FramePos> getCurrentPlayPositionWithQuantize() const;
+
+    UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     PollingControlProxy m_pBeatLoopSize;
     PollingControlProxy m_pPlayPos;
@@ -89,8 +101,11 @@ class WCueMenuPopup : public QWidget {
     std::unique_ptr<QLabel> m_pCuePosition;
     std::unique_ptr<QLineEdit> m_pEditLabel;
     std::unique_ptr<WColorPicker> m_pColorPicker;
-    std::unique_ptr<QPushButton> m_pDeleteCue;
-    std::unique_ptr<CueTypePushButton> m_pSavedLoopCue;
+    std::unique_ptr<CueMenuPushButton> m_pDeleteCue;
+    std::unique_ptr<CueMenuPushButton> m_pStandardCue;
+    std::unique_ptr<CueMenuPushButton> m_pSavedLoopCue;
+    std::unique_ptr<CueMenuPushButton> m_pSavedJumpCueForward;
+    std::unique_ptr<CueMenuPushButton> m_pSavedJumpCueBackward;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
