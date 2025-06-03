@@ -1041,7 +1041,7 @@ MC7000.parameterButtonRightShifted = function(channel, control, value, status, g
 };
 
 // Set Crossfader Curve
-MC7000.crossFaderCurve = function(control, value) {
+MC7000.crossFaderCurve = function(channel, control, value) {
     script.crossfaderCurve(value);
 };
 

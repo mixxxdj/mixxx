@@ -75,6 +75,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // stored in the database.
     int getPlaylistId(const int index) const;
     QList<TrackId> getTrackIds(const int playlistId) const;
+    QList<TrackId> getTrackIdsInPlaylistOrder(const int playlistId) const;
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(const int playlistId) const;
     // Returns the HiddenType of playlistId

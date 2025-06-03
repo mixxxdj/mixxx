@@ -255,9 +255,16 @@ inline bool instanceof (const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-QString toUnicode(const std::string& toConvert) {
+QString fromUtf16LeString(const std::string& toConvert) {
+    // Kaitai uses std::string as single container for all string encodings.
     return QTextCodec::codecForName("UTF-16LE")
             ->toUnicode(toConvert.data(), static_cast<int>(toConvert.length()));
+}
+
+QString fromUtf16BeString(const std::string& toConvert) {
+    // Kaitai uses std::string as single container for all string encodings.
+    int length = static_cast<int>(toConvert.length()) - 2; // strip off trailing nullbyte
+    return QTextCodec::codecForName("UTF-16BE")->toUnicode(toConvert.data(), length);
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
@@ -278,7 +285,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16le_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16le_t* longUtf16leString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16le_t*>(deviceString->body());
-        text = toUnicode(longUtf16leString->text());
+        text = fromUtf16LeString(longUtf16leString->text());
     }
 
     // Some strings read from Rekordbox *.PDB files contain random null characters
@@ -997,7 +1004,7 @@ void readAnalyze(TrackPointer track,
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
                         memoryCue.endPosition = mixxx::audio::kInvalidFramePos;
-                        memoryCue.comment = toUnicode(cueExtendedEntry->comment());
+                        memoryCue.comment = fromUtf16BeString(cueExtendedEntry->comment());
                         memoryCue.color = colorFromID(static_cast<int>(
                                 cueExtendedEntry->color_id()));
                         memoryCuesAndLoops << memoryCue;
@@ -1016,7 +1023,7 @@ void readAnalyze(TrackPointer track,
                         loop.startPosition = position;
                         loop.endPosition = mixxx::audio::FramePos(
                                 sampleRateKhz * static_cast<double>(endTime));
-                        loop.comment = toUnicode(cueExtendedEntry->comment());
+                        loop.comment = fromUtf16BeString(cueExtendedEntry->comment());
                         loop.color = colorFromID(static_cast<int>(cueExtendedEntry->color_id()));
                         memoryCuesAndLoops << loop;
                     } break;
@@ -1031,14 +1038,14 @@ void readAnalyze(TrackPointer track,
                             position,
                             mixxx::audio::kInvalidFramePos,
                             hotCueIndex,
-                            toUnicode(cueExtendedEntry->comment()),
+                            fromUtf16BeString(cueExtendedEntry->comment()),
                             mixxx::RgbColor(qRgb(
                                     static_cast<int>(
                                             cueExtendedEntry->color_red()),
                                     static_cast<int>(
                                             cueExtendedEntry->color_green()),
                                     static_cast<int>(cueExtendedEntry
-                                                             ->color_blue()))));
+                                                    ->color_blue()))));
                 } break;
                 }
             }
