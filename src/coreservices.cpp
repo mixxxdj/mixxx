@@ -139,7 +139,28 @@ inline QLocale inputLocale() {
                 qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
                 return locale;
             } else {
-                qDebug() << "No valid keyboard layout found in dconf:" << sourcesStr;
+                // mru-sources (most recently used source) is empty when user
+                // has only one keyboard layout enabled. Use it from sources.
+                sourcesProc.start("dconf",
+                        QStringList()
+                                << "read"
+                                << "/org/gnome/desktop/input-sources/sources");
+                if (sourcesProc.waitForFinished(100)) {
+                    const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+                    // Expecting something like this: [('xkb', 'de')]
+                    static const QRegularExpression re(QStringLiteral("\\('xkb',\\s*'([^']+)'\\)"));
+                    QRegularExpressionMatch match = re.match(sourcesStr);
+                    if (match.hasMatch()) {
+                        const QString layout = match.captured(1);
+                        QLocale locale(layout);
+                        qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
+                        return locale;
+                    } else {
+                        qDebug() << "No valid keyboard layout found in dconf:" << sourcesStr;
+                    }
+                } else {
+                    qDebug() << "Failed to read Keyboard Layout from dconf.";
+                }
             }
         } else {
             qDebug() << "Failed to read Keyboard Layout from dconf.";
