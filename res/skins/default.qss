@@ -34,7 +34,7 @@ QPushButton#LibraryBPMButton:!checked {
 
 /* Add default icons for cue menu buttons */
 WCueMenuPopup #CueDeleteButton {
-  image: url(:/images/ic_delete.svg);
+  icon: url(:/images/ic_delete.svg);
 }
 
 WColorPicker QPushButton[noColor="true"] {
