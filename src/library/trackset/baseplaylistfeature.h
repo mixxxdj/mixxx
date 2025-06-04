@@ -44,13 +44,13 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
 
-    virtual void slotPlaylistTableChanged(int playlistId) = 0;
-    void slotPlaylistTableChangedAndSelect(int playlistId) {
-        slotPlaylistTableChanged(playlistId);
-        selectPlaylistInSidebar(playlistId);
-    };
-    void slotPlaylistTableChangedAndScrollTo(int playlistId) {
-        slotPlaylistTableChanged(playlistId);
+    virtual void slotPlaylistTableChanged(
+            int playlistId,
+            PlaylistDAO::HiddenType type) = 0;
+    void slotPlaylistTableChangedAndScrollTo(
+            int playlistId,
+            PlaylistDAO::HiddenType type) {
+        slotPlaylistTableChanged(playlistId, type);
         selectPlaylistInSidebar(playlistId, false);
     };
     virtual void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) = 0;
