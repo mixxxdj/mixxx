@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.2" type="development" date="2025-06-01" timestamp="1748806698">
+    <release version="2.5.2" type="development" date="2025-06-03" timestamp="1748938066">
       <description>
  <p>
   Library
@@ -193,6 +193,10 @@
    Fix learning with "No Mapping" selected
    #14829
   </li>
+  <li>
+   Unit tests for engine.beginTimer
+   #12437
+  </li>
  </ul>
  <p>
   Target support
@@ -250,6 +254,15 @@
    Fix adjust Gain after adopting it as ReplayGain only in requesting player
    #14812
    #14806
+  </li>
+  <li>
+   Skins: add loop anchor toggle to Deere, Shade, Tango
+   #14890
+   #14173
+  </li>
+  <li>
+   Sound Hardware preferences: add manual link for Mic monitoring modes
+   #14889
   </li>
  </ul>
 </description>
