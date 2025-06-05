@@ -178,8 +178,12 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
         kLogger.warning() << "The ControllerRenderingEngine setup must be done by its own thread!";
         return;
     }
+    if (!m_isValid) {
+        DEBUG_ASSERT(!"Trying to setup an invalid engine");
+        return;
+    }
     QSurfaceFormat format;
-    format.setSamples(m_screenInfo.msaa);
+    // format.setSamples(m_screenInfo.msaa);
     format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
 
