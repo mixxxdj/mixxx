@@ -139,10 +139,7 @@ var iControls;
                 this.nextEffectButton[i] = new components.Button({
                     group: `[QuickEffectRack1_${group}]`,
                     midi: [0x90, 0x0C+i],
-                    // The manual says this is deprecated, but the replacement
-                    // it gives is for something else, not the quick effects
-                    // rack. Unclear to me what should be done here.
-                    key: "next_chain",
+                    key: "next_chain_preset",
                 });
                 this.superButton[i] = new components.Button({
                     group: `[QuickEffectRack1_${group}]`,
