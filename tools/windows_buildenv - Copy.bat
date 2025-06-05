@@ -24,19 +24,20 @@ IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.6-rel
     SET VCPKG_TARGET_TRIPLET=x64-windows-release
     vcpkg_update_main
-    REM SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
-    REM SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
-	SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-da4c207
-	SET BUILDENV_SHA256=62d4d7249a7e49ef96d4b96b380e23426dd714eaa9ae415e7a66a587a71e9a27
+    #SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
+    #SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
+	SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-dc4d563
+	SET BUILDENV_SHA256=4a5bc30e72c7f0222bbde67967c8dedbed75b806dcced8cc990c93c6685a8ad2
+
 ) ELSE (
     SET BUILDENV_BRANCH=2.6
     SET VCPKG_TARGET_TRIPLET=x64-windows
-    REM SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
-    REM SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
-    REM SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-12239ed
-    REM SET BUILDENV_SHA256=5c60b2c61d6448a99979d7cc997e92f2fd5b4b65f65e2439abfca3fa6fd30f8d
-	SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-c2def9b
-	SET BUILDENV_SHA256=01df9fdc8154f96184281a934e73eb4202e4f29452ecc888053c747f7a745d4f
+    #SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
+    #SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
+    #SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-12239ed
+    #SET BUILDENV_SHA256=5c60b2c61d6448a99979d7cc997e92f2fd5b4b65f65e2439abfca3fa6fd30f8d
+	SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-dc4d563
+	SET BUILDENV_SHA256=4a5bc30e72c7f0222bbde67967c8dedbed75b806dcced8cc990c93c6685a8ad2
 )
 
 IF "%~1"=="" (
@@ -217,9 +218,6 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
     CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
-	REM CALL :AddCMakeVar2CMakeSettings_JSON "7zip_dir"                           "BOOL"   "True"
-	REM CALL :AddCMakeVar2CMakeSettings_JSON "7zip_INCLUDE_DIR"                   "BOOL"   "True"
-	REM CALL :AddCMakeVar2CMakeSettings_JSON "7zip_LBRARY     "                   "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"

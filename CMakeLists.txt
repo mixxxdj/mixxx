@@ -111,6 +111,21 @@ function(fatal_error_missing_env)
   endif()
 endfunction()
 
+#eve 20250524
+#to prevent mocs from getting bit7z defines
+add_definitions(
+  -DBIT7Z_AUTO_FORMAT
+  -DBIT7Z_AUTO_PREFIX_LONG_PATHS
+  -DBIT7Z_PATH_SANITIZATION
+)
+
+#another possibility to prevent this is with
+#set(CMAKE_AUTOMOC_MOC_OPTIONS
+#    -DBIT7Z_AUTO_FORMAT
+#    -DBIT7Z_AUTO_PREFIX_LONG_PATHS
+#    -DBIT7Z_PATH_SANITIZATION
+#)
+
 if(UNIX AND NOT APPLE)
   execute_process(
     COMMAND uname -r
@@ -1349,6 +1364,8 @@ add_library(
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
+  src/preferences/backup/backupsettings.cpp
+  src/preferences/backup/backupworker.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -2787,6 +2804,100 @@ if(WIN32)
       "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   )
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+
+# bit7z
+if(WIN32)
+  find_package(unofficial-bit7z CONFIG REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE unofficial::bit7z::bit7z64)
+  target_compile_definitions(
+    mixxx-lib
+    PRIVATE
+      BIT7Z_AUTO_FORMAT
+      BIT7Z_AUTO_PREFIX_LONG_PATHS
+      BIT7Z_PATH_SANITIZATION
+  )
+  message("bit7z package lines passed for windows")
+endif()
+
+if(UNIX)
+  include(FetchContent)
+
+  FetchContent_Declare(
+    CPM
+    GIT_REPOSITORY https://github.com/cpm-cmake/CPM.cmake.git
+    GIT_TAG origin/master
+  )
+  FetchContent_MakeAvailable(CPM)
+
+  cpmaddpackage("gh:rikyoz/bit7z@4.0.10")
+
+  target_link_libraries(mixxx-lib PRIVATE bit7z)
+  target_compile_definitions(
+    mixxx-lib
+    PRIVATE
+      BIT7Z_AUTO_FORMAT
+      BIT7Z_AUTO_PREFIX_LONG_PATHS
+      BIT7Z_PATH_SANITIZATION
+  )
+
+  target_link_libraries(mixxx-lib PRIVATE bit7z)
+  message("bit7z package lines passed for linux mac")
+endif()
+
+#7zip
+if(WIN32)
+  file(
+    GLOB SEVEN_ZIP_DLL
+    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7zip.dll"
+  )
+  if(SEVEN_ZIP_DLL)
+    message(STATUS "Found 7zip.dll at: ${SEVEN_ZIP_DLL}")
+    set(
+      _dll_destinations
+      "${CMAKE_BINARY_DIR}/7z.dll"
+      "${CMAKE_INSTALL_PREFIX}/7z.dll"
+    )
+    foreach(dst IN LISTS _dll_destinations)
+      add_custom_command(
+        TARGET mixxx
+        POST_BUILD
+        COMMAND
+          ${CMAKE_COMMAND} -E copy_if_different "${SEVEN_ZIP_DLL}" "${dst}"
+        COMMENT "Copying 7zip.dll to ${dst}"
+      )
+      message(STATUS "Copied 7zip.dll to ${dst}")
+    endforeach()
+  else()
+    message(WARNING "7zip.dll not found, runtime compression may fail!")
+  endif()
+endif()
+
+if(UNIX)
+  file(
+    GLOB SEVEN_ZIP_BIN
+    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/7z"
+  )
+  if(SEVEN_ZIP_BIN)
+    message(STATUS "Found 7z at: ${SEVEN_ZIP_BIN}")
+    set(
+      _dll_destinations
+      "${CMAKE_BINARY_DIR}"
+      #"${CMAKE_INSTALL_PREFIX}"
+    )
+    foreach(dst IN LISTS _dll_destinations)
+      add_custom_command(
+        TARGET mixxx
+        POST_BUILD
+        COMMAND
+          ${CMAKE_COMMAND} -E copy_if_different "${SEVEN_ZIP_BIN}" "${dst}"
+        COMMENT "Copying 7z to ${dst}"
+      )
+      message(STATUS "Copied 7z to ${dst}")
+    endforeach()
+  else()
+    message(WARNING "7z not found, runtime compression may fail!")
+  endif()
 endif()
 
 # Chromaprint
