@@ -38,6 +38,10 @@ mixxx::audio::FrameDiff_t Beats::ConstIterator::beatLengthFrames() const {
     return (nextMarkerPosition - m_it->position()) / m_it->beatsTillNextMarker();
 }
 
+int Beats::ConstIterator::beatOffset() const {
+    return m_beatOffset;
+}
+
 Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::difference_type n) {
     if (n == 0) {
         return *this;
