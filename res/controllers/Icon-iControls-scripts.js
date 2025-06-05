@@ -80,11 +80,8 @@ var iControls;
             }, params));
         }
         inValueScale(value) {
-            if (value & 0x40) {
-                return this.inGetParameter() - ((value & ~0x40) / 100);
-            } else {
-                return this.inGetParameter() + (value / 100);
-            }
+            value = value > 0x40 ? value - 0x80 : value;
+            return this.inGetParameter() + (value / 100);
         }
     }
 
