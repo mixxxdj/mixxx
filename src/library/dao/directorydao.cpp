@@ -79,15 +79,17 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     if (!newDir.exists() || !newDir.isDir()) {
         kLogger.warning()
                 << "Failed to add"
-                << newDir.location()
-                << ": Directory does not exist or is inaccessible";
+                << newDir.location();
+        kLogger.warning()
+                << "Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
     }
     if (!newDir.isReadable()) {
         kLogger.warning()
                 << "Aborting to to add"
-                << newDir.location()
-                << ": Directory can not be read";
+                << newDir.location();
+        kLogger.warning()
+                << "Directory can not be read";
         return AddResult::UnreadableDirectory;
     }
     const auto newCanonicalLocation = newDir.canonicalLocation();
@@ -140,6 +142,50 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     }
 
     return AddResult::Ok;
+}
+
+std::pair<bool, mixxx::FileInfo> DirectoryDAO::isDirectoryWatched(
+        const mixxx::FileInfo& dir) const {
+    DEBUG_ASSERT(m_database.isOpen());
+    // Note(ronso0) We don't need VERIFY_OR_DEBUG_ASSERT here since this might,
+    // for example, be called by BrowseFeature when clicking (children of) the
+    // (Linux) root directory or other inaccessible directories.
+    if (!dir.exists() || !dir.isDir()) {
+        kLogger.warning()
+                << "Failed to check"
+                << dir.location();
+        kLogger.warning()
+                << "Directory does not exist, is inaccessible or is not a directory";
+        return std::make_pair(false, dir);
+    }
+    if (!dir.isReadable()) {
+        kLogger.warning()
+                << "Aborting to check"
+                << dir.location();
+        kLogger.warning()
+                << "Directory can not be read";
+        return std::make_pair(false, dir);
+    }
+    const auto testCanonicalLocation = dir.canonicalLocation();
+    DEBUG_ASSERT(!testCanonicalLocation.isEmpty());
+    for (auto&& rootDir : loadAllDirectories(true /* ignore missing */)) {
+        if (dir.location() == rootDir.location()) {
+            return std::make_pair(true, dir);
+        }
+        const auto rootCanonicalLocation = rootDir.canonicalLocation();
+        DEBUG_ASSERT(!rootCanonicalLocation.isEmpty());
+        if (mixxx::FileInfo::isRootSubCanonicalLocation(
+                    rootCanonicalLocation,
+                    testCanonicalLocation)) {
+            // New dir is a child of an existing dir, return
+            // the absolute path
+            QString absLoc = dir.location();
+            int rootLength = rootCanonicalLocation.length();
+            absLoc.replace(0, rootLength, rootDir.location());
+            return std::make_pair(true, mixxx::FileInfo(absLoc));
+        }
+    }
+    return std::make_pair(false, dir);
 }
 
 DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
