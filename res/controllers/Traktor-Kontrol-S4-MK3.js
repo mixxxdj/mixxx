@@ -480,6 +480,7 @@ class Component {
         this.send(value);
     }
     outConnect() {
+        // console.warn(`** outConnect ${this.constructor.name}: outKey ${this.outKey}`);
         if (this.outKey !== undefined && this.group !== undefined && this.outConnections.length === 0) {
             const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
@@ -497,8 +498,10 @@ class Component {
         this.outConnections = [];
     }
     outTrigger() {
+        // console.warn(`  ** outTrigger ${this.constructor.name} `);
         for (const connection of this.outConnections) {
             if (!connection) { continue; }
+            // console.warn(`  *** outTrigger ${this.outConnections.indexOf(connection)}**`);
             connection.trigger();
         }
     }
@@ -1877,6 +1880,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
             // empty 'key' is not considered in Button/PowerWindowButton
             onShortPress: function() {},
             onShortRelease: function() {
+                // console.warn("focusButton shortRelease");
                 if (this.shifted) {
                     if (this.unit.unitNumbers.length === 1) {
                         return;
@@ -1893,21 +1897,26 @@ class S4Mk3EffectUnit extends ComponentContainer {
                     }
                     this.unit.setCurrentUnit(newUnitNumber);
                 } else if (this.unit.focusedEffect !== null) {
+                    // console.warn("focusButton shortRelease: unfocus");
                     this.unit.setFocusedEffect(null);
                     this.unit.stopFocusSelectMode();
                 } else {
+                    // console.warn("focusButton shortRelease: toggle showParam");
                     script.toggleControl(this.group, "show_parameters");
                 }
                 this.output(0);
             },
             onLongPress: function() {
                 if (this.shifted) {
+                    // console.warn("focusButton longPress SHIFT");
                     script.toggleControl("Skin", "show_4effectunits");
                 } else {
+                    // console.warn("focusButton longPress -> focusSelectMode");
                     this.unit.startFocusSelectMode();
                 }
             },
             onLongRelease: function() {
+                // console.warn("focusButton longRelease -> focusSelectMode OFF");
                 this.unit.stopFocusSelectMode();
                 this.output(0);
             }
@@ -1924,6 +1933,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 inReport: inReports[2],
                 inByte: io.knobs[index].inByte,
                 stopFocusSelectMode: function(effectGroup, unfocusGroup, noEffectFocused) {
+                    // console.warn(`-- knob ${index + 1} stopFocusSelectMode, effectGroup: ${effectGroup}`);
                     this.group = noEffectFocused ? unfocusGroup : effectGroup;
                     this.inKey = noEffectFocused ? "meta" : `parameter${index + 1}`;
                     this.shift = noEffectFocused ? undefined : function() {
@@ -1947,17 +1957,21 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 onShortPress: function() {
                     // Connections for normal/focused mode are set in stopFocusSelectMode()
                     if (this.unit.focusSelectMode) {
+                        // console.warn(`--button ${index + 1} in focusSelectMode`);
                         // Set/clear focused effect
                         this.unit.setFocusedEffect(index);
                     } else if (this.shifted) {
+                        // console.warn(`--button ${index + 1} shifted`);
                         // Normal:  select next effect
                         // Focused: toggle button parameter [index + 1]
                         if (this.unit.focusedEffect === null) {
+                            // console.warn(`---- focusedEffect === null`);
                             script.triggerControl(this.group, "next_effect");
                         } else {
                             script.toggleControl(this.group, this.inKey);
                         }
                     } else {
+                        // console.warn(`--button ${index + 1} else: toggle ${this.group},${this.inKey}`);
                         // Normal:  toggle effect [index + 1]
                         // Focused: toggle button parameter [index + 1]
                         script.toggleControl(this.group, this.inKey);
@@ -1965,21 +1979,25 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 },
                 onLongRelease: function() {
                     if (!this.shifted) {
+                        // console.warn(`--button ${index + 1} longRel: toggle ${this.group},${this.inKey}`);
                         script.toggleControl(this.group, this.inKey);
                     }
                 },
                 startFocusSelectMode: function() {
                     this.outDisconnect();
                     this.outConnections[0] = engine.makeConnection(this.unit.group, "focused_effect", (value) => {
+                        // console.warn(`--button ${index + 1}: outConn val: ${value}`);
                         this.output(value === index + 1);
                     });
                     this.outTrigger();
                 },
                 stopFocusSelectMode: function(effectGroup, unfocusGroup, noEffectFocused) {
                     this.outDisconnect();
+                    // console.warn(`button/knob ${index + 1} outConns: ${this.outConnections}`);
                     this.group = noEffectFocused ? unfocusGroup : effectGroup;
                     this.inKey = noEffectFocused ? "enabled" : `button_parameter${index + 1}`;
                     this.shift = noEffectFocused ? undefined : function() {
+                        // console.warn(`button SHIFT: ${unfocusGroup},enabled`);
                         // TODO add setGroupKey() to Button?
                         // for Pot, this is a wrapper for these 4 commands:
                         this.setGroup(unfocusGroup);
@@ -1988,6 +2006,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                         this.outTrigger();
                     };
                     this.unshift = noEffectFocused ? undefined : function() {
+                        // console.warn(`button unSHIFT: ${effectGroup},buttonPara${index + 1}`);
                         this.setGroup(effectGroup);
                         this.setKey(`button_parameter${index + 1}`);
                         this.outConnect();
@@ -2034,6 +2053,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
         // With Shift we get the unfocus mapping: Meta knobs / effect toggles 1-3.
         const effectGroup = this.effectGroupForNumber(this.focusedEffect + 1);
         const noEffectFocused = this.focusedEffect === null;
+        // console.warn("-- stopFocusSelectMode");
         for (const index of this.effectIndices) {
             const unfocusGroup = this.effectGroupForNumber(index + 1);
             this.buttons[index].stopFocusSelectMode(effectGroup, unfocusGroup, noEffectFocused);
@@ -2044,8 +2064,10 @@ class S4Mk3EffectUnit extends ComponentContainer {
     setFocusedEffect(effectIdx) {
         // Set/clear focused effect
         if (this.focusedEffect === effectIdx) {
+            // console.warn("--> already focused, unfocus");
             this.focusedEffect = null;
         } else {
+            // console.warn(`--> set to ${effectIdx}`);
             this.focusedEffect = effectIdx;
         }
         this.effectFocusButton.indicator(this.focusedEffect !== null);
@@ -2060,6 +2082,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
     }
 
     setCurrentUnit(newNumber) {
+        // console.warn(`setCurrentUnit: ${newNumber}`);
         engine.setValue(this.group, "controller_input_active", 0);
         engine.setValue(this.group, "show_focus", 0);
 
