@@ -18,14 +18,18 @@
   [#14843](https://github.com/mixxxdj/mixxx/pull/14843)
   [#14734](https://github.com/mixxxdj/mixxx/issues/14734)
 * Browse feature: enable initial sorting during population [#14688](https://github.com/mixxxdj/mixxx/pull/14688)
+* Computer feature: avoid false-positve 'has children' for non-directory links
+  [#14907](https://github.com/mixxxdj/mixxx/pull/14907)
 
 ### Controller Mappings
 
+* Arturia KeyLab Mk1: initial mapping [#14502](https://github.com/mixxxdj/mixxx/pull/14502)
 * Denon MC7000: slicer mode TypeError [#14804](https://github.com/mixxxdj/mixxx/pull/14804)
 * Denon MC7000: crossfader curve using wrong parameter [#14803](https://github.com/mixxxdj/mixxx/pull/14803)
 * DJ TechTools MIDI Fighter Twister: support 4 decks [#14557](https://github.com/mixxxdj/mixxx/pull/14557)
 * Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
   [#14722](https://github.com/mixxxdj/mixxx/pull/14722)
+* Icon Pro Audio iControls: initial mapping [#14591](https://github.com/mixxxdj/mixxx/pull/14591)
 * Numark Mixtrack Platinium FX: Fix 4 steps browsing issue [#14778](https://github.com/mixxxdj/mixxx/pull/14778)
 * Traktor S2 MK3: Fixed LED issue [#14717](https://github.com/mixxxdj/mixxx/pull/14717)
 * Traktor S4 MK2: Use engine settings API for configuration [#14781](https://github.com/mixxxdj/mixxx/pull/14781)
