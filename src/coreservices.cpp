@@ -222,20 +222,28 @@ QString getCurrentXkbLayoutName() {
         return {};
     }
 
-    XkbDescPtr pDesc = XkbGetKeyboard(pDisplay, XkbAllComponentsMask, XkbUseCoreKbd);
+    XkbDescPtr pDesc = XkbGetMap(pDisplay, 0, XkbUseCoreKbd);
     if (!pDesc) {
-        // We are here with XWayland
+        qWarning() << "XkbGetMap failed";
+        return {};
+    }
+
+    XkbGetNames(pDisplay, XkbGroupNamesMask, pDesc);
+    if (!pDesc->names) {
+        qWarning() << "XkbGetNames failed";
         return {};
     }
     char* pGroupName = XGetAtomName(pDisplay, pDesc->names->groups[state.group]);
     if (!pGroupName) {
+        qWarning() << "XGetAtomName failed";
+        XkbFreeNames(pDesc, XkbGroupNamesMask, True);
         return {};
     }
     QString layoutName = QString(pGroupName);
+    XkbFreeNames(pDesc, XkbKeyNamesMask, True);
     XFree(pGroupName);
     return layoutName;
 }
-
 #endif
 
 inline QLocale inputLocale() {
