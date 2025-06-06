@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-05-21" timestamp="1747806201">
+    <release version="2.6.0" type="development" date="2025-06-06" timestamp="1749208048">
       <description>
  <p>
   STEM file support
@@ -1078,7 +1078,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.2" type="development" date="2025-05-21" timestamp="1747806201">
+    <release version="2.5.2" type="development" date="2025-06-06" timestamp="1749208048">
       <description>
  <p>
   Library
@@ -1098,11 +1098,33 @@
    #14808
    #14789
   </li>
+  <li>
+   Tracks table: show ReplayGain with max. 2 decimals, full precision in tooltip
+   #14868
+   #14867
+  </li>
+  <li>
+   Fix keyboard mappings with non-ASCII characters on Linux
+   #14843
+   #14734
+  </li>
+  <li>
+   Browse feature: enable initial sorting during population
+   #14688
+  </li>
+  <li>
+   Computer feature: avoid false-positve 'has children' for non-directory links
+   #14907
+  </li>
  </ul>
  <p>
   Controller Mappings
  </p>
  <ul>
+  <li>
+   Arturia KeyLab Mk1: initial mapping
+   #14502
+  </li>
   <li>
    Denon MC7000: slicer mode TypeError
    #14804
@@ -1112,8 +1134,16 @@
    #14803
   </li>
   <li>
+   DJ TechTools MIDI Fighter Twister: support 4 decks
+   #14557
+  </li>
+  <li>
    Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
    #14722
+  </li>
+  <li>
+   Icon Pro Audio iControls: initial mapping
+   #14591
   </li>
   <li>
    Numark Mixtrack Platinium FX: Fix 4 steps browsing issue
@@ -1157,14 +1187,9 @@
    Fix learning with "No Mapping" selected
    #14829
   </li>
- </ul>
- <p>
-  Engine
- </p>
- <ul>
   <li>
-   Vinyl Control: Reduce sticker drift
-   #14435
+   Unit tests for engine.beginTimer
+   #12437
   </li>
  </ul>
  <p>
@@ -1195,6 +1220,43 @@
    [Config],notify_max_dbg_time
    setting to reduce warnings in developer mode
    #14015
+  </li>
+  <li>
+   Detect arch and fail early if not supported when installing buildenv
+   #14478
+  </li>
+ </ul>
+ <p>
+  Misc
+ </p>
+ <ul>
+  <li>
+   Vinyl Control: Reduce sticker drift
+   #14435
+  </li>
+  <li>
+   Fix infinite number of pop ups of the "No Vinyl|Mic|Aux|Passthrough input configured" dialog
+   #14841
+   #14837
+  </li>
+  <li>
+   Reduce CPU usage with Trace log messages
+   #14862
+   #14791
+  </li>
+  <li>
+   Fix adjust Gain after adopting it as ReplayGain only in requesting player
+   #14812
+   #14806
+  </li>
+  <li>
+   Skins: add loop anchor toggle to Deere, Shade, Tango
+   #14890
+   #14173
+  </li>
+  <li>
+   Sound Hardware preferences: add manual link for Mic monitoring modes
+   #14889
   </li>
  </ul>
 </description>
