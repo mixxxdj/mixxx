@@ -14,6 +14,8 @@
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
+#include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -21,6 +23,8 @@ class DlgTrackInfo;
 class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
+class WLibrary;
+class WLibraryPreparationWindow;
 
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
@@ -31,13 +35,14 @@ class WTrackTableView : public WLibraryTableView {
             Library* pLibrary,
             double backgroundColorOpacity);
     ~WTrackTableView() override;
-    void contextMenuEvent(QContextMenuEvent * event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
     void pasteFromSidebar() override;
+    void pasteFromSidebarInPreparationWindow();
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
     void editSelectedItem();
@@ -116,7 +121,10 @@ class WTrackTableView : public WLibraryTableView {
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
-    void slotMouseDoubleClicked(const QModelIndex &);
+    void loadTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = false);
+    //    void loadTrackModelBase(QAbstractItemModel* model, bool setDnd, bool
+    //    restoreState = false);
+    void slotMouseDoubleClicked(const QModelIndex&);
     void slotUnhide();
     void slotPurge();
     void slotDeleteTracksFromDisk();
@@ -150,18 +158,18 @@ class WTrackTableView : public WLibraryTableView {
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
-    void dragMoveEvent(QDragMoveEvent * event) override;
-    void dragEnterEvent(QDragEnterEvent * event) override;
-    void dropEvent(QDropEvent * event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
     void enableCachedOnly();
-    void selectionChanged(const QItemSelection &selected,
-                          const QItemSelection &deselected) override;
+    void selectionChanged(const QItemSelection& selected,
+            const QItemSelection& deselected) override;
 
     void mousePressEvent(QMouseEvent* pEvent) override;
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
-    void mouseMoveEvent(QMouseEvent *pEvent) override;
+    void mouseMoveEvent(QMouseEvent* pEvent) override;
 
     // Returns the list of selected row indices, or an empty list if none are selected.
     QModelIndexList getSelectedRows() const;

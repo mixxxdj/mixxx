@@ -54,13 +54,12 @@ class LegacySkinParser : public QObject, public SkinParser {
     static void clearSharedGroupStrings();
 
     static Qt::MouseButton parseButtonState(const QDomNode& node,
-                                            const SkinContext& context);
+            const SkinContext& context);
 
     static QString getStyleFromNode(const QDomNode& node);
     static QDomElement openSkin(const QString& skinPath);
 
   private:
-
     QList<QWidget*> parseNode(const QDomElement& node);
 
     // Load the given template from file and return its document element.
@@ -73,7 +72,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     T* parseStandardWidget(const QDomElement& element);
 
     // Label widgets.
-    template <class T>
+    template<class T>
     QWidget* parseLabelWidget(const QDomElement& element);
     void setupLabelWidget(const QDomElement& element, WLabel* pLabel);
 
@@ -126,6 +125,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseTableView(const QDomElement& node);
     QWidget* parseSearchBox(const QDomElement& node);
     QWidget* parseLibrary(const QDomElement& node);
+    QWidget* parseLibraryPreparationWindow(const QDomElement& node);
     QWidget* parseLibrarySidebar(const QDomElement& node);
     QWidget* parseBattery(const QDomElement& node);
     QWidget* parseRecordingDuration(const QDomElement& node);
@@ -134,13 +134,13 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Renders a template.
     QList<QWidget*> parseTemplate(const QDomElement& node);
 
-    void commonWidgetSetup(const QDomNode& node, WBaseWidget* pBaseWidget,
-                           bool allowConnections=true);
+    void commonWidgetSetup(const QDomNode& node,
+            WBaseWidget* pBaseWidget,
+            bool allowConnections = true);
     void setupPosition(const QDomNode& node, QWidget* pWidget);
     void setupSize(const QDomNode& node, QWidget* pWidget);
     void setupBaseWidget(const QDomNode& node, WBaseWidget* pBaseWidget);
-    void setupWidget(const QDomNode& node, QWidget* pWidget,
-                     bool setupPosition=true);
+    void setupWidget(const QDomNode& node, QWidget* pWidget, bool setupPosition = true);
     void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
     void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString localizeShortcutKeys(const QString& shortcut);

@@ -26,12 +26,15 @@ class KeyboardEventFilter;
 class MixxxLibraryFeature;
 class PlayerManager;
 class PlaylistFeature;
+class PreparationFeature;
 class RecordingManager;
 class SidebarModel;
 class TrackCollectionManager;
 class WSearchLineEdit;
 class WLibrarySidebar;
+class WLibraryPreparationWindow;
 class WLibrary;
+class WPreparationWindow;
 class QAbstractItemModel;
 
 #ifdef __ENGINEPRIME__
@@ -70,6 +73,9 @@ class Library: public QObject {
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
+            KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
 
@@ -116,7 +122,9 @@ class Library: public QObject {
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
+    void slotShowTrackModelInPreparationWindow(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
+    void slotSwitchToViewInPreparationWindow(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
 #ifdef __STEM__
     void slotLoadTrackToPlayer(TrackPointer pTrack,
@@ -134,11 +142,15 @@ class Library: public QObject {
     void slotSearchInAllTracks();
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
+    void slotSaveCurrentViewStateInPreparationWindow() const;
     void slotRestoreCurrentViewState() const;
+    void slotRestoreCurrentViewStateInPreparationWindow() const;
 
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
+    void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
+    void switchToViewInPreparationWindow(const QString& view);
     void loadTrack(TrackPointer pTrack);
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
@@ -154,6 +166,7 @@ class Library: public QObject {
     void search(const QString& text);
     void disableSearch();
     void pasteFromSidebar();
+    void pasteFromSidebarInPreparationWindow();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void selectTrack(const TrackId&);
@@ -191,11 +204,13 @@ class Library: public QObject {
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
     WLibrary* m_pLibraryWidget;
+    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
+    PreparationFeature* m_pPreparationFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;

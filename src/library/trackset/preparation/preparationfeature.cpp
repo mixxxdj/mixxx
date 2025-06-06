@@ -1,18 +1,22 @@
-#include "library/trackset/setlogfeature.h"
+#include "library/trackset/preparation/preparationfeature.h"
 
 #include <QDateTime>
 #include <QMenu>
 #include <QSqlTableModel>
 
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/parser.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
-#include "moc_setlogfeature.cpp"
+#include "moc_preparationfeature.cpp"
+#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
@@ -20,12 +24,14 @@
 #include "widget/wtracktableview.h"
 
 namespace {
+const bool sDebug = false;
 constexpr int kNumToplevelHistoryEntries = 5;
 } // namespace
-
+// LIne to start CI
+// LIne to start CI
 using namespace mixxx::library::prefs;
 
-SetlogFeature::SetlogFeature(
+PreparationFeature::PreparationFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BasePlaylistFeature(
@@ -34,9 +40,9 @@ SetlogFeature::SetlogFeature(
                   new PlaylistTableModel(
                           nullptr,
                           pLibrary->trackCollectionManager(),
-                          "mixxx.db.model.setlog",
+                          "mixxx.db.model.preparation",
                           /*keep hidden tracks*/ true),
-                  QStringLiteral("SETLOGHOME"),
+                  QStringLiteral("PREPARATIONHOME"),
                   QStringLiteral("history"),
                   QStringLiteral("SetlogCountsDurations"),
                   /*keep hidden tracks*/ true),
@@ -47,7 +53,7 @@ SetlogFeature::SetlogFeature(
     // remove unneeded entries
     deleteAllUnlockedPlaylistsWithFewerTracks();
 
-    QString placeholderName = "historyPlaceholder";
+    QString placeholderName = "preparationPlaceholder";
     // remove previously created placeholder playlists
     const QList<QPair<int, QString>> pls = m_playlistDao.getPlaylists(PlaylistDAO::PLHT_UNKNOWN);
     QStringList plsToDelete;
@@ -65,114 +71,140 @@ SetlogFeature::SetlogFeature(
     // just to be safe
     m_playlistDao.setPlaylistLocked(m_yearNodeId, true);
 
-    //construct child model
+    // construct child model
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
     constructChildModel(kInvalidPlaylistId);
-
+    m_pShowTrackModelInLibraryWindowAction =
+            make_parented<QAction>(tr("Show in Library Window"), this);
+    connect(m_pShowTrackModelInLibraryWindowAction,
+            &QAction::triggered,
+            this,
+            &PreparationFeature::slotShowInLibraryWindow);
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous (below)"), this);
     connect(m_pJoinWithPreviousAction,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotJoinWithPrevious);
+            &PreparationFeature::slotJoinWithPrevious);
 
     m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played"), this);
     connect(m_pMarkTracksPlayedAction,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotMarkAllTracksPlayed);
+            &PreparationFeature::slotMarkAllTracksPlayed);
 
     m_pStartNewPlaylist = new QAction(tr("Finish current and start new"), this);
     connect(m_pStartNewPlaylist,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotGetNewPlaylist);
+            &PreparationFeature::slotGetNewPlaylist);
 
     m_pLockAllChildPlaylists = new QAction(tr("Lock all child playlists"), this);
     connect(m_pLockAllChildPlaylists,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotLockAllChildPlaylists);
+            &PreparationFeature::slotLockAllChildPlaylists);
 
     m_pUnlockAllChildPlaylists = new QAction(tr("Unlock all child playlists"), this);
     connect(m_pUnlockAllChildPlaylists,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotUnlockAllChildPlaylists);
+            &PreparationFeature::slotUnlockAllChildPlaylists);
 
     m_pDeleteAllChildPlaylists = new QAction(tr("Delete all unlocked child playlists"), this);
     connect(m_pDeleteAllChildPlaylists,
             &QAction::triggered,
             this,
-            &SetlogFeature::slotDeleteAllUnlockedChildPlaylists);
+            &PreparationFeature::slotDeleteAllUnlockedChildPlaylists);
 
-    // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
 }
 
-SetlogFeature::~SetlogFeature() {
-    // Clean up history when shutting down in case the track threshold changed,
-    // incl. potentially empty current playlist
+PreparationFeature::~PreparationFeature() {
     deleteAllUnlockedPlaylistsWithFewerTracks();
-    // Delete the placeholder
     m_playlistDao.deletePlaylist(m_yearNodeId);
 }
 
-QVariant SetlogFeature::title() {
-    return tr("History");
+QVariant PreparationFeature::title() {
+    return tr("Preparation");
 }
 
-void SetlogFeature::bindLibraryWidget(
+void PreparationFeature::bindLibraryWidget(
         WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     BasePlaylistFeature::bindLibraryWidget(pLibraryWidget, pKeyboard);
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::currentPlayingTrackChanged,
+            &PlayerInfo::trackChanged,
             this,
-            &SetlogFeature::slotPlayingTrackChanged);
+            &PreparationFeature::slotAddLoadedTrackToPreparation);
     m_pLibraryWidget = QPointer(pLibraryWidget);
 }
 
-void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
+void PreparationFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
     ScopedTransaction transaction(m_pLibrary->trackCollectionManager()
-                                          ->internalCollection()
-                                          ->database());
+                    ->internalCollection()
+                    ->database());
     int minTrackCount = m_pConfig->getValue(
             kHistoryMinTracksToKeepConfigKey,
             kHistoryMinTracksToKeepDefault);
-    m_playlistDao.deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG,
+    m_playlistDao.deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_PREPARATION,
             minTrackCount);
     transaction.commit();
 }
 
-void SetlogFeature::slotDeletePlaylist() {
+void PreparationFeature::slotDeletePlaylist() {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (playlistId == m_currentPlaylistId) {
-        // the current setlog must not be deleted
+        // the current preparationlist must not be deleted
         return;
     } else if (playlistId == m_yearNodeId) {
         // this is a YEAR node
         slotDeleteAllUnlockedChildPlaylists();
     } else {
-        // regular setlog, call the base implementation
+        // regular preparationlist, call the base implementation
         BasePlaylistFeature::slotDeletePlaylist();
     }
 }
 
-void SetlogFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
-    m_lastRightClickedIndex = QModelIndex();
+bool PreparationFeature::dropAcceptChild(
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+    qDebug() << "[PREPARATIONFEATURE] -> dropAcceptChild triggered";
+    int playlistId = playlistIdFromIndex(index);
+    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+        return false;
+    }
+    // If a track is dropped onto a playlist's name, but the track isn't in the
+    // library, then add the track to the library before adding it to the
+    // playlist.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
+                                      ->resolveTrackIdsFromUrls(urls, !pSource);
+    if (trackIds.isEmpty()) {
+        return false;
+    }
 
-    // Create the right-click menu
-    // QMenu menu(NULL);
-    // menu.addAction(m_pCreatePlaylistAction);
-    // TODO(DASCHUER) add something like disable logging
-    // menu.exec(globalPos);
+    // Return whether appendTracksToPlaylist succeeded.
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
-    //Save the model index so we can get it in the action slots...
+bool PreparationFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+    int playlistId = playlistIdFromIndex(index);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+
+    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+    return !locked && formatSupported;
+}
+
+void PreparationFeature::onRightClick(const QPoint& globalPos) {
+    Q_UNUSED(globalPos);
+    m_lastRightClickedIndex = QModelIndex();
+}
+
+void PreparationFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
+    // Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
     int playlistId = playlistIdFromIndex(index);
@@ -196,6 +228,8 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         m_pJoinWithPreviousAction->setEnabled(!locked);
         m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
+        menu.addAction(m_pShowTrackModelInLibraryWindowAction);
+        menu.addSeparator();
         menu.addAction(m_pAddToAutoDJAction);
         menu.addAction(m_pAddToAutoDJTopAction);
         menu.addSeparator();
@@ -207,7 +241,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
             menu.addAction(m_pMarkTracksPlayedAction);
         }
         if (index.sibling(index.row() + 1, index.column()).isValid()) {
-            // The very first (oldest) setlog cannot be joint
+            // The very first (oldest) preparationlist cannot be joint
             menu.addAction(m_pJoinWithPreviousAction);
         }
         if (playlistId == m_currentPlaylistId) {
@@ -223,13 +257,10 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     menu.exec(globalPos);
 }
 
-/// Purpose: When inserting or removing playlists,
-/// we require the sidebar model not to reset.
-/// This method queries the database and does dynamic insertion
-/// Use a custom model in the history for grouping by year
-/// @param selectedId row which should be selected
-QModelIndex SetlogFeature::constructChildModel(int selectedId) {
-    // qDebug() << "SetlogFeature::constructChildModel() selected:" << selectedId;
+QModelIndex PreparationFeature::constructChildModel(int selectedId) {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::constructChildModel() selected:" << selectedId;
+    }
     // Setup the sidebar playlist model
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
@@ -287,7 +318,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     std::vector<std::unique_ptr<TreeItem>> itemList;
     // Generous estimate (number of years the db is used ;))
     itemList.reserve(kNumToplevelHistoryEntries + 15);
-
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
                 playlistTableModel
@@ -317,7 +347,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
         // Create the TreeItem whose parent is the invisible root item.
         // Show only [kNumToplevelHistoryEntries] recent playlists at the top level
         // before grouping them by year.
-        if (hiddenType == PlaylistDAO::PLHT_SET_LOG) {
+        if (hiddenType == PlaylistDAO::PLHT_SET_PREPARATION) {
             if (row >= kNumToplevelHistoryEntries) {
                 // group by year
                 int yearCreated = dateCreated.date().year();
@@ -357,7 +387,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     return indexFromPlaylistId(selectedId);
 }
 
-void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
+void PreparationFeature::decorateChild(TreeItem* item, int playlistId) {
     if (playlistId == m_currentPlaylistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
@@ -368,30 +398,35 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 /// Invoked on startup to create new current playlist and by "Finish current and start new"
-void SetlogFeature::slotGetNewPlaylist() {
-    //qDebug() << "slotGetNewPlaylist() successfully triggered !";
-
-    // create a new playlist for today
-    QString set_log_name_format;
-    QString set_log_name;
-
-    set_log_name = QDate::currentDate().toString(Qt::ISODate);
-    set_log_name_format = set_log_name + " #%1";
-    int i = 1;
-
-    // calculate name of the todays setlog
-    while (m_playlistDao.getPlaylistIdFromName(set_log_name) != kInvalidPlaylistId) {
-        set_log_name = set_log_name_format.arg(++i);
+void PreparationFeature::slotGetNewPlaylist() {
+    if (sDebug) {
+        qDebug() << "slotGetNewPlaylist() successfully triggered !";
     }
 
-    //qDebug() << "Creating session history playlist name:" << set_log_name;
+    // create a new playlist for today
+    QString preparation_name_format;
+    QString preparation_name;
+
+    preparation_name = QString("Preparation %1").arg(QDate::currentDate().toString(Qt::ISODate));
+    preparation_name_format = preparation_name + " #%1";
+    int i = 1;
+
+    // calculate name of the todays preparationlist
+    while (m_playlistDao.getPlaylistIdFromName(preparation_name) != kInvalidPlaylistId) {
+        preparation_name = preparation_name_format.arg(++i);
+    }
+    if (sDebug) {
+        qDebug() << "Creating session preparation playlist name:" << preparation_name;
+    }
     m_currentPlaylistId = m_playlistDao.createPlaylist(
-            set_log_name, PlaylistDAO::PLHT_SET_LOG);
+            preparation_name, PlaylistDAO::PLHT_SET_PREPARATION);
 
     if (m_currentPlaylistId == kInvalidPlaylistId) {
-        qDebug() << "Setlog playlist Creation Failed";
-        qDebug() << "An unknown error occurred while creating playlist: "
-                 << set_log_name;
+        if (sDebug) {
+            qDebug() << "Setlog playlist Creation Failed";
+            qDebug() << "An unknown error occurred while creating playlist: "
+                     << preparation_name;
+        }
     } else {
         m_recentTracks.clear();
     }
@@ -402,8 +437,11 @@ void SetlogFeature::slotGetNewPlaylist() {
     slotPlaylistTableChanged(m_currentPlaylistId);
 }
 
-void SetlogFeature::slotJoinWithPrevious() {
-    // qDebug() << "SetlogFeature::slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
+void PreparationFeature::slotJoinWithPrevious() {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotJoinWithPrevious() row:"
+                 << m_lastRightClickedIndex.data();
+    }
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -413,7 +451,8 @@ void SetlogFeature::slotJoinWithPrevious() {
         return;
     }
 
-    if (m_playlistDao.isPlaylistLocked(clickedPlaylistId)) {
+    bool locked = m_playlistDao.isPlaylistLocked(clickedPlaylistId);
+    if (locked) {
         qDebug() << "Aborting playlist join because playlist"
                  << clickedPlaylistId << "is locked.";
         return;
@@ -421,16 +460,10 @@ void SetlogFeature::slotJoinWithPrevious() {
 
     // Add every track from right-clicked playlist to that with the next smaller ID
     int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
-            clickedPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+            clickedPlaylistId, PlaylistDAO::PLHT_SET_PREPARATION);
     if (previousPlaylistId == kInvalidPlaylistId) {
-        qDebug() << "Aborting playlist join because there's no previous playlist"
-                    " for playlist"
-                 << clickedPlaylistId;
-        return;
-    }
-    if (m_playlistDao.isPlaylistLocked(previousPlaylistId)) {
-        qDebug() << "Aborting playlist join because previous playlist"
-                 << previousPlaylistId << "is locked.";
+        qDebug() << "Aborting playlist join because playlist"
+                 << clickedPlaylistId << "because there's no previous playlist.";
         return;
     }
 
@@ -456,7 +489,7 @@ void SetlogFeature::slotJoinWithPrevious() {
             }
         }
 
-        // Change current setlog
+        // Change current preparationlist
         m_currentPlaylistId = previousPlaylistId;
     }
     qDebug() << "slotJoinWithPrevious() current:"
@@ -467,8 +500,10 @@ void SetlogFeature::slotJoinWithPrevious() {
     }
 }
 
-void SetlogFeature::slotMarkAllTracksPlayed() {
-    // qDebug() << "SetlogFeature::slotMarkAllTracksPlayed()";
+void PreparationFeature::slotMarkAllTracksPlayed() {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotMarkAllTracksPlayed()";
+    }
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -503,15 +538,15 @@ void SetlogFeature::slotMarkAllTracksPlayed() {
     }
 }
 
-void SetlogFeature::slotLockAllChildPlaylists() {
+void PreparationFeature::slotLockAllChildPlaylists() {
     lockOrUnlockAllChildPlaylists(true);
 }
 
-void SetlogFeature::slotUnlockAllChildPlaylists() {
+void PreparationFeature::slotUnlockAllChildPlaylists() {
     lockOrUnlockAllChildPlaylists(false);
 }
 
-void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
+void PreparationFeature::lockOrUnlockAllChildPlaylists(bool lock) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -540,7 +575,7 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
     m_playlistDao.setPlaylistsLocked(ids, lock);
 }
 
-void SetlogFeature::slotDeleteAllUnlockedChildPlaylists() {
+void PreparationFeature::slotDeleteAllUnlockedChildPlaylists() {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -591,95 +626,83 @@ void SetlogFeature::slotDeleteAllUnlockedChildPlaylists() {
     if (btn != QMessageBox::Ok) {
         return;
     }
-    qDebug() << "History: deleting all unlocked playlists of" << year;
+    if (sDebug) {
+        qDebug() << "preparation: deleting all unlocked playlists of" << year;
+    }
     m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
 }
 
-void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
-    if (!currentPlayingTrack) {
-        return;
-    }
+// pLoadedTrack
+void PreparationFeature::slotAddLoadedTrackToPreparation(const QString& group,
+        TrackPointer loadedTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(group);
+    Q_UNUSED(pOldTrack);
 
-    TrackId currentPlayingTrackId(currentPlayingTrack->getId());
-    bool track_played_recently = false;
-    if (currentPlayingTrackId.isValid()) {
-        // Remove the track from the recent tracks list if it's present and put
-        // at the front of the list.
-        const auto it = std::find(
-                m_recentTracks.cbegin(),
-                m_recentTracks.cend(),
-                currentPlayingTrackId);
-        if (it == m_recentTracks.cend()) {
-            track_played_recently = false;
-        } else {
-            track_played_recently = true;
-            constErase(&m_recentTracks, it);
-        }
-        m_recentTracks.push_front(currentPlayingTrackId);
-
-        // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        const unsigned int recentTrackWindow = m_pConfig->getValue(
-                kHistoryTrackDuplicateDistanceConfigKey,
-                kHistoryTrackDuplicateDistanceDefault);
-        while (m_recentTracks.size() > recentTrackWindow) {
-            m_recentTracks.pop_back();
-        }
-    }
-
-    // If the track was recently played, don't increment the playcount or
-    // add it to the history.
-    if (track_played_recently) {
-        return;
-    }
-
-    // If the track is not present in the recent tracks list, mark it
-    // played and update its playcount.
-    currentPlayingTrack->updatePlayCounter();
-
-    // We can only add tracks that are Mixxx library tracks, not external
-    // sources.
-    if (!currentPlayingTrackId.isValid()) {
-        return;
-    }
-
-    if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
-        // View needs a refresh
-
-        bool hasActiveView = false;
-        if (m_pLibraryWidget) {
-            WTrackTableView* view = dynamic_cast<WTrackTableView*>(
-                    m_pLibraryWidget->getActiveView());
-            if (view != nullptr) {
-                // We have a active view on the history. The user may have some
-                // important active selection. For example putting track into crates
-                // while the song changes through autodj. The selection is then lost
-                // and dataloss occurs
-                hasActiveView = true;
-                const QList<TrackId> trackIds = view->getSelectedTrackIds();
-                m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
-                view->setSelectedTracks(trackIds);
-            }
-        }
-
-        if (!hasActiveView) {
-            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+    if (loadedTrack) {
+        TrackId newLoadedTrack(loadedTrack->getId());
+        if (sDebug) {
+            qDebug() << "[PreparationFeature] -> Received Track ID" << newLoadedTrack;
         }
     } else {
-        // TODO(XXX): Care whether the append succeeded.
-        m_playlistDao.appendTrackToPlaylist(
-                currentPlayingTrackId, m_currentPlaylistId);
+        if (sDebug) {
+            qDebug() << "[PreparationFeature] -> Received null track!";
+        }
+        return;
+    }
+
+    TrackId newLoadedTrackId(loadedTrack->getId());
+    if (sDebug) {
+        qDebug() << "PreparationFeature: Loaded Track ID received: " << newLoadedTrackId;
+    }
+    if (m_pConfig->getValue(ConfigKey("[Library]", "PreparationListsAddAllLoadedTracks"), true)) {
+        if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
+            if (m_pPlaylistTableModel->getPlaylist() == m_currentPlaylistId) {
+                if (sDebug) {
+                    qDebug() << "PreparationFeature: Loaded Preparation PlayListId "
+                                "m_pPlaylistTableModel->getPlaylist() "
+                             << m_pPlaylistTableModel->getPlaylist();
+                    qDebug() << "PreparationFeature: Loaded Preparation "
+                                "PlayListId "
+                             << m_currentPlaylistId;
+                }
+                // View needs a refresh
+
+                bool hasActiveView = false;
+                if (m_pLibraryWidget) {
+                    WTrackTableView* view = dynamic_cast<WTrackTableView*>(
+                            m_pLibraryWidget->getActiveView());
+                    if (view != nullptr) {
+                        hasActiveView = true;
+                        const QList<TrackId> trackIds = view->getSelectedTrackIds();
+                        m_pPlaylistTableModel->appendTrack(newLoadedTrackId);
+                        view->setSelectedTracks(trackIds);
+                    }
+                }
+
+                if (!hasActiveView) {
+                    m_pPlaylistTableModel->appendTrack(newLoadedTrackId);
+                }
+            } else {
+                // TODO(XXX): Care whether the append succeeded.
+                m_playlistDao.appendTrackToPlaylist(
+                        newLoadedTrackId, m_currentPlaylistId);
+            }
+        }
     }
 }
 
-void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "SetlogFeature::slotPlaylistTableChanged() id:" << playlistId;
+void PreparationFeature::slotPlaylistTableChanged(int playlistId) {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotPlaylistTableChanged() id:" << playlistId;
+    }
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type != PlaylistDAO::PLHT_SET_LOG &&
+    if (type != PlaylistDAO::PLHT_SET_PREPARATION &&
             type != PlaylistDAO::PLHT_UNKNOWN) { // deleted Playlist
         return;
     }
 
-    // save currently selected History sidebar item (if any)
+    // save currently selected preparation sidebar item (if any)
     int selectedYearIndexRow = -1;
     int selectedPlaylistId = kInvalidPlaylistId;
     bool rootWasSelected = false;
@@ -692,16 +715,16 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         } else if (playlistId == lastClickedPlaylistId &&
                 type == PlaylistDAO::PLHT_UNKNOWN) {
             // selected playlist was deleted, find a sibling.
-            // prev/next works here because history playlists are always
+            // prev/next works here because preparation playlists are always
             // sorted by date of creation.
             selectedPlaylistId = m_playlistDao.getPreviousPlaylist(
                     lastClickedPlaylistId,
-                    PlaylistDAO::PLHT_SET_LOG);
+                    PlaylistDAO::PLHT_SET_PREPARATION);
             if (selectedPlaylistId == kInvalidPlaylistId) {
                 // no previous playlist, try to get the next playlist
                 selectedPlaylistId = m_playlistDao.getNextPlaylist(
                         lastClickedPlaylistId,
-                        PlaylistDAO::PLHT_SET_LOG);
+                        PlaylistDAO::PLHT_SET_PREPARATION);
             }
         } else {
             selectedPlaylistId = lastClickedPlaylistId;
@@ -723,47 +746,53 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
             newIndex = m_pSidebarModel->index(selectedYearIndexRow - 1, 0);
         }
     }
-    if (newIndex.isValid() || rootWasSelected) {
-        selectAndActivate(newIndex);
+    if (newIndex.isValid()) {
+        emit featureSelect(this, newIndex);
+        activateChild(newIndex);
+    } else if (rootWasSelected) {
+        // calling featureSelect with invalid index will select the root item
+        emit featureSelect(this, newIndex);
+        activate(); // to reload the new current playlist
     }
 }
 
-void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "SetlogFeature::slotPlaylistContentOrLockChanged() for"
-    //          << playlistIds.count() << "playlist(s)";
+void PreparationFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotPlaylistContentOrLockChanged() for"
+                 << playlistIds.count() << "playlist(s)";
+    }
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
-        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_PREPARATION) {
             idsToBeUpdated.insert(playlistId);
         }
     }
     updateChildModel(idsToBeUpdated);
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
+void PreparationFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    // qDebug() << "SetlogFeature::slotPlaylistTableRenamed() Id:" << playlistId;
-    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotPlaylistTableRenamed() Id:" << playlistId;
+    }
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_PREPARATION) {
         updateChildModel(QSet<int>{playlistId});
     }
 }
 
-void SetlogFeature::activate() {
-    // The root item was clicked, so activate the current playlist.
-    m_lastClickedIndex = m_pSidebarModel->getRootIndex();
-    m_lastRightClickedIndex = QModelIndex();
-    activatePlaylist(m_currentPlaylistId);
-}
-
-void SetlogFeature::activateChild(const QModelIndex& index) {
-    // qDebug() << "SetlogFeature::activateChild()" << index;
-    int playlistId = playlistIdFromIndex(index);
+void PreparationFeature::slotShowInLibraryWindow() {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotShowInLibraryWindow()";
+    }
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (sDebug) {
+        qDebug() << "PreparationFeature::slotShowInLibraryWindow() playlistId: " << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         // may happen during initialization
         return;
     }
-    m_lastClickedIndex = index;
-    m_lastRightClickedIndex = QModelIndex();
+
     emit saveModelState();
     m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
@@ -776,8 +805,41 @@ void SetlogFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-void SetlogFeature::activatePlaylist(int playlistId) {
-    // qDebug() << "SetlogFeature::activatePlaylist()" << playlistId;
+void PreparationFeature::activate() {
+    // The root item was clicked, so activate the current playlist.
+    m_lastClickedIndex = m_pSidebarModel->getRootIndex();
+    m_lastRightClickedIndex = QModelIndex();
+    activatePlaylist(m_currentPlaylistId);
+}
+
+void PreparationFeature::activateChild(const QModelIndex& index) {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::activateChild()" << index;
+    }
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId == kInvalidPlaylistId) {
+        // may happen during initialization
+        return;
+    }
+    m_lastClickedIndex = index;
+    m_lastRightClickedIndex = QModelIndex();
+
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        proxy->set(1);
+    }
+
+    emit saveModelState();
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
+    emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
+    // emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
+    emit enableCoverArtDisplay(true);
+}
+
+void PreparationFeature::activatePlaylist(int playlistId) {
+    if (sDebug) {
+        qDebug() << "PreparationFeature::activatePlaylist()" << playlistId;
+    }
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
@@ -785,9 +847,15 @@ void SetlogFeature::activatePlaylist(int playlistId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
+
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        proxy->set(1);
+    }
+
     emit saveModelState();
     m_pPlaylistTableModel->selectPlaylist(playlistId);
-    emit showTrackModel(m_pPlaylistTableModel);
+    emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
     // Update sidebar selection only if this is a child, incl. current playlist
     // and YEAR nodes.
     // indexFromPlaylistId() can't be used because, in case the root item was
@@ -807,7 +875,7 @@ void SetlogFeature::activatePlaylist(int playlistId) {
     emit enableCoverArtDisplay(true);
 }
 
-QString SetlogFeature::getRootViewHtml() const {
-    // Instead of the help text, the history shows the current playlist
+QString PreparationFeature::getRootViewHtml() const {
+    // Instead of the help text, the preparation shows the current playlist
     return QString();
 }

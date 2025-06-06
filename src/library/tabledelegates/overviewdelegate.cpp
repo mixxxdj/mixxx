@@ -10,6 +10,7 @@
 #include "util/logger.h"
 #include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 
 namespace {
 

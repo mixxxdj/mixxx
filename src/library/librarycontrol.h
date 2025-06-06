@@ -16,6 +16,7 @@ class Library;
 class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
+class WLibraryPreparationWindow;
 class WSearchLineEdit;
 class KeyboardEventFilter;
 
@@ -55,7 +56,13 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
+    void bindLibraryWidget(
+            WLibrary* pLibrary,
+            KeyboardEventFilter* pKeyboard);
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* pLibraryPreparationWindow,
+            KeyboardEventFilter* pKeyboard);
+
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
     /// Give the keyboard focus to one of the library widgets
@@ -80,6 +87,7 @@ class LibraryControl : public QObject {
 
   private slots:
     void libraryWidgetDeleted();
+    void libraryPreparationWindowWidgetDeleted();
     void sidebarWidgetDeleted();
     void searchboxWidgetDeleted();
 
@@ -220,6 +228,7 @@ class LibraryControl : public QObject {
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
     WSearchLineEdit* m_pSearchbox;
+    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget;
 
     // Other variables
     ControlProxy m_numDecks;
