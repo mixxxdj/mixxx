@@ -1608,7 +1608,6 @@ add_library(
   src/widget/woverview.cpp
   src/widget/wpixmapstore.cpp
   src/widget/wplaybutton.cpp
-  src/widget/wpreparationwindowtracktableview.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
   src/widget/wstarratingaction.cpp

@@ -8,6 +8,7 @@
 #include "library/libraryview.h"
 #include "skin/legacy/skincontext.h"
 #include "util/compatibility/qmutex.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/wbasewidget.h"
 
 class LibraryView;
@@ -59,6 +60,10 @@ class WLibraryBaseWindow : public QStackedWidget, public WBaseWidget {
         return m_bShowButtonText;
     }
 
+    WaveformSignalColors getOverviewSignalColors() const {
+        return m_overviewSignalColors;
+    }
+
   signals:
     FocusWidget setLibraryFocus(FocusWidget newFocus);
 
@@ -85,4 +90,5 @@ class WLibraryBaseWindow : public QStackedWidget, public WBaseWidget {
     QMap<QString, QWidget*> m_viewMap;
     double m_trackTableBackgroundColorOpacity;
     bool m_bShowButtonText;
+    WaveformSignalColors m_overviewSignalColors;
 };

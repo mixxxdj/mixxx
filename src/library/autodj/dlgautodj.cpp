@@ -60,6 +60,7 @@ DlgAutoDJ::DlgAutoDJ(
                                                       parent)
                                                       ->getShowButtonText()
                                             : false)),
+          // /*no sorting*/ false)),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
 

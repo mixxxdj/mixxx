@@ -159,12 +159,6 @@ Description:
                         <FgColor>#eece33</FgColor>
                         <ShowButtonText>false</ShowButtonText>
                         <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
-                      </Library>
-                      <Library>
-                        <BgColor>#585858</BgColor>
-                        <FgColor>#eece33</FgColor>
-                        <ShowButtonText>false</ShowButtonText>
-                        <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
                         <!-- Colors for the render modes of the Overview column -->
                         <!-- For the overview column we only set the signal color,
                              other colors are the defaults. -->
