@@ -47,8 +47,17 @@
 #include "util/sandbox.h"
 #endif
 
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifdef Q_OS_LINUX
+#include <X11/XKBlib.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/XKBrules.h>
+
+// #include <X11/Xresource.h>
+// #include <X11/extensions/XKBrules.h>
+// #include "X11Exception.h"
+#endif
+
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <X11/Xlibint.h>
 
 #include <QtX11Extras/QX11Info>
@@ -128,6 +137,65 @@ QLocale localeFromXkbSymbol(const QString& xkbLayout) {
     return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
 }
 
+QLocale localeFromXkbName(const QString& xkbLayout) {
+    // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
+    static const QMap<QString, QLocale> xkbToLocaleMap = {
+            {"Czech",
+                    QLocale(QLocale::Czech,
+                            QLocale::CzechRepublic)}, // cs_CZ.kbd.cfg
+            {"German",
+                    QLocale(QLocale::German,
+                            QLocale::Germany)}, // de_DE.kbd.cfg
+            {"German (no dead keys)",
+                    QLocale(QLocale::German,
+                            QLocale::Germany)}, // de_DE.kbd.cfg
+            {"Spanish",
+                    QLocale(QLocale::Spanish, QLocale::Spain)}, // es_ES.kbd.cfg
+            {"Spanish (no dead keys)",
+                    QLocale(QLocale::Spanish, QLocale::Spain)}, // es_ES.kbd.cfg
+            {"French",
+                    QLocale(QLocale::French, QLocale::France)}, // fr_FR.kbd.cfg
+            {"French (no dead keys)",
+                    QLocale(QLocale::French, QLocale::France)}, // fr_FR.kbd.cfg
+            {"Danish",
+                    QLocale(QLocale::Danish,
+                            QLocale::Denmark)}, // da_DK.kbd.cfg
+            {"Danish (no dead keys)",
+                    QLocale(QLocale::Danish,
+                            QLocale::Denmark)}, // da_DK.kbd.cfg
+            {"Greek",
+                    QLocale(QLocale::Greek, QLocale::Greece)}, // el_GR.kbd.cfg
+            {"Greek (no dead keys)",
+                    QLocale(QLocale::Greek, QLocale::Greece)}, // el_GR.kbd.cfg
+            {"Finnish",
+                    QLocale(QLocale::Finnish,
+                            QLocale::Finland)}, // fi_FI.kbd.cfg
+            {"Italian",
+                    QLocale(QLocale::Italian, QLocale::Italy)}, // it_IT.kbd.cfg
+            {"Italian (no dead keys)",
+                    QLocale(QLocale::Italian, QLocale::Italy)}, // it_IT.kbd.cfg
+            {"English (US)",
+                    QLocale(QLocale::English,
+                            QLocale::UnitedStates)}, // en_US.kbd.cfg
+            {"Russian",
+                    QLocale(QLocale::Russian,
+                            QLocale::Russia)}, // ru_RU.kbd.cfg
+            {"German (Switzerland)",
+                    QLocale(QLocale::German,
+                            QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"German (Switzerland, no dead keys)",
+                    QLocale(QLocale::German,
+                            QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"French (Switzerland)",
+                    QLocale(QLocale::French,
+                            QLocale::Switzerland)}, // fr_CH.kbd.cfg
+            {"French (Switzerland, no dead keys)",
+                    QLocale(QLocale::French,
+                            QLocale::Switzerland)} // fr_CH.kbd.cfg
+    };
+    return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
+}
+
 inline bool isGnomeSession() {
     const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
@@ -139,10 +207,44 @@ inline bool isXfceSession() {
     QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
     return desktop.contains("xfce");
 }
+
+QString getCurrentXkbLayoutName() {
+    XkbIgnoreExtension(False);
+    Display* pDisplay = XkbOpenDisplay(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    if (!pDisplay) {
+        // No X11 / XWayland running or no Xkb in use
+        return {};
+    }
+
+    XkbStateRec state;
+    if (XkbGetState(pDisplay, XkbUseCoreKbd, &state) != Success) {
+        qWarning() << "XkbGetState failed";
+        return {};
+    }
+
+    XkbDescPtr pDesc = XkbGetKeyboard(pDisplay, XkbAllComponentsMask, XkbUseCoreKbd);
+    if (!pDesc) {
+        // We are here with XWayland
+        return {};
+    }
+    char* pGroupName = XGetAtomName(pDisplay, pDesc->names->groups[state.group]);
+    if (!pGroupName) {
+        return {};
+    }
+    QString layoutName = QString(pGroupName);
+    XFree(pGroupName);
+    return layoutName;
+}
+
 #endif
 
 inline QLocale inputLocale() {
 #if defined(Q_OS_LINUX)
+    QString layoutName = getCurrentXkbLayoutName();
+    if (!layoutName.isEmpty()) {
+        qDebug() << "Keyboard Layout from XKB:" << layoutName;
+        return localeFromXkbName(layoutName);
+    }
     if (isGnomeSession()) {
         // In a Gnome session QGuiApplication::inputMethod() is not necessarily correct
         // https://github.com/mixxxdj/mixxx/issues/14838
