@@ -101,23 +101,29 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 #endif
 
 #if defined(Q_OS_LINUX)
-QLocale localeFromXkbLayout(const QString& xkbLayout) {
+QLocale localeFromXkbSymbol(const QString& xkbLayout) {
     // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
     static const QMap<QString, QLocale> xkbToLocaleMap = {
-            {"cz", QLocale(QLocale::Czech, QLocale::CzechRepublic)},             // cs_CZ.kbd.cfg
-            {"de", QLocale(QLocale::German, QLocale::Germany)},                  // de_DE.kbd.cfg
-            {"de+nodeadkeys", QLocale(QLocale::German, QLocale::Germany)},       // de_DE.kbd.cfg
-            {"es", QLocale(QLocale::Spanish, QLocale::Spain)},                   // es_ES.kbd.cfg
-            {"fr", QLocale(QLocale::French, QLocale::France)},                   // fr_FR.kbd.cfg
-            {"fr+nodeadkeys", QLocale(QLocale::French, QLocale::France)},        // fr_FR.kbd.cfg
-            {"dk", QLocale(QLocale::Danish, QLocale::Denmark)},                  // da_DK.kbd.cfg
-            {"gr", QLocale(QLocale::Greek, QLocale::Greece)},                    // el_GR.kbd.cfg
-            {"fi", QLocale(QLocale::Finnish, QLocale::Finland)},                 // fi_FI.kbd.cfg
-            {"it", QLocale(QLocale::Italian, QLocale::Italy)},                   // it_IT.kbd.cfg
-            {"us", QLocale(QLocale::English, QLocale::UnitedStates)},            // en_US.kbd.cfg
-            {"ru", QLocale(QLocale::Russian, QLocale::Russia)},                  // ru_RU.kbd.cfg
-            {"ch", QLocale(QLocale::German, QLocale::Switzerland)},              // de_CH.kbd.cfg
-            {"ch+de_nodeadkeys", QLocale(QLocale::German, QLocale::Switzerland)} // de_CH.kbd.cfg
+            {"cz", QLocale(QLocale::Czech, QLocale::CzechRepublic)},              // cs_CZ.kbd.cfg
+            {"de", QLocale(QLocale::German, QLocale::Germany)},                   // de_DE.kbd.cfg
+            {"de+nodeadkeys", QLocale(QLocale::German, QLocale::Germany)},        // de_DE.kbd.cfg
+            {"es", QLocale(QLocale::Spanish, QLocale::Spain)},                    // es_ES.kbd.cfg
+            {"es+nodeadkeys", QLocale(QLocale::Spanish, QLocale::Spain)},         // es_ES.kbd.cfg
+            {"fr", QLocale(QLocale::French, QLocale::France)},                    // fr_FR.kbd.cfg
+            {"fr+nodeadkeys", QLocale(QLocale::French, QLocale::France)},         // fr_FR.kbd.cfg
+            {"dk", QLocale(QLocale::Danish, QLocale::Denmark)},                   // da_DK.kbd.cfg
+            {"dk+nodeadkeys", QLocale(QLocale::Danish, QLocale::Denmark)},        // da_DK.kbd.cfg
+            {"gr", QLocale(QLocale::Greek, QLocale::Greece)},                     // el_GR.kbd.cfg
+            {"gr+nodeadkeys", QLocale(QLocale::Greek, QLocale::Greece)},          // el_GR.kbd.cfg
+            {"fi", QLocale(QLocale::Finnish, QLocale::Finland)},                  // fi_FI.kbd.cfg
+            {"it", QLocale(QLocale::Italian, QLocale::Italy)},                    // it_IT.kbd.cfg
+            {"it+nodeadkeys", QLocale(QLocale::Italian, QLocale::Italy)},         // it_IT.kbd.cfg
+            {"us", QLocale(QLocale::English, QLocale::UnitedStates)},             // en_US.kbd.cfg
+            {"ru", QLocale(QLocale::Russian, QLocale::Russia)},                   // ru_RU.kbd.cfg
+            {"ch", QLocale(QLocale::German, QLocale::Switzerland)},               // de_CH.kbd.cfg
+            {"ch+de_nodeadkeys", QLocale(QLocale::German, QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"ch+fr", QLocale(QLocale::French, QLocale::Switzerland)},            // fr_CH.kbd.cfg
+            {"ch+fr_nodeadkeys", QLocale(QLocale::French, QLocale::Switzerland)}  // fr_CH.kbd.cfg
     };
     return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
 }
@@ -156,7 +162,7 @@ inline QLocale inputLocale() {
                 const QString layout = match.captured(1);
                 ;
                 qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
-                return localeFromXkbLayout(layout);
+                return localeFromXkbSymbol(layout);
             } else {
                 // mru-sources (most recently used source) is empty when user
                 // has only one keyboard layout enabled. Use it from sources.
@@ -170,7 +176,7 @@ inline QLocale inputLocale() {
                     if (match.hasMatch()) {
                         const QString layout = match.captured(1);
                         qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
-                        return localeFromXkbLayout(layout);
+                        return localeFromXkbSymbol(layout);
                     } else {
                         qDebug() << "No valid keyboard layout found in dconf:" << sourcesStr;
                     }
@@ -196,7 +202,7 @@ inline QLocale inputLocale() {
                 const QStringList allLayouts = sourcesStr.split(',');
                 const QString currLayout = allLayouts[0];
                 qDebug() << "Keyboard Layout from XFCE xfconf:" << currLayout;
-                return localeFromXkbLayout(currLayout);
+                return localeFromXkbSymbol(currLayout);
             } else {
                 qDebug() << "No valid keyboard layout found in xfconf:" << sourcesStr;
             }
