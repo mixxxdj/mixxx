@@ -299,7 +299,7 @@ void BrowseFeature::slotUpdateItemIsWatchedPathRecursively(const QString& path) 
     QModelIndexList matchList = m_pSidebarModel->match(rootIdx,
             TreeItemModel::kDataRole,
             path,
-            1,
+            1, // Stop at the first match which is the top-level path that's affected
             Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
     if (matchList.isEmpty()) {
         return;
@@ -315,6 +315,10 @@ void BrowseFeature::slotUpdateItemIsWatchedPathRecursively(const QString& path) 
     bool watched = isPathWatched(path).first;
     pMatchItem->updateIsWatchedLibraryPathRecursively(watched);
     m_pSidebarWidget->update();
+    if (m_pSidebarWidget->isChildIndexSelected(matchIdx)) {
+        // Reload to switch to the applicable view
+        activateChild(matchIdx);
+    }
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
