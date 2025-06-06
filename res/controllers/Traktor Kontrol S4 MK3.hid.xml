@@ -184,12 +184,23 @@
                 </description>
             </option>
             <option
-                variable="tempoCenterOffsetMm"
+                variable="tempoCenterOffsetMmL"
                 type="real"
                 min="-3.0"
                 max="3.0"
                 default="0.0"
-                label="Center Snap Offset in Millimeter">
+                label="Left Deck Center Snap Offset in Millimeter">
+                <description>
+                    Shifts the center range in case it doesn't match the center marker.
+                </description>
+            </option>
+            <option
+                variable="tempoCenterOffsetMmR"
+                type="real"
+                min="-3.0"
+                max="3.0"
+                default="0.0"
+                label="Right Deck">
                 <description>
                     Shifts the center range in case it doesn't match the center marker.
                 </description>
