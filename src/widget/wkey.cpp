@@ -2,18 +2,23 @@
 
 #include "library/library_prefs.h"
 #include "moc_wkey.cpp"
+#include "preferences/usersettings.h"
 #include "skin/legacy/skincontext.h"
 #include "track/keyutils.h"
 
-WKey::WKey(const QString& group, QWidget* pParent)
+WKey::WKey(const QString& group, UserSettingsPointer pConfig, QWidget* pParent)
         : WLabel(pParent),
-          m_dOldValue(0),
           m_keyNotation(mixxx::library::prefs::kKeyNotationConfigKey, this),
           m_engineKeyDistance(group,
                   "visual_key_distance",
                   this,
-                  ControlFlag::AllowMissingOrInvalid) {
-    setValue(m_dOldValue);
+                  ControlFlag::AllowMissingOrInvalid),
+          m_engineKey(group,
+                  "key",
+                  this,
+                  ControlFlag::AllowMissingOrInvalid),
+          m_colorPaletteSettings(pConfig) {
+    setValue();
     m_keyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
 }
@@ -22,7 +27,7 @@ void WKey::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
-    setValue(dValue);
+    setValue();
 }
 
 void WKey::setup(const QDomNode& node, const SkinContext& context) {
@@ -31,23 +36,21 @@ void WKey::setup(const QDomNode& node, const SkinContext& context) {
     m_displayKey = context.selectBool(node, "DisplayKey", true);
 }
 
-void WKey::setValue(double dValue) {
-    m_dOldValue = dValue;
-    mixxx::track::io::key::ChromaticKey key =
-            KeyUtils::keyFromNumericValue(dValue);
-    if (key != mixxx::track::io::key::INVALID) {
+void WKey::setValue() {
+    m_key = KeyUtils::keyFromNumericValue(m_engineKey.get());
+    m_diff_cents = m_engineKeyDistance.get();
+    if (m_key != mixxx::track::io::key::INVALID) {
         // Render this key with the user-provided notation.
         QString keyStr = "";
         if (m_displayKey) {
-            keyStr = KeyUtils::keyToString(key);
+            keyStr = KeyUtils::keyToString(m_key);
         }
         if (m_displayCents) {
-            double diff_cents = m_engineKeyDistance.get();
-            int cents_to_display = static_cast<int>(diff_cents * 100);
+            int cents_to_display = static_cast<int>(m_diff_cents * 100);
             char sign = ' ';
-            if (diff_cents < 0) {
+            if (m_diff_cents < 0) {
                 sign = '-';
-            } else if (diff_cents > 0) {
+            } else if (m_diff_cents > 0) {
                 sign = '+';
             }
             keyStr.append(QString(" %1%2c").arg(sign).arg(qAbs(cents_to_display)));
@@ -56,15 +59,59 @@ void WKey::setValue(double dValue) {
     } else {
         setText("");
     }
+    update();
 }
 
 void WKey::setCents() {
-    setValue(m_dOldValue);
+    setValue();
 }
 
 void WKey::keyNotationChanged(double dKeyNotationValue) {
     Q_UNUSED(dKeyNotationValue);
     // NOTE: dKeyNotationValue is the index of the key notation type, NOT the
     // key itself, so we intentionally set the old value again to update the UI.
-    setValue(m_dOldValue);
+    // NOTE: This also seems to handle changing the Key Palette?
+    setValue();
+}
+
+void WKey::paintEvent(QPaintEvent* event) {
+    QString keyText = this->text();
+    ColorPalette keyColorPalette = m_colorPaletteSettings.getConfigKeyColorPalette();
+
+    QColor colorTop, colorBottom;
+    double splitPoint = 0; // 'height' of top color
+    if (m_diff_cents < 0) {
+        colorTop = KeyUtils::keyToColor(m_key, keyColorPalette);
+        colorBottom = KeyUtils::keyToColor(KeyUtils::scaleKeySteps(m_key, -1), keyColorPalette);
+        splitPoint = m_diff_cents + 1;
+    } else {
+        colorTop = KeyUtils::keyToColor(KeyUtils::scaleKeySteps(m_key, 1), keyColorPalette);
+        colorBottom = KeyUtils::keyToColor(m_key, keyColorPalette);
+        splitPoint = m_diff_cents;
+    }
+
+    QPainter painter(this);
+    int rectWidth = 4;
+    double splitHeight = splitPoint * height();
+
+    painter.fillRect(0,
+            0,
+            rectWidth,
+            splitHeight,
+            colorTop);
+
+    painter.fillRect(0,
+            splitHeight,
+            rectWidth,
+            height() - splitHeight,
+            colorBottom);
+
+    painter.setPen(QPen(Qt::white));
+    painter.drawText(rectWidth,
+            0,
+            width() - rectWidth,
+            height(),
+            Qt::AlignCenter,
+            keyText);
+    /*WLabel::paintEvent(event);*/
 }
