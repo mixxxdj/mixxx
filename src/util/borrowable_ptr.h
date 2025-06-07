@@ -104,6 +104,7 @@ class borrowable_ptr {
     explicit borrowable_ptr(Tp* p) {
         if (p) {
             m_sharedPtr = std::shared_ptr<Tp>(p, borrowable_deleter(&m_mutex));
+            m_weakPtr = m_sharedPtr;
         }
     }
 
@@ -112,31 +113,18 @@ class borrowable_ptr {
         m_mutex.unlock();
     }
 
-    // @brief Assign a new raw pointer to the `borrowable_ptr` but not owning
-    // @param p Raw pointer to the new object.
-    // @return Reference to this instance.
-    borrowable_ptr& operator=(Tp* p) {
-        reset();
-        m_mutex.unlock();
-        m_sharedPtr = std::shared_ptr<Tp>(p, borrowable_deleter(&m_mutex));
-        return *this;
-    }
-
     // @brief Borrow a strong reference to the managed object.
     // @return A `borrowed_ptr` instance pointing to the managed object.
     borrowed_ptr<Tp> borrow() {
-        return borrowed_ptr<Tp>(m_sharedPtr);
-    }
-
-    borrowable_ptr& operator=(const borrowable_ptr& other) {
-        this->operator=(other.get());
-        return *this;
+        return borrowed_ptr<Tp>(m_weakPtr.lock());
     }
 
     void reset() {
-        m_sharedPtr.reset();
-        // Wait until all borrowed references are released.
-        m_mutex.lock();
+        if (m_sharedPtr.get()) {
+            m_sharedPtr.reset();
+            // Wait until all borrowed references are released.
+            m_mutex.lock();
+        }
     }
 
     // @brief Get the raw pointer to the managed object.
@@ -147,5 +135,7 @@ class borrowable_ptr {
 
   private:
     QMutex m_mutex;
-    std::shared_ptr<Tp> m_sharedPtr; ///< Non-owning shared pointer to the managed object.
+    // must not be changed after construction, because changing shared pointers is not thread safe.
+    std::weak_ptr<Tp> m_weakPtr;     ///< Non-owning shared pointer for sharing,
+    std::shared_ptr<Tp> m_sharedPtr; ///< Owning private shared pointer to the managed object.
 };
