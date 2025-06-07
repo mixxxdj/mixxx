@@ -38,7 +38,7 @@ TEST_F(BorrowableTest, TwoThreads) {
             int* p2 = b2.get();
             qDebug() << "future1-first" << (p1 ? *p1 : 0) << (p2 ? *p2 : 0);
         }
-        firstIterationDone.count_down();
+        firstIterationDone.arrive_and_wait();
 
         for (int k = 1; k < 10; ++k) {
             borrowed_ptr b1 = borrowable.borrow();
@@ -57,7 +57,7 @@ TEST_F(BorrowableTest, TwoThreads) {
             int* p2 = b2.get();
             qDebug() << "future2-first" << (p1 ? *p1 : 0) << (p2 ? *p2 : 0);
         }
-        firstIterationDone.count_down();
+        firstIterationDone.arrive_and_wait();
 
         for (int k = 1; k < 10; ++k) {
             borrowed_ptr b1 = borrowable.borrow();
