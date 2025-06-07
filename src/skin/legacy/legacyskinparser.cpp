@@ -1338,7 +1338,7 @@ QWidget* LegacySkinParser::parseNumberPos(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    WKey* pEngineKey = new WKey(group, m_pParent);
+    WKey* pEngineKey = new WKey(group, m_pConfig, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
 }
