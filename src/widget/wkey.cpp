@@ -2,17 +2,19 @@
 
 #include "library/library_prefs.h"
 #include "moc_wkey.cpp"
+#include "preferences/usersettings.h"
 #include "skin/legacy/skincontext.h"
 #include "track/keyutils.h"
 
-WKey::WKey(const QString& group, QWidget* pParent)
+WKey::WKey(const QString& group, UserSettingsPointer pConfig, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
           m_keyNotation(mixxx::library::prefs::kKeyNotationConfigKey, this),
           m_engineKeyDistance(group,
                   "visual_key_distance",
                   this,
-                  ControlFlag::AllowMissingOrInvalid) {
+                  ControlFlag::AllowMissingOrInvalid),
+          m_colorPaletteSettings(pConfig) {
     setValue(m_dOldValue);
     m_keyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
@@ -33,8 +35,7 @@ void WKey::setup(const QDomNode& node, const SkinContext& context) {
 
 void WKey::setValue(double dValue) {
     m_dOldValue = dValue;
-    mixxx::track::io::key::ChromaticKey key =
-            KeyUtils::keyFromNumericValue(dValue);
+    key = KeyUtils::keyFromNumericValue(dValue);
     if (key != mixxx::track::io::key::INVALID) {
         // Render this key with the user-provided notation.
         QString keyStr = "";
@@ -66,5 +67,28 @@ void WKey::keyNotationChanged(double dKeyNotationValue) {
     Q_UNUSED(dKeyNotationValue);
     // NOTE: dKeyNotationValue is the index of the key notation type, NOT the
     // key itself, so we intentionally set the old value again to update the UI.
+    // NOTE: This also seems to handle changing the Key Palette
     setValue(m_dOldValue);
+}
+
+void WKey::paintEvent(QPaintEvent* event) {
+    QString keyText = this->text();
+    ColorPalette keyColorPalette = this->m_colorPaletteSettings.getConfigKeyColorPalette();
+    QColor keyColor = KeyUtils::keyToColor(this->key, keyColorPalette);
+
+    QPainter painter(this);
+    int rectWidth = 4;
+    painter.fillRect(0,
+            0,
+            rectWidth,
+            height(),
+            keyColor);
+    painter.setPen(QPen(Qt::white));
+    painter.drawText(rectWidth,
+            0,
+            width() - rectWidth,
+            height(),
+            Qt::AlignCenter,
+            keyText);
+    /*WLabel::paintEvent(event);*/
 }

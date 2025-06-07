@@ -1,12 +1,13 @@
 #pragma once
 
-#include "widget/wlabel.h"
 #include "control/controlproxy.h"
+#include "preferences/colorpalettesettings.h"
+#include "widget/wlabel.h"
 
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    explicit WKey(const QString& group, QWidget* pParent = nullptr);
+    explicit WKey(const QString& group, UserSettingsPointer pConfig, QWidget* pParent = nullptr);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void setup(const QDomNode& node, const SkinContext& context) override;
@@ -22,4 +23,7 @@ class WKey : public WLabel  {
     bool m_displayKey;
     ControlProxy m_keyNotation;
     ControlProxy m_engineKeyDistance;
+    ColorPaletteSettings m_colorPaletteSettings;
+    mixxx::track::io::key::ChromaticKey key;
+    void paintEvent(QPaintEvent* event) override;
 };
