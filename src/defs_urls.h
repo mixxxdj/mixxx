@@ -57,6 +57,8 @@
     MIXXX_MANUAL_URL "/chapters/djing_with_mixxx#sync-lock-with-dynamic-tempo"
 #define MIXXX_MANUAL_TRACK_SEARCH_URL \
     MIXXX_MANUAL_URL "/chapters/library.html#finding-tracks-search"
+#define MIXXX_MANUAL_MIC_MONITOR_MODES_URL \
+    MIXXX_MANUAL_URL "/chapters/microphones"
 #define MIXXX_MANUAL_BEATS_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#beat-detection"
 #define MIXXX_MANUAL_KEY_URL \
