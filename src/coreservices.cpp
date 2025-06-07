@@ -49,17 +49,10 @@
 
 #ifdef Q_OS_LINUX
 #include <X11/XKBlib.h>
-#include <X11/Xlib.h>
-#include <X11/extensions/XKBrules.h>
-
-// #include <X11/Xresource.h>
-// #include <X11/extensions/XKBrules.h>
-// #include "X11Exception.h"
 #endif
 
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <X11/Xlibint.h>
-
 #include <QtX11Extras/QX11Info>
 
 #include "engine/channelhandle.h"
