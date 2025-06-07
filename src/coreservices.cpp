@@ -274,7 +274,6 @@ inline QLocale inputLocale() {
                 if (sourcesProc.waitForFinished(100)) {
                     const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
                     // Expecting something like this: [('xkb', 'de')]
-                    static const QRegularExpression re(QStringLiteral("\\('xkb',\\s*'([^']+)'\\)"));
                     QRegularExpressionMatch match = re.match(sourcesStr);
                     if (match.hasMatch()) {
                         const QString layout = match.captured(1);
