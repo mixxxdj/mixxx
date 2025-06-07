@@ -6,6 +6,7 @@
     <description>HID Mapping for Traktor Kontrol S3</description>
     <wiki>https://github.com/mixxxdj/mixxx/wiki/Native-Instruments-Traktor-Kontrol-S3</wiki>
     <forums>https://mixxx.discourse.group/t/native-instruments-traktor-s3-mapping/18502/4</forums>
+    <manual>native_instruments_traktor_kontrol_s3</manual>
     <devices>
       <product protocol="hid" vendor_id="0x17cc" product_id="0x1900" usage_page="0xff01" usage="0x1" interface_number="0x3" />
     </devices>
@@ -16,4 +17,163 @@
       <file filename="Traktor-Kontrol-S3-hid-scripts.js" functionprefix="TraktorS3" />
     </scriptfiles>
   </controller>
+  <settings>
+    <option variable="fxMode" type="enum"
+      label="Effect section layout">
+      <value label="Quick Effect" default="true">QUICK_EFFECT</value>
+      <value label="Advanced Mode">ADVANCED</value>
+      <description>
+        Quick effect mode matches the intended use of the S3's FX mixing section,
+        while advanced mode gives detailed control over the individual FX
+        sections.
+      </description>
+    </option>
+    <option variable="fxResetOnStart"
+      type="boolean"
+      label="Reset FX chain on startup"
+      default="true">
+      <description>
+        When enabled, reset all channels to the default FX chain on startup.
+        Otherwise, preserve the last used value.
+      </description>
+    </option>
+    <option variable="fxUseChannelColors"
+      type="boolean"
+      label="Use channel colors for FX enable buttons"
+      default="true">
+      <description>
+        When enabled, the FX Enable buttons will use the channel colors when the
+        filter effect is selected. Disabling this
+        will use the Filter button's orange color instead.
+      </description>
+    </option>
+    <option variable="pitchMode" type="enum"
+      label="Pitch Slider Mode">
+      <value label="Absolute" default="true">PITCH_ABSOLUTE</value>
+      <value label="Relative">PITCH_RELATIVE</value>
+      <description>
+        Absolute mode is a normal pitch slider. Relative mode lets you hold
+        shift to move the slider without affecting pitch so that you can
+        continue to move it up or down more than the physical slider length
+        would allow.
+      </description>
+    </option>
+    <option variable="samplerModePressAndHold"
+      type="boolean"
+      label="Stop samplers when button is released"
+      default="false">
+      <description>
+        When enabled, samplers will stop playing as soon as the button is
+        released.
+      </description>
+    </option>
+    <option variable="jogDefaultOn"
+      type="boolean"
+      label="Enable scratch mode on start"
+      default="true">
+      <description>
+        When enabled, enable the jog button (scratch mode) on startup.
+      </description>
+    </option>
+    <option variable="sixteenSamplers"
+      type="boolean"
+      label="Use deck 2 for samplers 9-16"
+      default="false">
+      <description>
+        When enabled the samplers on deck 2 are 9-16 instead of 1-8.
+      </description>
+    </option>
+    <option variable="chan1Color" type="enum"
+      label="Channel 1 Color">
+      <value label="Red">RED</value>
+      <value label="Carrot" default="true">CARROT</value>
+      <value label="Orange">ORANGE</value>
+      <value label="Honey">HONEY</value>
+      <value label="Yellow">YELLOW</value>
+      <value label="Lime">LIME</value>
+      <value label="Green">GREEN</value>
+      <value label="Aqua">AQUA</value>
+      <value label="Celeste">CELESTE</value>
+      <value label="Sky">SKY</value>
+      <value label="Blue">BLUE</value>
+      <value label="Purple">PURPLE</value>
+      <value label="Fuchsia">FUCHSIA</value>
+      <value label="Magenta">MAGENTA</value>
+      <value label="Azalea">AZALEA</value>
+      <value label="Salmon">SALMON</value>
+      <value label="White">WHITE</value>
+      <description>
+        Sets the color of buttons on the channel.
+      </description>
+    </option>
+    <option variable="chan2Color" type="enum"
+      label="Channel 2 Color">
+      <value label="Red">RED</value>
+      <value label="Carrot" default="true">CARROT</value>
+      <value label="Orange">ORANGE</value>
+      <value label="Honey">HONEY</value>
+      <value label="Yellow">YELLOW</value>
+      <value label="Lime">LIME</value>
+      <value label="Green">GREEN</value>
+      <value label="Aqua">AQUA</value>
+      <value label="Celeste">CELESTE</value>
+      <value label="Sky">SKY</value>
+      <value label="Blue">BLUE</value>
+      <value label="Purple">PURPLE</value>
+      <value label="Fuchsia">FUCHSIA</value>
+      <value label="Magenta">MAGENTA</value>
+      <value label="Azalea">AZALEA</value>
+      <value label="Salmon">SALMON</value>
+      <value label="White">WHITE</value>
+      <description>
+        Sets the color of buttons on the channel.
+      </description>
+    </option>
+    <option variable="chan3Color" type="enum"
+      label="Channel 3 Color">
+      <value label="Red">RED</value>
+      <value label="Carrot">CARROT</value>
+      <value label="Orange">ORANGE</value>
+      <value label="Honey">HONEY</value>
+      <value label="Yellow">YELLOW</value>
+      <value label="Lime">LIME</value>
+      <value label="Green">GREEN</value>
+      <value label="Aqua">AQUA</value>
+      <value label="Celeste">CELESTE</value>
+      <value label="Sky">SKY</value>
+      <value label="Blue" default="true">BLUE</value>
+      <value label="Purple">PURPLE</value>
+      <value label="Fuchsia">FUCHSIA</value>
+      <value label="Magenta">MAGENTA</value>
+      <value label="Azalea">AZALEA</value>
+      <value label="Salmon">SALMON</value>
+      <value label="White">WHITE</value>
+      <description>
+        Sets the color of buttons on the channel.
+      </description>
+    </option>
+    <option variable="chan4Color" type="enum"
+      label="Channel 4 Color">
+      <value label="Red">RED</value>
+      <value label="Carrot">CARROT</value>
+      <value label="Orange">ORANGE</value>
+      <value label="Honey">HONEY</value>
+      <value label="Yellow">YELLOW</value>
+      <value label="Lime">LIME</value>
+      <value label="Green">GREEN</value>
+      <value label="Aqua">AQUA</value>
+      <value label="Celeste">CELESTE</value>
+      <value label="Sky">SKY</value>
+      <value label="Blue" default="true">BLUE</value>
+      <value label="Purple">PURPLE</value>
+      <value label="Fuchsia">FUCHSIA</value>
+      <value label="Magenta">MAGENTA</value>
+      <value label="Azalea">AZALEA</value>
+      <value label="Salmon">SALMON</value>
+      <value label="White">WHITE</value>
+      <description>
+        Sets the color of buttons on the channel.
+      </description>
+    </option>
+</settings>
 </MixxxControllerPreset>
