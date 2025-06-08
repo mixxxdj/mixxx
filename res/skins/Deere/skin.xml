@@ -146,7 +146,7 @@
       <SetVariable name="i">1</SetVariable>
       <!-- Traditional Blue -->
       <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
-      <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#343940</SetVariable>
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
@@ -154,7 +154,7 @@
       <SetVariable name="i">2</SetVariable>
       <!-- Traditional Orange -->
       <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-      <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#403c34</SetVariable>
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
@@ -162,7 +162,7 @@
       <SetVariable name="i">3</SetVariable>
       <!-- Violet -->
       <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
-      <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#403440</SetVariable>
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
@@ -170,7 +170,7 @@
       <SetVariable name="i">4</SetVariable>
       <!-- Lime -->
       <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-      <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+      <SetVariable name="DeckBackgroundColor">#3d4034</SetVariable>
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
