@@ -75,7 +75,7 @@ void WKey::keyNotationChanged(double dKeyNotationValue) {
 }
 
 void WKey::paintEvent(QPaintEvent* event) {
-    QString keyText = this->text();
+    QString keyText = text();
     ColorPalette keyColorPalette = m_colorPaletteSettings.getConfigKeyColorPalette();
 
     QColor colorTop, colorBottom;
