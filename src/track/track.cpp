@@ -454,6 +454,7 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     }
 
     m_pBeats = std::move(pBeats);
+    m_downbeat_offset = m_pBeats->getDownbeatsOffset();
     m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;
 }
@@ -514,6 +515,14 @@ void Track::afterBeatsAndBpmUpdated(
 
     markDirtyAndUnlock(pLock);
     emitBeatsAndBpmUpdated();
+}
+
+void Track::setDownbeatOffset(u_int8_t offset) {
+    m_downbeat_offset = offset;
+    const auto newBeats = m_pBeats->trySetDownbeatsOffset(offset);
+    if (newBeats) {
+        trySetBeats(*newBeats);
+    }
 }
 
 void Track::emitBeatsAndBpmUpdated() {

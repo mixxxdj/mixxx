@@ -171,19 +171,26 @@ mixxx::BeatsPointer Beats::fromConstTempo(
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::FramePos lastMarkerPosition,
         mixxx::Bpm lastMarkerBpm,
-        const QString& subVersion) {
+        const QString& subVersion,
+        const u_int8_t downbeatsOffset) {
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid() &&
             lastMarkerPosition.isValid() && lastMarkerBpm.isValid()) {
         return nullptr;
     }
-    return BeatsPointer(new Beats({}, lastMarkerPosition, lastMarkerBpm, sampleRate, subVersion));
+    return BeatsPointer(new Beats({},
+            lastMarkerPosition,
+            lastMarkerBpm,
+            sampleRate,
+            subVersion,
+            downbeatsOffset));
 }
 
 // static
 mixxx::BeatsPointer Beats::fromBeatPositions(
         mixxx::audio::SampleRate sampleRate,
         const QVector<audio::FramePos>& beatPositions,
-        const QString& subVersion) {
+        const QString& subVersion,
+        const u_int8_t downbeatsOffset) {
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid() && beatPositions.size() >= 2) {
         return nullptr;
     }
@@ -240,7 +247,8 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
             markerPosition.toLowerFrameBoundary(),
             bpm,
             sampleRate,
-            subVersion));
+            subVersion,
+            downbeatsOffset));
 }
 
 // static
@@ -249,12 +257,14 @@ mixxx::BeatsPointer Beats::fromBeatMarkers(
         const std::vector<BeatMarker>& markers,
         const audio::FramePos lastMarkerPosition,
         const Bpm lastMarkerBpm,
-        const QString& subVersion) {
+        const QString& subVersion,
+        const u_int8_t downbeatsOffset) {
     return BeatsPointer(new Beats(markers,
             lastMarkerPosition,
             lastMarkerBpm,
             sampleRate,
-            subVersion));
+            subVersion,
+            downbeatsOffset));
 }
 
 // static
@@ -309,8 +319,10 @@ mixxx::BeatsPointer Beats::fromBeatGridByteArray(
         bpm = mixxx::Bpm(pBlob->bpm);
     }
 
+    u_int8_t downbeatsOffset = grid.has_downbeats_offset() ? grid.downbeats_offset() : 0;
+
     if (position.isValid() && bpm.isValid()) {
-        return fromConstTempo(sampleRate, position, bpm, subVersion);
+        return fromConstTempo(sampleRate, position, bpm, subVersion, downbeatsOffset);
     }
 
     // Failed to parse the beatgrid.
@@ -362,7 +374,7 @@ QByteArray Beats::toBeatGridByteArray() const {
             static_cast<google::protobuf::int32>(
                     m_lastMarkerPosition.toLowerFrameBoundary().value()));
     grid.mutable_bpm()->set_bpm(m_lastMarkerBpm.value());
-
+    grid.set_downbeats_offset(m_downbeatsOffset);
     std::string output;
     grid.SerializeToString(&output);
     return QByteArray(output.data(), static_cast<int>(output.length()));
@@ -635,7 +647,8 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
             lastMarkerPosition.toLowerFrameBoundary(),
             m_lastMarkerBpm,
             m_sampleRate,
-            m_subVersion));
+            m_subVersion,
+            m_downbeatsOffset));
 }
 
 std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
@@ -649,7 +662,8 @@ std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
             lastMarkerPosition.toLowerFrameBoundary(),
             m_lastMarkerBpm,
             m_sampleRate,
-            m_subVersion));
+            m_subVersion,
+            m_downbeatsOffset));
 }
 
 std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
@@ -699,12 +713,26 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
             m_lastMarkerPosition,
             lastMarkerBpm,
             m_sampleRate,
-            m_subVersion));
+            m_subVersion,
+            m_downbeatsOffset));
 }
 
 std::optional<BeatsPointer> Beats::trySetBpm(mixxx::Bpm bpm) const {
     const auto it = cfirstmarker();
-    return BeatsPointer(new Beats({}, *it, bpm, m_sampleRate, m_subVersion));
+    return BeatsPointer(new Beats({}, *it, bpm, m_sampleRate, m_subVersion, m_downbeatsOffset));
+}
+
+std::optional<BeatsPointer> Beats::trySetDownbeatsOffset(u_int8_t offset) const {
+    return BeatsPointer(new Beats(m_markers,
+            m_lastMarkerPosition,
+            m_lastMarkerBpm,
+            m_sampleRate,
+            m_subVersion,
+            offset));
+}
+
+u_int8_t Beats::getDownbeatsOffset() const {
+    return m_downbeatsOffset;
 }
 
 bool Beats::isValid() const {
