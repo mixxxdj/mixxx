@@ -11,6 +11,7 @@
 #include <QCoreApplication>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
+#include <QStyleFactory>
 #include <QtGlobal>
 
 #include "config.h"
@@ -65,6 +66,7 @@ CmdlineArgs::CmdlineArgs()
           m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
+          m_logMaxFileSize(mixxx::kLogMaxFileSizeDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see #8090
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH))
@@ -326,6 +328,18 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(logFlushLevel);
     parser.addOption(logFlushLevelDeprecated);
 
+    const QCommandLineOption logMaxFileSize(QStringLiteral("log-max-file-size"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Sets the maximum file size of the "
+                                      "mixxx.log file in bytes. "
+                                      "Use -1 for unlimited. The default is "
+                                      "100 MB as 1e5 or 100000000.")
+                            : QString(),
+            QStringLiteral("bytes"));
+    logFlushLevelDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    logFlushLevelDeprecated.setValueName(logFlushLevel.valueName());
+    parser.addOption(logMaxFileSize);
+
     QCommandLineOption debugAssertBreak(QStringLiteral("debug-assert-break"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
@@ -336,6 +350,15 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     debugAssertBreakDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(debugAssertBreak);
     parser.addOption(debugAssertBreakDeprecated);
+
+    const QCommandLineOption styleOption(QStringLiteral("style"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Overrides the default application GUI style. Possible values: %1")
+                              .arg(QStyleFactory::keys().join(QStringLiteral(", ")))
+                    : QString(),
+            QStringLiteral("style"));
+    parser.addOption(styleOption);
 
     const QCommandLineOption helpOption = parser.addHelpOption();
     const QCommandLineOption versionOption = parser.addVersionOption();
@@ -456,6 +479,17 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         }
     }
 
+    if (parser.isSet(logMaxFileSize)) {
+        QString strLogMaxFileSize = parser.value(logMaxFileSize);
+        bool ok = false;
+        // We parse it as double to also support exponential notation
+        m_logMaxFileSize = static_cast<qint64>(strLogMaxFileSize.toDouble(&ok));
+        if (!ok) {
+            fputs("\nFailed to parse log-max-file-size.\n", stdout);
+            return false;
+        }
+    }
+
     // set colors
     if (parser.value(color).compare(QLatin1String("always"), Qt::CaseInsensitive) == 0) {
         m_useColors = true;
@@ -463,6 +497,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_useColors = false;
     } else if (parser.value(color).compare(QLatin1String("auto"), Qt::CaseInsensitive) != 0) {
         fputs("Unknown argument for for color.\n", stdout);
+    }
+
+    if (parser.isSet(styleOption)) {
+        m_styleName = parser.value(styleOption);
     }
 
     return true;

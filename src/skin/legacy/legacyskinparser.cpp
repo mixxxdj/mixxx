@@ -227,6 +227,13 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
 
     QDomDocument skin("skin");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = skin.setContent(&skinXmlFile);
+    if (!parseResult) {
+        qDebug() << "LegacySkinParser::openSkin - setContent failed see"
+                 << "line:" << parseResult.errorLine << "column:" << parseResult.errorColumn;
+        qDebug() << "LegacySkinParser::openSkin - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -235,6 +242,7 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
         qDebug() << "LegacySkinParser::openSkin - setContent failed see"
                  << "line:" << errorLine << "column:" << errorColumn;
         qDebug() << "LegacySkinParser::openSkin - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -991,6 +999,13 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    // This signal stems from AnalysisFeature, and the overview can now
+    // render the analysis progress like when listening to Playermanager's
+    // analysis progress signal when loading a track.
+    connect(m_pLibrary,
+            &Library::onTrackAnalyzerProgress,
+            overviewWidget,
+            &WOverview::onTrackAnalyzerProgress);
 
     commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
@@ -1732,6 +1747,15 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     }
 
     QDomDocument tmpl("template");
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = tmpl.setContent(&templateFile);
+    if (!parseResult) {
+        qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
+                   << absolutePath << "line:" << parseResult.errorLine
+                   << "column:" << parseResult.errorColumn;
+        qWarning() << "LegacySkinParser::loadTemplate - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -1741,6 +1765,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
         qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
                    << absolutePath << "line:" << errorLine << "column:" << errorColumn;
         qWarning() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -2510,8 +2535,23 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
     pWidget->appendBaseTooltip(tooltip);
 }
 
-QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
-    return m_pContext->selectString(node, "LaunchImageStyle");
+QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& skinDoc) {
+    QString schemeLaunchImageStyle;
+    // Check if the skins has color schemes
+    const QDomNode colorSchemeNode =
+            ColorSchemeParser::findConfiguredColorSchemeNode(
+                    skinDoc.toElement(),
+                    m_pConfig);
+    if (!colorSchemeNode.isNull()) {
+        // Check if the selected scheme has a <LaunchImageStyle> node with a string
+        schemeLaunchImageStyle = m_pContext->selectString(colorSchemeNode, "LaunchImageStyle");
+    }
+    if (!schemeLaunchImageStyle.isEmpty()) {
+        return schemeLaunchImageStyle;
+    } else {
+        // Look for the skin's general LaunchImage style
+        return m_pContext->selectString(skinDoc, "LaunchImageStyle");
+    }
 }
 
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {

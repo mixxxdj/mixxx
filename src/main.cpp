@@ -3,6 +3,7 @@
 #include <QPixmapCache>
 #include <QString>
 #include <QStringList>
+#include <QStyle>
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
@@ -38,6 +39,7 @@ constexpr int kParseCmdlineArgsErrorExitCode = 2;
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
+const QString kNotifyMaxDbgTimeKey = QStringLiteral("notify_max_dbg_time");
 
 // The default initial QPixmapCache limit is 10MB.
 // But this is used for all CoverArts in all used sizes and
@@ -142,6 +144,26 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
     }
 }
 
+void applyStyleOverride(CmdlineArgs* pArgs) {
+    if (!pArgs->getStyle().isEmpty()) {
+        qDebug() << "Default style is overwritten by command line argument "
+                    "-style"
+                 << pArgs->getStyle();
+        QApplication::setStyle(pArgs->getStyle());
+        return;
+    }
+    if (qEnvironmentVariableIsSet("QT_STYLE_OVERRIDE")) {
+        QString styleOverride = QString::fromLocal8Bit(qgetenv("QT_STYLE_OVERRIDE"));
+        if (!styleOverride.isEmpty()) {
+            // The environment variable overrides the command line option
+            qDebug() << "Default style is overwritten by env variable "
+                        "QT_STYLE_OVERRIDE"
+                     << styleOverride;
+            QApplication::setStyle(styleOverride);
+        }
+    }
+}
+
 } // anonymous namespace
 
 int main(int argc, char * argv[]) {
@@ -207,6 +229,29 @@ int main(int argc, char * argv[]) {
     adjustScaleFactor(&args);
 
     MixxxApplication app(argc, argv);
+
+#if defined(Q_OS_WIN)
+    // The Mixxx style is based on Qt's WindowsVista style
+    QApplication::setStyle("windowsvista");
+#endif
+
+    applyStyleOverride(&args);
+
+    qInfo() << "Selected Qt style:" << QApplication::style()->objectName();
+
+#if defined(Q_OS_WIN)
+    if (QApplication::style()->objectName() != "windowsvista") {
+        qWarning() << "Qt style for Windows is not set to 'windowsvista'. GUI might look broken!";
+    }
+#endif
+
+    auto config = ConfigObject<ConfigValue>(
+            QDir(args.getSettingsPath()).filePath(MIXXX_SETTINGS_FILE),
+            QString(),
+            QString());
+    int notifywarningThreshold = config.getValue<int>(
+            ConfigKey(kConfigGroup, kNotifyMaxDbgTimeKey), 10);
+    app.setNotifyWarningThreshold(notifywarningThreshold);
 
 #ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components

@@ -246,30 +246,31 @@ void DlgTagFetcher::slotPrev() {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
+    tags->clear();
+    m_data = Data();
     if (m_pTrack) {
-        tags->clear();
         disconnect(m_pTrack.get(),
                 &Track::changed,
                 this,
                 &DlgTagFetcher::slotTrackChanged);
-        m_data = Data();
     }
-    tags->clear();
 
-    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(CoverInfo{}, QPixmap{});
 
     m_coverCache.clear();
-
-    m_pTrack = pTrack;
-    if (!m_pTrack) {
-        return;
-    }
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
     checkBoxTags->setDisabled(true);
     checkBoxCover->setDisabled(true);
     statusMessage->setVisible(false);
+
+    m_pTrack = pTrack;
+    if (!m_pTrack) {
+        loadingProgressBar->setVisible(false);
+        return;
+    }
+
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     loadingProgressBar->setToolTip(QString());
@@ -579,7 +580,7 @@ void DlgTagFetcher::tagSelected() {
     m_data.m_selectedTag = tagIndex;
 
     m_fetchedCoverArtByteArrays.clear();
-    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
@@ -611,7 +612,7 @@ void DlgTagFetcher::slotCoverFound(
             m_pTrack &&
             m_pTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
-        m_pWCurrentCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCurrentCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 
@@ -672,7 +673,7 @@ void DlgTagFetcher::loadPixmapToLabel(const QPixmap& pixmap) {
     statusMessage->clear();
     statusMessage->setVisible(true);
 
-    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
 
     checkBoxCover->setEnabled(!pixmap.isNull());
 }

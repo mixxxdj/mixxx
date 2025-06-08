@@ -4,6 +4,8 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QSqlTableModel>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -448,10 +450,9 @@ void BasePlaylistFeature::slotImportPlaylist() {
     }
 
     // Update the import/export playlist directory
-    QString fileDirectory(playlistFile);
-    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
+    QFileInfo fileDirectory(playlistFile);
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
-            ConfigValue(fileDirectory));
+            ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
     slotImportPlaylistFile(playlistFile, playlistId);
 }
@@ -494,10 +495,9 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     }
 
     // Set last import directory
-    QString fileDirectory(playlistFiles.first());
-    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
+    QFileInfo fileDirectory(playlistFiles.first());
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
-            ConfigValue(fileDirectory));
+            ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
     int lastPlaylistId = kInvalidPlaylistId;
 
@@ -505,7 +505,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     for (const QString& playlistFile : playlistFiles) {
         const QFileInfo fileInfo(playlistFile);
         // Get a valid name
-        const QString baseName = fileInfo.baseName();
+        const QString baseName = fileInfo.completeBaseName();
         QString name = baseName;
         // Check if there already is a playlist by that name. If yes, add
         // increasing suffix (1++) until we find an unused name.
@@ -557,10 +557,9 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
 
     // Update the import/export playlist directory
-    QString fileDirectory(fileLocation);
-    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
+    QFileInfo fileDirectory(fileLocation);
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
-            ConfigValue(fileDirectory));
+            ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -677,7 +676,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
+            const QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             QList<AnalyzerScheduledTrack> tracks;
             for (auto id : ids) {
                 tracks.append(id);

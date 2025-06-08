@@ -673,22 +673,22 @@
   <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBox_sync_track_metadata</tabstop>
   <tabstop>checkBox_serato_metadata_export</tabstop>
+  <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>checkBox_edit_metadata_selected_clicked</tabstop>
   <tabstop>radioButton_dbclick_deck</tabstop>
   <tabstop>radioButton_dbclick_bottom</tabstop>
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
-  <tabstop>spinbox_bpm_precision</tabstop>
-  <tabstop>checkbox_played_track_color</tabstop>
-  <tabstop>spinbox_history_track_duplicate_distance</tabstop>
-  <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
-  <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>spinBox_row_height</tabstop>
   <tabstop>btn_library_font</tabstop>
+  <tabstop>spinbox_bpm_precision</tabstop>
+  <tabstop>checkbox_played_track_color</tabstop>
   <tabstop>spinBox_search_debouncing_timeout</tabstop>
   <tabstop>checkBox_enable_search_completions</tabstop>
   <tabstop>checkBox_enable_search_history_shortcuts</tabstop>
   <tabstop>comboBox_search_bpm_fuzzy_range</tabstop>
+  <tabstop>spinbox_history_track_duplicate_distance</tabstop>
+  <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>

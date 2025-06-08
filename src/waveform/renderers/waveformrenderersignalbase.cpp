@@ -89,7 +89,7 @@ bool WaveformRendererSignalBase::init() {
     m_pHighFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter3"));
     m_pLowKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter1"));
     m_pMidKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
-    m_pHighKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
+    m_pHighKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter3"));
 
     return onInit();
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 
 #include "effects/effectsmanager.h"
 #include "qml/qmleffectslotproxy.h"

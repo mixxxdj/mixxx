@@ -876,7 +876,9 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString lineBreak("<br/>");
+            const QString lineBreak("<br/>");
+            const QString kMicMonitorHintTrString =
+                    tr("Refer to the Mixxx User Manual for details.");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation->get() == 0.0) {
                 latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
@@ -887,7 +889,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
@@ -897,7 +902,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "for Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else {

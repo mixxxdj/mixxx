@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QtDebug>
 
+#include "preferences/keydetectionsettings.h"
 #include "util/compatibility/qmutex.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -355,8 +356,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
                               KeyNotation notation) {
     if (!ChromaticKey_IsValid(key) ||
         key == mixxx::track::io::key::INVALID) {
-        // TODO(rryan): Maybe just the empty string?
-        return "INVALID";
+        return {};
     }
 
     if (notation == KeyNotation::Custom) {
@@ -520,13 +520,17 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
 // static
 ChromaticKey KeyUtils::keyFromNumericValue(double value) {
-    int value_floored = int(value);
+    int value_floored = static_cast<int>(value);
+    return keyFromNumericValue(value_floored);
+}
 
-    if (!ChromaticKey_IsValid(value_floored)) {
+// static
+ChromaticKey KeyUtils::keyFromNumericValue(int value) {
+    if (!ChromaticKey_IsValid(value)) {
         return mixxx::track::io::key::INVALID;
     }
 
-    return static_cast<ChromaticKey>(value_floored);
+    return static_cast<ChromaticKey>(value);
 }
 
 KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
@@ -536,6 +540,24 @@ KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
         return KeyNotation::Invalid;
     }
     return static_cast<KeyNotation>(value_floored);
+}
+
+KeyUtils::KeyNotation KeyUtils::keyNotationFromString(const QString& notationName) {
+    if (notationName == KEY_NOTATION_CUSTOM) {
+        return KeyUtils::KeyNotation::Custom;
+    } else if (notationName == KEY_NOTATION_OPEN_KEY) {
+        return KeyUtils::KeyNotation::OpenKey;
+    } else if (notationName == KEY_NOTATION_LANCELOT) {
+        return KeyUtils::KeyNotation::Lancelot;
+    } else if (notationName == KEY_NOTATION_TRADITIONAL) {
+        return KeyUtils::KeyNotation::Traditional;
+    } else if (notationName == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+        return KeyUtils::KeyNotation::OpenKeyAndTraditional;
+    } else if (notationName == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+        return KeyUtils::KeyNotation::LancelotAndTraditional;
+    } else {
+        return KeyUtils::KeyNotation::Invalid;
+    }
 }
 
 // static
@@ -762,4 +784,41 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
     } else {
         return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
     }
+}
+
+// static
+QVariant KeyUtils::keyFromKeyTextAndIdFields(
+        const QVariant& keyTextField, const QVariant& keyIdField) {
+    // Helper function used by basetrackcache.cpp and basetracktablemodel.cpp
+    // to determine the Key string from either the LIBRARYTABLE_KEY or the
+    // LIBRARYTABLE_KEY_ID field.
+    //
+    // If we know the semantic key via the LIBRARYTABLE_KEY_ID
+    // column (as opposed to the string representation of the key
+    // currently stored in the DB) then lookup the key and render it
+    // using the user's selected notation.
+    if (keyIdField.isNull()) {
+        // Otherwise, just use the KEY column value as is
+        return keyTextField;
+    }
+    // Convert or clear invalid values
+    VERIFY_OR_DEBUG_ASSERT(keyIdField.canConvert<int>()) {
+        return keyTextField;
+    }
+    bool ok;
+    const auto keyId = keyIdField.toInt(&ok);
+    VERIFY_OR_DEBUG_ASSERT(ok) {
+        return keyTextField;
+    }
+    const auto key = KeyUtils::keyFromNumericValue(keyId);
+    if (key == mixxx::track::io::key::INVALID) {
+        return keyTextField;
+    }
+    // Render the key with the user-provided notation
+    return QVariant{KeyUtils::keyToString(key)};
+}
+
+// static
+QString KeyUtils::keyFromKeyTextAndIdValues(const QString& keyText, const ChromaticKey& keyId) {
+    return keyId == mixxx::track::io::key::INVALID ? keyText : KeyUtils::keyToString(keyId);
 }

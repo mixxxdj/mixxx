@@ -19,7 +19,11 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
           m_enabled(kConfigKey, kReplayGainEnabled) {
     setupUi(this);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(EnableGain, &QCheckBox::checkStateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
+#else
     connect(EnableGain, &QCheckBox::stateChanged, this, &DlgPrefReplayGain::slotSetRGEnabled);
+#endif
     connect(buttonGroupAnalyzer,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
             &QButtonGroup::idClicked,
@@ -49,7 +53,11 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
     setScrollSafeGuard(SliderDefaultBoost);
 
     connect(checkBoxReanalyze,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefReplayGain::slotSetReanalyze);
 
@@ -113,8 +121,13 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGEnabled() {
-    m_rgSettings.setReplayGainEnabled(EnableGain->isChecked());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefReplayGain::slotSetRGEnabled(Qt::CheckState state) {
+    m_rgSettings.setReplayGainEnabled(state == Qt::Checked);
+#else
+void DlgPrefReplayGain::slotSetRGEnabled(int isChecked) {
+    m_rgSettings.setReplayGainEnabled(static_cast<bool>(isChecked));
+#endif
     slotUpdate();
     slotApply();
 }
@@ -178,8 +191,12 @@ void DlgPrefReplayGain::slotApply() {
     m_enabled.set(EnableGain->isChecked() ? 1.0 : 0.0);
 }
 
-void DlgPrefReplayGain::slotSetReanalyze() {
-    bool checked = checkBoxReanalyze->isChecked();
-    m_rgSettings.setReplayGainReanalyze(checked);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefReplayGain::slotSetReanalyze(Qt::CheckState state) {
+    m_rgSettings.setReplayGainReanalyze(state == Qt::Checked);
+#else
+void DlgPrefReplayGain::slotSetReanalyze(int state) {
+    m_rgSettings.setReplayGainReanalyze(static_cast<bool>(state));
+#endif
     slotApply();
 }

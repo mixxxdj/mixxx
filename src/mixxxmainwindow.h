@@ -129,6 +129,11 @@ class MixxxMainWindow : public QMainWindow {
     Qt::WindowStates m_prevState;
 #endif
 
+    parented_ptr<QMessageBox> m_noVinylInputDialog;
+    parented_ptr<QMessageBox> m_noPassthroughInputDialog;
+    parented_ptr<QMessageBox> m_noMicInputDialog;
+    parented_ptr<QMessageBox> m_noAuxInputDialog;
+
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
     VisualsManager* m_pVisualsManager;
@@ -137,6 +142,7 @@ class MixxxMainWindow : public QMainWindow {
 #ifdef __LINUX__
     const bool m_supportsGlobalMenuBar;
 #endif
+    bool m_inRebootMixxxView;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 

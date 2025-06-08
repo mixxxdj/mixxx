@@ -10,6 +10,7 @@
 #include <QSpinBox>
 
 #include "moc_legacycontrollersettings.cpp"
+#include "widget/wsettingscheckboxlabel.h"
 
 namespace {
 
@@ -141,14 +142,23 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         pCheckBox->setCheckState(m_editedValue ? Qt::Checked : Qt::Unchecked);
     });
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(pCheckBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) {
+#else
     connect(pCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
+#endif
         m_editedValue = state == Qt::Checked;
         emit changed();
     });
 
-    auto pLabelWidget = make_parented<QLabel>(pWidget);
+    // We want to format the checkbox label with html styles. This is not possible
+    // so we attach a separate label. In order to get a clickable label like
+    // with QCheckBox, we use a custom QLabel that toggles its buddy QCheckBox
+    // (on left-click, like QCheckBox) and sets focus on it.
+    auto pLabelWidget = make_parented<WSettingsCheckBoxLabel>(pWidget);
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
+    pLabelWidget->setBuddy(pCheckBox);
 
     QBoxLayout* pLayout = new QHBoxLayout();
 

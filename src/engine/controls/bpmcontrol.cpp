@@ -1133,7 +1133,6 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
                                              frameInfo().trackEndPosition)
                                    : mixxx::Bpm());
     }
-    qWarning() << "BpmControl::trackBeatsUpdated";
     m_pBeats = pBeats;
     updateLocalBpm();
     resetSyncAdjustment();

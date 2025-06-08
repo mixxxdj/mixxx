@@ -228,7 +228,8 @@ void QmlPlayerProxy::slotHotcuesChanged() {
 
     const TrackPointer pTrack = m_pCurrentTrack;
     if (pTrack) {
-        for (const auto& cuePoint : pTrack->getCuePoints()) {
+        const auto& cuePoints = pTrack->getCuePoints();
+        for (const auto& cuePoint : cuePoints) {
             if (cuePoint->getHotCue() == Cue::kNoHotCue)
                 continue;
             hotcues.append(cuePoint);

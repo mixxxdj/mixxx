@@ -40,6 +40,7 @@ EngineMixer::EngineMixer(
           m_boothGainOld(0.0),
           m_headphoneMainGainOld(0.0),
           m_headphoneGainOld(1.0),
+          m_duckingGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
           m_numMicsConfigured(0),
@@ -137,9 +138,8 @@ EngineMixer::EngineMixer(
     m_pHeadMix->set(-1.);
 
     // Main / Headphone split-out mode (for devices with only one output).
-    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
+    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"), true, 0.0);
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pHeadSplitEnabled->set(0.0);
 
     m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
 
@@ -530,12 +530,8 @@ void EngineMixer::process(const int iBufferSize) {
 
     // Make the mix for each crossfader orientation output bus.
     // m_mainGain takes care of applying the attenuation from
-    // channel volume faders, crossfader, and talkover ducking.
-    // Talkover is mixed in later according to the configured MicMonitorMode
-    m_mainGain.setGains(crossfaderLeftGain,
-            1.0f,
-            crossfaderRightGain,
-            m_pTalkoverDucking->getGain(iFrames));
+    // channel volume faders and crossfader.
+    m_mainGain.setGains(crossfaderLeftGain, 1.0f, crossfaderRightGain);
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(m_mainGain,
@@ -608,6 +604,13 @@ void EngineMixer::process(const int iBufferSize) {
             // buffers within the same callback.
             applyMainEffects(iBufferSize);
 
+            // Apply talkover ducking gain after applying effects in order to
+            // avoid ducking neutralization by some effects (e.g. compressor or
+            // AGC)
+            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
+            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, iBufferSize);
+            m_duckingGainOld = duckingGain;
+
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, iBufferSize);
             }
@@ -647,6 +650,13 @@ void EngineMixer::process(const int iBufferSize) {
             // within the same callback. For consistency between the MicMonitorModes,
             // process main effects here before mixing in talkover.
             applyMainEffects(iBufferSize);
+
+            // Apply talkover ducking gain after applying effects in order to
+            // avoid ducking neutralization by some effects (e.g. compressor or
+            // AGC)
+            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
+            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, iBufferSize);
+            m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, iBufferSize);
@@ -705,6 +715,13 @@ void EngineMixer::process(const int iBufferSize) {
             // record/broadcast signal so the record/broadcast signal is the same
             // as what is heard on the main & booth outputs.
             applyMainEffects(iBufferSize);
+
+            // Apply talkover ducking gain after applying effects in order to
+            // avoid ducking neutralization by some effects (e.g. compressor or
+            // AGC)
+            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
+            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, iBufferSize);
+            m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, iBufferSize);

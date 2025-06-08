@@ -1,6 +1,7 @@
 #include "library/trackset/playlistfeature.h"
 
 #include <QMenu>
+#include <QSqlTableModel>
 #include <QtDebug>
 
 #include "library/library.h"

@@ -41,6 +41,7 @@ StatementMacros:
   - QT_REQUIRE_VERSION
 ---
 Language: ObjC
+ObjCBlockIndentWidth: 4
 # We exclude Objective-C(++) from the second line-wrapping pass in tools/clang_format.py
 # since this pass only applies C++ rules and therefore include the ColumnLimit in the
 # 'main' clang-format config here.

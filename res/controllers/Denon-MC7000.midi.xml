@@ -92,6 +92,33 @@
                 </option>
             </group>
         </group>
+        <group label="Samplers">
+            <option
+                variable="prevSamplerStop"
+                label="Auto-stop previous samplers when starting new sampler"
+                type="boolean"
+                default="true">
+                <description>
+                    Whether the previous sampler shall stop before a new sampler starts.
+                    When true, a running sampler will stop before the new sampler starts.
+                    When false, all triggered samplers will play simultaneously.
+                </description>
+            </option>
+            <option
+                variable="samplerQty"
+                type="enum"
+                label="Quantity">
+                <value label="16" default="true">16</value>
+                <value label="32">32</value>
+                <description>
+                    The number of samplers to use. When 32 samplers are used,
+                    deck 1 will trigger sampler 1 to 8, deck 2 will trigger
+                    sampler 9 to 16, deck 3 will trigger sampler 17 to 24 and
+                    deck 4 will trigger sampler 25 to 32. Please note that your
+                    Mixxx skin needs to support more than 16 samplers.
+                </description>
+            </option>
+        </group>
     </settings>
     <controller id="DENON MC7000">
         <scriptfiles>

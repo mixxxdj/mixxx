@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
+#include <QQmlEngine>
 #include <QString>
-#include <QtQml>
 
 #include "mixer/playermanager.h"
 #include "qml/qmlplayerproxy.h"

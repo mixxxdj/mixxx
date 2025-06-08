@@ -43,6 +43,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkShowTime(bool checked);
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
+    void slotSetUntilMarkTextHeightLimit(int index);
 
   private:
     void initWaveformControl();

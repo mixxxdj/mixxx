@@ -1,5 +1,9 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#include <QTimeZone>
+#endif
+
 #include "moc_dlgprefautodj.cpp"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
@@ -21,9 +25,20 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     RequeueIgnoreCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
     connect(RequeueIgnoreCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefAutoDJ::slotToggleRequeueIgnore);
+    /// TODO: Once we require at least Qt 6.7, remove this `setTimeZone` call
+    /// and uncomment the corresponding declarations in the UI file instead.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    RequeueIgnoreTimeEdit->setTimeZone(QTimeZone::LocalTime);
+#else
+    RequeueIgnoreTimeEdit->setTimeSpec(Qt::LocalTime);
+#endif
     RequeueIgnoreTimeEdit->setTime(
             QTime::fromString(
                     m_pConfig->getValue(
@@ -54,7 +69,11 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                     : Qt::Unchecked);
     // Be ready to enable and modify the minimum number and un/check the checkbox
     connect(RandomQueueCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefAutoDJ::slotToggleRandomQueue);
     connect(RandomQueueMinimumSpinBox,
@@ -124,7 +143,10 @@ void DlgPrefAutoDJ::slotCancel() {
                     ? Qt::Checked
                     : Qt::Unchecked);
     slotToggleRandomQueue(
-            m_pConfig->getValue<bool>(ConfigKey("[Auto DJ]", "Requeue")));
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "Requeue"), false)
+                    ? Qt::Checked
+                    : Qt::Unchecked);
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -148,7 +170,11 @@ void DlgPrefAutoDJ::slotSetMinimumAvailable(int a_iValue) {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), a_iValue);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleRequeueIgnore(Qt::CheckState buttonState) {
+#else
 void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {
+#endif
     bool checked = buttonState == Qt::Checked;
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), checked);
     RequeueIgnoreTimeEdit->setEnabled(checked);
@@ -179,7 +205,11 @@ void DlgPrefAutoDJ::slotConsiderRepeatPlaylistState(bool enable) {
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleRandomQueue(Qt::CheckState buttonState) {
+#else
 void DlgPrefAutoDJ::slotToggleRandomQueue(int buttonState) {
+#endif
     bool enable = buttonState == Qt::Checked;
     // Toggle the option to select minimum tracks
     RandomQueueMinimumSpinBox->setEnabled(enable);

@@ -1,6 +1,6 @@
 #pragma once
 #include <QIdentityProxyModel>
-#include <QtQml>
+#include <QQmlEngine>
 
 class LibraryTableModel;
 

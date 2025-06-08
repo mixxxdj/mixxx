@@ -274,7 +274,7 @@ void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
     m_outputFifo->aquireReadRegions(readAvailable,
             &dataPtr1, &size1, &dataPtr2, &size2);
 
-    QVector<NetworkOutputStreamWorkerPtr> workers =
+    const QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
     for (const auto& pWorker : workers) {
         if (pWorker.isNull()) {

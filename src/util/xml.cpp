@@ -69,15 +69,23 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
         qDebug() << "Could not open xml file:" << file.fileName();
         return QDomElement();
     }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = doc.setContent(&file);
+    if (!parseResult) {
+        QString errorString =
+                QStringLiteral("%1 at line %2, column %3")
+                        .arg(parseResult.errorMessage,
+                                QString::number(parseResult.errorLine),
+                                QString::number(parseResult.errorColumn));
+
+#else
     QString error;
     int line, col;
     if (!doc.setContent(&file, &error, &line, &col)) {
-        QString errorString = QString("%1 at line %2, column %3")
-                                .arg(error).arg(line).arg(col);
-
-        QString errorLog = QString("Error parsing XML file %1: %2")
-                            .arg(file.fileName(), errorString);
-        qWarning() << errorLog;
+        QString errorString = QString("%1 at line %2, column %3").arg(error).arg(line).arg(col);
+#endif
+        qWarning().nospace() << "Error parsing XML file " << file.fileName() << ": " << errorString;
 
         // Set up error dialog
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();

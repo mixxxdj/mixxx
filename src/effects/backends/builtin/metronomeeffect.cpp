@@ -131,7 +131,10 @@ void MetronomeEffect::processChannel(
                 nextClickStart = bufferEnd - beatToBufferEnd;
             }
         } else {
-            // no transport, nothing to do.
+            // no transport, continue until the current click has been fully played
+            if (gs->m_framesSinceClickStart < clickSize) {
+                gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
+            }
             return;
         }
     } else {

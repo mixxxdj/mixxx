@@ -6,27 +6,36 @@
 
 #include "effects/backends/audiounit/audiounitmanager.h"
 
-AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component,
-        AudioUnitInstantiationType instantiationType)
-        : m_name(QString::fromNSString([component name])) {
+AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component)
+        : m_name(component != nil ? QString::fromNSString([component name])
+                                  : "Unknown"),
+          m_isInstantiated(false) {
+}
+
+AudioUnitManagerPointer AudioUnitManager::create(
+        AVAudioUnitComponent* _Nullable component,
+        AudioUnitInstantiationType instantiationType) {
+    AudioUnitManagerPointer pManager =
+            QSharedPointer<AudioUnitManager>(new AudioUnitManager(component));
+
     // NOTE: The component can be null if the lookup failed in
     // `AudioUnitBackend::createProcessor`, in which case the effect simply acts
     // as an identity function on the audio. Same applies when
     // `AudioUnitManager` is default-initialized.
-    if (!component) {
-        return;
+    if (component) {
+        switch (instantiationType) {
+        case Sync:
+            instantiateAudioUnitSync(pManager, component);
+            break;
+        case AsyncInProcess:
+        case AsyncOutOfProcess:
+            instantiateAudioUnitAsync(
+                    pManager, component, instantiationType == AsyncInProcess);
+            break;
+        }
     }
 
-    switch (instantiationType) {
-    case Sync:
-        instantiateAudioUnitSync(component);
-        break;
-    case AsyncInProcess:
-    case AsyncOutOfProcess:
-        instantiateAudioUnitAsync(
-                component, instantiationType == AsyncInProcess);
-        break;
-    }
+    return pManager;
 }
 
 AudioUnitManager::~AudioUnitManager() {
@@ -37,7 +46,7 @@ AudioUnitManager::~AudioUnitManager() {
     }
 }
 
-AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
+AudioUnit _Nullable AudioUnitManager::getAudioUnit() const {
     // We need to load this atomic flag to ensure that we don't get a partial
     // read of the audio unit pointer (probably extremely uncommon, but not
     // impossible: https://belkadan.com/blog/2023/10/Implicity-Atomic)
@@ -48,7 +57,9 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
 }
 
 void AudioUnitManager::instantiateAudioUnitAsync(
-        AVAudioUnitComponent* _Nonnull component, bool inProcess) {
+        AudioUnitManagerPointer pManager,
+        AVAudioUnitComponent* _Nonnull component,
+        bool inProcess) {
     auto options = kAudioComponentInstantiation_LoadOutOfProcess;
 
     if (inProcess) {
@@ -61,41 +72,47 @@ void AudioUnitManager::instantiateAudioUnitAsync(
     }
 
     // Instantiate the audio unit asynchronously.
-    qDebug() << "Instantiating Audio Unit" << m_name << "asynchronously";
+    qDebug() << "Instantiating Audio Unit" << pManager->m_name
+             << "asynchronously";
 
     // TODO: Fix the weird formatting of blocks
     // clang-format off
     AudioComponentInstantiate(component.audioComponent, options, ^(AudioUnit _Nullable audioUnit, OSStatus error) {
         if (error != noErr) {
-            qWarning() << "Could not instantiate Audio Unit" << m_name << ":" << error << "(Check https://www.osstatus.com for a description)";
+            qWarning() << "Could not instantiate Audio Unit"
+                       << pManager->m_name << ":" << error
+                       << "(Check https://www.osstatus.com for a description)";
             return;
         }
 
-        VERIFY_OR_DEBUG_ASSERT(audioUnit != nil) {
-            qWarning() << "Could not instantiate Audio Unit" << m_name << "...but the error is noErr, what's going on?";
-            return;
-        }
-
-        initializeWith(audioUnit);
+        pManager->initializeWith(audioUnit);
     });
     // clang-format on
 }
 
 void AudioUnitManager::instantiateAudioUnitSync(
+        AudioUnitManagerPointer pManager,
         AVAudioUnitComponent* _Nonnull component) {
     AudioUnit _Nullable audioUnit = nil;
     OSStatus error =
             AudioComponentInstanceNew(component.audioComponent, &audioUnit);
     if (error != noErr) {
-        qWarning() << "Audio Unit" << m_name
+        qWarning() << "Audio Unit" << pManager->m_name
                    << "could not be instantiated:" << error
                    << "(Check https://www.osstatus.com for a description)";
     }
 
-    initializeWith(audioUnit);
+    pManager->initializeWith(audioUnit);
 }
 
-void AudioUnitManager::initializeWith(AudioUnit _Nonnull audioUnit) {
+void AudioUnitManager::initializeWith(AudioUnit _Nullable audioUnit) {
+    VERIFY_OR_DEBUG_ASSERT(audioUnit != nil) {
+        qWarning() << "Instantiated Audio Unit" << m_name
+                   << " is null, despite not erroring on initialization, "
+                      "something's wrong";
+        return;
+    }
+
     VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
         qWarning() << "Audio Unit" << m_name
                    << "cannot be initialized after already having been "

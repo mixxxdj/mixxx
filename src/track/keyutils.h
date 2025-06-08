@@ -43,7 +43,7 @@ class KeyUtils {
                 key < mixxx::track::io::key::C_MINOR;
     }
 
-    // Returns the tonic, 0-indexed.
+    /// Returns the tonic, 0-indexed.
     static inline int keyToTonic(mixxx::track::io::key::ChromaticKey key) {
         if (key == mixxx::track::io::key::INVALID) {
             return mixxx::track::io::key::INVALID;
@@ -51,21 +51,23 @@ class KeyUtils {
         return static_cast<int>(key) - (keyIsMajor(key) ? 1 : 13);
     }
 
-    // Takes a 0-indexed tonic and whether it is major/minor and produces a key.
+    /// Takes a 0-indexed tonic and whether it is major/minor and produces a key.
     static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic, bool major) {
         return static_cast<mixxx::track::io::key::ChromaticKey>(
             tonic + (major ? 1 : 13));
     }
 
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
-                               KeyNotation notation = KeyNotation::Custom);
+            KeyNotation notation = KeyNotation::Custom);
 
     static QString formatGlobalKey(
             const Keys& keys,
             KeyNotation notation = KeyNotation::Custom);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
+    static mixxx::track::io::key::ChromaticKey keyFromNumericValue(int value);
     static KeyNotation keyNotationFromNumericValue(double value);
+    static KeyNotation keyNotationFromString(const QString& notationName);
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 
@@ -85,8 +87,8 @@ class KeyUtils {
     static int shortestStepsToCompatibleKey(mixxx::track::io::key::ChromaticKey key,
                                             mixxx::track::io::key::ChromaticKey target_key);
 
-    // Returns a list of keys that are harmonically compatible with key using
-    // the Circle of Fifths (including the key itself).
+    /// Returns a list of keys that are harmonically compatible with key using
+    /// the Circle of Fifths (including the key itself).
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key);
 
@@ -100,7 +102,7 @@ class KeyUtils {
     static void setNotation(
         const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);
 
-    // Returns pow(2, octaveChange)
+    /// Returns pow(2, octaveChange)
     static inline double octaveChangeToPowerOf2(const double& octaveChange) {
         // Some libraries (e.g. SoundTouch) calculate pow(2, octaveChange)
         // using this identity:
@@ -130,6 +132,11 @@ class KeyUtils {
 
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
+
+    static QVariant keyFromKeyTextAndIdFields(
+            const QVariant& keyTextField, const QVariant& keyIdField);
+    static QString keyFromKeyTextAndIdValues(const QString& keyText,
+            const mixxx::track::io::key::ChromaticKey& key);
 
   private:
     static QMutex s_notationMutex;

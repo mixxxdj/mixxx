@@ -150,15 +150,15 @@ void WVuMeterGLSL::cleanupGL() {
     doneCurrent();
 }
 
-void WVuMeterGLSL::drawTexture(QOpenGLTexture* texture,
+void WVuMeterGLSL::drawTexture(QOpenGLTexture* pTexture,
         const QRectF& targetRect,
         const QRectF& sourceRect) {
-    const float texx1 = static_cast<float>(sourceRect.x() / texture->width());
-    const float texy1 = static_cast<float>(sourceRect.y() / texture->height());
+    const float texx1 = static_cast<float>(sourceRect.x() / pTexture->width());
+    const float texy1 = static_cast<float>(sourceRect.y() / pTexture->height());
     const float texx2 = static_cast<float>(
-            (sourceRect.x() + sourceRect.width()) / texture->width());
+            (sourceRect.x() + sourceRect.width()) / pTexture->width());
     const float texy2 = static_cast<float>(
-            (sourceRect.y() + sourceRect.height()) / texture->height());
+            (sourceRect.y() + sourceRect.height()) / pTexture->height());
 
     const float posx1 = static_cast<float>(targetRect.x());
     const float posy1 = static_cast<float>(targetRect.y());
@@ -176,9 +176,9 @@ void WVuMeterGLSL::drawTexture(QOpenGLTexture* texture,
     m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray.data(), 2);
 
-    texture->bind();
+    pTexture->bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    texture->release();
+    pTexture->release();
 }

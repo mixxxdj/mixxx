@@ -60,8 +60,8 @@ class MidiControllerTest : public MixxxTest {
         return m_pController->m_pScriptEngineLegacy->jsEngine()->evaluate(code).isError();
     }
 
-    std::shared_ptr<LegacyMidiControllerMapping> getControllerMapping() {
-        return m_pController->m_pMapping;
+    int getInputMappingCount() {
+        return m_pController->m_pMapping->getInputMappings().count();
     }
 
     void shutdownController() {
@@ -91,7 +91,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOff) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -120,7 +120,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -157,7 +157,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOpt
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): This behavior is broken!
 
@@ -194,7 +194,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOpt
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): This behavior is broken!
 
@@ -242,7 +242,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushCC) {
                     control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MidiOpCode::ControlChange, channel, control, 0x7F);
@@ -277,7 +277,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -307,7 +307,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
                                         control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MidiOpCode::NoteOn, channel, control, 0x7F);
@@ -345,7 +345,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): If the intended behavior of the button MIDI option is to
     // make a toggle MIDI button act like a push button then this isn't
@@ -385,7 +385,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
                                         control),
             options,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // NOTE(rryan): If the intended behavior of switch MIDI option is to make a
     // toggle MIDI button act like a toggle button then this isn't working. The
@@ -434,7 +434,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
                     control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MidiOpCode::ControlChange, channel, control, 0x7F);
@@ -466,7 +466,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
                     control),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive a 0, MIDI parameter should map to the min value.
     receivedShortMessage(MidiOpCode::ControlChange, channel, control, 0x00);
@@ -512,7 +512,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
                     msb_control),
             msb,
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // If kMinValue or kMaxValue are such that the middle value is 0 then the
     // set(0) commands below allow us to hide failures.
@@ -592,7 +592,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
                     0xFF),
             MidiOptions(),
             key));
-    m_pController->setMapping(m_pMapping->clone());
+    m_pController->setMapping(m_pMapping);
 
     // Receive a 0x0000, MIDI parameter should map to the min value.
     receivedShortMessage(MidiOpCode::PitchBendChange, channel, 0x00, 0x00);
@@ -618,13 +618,13 @@ TEST_F(MidiControllerTest, JSInputHandler_BindHandler) {
     constexpr double kMinValue = -1234.5;
     constexpr double kMaxValue = 678.9;
     ControlPotmeter potmeter(ConfigKey("[Channel1]", "test_pot"), kMinValue, kMaxValue);
-    m_pController->setMapping(m_pMapping->clone());
-    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
     evaluateAndAssert(
             "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {"
             "engine.setParameter('[Channel1]', 'test_pot', value);"
             "})");
-    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 1);
+    EXPECT_EQ(getInputMappingCount(), 1);
     receivedShortMessage(0x90, 0x43, 0x00);
     EXPECT_DOUBLE_EQ(potmeter.get(), kMinValue);
     receivedShortMessage(0x90, 0x43, 0x7F);
@@ -632,13 +632,29 @@ TEST_F(MidiControllerTest, JSInputHandler_BindHandler) {
 }
 
 TEST_F(MidiControllerTest, JSInputHandler_ControllerShutdownSlot) {
-    m_pController->setMapping(m_pMapping->clone());
-    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
     evaluateAndAssert(
-            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {"
-            "engine.setParameter('[Channel1]', 'test_pot', value);"
-            "})");
-    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 1);
+            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {})");
+    EXPECT_EQ(getInputMappingCount(), 1);
     shutdownController();
-    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    EXPECT_EQ(getInputMappingCount(), 0);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ErrorWhenControlIsTooLarge) {
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
+    bool isError = evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x80, (channel, control, value, status) => {})");
+    ASSERT_TRUE(isError);
+    EXPECT_EQ(getInputMappingCount(), 0);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ErrorWhenStatusIsTooSmall) {
+    m_pController->setMapping(m_pMapping);
+    EXPECT_EQ(getInputMappingCount(), 0);
+    bool isError = evaluateAndAssert(
+            "midi.makeInputHandler(0x7F, 0x00, (channel, control, value, status) => {})");
+    ASSERT_TRUE(isError);
+    EXPECT_EQ(getInputMappingCount(), 0);
 }

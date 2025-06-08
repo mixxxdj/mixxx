@@ -5,6 +5,7 @@ name: Build
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -38,8 +39,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 12 x64
-            os: macos-12
+          - name: macOS 13 x64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -62,8 +63,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 12 arm64
-            os: macos-12
+          - name: macOS 13 arm64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -118,7 +119,6 @@ jobs:
 
     env:
       # macOS codesigning
-      APPLE_CODESIGN_IDENTITY: EF241CF990A9BE5477438AEE1F308F76F33FD100
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
@@ -131,7 +131,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.2
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -173,7 +173,7 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
@@ -198,12 +198,15 @@ jobs:
           security unlock-keychain -p mixxx Mixxx.keychain
           security import ~/certificate.p12 -k Mixxx.keychain \
             -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
+          security find-certificate -a -Z Mixxx.keychain
+          APPLE_CODESIGN_IDENTITY="$(security find-certificate -a -Z Mixxx.keychain | grep ^SHA-1 | cut -d " " -f3 | uniq)"
           security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
           # Add keychain to search list
           security list-keychains -s Mixxx.keychain
           # Prevent keychain access from timing out
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
+          echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
@@ -279,7 +282,6 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
 
@@ -313,7 +315,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.4.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -330,8 +332,17 @@ jobs:
 
       - name: "Package"
         if: matrix.cpack_generator != null
-        run: cpack -G ${{ matrix.cpack_generator }} -V
-        working-directory: build
+        # Use retry loop to work around a race condition on macOS causing
+        # 'Resource busy' errors with 'hdiutil'. See
+        # https://github.com/actions/runner-images/issues/7522
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 30
+          max_attempts: 12
+          retry_wait_seconds: 1
+          command: |
+            cd build
+            cpack -G ${{ matrix.cpack_generator }} -V
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
@@ -345,7 +356,7 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
@@ -368,7 +379,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.4.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -470,7 +481,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -486,7 +497,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 

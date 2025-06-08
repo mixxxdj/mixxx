@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QSortFilterProxyModel>
 #include <QObject>
-#include <QVariant>
+#include <QPointer>
+#include <QSortFilterProxyModel>
 #include <QString>
+#include <QStringListModel>
+#include <QVariant>
 
-#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
+#include "preferences/usersettings.h"
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
@@ -49,6 +50,7 @@ class BrowseFeature : public LibraryFeature {
     void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
+    void invalidateRightClickIndex();
 
   signals:
     void setRootIndex(const QModelIndex&);
@@ -62,6 +64,7 @@ class BrowseFeature : public LibraryFeature {
     std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
+    QString getLastRightClickedPath() const;
 
     TrackCollection* const m_pTrackCollection;
 
@@ -75,7 +78,7 @@ class BrowseFeature : public LibraryFeature {
 
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
-    TreeItem* m_pLastRightClickedItem;
+    QModelIndex m_lastRightClickedIndex;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;

@@ -3,6 +3,7 @@
 #include <QAtomicPointer>
 #include <QMap>
 #include <QTime>
+#include <atomic>
 
 #include "control/controlvalue.h"
 #include "engine/slipmodestate.h"
@@ -83,15 +84,17 @@ class VisualPlayPosition : public QObject {
     // This is called by SoundDevicePortAudio just after the callback starts.
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
-    void setInvalid() { m_valid = false; };
+    void setInvalid() {
+        m_valid.store(false);
+    };
     bool isValid() const {
-        return m_valid;
+        return m_valid.load();
     }
 
   private:
     double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
-    bool m_valid;
+    std::atomic<bool> m_valid;
     QString m_key;
     bool m_noTransport;
 

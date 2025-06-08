@@ -494,7 +494,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
     qDebug() << inputDevicesOpened << "input sound devices opened";
-    for (const auto& device: devicesNotFound) {
+    for (const auto& device : std::as_const(devicesNotFound)) {
         qWarning() << device << "not found";
     }
 

@@ -40,12 +40,11 @@ const ConfigKey kVScrollBarPosConfigKey{
 
 } // anonymous namespace
 
-WTrackTableView::WTrackTableView(QWidget* parent,
+WTrackTableView::WTrackTableView(QWidget* pParent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        double backgroundColorOpacity,
-        bool sorting)
-        : WLibraryTableView(parent, pConfig),
+        double backgroundColorOpacity)
+        : WLibraryTableView(pParent, pConfig),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
@@ -53,7 +52,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_focusBorderColor(Qt::white),
           m_trackPlayedColor(QColor(kDefaultTrackPlayedColor)),
           m_trackMissingColor(QColor(kDefaultTrackMissingColor)),
-          m_sorting(sorting),
+          m_sorting(false),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Connect slots and signals to make the world go 'round.
@@ -84,6 +83,29 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 }
+#ifdef __LINUX__
+void WTrackTableView::currentChanged(
+        const QModelIndex& current,
+        const QModelIndex& previous) {
+    // This override fixes https://github.com/mixxxdj/mixxx/pull/14734
+    // On Ubuntu-based distros it may happen that the InputMethod management
+    // isn't working correctly for some reason. When the focused cell in the
+    // tracks view is changed, QAbstractItemView::currentChanged()
+    // https://github.com/qt/qtbase/blob/82015992c853b50dac167da26b8b858ac4794c66/src/widgets/itemviews/qabstractitemview.cpp#L3823
+    // enables Qt::WA_InputMethodEnabled for editable columns/cells.
+    // Then, special keys are interpreted as QInputMethodEvent instead of
+    // QKeyEvent, which are therefore not filtered by KeyboardEventFilter and
+    // some keys of built-in keyboard mappings don't work.
+    // (de_DE, fr_FR, fr_CH and probably others).
+    // Reset Qt::WA_InputMethodEnabled right away if no editor is open
+    QTableView::currentChanged(current, previous);
+    if (state() != QTableView::EditingState) {
+        // Does not interfere with hovered Star delegate, the only editor that
+        // is opened on hover.
+        setAttribute(Qt::WA_InputMethodEnabled, false);
+    }
+}
+#endif
 
 void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
@@ -175,6 +197,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         return;
     }
 
+    m_sorting = pTrackModel->hasCapabilities(TrackModel::Capability::Sorting);
+
     // If the model has not changed there's no need to exchange the headers
     // which would cause a small GUI freeze
     if (getTrackModel() == pTrackModel) {
@@ -214,17 +238,16 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // QHeaderView here saves on setModel() calls. Since we parent the
     // QHeaderView to the WTrackTableView, it is automatically deleted.
     auto* tempHeader = new QHeaderView(Qt::Horizontal, this);
-    /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
-     * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
-     * For some reason this will cause 4 select statements in series
-     * from which 3 are redundant --> expensive at all
-     *
-     * Sorting columns, however, is possible because we
-     * enable clickable sorting indicators some lines below.
-     * Furthermore, we connect signal 'sortIndicatorChanged'.
-     *
-     * Fixes Bug #672762
-     */
+    // Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
+    // Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
+    // For some reason this will cause 4 select statements in series
+    // from which 3 are redundant --> expensive at all
+    //
+    // Sorting columns, however, is possible because we
+    // enable clickable sorting indicators some lines below.
+    // Furthermore, we connect signal 'sortIndicatorChanged'.
+    //
+    // Fixes Bug https://github.com/mixxxdj/mixxx/issues/5643
 
     setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
@@ -259,11 +282,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
-        /* If Mixxx starts the first time or the header states have been cleared
-         * due to database schema evolution we gonna hide all columns that may
-         * contain a potential large number of NULL values.  This will hide the
-         * key column by default unless the user brings it to front
-         */
+        // If Mixxx starts the first time or the header states have been cleared
+        // due to database schema evolution we gonna hide all columns that may
+        // contain a potential large number of NULL values.  This will hide the
+        // key column by default unless the user brings it to front
         if (pTrackModel->isColumnHiddenByDefault(i) &&
                 !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
@@ -503,41 +525,99 @@ void WTrackTableView::slotUnhide() {
 
 void WTrackTableView::slotShowHideTrackMenu(bool show) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
-        return;
+        initTrackMenu();
     }
     if (show == m_pTrackMenu->isVisible()) {
         emit trackMenuVisible(show);
         return;
     }
     if (show) {
-        QContextMenuEvent event(QContextMenuEvent::Mouse,
-                mapFromGlobal(QCursor::pos()),
-                QCursor::pos());
-        contextMenuEvent(&event);
+        const auto selectedIndices = selectionModel()->selectedIndexes();
+        if (selectedIndices.isEmpty()) {
+            // If selection is empty, contextMenuEvent() won't work anyway.
+            return;
+        }
+
+        // Show at current index if it's valid. When using only a controller for
+        // for track selection, there's only on row selected.
+        // If it's not part of the selection, like when Ctrl+click was used to
+        // deselect a row, we use the first selected row and the column of the
+        // current index.
+        // Else show at cursor position.
+        QPoint evPos;
+        const auto currIdx = currentIndex();
+        if (currIdx.isValid()) {
+            if (selectedIndices.contains(currIdx)) {
+                evPos = visualRect(currIdx).center();
+            } else {
+                // use first selected row and column of current index
+                const QList<int> rows = getSelectedRowNumbers();
+                const QModelIndex tempIdx = currIdx.siblingAtRow(rows.first());
+                evPos = visualRect(tempIdx).center();
+            }
+            // If the selected row is outside the table's viewport (above or below),
+            // let the menu unfold from the bottom center to hopefully clarify
+            // that the menu belongs to the library and not to some deck widget.
+            if (!viewport()->rect().contains(evPos)) {
+                evPos = QPoint(viewport()->rect().center().x(),
+                        viewport()->rect().bottom());
+            } else {
+                // The viewports start below the header, but mapToGlobal() uses
+                // the rect() as reference. Add header height to y and we're good.
+                // Assumes the view shows at least one row which is at least as tall
+                // as the header, else we'll end up below the viewport, then it's
+                // up to QMenu to find an adequate popup position.
+                evPos += QPoint(0, horizontalHeader()->height());
+            }
+            evPos = mapToGlobal(evPos);
+        } else {
+            evPos = QCursor::pos();
+        }
+        showTrackMenu(evPos, indexAt(evPos));
     } else {
         m_pTrackMenu->close();
     }
 }
 
-void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
+void WTrackTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         initTrackMenu();
     }
-    event->accept();
+    pEvent->accept();
+
+    showTrackMenu(pEvent->globalPos(), indexAt(pEvent->pos()));
+}
+
+void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
+        return;
+    }
     // Update track indices in context menu
     const QModelIndexList indices = getSelectedRows();
     if (indices.isEmpty()) {
         return;
     }
-    // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi?
-    // They could then focus the respective edit field.
     m_pTrackMenu->loadTrackModelIndices(indices);
+    m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
 
-    // Create the right-click menu
-    m_pTrackMenu->popup(event->globalPos());
-    // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
+    m_pTrackMenu->popup(pos);
+    // WTrackmenu emits restoreCurrentViewStateOrIndex() on hide if required
+}
+
+QString WTrackTableView::columnNameOfIndex(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return {};
+    }
+    VERIFY_OR_DEBUG_ASSERT(model()) {
+        return {};
+    }
+    return model()->headerData(
+                          index.column(),
+                          Qt::Horizontal,
+                          TrackModel::kHeaderNameRole)
+            .toString();
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -795,7 +875,7 @@ QModelIndexList WTrackTableView::getSelectedRows() const {
 }
 
 QList<int> WTrackTableView::getSelectedRowNumbers() const {
-    QModelIndexList indices = getSelectedRows();
+    const QModelIndexList indices = getSelectedRows();
     QList<int> selectedRows;
     for (const QModelIndex& idx : indices) {
         selectedRows.append(idx.row());
@@ -1069,13 +1149,24 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         if (event->modifiers().testFlag(Qt::NoModifier)) {
             slotMouseDoubleClicked(currentIndex());
         } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
+            TrackModel* pTrackModel = getTrackModel();
+            if (!pTrackModel ||
+                    !pTrackModel->hasCapabilities(
+                            TrackModel::Capability::EditMetadata)) {
+                return;
+            }
             const QModelIndexList indices = getSelectedRows();
             if (indices.isEmpty()) {
                 return;
             }
-            // TODO Also pass the index of the focused column so DlgTrackInfo/~Multi
-            // can focus the respective edit field.
             m_pTrackMenu->loadTrackModelIndices(indices);
+            // Pass the name of the focused column to DlgTrackInfo/~Multi
+            // so they can focus the respective edit field.
+            // We use the column of the current index (last focus cell), even
+            // it may not be part of the selection, we just assume it's in the
+            // desired column.
+            const QString columnName = columnNameOfIndex(currentIndex());
+            m_pTrackMenu->setTrackPropertyName(columnName);
             m_pTrackMenu->slotShowDlgTrackInfo();
         }
         return;
@@ -1090,21 +1181,28 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         break;
     }
     TrackModel* pTrackModel = getTrackModel();
-    if (pTrackModel && !pTrackModel->isLocked()) {
-        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
-            removeSelectedTracks();
-            return;
+    if (pTrackModel) {
+        if (!pTrackModel->isLocked()) {
+            if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+                removeSelectedTracks();
+                return;
+            }
+            if (event->matches(QKeySequence::Cut)) {
+                cutSelectedTracks();
+                return;
+            }
+            if (event->matches(QKeySequence::Paste)) {
+                pasteTracks(currentIndex());
+                return;
+            }
+            if (event->key() == Qt::Key_Escape) {
+                clearSelection();
+                setCurrentIndex(QModelIndex());
+            }
         }
-        if (event->matches(QKeySequence::Cut)) {
-            cutSelectedTracks();
-            return;
-        }
+
         if (event->matches(QKeySequence::Copy)) {
             copySelectedTracks();
-            return;
-        }
-        if (event->matches(QKeySequence::Paste)) {
-            pasteTracks(currentIndex());
             return;
         }
         if (event->modifiers().testFlag(Qt::AltModifier) &&
@@ -1118,9 +1216,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             moveSelectedTracks(event);
             return;
         }
-        if (event->key() == Qt::Key_Escape) {
-            clearSelection();
-            setCurrentIndex(QModelIndex());
+        if (event->modifiers().testFlag(Qt::ControlModifier) &&
+                event->modifiers().testFlag(Qt::ShiftModifier) &&
+                event->key() == Qt::Key_C) {
+            // copy the cell content as native QKeySequence::Copy would
+            QKeyEvent ke =
+                    QKeyEvent{QEvent::KeyPress, Qt::Key_C, Qt::ControlModifier};
+            QTableView::keyPressEvent(&ke);
+            return;
         }
     }
     QTableView::keyPressEvent(event);

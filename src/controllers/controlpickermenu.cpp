@@ -494,21 +494,29 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Cues
     QMenu* pCueMenu = addSubmenu(tr("Cues"));
-    addDeckControl("cue_default", tr("Cue"), tr("Cue button"), pCueMenu);
-    addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), pCueMenu);
-    addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), pCueMenu);
+    addDeckAndSamplerControl("cue_default", tr("Cue"), tr("Cue button"), pCueMenu);
+    addDeckAndSamplerControl("cue_set", tr("Set Cue"), tr("Set cue point"), pCueMenu);
+    addDeckAndSamplerControl(
+            "cue_goto", tr("Go-To Cue"), tr("Go to cue point"), pCueMenu);
     addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay",
             tr("Go-To Cue And Play"),
             tr("Go to cue point and play"),
             pCueMenu);
-    addDeckControl("cue_gotoandstop",
+    addDeckAndSamplerControl("cue_gotoandstop",
             tr("Go-To Cue And Stop"),
             tr("Go to cue point and stop"),
             pCueMenu);
-    addDeckControl("cue_preview", tr("Preview Cue"), tr("Preview from cue point"), pCueMenu);
-    addDeckControl("cue_cdj", tr("Cue (CDJ Mode)"), tr("Cue button (CDJ mode)"), pCueMenu);
-    addDeckControl("play_stutter", tr("Stutter Cue"), tr("Stutter cue"), pCueMenu);
-    addDeckControl("cue_play",
+    addDeckAndSamplerControl("cue_preview",
+            tr("Preview Cue"),
+            tr("Preview from cue point"),
+            pCueMenu);
+    addDeckAndSamplerControl("cue_cdj",
+            tr("Cue (CDJ Mode)"),
+            tr("Cue button (CDJ mode)"),
+            pCueMenu);
+    addDeckAndSamplerControl(
+            "play_stutter", tr("Stutter Cue"), tr("Stutter cue"), pCueMenu);
+    addDeckAndSamplerControl("cue_play",
             tr("CUP (Cue + Play)"),
             tr("Go to cue point and play after release"),
             pCueMenu);
@@ -661,7 +669,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                "position as loop end") +
             noBeatsSeconds;
 
-    QList<double> beatSizes = LoopingControl::getBeatSizes();
+    const QList<double> beatSizes = LoopingControl::getBeatSizes();
 
     QMap<double, QString> humanBeatSizes;
     humanBeatSizes[0.03125] = tr("1/32");
@@ -1288,7 +1296,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Microphone Ducking Mode"),
             tr("Toggle microphone ducking mode (OFF, AUTO, MANUAL)"),
             pMicrophoneMenu);
-    addMicrophoneAndAuxControl("passthrough",
+    addMicrophoneAndAuxControl("main_mix",
             tr("Auxiliary On/Off"),
             tr("Auxiliary on/off"),
             pMicrophoneMenu,
@@ -1389,23 +1397,26 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Skin Controls
     QMenu* pGuiMenu = addSubmenu(tr("User Interface"));
-    addControl("[Samplers]",
+    addControl("[Skin]",
             "show_samplers",
             tr("Samplers Show/Hide"),
             tr("Show/hide the sampler section"),
             pGuiMenu);
-    addControl("[Microphone]",
-            "show_microphone",
-            tr("Microphone & Auxiliary Show/Hide"),
+    addControl("[Skin]",
+            "show_microphones",
+            // && prevents auto-detecting mnemonic /keyboard accelerator which
+            // would render to underlined whitespace here.
+            //: keep double & to prevent creation of keyboard accelerator
+            tr("Microphone && Auxiliary Show/Hide"),
             tr("Show/hide the microphone & auxiliary section"),
             pGuiMenu);
-    addControl("[PreviewDeck]",
-            "show_previewdeck",
+    addControl("[Skin]",
+            "show_previewdecks",
             tr("Preview Deck Show/Hide"),
             tr("Show/hide the preview deck"),
             pGuiMenu);
-    addControl("[EffectRack1]",
-            "show",
+    addControl("[Skin]",
+            "show_effectrack",
             tr("Effect Rack Show/Hide"),
             tr("Show/hide the effect rack"),
             pGuiMenu);

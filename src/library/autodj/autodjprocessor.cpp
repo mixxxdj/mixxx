@@ -396,15 +396,30 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             return ADJ_BOTH_DECKS_PLAYING;
         }
 
-        // TODO: This is a total bandaid for making Auto DJ work with decks 3
-        // and 4.  We should design a nicer way to handle this.
-        for (int i = 2; i < m_decks.length(); ++i) {
-            if (m_decks[i] && m_decks[i]->isPlaying()) {
+        // TODO: This is a total bandaid for making Auto DJ work with four decks.
+        // We should design a nicer way to handle this.
+        for (const auto& pDeck : std::as_const(m_decks)) {
+            VERIFY_OR_DEBUG_ASSERT(pDeck) {
+                continue;
+            }
+            if (pDeck == pLeftDeck) {
+                continue;
+            }
+            if (pDeck == pRightDeck) {
+                continue;
+            }
+            if (pDeck->isPlaying()) {
                 // Keep the current state.
                 emitAutoDJStateChanged(m_eState);
-                emit autoDJError(ADJ_DECKS_3_4_PLAYING);
-                return ADJ_DECKS_3_4_PLAYING;
+                emit autoDJError(ADJ_UNUSED_DECK_PLAYING);
+                return ADJ_UNUSED_DECK_PLAYING;
             }
+        }
+
+        if (pLeftDeck->index > 1 || pRightDeck->index > 1) {
+            // Left and/or right deck is deck 3/4 which may not be visible.
+            // Make sure it is, if the current skin is a 4-deck skin.
+            ControlObject::set(ConfigKey("[Skin]", "show_4decks"), 1);
         }
 
         // Never load the same track if it is already playing
@@ -891,20 +906,23 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 
     while (true) {
-        TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
+        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(
+                m_pAutoDJTableModel->index(0, 0));
 
-        if (nextTrack) {
-            if (nextTrack->getFileInfo().checkFileExists()) {
-                return nextTrack;
+        if (pNextTrack) {
+            if (pNextTrack->getFileInfo().checkFileExists()) {
+                return pNextTrack;
             } else {
-                // Remove missing song from auto DJ playlist.
+                // Remove missing track from auto DJ playlist.
+                qWarning() << "Auto DJ: Skip missing track" << pNextTrack->getLocation();
                 m_pAutoDJTableModel->removeTrack(
                         m_pAutoDJTableModel->index(0, 0));
+                // Don't "Requeue" missing tracks to avoid andless loops
+                maybeFillRandomTracks();
             }
         } else {
             // We're out of tracks. Return the null TrackPointer.
-            return nextTrack;
+            return pNextTrack;
         }
     }
 }

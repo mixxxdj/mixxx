@@ -1,12 +1,15 @@
-#include <QtDebug>
-#include <QStandardPaths>
-#include <QSettings>
+#include "library/banshee/bansheedbconnection.h"
+
 #include <QFile>
 #include <QFileInfo>
+#include <QMap>
+#include <QSettings>
 #include <QSqlError>
+#include <QSqlQuery>
+#include <QStandardPaths>
+#include <QtDebug>
 
 #include "library/queryutil.h"
-#include "library/banshee/bansheedbconnection.h"
 #include "util/performancetimer.h"
 
 BansheeDbConnection::BansheeDbConnection() {

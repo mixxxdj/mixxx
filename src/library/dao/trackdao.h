@@ -48,11 +48,12 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     QList<TrackId> resolveTrackIds(
+            const QList<QUrl>& urls,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
+    QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
     QList<TrackRef> getAllTrackRefs(
             const QDir& rootDir) const;
 
@@ -129,6 +130,10 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class TrackCollection;
     friend class TrackAnalysisScheduler;
 
+    QList<TrackId> resolveTrackIds(
+            const QStringList& pathList,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
+
     TrackId getTrackIdByLocation(
             const QString& location) const;
     TrackPointer getTrackById(
@@ -148,15 +153,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
-            const mixxx::FileAccess& fileAccess,
-            bool unremove);
-    TrackPointer addTracksAddFile(
             const QString& filePath,
-            bool unremove) {
-        return addTracksAddFile(
-                mixxx::FileAccess(mixxx::FileInfo(filePath)),
-                unremove);
-    }
+            bool unremove);
     void addTracksFinish(bool rollback = false);
 
     bool updateTrack(const Track& track) const;
@@ -181,6 +179,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Scanning related calls.
     void markTrackLocationsAsVerified(const QStringList& locations) const;
     void markTracksInDirectoriesAsVerified(const QStringList& directories) const;
+    void cleanupTrackLocationsDirectory() const;
     void invalidateTrackLocationsInLibrary() const;
     void markUnverifiedTracksAsDeleted();
 

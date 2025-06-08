@@ -27,6 +27,7 @@
  */
 
 (function(global) {
+    const NO_TIMER = 0;
     const Component = function(options) {
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
@@ -176,6 +177,8 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
+        isLongPressed: false,
+        longPressTimer: NO_TIMER,
         isPress: function(channel, control, value, _status) {
             return value > 0;
         },
@@ -192,15 +195,15 @@
                     this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
                     }
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                     this.isLongPressed = false;
                 }
@@ -257,15 +260,15 @@
                         engine.setValue(this.group, "beatsync", 1);
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
-                            this.longPressTimer = 0;
+                            this.longPressTimer = NO_TIMER;
                         }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
                 } else {
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                 }
             };
@@ -660,7 +663,7 @@
                 });
             }
 
-            script.deepMerge(this, newLayer);
+            Object.assign(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -1134,8 +1137,6 @@
 
         this.effectFocusButton = new Button({
             group: this.group,
-            longPressed: false,
-            longPressTimer: 0,
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
             startEffectFocusChooseMode: function() {
@@ -1161,9 +1162,10 @@
                 this.input = function(channel, control, value, status, _group) {
                     const showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                            this.startEffectFocusChooseMode.bind(this),
-                            true);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
+                            this.startEffectFocusChooseMode();
+                            this.longPressTimer = NO_TIMER;
+                        }, true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -1173,8 +1175,9 @@
                             this.pressedWhenParametersHidden = true;
                         }
                     } else {
-                        if (this.longPressTimer) {
+                        if (this.longPressTimer !== NO_TIMER) {
                             engine.stopTimer(this.longPressTimer);
+                            this.longPressTimer = NO_TIMER;
                         }
 
                         if (eu.focusChooseModeActive) {
