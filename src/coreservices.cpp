@@ -239,6 +239,13 @@ QString getCurrentXkbLayoutName() {
 }
 #endif
 
+// Returns the locale of the current keyboard layout
+// On macOS and Windows QGuiApplication::inputMethod() is used straight away.
+// On Linux it first tries to via X11/XWayland. That works even if Mixxx itself
+// is running with Wayland. If XWayland is not installed it falls back to
+// dconf/xfconf-query and than QGuiApplication::inputMethod() which is equivalent
+// to "ibus engine". QGuiApplication::inputMethod() does not work with GNOME and XFCE
+// https://bugreports.qt.io/browse/QTBUG-137302
 inline QLocale inputLocale() {
 #if defined(Q_OS_LINUX)
     QString layoutName = getCurrentXkbLayoutName();
