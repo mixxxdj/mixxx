@@ -338,11 +338,11 @@ class Track : public QObject {
     void swapHotcues(int a, int b);
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
-    u_int8_t getDownbeatOffset() const {
+    int getDownbeatOffset() const {
         return m_downbeat_offset;
     }
 
-    void setDownbeatOffset(u_int8_t offset);
+    void setDownbeatOffset(int offset);
 
 #ifdef __STEM__
     QList<StemInfo> getStemInfo() const {

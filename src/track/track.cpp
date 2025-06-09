@@ -517,7 +517,7 @@ void Track::afterBeatsAndBpmUpdated(
     emitBeatsAndBpmUpdated();
 }
 
-void Track::setDownbeatOffset(u_int8_t offset) {
+void Track::setDownbeatOffset(int offset) {
     m_downbeat_offset = offset;
     const auto newBeats = m_pBeats->trySetDownbeatsOffset(offset);
     if (newBeats) {

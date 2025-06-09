@@ -160,7 +160,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
             mixxx::Bpm lastMarkerBpm,
             mixxx::audio::SampleRate sampleRate,
             const QString& subVersion,
-            const u_int8_t downbeatsOffset)
+            const int downbeatsOffset)
             : m_markers(std::move(markers)),
               m_lastMarkerPosition(lastMarkerPosition),
               m_lastMarkerBpm(lastMarkerBpm),
@@ -177,7 +177,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
             mixxx::Bpm lastMarkerBpm,
             mixxx::audio::SampleRate sampleRate,
             const QString& subVersion,
-            const u_int8_t downbeatsOffset)
+            const int downbeatsOffset)
             : Beats(std::vector<BeatMarker>(),
                       lastMarkerPosition,
                       lastMarkerBpm,
@@ -256,13 +256,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
             audio::FramePos position,
             Bpm bpm,
             const QString& subVersion = QString(),
-            const u_int8_t downbeatsOffset = 0);
+            const int downbeatsOffset = 0);
 
     static mixxx::BeatsPointer fromBeatPositions(
             audio::SampleRate sampleRate,
             const QVector<audio::FramePos>& beatPositions,
             const QString& subVersion = QString(),
-            const u_int8_t downbeatsOffset = 0);
+            const int downbeatsOffset = 0);
 
     static mixxx::BeatsPointer fromBeatMarkers(
             audio::SampleRate sampleRate,
@@ -270,7 +270,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
             const audio::FramePos lastMarkerPosition,
             const Bpm lastMarkerBpm,
             const QString& subVersion = QString(),
-            const u_int8_t downbeatsOffset = 0);
+            const int downbeatsOffset = 0);
 
     enum class BpmScale {
         Double,
@@ -303,7 +303,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
         return m_subVersion;
     }
 
-    u_int8_t getDownbeatsOffset() const;
+    int getDownbeatsOffset() const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -427,7 +427,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// failure.
     std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const;
 
-    std::optional<BeatsPointer> trySetDownbeatsOffset(u_int8_t offset) const;
+    std::optional<BeatsPointer> trySetDownbeatsOffset(int offset) const;
 
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
@@ -457,7 +457,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     // The sub-version of this beatgrid.
     const QString m_subVersion;
 
-    const u_int8_t m_downbeatsOffset;
+    const int m_downbeatsOffset;
 };
 
 } // namespace mixxx
