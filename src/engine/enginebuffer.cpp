@@ -184,9 +184,9 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
-    addControl(quantize_control);
-    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
+    QuantizeControl* pQuantize_control = new QuantizeControl(group, pConfig);
+    addControl(pQuantize_control);
+    m_quantize = PollingControlProxy(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
@@ -787,7 +787,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
-        if (m_pQuantize->toBool()
+        if (m_quantize.toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
 #endif
@@ -1159,7 +1159,7 @@ void EngineBuffer::processTrackLocked(
     // Ife it's really desired, should this be moved to looping control in order
     // to set the sync'ed playposition right away and fill the wrap-around buffer
     // with correct samples from the sync'ed loop in / track start position?
-    if (m_pRepeat->toBool() && m_pQuantize->toBool() &&
+    if (m_pRepeat->toBool() && m_quantize.toBool() &&
             (m_playPos > playpos_old) == backwards) {
         // TODO() The resulting seek is processed in the following callback
         // That is to late
@@ -1341,7 +1341,7 @@ void EngineBuffer::processSeek(bool paused) {
             position = m_playPos;
             break;
         case SEEK_STANDARD:
-            if (m_pQuantize->toBool()) {
+            if (m_quantize.toBool()) {
                 seekType |= SEEK_PHASE;
             }
             // new position was already set above

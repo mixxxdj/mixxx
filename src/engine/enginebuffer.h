@@ -9,6 +9,7 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlvalue.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/slipmodestate.h"
@@ -410,7 +411,7 @@ class EngineBuffer : public EngineObject {
 
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_pQuantize;
+    PollingControlProxy m_quantize;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
