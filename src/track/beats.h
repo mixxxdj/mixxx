@@ -457,7 +457,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     // The sub-version of this beatgrid.
     const QString m_subVersion;
 
-    const int m_downbeatsOffset;
+    const int m_downbeatsOffset = 0;
 };
 
 } // namespace mixxx
