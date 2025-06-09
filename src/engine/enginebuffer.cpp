@@ -292,6 +292,9 @@ EngineBuffer::~EngineBuffer() {
     //close the writer
     df.close();
 #endif
+
+    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
+
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -322,8 +325,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pReplayGain;
 
     SampleUtil::free(m_pCrossfadeBuffer);
-
-    qDeleteAll(m_engineControls);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
