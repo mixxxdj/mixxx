@@ -308,9 +308,37 @@ GlobalTrackCache::GlobalTrackCache(
           m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
     qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
+    if (m_deleteTrackFn != nullptr) {
+        const int numThreads = 4;
+        for (int i = 0; i < numThreads; ++i) {
+            QThread* worker = QThread::create([this] {
+                while (true) {
+                    QMutexLocker lk(&m_shutdownMutex);
+                    if (m_shutdown) {
+                        break;
+                    }
+                    m_shutdownCv.wait(&m_shutdownMutex, 50);
+                }
+            });
+            m_workerThreads.append(worker);
+            worker->start();
+        }
+    }
+    qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
 }
 
 GlobalTrackCache::~GlobalTrackCache() {
+    if (!m_workerThreads.isEmpty()) {
+        {
+            QMutexLocker lk(&m_shutdownMutex);
+            m_shutdown = true;
+            m_shutdownCv.wakeAll();
+        }
+        for (QThread* worker : m_workerThreads) {
+            if (worker) {
+                worker->disconnect();
+                worker->quit();
+                worker->wait();
 <<<<<<< HEAD
 =======
     {
@@ -325,10 +353,14 @@ GlobalTrackCache::~GlobalTrackCache() {
             worker->wait();
 
 #ifdef Q_OS_MAC
-            worker->deleteLater();
+                worker->deleteLater();
 #else
-            delete worker;
+                delete worker;
 #endif
+            }
+        }
+        m_workerThreads.clear();
+    }
         }
     }
     m_workerThreads.clear();
