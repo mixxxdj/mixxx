@@ -1092,8 +1092,3 @@ QString BaseTrackTableModel::getFieldString(
         const QModelIndex& index, ColumnCache::Column column) const {
     return getFieldVariant(index, column).toString();
 }
-
-QString BaseTrackTableModel::getFieldString(
-        const QModelIndex& index, const QString& fieldName) const {
-    return getFieldVariant(index, fieldName).toString();
-}

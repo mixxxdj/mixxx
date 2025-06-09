@@ -33,7 +33,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QVariant getFieldVariant(const QModelIndex& index, ColumnCache::Column column) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
     QString getFieldString(const QModelIndex& index, ColumnCache::Column column) const;
-    QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
 
     ///////////////////////////////////////////////////////
     //  Overridable functions
