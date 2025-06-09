@@ -210,6 +210,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_pHeadphoneEnabled->setReadOnly();
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
+    m_enginelsr = (pConfig->getValue(ConfigKey(group, "engine_lsr"), 0.0) != 0.0);
 }
 
 EngineMixer::~EngineMixer() = default;

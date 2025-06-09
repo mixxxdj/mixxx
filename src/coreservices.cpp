@@ -209,6 +209,7 @@ void CoreServices::initializeSettings() {
     }
 #endif
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
+    qDebug() << settingsPath;
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 

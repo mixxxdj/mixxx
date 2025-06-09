@@ -22,7 +22,12 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #endif
 
-//for the writer
+#ifdef __LIBSAMPLERATE__
+#include "engine/bufferscalers/enginebufferscalesr.h"
+#endif
+
+// #define __SCALER_DEBUG__
+// for the writer
 #ifdef __SCALER_DEBUG__
 #include <QFile>
 #include <QTextStream>
@@ -82,11 +87,18 @@ class EngineBuffer : public EngineObject {
 
     // This enum is also used in mixxx.cfg
     // Don't remove or swap values to keep backward compatibility
+    // ---
+    // Resampling is required to fix audio pitch during a playback speed change.
     enum class KeylockEngine {
         SoundTouch = 0,
 #ifdef __RUBBERBAND__
         RubberBandFaster = 1,
         RubberBandFiner = 2,
+#endif
+#ifdef __LIBSAMPLERATE__
+        SampleRateLinear = 3,      // SRC_LINEAR, not bandlimited (anti-aliasing filter required)
+        SampleRateSincFinest = 4,  // SRC_SINC_BEST_QUALITY, bandlimited
+        SampleRateSincFastest = 5, // SRC_SINC_FASTEST, bandlimited
 #endif
     };
 
@@ -95,7 +107,13 @@ class EngineBuffer : public EngineObject {
             KeylockEngine::SoundTouch,
 #ifdef __RUBBERBAND__
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner
+            KeylockEngine::RubberBandFiner,
+#endif
+
+#ifdef __LIBSAMPLERATE__
+            KeylockEngine::SampleRateLinear,
+            KeylockEngine::SampleRateSincFinest,
+            KeylockEngine::SampleRateSincFastest
 #endif
     };
 
@@ -178,7 +196,7 @@ class EngineBuffer : public EngineObject {
             if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
                 return tr("Rubberband R3 (near-hi-fi quality)");
             }
-            [[fallthrough]];
+            [[fallthrough]]; // C++ 17, execution is meant to go to default case, suppress warnings.
 #endif
         default:
 #ifdef __RUBBERBAND__
@@ -451,6 +469,10 @@ class EngineBuffer : public EngineObject {
     EngineBufferScaleST* m_pScaleST;
 #ifdef __RUBBERBAND__
     EngineBufferScaleRubberBand* m_pScaleRB;
+#endif
+
+#ifdef __LIBSAMPLERATE__
+    EngineBufferScaleSR* m_pScaleSR;
 #endif
 
     // Indicates whether the scaler has changed since the last process()
