@@ -852,10 +852,7 @@ QVariant BaseTrackTableModel::roleValue(
 
 bool BaseTrackTableModel::isBpmLocked(
         const QModelIndex& index) const {
-    const bool bpmLockIndex =
-            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)
-                    .toBool();
-    return bpmLockIndex;
+    return getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK).toBool();
 }
 
 Qt::ItemFlags BaseTrackTableModel::defaultItemFlags(
