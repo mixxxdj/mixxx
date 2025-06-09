@@ -1,6 +1,7 @@
 #include "track/globaltrackcache.h"
 
 #include <QCoreApplication>
+#include <QtGlobal>
 
 #include "moc_globaltrackcache.cpp"
 #include "track/track.h"
@@ -310,6 +311,28 @@ GlobalTrackCache::GlobalTrackCache(
 }
 
 GlobalTrackCache::~GlobalTrackCache() {
+<<<<<<< HEAD
+=======
+    {
+        QMutexLocker lk(&m_shutdownMutex);
+        m_shutdown = true;
+        m_shutdownCv.wakeAll();
+    }
+    for (QThread* worker : m_workerThreads) {
+        if (worker) {
+            worker->disconnect();
+            worker->quit();
+            worker->wait();
+
+#ifdef Q_OS_MAC
+            worker->deleteLater();
+#else
+            delete worker;
+#endif
+        }
+    }
+    m_workerThreads.clear();
+>>>>>>> d406aba2b8 (Fix: avoid QThread segfault on macOS by using deleteLater() and disconnecting)
     deactivate();
 }
 
