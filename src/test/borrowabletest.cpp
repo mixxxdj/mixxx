@@ -43,6 +43,7 @@ TEST_F(BorrowableTest, TwoThreads) {
             int* p2 = borrowed1.get();
             qDebug() << "future2 a" << (p1 ? *p1 : 0) << (p2 ? *p2 : 0);
         }
+        // Force a task change to main to check for a fixed deadlock.
         QThread::usleep(1);
         for (int k = 0; k < 2; ++k) {
             borrowed_ptr borrowed1 = borrowable.borrow();
