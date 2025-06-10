@@ -212,29 +212,34 @@ QString getCurrentXkbLayoutName() {
     XkbStateRec state;
     if (XkbGetState(pDisplay, XkbUseCoreKbd, &state) != Success) {
         qWarning() << "XkbGetState failed";
+        XCloseDisplay(pDisplay);
         return {};
     }
 
     XkbDescPtr pDesc = XkbGetMap(pDisplay, 0, XkbUseCoreKbd);
     if (!pDesc) {
         qWarning() << "XkbGetMap failed";
+        XCloseDisplay(pDisplay);
         return {};
     }
 
     XkbGetNames(pDisplay, XkbGroupNamesMask, pDesc);
     if (!pDesc->names) {
         qWarning() << "XkbGetNames failed";
+        XCloseDisplay(pDisplay);
         return {};
     }
     char* pGroupName = XGetAtomName(pDisplay, pDesc->names->groups[state.group]);
     if (!pGroupName) {
         qWarning() << "XGetAtomName failed";
         XkbFreeNames(pDesc, XkbGroupNamesMask, True);
+        XCloseDisplay(pDisplay);
         return {};
     }
     QString layoutName = QString(pGroupName);
-    XkbFreeNames(pDesc, XkbKeyNamesMask, True);
     XFree(pGroupName);
+    XkbFreeNames(pDesc, XkbKeyNamesMask, True);
+    XCloseDisplay(pDisplay);
     return layoutName;
 }
 #endif
