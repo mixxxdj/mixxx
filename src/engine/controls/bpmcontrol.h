@@ -131,18 +131,18 @@ class BpmControl : public EngineControl {
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
-    PollingControlProxy m_pReverseButton;
+    PollingControlProxy m_reverseButton;
     std::unique_ptr<ControlProxy> m_pRateRatio;
-    PollingControlProxy m_pQuantize;
+    PollingControlProxy m_quantize;
 
     // ControlObjects that come from QuantizeControl
-    PollingControlProxy m_pNextBeat;
-    PollingControlProxy m_pPrevBeat;
+    PollingControlProxy m_nextBeat;
+    PollingControlProxy m_prevBeat;
 
     // ControlObjects that come from LoopingControl
-    PollingControlProxy m_pLoopEnabled;
-    PollingControlProxy m_pLoopStartPosition;
-    PollingControlProxy m_pLoopEndPosition;
+    PollingControlProxy m_loopEnabled;
+    PollingControlProxy m_loopStartPosition;
+    PollingControlProxy m_loopEndPosition;
 
     // The average bpm around the current playposition;
     std::unique_ptr<ControlObject> m_pLocalBpm;
