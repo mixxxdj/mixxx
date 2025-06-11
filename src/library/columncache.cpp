@@ -167,14 +167,14 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
                 nullptr,
                 0},
         DI(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION){&PLAYLISTTRACKSTABLE_POSITION,
-                QT_TRANSLATE_NOOP("BaseTrackTableModel", "#"),
+                QT_TRANSLATE_NOOP("BaseSqlTableModel", "#"),
                 kDefaultColumnWidth * 30 / 50},
         DI(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_PLAYLISTID){&PLAYLISTTRACKSTABLE_PLAYLISTID,
                 nullptr,
                 0},
         DI(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED){
                 &PLAYLISTTRACKSTABLE_DATETIMEADDED,
-                QT_TRANSLATE_NOOP("BaseTrackTableModel", "Timestamp"),
+                QT_TRANSLATE_NOOP("BaseSqlTableModel", "Timestamp"),
                 kDefaultColumnWidth * 80 / 50},
         DI(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH){&REKORDBOX_ANALYZE_PATH, nullptr, 0}};
 static_assert(std::size(kColumnPropertiesByEnum) == ColumnCache::NUM_COLUMNS);
