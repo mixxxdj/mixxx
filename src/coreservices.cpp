@@ -291,7 +291,8 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(30, tr("audio interface"));
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
     // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
-    m_pSoundManager = std::make_shared<SoundManager>(pConfig, m_pEngine.get());
+    m_pSoundManager = std::make_shared<SoundManager>(pConfig,
+            m_pEngine.get()); // m_psoundmanager is used by the preferences gui.
     m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
 
     m_pRecordingManager = std::make_shared<RecordingManager>(pConfig, m_pEngine.get());

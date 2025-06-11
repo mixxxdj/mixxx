@@ -262,6 +262,12 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeylockEngine->connectValueChanged(this,
             &EngineBuffer::slotKeylockEngineChanged,
             Qt::DirectConnection);
+
+    m_pScratchingEngine = new ControlProxy(kAppGroup, QStringLiteral("scratching_engine"), this);
+    m_pScratchingEngine->connectValueChanged(this,
+            &EngineBuffer::slotScratchingEngineChanged,
+            Qt::DirectConnection);
+
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
@@ -273,16 +279,14 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pScaleSR = new EngineBufferScaleSR(m_pReadAheadManager);
 #endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
-    qDebug() << "choosing scale engine now";
-    if (pMixingEngine->isEngineLSR()) {
-        qDebug() << "lsr scaler chosen";
-        m_pScaleVinyl = m_pScaleSR;
-        m_pScale = m_pScaleVinyl;
-    } else {
-        qDebug() << "linear scaler chosen";
-        m_pScaleVinyl = m_pScaleLinear; // linear interpolation during scratching, default.
-        m_pScale = m_pScaleVinyl;       // current scaler: same as vinyl scaler
-    }
+    qDebug() << "setting keylock engine to " << m_pScaleKeylock;
+
+    slotScratchingEngineChanged(m_pScratchingEngine->get());
+    qDebug() << "setting scratch engine to " << m_pScaleVinyl;
+
+    m_pScale = m_pScaleKeylock; // m_pScale = m_pScaleVinyl originally.
+    qDebug() << "current scaler " << m_pScale;
+
     m_pScale->clear(); // delete scaler state stored previously
     m_bScalerChanged = true;
 
@@ -883,6 +887,35 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     }
 }
 
+void EngineBuffer::slotScratchingEngineChanged(double dIndex) {
+    if (m_bScalerOverride) {
+        return;
+    }
+    const ScratchingEngine engine = static_cast<ScratchingEngine>(dIndex);
+    switch (engine) {
+    case ScratchingEngine::NaiveLinear:
+        m_pScaleVinyl = m_pScaleLinear;
+        break;
+#ifdef __LIBSAMPLERATE__
+    case ScratchingEngine::SampleRateLinear:
+        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleVinyl = m_pScaleSR;
+        break;
+    case ScratchingEngine::SampleRateSincFastest:
+        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleVinyl = m_pScaleSR;
+        break;
+    case ScratchingEngine::SampleRateSincFinest:
+        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleVinyl = m_pScaleSR;
+        break;
+#endif
+    default:
+        slotScratchingEngineChanged(static_cast<double>(defaultScratchingEngine()));
+        break;
+    }
+}
+
 // samplerate: Mixxx sample rate
 // m_pTrackSampleRate: track sample rate
 void EngineBuffer::processTrackLocked(
@@ -923,7 +956,7 @@ void EngineBuffer::processTrackLocked(
     // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
-    std::size_t outputBufferSize = bufferSize;
+    std::size_t outputBufferSize = bufferSize; // samples per buffer
     int stereoPairCount = m_channelCount / mixxx::audio::ChannelCount::stereo();
     // The speed is calculated out of the buffer size for the stereo channel
     // output, after mixing multi channel (stem) together

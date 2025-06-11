@@ -94,10 +94,6 @@ class EngineMixer : public QObject, public AudioSource {
         return m_pEngineSync.get();
     }
 
-    bool isEngineLSR() const {
-        return m_enginelsr;
-    }
-
     // These are really only exposed for tests to use.
     std::span<const CSAMPLE> getMainBuffer() const;
     std::span<const CSAMPLE> getBoothBuffer() const;
@@ -323,6 +319,7 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<ControlPushButton> m_pXFaderReverse;
     std::unique_ptr<ControlPushButton> m_pHeadSplitEnabled;
     std::unique_ptr<ControlObject> m_pKeylockEngine;
+    std::unique_ptr<ControlObject> m_pScratchingEngine;
 
     PflGainCalculator m_headphoneGain;
     TalkoverGainCalculator m_talkoverGain;
@@ -350,6 +347,4 @@ class EngineMixer : public QObject, public AudioSource {
     // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
-
-    bool m_enginelsr; // temp path for libsamplerate
 };

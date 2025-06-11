@@ -506,6 +506,7 @@ double RateControl::calculateSpeed(double baserate,
     return rate;
 }
 
+// https://mixxx.discourse.group/t/pitch-bend-vs-ramping-pitch-bend/28158
 void RateControl::processTempRate(const std::size_t bufferSamples) {
     // Code to handle temporary rate change buttons.
     // We support two behaviors, the standard ramped pitch bending

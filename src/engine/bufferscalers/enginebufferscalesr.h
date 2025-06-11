@@ -26,6 +26,8 @@ class EngineBufferScaleSR : public EngineBufferScale {
             double* pTempoRatio,
             double* pPitchRatio) override;
 
+    void setQuality(double engine_quality);
+
     // Main scaler method
     double scaleBuffer(
             CSAMPLE* pOutputBuffer,
@@ -39,4 +41,5 @@ class EngineBufferScaleSR : public EngineBufferScale {
     ReadAheadManager* m_pReadAheadManager;
 
     bool m_bBackwards;
+    double m_pEngineQuality;
 };

@@ -95,11 +95,6 @@ class EngineBuffer : public EngineObject {
         RubberBandFaster = 1,
         RubberBandFiner = 2,
 #endif
-#ifdef __LIBSAMPLERATE__
-        SampleRateLinear = 3,      // SRC_LINEAR, not bandlimited (anti-aliasing filter required)
-        SampleRateSincFinest = 4,  // SRC_SINC_BEST_QUALITY, bandlimited
-        SampleRateSincFastest = 5, // SRC_SINC_FASTEST, bandlimited
-#endif
     };
 
     // intended for iteration over the KeylockEngine enum
@@ -109,11 +104,24 @@ class EngineBuffer : public EngineObject {
             KeylockEngine::RubberBandFaster,
             KeylockEngine::RubberBandFiner,
 #endif
+    };
 
+    enum class ScratchingEngine {
+        NaiveLinear = 3,
 #ifdef __LIBSAMPLERATE__
-            KeylockEngine::SampleRateLinear,
-            KeylockEngine::SampleRateSincFinest,
-            KeylockEngine::SampleRateSincFastest
+        SampleRateLinear = 4,      // SRC_LINEAR, not bandlimited (anti-aliasing filter required)
+        SampleRateSincFastest = 5, // SRC_SINC_FASTEST, bandlimited
+        SampleRateSincFinest = 6,  // SRC_SINC_BEST_QUALITY, bandlimited
+#endif
+    };
+
+    // iterate over scratching engines
+    constexpr static std::initializer_list<ScratchingEngine> kScratchingEngines = {
+            ScratchingEngine::NaiveLinear,
+#ifdef __LIBSAMPLERATE__
+            ScratchingEngine::SampleRateLinear,
+            ScratchingEngine::SampleRateSincFastest,
+            ScratchingEngine::SampleRateSincFinest
 #endif
     };
 
@@ -199,7 +207,7 @@ class EngineBuffer : public EngineObject {
             [[fallthrough]]; // C++ 17, execution is meant to go to default case, suppress warnings.
 #endif
         default:
-#ifdef __RUBBERBAND__
+#ifdef __RUBBERBAND__ // samplerate case not necessary just yet.
             return tr("Unknown, using Rubberband (better)");
 #else
             return tr("Unknown, using Soundtouch");
@@ -230,6 +238,49 @@ class EngineBuffer : public EngineObject {
 #endif
     }
 
+    static QString getScratchingEngineName(ScratchingEngine engine) {
+        switch (engine) {
+        case ScratchingEngine::NaiveLinear:
+            return tr("Naive Linear Interpolation");
+#ifdef __LIBSAMPLERATE__
+        case ScratchingEngine::SampleRateLinear:
+            return tr("SampleRate (Linear Interpolation)");
+        case ScratchingEngine::SampleRateSincFinest:
+            return tr("SampleRate (Best Quality Sinc)");
+        case ScratchingEngine::SampleRateSincFastest:
+            return tr("SampleRate (Fastest Sinc)");
+            [[fallthrough]];
+#endif
+        default:
+            return tr("Unknown, using Naive Linear Interpolation");
+        }
+    }
+
+    static bool isScratchingEngineAvailable(ScratchingEngine engine) {
+        switch (engine) {
+        case ScratchingEngine::NaiveLinear:
+            return true;
+#ifdef __LIBSAMPLERATE__
+        case ScratchingEngine::SampleRateLinear:
+            return true;
+        case ScratchingEngine::SampleRateSincFinest:
+            return true;
+        case ScratchingEngine::SampleRateSincFastest:
+            return true;
+            [[fallthrough]];
+#endif
+        default:
+            return false;
+        }
+    }
+
+    constexpr static ScratchingEngine defaultScratchingEngine() {
+#ifdef __LIBSAMPLERATE__
+        return ScratchingEngine::SampleRateLinear;
+#else
+        return ScratchingEngine::NaiveLinear;
+#endif
+    }
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
@@ -260,6 +311,7 @@ class EngineBuffer : public EngineObject {
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotKeylockEngineChanged(double);
+    void slotScratchingEngineChanged(double);
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -432,6 +484,7 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
+    ControlProxy* m_pScratchingEngine;
     ControlPushButton* m_pKeylock;
     ControlProxy* m_pReplayGain;
 
