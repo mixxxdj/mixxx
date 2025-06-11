@@ -322,14 +322,25 @@ mixxx::Bpm BeatUtils::makeConstBpm(
 }
 
 // static
+std::optional<mixxx::Bpm> BeatUtils::trySnap(mixxx::Bpm minBpm,
+        mixxx::Bpm centerBpm,
+        mixxx::Bpm maxBpm,
+        double fraction) {
+    mixxx::Bpm snapBpm = mixxx::Bpm(round(centerBpm.value() * fraction) / fraction);
+    if (snapBpm > minBpm && snapBpm < maxBpm) {
+        return snapBpm;
+    }
+    return std::nullopt;
+};
+
+// static
 mixxx::Bpm BeatUtils::roundBpmWithinRange(
         mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
     // First try to snap to a full integer BPM
     // FIXME: calling bpm.value() without checking bpm.isValid()
-    auto snapBpm = mixxx::Bpm(round(centerBpm.value()));
-    if (snapBpm > minBpm && snapBpm < maxBpm) {
-        // Success
-        return snapBpm;
+    std::optional<mixxx::Bpm> snapBpm = trySnap(minBpm, centerBpm, maxBpm, 1.0);
+    if (snapBpm) {
+        return *snapBpm;
     }
 
     // 0.5 BPM are only reasonable if the double value is not insane
@@ -337,36 +348,33 @@ mixxx::Bpm BeatUtils::roundBpmWithinRange(
     if (centerBpm < mixxx::Bpm(85.0)) {
         // this can be actually up to 175 BPM
         // allow halve BPM values
-        snapBpm = mixxx::Bpm(round(centerBpm.value() * 2) / 2);
-        if (snapBpm > minBpm && snapBpm < maxBpm) {
-            // Success
-            return snapBpm;
+        snapBpm = trySnap(minBpm, centerBpm, maxBpm, 2.0);
+        if (snapBpm) {
+            return *snapBpm;
         }
     }
 
     if (centerBpm > mixxx::Bpm(127.0)) {
         // optimize for 2/3 going down to 85
         // else other factors below are more typical
-        snapBpm = mixxx::Bpm(round(centerBpm.value() / 3 * 2) * 3 / 2);
-        if (snapBpm > minBpm && snapBpm < maxBpm) {
-            return snapBpm;
+        snapBpm = trySnap(minBpm, centerBpm, maxBpm, 2.0 / 3.0);
+        if (snapBpm) {
+            return *snapBpm;
         }
     }
 
     // try to snap to a 1/3 Bpm
     // This covers all sorts of 3/2 and 3/4 multipliers
-    snapBpm = mixxx::Bpm(round(centerBpm.value() * 3) / 3);
-    if (snapBpm > minBpm && snapBpm < maxBpm) {
-        // Success
-        return snapBpm;
+    snapBpm = trySnap(minBpm, centerBpm, maxBpm, 3.0);
+    if (snapBpm) {
+        return *snapBpm;
     }
 
     // try to snap to a 1/12 Bpm
     // This covers all other sorts of typical multipliers
-    snapBpm = mixxx::Bpm(round(centerBpm.value() * 12) / 12);
-    if (snapBpm > minBpm && snapBpm < maxBpm) {
-        // Success
-        return snapBpm;
+    snapBpm = trySnap(minBpm, centerBpm, maxBpm, 12.0);
+    if (snapBpm) {
+        return *snapBpm;
     }
 
     // else give up and use the original BPM value.
