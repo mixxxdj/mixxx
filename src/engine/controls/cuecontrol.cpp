@@ -107,10 +107,10 @@ CueControl::CueControl(const QString& group,
     m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
     m_pBeatLoopSize = make_parented<ControlProxy>(group, "beatloop_size", this);
 
-    m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
+    m_pCuePoint = std::make_unique<ControlObject>(ConfigKey(group, "cue_point"));
     m_pCuePoint->set(Cue::kNoPosition);
 
-    m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
+    m_pCueMode = std::make_unique<ControlObject>(ConfigKey(group, "cue_mode"));
 
     m_pPassthrough = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthrough->connectValueChanged(this,
@@ -119,8 +119,6 @@ CueControl::CueControl(const QString& group,
 }
 
 CueControl::~CueControl() {
-    delete m_pCuePoint;
-    delete m_pCueMode;
     qDeleteAll(m_hotcueControls);
 }
 
