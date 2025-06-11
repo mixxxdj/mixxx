@@ -1549,12 +1549,17 @@ void CueControl::cuePlay(double value) {
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
-    if (cueMode == CueMode::Denon || cueMode == CueMode::Numark) {
+    switch (cueMode) {
+    case CueMode::Denon:
+    case CueMode::Numark:
         cueDenon(v);
-    } else if (cueMode == CueMode::CueAndPlay) {
+        break;
+    case CueMode::CueAndPlay:
         cuePlay(v);
-    } else {
-        // The modes Pioneer and Mixxx are similar, both are handled inside cueCDJ(v)
+        break;
+    default:
+        // The modes Pioneer, Mixxx and MixxxNoBlinking are similar,
+        // all are handled by cueCDJ()
         cueCDJ(v);
     }
 }
@@ -2054,7 +2059,8 @@ bool CueControl::updateIndicatorsAndModifyPlay(
         // Pause:
         m_pStopButton->set(1.0);
         m_pPlayLatched->forceSet(0.0);
-        if (cueMode == CueMode::Denon) {
+        switch (cueMode) {
+        case CueMode::Denon:
             if (trackAt == TrackAt::Cue || previewing) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
             } else {
@@ -2062,27 +2068,38 @@ bool CueControl::updateIndicatorsAndModifyPlay(
                 m_pPlayIndicator->setBlinkValue(
                         ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (cueMode == CueMode::Mixxx ||
-                cueMode == CueMode::MixxxNoBlinking ||
-                cueMode == CueMode::Numark) {
+            break;
+        case CueMode::Mixxx:
+        case CueMode::MixxxNoBlinking:
+        case CueMode::Numark:
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
-        } else {
-            // Flashing indicates that play is possible in Pioneer mode
+            break;
+        default:
+            // Flashing indicates that play is possible in Pioneer and CueAndPlay mode
             m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         }
     }
 
-    if (cueMode != CueMode::Denon && cueMode != CueMode::Numark) {
+    // Set cue_indicator
+    switch (cueMode) {
+    case CueMode::Denon:
+    case CueMode::Numark:
+        break;
+    default:
         if (m_pCuePoint->get() != Cue::kNoPosition) {
             if (newPlay == 0.0 && trackAt == TrackAt::ElseWhere) {
-                if (cueMode == CueMode::Mixxx) {
+                switch (cueMode) {
+                case CueMode::MixxxNoBlinking:
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+                    break;
+                case CueMode::Mixxx:
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(
                             ControlIndicator::RATIO1TO1_500MS);
-                } else if (cueMode == CueMode::MixxxNoBlinking) {
-                    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-                } else {
-                    // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
+                    break;
+                default:
+                    // in Pioneer and CueAndPlay mode Cue Button is flashing fast
+                    // if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(
                             ControlIndicator::RATIO1TO1_250MS);
                 }
@@ -2104,7 +2121,9 @@ void CueControl::updateIndicators() {
     // No need for mutex lock because we are only touching COs.
     TrackAt trackAt = getTrackAt();
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
-    if (cueMode == CueMode::Denon || cueMode == CueMode::Numark) {
+    switch (cueMode) {
+    case CueMode::Denon:
+    case CueMode::Numark: {
         // Cue button is only lit at cue point
         bool playing = m_pPlay->toBool();
         if (trackAt == TrackAt::Cue) {
@@ -2121,12 +2140,14 @@ void CueControl::updateIndicators() {
                     m_pPlayIndicator->setBlinkValue(
                             ControlIndicator::RATIO1TO1_500MS);
                 } else {
-                    // At track end
+                    // At track end or elsewhere, both Denon and Numark mode
                     m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
                 }
             }
         }
-    } else {
+        break;
+    }
+    default:
         // Here we have Pioneer, Mixxx, MixxxNoBlinking or CueAndPlay.
         // default to Pioneer mode
         if (m_currentlyPreviewingIndex != kMainCueIndex) {
@@ -2135,14 +2156,18 @@ void CueControl::updateIndicators() {
             if (!freely_playing) {
                 switch (trackAt) {
                 case TrackAt::ElseWhere:
-                    if (cueMode == CueMode::Mixxx) {
+                    switch (cueMode) {
+                    case CueMode::Mixxx:
                         // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                         m_pCueIndicator->setBlinkValue(
                                 ControlIndicator::RATIO1TO1_500MS);
-                    } else if (cueMode == CueMode::MixxxNoBlinking) {
+                        break;
+                    case CueMode::MixxxNoBlinking:
                         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-                    } else {
-                        // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
+                        break;
+                    default:
+                        // in Pioneer and CueAndPlay mode Cue button is flashing fast
+                        // if CUE will move Cue point
                         m_pCueIndicator->setBlinkValue(
                                 ControlIndicator::RATIO1TO1_250MS);
                     }
