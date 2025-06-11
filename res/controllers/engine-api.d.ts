@@ -305,6 +305,20 @@ declare namespace engine {
      */
     function softStart(deck: number, activate: boolean, factor?: number): void;
 
+    /**
+     * Returns true if the deck is currently braking.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently braking.
+     */
+    function isBraking(deck: number): bool;
+
+    /**
+     * Returns true if the deck is currently soft-starting.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently soft-starting.
+     */
+    function isSoftStarting(deck: number): bool;
+
     enum Charset {
         ASCII,          // American Standard Code for Information Interchange (7-Bit)
         UTF_8,          // Unicode Transformation Format (8-Bit)
