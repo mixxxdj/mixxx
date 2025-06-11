@@ -111,6 +111,10 @@ CueControl::CueControl(const QString& group,
     m_pCuePoint->set(Cue::kNoPosition);
 
     m_pCueMode = std::make_unique<ControlObject>(ConfigKey(group, "cue_mode"));
+    connect(m_pCueMode.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::slotCueModeChanged);
 
     m_pPassthrough = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthrough->connectValueChanged(this,
@@ -590,6 +594,16 @@ void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
     DEBUG_ASSERT(seekOnLoadPosition.isValid());
     seekExact(seekOnLoadPosition);
     m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition);
+}
+
+void CueControl::slotCueModeChanged(double) {
+    // This will call updateIndicatorsAndModifyPlay() with the current play state
+    // and update cue/play indicators.
+    // This is required for updating the indicators when the cue mode was changed
+    // while the deck is paused.
+    if (m_pPlay && !m_pPlay->toBool()) {
+        getEngineBuffer()->verifyPlay();
+    }
 }
 
 void CueControl::cueUpdated() {
