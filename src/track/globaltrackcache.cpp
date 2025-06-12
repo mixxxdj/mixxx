@@ -317,7 +317,7 @@ GlobalTrackCache::GlobalTrackCache(
                     if (m_shutdown) {
                         break;
                     }
-                    m_shutdownCv.wait(&m_shutdownMutex, 50);
+                    m_shutdownCv.wait(&m_shutdownMutex);
                 }
             });
             m_workerThreads.append(worker);
