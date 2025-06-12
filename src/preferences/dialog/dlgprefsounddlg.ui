@@ -21,6 +21,9 @@
        <property name="text">
         <string>Sound API</string>
        </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
        <property name="buddy">
         <cstring>apiComboBox</cstring>
        </property>
