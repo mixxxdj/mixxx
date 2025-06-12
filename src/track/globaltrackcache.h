@@ -22,7 +22,7 @@ enum class GlobalTrackCacheLookupResult {
 // Find the updated location of a track in the database when
 // the canonical location is no longer valid or accessible.
 class /*interface*/ GlobalTrackCacheRelocator {
-private:
+  private:
     friend class GlobalTrackCache;
     // Try to determine and return the relocated file info
     // or otherwise return just the provided file info.
@@ -42,20 +42,20 @@ class GlobalTrackCacheEntry final {
     // from the cache.
   public:
     class TrackDeleter {
-    public:
+      public:
         explicit TrackDeleter(deleteTrackFn_t deleteTrackFn = nullptr)
                 : m_deleteTrackFn(deleteTrackFn) {
         }
 
         void operator()(Track* pTrack) const;
 
-    private:
+      private:
         deleteTrackFn_t m_deleteTrackFn;
     };
 
     explicit GlobalTrackCacheEntry(
             std::unique_ptr<Track, TrackDeleter> deletingPtr)
-        : m_deletingPtr(std::move(deletingPtr)) {
+            : m_deletingPtr(std::move(deletingPtr)) {
     }
     GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
     GlobalTrackCacheEntry(GlobalTrackCacheEntry&&) = default;
@@ -85,7 +85,7 @@ class GlobalTrackCacheEntry final {
 typedef std::shared_ptr<GlobalTrackCacheEntry> GlobalTrackCacheEntryPointer;
 
 class GlobalTrackCacheLocker {
-public:
+  public:
     GlobalTrackCacheLocker();
     GlobalTrackCacheLocker(const GlobalTrackCacheLocker&) = delete;
     GlobalTrackCacheLocker(GlobalTrackCacheLocker&&);
@@ -121,22 +121,22 @@ public:
     GlobalTrackCache* m_pInstance;
 };
 
-class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
-public:
-  GlobalTrackCacheResolver(
-          mixxx::FileAccess fileAccess,
-          bool temporary = false);
-  GlobalTrackCacheResolver(
-          mixxx::FileAccess fileAccess,
-          TrackId trackId);
-  GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
-  GlobalTrackCacheResolver() = delete;
-  GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
-  ~GlobalTrackCacheResolver() override;
+class GlobalTrackCacheResolver final : public GlobalTrackCacheLocker {
+  public:
+    GlobalTrackCacheResolver(
+            mixxx::FileAccess fileAccess,
+            bool temporary = false);
+    GlobalTrackCacheResolver(
+            mixxx::FileAccess fileAccess,
+            TrackId trackId);
+    GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
+    GlobalTrackCacheResolver() = delete;
+    GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
+    ~GlobalTrackCacheResolver() override;
 
-  GlobalTrackCacheLookupResult getLookupResult() const {
-      return m_lookupResult;
-  }
+    GlobalTrackCacheLookupResult getLookupResult() const {
+        return m_lookupResult;
+    }
 
     const TrackPointer& getTrack() const {
         return m_strongPtr;
@@ -151,7 +151,7 @@ public:
     GlobalTrackCacheResolver& operator=(const GlobalTrackCacheResolver&) = delete;
     GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&&) = delete;
 
-private:
+  private:
     friend class GlobalTrackCache;
 
     void initLookupResult(
@@ -168,7 +168,7 @@ private:
 
 /// Callback interface for pre-delete actions
 class /*interface*/ GlobalTrackCacheSaver {
-private:
+  private:
     friend class GlobalTrackCache;
 
     /// Perform actions that are necessary to save any pending
@@ -221,7 +221,9 @@ class GlobalTrackCache : public QObject {
   private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
-
+    // queue of pending evictions
+    QMutex m_queueMutex;
+    QQueue<GlobalTrackCacheEntryPointer> m_pendingEntries;
     GlobalTrackCache(
             GlobalTrackCacheSaver* pSaver,
             deleteTrackFn_t deleteTrackFn);

@@ -15,7 +15,7 @@ constexpr std::size_t kUnorderedCollectionMinCapacity = 1024;
 
 const mixxx::Logger kLogger("GlobalTrackCache");
 
-//static
+// static
 GlobalTrackCache* volatile s_pInstance = nullptr;
 
 // Enforce logging during tests
@@ -31,8 +31,7 @@ inline bool traceLogEnabled() {
 
 constexpr bool kLogStats = false;
 
-inline
-TrackRef createTrackRef(const Track& track) {
+inline TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
@@ -40,7 +39,7 @@ class EvictAndSaveFunctor {
   public:
     explicit EvictAndSaveFunctor(
             GlobalTrackCacheEntryPointer cacheEntryPtr)
-        : m_cacheEntryPtr(std::move(cacheEntryPtr)) {
+            : m_cacheEntryPtr(std::move(cacheEntryPtr)) {
     }
 
     void operator()(Track* plainPtr) {
@@ -219,7 +218,7 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
     DEBUG_ASSERT(m_trackRef == createTrackRef(*m_strongPtr));
 }
 
-//static
+// static
 void GlobalTrackCache::createInstance(
         GlobalTrackCacheSaver* pSaver,
         deleteTrackFn_t deleteTrackFn) {
@@ -228,7 +227,7 @@ void GlobalTrackCache::createInstance(
     s_pInstance = new GlobalTrackCache(pSaver, deleteTrackFn);
 }
 
-//static
+// static
 void GlobalTrackCache::destroyInstance() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(s_pInstance);
 
@@ -271,7 +270,7 @@ void GlobalTrackCacheEntry::TrackDeleter::operator()(Track* pTrack) const {
     }
 }
 
-//static
+// static
 void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr) {
     // Any access to plainPtr before a validity check inside the
     // GlobalTrackCacheLocker scope is forbidden!! Due to race
@@ -307,64 +306,64 @@ GlobalTrackCache::GlobalTrackCache(
           m_deleteTrackFn(deleteTrackFn),
           m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
+    // Register our EntryPointer type for queued signals
     qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
     if (m_deleteTrackFn != nullptr) {
         const int numThreads = 4;
         for (int i = 0; i < numThreads; ++i) {
-            QThread* worker = QThread::create([this] {
+            QThread* pWorker = QThread::create([this] {
                 while (true) {
-                    QMutexLocker lk(&m_shutdownMutex);
-                    if (m_shutdown) {
-                        break;
+                    // Wait for either shutdown or an eviction request
+                    {
+                        QMutexLocker shutdownLk(&m_shutdownMutex);
+                        m_shutdownCv.wait(&m_shutdownMutex);
+                        if (m_shutdown) {
+                            break;
+                        }
                     }
-                    m_shutdownCv.wait(&m_shutdownMutex);
+
+                    // Pop one pending eviction entry
+                    GlobalTrackCacheEntryPointer entry;
+                    {
+                        QMutexLocker queueLk(&m_queueMutex);
+                        if (!m_pendingEntries.isEmpty()) {
+                            entry = m_pendingEntries.dequeue();
+                        }
+                    }
+                    if (!entry) {
+                        continue; // no work, go back to waiting
+                    }
+
+                    // Perform the eviction/save via the singleton
+                    GlobalTrackCache::evictAndSaveCachedTrack(std::move(entry));
                 }
             });
-            m_workerThreads.append(worker);
-            worker->start();
+            m_workerThreads.append(pWorker);
+            pWorker->start();
         }
     }
-    qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
 }
 
 GlobalTrackCache::~GlobalTrackCache() {
+    // Signal shutdown to all workers
     if (!m_workerThreads.isEmpty()) {
-        {
-            QMutexLocker lk(&m_shutdownMutex);
-            m_shutdown = true;
-            m_shutdownCv.wakeAll();
-        }
-        for (QThread* worker : m_workerThreads) {
-            if (worker) {
-                worker->disconnect();
-                worker->quit();
-                worker->wait();
-<<<<<<< HEAD
-=======
-    {
         QMutexLocker lk(&m_shutdownMutex);
         m_shutdown = true;
         m_shutdownCv.wakeAll();
     }
-    for (QThread* worker : m_workerThreads) {
-        if (worker) {
-            worker->disconnect();
-            worker->quit();
-            worker->wait();
 
-#ifdef Q_OS_MAC
-                worker->deleteLater();
-#else
-                delete worker;
-#endif
-            }
-        }
-        m_workerThreads.clear();
-    }
+    // Quit and join each thread, then delete
+    for (QThread* pWorker : m_workerThreads) {
+        if (pWorker) {
+            pWorker->disconnect(); // drop any queued signals
+            pWorker->quit();
+            pWorker->wait();
+            pWorker->deleteLater(); // safe, cross-platform
         }
     }
     m_workerThreads.clear();
->>>>>>> d406aba2b8 (Fix: avoid QThread segfault on macOS by using deleteLater() and disconnecting)
+
+    // Run the existing cache teardown
     deactivate();
 }
 
@@ -376,7 +375,7 @@ void GlobalTrackCache::relocateTracks(
     }
     TracksByCanonicalLocation relocatedTracksByCanonicalLocation;
     for (auto&&
-            i = m_tracksByCanonicalLocation.begin();
+                    i = m_tracksByCanonicalLocation.begin();
             i != m_tracksByCanonicalLocation.end();
             ++i) {
         const QString oldCanonicalLocation = i->first;
@@ -454,7 +453,7 @@ void GlobalTrackCache::deactivate() {
 
     while (!m_tracksById.empty()) {
         auto i = m_tracksById.begin();
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr = i->second->getPlainPtr();
         saveEvictedTrack(plainPtr);
         m_tracksByCanonicalLocation.erase(plainPtr->getFileInfo().canonicalLocation());
         m_tracksById.erase(i);
@@ -462,7 +461,7 @@ void GlobalTrackCache::deactivate() {
 
     while (!m_tracksByCanonicalLocation.empty()) {
         auto i = m_tracksByCanonicalLocation.begin();
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr = i->second->getPlainPtr();
         saveEvictedTrack(plainPtr);
         m_tracksByCanonicalLocation.erase(i);
     }
@@ -591,7 +590,6 @@ QSet<TrackId> GlobalTrackCache::getCachedTrackIds() const {
 
 TrackPointer GlobalTrackCache::revive(
         GlobalTrackCacheEntryPointer entryPtr) {
-
     TrackPointer savingPtr = entryPtr->lock();
     if (savingPtr) {
         if (traceLogEnabled()) {
@@ -730,7 +728,7 @@ void GlobalTrackCache::resolve(
     if (trackRef.hasId()) {
         // Insert item by id
         DEBUG_ASSERT(m_tracksById.find(
-                trackRef.getId()) == m_tracksById.end());
+                             trackRef.getId()) == m_tracksById.end());
         m_tracksById.insert(std::make_pair(
                 trackRef.getId(),
                 cacheEntryPtr));
@@ -738,7 +736,7 @@ void GlobalTrackCache::resolve(
     if (trackRef.hasCanonicalLocation()) {
         // Insert item by track location
         DEBUG_ASSERT(m_tracksByCanonicalLocation.find(
-                trackRef.getCanonicalLocation()) == m_tracksByCanonicalLocation.end());
+                             trackRef.getCanonicalLocation()) == m_tracksByCanonicalLocation.end());
         m_tracksByCanonicalLocation.insert(std::make_pair(
                 trackRef.getCanonicalLocation(),
                 cacheEntryPtr));
@@ -904,8 +902,19 @@ void GlobalTrackCache::slotEvictAndSave(
     // track object while the cache is still locked.
     cacheEntryPtr.reset();
 
+    // enqueue this eviction request
+    {
+        QMutexLocker ql(&m_queueMutex);
+        m_pendingEntries.enqueue(std::move(cacheEntryPtr));
+    }
     // Finally the exclusive lock on the cache is released implicitly
     // when exiting the scope of this method.
+
+    // wake one worker to process it
+    {
+        QMutexLocker lk(&m_shutdownMutex);
+        m_shutdownCv.wakeOne();
+    }
 }
 
 bool GlobalTrackCache::tryEvict(Track* plainPtr) {
@@ -957,14 +966,14 @@ bool GlobalTrackCache::tryEvict(Track* plainPtr) {
 }
 
 bool GlobalTrackCache::isCached(Track* plainPtr) const {
-    for (auto&& entry: m_tracksById) {
+    for (auto&& entry : m_tracksById) {
         if (entry.second->getPlainPtr() == plainPtr) {
             return true;
         }
     }
-    for (auto&& entry: m_tracksByCanonicalLocation) {
+    for (auto&& entry : m_tracksByCanonicalLocation) {
         if (entry.second->getPlainPtr() == plainPtr) {
-              return true;
+            return true;
         }
     }
     return false;
