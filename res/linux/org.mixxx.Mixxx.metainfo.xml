@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.2" type="development" date="2025-06-06" timestamp="1749208048">
+    <release version="2.5.2" type="development" date="2025-06-06" timestamp="1749241083">
       <description>
  <p>
   Library
@@ -127,12 +127,21 @@
    #14734
   </li>
   <li>
-   Browse feature: enable initial sorting during population
+   Computer feature: enable initial sorting during population
    #14688
   </li>
   <li>
    Computer feature: avoid false-positve 'has children' for non-directory links
    #14907
+  </li>
+  <li>
+   Fix column header mapping when using external library
+   #13782
+  </li>
+  <li>
+   Fixed Single track cover reload on reload metadata from file
+   #14494
+   #14409
   </li>
  </ul>
  <p>
@@ -166,6 +175,10 @@
   <li>
    Numark Mixtrack Platinium FX: Fix 4 steps browsing issue
    #14778
+  </li>
+  <li>
+   Traktor Kontrol S3: Use GUI config for settings
+   #14904
   </li>
   <li>
    Traktor S2 MK3: Fixed LED issue
@@ -208,6 +221,10 @@
   <li>
    Unit tests for engine.beginTimer
    #12437
+  </li>
+  <li>
+   engine-api.d.ts: brake()/spinback() documentation
+   #14929
   </li>
  </ul>
  <p>
@@ -275,6 +292,21 @@
   <li>
    Sound Hardware preferences: add manual link for Mic monitoring modes
    #14889
+  </li>
+  <li>
+   Work around an Ubuntu, Ibus or Qt issue regarding detecting the current keyboard layout.
+   #14883
+   #14838
+   #14797
+  </li>
+  <li>
+   Fix BPM rounding for the 3/2 case
+   #14751
+  </li>
+  <li>
+   Update cue &amp; play indicators on paused decks when switching cue mode
+   14930
+   9928
   </li>
  </ul>
 </description>
