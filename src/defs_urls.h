@@ -48,7 +48,7 @@
 #define MIXXX_MANUAL_CONTROLS_URL \
     MIXXX_MANUAL_URL "/chapters/advanced_topics.html#mixxx-controls"
 #define MIXXX_MANUAL_SOUND_URL \
-    MIXXX_MANUAL_URL "/chapters/preferences.html#sound-hardware"
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware.html"
 #define MIXXX_MANUAL_LIBRARY_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#library"
 #define MIXXX_MANUAL_CUE_MODES_URL \
