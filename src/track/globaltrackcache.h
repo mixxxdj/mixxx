@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QQueue>
 #include <QWaitCondition>
 #include <map>
 #include <unordered_map>

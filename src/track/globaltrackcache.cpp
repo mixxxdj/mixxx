@@ -1,6 +1,7 @@
 #include "track/globaltrackcache.h"
 
 #include <QCoreApplication>
+#include <QThread>
 #include <QtGlobal>
 
 #include "moc_globaltrackcache.cpp"
