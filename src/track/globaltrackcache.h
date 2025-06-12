@@ -1,6 +1,8 @@
 #pragma once
-
+#include <QList>
+#include <QMutex>
 #include <QQueue>
+#include <QThread>
 #include <QWaitCondition>
 #include <map>
 #include <unordered_map>
@@ -12,8 +14,17 @@
 
 // forward declaration(s)
 class GlobalTrackCache;
+class GlobalTrackCache {
+  private:
+    QMutex m_shutdownMutex;
+    QWaitCondition m_shutdownCv;
+    bool m_shutdown = false;
 
-enum class GlobalTrackCacheLookupResult {
+    QQueue<GlobalTrackCacheEntryPointer> m_pendingEntries;
+    QList<QThread*> m_workerThreads;
+
+    QMutex m_queueMutex;
+} enum class GlobalTrackCacheLookupResult {
     None,
     Hit,
     Miss,
