@@ -82,9 +82,12 @@ const TempoFaderTicksPerMm = 4096 / 77; // 53.1948..
 const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
 // Value center may be off the labeled center.
 // Use this setting to compensate per device.
-const TempoCenterValueOffset = engine.getSetting("tempoCenterOffsetMm") || 0.0;
-const TempoCenterUpper = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
-const TempoCenterLower = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
+const TempoCenterValueOffsetL = (engine.getSetting("tempoCenterOffsetMmL") || 0.0) * TempoFaderTicksPerMm;
+const TempoCenterValueOffsetR = (engine.getSetting("tempoCenterOffsetMmR") || 0.0) * TempoFaderTicksPerMm;
+const TempoCenterUpperL = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetL;
+const TempoCenterLowerL = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetL;
+const TempoCenterUpperR = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetR;
+const TempoCenterLowerR = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetR;
 
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
@@ -1643,19 +1646,32 @@ class S4Mk3Deck extends Deck {
             } : undefined,
         });
         this.tempoFader = new Pot({
+            deck: this,
             inKey: "rate",
             outKey: "rate",
             appliedValue: null,
-
+            tempoCenterLower: null,
+            tempoCenterUpper: null,
             input: function(value) {
                 const receivingFirstValue = this.appliedValue === null;
 
-                if (value < TempoCenterLower) {
+                if (receivingFirstValue) {
+                    // Initialize center range incl. offset
+                    if (this.deck === TraktorS4MK3.leftDeck) {
+                        this.tempoCenterLower = TempoCenterLowerL;
+                        this.tempoCenterUpper = TempoCenterUpperL;
+                    } else {
+                        this.tempoCenterLower = TempoCenterLowerR;
+                        this.tempoCenterUpper = TempoCenterUpperR;
+                    }
+                }
+
+                if (value < this.tempoCenterLower) {
                     // scale input for lower range
-                    this.appliedValue = script.absoluteLin(value, -1, 0, 0, TempoCenterLower);
-                } else if (value > TempoCenterUpper) {
+                    this.appliedValue = script.absoluteLin(value, -1, 0, 0, this.tempoCenterLower);
+                } else if (value > this.tempoCenterUpper) {
                     // scale input for upper range
-                    this.appliedValue = script.absoluteLin(value, 0, 1, TempoCenterUpper, 4096);
+                    this.appliedValue = script.absoluteLin(value, 0, 1, this.tempoCenterUpper, 4096);
                 } else {
                     // reset rate in center region
                     this.appliedValue = 0;
