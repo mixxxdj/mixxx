@@ -64,6 +64,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::apiChanged);
+    apiLabel->setText(apiLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SOUND_API_URL));
 
     sampleRateComboBox->clear();
     const auto sampleRates = m_pSoundManager->getSampleRates();
