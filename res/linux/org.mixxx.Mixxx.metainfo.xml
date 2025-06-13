@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.2" type="development" date="2025-06-06" timestamp="1749241083">
+    <release version="2.5.2" type="stable" date="2025-06-13" timestamp="1749772800">
       <description>
  <p>
   Library

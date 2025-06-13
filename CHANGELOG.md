@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (unreleased)
+## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (2025-06-13)
 
 ### Library
 
