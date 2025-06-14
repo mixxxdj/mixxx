@@ -206,6 +206,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
     // Special case -- no scaling needed!
     if (rate_diff == 0 && (rate_new == 1.0 || rate_new == -1.0)) {
+        qDebug() << "No scaling required.";
         return do_copy(buf, buf_size);
     }
 

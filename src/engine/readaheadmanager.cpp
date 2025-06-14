@@ -36,7 +36,7 @@ SINT ReadAheadManager::getNextSamples(double dRate,
         CSAMPLE* pOutput,
         SINT requested_samples,
         mixxx::audio::ChannelCount channelCount) {
-    // qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
+    qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
 
     int modSamples = requested_samples % channelCount;
     if (modSamples != 0) {
@@ -204,7 +204,7 @@ SINT ReadAheadManager::getNextSamples(double dRate,
         }
     }
 
-    // qDebug() << "read" << m_currentPosition << samples_from_reader;
+    qDebug() << "read" << m_currentPosition << samples_from_reader;
     return samples_from_reader;
 }
 
@@ -212,7 +212,7 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
     m_pRateControl = pRateControl;
 }
 
-// Not thread-save, call from engine thread only
+// Not thread-safe, call from engine thread only
 void ReadAheadManager::notifySeek(double seekPosition) {
     m_currentPosition = seekPosition;
     m_cacheMissHappened = false;
@@ -275,7 +275,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
     m_readAheadLog.push_back(newEntry);
 }
 
-// Not thread-save, call from engine thread only
+// Not thread-safe, call from engine thread only
 double ReadAheadManager::getFilePlaypositionFromLog(
         double currentFilePlayposition,
         double numConsumedSamples) {
