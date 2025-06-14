@@ -276,7 +276,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 #endif
 
 #ifdef __LIBSAMPLERATE__
-    m_pScaleSR = new EngineBufferScaleSR(m_pReadAheadManager);
+    m_pScaleSR = new EngineBufferScaleSR(m_pReadAheadManager, m_pScratchingEngine->get());
 #endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
     qDebug() << "setting keylock engine to " << m_pScaleKeylock;
@@ -284,7 +284,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     slotScratchingEngineChanged(m_pScratchingEngine->get());
     qDebug() << "setting scratch engine to " << m_pScaleVinyl;
 
-    m_pScale = m_pScaleKeylock; // m_pScale = m_pScaleVinyl originally.
+    m_pScale = m_pScaleVinyl; // m_pScale = m_pScaleVinyl originally.
     qDebug() << "current scaler " << m_pScale;
 
     m_pScale->clear(); // delete scaler state stored previously
@@ -887,26 +887,20 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     }
 }
 
-void EngineBuffer::slotScratchingEngineChanged(double dIndex) {
+void EngineBuffer::slotScratchingEngineChanged(double eIndex) {
     if (m_bScalerOverride) {
         return;
     }
-    const ScratchingEngine engine = static_cast<ScratchingEngine>(dIndex);
+    const ScratchingEngine engine = static_cast<ScratchingEngine>(eIndex);
     switch (engine) {
     case ScratchingEngine::NaiveLinear:
         m_pScaleVinyl = m_pScaleLinear;
         break;
 #ifdef __LIBSAMPLERATE__
     case ScratchingEngine::SampleRateLinear:
-        m_pScaleSR->setQuality(static_cast<double>(engine));
-        m_pScaleVinyl = m_pScaleSR;
-        break;
     case ScratchingEngine::SampleRateSincFastest:
-        m_pScaleSR->setQuality(static_cast<double>(engine));
-        m_pScaleVinyl = m_pScaleSR;
-        break;
     case ScratchingEngine::SampleRateSincFinest:
-        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleSR->setQuality(eIndex);
         m_pScaleVinyl = m_pScaleSR;
         break;
 #endif
@@ -925,6 +919,7 @@ void EngineBuffer::processTrackLocked(
     m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackEndPositionOld = getTrackEndPosition();
 
+    // this is the scaling ratio for resampling
     double baseSampleRate = 0.0;
     if (sampleRate.isValid()) {
         baseSampleRate = m_trackSampleRateOld / sampleRate; // basesamplerate is some ratio
@@ -1094,6 +1089,7 @@ void EngineBuffer::processTrackLocked(
             m_pScale->clear();
         }
 
+        qDebug() << "[processtrackloaded] Current Scaler: " << m_pScale;
         m_baserate_old = baseSampleRate;
         m_speed_old = speed;
         m_pitch_old = pitchRatio;
@@ -1104,7 +1100,6 @@ void EngineBuffer::processTrackLocked(
         // base rate (ratio between sample rate of the source audio and the
         // main samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
-
         m_pScale->setScaleParameters(baseSampleRate,
                 &speed,
                 &pitchRatio);
@@ -1151,6 +1146,7 @@ void EngineBuffer::processTrackLocked(
     if (!bCurBufferPaused) {
         // Perform scaling of Reader buffer into buffer.
         const double framesRead = m_pScale->scaleBuffer(pOutput, bufferSize);
+        qDebug() << "Buffer not paused, read " << framesRead << " frames";
 
         // TODO(XXX): The result framesRead might not be an integer value.
         // Converting to samples here does not make sense. All positional
@@ -1254,6 +1250,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
+    // we check if the samplerate has changed on each DAC request.
     m_pScaleLinear->setSignal(m_sampleRate, m_channelCount);
     m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__

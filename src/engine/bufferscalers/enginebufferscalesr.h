@@ -19,7 +19,7 @@ class EngineBufferScaleSR : public EngineBufferScale {
     Q_OBJECT
   public:
     explicit EngineBufferScaleSR(
-            ReadAheadManager* pReadAheadManager);
+            ReadAheadManager* pReadAheadManager, double eIndex);
     ~EngineBufferScaleSR() override;
 
     void setScaleParameters(double base_rate,
@@ -39,7 +39,8 @@ class EngineBufferScaleSR : public EngineBufferScale {
     void onSignalChanged() override;
 
     ReadAheadManager* m_pReadAheadManager;
-
     bool m_bBackwards;
-    double m_pEngineQuality;
+
+    SRC_STATE* m_pResampler;
+    mixxx::SampleBuffer m_bufferBack;
 };
