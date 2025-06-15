@@ -180,7 +180,7 @@
           <value label="Dim Pink">115</value>
           <value label="White">121</value>
         </option>
-        <option variable="superOffColor" type="enum" label="Quick Effect Switch On Color">
+        <option variable="superOnColor" type="enum" label="Quick Effect Switch On Color">
           <description>The color of the activated quick effect kill switch.</description>
           <value label="Off">1</value>
           <value label="Firmware Controlled">127</value>
@@ -204,9 +204,9 @@
           <value label="Dim Pink">115</value>
           <value label="White">121</value>
         </option>
-        <option variable="superOnColor" type="enum" label="Quick Effect Switch Off Color">
+        <option variable="superOffColor" type="enum" label="Quick Effect Switch Off Color">
           <description>The color of the inactive quick effect kill switch.</description>
-          <value label="Off" default="true">1</value>
+          <value label="Off">1</value>
           <value label="Firmware Controlled">127</value>
           <value label="Red">18</value>
           <value label="Dim Red">19</value>
@@ -217,7 +217,7 @@
           <value label="Lime">54</value>
           <value label="Dim Lime">55</value>
           <value label="Green">66</value>
-          <value label="Dim Green">67</value>
+          <value label="Dim Green" default="true">67</value>
           <value label="Celeste">78</value>
           <value label="Dim Celeste">79</value>
           <value label="Blue">90</value>

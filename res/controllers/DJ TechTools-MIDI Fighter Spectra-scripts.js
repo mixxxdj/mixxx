@@ -65,7 +65,8 @@ var MidiFighterSpectra;
                     midi: [0x92, 0x5C + i],
                     key: "enabled",
                     type: components.Button.prototype.types.toggle,
-                    on: COLORS.GREEN,
+                    on: engine.getSetting("superOnColor"),
+                    off: engine.getSetting("superOffColor"),
                 });
                 this.stemLayer[i] = new components.Button({
                     group: `[Channel1_Stem${i + 1}]`,
@@ -211,8 +212,8 @@ var MidiFighterSpectra;
                     midi: [0x92, 0x24 + i],
                     key: "enabled",
                     type: components.Button.prototype.types.toggle,
-                    off: engine.getSetting("superOnColor"),
-                    on: engine.getSetting("superOffColor"),
+                    on: engine.getSetting("superOnColor"),
+                    off: engine.getSetting("superOffColor"),
                 });
             }
 
