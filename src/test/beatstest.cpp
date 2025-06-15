@@ -22,7 +22,8 @@ const auto kConstTempoBeats = Beats(
         kStartPosition,
         kBpm,
         kSampleRate,
-        QString());
+        QString(),
+        0);
 
 // Create beats with 8 beats at 120 BPM, then 16 beats at 60 Bpm, followed by 120 BPM.
 const auto kNonConstTempoBeats = Beats(
@@ -33,7 +34,8 @@ const auto kNonConstTempoBeats = Beats(
         kStartPosition + 8 * kSampleRate.value() / 2 + 16 * kSampleRate.value(),
         kBpm,
         kSampleRate,
-        QString());
+        QString(),
+        0);
 
 TEST(BeatsTest, ConstTempoGetBpmInRange) {
     EXPECT_DOUBLE_EQ(kBpm.value(),
