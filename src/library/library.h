@@ -162,6 +162,7 @@ class Library: public QObject {
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);
+    void exportPlaylist(int playlistId);
 #endif
     void saveModelState();
     void restoreModelState();

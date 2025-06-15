@@ -227,13 +227,14 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-cmake_dependent_option(
-  QML
-  "Build with QML"
-  ON
-  "QT6"
-  OFF
-)
+
+# Because of multiple concurrent definition of symbols caused by the rendergraph
+# compile definition we need to disable QML by default. This avoids the risk of
+# undefined behaviour in a stable build.
+# See: https://github.com/mixxxdj/mixxx/issues/14766
+# Once this is fixed we can revert the commit introducing this.
+option(QML "Build with QML" OFF)
+
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
 if(QOPENGL)
@@ -485,6 +486,7 @@ set_property(
 )
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
 # We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) to save
@@ -503,7 +505,7 @@ message(STATUS "Optimization level: ${OPTIMIZE}")
 if(MSVC)
   # Microsoft Visual Studio Compiler
   add_compile_options(/UTF8)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
     message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -556,7 +558,7 @@ if(MSVC)
     # unless link time code generation (like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
+      # Optimize Debug Builds as well, to have "normal" behavior of Mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
       string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -626,7 +628,7 @@ if(MSVC)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -636,7 +638,7 @@ if(MSVC)
       endif()
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling optimizations for native system, specified by user")
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -651,9 +653,9 @@ if(MSVC)
       )
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
         message("Enabling pure x64 instruction set (without AVX etc.)")
-      else()
+      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
       endif()
     else()
@@ -665,7 +667,7 @@ if(MSVC)
   else()
     # OPTIMIZE=off
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-      #Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -685,7 +687,7 @@ if(MSVC)
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-      #Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -2841,7 +2843,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.24.3)
+  set(LIBDJINTEROP_VERSION 0.26.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2904,7 +2906,7 @@ if(ENGINEPRIME)
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
       URL_HASH
-        SHA256=df41fe39bed9d16d27a3649d237b68edd2cdb6fc71a82cae5cd746d4e4ef6578
+        SHA256=f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -4991,6 +4993,23 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake")
 if(WIN32)
   # override not working default NSIS
   set(CPACK_GENERATOR WIX)
+
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64")
+    if(${CMAKE_VERSION} VERSION_LESS "3.24")
+      message(FATAL_ERROR "WIX: Need CMake version >= 3.24 for ARM64")
+    endif()
+    set(CPACK_WIX_ARCHITECTURE "ARM64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
+    set(CPACK_WIX_ARCHITECTURE "x64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+    set(CPACK_WIX_ARCHITECTURE "x86")
+  else()
+    message(
+      FATAL_ERROR
+      "WIX: Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}"
+    )
+  endif()
+
   # uses CMAKE_PROJECT_VERSION
   configure_file(packaging/wix/LICENSE.rtf.in packaging/wix/LICENSE.rtf @ONLY)
 endif()

@@ -1054,6 +1054,39 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
     m_ramp[deck] = true;
 }
 
+bool ControllerScriptInterfaceLegacy::isBrakeActive(int deck) {
+    if (deck >= m_brakeActive.size()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("isBrakeActive called with invalid deck index %1, "
+                               "returning false")
+                        .arg(QString::number(deck)));
+        return false;
+    }
+    return m_brakeActive[deck];
+}
+
+bool ControllerScriptInterfaceLegacy::isSpinbackActive(int deck) {
+    if (deck >= m_spinbackActive.size()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("isSpinbackActive called with invalid deck index %1, "
+                               "returning false")
+                        .arg(QString::number(deck)));
+        return false;
+    }
+    return m_softStartActive[deck];
+}
+
+bool ControllerScriptInterfaceLegacy::isSoftStartActive(int deck) {
+    if (deck >= m_softStartActive.size()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("isSoftStartActive called with invalid deck index %1, "
+                               "returning false")
+                        .arg(QString::number(deck)));
+        return false;
+    }
+    return m_softStartActive[deck];
+}
+
 QByteArray ControllerScriptInterfaceLegacy::convertCharset(
         const ControllerScriptInterfaceLegacy::Charset targetCharset,
         const QString& value) {

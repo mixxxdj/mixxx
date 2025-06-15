@@ -9,6 +9,7 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlvalue.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/slipmodestate.h"
@@ -233,6 +234,8 @@ class EngineBuffer : public EngineObject {
     void seekAbs(mixxx::audio::FramePos);
     void seekExact(mixxx::audio::FramePos);
 
+    void verifyPlay();
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -298,7 +301,6 @@ class EngineBuffer : public EngineObject {
         return m_previousBufferSeek;
     }
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
-    void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput,
             const std::size_t bufferSize,
@@ -410,7 +412,7 @@ class EngineBuffer : public EngineObject {
 
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_pQuantize;
+    PollingControlProxy m_quantize;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
