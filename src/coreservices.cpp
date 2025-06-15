@@ -14,6 +14,7 @@
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/scripting/controllerscriptenginebase.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemixer.h"
@@ -40,7 +41,6 @@
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 
-#include "controllers/scripting/controllerscriptenginebase.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
@@ -722,6 +722,8 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_isInitialized = true;
 
+    ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
+
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();
 }
@@ -863,6 +865,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 #endif
 
     // Stop all pending library operations
