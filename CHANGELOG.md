@@ -331,7 +331,7 @@
 * Fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
 * qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
-## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (unreleased)
+## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (2025-06-13)
 
 ### Library
 
@@ -348,9 +348,13 @@
 * Fix keyboard mappings with non-ASCII characters on Linux
   [#14843](https://github.com/mixxxdj/mixxx/pull/14843)
   [#14734](https://github.com/mixxxdj/mixxx/issues/14734)
-* Browse feature: enable initial sorting during population [#14688](https://github.com/mixxxdj/mixxx/pull/14688)
+* Computer feature: enable initial sorting during population [#14688](https://github.com/mixxxdj/mixxx/pull/14688)
 * Computer feature: avoid false-positve 'has children' for non-directory links
   [#14907](https://github.com/mixxxdj/mixxx/pull/14907)
+* Fix column header mapping when using external library [#13782](https://github.com/mixxxdj/mixxx/pull/13782)
+* Fixed Single track cover reload on reload metadata from file
+  [#14494](https://github.com/mixxxdj/mixxx/pull/14494)
+  [#14409](https://github.com/mixxxdj/mixxx/issues/14409)
 
 ### Controller Mappings
 
@@ -362,6 +366,7 @@
   [#14722](https://github.com/mixxxdj/mixxx/pull/14722)
 * Icon Pro Audio iControls: initial mapping [#14591](https://github.com/mixxxdj/mixxx/pull/14591)
 * Numark Mixtrack Platinium FX: Fix 4 steps browsing issue [#14778](https://github.com/mixxxdj/mixxx/pull/14778)
+* Traktor Kontrol S3: Use GUI config for settings [#14904](https://github.com/mixxxdj/mixxx/pull/14904)
 * Traktor S2 MK3: Fixed LED issue [#14717](https://github.com/mixxxdj/mixxx/pull/14717)
 * Traktor S4 MK2: Use engine settings API for configuration [#14781](https://github.com/mixxxdj/mixxx/pull/14781)
 * Traktor S4 MK3: prevent sync lockup, add setting for tempo center snap
@@ -379,6 +384,8 @@
   [#14805](https://github.com/mixxxdj/mixxx/issues/14805)
 * Fix learning with "No Mapping" selected [#14829](https://github.com/mixxxdj/mixxx/pull/14829)
 * Unit tests for engine.beginTimer [#12437](https://github.com/mixxxdj/mixxx/pull/12437)
+* engine-api.d.ts: brake()/spinback() documentation
+  [#14929](https://github.com/mixxxdj/mixxx/pull/14929)
 
 ### Target support
 
@@ -408,6 +415,14 @@
   [#14173](https://github.com/mixxxdj/mixxx/issues/14173)
 * Sound Hardware preferences: add manual link for Mic monitoring modes
   [#14889](https://github.com/mixxxdj/mixxx/pull/14889)
+* Work around an Ubuntu, Ibus or Qt issue regarding detecting the current keyboard layout.
+  [#14883](https://github.com/mixxxdj/mixxx/pull/14883)
+  [#14838](https://github.com/mixxxdj/mixxx/issues/14838)
+  [#14797](https://github.com/mixxxdj/mixxx/issues/14797)
+* Fix BPM rounding for the 3/2 case [#14751](https://github.com/mixxxdj/mixxx/pull/14751)
+* Update cue & play indicators on paused decks when switching cue mode
+  [14930](https://github.com/mixxxdj/mixxx/pull/14930)
+  [9928](https://github.com/mixxxdj/mixxx/issues/9928)
 
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 
