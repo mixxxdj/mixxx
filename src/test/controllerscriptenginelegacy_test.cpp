@@ -30,6 +30,22 @@
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
+#include "track/track.h"
+#include "sources/soundsourceproxy.h"
+#include "control/controlindicatortimer.h"
+#include "database/mixxxdb.h"
+#include "test/mixxxdbtest.h"
+#include "test/soundsourceproviderregistration.h"
+#include "effects/effectsmanager.h"
+#include "engine/enginemixer.h"
+#include "library/coverartcache.h"
+#include "soundio/soundmanager.h"
+#include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "recording/recordingmanager.h"
+#include "library/library.h"
+#include "engine/channelhandle.h"
 
 using ::testing::_;
 using namespace std::chrono_literals;
@@ -38,7 +54,7 @@ typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxTest {
+class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxDbTest, SoundSourceProviderRegistration {
   protected:
     ControllerScriptEngineLegacyTest()
             : ControllerScriptEngineLegacy(nullptr, logger) {
@@ -57,13 +73,84 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
         initialize();
+
+        // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
+        // but it does a lot of local disk / settings setup.
+        auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+        m_pEffectsManager = std::make_shared<EffectsManager>(config(), pChannelHandleFactory);
+        m_pEngine = std::make_shared<EngineMixer>(
+                config(),
+                "[Master]",
+                m_pEffectsManager.get(),
+                pChannelHandleFactory,
+                true);
+        m_pSoundManager = std::make_shared<SoundManager>(config(), m_pEngine.get());
+        m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
+        m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
+                
+        CoverArtCache::createInstance();
+
+        m_pPlayerManager = std::make_shared<PlayerManager>(config(),
+                m_pSoundManager.get(),
+                m_pEffectsManager.get(),
+                m_pEngine.get());
+
+        m_pPlayerManager->addConfiguredDecks();
+        m_pPlayerManager->addSampler();
+        PlayerInfo::create();
+        m_pEffectsManager->setup();
+
+        const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPooler());
+        if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+            exit(1);
+        }
+
+        m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
+                nullptr,
+                config(),
+                dbConnectionPooler(),
+                [](Track* pTrack) { delete pTrack; });
+
+        m_pRecordingManager = std::make_shared<RecordingManager>(config(), m_pEngine.get());
+        m_pLibrary = std::make_shared<Library>(
+                nullptr,
+                config(),
+                dbConnectionPooler(),
+                m_pTrackCollectionManager.get(),
+                m_pPlayerManager.get(),
+                m_pRecordingManager.get());
+
+        m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+        ControllerScriptEngineBase::registerPlayerManager(m_pPlayerManager);
+        ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
     }
 
+    // Helper to get or add a track by location, like in PlayerManagerTest
+    TrackPointer getOrAddTrackByLocation(const QString& trackLocation) {
+        return m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFilePath(trackLocation));
+    }
     void TearDown() override {
         mixxx::Time::setTestMode(false);
 #ifdef MIXXX_USE_QML
         m_rootItems.clear();
 #endif
+        CoverArtCache::destroy();
+        ControllerScriptEngineBase::registerPlayerManager(nullptr);
+        ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+    }
+
+    ~ControllerScriptEngineLegacyTest() {
+        // Reset in the correct order to avoid singleton destruction issues
+        m_pSoundManager.reset();
+        m_pPlayerManager.reset();
+        PlayerInfo::destroy();
+        m_pLibrary.reset();
+        m_pRecordingManager.reset();
+        m_pEngine.reset();
+        m_pEffectsManager.reset();
+        m_pTrackCollectionManager.reset();
+        m_pControlIndicatorTimer.reset();
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
@@ -107,6 +194,15 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         handleScreenFrame(screeninfo, frame, timestamp);
     }
 #endif
+
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    std::shared_ptr<EngineMixer> m_pEngine;
+    std::shared_ptr<SoundManager> m_pSoundManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
+    std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
+    std::shared_ptr<Library> m_pLibrary;
+    std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {

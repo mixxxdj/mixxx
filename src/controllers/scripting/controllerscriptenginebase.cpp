@@ -35,12 +35,12 @@ void ControllerScriptEngineBase::registerPlayerManager(
     ControllerScriptEngineBase::s_pPlayerManager = pPlayerManager;
 }
 
-#ifdef MIXXX_USE_QML
 void ControllerScriptEngineBase::registerTrackCollectionManager(
         std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
 }
 
+#ifdef MIXXX_USE_QML
 void ControllerScriptEngineBase::handleQMLErrors(const QList<QQmlError>& qmlErrors) {
     for (const QQmlError& error : std::as_const(qmlErrors)) {
         showQMLExceptionDialog(error, m_bErrorsAreFatal);
