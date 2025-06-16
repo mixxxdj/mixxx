@@ -19,6 +19,7 @@ class AnalysisFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
+class GroupedCratesFeature;
 class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
@@ -195,6 +196,7 @@ class Library: public QObject {
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    GroupedCratesFeature* m_pGroupedCratesFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;
