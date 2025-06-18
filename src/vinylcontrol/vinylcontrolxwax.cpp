@@ -448,13 +448,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     if(bHaveSignal) {
         //POSITION: MAYBE  PITCH: YES
 
-        //We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
-        //qDebug() << "Pitch" << dVinylPitch;
-
         if (m_iPosition != -1) {
             //POSITION: YES  PITCH: YES
-            //add a value to the pitch ring (for averaging / smoothing the pitch)
-            //qDebug() << fabs(((m_dVinylPosition - m_dVinylPositionOld) * (dVinylPitch / fabs(dVinylPitch))));
 
             bool reversed = static_cast<bool>(reverseButton->get());
             if (!reversed && m_bWasReversed) {
@@ -483,8 +478,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 }
                 m_bForceResync = false;
-            } else if (fabs(m_dVinylPosition - filePosition) > 0.1 &&
-                       m_dVinylPosition < -2.0) {
+            } else if (fabs(m_dDriftAmt) > 0.1 &&
+                    m_dVinylPosition < -2.0) {
                 //At first I thought it was a bug to resync to leadin in relative mode,
                 //but after using it that way it's actually pretty convenient.
                 //qDebug() << "Vinyl leadin";
@@ -494,14 +489,14 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     m_pRateRatio->set(fabs(dVinylPitch));
                 }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
+                    (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
                 //qDebug() << "resync position (>15.0 sec)";
                 //qDebug() << m_dVinylPosition << m_dVinylPositionOld << m_dVinylPosition - m_dVinylPositionOld;
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
-                       fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
+                    fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
@@ -535,7 +530,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                     fabs(dVinylPitch) < 0.05 &&
-                    fabs(m_dDriftAmt) >= 0.3) {
+                    fabs(m_dDriftAmt) >= 1.0) {
                 //qDebug() << "slow, out of sync, syncing position";
                 syncPosition();
             }
@@ -621,14 +616,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         m_pRateRatio->set(1.0);
 
-        if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                fabs(m_dVinylPosition - filePosition) >= 0.1) {
-            //qDebug() << "stopped, out of sync, syncing position";
-            syncPosition();
-        }
-
-        if(fabs(filePosition - m_dOldFilePos) >= 0.1 ||
-               filePosition == m_dOldFilePos) {
+        if (fabs(filePosition - m_dOldFilePos) >= 0.3 ||
+                filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
             resetSteadyPitch(0.0, 0.0);
