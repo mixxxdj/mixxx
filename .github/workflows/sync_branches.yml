@@ -95,6 +95,7 @@ jobs:
             if [ ! "${BRANCH_EXISTS}" = true ]; then
               gh pr create -B "${TO_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}"
               gh pr edit --add-label "sync-branches"
+              gh pr merge --auto
             fi
           fi
         env:
@@ -107,3 +108,11 @@ jobs:
           PULL_REQUEST_TITLE: Merge changes from `${{ matrix.from_branch }}` into `${{ matrix.to_branch }}`
           PULL_REQUEST_BODY: |
             New content has landed in the `${{ matrix.from_branch }}` branch, so let's merge the changes into `${{ matrix.to_branch }}`.
+
+      - name: "Approve PR"
+        if: ${{ steps.check_sync.outputs.branch_exists == 'true' }}
+        run: |
+          set -x
+          gh pr review "${TO_BRANCH}" --approve -b ":robot: **beep-beep-beeeep** :robot: \n*(Translation: LGTM)*"
+        env:
+          TO_BRANCH: ${{ matrix.to_branch }}
