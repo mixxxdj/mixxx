@@ -153,8 +153,8 @@ bool WaveformRendererTextured::loadTexture() {
                 GL_UNSIGNED_BYTE,
                 m_data.data());
         int error = glGetError();
-        if (error) {
-            qDebug() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
+        VERIFY_OR_DEBUG_ASSERT(!error) {
+            qWarning() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
         }
     } else {
         glDeleteTextures(1, &m_textureId);
