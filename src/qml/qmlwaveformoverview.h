@@ -6,7 +6,7 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 
-#include "qmlplayerproxy.h"
+#include "qmltrackproxy.h"
 #include "waveform/waveform.h"
 
 namespace mixxx {
