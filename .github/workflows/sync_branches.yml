@@ -1,11 +1,20 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 name: Sync Branches
 on:
   workflow_call:
+    inputs:
+      from:
+        description: "The prior release from which to sync"
+        required: true
+        type: string
+      to:
+        description: "The active release in which to sync"
+        required: true
+        type: string
     secrets:
       # PAT setup with content:write and pull_request:write
       pat_token:
         required: true
-  workflow_dispatch:
 
 permissions: {}
 
@@ -14,14 +23,6 @@ env:
   SYNC_COMMITTER_NAME: Mixxx Bot
 jobs:
   sync-branches:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - from_branch: "2.5"
-            to_branch: "2.6"
-          - from_branch: "2.6"
-            to_branch: "main"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -68,23 +69,21 @@ jobs:
             echo "Branch ${SYNC_BRANCH} does not exist yet."
           fi
         env:
-          SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
+          SYNC_BRANCH: sync-branch-${{ inputs.from}}-to-${{ inputs.to }}
 
       - name: "Merge Changes"
         run: |
           set -x
           echo "::group::Fetching and merging branches"
           if [ "${BRANCH_EXISTS}" = true ]; then
-            git fetch origin "${SYNC_BRANCH}" "${TO_BRANCH}" "${FROM_BRANCH}"
             git checkout "${SYNC_BRANCH}"
           else
-            git fetch origin "${TO_BRANCH}" "${FROM_BRANCH}"
             git checkout "${TO_BRANCH}"
             git checkout -b "${SYNC_BRANCH}"
           fi
           git config --global user.email "${SYNC_COMMITTER_EMAIL}"
           git config --global user.name "${SYNC_COMMITTER_NAME}"
-          git pull --no-edit origin "${FROM_BRANCH}" || true
+          git merge -m "Merge branch '${FROM_BRANCH}' into '${TO_BRANCH}'" "origin/${FROM_BRANCH}" || true
           COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
           COMMIT_MERGE="$(git show --no-patch --format="%h" "${SYNC_BRANCH}")"
           git status
@@ -100,10 +99,10 @@ jobs:
           fi
         env:
           BRANCH_EXISTS: ${{ steps.check_sync.outputs.branch_exists }}
-          FROM_BRANCH: ${{ matrix.from_branch}}
-          TO_BRANCH: ${{ matrix.to_branch }}
-          SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
+          FROM_BRANCH: ${{ inputs.from}}
+          TO_BRANCH: ${{ inputs.to }}
+          SYNC_BRANCH: sync-branch-${{ inputs.from}}-to-${{ inputs.to }}
           GITHUB_TOKEN: ${{ secrets.pat_token }}
-          PULL_REQUEST_TITLE: Merge changes from `${{ matrix.from_branch }}` into `${{ matrix.to_branch }}`
+          PULL_REQUEST_TITLE: Merge changes from `${{ inputs.from }}` into `${{ inputs.to }}`
           PULL_REQUEST_BODY: |
-            New content has landed in the `${{ matrix.from_branch }}` branch, so let's merge the changes into `${{ matrix.to_branch }}`.
+            New content has landed in the `${{ inputs.from }}` branch, so let's merge the changes into `${{ inputs.to }}`
