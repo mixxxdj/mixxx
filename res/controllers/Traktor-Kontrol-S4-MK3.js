@@ -198,12 +198,12 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
-const P_Gain = engine.getSetting("P_Gain");
-const I_Gain = engine.getSetting("I_Gain");
-const D_Gain = engine.getSetting("D_Gain");
-const SLIP_FRICTION_FORCE = engine.getSetting("SLIP_FRICTION_FORCE");
-const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION");
-
+const P_Gain = engine.getSetting("P_Gain") || 80000;
+const I_Gain = engine.getSetting("I_Gain") || 1000;
+const D_Gain = engine.getSetting("D_Gain") || 50000;
+const SLIP_FRICTION_FORCE = engine.getSetting("SLIP_FRICTION_FORCE") || 12000;
+const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION") || 0;
+//TODO: move motorized nudge sensitivity here
 
 /********************************************************
                 PAD LAYOUT CONSTANTS
