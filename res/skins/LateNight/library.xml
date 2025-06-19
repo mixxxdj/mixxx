@@ -31,14 +31,11 @@
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>100,</MinimumSize>
                 <Children>
-
                   <Template src="skins:LateNight/decks/preview_deck.xml"/>
-
                   <WidgetGroup><!--SearchBox + Library expand toggle -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
                     <Children>
-
                       <WidgetGroup>
                         <ObjectName>SearchLineBox</ObjectName>
                         <Layout>horizontal</Layout>
@@ -47,7 +44,6 @@
                           <SearchBox></SearchBox>
                         </Children>
                       </WidgetGroup>
-
                       <WidgetGroup>
                         <ObjectName>LibExpandBox</ObjectName>
                         <Layout>vertical</Layout>

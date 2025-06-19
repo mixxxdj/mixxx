@@ -1146,7 +1146,7 @@ void EngineBuffer::processTrackLocked(
     if (!bCurBufferPaused) {
         // Perform scaling of Reader buffer into buffer.
         const double framesRead = m_pScale->scaleBuffer(pOutput, bufferSize);
-        qDebug() << "Buffer not paused, read " << framesRead << " frames";
+        // qDebug() << "Buffer not paused, read " << framesRead << " frames";
 
         // TODO(XXX): The result framesRead might not be an integer value.
         // Converting to samples here does not make sense. All positional

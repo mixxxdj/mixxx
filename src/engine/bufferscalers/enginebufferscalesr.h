@@ -40,7 +40,8 @@ class EngineBufferScaleSR : public EngineBufferScale {
 
     ReadAheadManager* m_pReadAheadManager;
     bool m_bBackwards;
+    mixxx::audio::ChannelCount m_dChannels;
 
     SRC_STATE* m_pResampler;
-    mixxx::SampleBuffer m_bufferBack;
+    mixxx::SampleBuffer m_bufferBack; // to hold samples from RAMAN
 };

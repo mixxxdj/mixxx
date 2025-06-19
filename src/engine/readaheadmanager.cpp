@@ -36,14 +36,14 @@ SINT ReadAheadManager::getNextSamples(double dRate,
         CSAMPLE* pOutput,
         SINT requested_samples,
         mixxx::audio::ChannelCount channelCount) {
-    qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
+    // qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
 
     int modSamples = requested_samples % channelCount;
     if (modSamples != 0) {
         qDebug() << "ERROR: Non-aligned requested_samples to ReadAheadManager::getNextSamples";
         requested_samples -= modSamples;
     }
-    bool in_reverse = dRate < 0;
+    bool in_reverse = dRate < 0; // drate only used to check playback direction
 
     mixxx::audio::FramePos targetPosition;
     // A loop (beat loop or track on repeat) will only limit the amount we
@@ -204,7 +204,7 @@ SINT ReadAheadManager::getNextSamples(double dRate,
         }
     }
 
-    qDebug() << "read" << m_currentPosition << samples_from_reader;
+    // qDebug() << "read" << m_currentPosition << samples_from_reader;
     return samples_from_reader;
 }
 

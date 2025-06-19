@@ -72,8 +72,9 @@ double EngineBufferScaleLinear::scaleBuffer(
         m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
         m_bClear = false;
     }
+
     double rate_add_old = m_dOldRate; // Smoothly interpolate to new playback rate
-    double rate_add_new = m_dRate;
+    double rate_add_new = m_dRate;    // base_rate * tempo ratio
     double frames_read = 0;
 
     if (rate_add_new * rate_add_old < 0) {
@@ -206,7 +207,6 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
     // Special case -- no scaling needed!
     if (rate_diff == 0 && (rate_new == 1.0 || rate_new == -1.0)) {
-        qDebug() << "No scaling required.";
         return do_copy(buf, buf_size);
     }
 
@@ -215,9 +215,9 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     const SINT bufferSizeFrames = getOutputSignal().samples2frames(buf_size);
     const double rate_delta = rate_diff / bufferSizeFrames;
     // use Gaussian sum formula (n(n+1))/2 for
-    //for (int j = 0; j < bufferSizeFrames; ++j) {
+    // for (int j = 0; j < bufferSizeFrames; ++j) {
     //    frames += (j * rate_delta) + rate_old;
-    //}
+    // }
     frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
     frames *= rate_delta;
     frames += rate_old * bufferSizeFrames;

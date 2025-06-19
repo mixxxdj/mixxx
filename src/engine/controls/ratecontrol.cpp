@@ -498,6 +498,7 @@ double RateControl::calculateSpeed(double baserate,
             if (m_pReverseButton->toBool() && !m_pScratch2Enable->toBool() &&
                     (!bVinylControlEnabled ||
                             vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+                qDebug() << "calculatespeed(): reversing. New rate: " << -rate;
                 rate = -rate;
                 *pReportReverse = true;
             }
