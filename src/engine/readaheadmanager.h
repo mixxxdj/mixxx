@@ -123,5 +123,6 @@ class ReadAheadManager {
     double m_currentPosition;
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
-    bool m_cacheMissHappened;
+    int m_cacheMissCount;
+    bool m_cacheMissExpected;
 };
