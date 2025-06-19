@@ -19,4 +19,4 @@ jobs:
 
   sync:
     if: ${{ github.ref != 'refs/heads/main' }}
-    uses: ./.github/workflows/sync_branch.yml
+    uses: ./.github/workflows/sync_branches.yml
