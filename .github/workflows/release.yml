@@ -20,3 +20,5 @@ jobs:
   sync:
     if: ${{ github.ref != 'refs/heads/main' }}
     uses: ./.github/workflows/sync_branches.yml
+    secrets:
+      pat_token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
