@@ -1,9 +1,6 @@
 name: Sync Branches
 on:
-  push:
-    branches:
-      - "2.5"
-      - "2.6"
+  workflow_call:
   workflow_dispatch:
 
 permissions: {}
