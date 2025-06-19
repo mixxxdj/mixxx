@@ -177,14 +177,18 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     auto samplingMode = m_pConfig->getValue(
             ConfigKey(kWaveformConfigGroup, kWaveformSamplingFunctionConfigKey),
             Waveform::Sampling::MAX);
-    if ((!pCurrentTrackWaveformSummary.isNull() &&
-                pCurrentTrackWaveformSummary->getSamplingMode() !=
-                        samplingMode) ||
-            (!pCurrentTrackWaveform.isNull() &&
-                    pCurrentTrackWaveform->getSamplingMode() != samplingMode)) {
-        kLogger.debug() << "loadStored - Stored waveform uses"
+    if (!pCurrentTrackWaveformSummary.isNull() &&
+            pCurrentTrackWaveformSummary->getSamplingMode() !=
+                    samplingMode) {
+        kLogger.debug() << "loadStored - Stored waveform summary uses"
                         << pCurrentTrackWaveformSummary->getSamplingMode()
-                        << "and" << pCurrentTrackWaveform->getSamplingMode()
+                        << "sampling but current sampling is" << samplingMode;
+        return true;
+    }
+    if (!pCurrentTrackWaveform.isNull() &&
+            pCurrentTrackWaveform->getSamplingMode() != samplingMode) {
+        kLogger.debug() << "loadStored - Stored waveform uses"
+                        << pCurrentTrackWaveform->getSamplingMode()
                         << "sampling but current sampling is" << samplingMode;
         return true;
     }
