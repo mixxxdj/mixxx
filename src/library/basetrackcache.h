@@ -64,6 +64,7 @@ class BaseTrackCache : public QObject {
     QString columnNameForFieldIndex(int index) const;
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
+    int endFieldIndex() const;
     virtual void filterAndSort(const QSet<TrackId>& trackIds,
                                const QString& query,
                                const QString& extraFilter,
@@ -73,7 +74,6 @@ class BaseTrackCache : public QObject {
                                QHash<TrackId, int>* trackToIndex);
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
-    virtual void ensureCached(const QSet<TrackId>& trackIds);
 
   signals:
     void tracksChanged(const QSet<TrackId>& trackIds);
@@ -87,7 +87,7 @@ class BaseTrackCache : public QObject {
     void slotTrackClean(TrackId trackId);
 
   private:
-    const TrackPointer& getRecentTrack(TrackId trackId) const;
+    const TrackPointer& getCachedTrack(TrackId trackId) const;
     void replaceRecentTrack(TrackPointer pTrack) const;
     void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;
     void resetRecentTrack() const;

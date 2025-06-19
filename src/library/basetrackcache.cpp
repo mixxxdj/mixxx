@@ -51,6 +51,10 @@ int BaseTrackCache::fieldIndex(const QString& columnName) const {
     return m_columnCache.fieldIndex(columnName);
 }
 
+int BaseTrackCache::endFieldIndex() const {
+    return m_columnCache.endFieldIndex();
+}
+
 QString BaseTrackCache::columnNameForFieldIndex(int index) const {
     return m_columnCache.columnNameForFieldIndex(index);
 }
@@ -107,11 +111,7 @@ void BaseTrackCache::ensureCached(TrackId trackId) {
     updateTrackInIndex(trackId);
 }
 
-void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
-    updateTracksInIndex(trackIds);
-}
-
-const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
+const TrackPointer& BaseTrackCache::getCachedTrack(TrackId trackId) const {
     DEBUG_ASSERT(m_bIsCaching);
     // Only refresh the recently used track if the identifiers
     // don't match. Otherwise simply return the corresponding
@@ -121,11 +121,13 @@ const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
         if (trackId.isValid()) {
             TrackPointer trackPtr =
                     GlobalTrackCacheLocker().lookupTrackById(trackId);
-            replaceRecentTrack(
-                    std::move(trackId),
-                    std::move(trackPtr));
-        } else {
-            resetRecentTrack();
+            if (!trackPtr) {
+                resetRecentTrack();
+            } else {
+                replaceRecentTrack(
+                        std::move(trackId),
+                        std::move(trackPtr));
+            }
         }
     }
     return m_recentTrackPtr;
@@ -140,50 +142,15 @@ void BaseTrackCache::replaceRecentTrack(TrackPointer pTrack) const {
 }
 
 void BaseTrackCache::replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const {
-    DEBUG_ASSERT(m_bIsCaching);
+    // reset recent track first, because that may evict if from GlobalTrackCache cache
+    // causing updateIndexWithQuery() which resets the recent track again.
+    resetRecentTrack();
+    DEBUG_ASSERT(!pTrack || m_recentTrackId != pTrack->getId());
     m_recentTrackId = std::move(trackId);
-    if (m_recentTrackId.isValid()) {
-        if (pTrack) {
-            DEBUG_ASSERT(m_recentTrackId == pTrack->getId());
-
-            // NOTE(uklotzde, 2018-02-07, Fedora 27, GCC 7.3.1, optimize=native (-O3), Core i5-6440HQ)
-            // Using the move assignment operator here will sooner or later
-            // store a nullptr in m_recentTrackPtr even if both m_recentTrackPtr
-            // and pTrack contain a valid but different pointer before the
-            // assignment and the custom deleter is invoked on m_recentTrackPtr
-            // during the assignment. The issue does not occur when either
-            // changing the optimization level from 'native' to 'none' or
-            // when replacing the move assignment with a swap operation (see below).
-            //
-            // Fucked up by the optimizer:
-            // m_recentTrackPtr = std::move(pTrack);
-            //
-            // The workaround:
-            m_recentTrackPtr.swap(pTrack);
-            //
-            // The following debug assertion will be triggered eventually
-            // without the workaround in place when browsing and editing
-            // properties of tracks.
-            DEBUG_ASSERT(m_recentTrackPtr);
-
-            if (m_recentTrackPtr->isDirty()) {
-                m_dirtyTracks.insert(m_recentTrackId);
-            } else {
-                m_dirtyTracks.remove(m_recentTrackId);
-            }
-        } else {
-            // The track cannot be dirty if it is not present
-            m_recentTrackPtr.reset();
-            m_dirtyTracks.remove(m_recentTrackId);
-        }
-    } else {
-        DEBUG_ASSERT(!pTrack);
-        m_recentTrackPtr.reset();
-    }
+    m_recentTrackPtr = std::move(pTrack);
 }
 
 void BaseTrackCache::resetRecentTrack() const {
-    DEBUG_ASSERT(m_bIsCaching);
     m_recentTrackId = TrackId();
     m_recentTrackPtr.reset();
 }
@@ -210,7 +177,7 @@ bool BaseTrackCache::updateTrackInIndex(
             record[i] = getTrackValueForColumn(pTrack, i);
         }
         if (m_bIsCaching) {
-            replaceRecentTrack(std::move(trackId), pTrack);
+            replaceRecentTrack(trackId, pTrack);
         }
     } else {
         if (m_bIsCaching) {
@@ -226,10 +193,6 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
 
     if (sDebug) {
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
-    }
-
-    if (m_bIsCaching) {
-        resetRecentTrack();
     }
 
     QSqlQuery query(m_database);
@@ -286,6 +249,9 @@ void BaseTrackCache::buildIndex() {
     // clear the table, and keep track of what IDs we see, then delete the ones
     // we don't see.
     m_trackInfo.clear();
+    if (m_bIsCaching) {
+        resetRecentTrack();
+    }
 
     if (!updateIndexWithQuery(queryString)) {
         qDebug() << "buildIndex failed!";
@@ -445,7 +411,7 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     }
 
     if (m_bIsCaching) {
-        TrackPointer pTrack = getRecentTrack(trackId);
+        TrackPointer pTrack = getCachedTrack(trackId);
         if (pTrack) {
             QVariant result = getTrackValueForColumn(pTrack, column);
             if (result.isValid()) {
@@ -576,8 +542,8 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     for (TrackId trackId : std::as_const(dirtyTracks)) {
         // Only get the track if it is in the cache. Tracks that
         // are not cached in memory cannot be dirty.
-        TrackPointer pTrack = getRecentTrack(trackId);
-
+        // Bypass getCachedTrack() to not invalidate m_recentTrackId
+        TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (!pTrack) {
             continue;
         }

@@ -69,12 +69,13 @@ class ColumnCache : public QObject {
         NUM_COLUMNS
     };
 
-    explicit ColumnCache(const QStringList& columns = QStringList());
+    ColumnCache();
+    explicit ColumnCache(QStringList columns);
 
-    void setColumns(const QStringList& columns);
+    void setColumns(QStringList columns);
 
     inline int fieldIndex(Column column) const {
-        if (column < 0 || column >= NUM_COLUMNS) {
+        if (static_cast<size_t>(column) >= std::size(m_columnIndexByEnum)) {
             return -1;
         }
         return m_columnIndexByEnum[column];
@@ -84,9 +85,9 @@ class ColumnCache : public QObject {
         return m_columnIndexByName.value(columnName, -1);
     }
 
-    inline QString columnName(Column column) const {
-        return m_columnNameByEnum[column];
-    }
+    const QString& columnName(Column column) const;
+    QString columnTitle(Column column) const;
+    int columnDefaultWidth(Column column) const;
 
     inline QString columnNameForFieldIndex(int index) const {
         if (index < 0 || index >= m_columnsByIndex.size()) {
@@ -95,12 +96,27 @@ class ColumnCache : public QObject {
         return m_columnsByIndex.at(index);
     }
 
+    int endFieldIndex() const {
+        return m_columnsByIndex.size();
+    }
+
     inline QString columnSortForFieldIndex(int index) const {
         // Check if there is a special sort clause
         QString format = m_columnSortByIndex.value(index, "%1");
         return format.arg(columnNameForFieldIndex(index));
     }
 
+    KeyUtils::KeyNotation keyNotation() const {
+        return KeyUtils::keyNotationFromNumericValue(
+                m_pKeyNotationCP->get());
+    }
+
+    static int defaultColumnWidth();
+
+  private slots:
+    void slotSetKeySortOrder(double);
+
+  private:
     void insertColumnSortByEnum(
             Column column,
             const QString& sortFormat) {
@@ -112,28 +128,14 @@ class ColumnCache : public QObject {
         m_columnSortByIndex.insert(index, sortFormat);
     }
 
-    void insertColumnNameByEnum(
-            Column column,
-            const QString& name) {
-        DEBUG_ASSERT(!m_columnNameByEnum.contains(column) ||
-                m_columnNameByEnum[column] == name);
-        m_columnNameByEnum.insert(column, name);
-    }
 
-    KeyUtils::KeyNotation keyNotation() const {
-        return KeyUtils::keyNotationFromNumericValue(
-                m_pKeyNotationCP->get());
-    }
-
-  private slots:
-    void slotSetKeySortOrder(double);
-
-  private:
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
-    QMap<Column, QString> m_columnNameByEnum;
     // A mapping from column enum to logical index.
+    // Columns in the enums but not in the table are marked by -1
+    // Note: There might be (hidden) columns in the table tracked with
+    // m_columnIndexByName but without a corresponding enum.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
     ControlProxy* m_pKeyNotationCP;

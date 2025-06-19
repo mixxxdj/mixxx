@@ -383,6 +383,16 @@ QUrl DlgPrefSound::helpUrl() const {
     return QUrl(MIXXX_MANUAL_SOUND_URL);
 }
 
+void DlgPrefSound::selectIOTab(mixxx::preferences::SoundHardwareTab tab) {
+    switch (tab) {
+    case mixxx::preferences::SoundHardwareTab::Input:
+        ioTabs->setCurrentWidget(inputTab);
+        return;
+    case mixxx::preferences::SoundHardwareTab::Output:
+        ioTabs->setCurrentWidget(outputTab);
+        return;
+    }
+}
 /// Initializes (and creates) all the path items. Each path item widget allows
 /// the user to input a sound device name and channel number given a description
 /// of what will be done with that info. Inputs and outputs are grouped by tab,
@@ -1000,7 +1010,9 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString lineBreak("<br/>");
+            const QString lineBreak("<br/>");
+            const QString kMicMonitorHintTrString =
+                    tr("Refer to the Mixxx User Manual for details.");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation.get() == 0.0) {
                 latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
@@ -1011,7 +1023,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
@@ -1021,7 +1036,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "for Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else {

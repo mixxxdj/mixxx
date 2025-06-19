@@ -51,16 +51,34 @@ Variables:
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <Template src="skins:Tango/controls/button_2state_right_display.xml">
-        <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
-        <SetVariable name="ObjectName">CueButton</SetVariable>
-        <SetVariable name="Size">24f,24f</SetVariable>
-        <SetVariable name="state_0_text">Q</SetVariable>
-        <SetVariable name="state_1_text">Q</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,cue_default</SetVariable>
-        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_gotoandstop</SetVariable>
-        <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,cue_indicator</SetVariable>
-      </Template>
+      <CueButton>
+        <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+        <ObjectName>CueButton</ObjectName>
+        <Size>24f,24f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
+        <Group><Variable name="group"/></Group>
+        <State>
+          <Number>0</Number>
+          <Text>Q</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Q</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+      </CueButton>
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 

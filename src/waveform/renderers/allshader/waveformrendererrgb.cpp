@@ -28,22 +28,6 @@ WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
     setUsePreprocess(true);
 }
 
-void WaveformRendererRGB::setAxesColor(const QColor& axesColor) {
-    getRgbF(axesColor, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
-}
-
-void WaveformRendererRGB::setLowColor(const QColor& lowColor) {
-    getRgbF(lowColor, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
-}
-
-void WaveformRendererRGB::setMidColor(const QColor& midColor) {
-    getRgbF(midColor, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
-}
-
-void WaveformRendererRGB::setHighColor(const QColor& highColor) {
-    getRgbF(highColor, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
-}
-
 void WaveformRendererRGB::onSetup(const QDomNode&) {
 }
 
@@ -83,7 +67,7 @@ bool WaveformRendererRGB::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -180,7 +164,8 @@ bool WaveformRendererRGB::preprocessInner() {
                 u8maxLow[signalChn] = math_max(u8maxLow[signalChn], waveformData.filtered.low);
                 u8maxMid[signalChn] = math_max(u8maxMid[signalChn], waveformData.filtered.mid);
                 u8maxHigh[signalChn] = math_max(u8maxHigh[signalChn], waveformData.filtered.high);
-                u8maxAllChn[chn] = math_max(u8maxAllChn[chn], waveformData.filtered.all);
+                u8maxAllChn[signalChn] = math_max(
+                        u8maxAllChn[signalChn], waveformData.filtered.all);
             }
         }
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
@@ -244,11 +229,11 @@ bool WaveformRendererRGB::preprocessInner() {
             // Lines are thin rectangles
             if (!splitLeftRight) {
                 vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                                   halfBreadth - heightFactorAbs * maxAllChn[0]},
+                                                   halfBreadth - heightFactorAbs * maxAllChn[chn]},
                         {fpos + halfPixelSize,
                                 m_isSlipRenderer
                                         ? halfBreadth
-                                        : halfBreadth + heightFactorAbs * maxAllChn[1]},
+                                        : halfBreadth + heightFactorAbs * maxAllChn[chn]},
                         {red,
                                 green,
                                 blue});
