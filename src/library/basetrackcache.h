@@ -106,13 +106,6 @@ class BaseTrackCache : public QObject {
             Qt::SortOrder sortOrder,
             const QVariant& val1,
             const QVariant& val2) const;
-    bool trackMatches(const TrackPointer& pTrack,
-            const QRegularExpression& matcher) const;
-    bool trackMatchesNumeric(const TrackPointer& pTrack,
-                             const QStringList& numberMatchers) const;
-    bool trackMatchesNamedString(const TrackPointer& pTrack,
-                             const QStringList& numberMatchers) const;
-    bool evaluateNumeric(const int value, const QString& expression) const;
 
     const QString m_tableName;
     const QString m_idColumn;
