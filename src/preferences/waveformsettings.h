@@ -1,6 +1,14 @@
 #pragma once
 
 #include "preferences/usersettings.h"
+#include "waveform/waveform.h"
+
+namespace {
+
+const QString kWaveformConfigGroup = QStringLiteral("[Waveform]");
+const QString kWaveformSamplingFunctionConfigKey = QStringLiteral("waveform_sampling_function");
+
+} // namespace
 
 class WaveformSettings {
   public:
@@ -24,6 +32,17 @@ class WaveformSettings {
     void setWaveformGenerationWithAnalysisEnabled(bool enabled) {
         m_pConfig->setValue<bool>(
                 ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), enabled);
+    }
+
+    Waveform::Sampling waveformSamplingFunction() const {
+        return m_pConfig->getValue(ConfigKey(kWaveformConfigGroup,
+                                           kWaveformSamplingFunctionConfigKey),
+                Waveform::Sampling::MAX);
+    }
+
+    void setWaveformSamplingFunction(Waveform::Sampling sampling) {
+        m_pConfig->setValue(
+                ConfigKey(kWaveformConfigGroup, kWaveformSamplingFunctionConfigKey), sampling);
     }
 
   private:
