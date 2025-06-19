@@ -32,6 +32,9 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void slotSliderCompression();
     void slotGroupChanged();
 
+  private slots:
+    void slotToggleCueEnabled();
+
   signals:
     void apply(const QString &);
 
@@ -44,6 +47,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void saveMetaData();
     void saveEncoding();
     void saveUseCueFile();
+    void saveUseCueFileAnnotation();
     void saveSplitSize();
 
     // Pointer to config object
