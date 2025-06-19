@@ -18,6 +18,7 @@
       <value label="EQ/Quick Effect Kill Switch" default="true">eq</value>
       <value label="Hotcues">hotcues</value>
       <value label="Samplers">samplers</value>
+      <value label="Stems">stems</value>
     </option>
     <option variable="groundEffectLed" type="enum" default="true" label="Ground Effect LEDs">
       <description>
@@ -179,7 +180,7 @@
           <value label="Dim Pink">115</value>
           <value label="White">121</value>
         </option>
-        <option variable="superOffColor" type="enum" label="Quick Effect Switch On Color">
+        <option variable="superOnColor" type="enum" label="Quick Effect Switch On Color">
           <description>The color of the activated quick effect kill switch.</description>
           <value label="Off">1</value>
           <value label="Firmware Controlled">127</value>
@@ -203,9 +204,9 @@
           <value label="Dim Pink">115</value>
           <value label="White">121</value>
         </option>
-        <option variable="superOnColor" type="enum" label="Quick Effect Switch Off Color">
+        <option variable="superOffColor" type="enum" label="Quick Effect Switch Off Color">
           <description>The color of the inactive quick effect kill switch.</description>
-          <value label="Off" default="true">1</value>
+          <value label="Off">1</value>
           <value label="Firmware Controlled">127</value>
           <value label="Red">18</value>
           <value label="Dim Red">19</value>
@@ -216,7 +217,7 @@
           <value label="Lime">54</value>
           <value label="Dim Lime">55</value>
           <value label="Green">66</value>
-          <value label="Dim Green">67</value>
+          <value label="Dim Green" default="true">67</value>
           <value label="Celeste">78</value>
           <value label="Dim Celeste">79</value>
           <value label="Blue">90</value>
@@ -656,7 +657,7 @@
       <!-- Deck Selection -->
       <control>
         <group>[Channel1]</group>
-        <key>MidiFighterSpectra.controller.selectCueDeck.input</key>
+        <key>MidiFighterSpectra.controller.selectDeck[0].input</key>
         <description>Select deck 1.</description>
         <status>0x92</status>
         <midino>0x34</midino>
@@ -666,7 +667,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MidiFighterSpectra.controller.selectCueDeck.input</key>
+        <key>MidiFighterSpectra.controller.selectDeck[1].input</key>
         <description>Select deck 2.</description>
         <status>0x92</status>
         <midino>0x35</midino>
@@ -676,7 +677,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>MidiFighterSpectra.controller.selectCueDeck.input</key>
+        <key>MidiFighterSpectra.controller.selectDeck[2].input</key>
         <description>Select deck 3.</description>
         <status>0x92</status>
         <midino>0x36</midino>
@@ -686,7 +687,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>MidiFighterSpectra.controller.selectCueDeck.input</key>
+        <key>MidiFighterSpectra.controller.selectDeck[3].input</key>
         <description>Select deck 4.</description>
         <status>0x92</status>
         <midino>0x37</midino>
@@ -694,6 +695,48 @@
           <script-binding/>
         </options>
       </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[4].input</key>
+        <description>Select deck 1.</description>
+        <status>0x92</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[5].input</key>
+        <description>Select deck 2.</description>
+        <status>0x92</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[6].input</key>
+        <description>Select deck 3.</description>
+        <status>0x92</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[7].input</key>
+        <description>Select deck 4.</description>
+        <status>0x92</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
       <!-- Layer 3: Samplers -->
       <control>
         <group>[Sampler1]</group>
@@ -855,6 +898,89 @@
           <script-binding/>
         </options>
       </control>
+
+      <!-- Layer 4: Stems -->
+      <control>
+        <group>[Channel1_Stem1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[0].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem2]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[1].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem3]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[2].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x62</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem4]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[3].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[4].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem2]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[5].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem3]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[6].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem4]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[7].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
     </controls>
     <outputs/>
   </controller>

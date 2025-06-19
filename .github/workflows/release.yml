@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - "[0-9].[0-9]"
+  workflow_dispatch:
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  changelog:
+    uses: ./.github/workflows/changelog.yml
+
+  build:
+    uses: ./.github/workflows/build.yml
+
+  sync:
+    if: ${{ github.ref != 'refs/heads/main' }}
+    uses: ./.github/workflows/sync_branches.yml
+    secrets:
+      pat_token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
