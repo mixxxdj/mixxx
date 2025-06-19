@@ -1,9 +1,10 @@
 name: Sync Branches
 on:
-  push:
-    branches:
-      - "2.5"
-      - "2.6"
+  workflow_call:
+    secrets:
+      # PAT setup with content:write and pull_request:write
+      pat_token:
+        required: true
   workflow_dispatch:
 
 permissions: {}
@@ -42,8 +43,8 @@ jobs:
       - name: "Check out repository"
         uses: actions/checkout@v4.1.7
         with:
-          # PAT setup with content:write and pull_request:write
-          token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
+          token: ${{ secrets.pat_token }}
+          fetch-depth: 0
           persist-credentials: true
 
       - name: "Configure Git"
@@ -71,9 +72,10 @@ jobs:
 
       - name: "Merge Changes"
         run: |
+          set -x
           echo "::group::Fetching and merging branches"
           if [ "${BRANCH_EXISTS}" = true ]; then
-            git fetch origin "${SYNC_BRANCH}" "${FROM_BRANCH}"
+            git fetch origin "${SYNC_BRANCH}" "${TO_BRANCH}" "${FROM_BRANCH}"
             git checkout "${SYNC_BRANCH}"
           else
             git fetch origin "${TO_BRANCH}" "${FROM_BRANCH}"
@@ -82,7 +84,7 @@ jobs:
           fi
           git config --global user.email "${SYNC_COMMITTER_EMAIL}"
           git config --global user.name "${SYNC_COMMITTER_NAME}"
-          git pull --no-edit origin "origin/${FROM_BRANCH}" || true
+          git pull --no-edit origin "${FROM_BRANCH}" || true
           COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
           COMMIT_MERGE="$(git show --no-patch --format="%h" "${SYNC_BRANCH}")"
           git status
@@ -92,7 +94,8 @@ jobs:
           else
             git push origin "${SYNC_BRANCH}"
             if [ ! "${BRANCH_EXISTS}" = true ]; then
-              gh pr create -B "${FROM_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}" --labels "sync-branches"
+              gh pr create -B "${TO_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}"
+              gh pr edit --add-label "sync-branches"
             fi
           fi
         env:
@@ -100,8 +103,7 @@ jobs:
           FROM_BRANCH: ${{ matrix.from_branch}}
           TO_BRANCH: ${{ matrix.to_branch }}
           SYNC_BRANCH: sync-branch-${{ matrix.from_branch}}-to-${{ matrix.to_branch }}
-          # PAT setup with content:write and pull_request:write
-          GITHUB_TOKEN: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
+          GITHUB_TOKEN: ${{ secrets.pat_token }}
           PULL_REQUEST_TITLE: Merge changes from `${{ matrix.from_branch }}` into `${{ matrix.to_branch }}`
           PULL_REQUEST_BODY: |
             New content has landed in the `${{ matrix.from_branch }}` branch, so let's merge the changes into `${{ matrix.to_branch }}`.
