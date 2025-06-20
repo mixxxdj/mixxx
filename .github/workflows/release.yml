@@ -8,11 +8,9 @@ on:
       - "[0-9].[0-9]"
   workflow_dispatch:
 
-env:
-  # This variable stores the map of Mixxx branches that still being developed. The key is the branch receiving support and the value is the next version in line
-  # NOTE: this must be valid JSON!
-  ACTIVE_VERSIONS: |-
-    {"2.5": "2.6", "2.6": "main"}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   checks:
