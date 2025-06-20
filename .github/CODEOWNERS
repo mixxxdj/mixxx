@@ -1,5 +1,5 @@
 /.github/            @Holzhaus @acolombier
-/packaging/          @daschuer @fwcd
+/packaging/          @daschuer @Swiftb0y
 /res/qml             @Holzhaus @acolombier
 /res/skins/          @ronso0 @Holzhaus
 /src/analyzer        @acolombier @Swiftb0y
@@ -9,10 +9,10 @@
 /src/controllers     @daschuer @acolombier
 /src/database        @daschuer @Swiftb0y
 /src/dialog          @daschuer @JoergAtGithub
-/src/effects         @fwcd @daschuer
+/src/effects         @daschuer @Swiftb0y
 /src/encoder         @daschuer @JoergAtGithub
 /src/engine          @daschuer @ronso0
-/src/library         @ronso0 @fwcd
+/src/library         @ronso0 @Swiftb0y
 /src/mixer           @ronso0 @Holzhaus
 /src/musicbrainz     @ronso0 @JoergAtGithub
 /src/network         @daschuer @JoergAtGithub

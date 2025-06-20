@@ -39,12 +39,14 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
 
 ### Use of AI
 
-The use of AI assistant is welcome in any contributions, but we expect the author of the PR to precisely understand any changes they would be submitting, thus ask them to review any generated content to ensure it is relevant and hallucination-free. As PR review is a constant challenge due to core member's time, if a Mixxx members suspects a PR to be exclusively vibe-coded and providing no value, they are allowed to close them right away with an automated notice, as following:
+The use of AI to assist the creation of a contribution is acceptable, but we expect the author of any PR to precisely understand all changes they have made, and we will ask authors to self-review all generated content to ensure it is relevant and hallucination-free. Due to the potentially large waste of time reviewing poor LLM code, the Mixxx Core Team has zero tolerance for ineffective vibes-based code produced by LLMs that are not fully understood by the PR author.
 
-> Thanks for your contribution in Mixxx. Unfortunately, it looks like the change you are submitting is exclusively written by AI and does not match with our level of expectation. For this matter, we are going to close this PR, but if you expect this decision to be unfair or incorrect, please feel free to provide a review of your own PR and justify the code diff. We appreciate that you may not be an expert in technologies used in Mixxx, but we believe that our time can be better invested than providing advice to an LLM.
-> Please check the CONTRIBUTING guideline for further details
+If a Mixxx member suspects that a PR is vibe-coded and provides little-to-no value, they may close it with a templated notice such as following:
 
-Please remember that these kind of abusive are particularly disrespectful to the Mixxx contributors, and we reserve ourself the right to ban any users that would repeatedly do so.
+> We encourage thoughtful contributions and welcome the use of AI tools, as long as the author fully understands and reviews all changes. However, pull requests relying solely on AI-generated code without proper understanding may be closed to maintain the project's quality and to use our reviewing resources effectively.
+> Repeated low-quality submissions or unresponsiveness to feedback may result in removal from the project. Please review our CONTRIBUTING guidelines for more details. Thank you for supporting Mixxx!
+
+We have received a number of such pull requests and they are a drain on our limited reviewing resources. Repeat offenders producing multiple poor-quality contributions and who are not responsive to advice or change requests may be banned from the project.
 
 ## Git Workflow
 
@@ -111,10 +113,10 @@ Mixxx core team members are contributors who have write access to the [upstream 
 
 #### Change requests
 
-We recommend that core members use the `Change request` review state carefully due to the blocking aspect it represent in PRs. When a member submit a change request, they are expected to commit to provide quick feedback once the PR's author has addressed these changes in order not to block the PR. If a core member request changes and doesn't provide a feedback within 15 days following the author actor acting on the this request, another core member can discard their review in order to unblock the PR. We trust the second core member to ensure that the initial change request has correctly been addressed. When in doubt, the initial change request should be kept. Note that the [CODEOWNERS file](.github/CODEOWNERS) can be used to find another member with expertise to help assessing whether or not the initial concerned has been addressed.
+We recommend that core members use the **Change request** review state carefully due to the blocking aspect it represents in PRs. When a member submits a change request, they are expected to commit to providing quick feedback once the PR's author has addressed these changes in order not to block the PR. If a core member requests changes and doesn't provide feedback within one week after the author has indicated that the changes have been addressed, the author may follow up with a reminder. If the reviewer still does not respond within another week, another core member can discard their review in order to unblock the PR. We trust the second core member to ensure that the initial change request has been correctly addressed. When in doubt, the initial change request should be kept. Note that the [CODEOWNERS file](.github/CODEOWNERS) can be used to find another member with expertise to help assessing whether or not the initial concerned has been addressed.
 
 #### Code owners
 
 To help with expertise across Mixxx codebase, we use [Github's CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to highlight members who can provide advice and help addressing a thorough review. Beside the filename, code owners do not own the approval, and any core member can decide to merge changes in section they aren't expert in. Once again, we trust core embers will take the right decision and reach out to another core member when in doubt.
 
-Code owners member are initial defined on based on the last two years of contribution, and distributed across all active members. Any core members can add or remove themselves from the list.
+Code owners member are initially defined on based on the last two years of contribution and distributed across all active members. Any core member can add or remove themselves from the list.
