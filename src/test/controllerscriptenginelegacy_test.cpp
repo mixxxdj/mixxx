@@ -7,6 +7,7 @@
 #include <QMetaEnum>
 #include <QScopedPointer>
 #include <QTemporaryFile>
+#include <QTest>
 #include <QThread>
 #include <QtDebug>
 #include <bit>
@@ -27,25 +28,28 @@
 #ifdef MIXXX_USE_QML
 #include "qml/qmlmixxxcontrollerscreen.h"
 #endif
-#include "test/mixxxtest.h"
-#include "util/color/colorpalette.h"
-#include "util/time.h"
-#include "track/track.h"
-#include "sources/soundsourceproxy.h"
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
-#include "test/mixxxdbtest.h"
-#include "test/soundsourceproviderregistration.h"
 #include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
+#include "engine/channels/enginedeck.h"
+#include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "library/coverartcache.h"
-#include "soundio/soundmanager.h"
+#include "library/library.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-#include "library/library.h"
-#include "engine/channelhandle.h"
+#include "soundio/soundmanager.h"
+#include "sources/soundsourceproxy.h"
+#include "test/mixxxdbtest.h"
+#include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
+#include "track/track.h"
+#include "util/color/colorpalette.h"
+#include "util/time.h"
 
 using ::testing::_;
 using namespace std::chrono_literals;
@@ -54,7 +58,9 @@ typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxDbTest, SoundSourceProviderRegistration {
+class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
+                                         public MixxxDbTest,
+                                         SoundSourceProviderRegistration {
   protected:
     ControllerScriptEngineLegacyTest()
             : ControllerScriptEngineLegacy(nullptr, logger) {
@@ -87,7 +93,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         m_pSoundManager = std::make_shared<SoundManager>(config(), m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
         m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
-                
+
         CoverArtCache::createInstance();
 
         m_pPlayerManager = std::make_shared<PlayerManager>(config(),
@@ -125,11 +131,22 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
     }
 
-    // Helper to get or add a track by location, like in PlayerManagerTest
-    TrackPointer getOrAddTrackByLocation(const QString& trackLocation) {
-        return m_pTrackCollectionManager->getOrAddTrack(
-                TrackRef::fromFilePath(trackLocation));
+    void loadTrackSync(const QString& trackLocation) {
+        TrackPointer pTrack1 = m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFilePath(getTestDir().filePath(trackLocation)));
+        auto* deck = m_pPlayerManager->getDeck(1);
+        deck->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
+        m_pEngine->process(1024);
+        while (!deck->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
+            QTest::qSleep(100);
+        }
+        processEvents();
     }
+
     void TearDown() override {
         mixxx::Time::setTestMode(false);
 #ifdef MIXXX_USE_QML
@@ -914,11 +931,54 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
     }
 }
 
+TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy) {
+    QMap<QString, QString> expectedValues = {
+            std::pair("artist", "Test Artist"),
+            std::pair("title", "Test title"),
+            std::pair("album", "Test Album"),
+            std::pair("albumArtist", "Test Album Artist"),
+            std::pair("genre", "Test genre"),
+            std::pair("composer", "Test Composer"),
+            std::pair("grouping", ""),
+            std::pair("year", "2011"),
+            std::pair("trackNumber", "07"),
+            std::pair("trackTotal", "60")};
+
+    m_pJSEngine->globalObject().setProperty(
+            "testedValues", m_pJSEngine->toScriptValue(expectedValues.keys()));
+
+    const auto* code =
+            "var result = {};"
+            "var player = engine.getPlayer('[Channel1]');"
+            "for(const name of testedValues) {"
+            "    player[`${name}Changed`].connect(newValue => {"
+            "        result[name] = newValue;"
+            "    });"
+            "}";
+
+    EXPECT_TRUE(evaluateAndAssert(code)) << "Evaluation error in test code";
+    loadTrackSync("id3-test-data/all.mp3");
+    for (auto [property, expected] : expectedValues.asKeyValueRange()) {
+        auto const playerActual = evaluate("player." + property).toString();
+        auto const slotActual = evaluate("result." + property).toString();
+        EXPECT_QSTRING_EQ(expected, playerActual)
+                << QString("engine.getPlayer(...).%1 doesn't corresponds to "
+                           "its expected value (expected: %2, actual: %3)")
+                           .arg(property, expected, playerActual)
+                           .toStdString();
+        EXPECT_QSTRING_EQ(expected, slotActual) << QString(
+                "engine.getPlayer(...).%1Changed slot didn't produce the "
+                "expected value (expected: %2, actual: %3)")
+                                                           .arg(property, expected, playerActual)
+                                                           .toStdString();
+    }
+}
+
 #ifdef MIXXX_USE_QML
 class MockScreenRender : public ControllerRenderingEngine {
   public:
     MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
-            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl) {};
     MOCK_METHOD(void,
             requestSendingFrameData,
             (Controller * controller, const QByteArray& frame),
