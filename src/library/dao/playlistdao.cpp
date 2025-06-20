@@ -13,7 +13,8 @@
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
-        : m_pAutoDJProcessor(nullptr) {
+        : m_pAutoDJProcessor(nullptr),
+          m_prepPlaylistId(kInvalidPlaylistId) {
 }
 
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
@@ -436,6 +437,11 @@ int PlaylistDAO::setPlaylistsLocked(const QSet<int>& playlistIds, const bool loc
         return -1;
     }
 
+    // Unset Prep playlist
+    if (m_prepPlaylistId != kInvalidPlaylistId && playlistIds.contains(m_prepPlaylistId)) {
+        togglePrepPlaylist(m_prepPlaylistId);
+    }
+
     emit lockChanged(playlistIds);
     return playlistIds.size();
 }
@@ -593,6 +599,30 @@ QList<QPair<int, QString>> PlaylistDAO::getUnlockedPlaylists(const HiddenType hi
         playlists.append(qMakePair(id, name));
     }
     return playlists;
+}
+
+QSet<int> PlaylistDAO::getPlaylistIds(const HiddenType hidden) const {
+    // qDebug() << "PlaylistDAO::getPlaylistIds(hidden =" << hidden
+    //          << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT id FROM Playlists WHERE hidden = %1")
+                            .arg(hidden)));
+
+    QSet<int> ids;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return ids;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        ids.insert(id);
+    }
+    return ids;
 }
 
 int PlaylistDAO::getPlaylistId(const int index) const {
@@ -1431,4 +1461,34 @@ void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJS
         }
         break;
     }
+}
+
+bool PlaylistDAO::appendTrackToPrepPlaylist(TrackId id) {
+    if (!id.isValid()) {
+        return false;
+    }
+    if (m_prepPlaylistId == kInvalidPlaylistId) {
+        // append to AutoDJQueue?
+        // Just to make append control more versatile?
+        return false;
+    }
+    if (isPlaylistLocked(m_prepPlaylistId)) {
+        return false;
+    }
+    if (isTrackInPlaylist(id, m_prepPlaylistId)) {
+        return false;
+    }
+    return appendTracksToPlaylist(QList<TrackId>{id}, m_prepPlaylistId);
+}
+
+/// use kInvalidPlaylistId to unset
+int PlaylistDAO::togglePrepPlaylist(int playlistId) {
+    if (!isPlaylistLocked(playlistId)) {
+        if (m_prepPlaylistId == playlistId) {
+            m_prepPlaylistId = kInvalidPlaylistId;
+        } else {
+            m_prepPlaylistId = playlistId;
+        }
+    }
+    return m_prepPlaylistId;
 }
