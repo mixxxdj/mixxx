@@ -678,7 +678,7 @@
                 </option>
 
                 <option
-                    variable="P_Gain"
+                    variable="proportionalGain"
                     type="integer"
                     min="1"
                     max="100000"
@@ -691,7 +691,7 @@
                 </option>
 
                 <option
-                    variable="I_Gain"
+                    variable="integrativeGain"
                     type="integer"
                     min="0"
                     max="10000"
@@ -704,7 +704,7 @@
                 </option>
 
                 <option
-                    variable="D_Gain"
+                    variable="derivativeGain"
                     type="integer"
                     min="0"
                     max="100000"
@@ -717,7 +717,7 @@
                 </option>
 
                 <option
-                    variable="SLIP_FRICTION_FORCE"
+                    variable="slipFrictionForce"
                     type="integer"
                     min="0"
                     max="20000"
@@ -726,19 +726,6 @@
                     label="(testing) SLIP FRICTION FORCE">
                     <description>
                         How strongly the TT resists scratching
-                    </description>
-                </option>
-
-                <option
-                    variable="MOTOR_FRICTION_COMPENSATION"
-                    type="integer"
-                    min="0"
-                    max="20000"
-                    step="100"
-                    default="0"
-                    label="(testing) MOTOR FRICTION COMPENSATION">
-                    <description>
-                        How much extra motor force to account for motor friction
                     </description>
                 </option>
             </row>
