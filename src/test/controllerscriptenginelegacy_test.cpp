@@ -7,6 +7,7 @@
 #include <QMetaEnum>
 #include <QScopedPointer>
 #include <QTemporaryFile>
+#include <QTest>
 #include <QThread>
 #include <QtDebug>
 #include <bit>
@@ -27,7 +28,26 @@
 #ifdef MIXXX_USE_QML
 #include "qml/qmlmixxxcontrollerscreen.h"
 #endif
+#include "control/controlindicatortimer.h"
+#include "database/mixxxdb.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
+#include "engine/channels/enginedeck.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemixer.h"
+#include "library/coverartcache.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
+#include "mixer/deck.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "recording/recordingmanager.h"
+#include "soundio/soundmanager.h"
+#include "sources/soundsourceproxy.h"
+#include "test/mixxxdbtest.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
+#include "track/track.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
 
@@ -38,7 +58,9 @@ typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxTest {
+class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
+                                         public MixxxDbTest,
+                                         SoundSourceProviderRegistration {
   protected:
     ControllerScriptEngineLegacyTest()
             : ControllerScriptEngineLegacy(nullptr, logger) {
@@ -57,6 +79,72 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
         initialize();
+
+        // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
+        // but it does a lot of local disk / settings setup.
+        auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+        m_pEffectsManager = std::make_shared<EffectsManager>(config(), pChannelHandleFactory);
+        m_pEngine = std::make_shared<EngineMixer>(
+                config(),
+                "[Master]",
+                m_pEffectsManager.get(),
+                pChannelHandleFactory,
+                true);
+        m_pSoundManager = std::make_shared<SoundManager>(config(), m_pEngine.get());
+        m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
+        m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
+
+        CoverArtCache::createInstance();
+
+        m_pPlayerManager = std::make_shared<PlayerManager>(config(),
+                m_pSoundManager.get(),
+                m_pEffectsManager.get(),
+                m_pEngine.get());
+
+        m_pPlayerManager->addConfiguredDecks();
+        m_pPlayerManager->addSampler();
+        PlayerInfo::create();
+        m_pEffectsManager->setup();
+
+        const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPooler());
+        if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+            exit(1);
+        }
+
+        m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
+                nullptr,
+                config(),
+                dbConnectionPooler(),
+                [](Track* pTrack) { delete pTrack; });
+
+        m_pRecordingManager = std::make_shared<RecordingManager>(config(), m_pEngine.get());
+        m_pLibrary = std::make_shared<Library>(
+                nullptr,
+                config(),
+                dbConnectionPooler(),
+                m_pTrackCollectionManager.get(),
+                m_pPlayerManager.get(),
+                m_pRecordingManager.get());
+
+        m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+        ControllerScriptEngineBase::registerPlayerManager(m_pPlayerManager);
+        ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
+    }
+
+    void loadTrackSync(const QString& trackLocation) {
+        TrackPointer pTrack1 = m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFilePath(getTestDir().filePath(trackLocation)));
+        auto* deck = m_pPlayerManager->getDeck(1);
+        deck->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
+        m_pEngine->process(1024);
+        while (!deck->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
+            QTest::qSleep(100);
+        }
+        processEvents();
     }
 
     void TearDown() override {
@@ -64,6 +152,22 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
 #ifdef MIXXX_USE_QML
         m_rootItems.clear();
 #endif
+        CoverArtCache::destroy();
+        ControllerScriptEngineBase::registerPlayerManager(nullptr);
+        ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+    }
+
+    ~ControllerScriptEngineLegacyTest() {
+        // Reset in the correct order to avoid singleton destruction issues
+        m_pSoundManager.reset();
+        m_pPlayerManager.reset();
+        PlayerInfo::destroy();
+        m_pLibrary.reset();
+        m_pRecordingManager.reset();
+        m_pEngine.reset();
+        m_pEffectsManager.reset();
+        m_pTrackCollectionManager.reset();
+        m_pControlIndicatorTimer.reset();
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
@@ -107,6 +211,15 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
         handleScreenFrame(screeninfo, frame, timestamp);
     }
 #endif
+
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    std::shared_ptr<EngineMixer> m_pEngine;
+    std::shared_ptr<SoundManager> m_pSoundManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
+    std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
+    std::shared_ptr<Library> m_pLibrary;
+    std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
 };
 
 class ControllerScriptEngineLegacyTimerTest : public ControllerScriptEngineLegacyTest {
@@ -834,11 +947,54 @@ TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
     }
 }
 
+TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy) {
+    QMap<QString, QString> expectedValues = {
+            std::pair("artist", "Test Artist"),
+            std::pair("title", "Test title"),
+            std::pair("album", "Test Album"),
+            std::pair("albumArtist", "Test Album Artist"),
+            std::pair("genre", "Test genre"),
+            std::pair("composer", "Test Composer"),
+            std::pair("grouping", ""),
+            std::pair("year", "2011"),
+            std::pair("trackNumber", "07"),
+            std::pair("trackTotal", "60")};
+
+    m_pJSEngine->globalObject().setProperty(
+            "testedValues", m_pJSEngine->toScriptValue(expectedValues.keys()));
+
+    const auto* code =
+            "var result = {};"
+            "var player = engine.getPlayer('[Channel1]');"
+            "for(const name of testedValues) {"
+            "    player[`${name}Changed`].connect(newValue => {"
+            "        result[name] = newValue;"
+            "    });"
+            "}";
+
+    EXPECT_TRUE(evaluateAndAssert(code)) << "Evaluation error in test code";
+    loadTrackSync("id3-test-data/all.mp3");
+    for (auto [property, expected] : expectedValues.asKeyValueRange()) {
+        auto const playerActual = evaluate("player." + property).toString();
+        auto const slotActual = evaluate("result." + property).toString();
+        EXPECT_QSTRING_EQ(expected, playerActual)
+                << QString("engine.getPlayer(...).%1 doesn't corresponds to "
+                           "its expected value (expected: %2, actual: %3)")
+                           .arg(property, expected, playerActual)
+                           .toStdString();
+        EXPECT_QSTRING_EQ(expected, slotActual) << QString(
+                "engine.getPlayer(...).%1Changed slot didn't produce the "
+                "expected value (expected: %2, actual: %3)")
+                                                           .arg(property, expected, playerActual)
+                                                           .toStdString();
+    }
+}
+
 #ifdef MIXXX_USE_QML
 class MockScreenRender : public ControllerRenderingEngine {
   public:
     MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
-            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl) {};
     MOCK_METHOD(void,
             requestSendingFrameData,
             (Controller * controller, const QByteArray& frame),
