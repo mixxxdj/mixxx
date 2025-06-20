@@ -1112,10 +1112,17 @@ TraktorS3.Deck = class {
     }
 
     loadTrackHandler(field) {
-        if (this.shiftPressed) {
-            engine.setValue(this.activeChannel, "eject", field.value);
+        // If the library is selected, load the track based on which encoder was
+        // pressed. Otherwise just do whatever the default action is for the
+        // focused menu or widget.
+        if (engine.getValue("[Library]", "focused_widget") === 3) {
+            if (this.shiftPressed) {
+                engine.setValue(this.activeChannel, "eject", field.value);
+            } else {
+                engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            }
         } else {
-            engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            engine.setValue("[Library]", "GoToItem", field.value);
         }
     }
 
