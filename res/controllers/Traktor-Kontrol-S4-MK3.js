@@ -1,6 +1,7 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 
-// TEMPORARY
+// TEMPORARY. These are configuration values for a motor test routine that I used to collect
+// data for output-to-input mapping. -ZT
 // const S4MK3DEBUG = true;
 const S4MK3MOTORTEST_ENABLE = false;
 const S4MK3MOTORTEST_UPTIME = 10000; //milliseconds
@@ -10,7 +11,14 @@ const S4MK3MOTORTEST_STEPSIZE = 0;
 const S4MK3MOTORTEST_ENDLVL = 6000;
 const NONSLIP_PITCH_SMOOTHING = 0.5;
 // const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
-const TARGET_MOTOR_OUTPUT = 4600; //measured target, not exact
+
+// Target motor outputs will ideally be calibrated based on real hardware data specific to the device
+// so that variations of construction and wear can be accomodated. For now, these outputs are based on
+// a data collection experiment I performed during testing --ZT
+const TARGET_MOTOR_OUTPUT_33RPM = 4600; //measured in a rough calibration test, not exact. TODO: refine this value
+const TARGET_MOTOR_OUTPUT_45RPM = 5600; //measured in a rough calibration test, not exact. TODO: refine this value
+
+// TODO: make nudge sensitivity a user-defineable value
 const TT_NUDGE_SENSITIVITY = 0.1;
 
 /********************************************************
@@ -202,7 +210,9 @@ const P_Gain = engine.getSetting("P_Gain") || 80000;
 const I_Gain = engine.getSetting("I_Gain") || 1000;
 const D_Gain = engine.getSetting("D_Gain") || 50000;
 const SLIP_FRICTION_FORCE = engine.getSetting("SLIP_FRICTION_FORCE") || 12000;
-const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION") || 0;
+
+// friction is inherently compensated in the PID controller
+// const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION") || 0;
 //TODO: move motorized nudge sensitivity here
 
 /********************************************************
@@ -259,12 +269,15 @@ const WHEEL_CLOCK_FREQ = 100000000; // One tick every 10ns (100MHz)
 
 // TEMPORARY TEST
 let rps = 0;
-// Make sure the RPM for 33.3 is as precise as possible
+let TARGET_MOTOR_OUTPUT = 0;
+// Make sure the RPM for 33.3 is as precise as possible,
+// And set the target motor output for nudging
 if (BaseRevolutionsPerMinute == 33) {
     rps = (100/3) / 60;
-}
-else {
+    TARGET_MOTOR_OUTPUT = TARGET_MOTOR_OUTPUT_33RPM;
+} else { // 45RPM
     rps = BaseRevolutionsPerMinute / 60;
+    TARGET_MOTOR_OUTPUT = TARGET_MOTOR_OUTPUT_45RPM;
 }
 const baseRevolutionsPerSecond = rps;
 const baseDegreesPerSecond = baseRevolutionsPerSecond * 360;
@@ -3304,8 +3317,8 @@ class S4Mk3MotorManager {
             }
             // New torque becomes old torque
             this.outputTorque_prev = outputTorque;
-            // Apply additional forward force to compensate for friction
-            outputTorque += MOTOR_FRICTION_COMPENSATION;
+            // Apply additional forward force to compensate for friction --- NO LONGER NECESSARY
+            // outputTorque += MOTOR_FRICTION_COMPENSATION;
         // If the deck isn't playing, but we're in motor mode, ensure that scratch mode is ON
         // and reset the "isUpToSpeed" flag
         } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
