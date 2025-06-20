@@ -8,6 +8,10 @@ on:
       - reopened
       - edited
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pre-commit:
     uses: ./.github/workflows/pre-commit.yml
