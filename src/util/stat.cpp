@@ -1,11 +1,11 @@
-#include <limits>
+#include "util/stat.h"
 
 #include <QStringList>
+#include <limits>
 
-#include "util/stat.h"
-#include "util/time.h"
 #include "util/math.h"
 #include "util/statsmanager.h"
+#include "util/time.h"
 
 Stat::Stat()
         : m_type(UNSPECIFIED),
@@ -20,18 +20,18 @@ Stat::Stat()
 
 QString Stat::valueUnits() const {
     switch (m_type) {
-        case DURATION_MSEC:
-            return "ms";
-        case DURATION_NANOSEC:
-            return "ns";
-        case DURATION_SEC:
-            return "s";
-        case EVENT:
-        case EVENT_START:
-        case EVENT_END:
-        case UNSPECIFIED:
-        default:
-            return "";
+    case DURATION_MSEC:
+        return "ms";
+    case DURATION_NANOSEC:
+        return "ns";
+    case DURATION_SEC:
+        return "s";
+    case EVENT:
+    case EVENT_START:
+    case EVENT_END:
+    case UNSPECIFIED:
+    default:
+        return "";
     }
 }
 
@@ -40,7 +40,7 @@ void Stat::processReport(const StatReport& report) {
     if (m_compute & (Stat::SUM | Stat::AVERAGE)) {
         m_sum += report.value;
     }
-    if ((m_compute & Stat::MAX)&& report.value > m_max) {
+    if ((m_compute & Stat::MAX) && report.value > m_max) {
         m_max = report.value;
     }
     if ((m_compute & Stat::MIN) && report.value < m_min) {
@@ -69,20 +69,24 @@ void Stat::processReport(const StatReport& report) {
     }
 }
 
-QDebug operator<<(QDebug dbg, const Stat &stat) {
+QDebug operator<<(QDebug dbg, const Stat& stat) {
     QStringList stats;
+    auto toMs = [](double ns) -> QString {
+        return QString::number(ns / 1e6, 'f', 3) + QStringLiteral("ms");
+    };
+
     if (stat.m_compute & Stat::COUNT) {
         stats << "count=" + QString::number(stat.m_report_count);
     }
 
     if (stat.m_compute & Stat::SUM) {
-        stats << "sum=" + QString::number(stat.m_sum) + stat.valueUnits();
+        stats << "sum=" + toMs(stat.m_sum);
     }
 
     if (stat.m_compute & Stat::AVERAGE) {
         QString value = "average=";
         if (stat.m_report_count > 0) {
-            value += QString::number(stat.m_sum / stat.m_report_count) + stat.valueUnits();
+            value += toMs(stat.m_sum / stat.m_report_count);
         } else {
             value += "XXX";
         }
@@ -92,7 +96,7 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
     if (stat.m_compute & Stat::MIN) {
         QString value = "min=";
         if (stat.m_report_count > 0) {
-            value += QString::number(stat.m_min) + stat.valueUnits();
+            value += toMs(stat.m_min);
         } else {
             value += "XXX";
         }
@@ -102,7 +106,7 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
     if (stat.m_compute & Stat::MAX) {
         QString value = "max=";
         if (stat.m_report_count > 0) {
-            value += QString::number(stat.m_max) + stat.valueUnits();
+            value += toMs(stat.m_max);
         } else {
             value += "XXX";
         }
@@ -111,9 +115,9 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 
     if (stat.m_compute & Stat::SAMPLE_VARIANCE) {
         double variance = stat.variance();
-        stats << "variance=" + QString::number(variance) + stat.valueUnits() + "^2";
+        stats << "variance=" + toMs(variance) + "^2";
         if (variance >= 0.0) {
-            stats << "stddev=" + QString::number(sqrt(variance)) + stat.valueUnits();
+            stats << "stddev=" + toMs(sqrt(variance));
         }
     }
 
@@ -123,23 +127,22 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 
     if (stat.m_compute & Stat::HISTOGRAM) {
         QStringList histogram;
-        for (auto it = stat.m_histogram.constBegin();
-             it != stat.m_histogram.constEnd(); ++it) {
-            histogram << QString::number(it.key()) + stat.valueUnits() + ":" +
-                    QString::number(it.value());
+        for (auto it = stat.m_histogram.constBegin(); it != stat.m_histogram.constEnd(); ++it) {
+            histogram << QString::number(it.key() / 1e6, 'f', 3) + "ms:" +
+                            QString::number(it.value());
         }
-        stats << "histogram=" + histogram.join(",");
+        stats << "histogram=" + histogram.join(", ");
     }
 
-    dbg.nospace() << "Stat(" << stat.m_tag << "," << stats.join(",") << ")";
+    dbg.nospace() << "Stat(" << stat.m_tag << ", " << stats.join(", ") << ")";
     return dbg.maybeSpace();
 }
 
 // static
 bool Stat::track(QString tag,
-                 Stat::StatType type,
-                 Stat::ComputeFlags compute,
-                 double value) {
+        Stat::StatType type,
+        Stat::ComputeFlags compute,
+        double value) {
     if (!StatsManager::s_bStatsManagerEnabled) {
         return false;
     }
