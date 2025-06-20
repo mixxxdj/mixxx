@@ -2,15 +2,6 @@
 name: Sync Branches
 on:
   workflow_call:
-    inputs:
-      from:
-        description: "The prior release from which to sync"
-        required: true
-        type: string
-      to:
-        description: "The active release in which to sync"
-        required: true
-        type: string
     secrets:
       # PAT setup with content:write and pull_request:write
       pat_token:
@@ -21,6 +12,12 @@ permissions: {}
 env:
   SYNC_COMMITTER_EMAIL: bot@mixxx.org
   SYNC_COMMITTER_NAME: Mixxx Bot
+
+  # This variable stores the map of Mixxx branches that still being developed. The key is the branch receiving support and the value is the next version in line
+  # NOTE: this must be valid JSON!
+  ACTIVE_VERSIONS: |-
+    {"2.5": "2.6", "2.6": "main"}
+
 jobs:
   sync-branches:
     runs-on: ubuntu-latest
@@ -69,7 +66,7 @@ jobs:
             echo "Branch ${SYNC_BRANCH} does not exist yet."
           fi
         env:
-          SYNC_BRANCH: sync-branch-${{ inputs.from}}-to-${{ inputs.to }}
+          SYNC_BRANCH: sync-branch-${{ github.ref_name }}-to-${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
 
       - name: "Merge Changes"
         run: |
@@ -99,10 +96,10 @@ jobs:
           fi
         env:
           BRANCH_EXISTS: ${{ steps.check_sync.outputs.branch_exists }}
-          FROM_BRANCH: ${{ inputs.from}}
-          TO_BRANCH: ${{ inputs.to }}
-          SYNC_BRANCH: sync-branch-${{ inputs.from}}-to-${{ inputs.to }}
+          FROM_BRANCH: ${{ github.ref_name }}
+          TO_BRANCH: ${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
+          SYNC_BRANCH: sync-branch-${{ github.ref_name }}-to-${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
           GITHUB_TOKEN: ${{ secrets.pat_token }}
-          PULL_REQUEST_TITLE: Merge changes from `${{ inputs.from }}` into `${{ inputs.to }}`
+          PULL_REQUEST_TITLE: Merge changes from `${{ github.ref_name  }}` into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`
           PULL_REQUEST_BODY: |
-            New content has landed in the `${{ inputs.from }}` branch, so let's merge the changes into `${{ inputs.to }}`
+            New content has landed in the `${{ github.ref_name  }}` branch, so let's merge the changes into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`
