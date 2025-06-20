@@ -43,4 +43,4 @@ jobs:
         uses: daschuer/softfix@v4
         env:
           # PAT setup with content:write and pull_request:write
-          repo-token: ${{ secrets.MIXXX_SOFTFIX_PAT }}
+          GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}

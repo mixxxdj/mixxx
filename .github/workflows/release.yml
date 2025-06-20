@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 name: Release
 
 on:
@@ -24,10 +25,7 @@ jobs:
     uses: ./.github/workflows/build.yml
 
   sync:
-    if: ${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref] != null }}
+    if: ${{ github.ref != 'refs/heads/main' }}
     uses: ./.github/workflows/sync_branches.yml
-    with:
-      from: ${{ github.ref }}
-      to: ${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref] }}
     secrets:
       pat_token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
