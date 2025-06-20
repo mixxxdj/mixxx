@@ -123,6 +123,9 @@
        <property name="text">
         <string>Microphone Monitor Mode</string>
        </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="9" column="0">

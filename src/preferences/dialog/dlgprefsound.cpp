@@ -264,6 +264,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     setScrollSafeGuardForAllInputWidgets(this);
 
+    micMonitorModeLabel->setText(micMonitorModeLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
+
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
                "consider for using Mixxx.")
