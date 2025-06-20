@@ -1,26 +1,5 @@
 /// Created by Be <be@mixxx.org> and A. Colombier <mixxx@acolombier.dev>
 
-// TEMPORARY. These are configuration values for a motor test routine that I used to collect
-// data for output-to-input mapping. -ZT
-// const S4MK3DEBUG = true;
-const S4MK3MOTORTEST_ENABLE = false;
-const S4MK3MOTORTEST_UPTIME = 10000; //milliseconds
-const S4MK3MOTORTEST_DOWNTIME = 0; //milliseconds
-const S4MK3MOTORTEST_STARTLVL= 4500;
-const S4MK3MOTORTEST_STEPSIZE = 0;
-const S4MK3MOTORTEST_ENDLVL = 6000;
-const NONSLIP_PITCH_SMOOTHING = 0.5;
-// const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
-
-// Target motor outputs will ideally be calibrated based on real hardware data specific to the device
-// so that variations of construction and wear can be accomodated. For now, these outputs are based on
-// a data collection experiment I performed during testing --ZT
-const TARGET_MOTOR_OUTPUT_33RPM = 4600; //measured in a rough calibration test, not exact. TODO: refine this value
-const TARGET_MOTOR_OUTPUT_45RPM = 5600; //measured in a rough calibration test, not exact. TODO: refine this value
-
-// TODO: make nudge sensitivity a user-defineable value
-const TT_NUDGE_SENSITIVITY = 0.1;
-
 /********************************************************
                 LED Color Constants
  *******************************************************/
@@ -62,42 +41,10 @@ const KeyboardColors = [
     LedColors.white,
 ];
 
-// The LEDs only support 16 base colors. Adding 1 in addition to
-// the normal 2 for Button.prototype.brightnessOn changes the color
-// slightly, so use that get 25 different colors to include the Filter
-// button as a 5th effect chain preset selector.
-const QuickEffectPresetColors = [
-    LedColors.red,
-    LedColors.green,
-    LedColors.blue,
-    LedColors.yellow,
-    LedColors.orange,
-    LedColors.purple,
-    LedColors.white,
-
-    LedColors.magenta,
-    LedColors.azalea,
-    LedColors.salmon,
-    LedColors.red + 1,
-
-    LedColors.sky,
-    LedColors.celeste,
-    LedColors.fuscia,
-    LedColors.blue + 1,
-
-    LedColors.carrot,
-    LedColors.honey,
-    LedColors.yellow + 1,
-
-    LedColors.lime,
-    LedColors.aqua,
-    LedColors.purple + 1,
-
-    LedColors.magenta + 1,
-    LedColors.azalea + 1,
-    LedColors.salmon + 1,
-    LedColors.fuscia + 1,
-];
+// Constant used to define custom default pad layout
+const DefaultPadLayoutHotcue = "hotcue";
+const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
+const DefaultPadLayoutKeyboard = "keyboard";
 
 /********************************************************
                 USER CONFIGURABLE SETTINGS
@@ -215,20 +162,48 @@ const SLIP_FRICTION_FORCE = engine.getSetting("SLIP_FRICTION_FORCE") || 12000;
 // const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION") || 0;
 //TODO: move motorized nudge sensitivity here
 
-/********************************************************
-                PAD LAYOUT CONSTANTS
- *******************************************************/
-// Constant used to define custom default pad layout
-const DefaultPadLayoutHotcue = "hotcue";
-const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
-const DefaultPadLayoutKeyboard = "keyboard";
+// The LEDs only support 16 base colors. Adding 1 in addition to
+// the normal 2 for Button.prototype.brightnessOn changes the color
+// slightly, so use that get 25 different colors to include the Filter
+// button as a 5th effect chain preset selector.
+const QuickEffectPresetColors = [
+    LedColors.red,
+    LedColors.green,
+    LedColors.blue,
+    LedColors.yellow,
+    LedColors.orange,
+    LedColors.purple,
+    LedColors.white,
+
+    LedColors.magenta,
+    LedColors.azalea,
+    LedColors.salmon,
+    LedColors.red + 1,
+
+    LedColors.sky,
+    LedColors.celeste,
+    LedColors.fuscia,
+    LedColors.blue + 1,
+
+    LedColors.carrot,
+    LedColors.honey,
+    LedColors.yellow + 1,
+
+    LedColors.lime,
+    LedColors.aqua,
+    LedColors.purple + 1,
+
+    LedColors.magenta + 1,
+    LedColors.azalea + 1,
+    LedColors.salmon + 1,
+    LedColors.fuscia + 1,
+];
 
 /********************************************************
                 MIXER CONSTANTS
  *******************************************************/
 // assign samplers to the crossfader on startup
 const SamplerCrossfaderAssign = true;
-
 
 /********************************************************
                 JOGWHEEL-RELATED CONSTANTS
@@ -265,9 +240,9 @@ const wheelPositionMax = 2 ** 32 - 1;
 const wheelAbsoluteMax = 2880; //FIXME: nomenclature
 
 const wheelTimerMax = 2 ** 32 - 1;
-const WHEEL_CLOCK_FREQ = 100000000; // One tick every 10ns (100MHz)
+const wheelClockFreq = 100000000; // One tick every 10ns (100MHz)
 
-// TEMPORARY TEST
+// Establish rotational constants for wheel math
 let rps = 0;
 let TARGET_MOTOR_OUTPUT = 0;
 // Make sure the RPM for 33.3 is as precise as possible,
@@ -318,37 +293,26 @@ const INTEGRATOR_SUPPRESSION_ERROR_THRESH = 0.3;
 // const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
 const PLAYBACK_QUANTIZE_ERROR_STEP = 0.4
 
-const wheelLEDmodes = {
-    off: 0,
-    dimFlash: 1,
-    spot: 2,
-    ringFlash: 3,
-    dimSpot: 4,
-    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
-};
+// TEMPORARY. These are configuration values for a motor test routine that I used to collect
+// data for output-to-input mapping. -ZT
+// const S4MK3DEBUG = true;
+const S4MK3MOTORTEST_ENABLE = false;
+const S4MK3MOTORTEST_UPTIME = 10000; //milliseconds
+const S4MK3MOTORTEST_DOWNTIME = 0; //milliseconds
+const S4MK3MOTORTEST_STARTLVL= 4500;
+const S4MK3MOTORTEST_STEPSIZE = 0;
+const S4MK3MOTORTEST_ENDLVL = 6000;
+const NONSLIP_PITCH_SMOOTHING = 0.5;
+// const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
 
-// The mode available, which the wheel can be used for.
-const wheelModes = {
-    jog: 0,
-    vinyl: 1,
-    motor: 2,
-    loopIn: 3,
-    loopOut: 4,
-};
+// Target motor outputs will ideally be calibrated based on real hardware data specific to the device
+// so that variations of construction and wear can be accomodated. For now, these outputs are based on
+// a data collection experiment I performed during testing --ZT
+const TARGET_MOTOR_OUTPUT_33RPM = 4600; //measured in a rough calibration test, not exact. TODO: refine this value
+const TARGET_MOTOR_OUTPUT_45RPM = 5600; //measured in a rough calibration test, not exact. TODO: refine this value
 
-const moveModes = {
-    beat: 0,
-    bpm: 1,
-    grid: 2,
-    keyboard: 3,
-};
-
-// tracks state across input reports
-let wheelTimer = null;
-// This is a global variable so the S4Mk3Deck Components have access
-// to it and it is guaranteed to be calculated before processing
-// input for the Components.
-let wheelTimerDelta = 0;
+// TODO: make nudge sensitivity a user-defineable value
+const TT_NUDGE_SENSITIVITY = 0.1;
 
 /********************************************************
                 HID REPORT IDs
@@ -1763,6 +1727,38 @@ Button.prototype.colorMap = new ColorMapper({
     0xCCCCCC: LedColors.white,
 });
 
+const wheelLEDmodes = {
+    off: 0,
+    dimFlash: 1,
+    spot: 2,
+    ringFlash: 3,
+    dimSpot: 4,
+    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
+};
+
+// The mode available, which the wheel can be used for.
+const wheelModes = {
+    jog: 0,
+    vinyl: 1,
+    motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const moveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
+};
+
+// tracks state across input reports
+let wheelTimer = null;
+// This is a global variable so the S4Mk3Deck Components have access
+// to it and it is guaranteed to be calculated before processing
+// input for the Components.
+let wheelTimerDelta = 0;
+
 /*
  * Kontrol S4 Mk3 hardware specific mapping logic
  */
@@ -1848,7 +1844,37 @@ class S4Mk3EffectUnit extends ComponentContainer {
                     }
                 },
                 onShortRelease: function() {
-                    if (this.shifted && this.unit.focusedEffect === null) {
+                   const wheelLEDmodes = {
+    off: 0,
+    dimFlash: 1,
+    spot: 2,
+    ringFlash: 3,
+    dimSpot: 4,
+    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
+};
+
+// The mode available, which the wheel can be used for.
+const wheelModes = {
+    jog: 0,
+    vinyl: 1,
+    motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const moveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
+};
+
+// tracks state across input reports
+let wheelTimer = null;
+// This is a global variable so the S4Mk3Deck Components have access
+// to it and it is guaranteed to be calculated before processing
+// input for the Components.
+let wheelTimerDelta = 0; if (this.shifted && this.unit.focusedEffect === null) {
                         script.triggerControl(this.group, "next_effect");
                     }
                 },
@@ -2854,7 +2880,7 @@ class S4Mk3Deck extends Deck {
                 // example: position difference of 3 and timestamp difference of 2ms = 200000ns
                 //          results in 1.5e-05 or 0.000015
                 //          multiply by 100MHz or 100000000 produces 1500 ticks per second
-                const currentVelocity_tickspersecond = WHEEL_CLOCK_FREQ * (in_position - prev_position)/(in_timestamp - prev_timestamp);
+                const currentVelocity_tickspersecond = wheelClockFreq * (in_position - prev_position)/(in_timestamp - prev_timestamp);
                 
                 // then, normalize it with reference to the target rotation speed of the platter
                 // regardless of how the pitch is being adjusted. In other words, the "rate_ratio"
