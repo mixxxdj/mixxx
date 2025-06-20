@@ -1,10 +1,8 @@
 #include "effects/backends/builtin/autopaneffect.h"
 
-#include <QtDebug>
-
-#include "util/experiment.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
-#include "util/sample.h"
 
 constexpr float kPositionRampingThreshold = 0.002f;
 
@@ -50,7 +48,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     smoothing->setRange(0.25, 0.50, 0.50); // There are two steps per period so max is half
 
-    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
+    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to main,
     //                     make the scaleStartParameter for this be 1.
 
     // Width : applied on the channel with gain reducing.
@@ -75,9 +73,6 @@ void AutoPanEffect::loadEngineEffectParameters(
     m_pWidthParameter = parameters.value("width");
 }
 
-AutoPanEffect::~AutoPanEffect() {
-}
-
 void AutoPanEffect::processChannel(
         AutoPanGroupState* pGroupState,
         const CSAMPLE* pInput,
@@ -93,10 +88,10 @@ void AutoPanEffect::processChannel(
     double period = m_pPeriodParameter->value();
     const auto smoothing = static_cast<float>(0.5 - m_pSmoothingParameter->value());
 
-    if (groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.beat_length.has_value()) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        period = beats * groupFeatures.beat_length_sec * engineParameters.sampleRate();
+        period = beats * groupFeatures.beat_length->frames;
 
         // TODO(xxx) sync phase
         //if (groupFeatures.has_beat_fraction) {
@@ -168,7 +163,8 @@ void AutoPanEffect::processChannel(
         pGroupState->frac.setWithRampingApplied(static_cast<float>((sinusoid + 1.0f) / 2.0f));
 
         // apply the delay
-        pGroupState->delay->process(&pInput[i],
+        pGroupState->pDelay->process(
+                &pInput[i],
                 &pOutput[i],
                 -0.005 *
                         math_clamp(

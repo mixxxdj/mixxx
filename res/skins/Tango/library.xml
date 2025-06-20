@@ -24,7 +24,7 @@ Description:
           <WidgetGroup>
             <Size>1me,2f</Size>
             <Connection>
-              <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_maximized_library</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -44,12 +44,12 @@ Description:
                 <Size>159min,74me</Size>
                 <Children>
 
-                  <Template src="skin:../Tango/decks/preview_deck.xml"/>
+                  <Template src="skins:Tango/decks/preview_deck.xml"/>
 
                   <WidgetGroup>
                     <Size>1me,5f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_preview_decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -81,10 +81,10 @@ Description:
                                 <Layout>horizontal</Layout>
                                 <Size>19f,15min</Size>
                                 <Children>
-                                  <Template src="skin:../Tango/controls/button_2state_persist.xml">
+                                  <Template src="skins:Tango/controls/button_2state_persist.xml">
                                     <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
                                     <SetVariable name="Size">19f,15f</SetVariable>
-                                    <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+                                    <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
                                   </Template>
                                 </Children>
                               </WidgetGroup>
@@ -100,7 +100,7 @@ Description:
                       <CoverArt>
                         <Size>30min,30min</Size>
                         <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>
@@ -118,6 +118,10 @@ Description:
                     <FgColor>#eece33</FgColor>
                     <ShowButtonText>false</ShowButtonText>
                     <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
+                    <!-- Colors for the render modes of the Overview column -->
+                    <!-- For the overview column we only set the signal color,
+                         other colors are the defaults. -->
+                    <SignalColor><Variable name="SignalColor"/></SignalColor>
                   </Library>
                 </Children>
               </WidgetGroup><!-- /Library Table -->

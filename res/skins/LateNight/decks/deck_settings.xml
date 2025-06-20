@@ -31,25 +31,27 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:/controls/button_2state.xml">
+              <Template src="skins:LateNight/controls/button_2state.xml">
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
                 <SetVariable name="ObjectName">SlipmodeButton<Variable name="DeckGroup"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,slip_enabled</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_2state.xml">
+              <Template src="skins:LateNight/controls/button_2state.xml">
                 <SetVariable name="TooltipId">quantize</SetVariable>
                 <SetVariable name="ObjectName">QuantizeButton<Variable name="DeckGroup"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,quantize</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_1state_right.xml">
+              <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">CurposButton<Variable name="DeckGroup"/></SetVariable>
+                <SetVariable name="CoverName">BeatEditCoverDecks</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
+                <SetVariable name="CoverConfigKey"><Variable name="Group"/>,bpmlock</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
@@ -60,21 +62,21 @@
             <ObjectName>DeckSettingsGrid</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:/controls/button_1state.xml">
+              <Template src="skins:LateNight/controls/button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="ObjectName">EjectButton<Variable name="DeckGroup"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_2state.xml">
+              <Template src="skins:LateNight/controls/button_2state.xml">
                 <SetVariable name="TooltipId">repeat</SetVariable>
                 <SetVariable name="ObjectName">RepeatButton<Variable name="DeckGroup"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,repeat</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_2state.xml">
+              <Template src="skins:LateNight/controls/button_2state.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
                 <SetVariable name="ObjectName">KeylockButton<Variable name="DeckGroup"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>

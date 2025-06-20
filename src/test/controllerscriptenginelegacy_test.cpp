@@ -1,25 +1,48 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <QByteArrayView>
+#include <QMetaEnum>
 #include <QScopedPointer>
 #include <QTemporaryFile>
 #include <QThread>
 #include <QtDebug>
+#include <bit>
 #include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
+#ifdef MIXXX_USE_QML
+#include <QQuickItem>
+
+#include "controllers/controllerenginethreadcontrol.h"
+#include "controllers/rendering/controllerrenderingengine.h"
+#endif
 #include "controllers/softtakeover.h"
+#include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QML
+#include "qml/qmlmixxxcontrollerscreen.h"
+#endif
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
+
+using ::testing::_;
+using namespace std::chrono_literals;
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerScriptEngineLegacyTest : public MixxxTest {
+class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, public MixxxTest {
   protected:
+    ControllerScriptEngineLegacyTest()
+            : ControllerScriptEngineLegacy(nullptr, logger) {
+    }
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
         QByteArray contentsBa = contents.toLocal8Bit();
         ScopedTemporaryFile pFile = std::make_unique<QTemporaryFile>();
@@ -31,23 +54,24 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
 
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngine->initialize();
+        initialize();
     }
 
     void TearDown() override {
-        delete cEngine;
         mixxx::Time::setTestMode(false);
+#ifdef MIXXX_USE_QML
+        m_rootItems.clear();
+#endif
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
-        return cEngine->evaluateScriptFile(scriptFile);
+        return ControllerScriptEngineLegacy::evaluateScriptFile(scriptFile);
     }
 
     QJSValue evaluate(const QString& code) {
-        return cEngine->jsEngine()->evaluate(code);
+        return jsEngine()->evaluate(code);
     }
 
     bool evaluateAndAssert(const QString& code) {
@@ -65,9 +89,42 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
         application()->processEvents();
     }
 
-    ControllerScriptEngineLegacy* cEngine;
+#ifdef MIXXX_USE_QML
+    QHash<QString, std::shared_ptr<ControllerRenderingEngine>>& renderingScreens() {
+        return m_renderingScreens;
+    }
+
+    std::unordered_map<QString,
+            std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>&
+    rootItems() {
+        return m_rootItems;
+    }
+
+    void testHandleScreen(
+            const LegacyControllerMapping::ScreenInfo& screeninfo,
+            const QImage& frame,
+            const QDateTime& timestamp) {
+        handleScreenFrame(screeninfo, frame, timestamp);
+    }
+#endif
 };
 
+class ControllerScriptEngineLegacyTimerTest : public ControllerScriptEngineLegacyTest {
+  protected:
+    std::unique_ptr<ControlPotmeter> co;
+    std::unique_ptr<ControlPotmeter> coTimerId;
+
+    void SetUp() override {
+        ControllerScriptEngineLegacyTest::SetUp();
+        co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"), -10.0, 10.0);
+        co->setParameter(0.0);
+        coTimerId = std::make_unique<ControlPotmeter>(
+                ConfigKey("[Test]", "coTimerId"), -10.0, 50.0);
+        coTimerId->setParameter(0.0);
+        EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', 0.0);"));
+        EXPECT_DOUBLE_EQ(0.0, co->get());
+    }
+};
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
     QFileInfo commonScript(config()->getResourcePath() +
             QStringLiteral("/controllers/common-controller-scripts.js"));
@@ -171,7 +228,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
     // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -202,8 +259,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
-    // Advance time to 2x the threshold.
-    mixxx::Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() * 2);
+    SoftTakeover::TestAccess::advanceTimePastThreshold();
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
@@ -257,7 +313,7 @@ TEST_F(ControllerScriptEngineLegacyTest, trigger) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection = engine.connectControl('[Test]', 'co', reaction);"
             "engine.trigger('[Test]', 'co');"));
@@ -279,7 +335,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByString) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', 'reaction');"
             "engine.trigger('[Test]', 'co');"
@@ -306,7 +362,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByStringForbidDuplicateC
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', 'reaction');"
             "engine.connectControl('[Test]', 'co', 'reaction');"
@@ -329,7 +385,7 @@ TEST_F(ControllerScriptEngineLegacyTest,
 
     QString script(
             "var incrementCounterCO = function () {"
-            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  let counter = engine.getValue('[Test]', 'counter');"
             "  engine.setValue('[Test]', 'counter', counter + 1);"
             "};"
             "var connection1 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
@@ -337,7 +393,7 @@ TEST_F(ControllerScriptEngineLegacyTest,
             // to check that disconnecting one does not disconnect both.
             "var connection2 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
             "function changeTestCoValue() {"
-            "  var testCoValue = engine.getValue('[Test]', 'co');"
+            "  let testCoValue = engine.getValue('[Test]', 'co');"
             "  engine.setValue('[Test]', 'co', testCoValue + 1);"
             "};"
             "function disconnectConnection2() {"
@@ -367,7 +423,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByFunction) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection = engine.connectControl('[Test]', 'co', reaction);"
             "connection.trigger();"));
@@ -385,7 +441,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByFunctionAllowDuplicate
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', reaction);"
             "engine.connectControl('[Test]', 'co', reaction);"
@@ -409,7 +465,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_toDisconnectRemovesAllCo
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', reaction);"
             "engine.connectControl('[Test]', 'co', reaction);"
@@ -433,7 +489,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByLambda) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var connection = engine.connectControl('[Test]', 'co', function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); });"
             "connection.trigger();"
             "function disconnect() { "
@@ -456,7 +512,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_Disconnect) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection = engine.makeConnection('[Test]', 'co', reaction);"
             "connection.trigger();"
@@ -480,15 +536,15 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_reflectDisconnect) {
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(success) { "
             "  if (success) {"
-            "    var pass = engine.getValue('[Test]', 'passed');"
+            "    let pass = engine.getValue('[Test]', 'passed');"
             "    engine.setValue('[Test]', 'passed', pass + 1.0); "
             "  }"
             "};"
-            "var dummy_callback = function(value) {};"
-            "var connection = engine.makeConnection('[Test]', 'co', dummy_callback);"
+            "let dummy_callback = function(value) {};"
+            "let connection = engine.makeConnection('[Test]', 'co', dummy_callback);"
             "reaction(connection);"
             "reaction(connection.isConnected);"
-            "var successful_disconnect = connection.disconnect();"
+            "let successful_disconnect = connection.disconnect();"
             "reaction(successful_disconnect);"
             "reaction(!connection.isConnected);"));
     processEvents();
@@ -508,7 +564,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_DisconnectByPassingToC
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection1 = engine.connectControl('[Test]', 'co', reaction);"
             "var connection2 = engine.connectControl('[Test]', 'co', reaction);"
@@ -545,7 +601,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_MakesIndependentConnec
 
     EXPECT_TRUE(evaluateAndAssert(
             "var incrementCounterCO = function () {"
-            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  let counter = engine.getValue('[Test]', 'counter');"
             "  engine.setValue('[Test]', 'counter', counter + 1);"
             "};"
             "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
@@ -553,7 +609,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_MakesIndependentConnec
             // to check that disconnecting one does not disconnect both.
             "var connection2 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
             "function changeTestCoValue() {"
-            "  var testCoValue = engine.getValue('[Test]', 'co');"
+            "  let testCoValue = engine.getValue('[Test]', 'co');"
             "  engine.setValue('[Test]', 'co', testCoValue + 1);"
             "}"
             "function disconnectConnection1() {"
@@ -583,7 +639,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_trigger) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var incrementCounterCO = function () {"
-            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  let counter = engine.getValue('[Test]', 'counter');"
             "  engine.setValue('[Test]', 'counter', counter + 1);"
             "};"
             "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
@@ -619,4 +675,487 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0) // Latin9 is available form Qt 6.5
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.Charset.Latin9, 'Hello! €')");
+
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            QByteArrayView::fromArray({'\x48',
+                    '\x65',
+                    '\x6c',
+                    '\x6c',
+                    '\x6f',
+                    '\x21',
+                    '\x20',
+                    '\xA4'}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.Charset.Latin9, 'مايأ نامز ™')"));
+    char sub = '\x1A'; // ASCII/Latin9 SUB character
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray(
+                    {sub, sub, sub, sub, '\x20', sub, sub, sub, sub, '\x20', sub}));
+}
+#endif
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetLatin1Eur) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.Charset.Latin1, 'Hello! ¤€')");
+
+    char sub = '?'; // used by Qt for substitution
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            QByteArrayView::fromArray({'\x48',
+                    '\x65',
+                    '\x6c',
+                    '\x6c',
+                    '\x6f',
+                    '\x21',
+                    '\x20',
+                    '\xA4',
+                    sub}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.Charset.UTF_16LE, 'مايأ نامز')"));
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray({'\x45',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x4A',
+                    '\x06',
+                    '\x23',
+                    '\x06',
+                    '\x20',
+                    '\x00',
+                    '\x46',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x45',
+                    '\x06',
+                    '\x32',
+                    '\x06'}));
+}
+
+#define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! ™ 😊"
+
+static int convertedCharsetForString(ControllerScriptInterfaceLegacy::Charset charset) {
+    // the expected length after conversion of COMPLICATEDSTRINGLITERAL
+    using enum ControllerScriptInterfaceLegacy::Charset;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    switch (charset) {
+    case UTF_8:
+        return 67;
+    case UTF_16LE:
+    case UTF_16BE:
+        return 70;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 136;
+    case ASCII:
+    case CentralEurope:
+    case Cyrillic:
+    case WesternEurope:
+    case Greek:
+    case Turkish:
+    case Hebrew:
+    case Arabic:
+    case Baltic:
+    case Vietnamese:
+    case Latin9:
+    case KOI8_U:
+        return 34;
+    case Latin1:
+        // Latin1 is handled by Qt internally and 😊 becomes "??"
+        return 35;
+    case EUC_JP:
+        return 53;
+    case Shift_JIS:
+    case EUC_KR:
+    case Big5_HKSCS:
+        return 52;
+    case UCS2:
+        return 72;
+    case SCSU:
+        return 55;
+    case BOCU_1:
+        return 56;
+    case CESU_8:
+        return 69;
+    }
+#else
+    // Qt < 6.4 only supports these conversions
+    switch (charset) {
+    case UTF_8:
+        return 67;
+    case UTF_16LE:
+    case UTF_16BE:
+        return 70;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 136;
+    case Latin1:
+        return 35;
+    default:
+        return 0;
+    }
+#endif
+
+    // unreachable, but gtest does not offer a way to assert this here.
+    // returning 0 will almost certainly also result in a failure.
+    return 0;
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
+    QMetaEnum charsetEnumEntry = QMetaEnum::fromType<
+            ControllerScriptInterfaceLegacy::Charset>();
+
+    for (int i = 0; i < charsetEnumEntry.keyCount(); ++i) {
+        QString key = charsetEnumEntry.key(i);
+        auto enumValue =
+                static_cast<ControllerScriptInterfaceLegacy::Charset>(
+                        charsetEnumEntry.value(i));
+        QString source = QStringLiteral(
+                "engine.convertCharset(engine.Charset.%1, "
+                "'" COMPLICATEDSTRINGLITERAL "')")
+                                 .arg(key);
+        auto result = qjsvalue_cast<QByteArray>(evaluate(source));
+        EXPECT_EQ(result.size(), convertedCharsetForString(enumValue))
+                << "Unexpected length of converted string for encoding: '"
+                << key.toStdString() << "'";
+    }
+}
+
+#ifdef MIXXX_USE_QML
+class MockScreenRender : public ControllerRenderingEngine {
+  public:
+    MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
+            : ControllerRenderingEngine(info, new ControllerEngineThreadControl){};
+    MOCK_METHOD(void,
+            requestSendingFrameData,
+            (Controller * controller, const QByteArray& frame),
+            (override));
+};
+
+TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
+    LogCaptureGuard logCaptureGuard;
+    LegacyControllerMapping::ScreenInfo dummyScreen{
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // rawData
+            false                                                  // reversedColor
+    };
+    QImage dummyFrame;
+    // Allocate screen on the heap as it need to outlive the this function,
+    // since the engine will take ownership of it
+    std::shared_ptr<MockScreenRender> pDummyRender =
+            std::make_shared<MockScreenRender>(dummyScreen);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, _)).Times(0);
+    EXPECT_LOG_MSG(QtWarningMsg,
+            "Could not find a valid transform function but the screen doesn't "
+            "accept raw data. Aborting screen rendering.");
+
+    renderingScreens().insert(dummyScreen.identifier, pDummyRender);
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+
+    testHandleScreen(
+            dummyScreen,
+            dummyFrame,
+            QDateTime::currentDateTime());
+
+    ASSERT_ALL_EXPECTED_MSG();
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
+    LogCaptureGuard logCaptureGuard;
+    LegacyControllerMapping::ScreenInfo dummyScreen{
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // reversedColor
+            true                                                   // rawData
+    };
+    QImage dummyFrame;
+    // Allocate screen on the heap as it need to outlive the this function,
+    // since the engine will take ownership of it
+    std::shared_ptr<MockScreenRender> pDummyRender =
+            std::make_shared<MockScreenRender>(dummyScreen);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
+
+    renderingScreens().insert(dummyScreen.identifier, pDummyRender);
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
+
+    testHandleScreen(
+            dummyScreen,
+            dummyFrame,
+            QDateTime::currentDateTime());
+
+    ASSERT_ALL_EXPECTED_MSG();
+}
+#endif
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimer) {
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    EXPECT_TRUE(
+            evaluateAndAssert(R"(engine.beginTimer(50, function() {
+                                    let x = engine.getValue('[Test]', 'co');
+                                    x++; 
+                                    engine.setValue('[Test]', 'co', x);
+                                 }, false);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    jsEngine()->thread()->msleep(70);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(1.0, co->get());
+
+    jsEngine()->thread()->msleep(140);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(2.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimer) {
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(engine.beginTimer(20, function() {
+                   engine.setValue('[Test]', 'co', 1.0);
+               }, true);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(1.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerBindFunction) {
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(var globVar = 7;
+            timerId = engine.beginTimer(20, function () {
+                engine.setValue('[Test]', 'co', this.globVar);
+                this.globVar++;
+                engine.setValue('[Test]', 'coTimerId', timerId + 10);
+            }.bind(this), true);            
+            engine.setValue('[Test]', 'coTimerId', timerId);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', this.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFunction) {
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(var globVar = 7;
+            timerId = engine.beginTimer(20, () => {
+                engine.setValue('[Test]', 'co', this.globVar);
+                this.globVar++;
+                engine.setValue('[Test]', 'coTimerId', timerId + 10);
+            }, true);            
+            engine.setValue('[Test]', 'coTimerId', timerId);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', this.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerBindFunctionInClass) {
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, function() {
+                     engine.setValue('[Test]', 'co', this.globVar);
+                     this.globVar++;
+                     engine.setValue('[Test]', 'coTimerId', this.timerId + 10);
+                  }.bind(this), true);            
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass();
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', MyMapping.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFunctionInClass) {
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               runTimer() {                  
+                  const savedThis = this;
+                  this.timerId = engine.beginTimer(20, () => {
+                     if (savedThis !== this) { throw new Error("savedThis should be equal to this"); }
+                     if (!(this instanceof MyClass)) { throw new Error("this should be an instance of MyClass"); }
+                     engine.setValue('[Test]', 'co', this.globVar);
+                     this.globVar++;
+                     engine.setValue('[Test]', 'coTimerId', this.timerId + 10);
+                  }, true);            
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass();
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', MyMapping.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunctionCallInClass) {
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               stopTimer() {
+                  if (!(this instanceof MyClass)) { throw new Error("this should be an instance of MyClass"); }
+                  engine.stopTimer(this.timerId);
+                  this.timerId = 0;
+                  engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, () => this.stopTimer(), false);                  
+                  engine.setValue('[Test]', 'co', this.globVar);      
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass();
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+}
+TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerThisFunctionCallInClass) {
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               stopTimer() {    
+                  if (!(this instanceof MyClass)) {throw new Error("this should be an instance of MyClass");}
+                  engine.stopTimer(this.timerId);
+                  this.timerId = 0;
+                  engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, this.stopTimer.bind(this), false);              
+                  engine.setValue('[Test]', 'co', this.globVar);
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass();
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+
+    jsEngine()->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
 }

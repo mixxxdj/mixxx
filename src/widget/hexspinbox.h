@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QSpinBox>
-#include <QValidator>
 
 class HexSpinBox : public QSpinBox {
     Q_OBJECT

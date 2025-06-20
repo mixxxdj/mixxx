@@ -1,6 +1,6 @@
 <!--
 Description:
-  An extra line below/above waveform overview that contains FX asssign buttons and
+  An extra line below/above waveform overview that contains FX assign buttons and
   track comment (optional)
 Variables:
   chanNum : the channel number
@@ -28,22 +28,22 @@ Variables:
         <SizePolicy>i,min</SizePolicy>
         <Children>
 
-          <Template src="skin:../Tango/fx/assign_button.xml">
+          <Template src="skins:Tango/fx/assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
             <SetVariable name="FxUnit">1</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/fx/assign_button.xml">
+          <Template src="skins:Tango/fx/assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
             <SetVariable name="FxUnit">2</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/fx/assign_button.xml">
+          <Template src="skins:Tango/fx/assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
             <SetVariable name="FxUnit">3</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/fx/assign_button.xml">
+          <Template src="skins:Tango/fx/assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
             <SetVariable name="FxUnit">4</SetVariable>
           </Template>

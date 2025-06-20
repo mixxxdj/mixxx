@@ -12,7 +12,7 @@
         <Layout>stacked</Layout>
         <SizePolicy>max,max</SizePolicy>
         <Children>
-          <Template src="skin:/controls/button_2state_right_display.xml">
+          <Template src="skins:LateNight/controls/button_2state_right_display.xml">
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
             <SetVariable name="ObjectName">PlaySampler</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
@@ -48,7 +48,7 @@
                 <TooltipId>track_title</TooltipId>
                 <ObjectName>SamplerTitleMini</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
-                <Property>title</Property>
+                <Property>titleInfo</Property>
                 <Group><Variable name="Group"/></Group>
                 <Elide>right</Elide>
               </TrackProperty>
@@ -65,7 +65,7 @@
                 <ObjectName>SamplerBpmMini</ObjectName>
                 <Size>45f,18f</Size>
                 <Group><Variable name="Group"/></Group>
-                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
                 <Alignment>left</Alignment>
                 <Connection>
                   <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
@@ -83,7 +83,7 @@
                 <Layout>horizontal</Layout>
                 <Size>43f,18f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state.xml">
                     <SetVariable name="TooltipId">eject</SetVariable>
                     <SetVariable name="ObjectName">EjectButton12</SetVariable>
                     <SetVariable name="BtnType"></SetVariable>
@@ -96,18 +96,18 @@
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Pressed>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Pressed>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Pressed>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>

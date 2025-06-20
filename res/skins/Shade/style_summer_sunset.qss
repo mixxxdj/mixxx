@@ -7,6 +7,7 @@ WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 QTextBrowser QMenu,
 QTextBrowser QMenu::item,
 WTrackMenu,
@@ -14,8 +15,11 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -50,7 +54,8 @@ WBeatSpinBox,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
-  QLineEdit QMenu::separator {
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
     border-top: 1px solid #222;
   }
 #MainMenu::item:selected,
@@ -62,20 +67,30 @@ WBeatSpinBox,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::item:selected,
-WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-QTextBrowser QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::item:selected,
 #fadeModeCombobox::indicator:unchecked:selected {
   background-color: #d9c663;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-background-color: #d9c663;
   }
   WEffectSelector::indicator:unchecked:selected,
   #fadeModeCombobox::indicator:unchecked:selected {
@@ -88,7 +103,7 @@ WEffectSelector::indicator:unchecked:selected,
   }
   /* unchecked menu checkbox */
   WLibrarySidebar QMenu::indicator:unchecked,
-  WTrackTableViewHeader QMenu::indicator:unchecked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
   WTrackMenu QMenu QCheckBox::indicator:enabled:unchecked {
     border-color: #222;
   }
@@ -96,7 +111,7 @@ WEffectSelector::indicator:unchecked:selected,
   /* checked checkbox */
   /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
   WLibrarySidebar QMenu::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -132,6 +147,12 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #cdbb5d;
 }
+#CueSavedLoopButton {
+  background-color: #cdbb5d;
+}
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #54fd05;
+}
 #CueLabelEdit {
   background-color: #706633;
 }
@@ -141,6 +162,10 @@ WLibrarySidebar:focus,
 WLibraryTextBrowser:focus,
 WSearchLineEdit:focus {
   border-color: #78C70B;
+}
+
+#LibraryBPMButton::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_lib_bpm_unlocked_white.svg);
 }
 
 #LibraryFeatureControls QPushButton:enabled {

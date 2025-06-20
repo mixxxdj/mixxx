@@ -22,13 +22,14 @@ QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal() {
 void QtWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 
-    QColor borderColor = m_pColors->getSignalColor().lighter(125);
-    borderColor.setAlphaF(0.5);
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
+    QColor borderColor = pColors->getSignalColor().lighter(125);
+    borderColor.setAlphaF(0.5f);
     m_borderPen.setColor(borderColor);
-    m_borderPen.setWidthF(1.25);
+    m_borderPen.setWidthF(1.25f);
 
-    QColor signalColor = m_pColors->getSignalColor();
-    signalColor.setAlphaF(0.8);
+    QColor signalColor = pColors->getSignalColor();
+    signalColor.setAlphaF(0.8f);
     m_brush = QBrush(signalColor);
 }
 
@@ -38,24 +39,28 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = pTrack->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
+        return;
+    }
+
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
         return;
     }
 
@@ -86,12 +91,16 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_pColors->getAxesColor());
+        painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
         painter->drawLine(0,0,m_waveformRenderer->getLength(),0);
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
     m_polygon.clear();
     m_polygon.reserve(2 * m_waveformRenderer->getLength() + 2);
     m_polygon.append(QPointF(0.0, 0.0));

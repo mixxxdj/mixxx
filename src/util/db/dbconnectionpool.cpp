@@ -32,8 +32,10 @@ bool DbConnectionPool::createThreadLocalConnection() {
                 << *pConnection;
         return false; // abort
     }
-    m_threadLocalConnections.setLocalData(pConnection.get()); // transfer ownership
-    pConnection.release(); // release ownership
+
+    // m_threadLocalConnections takes the ownership of pConnection
+    m_threadLocalConnections.setLocalData(pConnection.release());
+
     DEBUG_ASSERT(m_threadLocalConnections.hasLocalData());
     DEBUG_ASSERT(m_threadLocalConnections.localData());
     kLogger.info()

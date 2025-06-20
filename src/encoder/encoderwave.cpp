@@ -1,11 +1,11 @@
-#include <QtDebug>
-
 #include "encoder/encoderwave.h"
 
-#include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
-#include "recording/defs_recording.h"
+#include <QtDebug>
 
+#include "audio/types.h"
+#include "encoder/encodercallback.h"
+#include "encoder/encoderwavesettings.h"
+#include "recording/defs_recording.h"
 
 // The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)
@@ -136,9 +136,8 @@ void EncoderWave::flush() {
     sf_write_sync(m_pSndfile);
 }
 
-
-void EncoderWave::encodeBuffer(const CSAMPLE *pBuffer, const int iBufferSize) {
-    sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
+    sf_write_float(m_pSndfile, pBuffer, bufferSize);
 }
 
 /* Originally called from enginebroadcast.cpp to update metadata information

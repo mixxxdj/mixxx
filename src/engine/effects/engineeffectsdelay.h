@@ -3,14 +3,13 @@
 #include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 namespace {
 static constexpr int kMaxDelayFrames =
         mixxx::audio::SampleRate::kValueMax - 1;
 static constexpr int kDelayBufferSize =
-        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount;
+        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelOutputCount;
 } // anonymous namespace
 
 /// The effect can produce the output signal with a specific delay caused
@@ -29,10 +28,11 @@ static constexpr int kDelayBufferSize =
 /// After delaying the non-delayed signal, both signals (delayed
 /// and non-delayed) can be mixed and used together.
 class EngineEffectsDelay final : public EngineObject {
+    Q_OBJECT
   public:
     EngineEffectsDelay();
 
-    virtual ~EngineEffectsDelay(){};
+    ~EngineEffectsDelay() override;
 
     /// Called from the audio thread
 
@@ -53,7 +53,7 @@ class EngineEffectsDelay final : public EngineObject {
         // to aware problems with a number of channels. The inner
         // EngineEffectsDelay structure works with delay samples, so the value
         // is recalculated for the EngineEffectsDelay usage.
-        m_currentDelaySamples = delayFrames * mixxx::kEngineChannelCount;
+        m_currentDelaySamples = delayFrames * mixxx::kEngineChannelOutputCount;
     }
 
     /// The method delays the input buffer by the set number of samples
@@ -71,7 +71,7 @@ class EngineEffectsDelay final : public EngineObject {
     /// as actual and the output buffer is filled using cross-fading
     /// of the presumed output buffer for the previous delay value
     /// and of the output buffer created using the new delay value.
-    void process(CSAMPLE* pInOut, const int iBufferSize) override;
+    void process(CSAMPLE* pInOut, const std::size_t bufferSize) override;
 
   private:
     SINT m_currentDelaySamples;

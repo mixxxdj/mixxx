@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <memory.h>
 
 #include <QtDebug>
+#include <memory>
 
 #include "track/beats.h"
 #include "track/track.h"
@@ -14,17 +14,17 @@ class BeatMapTest : public testing::Test {
   protected:
     BeatMapTest()
             : m_pTrack(Track::newTemporary()),
-              m_iSampleRate(10000),
+              m_sampleRate(mixxx::audio::SampleRate(10000)),
               m_iFrameSize(2) {
         m_pTrack->setAudioProperties(
                 mixxx::audio::ChannelCount(2),
-                mixxx::audio::SampleRate(m_iSampleRate),
+                m_sampleRate,
                 mixxx::audio::Bitrate(),
                 mixxx::Duration::fromSeconds(180));
     }
 
     mixxx::audio::FrameDiff_t getBeatLengthFrames(mixxx::Bpm bpm) {
-        return (60.0 * m_iSampleRate / bpm.value());
+        return (60.0 * m_sampleRate.value() / bpm.value());
     }
 
     QVector<mixxx::audio::FramePos> createBeatVector(mixxx::audio::FramePos first_beat,
@@ -38,7 +38,7 @@ class BeatMapTest : public testing::Test {
     }
 
     TrackPointer m_pTrack;
-    int m_iSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     int m_iFrameSize;
 };
 

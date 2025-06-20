@@ -281,13 +281,13 @@ VestaxVCI300.updatePitchValue = function(group, pitchHigh, pitchLow) {
 
 VestaxVCI300.initValues = function() {
     VestaxVCI300.scrollState = false;
-    VestaxVCI300.numDecksBackup = engine.getValue(VestaxVCI300.group, "num_decks");
-    engine.setValue(VestaxVCI300.group, "num_decks", 2);
+    VestaxVCI300.numDecksBackup = engine.getValue("[App]", "num_decks");
+    engine.setValue("[App]", "num_decks", 2);
     engine.setValue(VestaxVCI300.group, "headMix", 0.0);
 };
 
 VestaxVCI300.restoreValues = function() {
-    engine.setValue(VestaxVCI300.group, "num_decks", VestaxVCI300.numDecksBackup);
+    engine.setValue("[App]", "num_decks", VestaxVCI300.numDecksBackup);
 };
 
 VestaxVCI300.connectControl = function(group, ctrl, func) {
@@ -402,11 +402,9 @@ VestaxVCI300.Deck.prototype.disableScratching = function() {
     if ((!this.isPlaying() && (VestaxVCI300.JOG_SCRATCH2_ABS_MIN < Math.abs(scratch2))) ||
         (scratch2 < VestaxVCI300.JOG_SCRATCH2_PLAY_MIN) ||
         (scratch2 > VestaxVCI300.JOG_SCRATCH2_PLAY_MAX)) {
-        var timeoutCallback =
-            "VestaxVCI300.onScratchingTimeoutDeck" + this.number + "()";
         this.scratchTimer = engine.beginTimer(
             VestaxVCI300.JOG_SCRATCH_TIMEOUT,
-            timeoutCallback,
+            VestaxVCI300["onScratchingTimeoutDeck" + this.number],
             true);
     }
     if (0 === this.scratchTimer) {

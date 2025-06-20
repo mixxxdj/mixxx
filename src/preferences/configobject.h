@@ -7,6 +7,7 @@
 #include <QMetaType>
 #include <QReadWriteLock>
 #include <QString>
+#include <type_traits>
 
 #include "util/assert.h"
 #include "util/compatibility/qhash.h"
@@ -14,6 +15,8 @@
 
 // Class for the key for a specific configuration element. A key consists of a
 // group and an item.
+//
+// NOTE: new ConfigKey's item should use the `snake_case` formatting
 class ConfigKey final {
   public:
     ConfigKey() = default; // is required for qMetaTypeConstructHelper()
@@ -155,6 +158,12 @@ template <class ValueType> class ConfigObject {
     // values. ResultType is serialized to string on a per-type basis.
     template <class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
+    template<class EnumType>
+        requires std::is_enum_v<EnumType>
+    // we need to take value as const ref otherwise the overload is ambiguous
+    void setValue(const ConfigKey& key, const EnumType& value) {
+        setValue<int>(key, static_cast<int>(value));
+    };
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns ResultType().
@@ -171,6 +180,12 @@ template <class ValueType> class ConfigObject {
     template <class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
+    template<typename EnumType>
+        requires std::is_enum_v<EnumType>
+    EnumType getValue(const ConfigKey& key, const EnumType& default_value) const {
+        // we need to take default_value as const ref otherwise the overload is ambiguous
+        return static_cast<EnumType>(getValue<int>(key, static_cast<int>(default_value)));
+    }
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
@@ -206,3 +221,21 @@ template <class ValueType> class ConfigObject {
     // not be opened; otherwise true.
     bool parse();
 };
+
+// Specialization must be declared before the first use that would cause
+// implicit instantiation, in every translation unit where such use occurs.
+// See <https://en.cppreference.com/w/cpp/language/template_specialization> for
+// details.
+template<>
+template<>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const QString& default_value) const;
+template<>
+template<>
+bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key, const bool& default_value) const;
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& value);
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value);

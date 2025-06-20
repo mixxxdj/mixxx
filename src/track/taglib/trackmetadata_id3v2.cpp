@@ -1,16 +1,17 @@
 #include "track/taglib/trackmetadata_id3v2.h"
 
-#include <taglib/attachedpictureframe.h>
-#include <taglib/commentsframe.h>
-#include <taglib/generalencapsulatedobjectframe.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/unknownframe.h>
+#include <attachedpictureframe.h>
+#include <commentsframe.h>
+#include <generalencapsulatedobjectframe.h>
+#include <textidentificationframe.h>
+#include <unknownframe.h>
 
 #include <array>
 #if defined(__EXTRA_METADATA__)
-#include <taglib/uniquefileidentifierframe.h>
+#include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
@@ -109,7 +110,7 @@ T* downcastFrame(TagLib::ID3v2::Frame* pFrame) {
     DEBUG_ASSERT(pFrame);
     // We need to use a safe dynamic_cast at runtime instead of an unsafe
     // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    // See also: https://github.com/mixxxdj/mixxx/issues/9325
     auto* pDowncastFrame = dynamic_cast<T*>(pFrame);
     VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
         // This should only happen when reading corrupt or malformed files
@@ -122,7 +123,7 @@ template<typename T>
 const T* downcastFrame(const TagLib::ID3v2::Frame* pFrame) {
     // We need to use a safe dynamic_cast at runtime instead of an unsafe
     // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    // See also: https://github.com/mixxxdj/mixxx/issues/9325
     const auto* pDowncastFrame = dynamic_cast<const T*>(pFrame);
     VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
         // This should only happen when reading corrupt or malformed files
@@ -382,10 +383,9 @@ void writeTextIdentificationFrame(
         auto pFrame =
                 std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
         pFrame->setText(toTString(text));
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // pTag takes the ownership of pFrame
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -414,10 +414,9 @@ void writeUserTextIdentificationFrame(
                     std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(toTString(text));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // pTag takes the ownership of pFrame
+            pTag->addFrame(pFrame.release());
         }
     }
 }
@@ -488,10 +487,9 @@ void writeCommentsFrame(
                     std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(text);
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // pTag takes the ownership of pFrame
+            pTag->addFrame(pFrame.release());
         }
     }
     // Cleanup: Remove non-standard comment frames to avoid redundant and
@@ -576,10 +574,9 @@ void writeGeneralEncapsulatedObjectFrame(
         pFrame->setDescription(toTString(description));
         pFrame->setObject(toTByteVector(data));
         pFrame->setMimeType(mimeType);
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // pTag takes the ownership of pFrame
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -688,7 +685,7 @@ void importTrackMetadataFromTag(
     // description (see below). If no such CommentsFrame exists TagLib
     // arbitrarily picks the first one with a description that it finds,
     // e.g. "iTunNORM" or "iTunPGAP" with unexpected results for the user.
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1742617
+    // See also: https://github.com/mixxxdj/mixxx/issues/9074
     taglib::importTrackMetadataFromTag(
             pTrackMetadata,
             tag,
@@ -712,7 +709,7 @@ void importTrackMetadataFromTag(
                 readFirstUserTextIdentificationFrame(
                         tag,
                         QStringLiteral("COMMENT"));
-        if (!comment.isNull() || resetMissingTagMetadata) {
+        if (!comment.isEmpty() || resetMissingTagMetadata) {
             pTrackMetadata->refTrackInfo().setComment(comment);
         }
     }
@@ -905,7 +902,7 @@ void importTrackMetadataFromTag(
 
     const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
     if (!keyFrames.isEmpty() || resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(
+        pTrackMetadata->refTrackInfo().setKeyText(
                 firstNonEmptyFrameToQString(keyFrames));
     }
 
@@ -1060,21 +1057,21 @@ void importTrackMetadataFromTag(
                     tag,
                     kFrameDescriptionSeratoBeatGrid);
     if (!seratoBeatGrid.isEmpty()) {
-        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MP3);
+        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MPEG);
     }
     const QByteArray seratoMarkers =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers);
     if (!seratoMarkers.isEmpty()) {
-        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MP3);
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MPEG);
     }
     const QByteArray seratoMarkers2 =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers2);
     if (!seratoMarkers2.isEmpty()) {
-        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MP3);
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MPEG);
     }
 }
 
@@ -1217,7 +1214,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     writeTextIdentificationFrame(
             pTag,
             "TKEY",
-            trackMetadata.getTrackInfo().getKey());
+            trackMetadata.getTrackInfo().getKeyText());
 
     writeUserTextIdentificationFrame(
             pTag,
@@ -1345,15 +1342,15 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoBeatGrid,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers2,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MPEG));
     }
 
     return true;

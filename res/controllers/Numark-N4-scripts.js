@@ -228,10 +228,10 @@ NumarkN4.topContainer = function(channel) {
                     midi.sendShortMsg(0xB0+channel, 0x0B+i, (i-this.hotCuePage)?0x00:0x7F);
                 }
             }
-            this.timer = engine.beginTimer(1000, function() {
+            this.timer = engine.beginTimer(1000, () => {
                 theContainer.reconnectComponents();
                 this.timer = 0;
-            }.bind(this), true);
+            }, true);
         },
         shift: function() {
             this.group=theContainer.group;
@@ -286,14 +286,14 @@ NumarkN4.topContainer.prototype = new components.ComponentContainer();
 
 NumarkN4.MixerTemplate = function() {
     //channel will always be 0 it can be "hardcoded" into the components
-    this.deckChangeL = new components.Button ({
+    this.deckChangeL = new components.Button({
         midi: [0xB0, 0x50],
         input: function(_channel, _control, value, _status, _group) {
             this.output(value);
             //just "echos" the midi since the controller knows the deck its on itself but doesn't update the corresponding leds.
         },
     });
-    this.deckChangeR = new components.Button ({
+    this.deckChangeR = new components.Button({
         midi: [0xB0, 0x51],
         input: function(_channel, _control, value, _status, _group) {
             this.output(value);
@@ -355,8 +355,8 @@ NumarkN4.MixerTemplate = function() {
     this.navigationEncoderButton = new components.Button({
         shift: function() {
             this.type=components.Button.prototype.types.toggle;
-            this.group="[Master]";
-            this.inKey="maximize_library";
+            this.group="[Skin]";
+            this.inKey="show_maximized_library";
         },
         unshift: function() {
             this.type=components.Button.prototype.types.push;
@@ -492,9 +492,9 @@ NumarkN4.Deck = function(channel) {
                 if (this.inGetParameter()!==value) {
                     this.inSetParameter(value);
                 }
-                engine.beginTimer(100, function() {
+                engine.beginTimer(100, () => {
                     this.flickerSafetyTimeout=true;
-                }.bind(this), true);
+                }, true);
             }
         },
     });
@@ -564,7 +564,7 @@ NumarkN4.Deck = function(channel) {
         },
     });
 
-    this.manageChannelIndicator = function() {
+    this.manageChannelIndicator = () => {
         this.duration=engine.getParameter(theDeck.group, "duration");
         // checks if the playposition is in the warnTimeFrame
         if (engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime)) {
@@ -586,7 +586,7 @@ NumarkN4.Deck = function(channel) {
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {
             //timer is more efficient is this case than a callback because it would be called too often.
-            theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval, theDeck.manageChannelIndicator.bind(this));
+            theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval, theDeck.manageChannelIndicator.bind(this), true);
         }
         this.previouslyLoaded=value;
     }.bind(this));
@@ -641,7 +641,7 @@ NumarkN4.Deck = function(channel) {
         midi: [0xB0+channel, 0x01, 0xB0+channel, 0x37], //only specifying input MSB
         inKey: "rate",
         group: theDeck.group,
-        invert: false,
+        invert: true,
     });
     this.pitchLedHandler = engine.makeConnection(this.group, "rate", function(value) {
     // Turns on when rate slider is centered

@@ -1,5 +1,9 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#include <QTimeZone>
+#endif
+
 #include "moc_dlgprefautodj.cpp"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
@@ -8,23 +12,45 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
+    // The auto-DJ replay-age for randomly-selected tracks
+    connect(RequeueIgnoreCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefAutoDJ::slotToggleRequeueIgnore);
+
+    // Auto DJ random enqueue
+    connect(RandomQueueCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefAutoDJ::slotToggleRandomQueue);
+
+    setScrollSafeGuardForAllInputWidgets(this);
+}
+
+void DlgPrefAutoDJ::slotUpdate() {
     // The minimum available for randomly-selected tracks
     MinimumAvailableSpinBox->setValue(
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "MinimumAvailable"), 20));
-    connect(MinimumAvailableSpinBox,
-            QOverload<int>::of(&QSpinBox::valueChanged),
-            this,
-            &DlgPrefAutoDJ::slotSetMinimumAvailable);
 
     // The auto-DJ replay-age for randomly-selected tracks
-    RequeueIgnoreCheckBox->setChecked(
-            (bool)m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), 0));
-    connect(RequeueIgnoreCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefAutoDJ::slotToggleRequeueIgnore);
+    RequeueIgnoreCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
+    /// TODO: Once we require at least Qt 6.7, remove this `setTimeZone` call
+    /// and uncomment the corresponding declarations in the UI file instead.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    RequeueIgnoreTimeEdit->setTimeZone(QTimeZone::LocalTime);
+#else
+    RequeueIgnoreTimeEdit->setTimeSpec(Qt::LocalTime);
+#endif
     RequeueIgnoreTimeEdit->setTime(
             QTime::fromString(
                     m_pConfig->getValue(
@@ -32,167 +58,81 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                     RequeueIgnoreTimeEdit->displayFormat()));
     RequeueIgnoreTimeEdit->setEnabled(
             RequeueIgnoreCheckBox->checkState() == Qt::Checked);
-    connect(RequeueIgnoreTimeEdit,
-            &QTimeEdit::timeChanged,
-            this,
-            &DlgPrefAutoDJ::slotSetRequeueIgnoreTime);
 
     // Auto DJ random enqueue
-    RandomQueueCheckBox->setChecked(
-            (bool)m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
-    // 5-arbitrary
+    RandomQueueCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "EnableRandomQueue"), false));
+
     RandomQueueMinimumSpinBox->setValue(
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"), 5));
     // "[Auto DJ], Requeue" is set by 'Repeat Playlist' toggle in DlgAutoDj GUI.
     // If it's checked un-check 'Random Queue'
-    slotConsiderRepeatPlaylistState(
-            m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
+    // TODO Add 'Repeat' checkbox here, or add a hint why the checkbox may be disabled
+    considerRepeatPlaylistState(
+            m_pConfig->getValue<bool>(ConfigKey("[Auto DJ]", "Requeue")));
     slotToggleRandomQueue(
-            m_pConfig->getValue<int>(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue")));
-    // Be ready to enable and modify the minimum number and un/check the checkbox
-    connect(RandomQueueCheckBox,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgPrefAutoDJ::slotToggleRandomQueue);
-    connect(RandomQueueMinimumSpinBox,
-            QOverload<int>::of(&QSpinBox::valueChanged),
-            this,
-            &DlgPrefAutoDJ::slotSetRandomQueueMin);
-}
+            m_pConfig->getValue<bool>(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue"))
+                    ? Qt::Checked
+                    : Qt::Unchecked);
 
-DlgPrefAutoDJ::~DlgPrefAutoDJ() {
-}
-
-void DlgPrefAutoDJ::slotUpdate() {
+    // Re-center the crossfader instantly when AutoDJ is disabled
+    CenterXfaderCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "center_xfader_when_disabling"), false));
 }
 
 void DlgPrefAutoDJ::slotApply() {
-    //Copy from Buffer to actual values
-    m_pConfig->setValue(ConfigKey("[Auto DJ]","MinimumAvailable"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), 20));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "MinimumAvailable"),
+            MinimumAvailableSpinBox->value());
 
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "IgnoreTime"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "IgnoreTimeBuff"), "23:59"));
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTime"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), "0"));
+            RequeueIgnoreCheckBox->isChecked());
+    const QString ignTimeStr =
+            RequeueIgnoreTimeEdit->time().toString();
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "IgnoreTime"), ignTimeStr);
 
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"), 5));
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), 0));
-}
+            RandomQueueCheckBox->isChecked());
+    m_pConfig->setValue(
+            ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),
+            RandomQueueMinimumSpinBox->value());
 
-void DlgPrefAutoDJ::slotCancel() {
-    // Load actual values and reset Buffer Values where ever needed
-    MinimumAvailableSpinBox->setValue(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "MinimumAvailable"), 20));
-
-    RequeueIgnoreTimeEdit->setTime(
-            QTime::fromString(
-                    m_pConfig->getValue(
-                            ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
-                    RequeueIgnoreTimeEdit->displayFormat()));
-    RequeueIgnoreCheckBox->setChecked(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
-    RequeueIgnoreTimeEdit->setEnabled(
-            RequeueIgnoreCheckBox->checkState() == Qt::Checked);
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), 0));
-
-    RandomQueueMinimumSpinBox->setValue(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"), 5));
-    RandomQueueCheckBox->setChecked(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), false));
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
-    slotToggleRandomQueue(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
-    slotToggleRandomQueue(
-            m_pConfig->getValue<int>(ConfigKey("[Auto DJ]", "Requeue")));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "center_xfader_when_disabling"),
+            CenterXfaderCheckBox->isChecked());
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
-    // Re-queue tracks in AutoDJ
     MinimumAvailableSpinBox->setValue(20);
 
-    RequeueIgnoreTimeEdit->setTime(QTime::fromString(
-            "23:59", RequeueIgnoreTimeEdit->displayFormat()));
     RequeueIgnoreCheckBox->setChecked(false);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"),QString("0"));
     RequeueIgnoreTimeEdit->setEnabled(false);
+    RequeueIgnoreTimeEdit->setTime(QTime::fromString("23:59"));
 
-    RandomQueueMinimumSpinBox->setValue(5);
     RandomQueueCheckBox->setChecked(false);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
-    RandomQueueMinimumSpinBox->setEnabled(false);
     RandomQueueCheckBox->setEnabled(true);
+    RandomQueueMinimumSpinBox->setEnabled(false);
+    RandomQueueMinimumSpinBox->setValue(5);
+
+    CenterXfaderCheckBox->setChecked(false);
 }
 
-void DlgPrefAutoDJ::slotSetMinimumAvailable(int a_iValue) {
-    QString str;
-    str.setNum(a_iValue);
-    m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailableBuff"),str);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleRequeueIgnore(Qt::CheckState buttonState) {
+#else
+void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {
+#endif
+    RequeueIgnoreTimeEdit->setEnabled(buttonState == Qt::Checked);
 }
 
-void DlgPrefAutoDJ::slotToggleRequeueIgnore(int a_iState) {
-    bool bChecked = (a_iState == Qt::Checked);
-    QString strChecked = (bChecked) ? "1" : "0";
-    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), strChecked);
-    RequeueIgnoreTimeEdit->setEnabled(bChecked);
+void DlgPrefAutoDJ::considerRepeatPlaylistState(bool enable) {
+    RandomQueueMinimumSpinBox->setEnabled(enable);
 }
 
-void DlgPrefAutoDJ::slotSetRequeueIgnoreTime(const QTime& a_rTime) {
-    QString str = a_rTime.toString(RequeueIgnoreTimeEdit->displayFormat());
-    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTimeBuff"),str);
-}
-
-void DlgPrefAutoDJ::slotSetRandomQueueMin(int a_iValue) {
-    QString str;
-    //qDebug() << "min allowed " << a_iValue;
-    str.setNum(a_iValue);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"), str);
-}
-
-void DlgPrefAutoDJ::slotConsiderRepeatPlaylistState(int a_iValue) {
-    if (a_iValue == 1) {
-        // Requeue is enabled
-        RandomQueueCheckBox->setChecked(false);
-        // ToDo(ronso0): Redundant? If programmatic checkbox change is signaled
-        // to slotToggleRandomQueue
-        RandomQueueMinimumSpinBox->setEnabled(false);
-        m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
-                ConfigValue(0));
-    } else {
-        RandomQueueMinimumSpinBox->setEnabled(
-                m_pConfig->getValue(
-                        ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), false));
-    }
-}
-
-void DlgPrefAutoDJ::slotToggleRandomQueue(int a_iValue) {
-    // Toggle the option to select minimum tracks
-    if (a_iValue == 0) {
-        RandomQueueMinimumSpinBox->setEnabled(false);
-        m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
-                ConfigValue(0));
-    } else {
-        RandomQueueMinimumSpinBox->setEnabled(true);
-        m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
-                ConfigValue(1));
-    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleRandomQueue(Qt::CheckState buttonState) {
+#else
+void DlgPrefAutoDJ::slotToggleRandomQueue(int buttonState) {
+#endif
+    RandomQueueMinimumSpinBox->setEnabled(buttonState == Qt::Checked);
 }

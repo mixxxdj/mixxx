@@ -21,5 +21,3 @@
 #else
 #error We do not support your compiler. Please email mixxx-devel@lists.sourceforge.net and tell us about your use case.
 #endif
-
-#define M_FALLTHROUGH_INTENDED [[fallthrough]]

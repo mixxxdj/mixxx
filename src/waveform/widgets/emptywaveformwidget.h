@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "waveform/widgets/nonglwaveformwidgetabstract.h"
+
+class QWidget;
 
 // This class can be used as a template file to create new WaveformWidgets it
 // contain minimal set of method to re-implement
@@ -12,13 +12,19 @@ class EmptyWaveformWidget : public NonGLWaveformWidgetAbstract {
   public:
     virtual ~EmptyWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Empty;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("Empty"); }
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline bool useTextureForWaveform() {
+        return false;
+    }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Default;
+    }
 
   protected:
     virtual void castToQWidget();

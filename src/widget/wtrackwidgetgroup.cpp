@@ -1,11 +1,10 @@
 #include "widget/wtrackwidgetgroup.h"
 
-#include <QDebug>
 #include <QStylePainter>
-#include <QUrl>
 
 #include "control/controlobject.h"
 #include "moc_wtrackwidgetgroup.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -14,33 +13,19 @@ namespace {
 
 constexpr int kDefaultTrackColorAlpha = 255;
 
-constexpr WTrackMenu::Features kTrackMenuFeatures =
-        WTrackMenu::Feature::SearchRelated |
-        WTrackMenu::Feature::Playlist |
-        WTrackMenu::Feature::Crate |
-        WTrackMenu::Feature::Metadata |
-        WTrackMenu::Feature::Reset |
-        WTrackMenu::Feature::Analyze |
-        WTrackMenu::Feature::BPM |
-        WTrackMenu::Feature::Color |
-        WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties |
-        WTrackMenu::Feature::UpdateReplayGainFromPregain |
-        WTrackMenu::Feature::FindOnWeb |
-        WTrackMenu::Feature::SelectInLibrary;
-
 } // anonymous namespace
 
 WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
-        const QString& group)
+        const QString& group,
+        bool isMainDeck)
         : WWidgetGroup(pParent),
           m_group(group),
           m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
           m_trackColorAlpha(kDefaultTrackColorAlpha),
-          m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+          m_isMainDeck(isMainDeck) {
     setAcceptDrops(true);
 }
 
@@ -108,25 +93,51 @@ void WTrackWidgetGroup::paintEvent(QPaintEvent* pe) {
     }
 }
 
-void WTrackWidgetGroup::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons().testFlag(Qt::LeftButton) && m_pCurrentTrack) {
+void WTrackWidgetGroup::mousePressEvent(QMouseEvent* pEvent) {
+    DragAndDropHelper::mousePressed(pEvent);
+}
+
+void WTrackWidgetGroup::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (m_pCurrentTrack && DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
 
-void WTrackWidgetGroup::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WTrackWidgetGroup::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
 
-void WTrackWidgetGroup::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WTrackWidgetGroup::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
 
-void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
-    event->accept();
+void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
     if (m_pCurrentTrack) {
+        ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
-        m_pTrackMenu->popup(event->globalPos());
+        m_pTrackMenu->popup(pEvent->globalPos());
     }
+}
+
+void WTrackWidgetGroup::ensureTrackMenuIsCreated() {
+    if (m_pTrackMenu.get() != nullptr) {
+        return;
+    }
+    m_pTrackMenu = make_parented<WTrackMenu>(
+            this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
+
+    // The show control exists onlyfor main decks.
+    // See WTrackProperty for info
+    if (!m_isMainDeck) {
+        return;
+    }
+    connect(m_pTrackMenu,
+            &WTrackMenu::trackMenuVisible,
+            this,
+            [this](bool visible) {
+                ControlObject::set(ConfigKey(m_group, kShowTrackMenuKey),
+                        visible ? 1.0 : 0.0);
+            });
 }

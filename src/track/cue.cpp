@@ -1,12 +1,8 @@
 #include "track/cue.h"
 
-#include <QtDebug>
-
 #include "audio/frame.h"
-#include "engine/engine.h"
 #include "moc_cue.cpp"
 #include "util/assert.h"
-#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 
@@ -97,13 +93,14 @@ Cue::Cue(
         mixxx::CueType type,
         int hotCueIndex,
         mixxx::audio::FramePos startPosition,
-        mixxx::audio::FramePos endPosition)
+        mixxx::audio::FramePos endPosition,
+        mixxx::RgbColor color)
         : m_bDirty(true), // not yet in database, needs to be saved
           m_type(type),
           m_startPosition(startPosition),
           m_endPosition(endPosition),
           m_iHotCue(hotCueIndex),
-          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+          m_color(color) {
     DEBUG_ASSERT(m_iHotCue == kNoHotCue || m_iHotCue >= mixxx::kFirstHotCueIndex);
     DEBUG_ASSERT(m_startPosition.isValid() || m_endPosition.isValid());
     DEBUG_ASSERT(!m_dbId.isValid());
@@ -222,6 +219,17 @@ mixxx::audio::FrameDiff_t Cue::getLengthFrames() const {
         return m_endPosition.value();
     }
     return m_endPosition - m_startPosition;
+}
+
+void Cue::setHotCue(int n) {
+    VERIFY_OR_DEBUG_ASSERT(n >= mixxx::kFirstHotCueIndex) {
+        return;
+    }
+    const auto lock = lockMutex(&m_mutex);
+    if (m_iHotCue == n) {
+        return;
+    }
+    m_iHotCue = n;
 }
 
 int Cue::getHotCue() const {

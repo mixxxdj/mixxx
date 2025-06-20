@@ -37,7 +37,7 @@
                       <Template src="skin:hide_show_button.xml">
                         <SetVariable name="TooltipId">maximize_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Master],maximize_library</SetVariable>
+                        <SetVariable name="control">[Skin],show_maximized_library</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -60,7 +60,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <MinimumSize>30,30</MinimumSize>
                         <Connection>
-                          <ConfigKey>[Library],show_coverart</ConfigKey>
+                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>
@@ -72,6 +72,10 @@
               <Library>
                 <ShowButtonText>false</ShowButtonText>
                 <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                <!-- Colors for the render modes of the Overview column -->
+                <!-- For the overview column we only set the signal color,
+                     other colors are the defaults. -->
+                <SignalColor><Variable name="SignalColor"/></SignalColor>
               </Library>
 
             </Children>

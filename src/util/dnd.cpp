@@ -1,8 +1,7 @@
 #include "util/dnd.h"
 
 #include "control/controlobject.h"
-#include "library/parserm3u.h"
-#include "library/parserpls.h"
+#include "library/parser.h"
 #include "mixer/playermanager.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
@@ -101,6 +100,40 @@ bool allowLoadToPlayer(
     return allowLoadTrackIntoPlayingDeck;
 }
 
+// Helper function for DragAndDropHelper::mousePressed and DragAndDropHelper::mouseMoveInitiatesDrag
+bool mouseMoveInitiatesDragHelper(QMouseEvent* pEvent, bool isPress) {
+    if (pEvent->buttons() != Qt::LeftButton) {
+        return false;
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const qreal x = pEvent->position().x();
+    const qreal y = pEvent->position().y();
+#else
+    const qreal x = pEvent->x();
+    const qreal y = pEvent->y();
+#endif
+
+    static qreal pressX{};
+    static qreal pressY{};
+
+    if (isPress) {
+        pressX = x;
+        pressY = y;
+        return false;
+    }
+
+    const qreal threshold = static_cast<qreal>(QApplication::startDragDistance());
+    // X and Y distance since press
+    const qreal dx = x - pressX;
+    const qreal dy = y - pressY;
+
+    // Check if the distance surpasses the threshold. Per Pythagoras Theorem:
+    // distance = sqrt(dx^2 + dy^2)
+    // We can avoid the sqrt by squaring the threshold.
+
+    return dx * dx + dy * dy >= threshold * threshold;
+}
+
 } // anonymous namespace
 
 //static
@@ -132,7 +165,7 @@ QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
 
         if (acceptPlaylists && Parser::isPlaylistFilenameSupported(file)) {
             const QList<QString> track_list = Parser::parse(file);
-            for (auto& playlistFile : track_list) {
+            for (const auto& playlistFile : track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }
         } else {
@@ -177,6 +210,16 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     return true;
 }
 
+// static
+void DragAndDropHelper::mousePressed(QMouseEvent* pEvent) {
+    mouseMoveInitiatesDragHelper(pEvent, true);
+}
+
+// static
+bool DragAndDropHelper::mouseMoveInitiatesDrag(QMouseEvent* pEvent) {
+    return mouseMoveInitiatesDragHelper(pEvent, false);
+}
+
 //static
 bool DragAndDropHelper::dragEnterAccept(
         const QMimeData& mimeData,
@@ -213,38 +256,38 @@ QDrag* DragAndDropHelper::dragTrackLocations(
 
 //static
 void DragAndDropHelper::handleTrackDragEnterEvent(
-        QDragEnterEvent* event,
+        QDragEnterEvent* pEvent,
         const QString& group,
         UserSettingsPointer pConfig) {
     if (allowLoadToPlayer(group, pConfig) &&
-            dragEnterAccept(*event->mimeData(), group, true, false)) {
-        event->acceptProposedAction();
+            dragEnterAccept(*pEvent->mimeData(), group, true, false)) {
+        pEvent->acceptProposedAction();
     } else {
         qDebug() << "Ignoring drag enter event, loading not allowed";
-        event->ignore();
+        pEvent->ignore();
     }
 }
 
 //static
 void DragAndDropHelper::handleTrackDropEvent(
-        QDropEvent* event,
+        QDropEvent* pEvent,
         TrackDropTarget& target,
         const QString& group,
         UserSettingsPointer pConfig) {
     if (allowLoadToPlayer(group, pConfig)) {
-        if (allowDeckCloneAttempt(*event, group)) {
-            event->accept();
-            target.emitCloneDeck(event->mimeData()->text(), group);
+        if (allowDeckCloneAttempt(*pEvent, group)) {
+            pEvent->accept();
+            target.emitCloneDeck(pEvent->mimeData()->text(), group);
             return;
         } else {
             const QList<mixxx::FileInfo> files = dropEventFiles(
-                    *event->mimeData(), group, true, false);
+                    *pEvent->mimeData(), group, true, false);
             if (!files.isEmpty()) {
-                event->accept();
+                pEvent->accept();
                 target.emitTrackDropped(files.at(0).location(), group);
                 return;
             }
         }
     }
-    event->ignore();
+    pEvent->ignore();
 }

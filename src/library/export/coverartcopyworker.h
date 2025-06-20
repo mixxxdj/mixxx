@@ -1,15 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QScopedPointer>
 #include <QString>
 #include <QThread>
 #include <future>
 
 #include "library/coverart.h"
-#include "library/coverartutils.h"
-#include "util/fileinfo.h"
-#include "util/imagefiledata.h"
 
 // This is a QThread class for copying the cover art.
 
@@ -22,9 +18,11 @@ class CoverArtCopyWorker : public QThread {
     };
 
     CoverArtCopyWorker(const QString& selectedCoverArtFilePath,
-            const QString& oldCoverArtFilePath)
+            const QString& oldCoverArtFilePath,
+            const QByteArray& fetchedCoverArtByteArray = nullptr)
             : m_selectedCoverArtFilePath(selectedCoverArtFilePath),
-              m_oldCoverArtFilePath(oldCoverArtFilePath) {
+              m_oldCoverArtFilePath(oldCoverArtFilePath),
+              m_fetchedCoverArtByteArray(fetchedCoverArtByteArray) {
         qRegisterMetaType<CoverInfoRelative>("CoverInfoRelative");
     }
 
@@ -48,4 +46,5 @@ class CoverArtCopyWorker : public QThread {
     CoverInfoRelative m_coverInfo;
     const QString m_selectedCoverArtFilePath;
     const QString m_oldCoverArtFilePath;
+    const QByteArray m_fetchedCoverArtByteArray;
 };

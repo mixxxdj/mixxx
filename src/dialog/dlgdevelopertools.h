@@ -3,9 +3,7 @@
 #include <QDialog>
 #include <QFile>
 #include <QSortFilterProxyModel>
-#include <QTimerEvent>
 
-#include "control/controlobject.h"
 #include "control/controlsortfiltermodel.h"
 #include "dialog/ui_dlgdevelopertoolsdlg.h"
 #include "preferences/usersettings.h"
@@ -15,6 +13,8 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     Q_OBJECT
   public:
     DlgDeveloperTools(QWidget* pParent, UserSettingsPointer pConfig);
+
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
 
   protected:
     void timerEvent(QTimerEvent* pTimerEvent) override;

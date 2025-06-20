@@ -41,13 +41,11 @@ void WCoverArtMenu::setCoverArt(const CoverInfo& coverInfo) {
 }
 
 void WCoverArtMenu::slotChange() {
-    QFileInfo trackFileInfo;
-
     VERIFY_OR_DEBUG_ASSERT(!m_coverInfo.trackLocation.isEmpty()) {
         return;
     }
 
-    trackFileInfo = QFileInfo(m_coverInfo.trackLocation);
+    QFileInfo trackFileInfo(m_coverInfo.trackLocation);
 
     QString initialDir;
     if (m_coverInfo.type == CoverInfo::FILE) {
@@ -115,9 +113,7 @@ void WCoverArtMenu::slotChange() {
 
 void WCoverArtMenu::slotUnset() {
     CoverInfo coverInfo;
-    coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
-    coverInfo.setImage();
     qDebug() << "WCoverArtMenu::slotUnset emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }

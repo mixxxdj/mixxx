@@ -3,7 +3,7 @@
 #include <QString>
 
 #include "soundio/sounddevice.h"
-
+#include "soundio/soundmanagerconfig.h"
 
 class SoundManager;
 class EngineNetworkStream;
@@ -29,11 +29,13 @@ class SoundDeviceNotFound : public SoundDevice {
     SoundDeviceStatus close() override {
         return SoundDeviceStatus::Error;
     };
-    void readProcess() override { };
-    void writeProcess() override { };
-    QString getError() const override{ return QObject::tr("Device not found"); };
+    void readProcess(SINT /*framesPerbuffer*/) override{};
+    void writeProcess(SINT /*framesPerbuffer*/) override{};
+    QString getError() const override {
+        return QObject::tr("Device not found");
+    };
 
-    unsigned int getDefaultSampleRate() const override {
-        return 44100;
+    mixxx::audio::SampleRate getDefaultSampleRate() const override {
+        return SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 };

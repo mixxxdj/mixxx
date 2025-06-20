@@ -1,6 +1,5 @@
 #include "analyzer/analyzerkey.h"
 
-#include <QVector>
 #include <QtDebug>
 
 #include "analyzer/analyzertrack.h"
@@ -12,6 +11,10 @@
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
+
+namespace {
+constexpr int excludeFirstChannelMask = 0x1;
+} // namespace
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
@@ -33,19 +36,20 @@ mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
 
 AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
         : m_keySettings(keySettings),
-          m_iSampleRate(0),
-          m_iTotalSamples(0),
-          m_iMaxSamplesToProcess(0),
-          m_iCurrentSample(0),
+          m_sampleRate(0),
+          m_totalFrames(0),
+          m_maxFramesToProcess(0),
+          m_currentFrame(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
+bool AnalyzerKey::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
-        int totalSamples) {
-    if (totalSamples == 0) {
+        mixxx::audio::ChannelCount channelCount,
+        SINT frameLength) {
+    if (frameLength <= 0) {
         return false;
     }
 
@@ -75,19 +79,20 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeEnabled
              << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled;
 
-    m_iSampleRate = sampleRate;
-    m_iTotalSamples = totalSamples;
+    m_sampleRate = sampleRate;
+    m_channelCount = channelCount;
+    m_totalFrames = frameLength;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysisEnabled) {
-        m_iMaxSamplesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+        m_maxFramesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate;
     } else {
-        m_iMaxSamplesToProcess = m_iTotalSamples;
+        m_maxFramesToProcess = frameLength;
     }
-    m_iCurrentSample = 0;
+    m_currentFrame = 0;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(tio.getTrack());
+    bool bShouldAnalyze = shouldAnalyze(track.getTrack());
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
@@ -104,7 +109,7 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
         }
 
         if (m_pPlugin) {
-            if (m_pPlugin->initialize(sampleRate)) {
+            if (m_pPlugin->initialize(mixxx::audio::SampleRate(m_sampleRate))) {
                 qDebug() << "Key calculation started with plugin" << m_pluginId;
             } else {
                 qDebug() << "Key calculation will not start.";
@@ -118,15 +123,15 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
     return bShouldAnalyze;
 }
 
-bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
+bool AnalyzerKey::shouldAnalyze(TrackPointer pTrack) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
         pluginID = defaultPlugin().id();
     }
 
-    const Keys keys(tio->getKeys());
-    if (keys.isValid()) {
+    const Keys keys = pTrack->getKeys();
+    if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();
 
@@ -151,17 +156,56 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
 
-    m_iCurrentSample += iLen;
-    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
+    SINT numFrames = count / m_channelCount;
+    m_currentFrame += numFrames;
+
+    if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, iLen);
+    const CSAMPLE* pKeyInput = pIn;
+    CSAMPLE* pHarmonicMixedChannel = nullptr;
+
+    if (m_channelCount == mixxx::audio::ChannelCount::stem()) {
+        // We have an 8 channel soundsource. The only implemented soundsource with
+        // 8ch is the NI STEM file format.
+        // TODO: If we add other soundsources with 8ch, we need to rework this condition.
+        //
+        // For NI STEM we mix all the stems together except the first one,
+        // which contains drums or beats by convention.
+        count = numFrames * mixxx::audio::ChannelCount::stereo();
+        pHarmonicMixedChannel = SampleUtil::alloc(count);
+        VERIFY_OR_DEBUG_ASSERT(pHarmonicMixedChannel) {
+            return false;
+        }
+
+        if (m_keySettings.getStemStrategy() == KeyDetectionSettings::StemStrategy::Enforced) {
+            SampleUtil::mixMultichannelToStereo(pHarmonicMixedChannel,
+                    pIn,
+                    numFrames,
+                    m_channelCount,
+                    excludeFirstChannelMask);
+        } else {
+            SampleUtil::mixMultichannelToStereo(
+                    pHarmonicMixedChannel, pIn, numFrames, m_channelCount);
+        }
+
+        pKeyInput = pHarmonicMixedChannel;
+    } else if (m_channelCount > mixxx::audio::ChannelCount::stereo()) {
+        DEBUG_ASSERT(!"Unsupported channel count");
+        return false;
+    }
+
+    bool ret = m_pPlugin->processSamples(pKeyInput, count);
+    if (pHarmonicMixedChannel) {
+        SampleUtil::free(pHarmonicMixedChannel);
+    }
+    return ret;
 }
 
 void AnalyzerKey::cleanup() {
@@ -182,7 +226,7 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysisEnabled);
     Keys track_keys = KeyFactory::makePreferredKeys(
-            key_changes, extraVersionInfo, m_iSampleRate, m_iTotalSamples);
+            key_changes, extraVersionInfo, m_sampleRate, m_totalFrames);
     tio->setKeys(track_keys);
 }
 

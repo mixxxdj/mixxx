@@ -1,11 +1,11 @@
 #pragma once
 
-#include <taglib/aifffile.h>
-#include <taglib/flacfile.h>
-#include <taglib/mp4file.h>
-#include <taglib/mpegfile.h>
-#include <taglib/wavfile.h>
-#include <taglib/wavpackfile.h>
+#include <aifffile.h>
+#include <flacfile.h>
+#include <mp4file.h>
+#include <mpegfile.h>
+#include <wavfile.h>
+#include <wavpackfile.h>
 
 #include <QFile>
 
@@ -15,23 +15,38 @@ namespace mixxx {
 class TrackMetadata;
 
 namespace taglib {
+Q_NAMESPACE
 
+// This enum is aligned with TagLib_File_Type form the TagLib C binding
 enum class FileType {
-    Unknown,
-    AIFF,
+    Unknown = -1,
+    MPEG = 0,
+    OggVorbis,
     FLAC,
-    MP3,
+    MPC,
+    OggFlac,
+    WavPack,
+    Speex,
+    TrueAudio,
     MP4,
-    OGG,
-    OPUS,
+    ASF,
+    AIFF,
     WAV,
-    WV
+    APE,
+    IT,
+    Mod,
+    S3M,
+    XM,
+    Opus,
+    DSF,
+    DSDIFF
 };
+Q_ENUM_NS(FileType);
 
 QDebug operator<<(QDebug debug, FileType fileType);
 
-// Deduce the TagLib file type from the file name
-FileType getFileTypeFromFileName(const QString& fileName);
+// Deduce enum FileType from the fileType String
+FileType stringToEnumFileType(const QString& fileType);
 
 #ifdef _WIN32
 static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");

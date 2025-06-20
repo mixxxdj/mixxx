@@ -30,7 +30,7 @@
  * not switch it off. The performance pad LEDs can all be set individually
  * (including the mode buttons).
  *
- * The TR-S output is not connected to the master out. Instead, it is connected
+ * The TR-S output is not connected to the main out. Instead, it is connected
  * to one of input channels of the controller's audio interface. Hence, the
  * TR/SAMPLER LEVEL knob does not control the output volume of TR-S, and
  * works as a generic MIDI control instead.
@@ -163,8 +163,8 @@ DJ505.init = function() {
     engine.makeConnection("[Channel3]", "track_loaded", DJ505.autoShowDecks);
     engine.makeConnection("[Channel4]", "track_loaded", DJ505.autoShowDecks);
 
-    if (engine.getValue("[Master]", "num_samplers") < 16) {
-        engine.setValue("[Master]", "num_samplers", 16);
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
     }
 
     // Send Serato SysEx messages to request initial state and unlock pads
@@ -172,7 +172,7 @@ DJ505.init = function() {
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6);
 
     // Send "keep-alive" message to keep controller in Serato mode
-    engine.beginTimer(500, function() {
+    engine.beginTimer(500, () => {
         midi.sendShortMsg(0xBF, 0x64, 0x00);
     });
 
@@ -220,7 +220,7 @@ DJ505.browseEncoder = new components.Encoder({
                 this.isLongPressed = false;
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
-                    function() { this.isLongPressed = true; }.bind(this),
+                    () => { this.isLongPressed = true; },
                     true
                 );
 
@@ -298,8 +298,8 @@ DJ505.addPrepareButton = new components.Button({
     shiftOffset: -7,
     sendShifted: true,
     shiftControl: true,
-    group: "[Master]",
-    key: "maximize_library",
+    group: "[Skin]",
+    key: "show_maximized_library",
     type: components.Button.prototype.types.toggle,
 });
 
@@ -472,7 +472,7 @@ DJ505.Deck = function(deckNumbers, offset) {
      * backwards in a track, has problems with loops, does not detect hotcue
      * jumps and does not indicate the downbeat (obviously).
      *
-     * See Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/419155
+     * See Launchpad issue: https://github.com/mixxxdj/mixxx/issues/5218
      */
     this.beatIndex = 0;
     this.lastBeatDistance = 0;
@@ -609,7 +609,7 @@ DJ505.Deck = function(deckNumbers, offset) {
             // indicator for the LED instead.
             if (value === 3) {
                 if (this.connections[1] === undefined) {
-                    this.connections[1] = engine.makeConnection("[Master]", "indicator_500millis", this.setLed.bind(this));
+                    this.connections[1] = engine.makeConnection("[App]", "indicator_500ms", this.setLed.bind(this));
                 }
                 return;
             }
@@ -621,10 +621,10 @@ DJ505.Deck = function(deckNumbers, offset) {
         },
         input: function(channel, control, value, _status, _group) {
             if (value) {
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                     this.onLongPress();
                     this.longPressTimer = 0;
-                }.bind(this), true);
+                }, true);
             } else if (this.longPressTimer !== 0) {
                 // Button released after short press
                 engine.stopTimer(this.longPressTimer);
@@ -693,10 +693,10 @@ DJ505.Deck = function(deckNumbers, offset) {
         group: "[Channel" + deckNumbers + "]",
         input: function(_channel, _control, value, _status, group) {
             if (value) {
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                     this.onLongPress(group);
                     this.longPressTimer = 0;
-                }.bind(this), true);
+                }, true);
             } else if (this.longPressTimer !== 0) {
                 // Button released after short press
                 engine.stopTimer(this.longPressTimer);
@@ -721,12 +721,12 @@ DJ505.Deck = function(deckNumbers, offset) {
     this.vuMeter = new components.Component({
         midi: [0xB0 + offset, 0x1F],
         group: "[Channel" + deckNumbers + "]",
-        outKey: "VuMeter",
+        outKey: "vu_meter",
         output: function(value, group, _control) {
             // The red LEDs light up with MIDI values greater than 0x24. The
             // maximum brightness is reached at value 0x28. Red LEDs should
             // only be illuminated if the track is clipping.
-            if (engine.getValue(group, "PeakIndicator") === 1) {
+            if (engine.getValue(group, "peak_indicator") === 1) {
                 value = 0x28;
             } else {
                 value = Math.round(value * 0x24);
@@ -749,7 +749,7 @@ DJ505.DeckToggleButton.prototype.input = function(channel, control, value, statu
         // Button was pressed
         this.longPressTimer = engine.beginTimer(
             this.longPressTimeout,
-            function() { this.isLongPressed = true; }.bind(this),
+            () => { this.isLongPressed = true; },
             true
         );
         this.secondaryDeck = !this.secondaryDeck;
@@ -790,7 +790,7 @@ DJ505.Sampler = function() {
      *
      * 1. Standalone mode
      *
-     * When the controller is in standlone mode, the controller's TR-S works
+     * When the controller is in standalone mode, the controller's TR-S works
      * with the SERATO SAMPLER and SYNC functionality disabled. Also, it's not
      * possible to apply FX to the TR-S output signal. The TR/SAMPLER LEVEL
      * knob can be used to adjust the volume of the output.
@@ -801,7 +801,7 @@ DJ505.Sampler = function() {
      * In this mode, the BPM can be set by sending MIDI clock
      * messages (0xF8). The sampler can be started by sending one MIDI
      * message per bar (0xBA 0x02 XX). The TR-S is not directly connected to
-     * the master out. Instead, the sound is played on channels 7-8 so that the
+     * the main out. Instead, the sound is played on channels 7-8 so that the
      * signal can be routed through the FX section.
      *
      * The SERATO SAMPLER features 8 instruments (S1 - S8) that can be to play
@@ -880,10 +880,10 @@ DJ505.Sampler = function() {
     this.startStopButtonPressed = function(channel, control, value, status, _group) {
         if (status === 0xFA) {
             this.playbackCounter = 1;
-            this.playbackTimer = engine.beginTimer(500, function() {
+            this.playbackTimer = engine.beginTimer(500, () => {
                 midi.sendShortMsg(0xBA, 0x02, this.playbackCounter);
                 this.playbackCounter = (this.playbackCounter % 4) + 1;
-            }.bind(this));
+            });
         } else if (status === 0xFC) {
             if (this.playbackTimer) {
                 engine.stopTimer(this.playbackTimer);
@@ -961,10 +961,10 @@ DJ505.SlipModeButton.prototype.unshift = function() {
 
         this.doubleTapTimer = engine.beginTimer(
             this.doubleTapTimeout,
-            function() {
+            () => {
                 this.doubleTapped = false;
                 this.doubleTapTimer = null;
-            }.bind(this),
+            },
             true
         );
     };
@@ -1158,7 +1158,7 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
         break;
     // FIXME: Mixxx is currently missing support for Serato-style "flips",
     // hence this mode can only be implemented if this feature is added:
-    // https://bugs.launchpad.net/mixxx/+bug/1768113
+    // https://github.com/mixxxdj/mixxx/issues/9271
     //case DJ505.PadMode.FLIP:
     //    mode = this.modes.flip;
     //    break;
@@ -1179,7 +1179,7 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
         mode = this.modes.roll;
         break;
     // FIXME: Although it might be possible to implement Slicer Mode, it would
-    // miss visual feedback: https://bugs.launchpad.net/mixxx/+bug/1828886
+    // miss visual feedback: https://github.com/mixxxdj/mixxx/issues/9660
     //case DJ505.PadMode.SLICER:
     //    mode = this.modes.slicer;
     //    break;
@@ -1618,9 +1618,9 @@ DJ505.SavedLoopMode = function(deck, offset) {
 
                 if (value) {
                     this.longPressTimer = engine.beginTimer(
-                        this.longPressTimeout, function() {
+                        this.longPressTimeout, () => {
                             engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
-                        }.bind(this));
+                        });
                 } else {
                     if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);
@@ -1638,7 +1638,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
         output: function(value, _group, _control) {
             this.stopBlinking();
             if (value === 2) {
-                this.connections[2] = engine.makeConnection("[Master]", "indicator_250millis", function(value, _group, _control) {
+                this.connections[2] = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
                     const colorValue = this.colorMapper.getValueForNearestColor(
                         engine.getValue(this.group, this.colorKey));
                     if (value) {

@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindDjInterop
 ---------------
@@ -48,25 +43,31 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_DjInterop QUIET libdjinterop)
 endif()
 
-find_path(DjInterop_INCLUDE_DIR
+find_path(
+  DjInterop_INCLUDE_DIR
   NAMES djinterop/djinterop.hpp
-  PATHS ${PC_DjInterop_INCLUDE_DIRS}
-  DOC "DjInterop include directory")
+  HINTS ${PC_DjInterop_INCLUDE_DIRS}
+  DOC "DjInterop include directory"
+)
 mark_as_advanced(DjInterop_INCLUDE_DIR)
 
-find_library(DjInterop_LIBRARY
+find_library(
+  DjInterop_LIBRARY
   NAMES djinterop
-  PATHS ${PC_DjInterop_LIBRARY_DIRS}
+  HINTS ${PC_DjInterop_LIBRARY_DIRS}
   DOC "DjInterop library"
 )
 mark_as_advanced(DjInterop_LIBRARY)
 
+if(DEFINED PC_DjInterop_VERSION AND NOT PC_DjInterop_VERSION STREQUAL "")
+  set(DjInterop_VERSION "${PC_DjInterop_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   DjInterop
-  DEFAULT_MSG
-  DjInterop_LIBRARY
-  DjInterop_INCLUDE_DIR
+  REQUIRED_VARS DjInterop_LIBRARY DjInterop_INCLUDE_DIR DjInterop_VERSION
+  VERSION_VAR DjInterop_VERSION
 )
 
 if(DjInterop_FOUND)
@@ -76,7 +77,8 @@ if(DjInterop_FOUND)
 
   if(NOT TARGET DjInterop::DjInterop)
     add_library(DjInterop::DjInterop UNKNOWN IMPORTED)
-    set_target_properties(DjInterop::DjInterop
+    set_target_properties(
+      DjInterop::DjInterop
       PROPERTIES
         IMPORTED_LOCATION "${DjInterop_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_DjInterop_CFLAGS_OTHER}"

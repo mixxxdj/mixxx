@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QSqlDatabase>
-
 #include "library/dao/dao.h"
 #include "track/cue.h"
 #include "track/trackid.h"
@@ -22,5 +20,4 @@ class CueDAO : public DAO {
 
   private:
     bool saveCue(TrackId trackId, Cue* pCue) const;
-    bool deleteCue(Cue* pCue) const;
 };

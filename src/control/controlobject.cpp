@@ -1,13 +1,9 @@
 #include "control/controlobject.h"
 
-#include <QHash>
-#include <QSet>
 #include <QtDebug>
 
 #include "control/control.h"
 #include "moc_controlobject.cpp"
-#include "util/stat.h"
-#include "util/timer.h"
 
 ControlObject::ControlObject()
         : m_pControl(ControlDoublePrivate::getDefaultControl()) {
@@ -65,6 +61,10 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flag
         return pCDP->getCreatorCO();
     }
     return nullptr;
+}
+
+bool ControlObject::exists(const ConfigKey& key) {
+    return !ControlDoublePrivate::getControl(key, ControlFlag::NoWarnIfMissing).isNull();
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {

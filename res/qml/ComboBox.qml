@@ -6,6 +6,9 @@ import "Theme"
 ComboBox {
     id: root
 
+    property alias popupWidth: popup.width
+    property bool clip: false
+
     background: Skin.EmbeddedBackground {
     }
 
@@ -31,7 +34,6 @@ ComboBox {
             border.color: Theme.deckLineColor
             color: "transparent"
         }
-
     }
 
     contentItem: Text {
@@ -41,10 +43,12 @@ ComboBox {
         font: root.font
         color: Theme.deckTextColor
         verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
+        elide: root.clip ? Text.ElideNone : Text.ElideRight
+        clip: root.clip
     }
 
     popup: Popup {
+        id: popup
         y: root.height
         width: root.width
         implicitHeight: contentItem.implicitHeight
@@ -57,12 +61,9 @@ ComboBox {
 
             ScrollIndicator.vertical: ScrollIndicator {
             }
-
         }
 
         background: Skin.EmbeddedBackground {
         }
-
     }
-
 }

@@ -1,13 +1,27 @@
 #pragma once
 
+#include <QJSValue>
+
 #include "controllers/controller.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
-#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "controllers/midi/midimessage.h"
-#include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
-class DlgControllerLearning;
+class MidiOutputHandler;
+class MidiController;
+
+class MidiInputHandleJSProxy final : public QObject {
+    Q_OBJECT
+  public:
+    MidiInputHandleJSProxy(
+            MidiController* pMidiController,
+            const MidiInputMapping& inputMapping);
+    Q_INVOKABLE bool disconnect();
+
+  protected:
+    MidiController* m_pMidiController;
+    MidiInputMapping m_inputMapping;
+};
 
 /// MIDI Controller base class
 ///
@@ -26,7 +40,17 @@ class MidiController : public Controller {
     QString mappingExtension() override;
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
+
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -36,6 +60,7 @@ class MidiController : public Controller {
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
+    bool removeInputMapping(uint16_t key, const MidiInputMapping& mapping);
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
@@ -53,6 +78,13 @@ class MidiController : public Controller {
         send(data);
     }
 
+    QJSValue makeInputHandler(unsigned char status,
+            unsigned char control,
+            const QJSValue& scriptCode);
+
+    bool applyMapping(const QString& resourcePath) override;
+    int close() override;
+
   protected slots:
     virtual void receivedShortMessage(
             unsigned char status,
@@ -61,11 +93,9 @@ class MidiController : public Controller {
             mixxx::Duration timestamp);
     // For receiving System Exclusive messages
     void receive(const QByteArray& data, mixxx::Duration timestamp) override;
-    int close() override;
+    void slotBeforeEngineShutdown() override;
 
   private slots:
-    bool applyMapping() override;
-
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
@@ -89,7 +119,7 @@ class MidiController : public Controller {
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char>> m_fourteen_bit_queued_mappings;
 
@@ -118,6 +148,12 @@ class MidiControllerJSProxy : public ControllerJSProxy {
 
     Q_INVOKABLE void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         m_pMidiController->sendSysexMsg(data, length);
+    }
+
+    Q_INVOKABLE QJSValue makeInputHandler(unsigned char status,
+            unsigned char control,
+            const QJSValue& scriptCode) {
+        return m_pMidiController->makeInputHandler(status, control, scriptCode);
     }
 
   private:

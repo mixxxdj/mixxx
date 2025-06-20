@@ -1,7 +1,6 @@
 #include "util/taskmonitor.h"
 
 #include <QCoreApplication>
-#include <QThread>
 
 #include "moc_taskmonitor.cpp"
 #include "util/assert.h"

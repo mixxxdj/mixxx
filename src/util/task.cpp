@@ -3,13 +3,9 @@
 #include <QtDebug>
 
 #include "moc_task.cpp"
-#include "util/compatibility/qatomic.h"
-
-TaskWatcher::TaskWatcher(QObject* pParent) : QObject(pParent) {
-}
 
 TaskWatcher::~TaskWatcher() {
-    if (atomicLoadRelaxed(m_activeTasks) > 0) {
+    if (m_activeTasks.loadRelaxed() > 0) {
         qWarning() << "TaskWatcher destroyed before all tasks were done.";
     }
 }

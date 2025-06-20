@@ -2,12 +2,124 @@
 <MixxxControllerPreset mixxxVersion="2.3.1" schemaVersion="1">
     <info>
     	<name>Denon MC7000</name>
-    	<author>OsZ</author>
+    	<author>OsZ, JL</author>
     	<description>A professional 4-channel DJ controller featuring 2 separate audio interfaces. Please refer to the Mixxx user manual to get the audio interfaces working on Linux.</description>
     	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>
     	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
         <manual>denon_mc7000</manual>
     </info>
+    <settings>
+        <group label="Jogwheels">
+            <group label="General">
+                <option
+                    variable="jogSensitivity"
+                    type="real"
+                    min="0.05"
+                    max="10.0"
+                    default="1.0"
+                    label="Jogwheel sensitivity">
+                    <description>
+                        Sensitivity factor of the jog wheel (also depends on audio latency)
+                        0.5 for half, 2 for double sensitivity - Recommendation:
+                        set to 0.5 with audio buffer set to 50ms
+                        set to 1 with audio buffer set to 25ms
+                        set to 3 with audio buffer set to 5ms
+                    </description>
+                </option>
+            </group>
+            <group label="Acceleration">
+                <option
+                    variable="jogAccelerationEnabled"
+                    type="boolean"
+                    default="false"
+                    label="Enable jogwheel acceleration">
+                    <description>
+                        If enabled, the track speed will accelerate faster than the physical jogwheel movement. Be aware that the absolute track position will drift relative to the jogwheel position in this mode!
+                        (exponent: 0 and coefficient: 1 = no acceleration)
+                    </description>
+                </option>
+                <option
+                    variable="jogAccelerationExponent"
+                    type="real"
+                    min="0"
+                    max="20.0"
+                    default="0.8"
+                    step="0.1"
+                    label="Acceleration exponent">
+                    <description>
+                        The exponent of the acceleration curve
+                    </description>
+                </option>
+                <option
+                    variable="jogAccelerationCoefficient"
+                    type="real"
+                    min="0.05"
+                    max="20.0"
+                    step="0.1"
+                    default="1.0"
+                    label="Acceleration coefficient">
+                    <description>
+                        The scaling factor of the acceleration curve
+                    </description>
+                </option>
+            </group>
+        </group>
+        <group label="Alternative Mapping">
+            <group label="Parameter Buttons">
+                <option
+                    variable="parameterButtonMode"
+                    type="enum"
+                    label="Parameter Button Mode">
+                    <value label="Change Star Rating (Shift: Track Color)" default="true">starsAndColor</value>
+                    <value label="Perform Beat Jump (Shift: Adjust Jump Size)">beatjump</value>
+                    <value label="Set Intro/Outro (Shift: Clear Intro/Outro)">introOutro</value>
+                    <description>
+                        Change the functionality of the orange parameter buttons
+                        in the bottom left/right corner of the controller.
+                    </description>
+                </option>
+                <option
+                    variable="parameterButtonPitchPlayOverrideEnabled"
+                    label="Override parameter button mode during pitch play to set pitch range"
+                    type="boolean"
+                    default="true">
+                    <description>
+                        Whether to use the parameter buttons to change the pitch
+                        range during pitch play mode. If this option is enabled,
+                        the pitch change functionality overrides the normal
+                        parameter button mode during pitch play.
+                    </description>
+                </option>
+            </group>
+        </group>
+        <group label="Samplers">
+            <option
+                variable="prevSamplerStop"
+                label="Auto-stop previous samplers when starting new sampler"
+                type="boolean"
+                default="true">
+                <description>
+                    Whether the previous sampler shall stop before a new sampler starts.
+                    When true, a running sampler will stop before the new sampler starts.
+                    When false, all triggered samplers will play simultaneously.
+                </description>
+            </option>
+            <option
+                variable="samplerQty"
+                type="enum"
+                label="Quantity">
+                <value label="16" default="true">16</value>
+                <value label="32">32</value>
+                <description>
+                    The number of samplers to use. When 32 samplers are used,
+                    deck 1 will trigger sampler 1 to 8, deck 2 will trigger
+                    sampler 9 to 16, deck 3 will trigger sampler 17 to 24 and
+                    deck 4 will trigger sampler 25 to 32. Please note that your
+                    Mixxx skin needs to support more than 16 samplers.
+                </description>
+            </option>
+        </group>
+    </settings>
     <controller id="DENON MC7000">
         <scriptfiles>
             <file filename="Denon-MC7000-scripts.js" functionprefix="MC7000"/>
@@ -1355,42 +1467,42 @@
 <!--  PLAY / CUE / SYNC  -->
 			<control>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch1</description>
                 <status>0x90</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch2</description>
                 <status>0x91</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch3</description>
                 <status>0x92</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch4</description>
                 <status>0x93</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1927,162 +2039,162 @@
 <!-- PARAMETER BUTTONS -->
 			<control>
                 <group>[Channel1]</group>
-                <key>stars_down</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>stars_up</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_prev</key>
+                <group>[Channel1]</group>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_next</key>
+                <group>[Channel1]</group>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>stars_down</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>stars_up</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_prev</key>
+                <group>[Channel2]</group>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_next</key>
+                <group>[Channel2]</group>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>stars_down</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>stars_up</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_prev</key>
+                <group>[Channel3]</group>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_next</key>
+                <group>[Channel3]</group>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>stars_down</key>
+                <key>MC7000.parameterButtonLeft</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>stars_up</key>
+                <key>MC7000.parameterButtonRight</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_prev</key>
+                <group>[Channel4]</group>
+                <key>MC7000.parameterButtonLeftShifted</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>track_color_next</key>
+                <group>[Channel4]</group>
+                <key>MC7000.parameterButtonRightShifted</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
 <!-- LIBRARY -->
@@ -2197,8 +2309,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>Full screen Library</description>
                 <status>0x9F</status>
                 <midino>0x0F</midino>

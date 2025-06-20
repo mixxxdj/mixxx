@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindOgg
 -------
@@ -39,26 +34,31 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Ogg QUIET ogg)
 endif()
 
-find_path(Ogg_INCLUDE_DIR
+find_path(
+  Ogg_INCLUDE_DIR
   NAMES ogg/ogg.h
-  PATHS ${PC_Ogg_INCLUDE_DIRS}
+  HINTS ${PC_Ogg_INCLUDE_DIRS}
   DOC "Ogg include directory"
 )
 mark_as_advanced(Ogg_INCLUDE_DIR)
 
-find_library(Ogg_LIBRARY
+find_library(
+  Ogg_LIBRARY
   NAMES ogg
-  PATHS ${PC_Ogg_LIBRARY_DIRS}
+  HINTS ${PC_Ogg_LIBRARY_DIRS}
   DOC "Ogg library"
 )
 mark_as_advanced(Ogg_LIBRARY)
 
+if(DEFINED PC_Ogg_VERSION AND NOT PC_Ogg_VERSION STREQUAL "")
+  set(Ogg_VERSION "${PC_Ogg_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Ogg
-  REQUIRED_VARS
-  Ogg_INCLUDE_DIR
-  Ogg_LIBRARY
+  REQUIRED_VARS Ogg_LIBRARY Ogg_INCLUDE_DIR
+  VERSION_VAR Ogg_VERSION
 )
 
 if(Ogg_FOUND)
@@ -68,7 +68,8 @@ if(Ogg_FOUND)
 
   if(NOT TARGET Ogg::ogg)
     add_library(Ogg::ogg UNKNOWN IMPORTED)
-    set_target_properties(Ogg::ogg
+    set_target_properties(
+      Ogg::ogg
       PROPERTIES
         IMPORTED_LOCATION "${Ogg_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Ogg_CFLAGS_OTHER}"

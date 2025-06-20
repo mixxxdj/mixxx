@@ -36,8 +36,8 @@ Variables:
             <Children>
               <EffectParameterKnobComposed>
                 <Size>26f,22f</Size>
-                <Knob>skin:../Tango/knobs_sliders/knob_fx_yellow.svg</Knob>
-                <BackPath>skin:../Tango/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
+                <Knob>skins:Tango/knobs_sliders/knob_fx_yellow.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>1.500</KnobCenterYOffset>
@@ -51,26 +51,18 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Name of parameter -->
+          <EffectParameterName>
+            <ObjectName>FxParameterKnobName</ObjectName>
             <MinimumSize>42,12</MinimumSize>
             <MaximumSize>51,12</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <!-- To keep text centered it's in an container with spacers on the left/right -->
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-              <EffectParameterName>
-                <ObjectName>FxParameterKnobName</ObjectName>
-                <Size>-1min,12f</Size>
-                <EffectRack><Variable name="FxRack"/></EffectRack>
-                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-                <Effect><Variable name="FxNum"/></Effect>
-                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
-                <Alignment>left</Alignment>
-              </EffectParameterName>
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-            </Children>
-          </WidgetGroup>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+            <Alignment>center</Alignment>
+            <Elide>right</Elide>
+          </EffectParameterName>
         </Children>
       </WidgetGroup><!-- Parameter knob + parameter name -->
 
@@ -88,7 +80,7 @@ Variables:
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <!-- Meta knob link invert button -->
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
                 <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
                 <SetVariable name="Size">10f,5f</SetVariable>
@@ -96,7 +88,7 @@ Variables:
               </Template>
 
               <!-- Meta knob link button -->
-              <Template src="skin:../Tango/controls/button_5state.xml">
+              <Template src="skins:Tango/controls/button_5state.xml">
                 <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
                 <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
                 <SetVariable name="Size">25me,5f</SetVariable>

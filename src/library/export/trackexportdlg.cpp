@@ -1,6 +1,6 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
+#include <QCheckBox>
 #include <QMessageBox>
 
 #include "moc_trackexportdlg.cpp"
@@ -67,31 +67,33 @@ void TrackExportDlg::slotAskOverwriteMode(
         std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     QMessageBox question_box(
             QMessageBox::Warning,
-            tr("Overwrite Existing File?"),
-            tr("\"%1\" already exists, overwrite?").arg(filename),
-            QMessageBox::Cancel | QMessageBox::No | QMessageBox::NoToAll
-            | QMessageBox::Yes | QMessageBox::YesToAll);
-    question_box.setDefaultButton(QMessageBox::No);
-    question_box.addButton(tr("&Overwrite"), QMessageBox::YesRole);
-    question_box.addButton(tr("Over&write All"), QMessageBox::YesRole);
-    question_box.addButton(tr("&Skip"), QMessageBox::NoRole);
-    question_box.addButton(tr("Skip &All"), QMessageBox::NoRole);
+            tr("Replace Existing File?"),
+            tr("\"%1\" already exists, replace?").arg(filename),
+            QMessageBox::Cancel,
+            this);
 
-    switch (question_box.exec()) {
-    case QMessageBox::No:
-        promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP);
-        return;
-    case QMessageBox::NoToAll:
-        promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP_ALL);
-        return;
-    case QMessageBox::Yes:
-        promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE);
-        return;
-    case QMessageBox::YesToAll:
-        promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
-        return;
-    case QMessageBox::Cancel:
-    default:
+    QPushButton* pSkip = question_box.addButton(
+            tr("&Skip"), QMessageBox::NoRole);
+    QPushButton* pOverwrite = question_box.addButton(
+            tr("&Replace"), QMessageBox::YesRole);
+    question_box.setDefaultButton(pSkip);
+
+    QCheckBox* pApplyToAll = new QCheckBox(tr("Apply to all files"));
+    pApplyToAll->setChecked(false);
+    question_box.setCheckBox(pApplyToAll);
+
+    question_box.exec();
+    auto* pBtn = question_box.clickedButton();
+    if (pBtn == pSkip) {
+        promise->set_value(pApplyToAll->isChecked()
+                        ? TrackExportWorker::OverwriteAnswer::SKIP_ALL
+                        : TrackExportWorker::OverwriteAnswer::SKIP);
+    } else if (pBtn == pOverwrite) {
+        promise->set_value(pApplyToAll->isChecked()
+                        ? TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL
+                        : TrackExportWorker::OverwriteAnswer::OVERWRITE);
+    } else {
+        // Cancel
         promise->set_value(TrackExportWorker::OverwriteAnswer::CANCEL);
     }
 }
@@ -103,7 +105,7 @@ void TrackExportDlg::cancelButtonClicked() {
 void TrackExportDlg::finish() {
     m_worker->stop();
     m_worker->wait();
-    if (m_worker->errorMessage().length()) {
+    if (!m_worker->errorMessage().isEmpty()) {
         QMessageBox::warning(
                 nullptr,
                 tr("Export Error"),

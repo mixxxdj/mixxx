@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "audio/signalinfo.h"
 #include "track/beatsimporter.h"
 #include "track/cueinfoimporter.h"
@@ -19,18 +21,16 @@ class SeratoTags final {
         Failed = 2,
     };
 
-    static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
-    static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
-    static constexpr RgbColor kFixedLoopColor = RgbColor(0x27AAE1);
+    SeratoTags()
+            : m_seratoBeatGridParserStatus(ParserStatus::None),
+              m_seratoMarkersParserStatus(ParserStatus::None),
+              m_seratoMarkers2ParserStatus(ParserStatus::None) {
+    }
 
-    SeratoTags() = default;
-
-    static RgbColor::optional_t storedToDisplayedTrackColor(RgbColor color);
-    static RgbColor displayedToStoredTrackColor(RgbColor::optional_t color);
-    static RgbColor storedToDisplayedSeratoDJProCueColor(RgbColor color);
-    static RgbColor displayedToStoredSeratoDJProCueColor(RgbColor color);
     static double guessTimingOffsetMillis(
-            const QString& filePath, const audio::SignalInfo& signalInfo);
+            const QString& filePath,
+            const QString& fileType,
+            const audio::SignalInfo& signalInfo);
 
     bool isEmpty() const {
         return m_seratoBeatGrid.isEmpty() && m_seratoMarkers.isEmpty() &&
@@ -86,7 +86,7 @@ class SeratoTags final {
         return m_seratoMarkers2.dump(fileType);
     }
 
-    CueInfoImporterPointer importCueInfos() const;
+    std::unique_ptr<CueInfoImporter> createCueInfoImporter() const;
     BeatsImporterPointer importBeats() const;
 
     QList<CueInfo> getCueInfos() const;
@@ -99,7 +99,18 @@ class SeratoTags final {
         m_seratoBeatGrid.setBeats(pBeats, signalInfo, duration, timingOffset);
     }
 
-    RgbColor::optional_t getTrackColor() const;
+    /// Return the track color.
+    ///
+    /// If no Serato tags are present in the file or if tags contain no
+    /// information about the track color (which should never happen when
+    /// writing the tags with Serato DJ software), then the outer optional will
+    /// be `nullopt`. This means that the track color should be left unchanged
+    /// on metadata reimport.
+    ///
+    /// In all other cases, the track color has been specified in the Serato
+    /// tags successfully, and the inner optional value can be used as new
+    /// track color when (re-)importing metadata.
+    std::optional<RgbColor::optional_t> getTrackColor() const;
     void setTrackColor(const RgbColor::optional_t& color);
 
     bool isBpmLocked() const;
@@ -116,12 +127,12 @@ class SeratoTags final {
 
 inline bool operator==(const SeratoTags& lhs, const SeratoTags& rhs) {
     // FIXME: Find a more efficient way to do this
-    return (lhs.dumpBeatGrid(taglib::FileType::MP3) ==
-                    rhs.dumpBeatGrid(taglib::FileType::MP3) &&
-            lhs.dumpMarkers(taglib::FileType::MP3) ==
-                    rhs.dumpMarkers(taglib::FileType::MP3) &&
-            lhs.dumpMarkers2(taglib::FileType::MP3) ==
-                    rhs.dumpMarkers2(taglib::FileType::MP3));
+    return (lhs.dumpBeatGrid(taglib::FileType::MPEG) ==
+                    rhs.dumpBeatGrid(taglib::FileType::MPEG) &&
+            lhs.dumpMarkers(taglib::FileType::MPEG) ==
+                    rhs.dumpMarkers(taglib::FileType::MPEG) &&
+            lhs.dumpMarkers2(taglib::FileType::MPEG) ==
+                    rhs.dumpMarkers2(taglib::FileType::MPEG));
 }
 
 inline bool operator!=(const SeratoTags& lhs, const SeratoTags& rhs) {

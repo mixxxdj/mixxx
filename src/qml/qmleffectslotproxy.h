@@ -1,13 +1,12 @@
 #pragma once
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 
 #include "effects/effectsmanager.h"
+#include "qml/qmleffectmanifestparametersmodel.h"
 
 namespace mixxx {
 namespace qml {
-
-class QmlEffectManifestParametersModel;
 
 class QmlEffectSlotProxy : public QObject {
     Q_OBJECT

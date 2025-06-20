@@ -286,12 +286,64 @@ double ControlTTRotaryBehavior::parameterToValue(double dParam) {
     return temp;
 }
 
+ControlLinSteppedIntPotBehavior::ControlLinSteppedIntPotBehavior(
+        double dMinValue, double dMaxValue, bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    m_dMinValue = round(dMinValue);
+    m_dMaxValue = round(dMaxValue);
+    m_dValueRange = m_dMaxValue - m_dMinValue;
+    m_bAllowOutOfBounds = allowOutOfBounds;
+    m_lastSnappedParam = 0;
+    m_dist = 0;
+    m_oldVal = 0;
+}
+
+double ControlLinSteppedIntPotBehavior::valueToParameter(double dValue) {
+    if (m_dValueRange == 0.0) {
+        return 0;
+    }
+    if (dValue > m_dMaxValue) {
+        dValue = m_dMaxValue;
+    } else if (dValue < m_dMinValue) {
+        dValue = m_dMinValue;
+    }
+    double param = (dValue - m_dMinValue) / m_dValueRange;
+    return param;
+}
+
+double ControlLinSteppedIntPotBehavior::parameterToValue(double dParam) {
+    // Note: each value change will make ControlDoublePrivate::setInner emit valueChanged(),
+    // call valueToParameter() and call parameterToValue() again with snapped parameter.
+    // Thus we can't compare dParam to the previous because that would simply swap the
+    // sign of resulting dist with each cal.
+    // Instead, compare to m_lastSnappedParam and accumulate all change request deltas.
+    if (dParam == m_lastSnappedParam) {
+        return round(m_dMinValue + (dParam * m_dValueRange));
+    }
+
+    double dist = dParam - m_lastSnappedParam;
+    // compare current and previous change direction
+    if (m_dist != 0 && (dist > 0) == (m_dist > 0)) { // same direction > add
+        m_dist += dist;
+    } else { // new direction or m_dist is 0 > replace
+        m_dist = dist;
+    }
+
+    double newVal = round(m_dMinValue + ((m_lastSnappedParam + m_dist) * m_dValueRange));
+    if (newVal != m_oldVal) {
+        m_lastSnappedParam = valueToParameter(newVal);
+        m_oldVal = newVal;
+        m_dist = 0;
+    }
+    return newVal;
+}
+
 // static
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
 const int ControlPushButtonBehavior::kLongPressLatchingTimeMillis = 300;
 
-ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
-                                                     int iNumStates)
+ControlPushButtonBehavior::ControlPushButtonBehavior(mixxx::control::ButtonMode buttonMode,
+        int iNumStates)
         : m_buttonMode(buttonMode),
           m_iNumStates(iNumStates) {
 }
@@ -312,7 +364,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
     }
 
     // This block makes push-buttons act as power window buttons.
-    if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
+    if (m_buttonMode == mixxx::control::ButtonMode::PowerWindow && m_iNumStates == 2) {
         auto* timer = getTimer();
         if (pressed) {
             // Toggle on press
@@ -324,7 +376,8 @@ void ControlPushButtonBehavior::setValueFromMidi(
             // Disable after releasing a long press
             pControl->set(0., nullptr);
         }
-    } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
+    } else if (m_buttonMode == mixxx::control::ButtonMode::Toggle ||
+            m_buttonMode == mixxx::control::ButtonMode::LongPressLatching) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNumStates > 1) { // multistate button
             if (pressed) {
@@ -335,14 +388,14 @@ void ControlPushButtonBehavior::setValueFromMidi(
                 double value = pControl->get();
                 value = (int)(value + 1.) % m_iNumStates;
                 pControl->set(value, nullptr);
-                if (m_buttonMode == LONGPRESSLATCHING) {
+                if (m_buttonMode == mixxx::control::ButtonMode::LongPressLatching) {
                     auto* timer = getTimer();
                     timer->setSingleShot(true);
                     timer->start(kLongPressLatchingTimeMillis);
                 }
             } else {
                 double value = pControl->get();
-                if (m_buttonMode == LONGPRESSLATCHING &&
+                if (m_buttonMode == mixxx::control::ButtonMode::LongPressLatching &&
                         getTimer()->isActive() && value >= 1.) {
                     // revert toggle if button is released too early
                     value = (int)(value - 1.) % m_iNumStates;

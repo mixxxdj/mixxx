@@ -13,6 +13,9 @@ class ColorSchemeParser {
             UserSettingsPointer pConfig,
             QString* pStyle,
             SkinContext* pContext);
+    static QDomNode findConfiguredColorSchemeNode(
+            const QDomElement& docElem,
+            UserSettingsPointer pConfig);
 
   private:
     static ImgSource* parseFilters(const QDomNode& filter);

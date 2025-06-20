@@ -30,7 +30,7 @@
                       <Template src="skin:mixer_controls_2decks_left.xml">
                         <SetVariable name="i">1</SetVariable>
                       </Template>
-                      <Template src="skin:mixer_column_master_vu_2decks.xml"/>
+                      <Template src="skin:mixer_column_main_vu_2decks.xml"/>
                       <Template src="skin:mixer_controls_2decks_right.xml">
                         <SetVariable name="i">2</SetVariable>
                       </Template>
@@ -98,11 +98,11 @@
                   <Template src="skin:mixer_controls_4decks_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
-                  <!-- The 4-deck master VU meter column contains the same
+                  <!-- The 4-deck main VU meter column contains the same
                       structure and mechanisms as the left/right channel controls.
                       When altering those remember to change i.e. <MaximumSize>
                       and fixed spacers there as well -->
-                  <Template src="skin:mixer_column_master_vu_4decks.xml"/>
+                  <Template src="skin:mixer_column_main_vu_4decks.xml"/>
                   <Template src="skin:mixer_controls_4decks_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
@@ -169,6 +169,7 @@
               <WidgetGroup>
                 <ObjectName>Crossfader</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
+                <MaximumSize>200,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <SliderComposed>
@@ -176,7 +177,7 @@
                     <Size>1me,40f</Size>
                     <MaximumSize>200,</MaximumSize>
                     <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
-                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
+                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
                     <Horizontal>true</Horizontal>
                     <Connection>
                       <ConfigKey>[Master],crossfader</ConfigKey>
@@ -265,7 +266,7 @@
       </WidgetGroup><!-- Mixer -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_mixer</ConfigKey>
+      <ConfigKey>[Skin],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- MixerBorder -->

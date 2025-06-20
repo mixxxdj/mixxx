@@ -2,10 +2,10 @@
 
 #include <QLocale>
 #include <QTime>
-#include <QtDebug>
+#include <QTimer>
 
 #include "moc_wtime.cpp"
-#include "util/cmdlineargs.h"
+#include "skin/legacy/skincontext.h"
 
 WTime::WTime(QWidget* parent)
         : WLabel(parent),

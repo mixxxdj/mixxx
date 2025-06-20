@@ -39,7 +39,7 @@ midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit button led off
 
 }
 
-engine.beginTimer(150, "VestaxVCI1003DEX.loopLeds()",false)
+engine.beginTimer(150, VestaxVCI1003DEX.loopLeds,false)
 //timer for loop leds end
 
 

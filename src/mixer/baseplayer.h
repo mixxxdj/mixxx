@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QString>
 
-#include "mixer/playermanager.h"
+class PlayerManager;
 
 class BasePlayer : public QObject {
     Q_OBJECT
@@ -17,7 +17,5 @@ class BasePlayer : public QObject {
 
   protected:
     PlayerManager* m_pPlayerManager;
-
-  private:
     const QString m_group;
 };

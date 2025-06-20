@@ -1,18 +1,12 @@
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
-#include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
-
 #include "broadcast/broadcastmanager.h"
+
+#include <shoutidjc/shout.h>
+
 #include "broadcast/defs_broadcast.h"
-#include "engine/enginemaster.h"
+#include "control/controlpushbutton.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "engine/sidechain/enginesidechain.h"
 #include "moc_broadcastmanager.cpp"
+#include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
 
@@ -28,7 +22,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
-    m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pBroadcastEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(m_pBroadcastEnabled,
             &ControlPushButton::valueChanged,
             this,
@@ -42,7 +36,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     shout_init();
 
     // Initialize connections list from the current state of BroadcastSettings
-    QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
+    const QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
     for (const BroadcastProfilePtr& profile : profiles) {
         addConnection(profile);
     }
@@ -98,7 +92,7 @@ void BroadcastManager::slotControlEnabled(double v) {
     if (v > 0.0) {
         bool atLeastOneEnabled = false;
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
-        for (const BroadcastProfilePtr& profile : profiles) {
+        for (const BroadcastProfilePtr& profile : std::as_const(profiles)) {
             if (profile->getEnabled()) {
                 atLeastOneEnabled = true;
                 break;
@@ -117,11 +111,11 @@ void BroadcastManager::slotControlEnabled(double v) {
     } else {
         m_pBroadcastEnabled->set(false);
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
-        QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
-        for(BroadcastProfilePtr profile : profiles) {
-           if (profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE) {
-               profile->setConnectionStatus(BroadcastProfile::STATUS_UNCONNECTED);
-           }
+        const QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
+        for (BroadcastProfilePtr profile : profiles) {
+            if (profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE) {
+                profile->setConnectionStatus(BroadcastProfile::STATUS_UNCONNECTED);
+            }
         }
     }
 
@@ -137,7 +131,7 @@ void BroadcastManager::slotProfileRemoved(BroadcastProfilePtr profile) {
 }
 
 void BroadcastManager::slotProfilesChanged() {
-    QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
+    const QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
     for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
         if (connection) {
@@ -198,7 +192,7 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
 }
 
 ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePtr profile) {
-    QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
+    const QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
     for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
         if (connection.isNull()) {
@@ -219,7 +213,7 @@ void BroadcastManager::slotConnectionStatusChanged(int newState) {
         connectedCount = 0, failedCount = 0;
 
     // Collect status info
-    QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
+    const QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
     for (BroadcastProfilePtr profile : profiles) {
         if (!profile->getEnabled()) {
             continue;

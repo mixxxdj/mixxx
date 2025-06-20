@@ -9,7 +9,6 @@ Variables:
 -->
 <Template>
   <SetVariable name="QuickFxGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="QuickFx">[QuickEffectRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <ObjectName>EQKnobContainerRight</ObjectName>
     <SizePolicy>min,min</SizePolicy>
@@ -25,8 +24,8 @@ Variables:
           <KnobComposed>
             <TooltipId>QuickEffectRack_super1</TooltipId>
             <Size>30f,26f</Size>
-            <Knob>skin:../Tango/knobs_sliders/knob_blue.svg</Knob>
-            <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+            <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
+            <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -35,7 +34,7 @@ Variables:
             </Connection>
           </KnobComposed>
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
             <SetVariable name="Size">30f,26f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
@@ -49,7 +48,7 @@ Variables:
         <Size>12f,23f</Size>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
             <SetVariable name="ObjectName">QuickFXButton</SetVariable>
             <SetVariable name="Size">12f,23f</SetVariable>

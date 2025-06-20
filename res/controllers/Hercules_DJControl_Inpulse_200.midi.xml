@@ -237,8 +237,8 @@
             <!-- NN's MIDI Channel 4 (0x93 - SHIFT MODE)-->
             <!--Browser section (Encoder button)-->
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>Browser button - Maximize Library view</description>
                 <status>0x93</status>
                 <midino>0x00</midino>
@@ -1107,6 +1107,18 @@
                     <script-binding />
                 </options>
             </control>
+            <!-- CC's MIDI Channel 4 (0xB3  SHIFT mode)-->
+            <!--Browser encoder-->
+	    <control>
+                <group>[Library]</group>
+                <key>ScrollVertical</key>
+                <description>Scroll Vertical (SHIFT + Browser Knob)</description>
+                <status>0xB3</status>
+                <midino>0x01</midino>
+                <options>
+                    <selectknob />
+                </options>
+            </control>
             <!-- CC's MIDI Channel 5 (0xB4  Deck B - SHIFT mode)-->
             <!--Jog wheel-->
             <control>
@@ -1293,8 +1305,8 @@
                 <off>0x07</off>
             </output>
             <output>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>Browser LED (GREEN)</description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>

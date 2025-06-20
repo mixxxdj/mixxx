@@ -29,8 +29,6 @@ class SettingsManager {
     }
 
   private:
-    void initializeDefaults();
-
     UserSettingsPointer m_pSettings;
     bool m_bShouldRescanLibrary;
 #ifdef __BROADCAST__

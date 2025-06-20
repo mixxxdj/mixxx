@@ -1,8 +1,9 @@
 #pragma once
 
-#include "effects/backends/effectsbackend.h"
+#include "effects/defs.h"
 
 class ControlObject;
+class EffectProcessor;
 
 /// EffectsBackendManager initializes EffectsBackends, maintains the list of
 /// available EffectManifests, and creates EffectProcessors from EffectManifests.
@@ -19,7 +20,7 @@ class EffectsBackendManager {
     /// returns a pointer to the manifest or a null pointer in case a
     /// the previously stored backend or effect is no longer available
     EffectManifestPointer getManifest(const QString& id, EffectBackendType backendType) const;
-    const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset) const;
+    EffectManifestPointer getManifest(EffectPresetPointer pPreset) const;
 
     std::unique_ptr<EffectProcessor> createProcessor(const EffectManifestPointer pManifest);
 

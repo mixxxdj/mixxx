@@ -44,7 +44,7 @@ LibLoader::LibLoader()
              << "libfaad.so";
 #endif
 
-    for (const auto& libname : qAsConst(libnames)) {
+    for (const auto& libname : std::as_const(libnames)) {
         m_pLibrary.reset();
         m_pLibrary = std::make_unique<QLibrary>(libname, 0);
         if (m_pLibrary->load()) {

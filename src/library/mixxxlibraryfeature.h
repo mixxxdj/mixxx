@@ -1,18 +1,13 @@
 #pragma once
 
 #include <QAction>
-#include <QIcon>
-#include <QList>
-#include <QModelIndex>
 #include <QObject>
 #include <QPointer>
 #include <QSharedPointer>
 #include <QString>
-#include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
 
-#include "library/dao/trackdao.h"
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
@@ -23,6 +18,7 @@ class DlgMissing;
 class BaseTrackCache;
 class LibraryTableModel;
 class TrackCollection;
+class QModelIndex;
 
 class MixxxLibraryFeature final : public LibraryFeature {
     Q_OBJECT

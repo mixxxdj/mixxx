@@ -1,20 +1,14 @@
 #pragma once
 
-#include <QObject>
-#include <QColor>
-#include <QDomNode>
-#include <QPainter>
-#include <QPaintEvent>
-
 #include <vector>
 
-#include "preferences/usersettings.h"
 #include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
-class ConfigKey;
-class ControlObject;
+class QPaintEvent;
+class QPainter;
+class WaveformWidgetRenderer;
 
 class WaveformRenderMarkRange : public WaveformRendererAbstract {
   public:

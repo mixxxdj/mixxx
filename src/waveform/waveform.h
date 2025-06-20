@@ -7,23 +7,28 @@
 #include <QString>
 #include <vector>
 
+#include "analyzer/constants.h"
+#include "audio/signalinfo.h"
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
 
-enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
+enum BandIndex { AllBand = 0,
+    Low = 1,
+    Mid = 2,
+    High = 3,
+    BandCount = 4 };
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
-union WaveformData {
-    struct {
-        unsigned char low;
-        unsigned char mid;
-        unsigned char high;
-        unsigned char all;
-    } filtered;
-    int m_i;
+struct WaveformFilteredData {
+    unsigned char low;
+    unsigned char mid;
+    unsigned char high;
+    unsigned char all;
+};
 
-    WaveformData() {}
-    WaveformData(int i) { m_i = i;}
+struct WaveformData {
+    WaveformFilteredData filtered;
+    unsigned char stems[mixxx::kMaxSupportedStems];
 };
 
 class Waveform {
@@ -35,8 +40,12 @@ class Waveform {
     };
 
     explicit Waveform(const QByteArray& pData = QByteArray());
-    Waveform(int audioSampleRate, int audioSamples,
-             int desiredVisualSampleRate, int maxVisualSamples);
+    Waveform(
+            int audioSampleRate,
+            SINT frameLength,
+            int desiredVisualSampleRate,
+            int maxVisualSamples,
+            int stemCount);
 
     virtual ~Waveform();
 
@@ -71,12 +80,6 @@ class Waveform {
     }
 
     QByteArray toByteArray() const;
-
-    // We do not lock the mutex since m_dataSize and m_visualSampleRate are not
-    // changed after the constructor runs.
-    bool isValid() const {
-        return getDataSize() > 0 && getVisualSampleRate() > 0;
-    }
 
     SaveState saveState() const {
         return m_saveState;
@@ -130,12 +133,16 @@ class Waveform {
     // constructor runs.
     const WaveformData* data() const { return &m_data[0];}
 
+    bool hasStem() const {
+        return m_stemCount > 0;
+    }
+
     void dump() const;
 
   private:
     void readByteArray(const QByteArray& data);
     void resize(int size);
-    void assign(int size, int value = 0);
+    void assign(int size);
 
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
@@ -174,6 +181,9 @@ class Waveform {
     // For performance, completion is shared as a QAtomicInt and does not lock
     // the mutex. The completion of the waveform calculation.
     QAtomicInt m_completion;
+
+    // The number of stem contained in waveform samples. 0 if not a stem waveform
+    int m_stemCount;
 
     mutable QMutex m_mutex;
 

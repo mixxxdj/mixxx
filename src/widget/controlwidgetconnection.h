@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QByteArray>
 #include <QMetaProperty>
 #include <QObject>
-#include <QScopedPointer>
 #include <QString>
+#include <memory>
 
 #include "control/controlproxy.h"
-#include "util/valuetransformer.h"
+#include "util/parented_ptr.h"
 
 class WBaseWidget;
 class ValueTransformer;
@@ -15,10 +14,10 @@ class ValueTransformer;
 class ControlWidgetConnection : public QObject {
     Q_OBJECT
   public:
-    // Takes ownership of pControl and pTransformer.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                            const ConfigKey& key,
-                            ValueTransformer* pTransformer);
+            const ConfigKey& key,
+            std::unique_ptr<ValueTransformer> pTransformer);
+    ~ControlWidgetConnection() override;
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
@@ -40,10 +39,10 @@ class ControlWidgetConnection : public QObject {
     // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlProxy* m_pControl;
+    parented_ptr<ControlProxy> m_pControl;
 
   private:
-    QScopedPointer<ValueTransformer> m_pValueTransformer;
+    std::unique_ptr<ValueTransformer> m_pValueTransformer;
 };
 
 class ControlParameterWidgetConnection final : public ControlWidgetConnection {
@@ -96,10 +95,12 @@ class ControlParameterWidgetConnection final : public ControlWidgetConnection {
     }
 
     ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
-                                     const ConfigKey& key,
-                                     ValueTransformer* pTransformer,
-                                     DirectionOption directionOption,
-                                     EmitOption emitOption);
+            const ConfigKey& key,
+            std::unique_ptr<ValueTransformer> pTransformer,
+            DirectionOption directionOption,
+            EmitOption emitOption);
+
+    ~ControlParameterWidgetConnection() override;
 
     void Init();
 
@@ -128,9 +129,11 @@ class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
     Q_OBJECT
   public:
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
-                                    const ConfigKey& key,
-                                    ValueTransformer* pTransformer,
-                                    const QString& propertyName);
+            const ConfigKey& key,
+            std::unique_ptr<ValueTransformer> pTransformer,
+            const QString& propertyName);
+
+    ~ControlWidgetPropertyConnection() override;
 
     QString toDebugString() const override;
 

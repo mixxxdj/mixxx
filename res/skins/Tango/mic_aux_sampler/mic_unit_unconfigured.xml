@@ -38,7 +38,7 @@ Variables:
             <Layout>vertical</Layout>
             <Size>20f,28f</Size>
             <Children>
-              <Template src="skin:../Tango/controls/button_1state.xml">
+              <Template src="skins:Tango/controls/button_1state.xml">
                 <SetVariable name="TooltipId">configure_input</SetVariable>
                 <SetVariable name="ObjectName">MicAuxAdd</SetVariable>
                 <SetVariable name="Size">20f,20f</SetVariable>
@@ -54,7 +54,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>

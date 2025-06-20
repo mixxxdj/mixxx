@@ -1,5 +1,7 @@
 #include "control/controlmodel.h"
 
+#include <QStringBuilder>
+
 #include "moc_controlmodel.cpp"
 
 ControlModel::ControlModel(QObject* pParent)
@@ -15,25 +17,28 @@ ControlModel::ControlModel(QObject* pParent)
     // Add all controls to Model
     const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
             ControlDoublePrivate::getAllInstances();
-    const QHash<ConfigKey, ConfigKey> controlAliases =
-            ControlDoublePrivate::getControlAliases();
+
+    QSet<ConfigKey> controlKeys;
+
+    // Reserve memory for m_controls, which will be used later in addControl
+    m_controls.reserve(controlsList.size());
 
     for (const QSharedPointer<ControlDoublePrivate>& pControl : controlsList) {
         if (!pControl) {
             continue;
         }
 
+        // Skip duplicates
+        // This skips either the alias or original key, whatever comes first
+        // in controlsList, but that doesn't make a difference here.
+        if (controlKeys.contains(pControl->getKey())) {
+            continue;
+        }
+        controlKeys.insert(pControl->getKey());
+
         addControl(pControl->getKey(),
                 pControl->name(),
                 pControl->description());
-
-        ConfigKey aliasKey = controlAliases[pControl->getKey()];
-        if (aliasKey.isValid()) {
-            addControl(aliasKey,
-                    pControl->name(),
-                    QStringLiteral("Alias for ") + pControl->getKey().group +
-                            pControl->getKey().item);
-        }
     }
 }
 

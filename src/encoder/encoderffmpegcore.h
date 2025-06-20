@@ -1,7 +1,5 @@
 #pragma once
 
-#include <encoder/encoderffmpegresample.h>
-
 extern "C" {
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
@@ -24,6 +22,7 @@ extern "C" {
 #include <QLibrary>
 
 #include "encoder/encoder.h"
+#include "encoder/encoderffmpegresample.h"
 #include "track/track_decl.h"
 #include "util/types.h"
 
@@ -44,7 +43,7 @@ public:
 #endif
     ~EncoderFfmpegCore();
     int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
-    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;

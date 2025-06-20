@@ -3,13 +3,7 @@
 #include <random>
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/filters/enginefilterpansingle.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
-#include "util/samplebuffer.h"
 #include "util/types.h"
 
 class WhiteNoiseGroupState final : public EffectState {
@@ -19,8 +13,7 @@ class WhiteNoiseGroupState final : public EffectState {
               previous_drywet(0.0),
               gen(rs()) {
     }
-    ~WhiteNoiseGroupState() {
-    }
+    ~WhiteNoiseGroupState() override = default;
 
     CSAMPLE_GAIN previous_drywet;
     std::random_device rs;
@@ -30,6 +23,7 @@ class WhiteNoiseGroupState final : public EffectState {
 class WhiteNoiseEffect : public EffectProcessorImpl<WhiteNoiseGroupState> {
   public:
     WhiteNoiseEffect() = default;
+    ~WhiteNoiseEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

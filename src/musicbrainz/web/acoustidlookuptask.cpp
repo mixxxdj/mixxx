@@ -2,7 +2,7 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QMetaMethod>
+#include <QUuid>
 
 #include "moc_acoustidlookuptask.cpp"
 #include "musicbrainz/gzip.h"

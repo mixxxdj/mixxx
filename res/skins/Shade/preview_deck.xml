@@ -40,7 +40,7 @@
                         <Size>0e,18f</Size>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <Text>
+                          <TrackProperty>
                             <TooltipId>text</TooltipId>
                             <Style> QLabel {
                               font-size: 12px;
@@ -53,9 +53,10 @@
                               padding-top: 2px;}
                             </Style>
                             <Group>[PreviewDeck1]</Group>
+                            <Property>info</Property>
                             <SizePolicy>me,min</SizePolicy>
                             <Elide>right</Elide>
-                          </Text>
+                          </TrackProperty>
                         </Children>
                       </WidgetGroup>
                       <WidgetGroup>
@@ -73,7 +74,7 @@
                             </Style>
                             <Size>35f,18f</Size>
                             <Group>[PreviewDeck1]</Group>
-                            <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                            <!--CSS alignments not respected see bug #5459 , lets call <Alignment> -->
                             <Alignment>right</Alignment>
                             <Connection>
                               <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
@@ -170,7 +171,7 @@
                             <SignalHighColor></SignalHighColor>
                             <SignalMidColor></SignalMidColor>
                             <SignalLowColor></SignalLowColor>
-                            <SignalColor>#191F24</SignalColor>
+                            <SignalColor><Variable name="SignalColor"/></SignalColor>
                             <PlayPosColor>#00FF00</PlayPosColor>
                             <ShowCueTimes>false</ShowCueTimes>
                             <DefaultMark>
@@ -201,27 +202,29 @@
                 <ObjectName>SamplerVUMeter</ObjectName>
                 <BackPath>style/style_bg_deck_pane.png</BackPath>
                 <Size>9f,54f</Size>
-                <Style>
-                  QWidget { margin: 0px; padding: 2px; }
-                </Style>
                 <Children>
-                  <StatusLight>
-                    <TooltipId>sampler_PeakIndicator</TooltipId>
-                    <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
-                    <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
+                  <WidgetGroup>
                     <Pos>2,2</Pos>
                     <Size>5f,8f</Size>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-                    </Connection>
-                  </StatusLight>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <StatusLight>
+                        <TooltipId>preview_peak_indicator</TooltipId>
+                        <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
+                        <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],peak_indicator</ConfigKey>
+                        </Connection>
+                      </StatusLight>
+                    </Children>
+                  </WidgetGroup>
                   <WidgetGroup>
                     <Pos>2,11</Pos>
                     <Size>5f,41f</Size>
                     <Layout>horizontal</Layout>
                     <Children>
                       <VuMeter>
-                        <TooltipId>sampler_VuMeter</TooltipId>
+                        <TooltipId>preview_VuMeter</TooltipId>
                         <PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
                         <PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
                         <Horizontal>false</Horizontal>
@@ -230,7 +233,7 @@
                         <PeakFallTime>50</PeakFallTime>
                         <PeakFallStep>2</PeakFallStep>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+                          <ConfigKey>[PreviewDeck1],vu_meter</ConfigKey>
                         </Connection>
                       </VuMeter>
                     </Children>
@@ -274,7 +277,7 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey>[Skin],show_preview_decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

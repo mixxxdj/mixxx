@@ -27,10 +27,10 @@ Variables:
                 <TooltipId>spinny</TooltipId>
                 <Size>111f,111f</Size>
                 <Group><Variable name="group"/></Group>
-                <PathBackground scalemode="STRETCH_ASPECT">skin:../Tango/graphics/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">skin:../Tango/graphics/spinny_mask.svg</PathMask>
-                <PathForeground scalemode="STRETCH_ASPECT">skin:../Tango/graphics/spinny_indicator.svg</PathForeground>
-                <PathGhost scalemode="STRETCH_ASPECT">skin:../Tango/graphics/spinny_indicator_ghost.svg</PathGhost>
+                <PathBackground scalemode="STRETCH_ASPECT">skins:Tango/graphics/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skins:Tango/graphics/spinny_mask.svg</PathMask>
+                <PathForeground scalemode="STRETCH_ASPECT">skins:Tango/graphics/spinny_indicator.svg</PathForeground>
+                <PathGhost scalemode="STRETCH_ASPECT">skins:Tango/graphics/spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>true</ShowCover>
                 <ShowCoverControl>[Skin],show_coverart</ShowCoverControl>
               </Spinny>
@@ -52,7 +52,7 @@ Variables:
                 <TooltipId>coverart</TooltipId>
                 <Size>111f,111f</Size>
                 <Group><Variable name="group"/></Group>
-                <DefaultCover scalemode="STRETCH_ASPECT">skin:../Tango/graphics/cover_default.svg</DefaultCover>
+                <DefaultCover scalemode="STRETCH_ASPECT">skins:Tango/graphics/cover_default.svg</DefaultCover>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>

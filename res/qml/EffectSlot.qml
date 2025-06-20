@@ -52,7 +52,6 @@ Item {
                 const effectId = model.get(index).effectId;
                 if (root.slot.effectId != effectId)
                     root.slot.effectId = effectId;
-
             }
             Component.onCompleted: root.slot.onEffectIdChanged()
 
@@ -71,7 +70,6 @@ Item {
 
                 target: root.slot
             }
-
         }
 
         Skin.ControlMiniKnob {
@@ -87,7 +85,6 @@ Item {
             key: "meta"
             color: Theme.effectColor
         }
-
     }
 
     ListView {
@@ -148,7 +145,6 @@ Item {
                     group: root.group
                     key: parameter.controlKey + "_loaded"
                 }
-
             }
 
             Skin.ControlButton {
@@ -172,9 +168,7 @@ Item {
                     group: root.group
                     key: parameter.controlKey + "_loaded"
                 }
-
             }
-
         }
 
         populate: Transition {
@@ -191,13 +185,10 @@ Item {
                 to: 1
                 duration: 200
             }
-
         }
 
         Skin.FadeBehavior on opacity {
             fadeTarget: parametersView
         }
-
     }
-
 }

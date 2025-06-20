@@ -3,15 +3,13 @@
 #include <QList>
 #include <QString>
 
+#include "audio/types.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/types.h"
 
-class SoundDevice;
 class SoundManager;
-class AudioOutput;
-class AudioInput;
 class AudioOutputBuffer;
 class AudioInputBuffer;
 
@@ -31,17 +29,17 @@ class SoundDevice {
     inline const QString& getHostAPI() const {
         return m_hostAPI;
     }
-    void setSampleRate(double sampleRate);
-    void setFramesPerBuffer(unsigned int framesPerBuffer);
+    void setSampleRate(mixxx::audio::SampleRate sampleRate);
+    void setConfigFramesPerBuffer(unsigned int framesPerBuffer);
     virtual SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
     virtual SoundDeviceStatus close() = 0;
-    virtual void readProcess() = 0;
-    virtual void writeProcess() = 0;
+    virtual void readProcess(SINT framesPerBuffer) = 0;
+    virtual void writeProcess(SINT framesPerBuffer) = 0;
     virtual QString getError() const = 0;
-    virtual unsigned int getDefaultSampleRate() const = 0;
-    int getNumOutputChannels() const;
-    int getNumInputChannels() const;
+    virtual mixxx::audio::SampleRate getDefaultSampleRate() const = 0;
+    mixxx::audio::ChannelCount getNumOutputChannels() const;
+    mixxx::audio::ChannelCount getNumInputChannels() const;
     SoundDeviceStatus addOutput(const AudioOutputBuffer& out);
     SoundDeviceStatus addInput(const AudioInputBuffer& in);
     const QList<AudioInputBuffer>& inputs() const {
@@ -77,14 +75,19 @@ class SoundDevice {
     // The name of the soundcard, as displayed to the user
     QString m_strDisplayName;
     // The number of output channels that the soundcard has
-    int m_iNumOutputChannels;
+    mixxx::audio::ChannelCount m_numOutputChannels;
     // The number of input channels that the soundcard has
-    int m_iNumInputChannels;
+    mixxx::audio::ChannelCount m_numInputChannels;
     // The current samplerate for the sound device.
-    double m_dSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     // The name of the audio API used by this device.
     QString m_hostAPI;
-    SINT m_framesPerBuffer;
+    // The **configured** number of frames per buffer. We'll tell PortAudio we
+    // want this many frames in a buffer, but PortAudio may still give us have a
+    // differently sized buffers. As such this value should only be used for
+    // configuring the audio devices. The actual runtime buffer size should be
+    // used for any computations working with audio.
+    SINT m_configFramesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
 };

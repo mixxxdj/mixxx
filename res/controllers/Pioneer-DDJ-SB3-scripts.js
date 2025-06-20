@@ -140,7 +140,7 @@ PioneerDDJSB3.flasher.functions = [];
 PioneerDDJSB3.flasher.init = function() {
     var flag = true;
 
-    PioneerDDJSB3.flasher.timer = engine.beginTimer(500, function() {
+    PioneerDDJSB3.flasher.timer = engine.beginTimer(500, () => {
         flag = !flag;
 
         for (var i = 0; i < PioneerDDJSB3.flasher.functions.length; i++) {
@@ -254,6 +254,10 @@ PioneerDDJSB3.init = function() {
         "[Channel4]_enabled": 1,
     };
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     PioneerDDJSB3.deck = [];
     PioneerDDJSB3.deck[1] = new PioneerDDJSB3.Deck(1);
     PioneerDDJSB3.deck[2] = new PioneerDDJSB3.Deck(2);
@@ -277,7 +281,7 @@ PioneerDDJSB3.init = function() {
     PioneerDDJSB3.initDeck("[Channel4]");
 
     if (PioneerDDJSB3.twinkleVumeterAutodjOn) {
-        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle());
+        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle);
     }
 
     // request the positions of the knobs and faders from the controller
@@ -650,9 +654,8 @@ PioneerDDJSB3.bindDeckControlConnections = function(channelGroup, isUnbinding) {
             "pfl": PioneerDDJSB3.headphoneCueLed,
             "keylock": PioneerDDJSB3.keyLockLed,
             "loop_enabled": PioneerDDJSB3.autoLoopLed,
+            "slip_enabled": PioneerDDJSB3.slipLed,
         };
-
-    controlsToFunctions.slipEnabled = PioneerDDJSB3.slipLed;
 
     for (i = 1; i <= 8; i++) {
         controlsToFunctions["hotcue_" + i + "_enabled"] = PioneerDDJSB3.hotCueLeds;
@@ -673,13 +676,13 @@ PioneerDDJSB3.bindNonDeckControlConnections = function(isUnbinding) {
     }
 
     if (PioneerDDJSB3.showVumeterMaster) {
-        engine.connectControl("[Master]", "VuMeterL", PioneerDDJSB3.VuMeterLeds, isUnbinding);
-        engine.connectControl("[Master]", "VuMeterR", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Main]", "vu_meter_left", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Main]", "vu_meter_right", PioneerDDJSB3.VuMeterLeds, isUnbinding);
     } else {
-        engine.connectControl("[Channel1]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
-        engine.connectControl("[Channel2]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
-        engine.connectControl("[Channel3]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
-        engine.connectControl("[Channel4]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel1]", "vu_meter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel2]", "vu_meter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel3]", "vu_meter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel4]", "vu_meter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
     }
 };
 
@@ -767,7 +770,7 @@ PioneerDDJSB3.vinylButton = function(channel, control, value, status, group) {
 
 PioneerDDJSB3.slipButton = function(channel, control, value, status, group) {
     if (value) {
-        script.toggleControl(group, "slipEnabled");
+        script.toggleControl(group, "slip_enabled");
     }
 };
 
@@ -1093,7 +1096,7 @@ PioneerDDJSB3.shiftListeners.push(function(group, isShifted) {
 PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
     // The red LED lights up with MIDI values 119 (0x77) and above. That should only light up when
     // the track is clipping.
-    if (engine.getValue(group, "PeakIndicator") === 1) {
+    if (engine.getValue(group, "peak_indicator") === 1) {
         value = 119;
     } else {
         // 117 was determined experimentally so the yellow LED only lights
@@ -1104,9 +1107,9 @@ PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
     if (!(PioneerDDJSB3.twinkleVumeterAutodjOn && engine.getValue("[AutoDJ]", "enabled"))) {
         var midiChannel;
         if (PioneerDDJSB3.showVumeterMaster) {
-            if (control === "VuMeterL") {
+            if (control === "vu_meter_left") {
                 midiChannel = 0;
-            } else if (control === "VuMeterR") {
+            } else if (control === "vu_meter_right") {
                 midiChannel = 1;
             }
             // Send for deck 1 or 2
@@ -1119,7 +1122,7 @@ PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
         }
     } else {
         if (group === "[Master]") {
-            if (control === "VuMeterL") {
+            if (control === "vu_meter_left") {
                 PioneerDDJSB3.valueVuMeter["[Channel1]_current"] = value;
                 PioneerDDJSB3.valueVuMeter["[Channel3]_current"] = value;
             } else {
@@ -1206,11 +1209,11 @@ PioneerDDJSB3.jogTouch = function(channel, control, value, status, group) {
         } else {
             engine.scratchDisable(deck + 1, true);
 
-            if (engine.getValue(group, "slipEnabled")) {
-                engine.setValue(group, "slipEnabled", false);
+            if (engine.getValue(group, "slip_enabled")) {
+                engine.setValue(group, "slip_enabled", false);
 
-                engine.beginTimer(250, function() {
-                    engine.setValue(group, "slipEnabled", true);
+                engine.beginTimer(250, () => {
+                    engine.setValue(group, "slip_enabled", true);
                 }, true);
             }
         }
@@ -1412,6 +1415,11 @@ PioneerDDJSB3.EffectUnit = function(unitNumber) {
         },
     });
 
+    this.shiftKnob = new components.Pot({
+        inKey: "super1",
+        group: eu.group
+    });
+
     this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, "focused_effect", function(value) {
         if (value === 0) {
             engine.softTakeoverIgnoreNextValue(eu.group, "mix");
@@ -1534,8 +1542,10 @@ PioneerDDJSB3.Slicer.prototype.generateBeatPositions = function() {
         if (sample < this.trackSamples) {
             var bp = {
                 sample: sample,
-                positionIn: (this.PLAY_POSITION_RANGE * sample - 1) / this.trackSamples,
-                positionOut: (this.PLAY_POSITION_RANGE * nextSample - 1) / this.trackSamples,
+                position: {
+                    in: (this.PLAY_POSITION_RANGE * sample - 1) / this.trackSamples,
+                    out: (this.PLAY_POSITION_RANGE * nextSample - 1) / this.trackSamples,
+                }
             };
 
             this.beatPositions.push(bp);
@@ -1591,7 +1601,7 @@ PioneerDDJSB3.Slicer.prototype.playPositionChange = function(value) {
         for (var i = 0; i < this.beatPositions.length; i++) {
             var beatPosition = this.beatPositions[i];
 
-            if (value >= beatPosition.positionIn && value < beatPosition.positionOut) {
+            if (value >= beatPosition.position.in && value < beatPosition.position.out) {
                 this.currentBeat = i;
                 found = true;
             }

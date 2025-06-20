@@ -27,19 +27,19 @@
                 <Alignment>center</Alignment>
               </Label>
 
-              <Template src="skin:/controls/button_xfader_aux.xml"/>
+              <Template src="skins:LateNight/controls/button_xfader_aux.xml"/>
 
               <WidgetGroup>
                 <ObjectName>AuxPlayBox</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/button_2state.xml">
-                    <SetVariable name="TooltipId">master_enable</SetVariable>
+                  <Template src="skins:LateNight/controls/button_2state.xml">
+                    <SetVariable name="TooltipId">main_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlay</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
                     <SetVariable name="BtnSize">medium</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,master</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,main_mix</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -52,7 +52,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skins:LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="ChannelType">auxiliary</SetVariable>
                 <SetVariable name="VuSize">micaux</SetVariable>
               </Template>
@@ -69,7 +69,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/knob.xml">
+                  <Template src="skins:LateNight/controls/knob.xml">
                     <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>
@@ -82,7 +82,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_2state.xml">
+                      <Template src="skins:LateNight/controls/button_2state.xml">
                         <SetVariable name="TooltipId">pfl</SetVariable>
                         <SetVariable name="ObjectName">PflButton</SetVariable>
                         <SetVariable name="BtnSize">square</SetVariable>
@@ -102,7 +102,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons.xml"/>
+                  <Template src="skins:LateNight/fx/assign_buttons.xml"/>
                 </Children>
               </WidgetGroup>
 
@@ -114,7 +114,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey><Variable name="Group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="Group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

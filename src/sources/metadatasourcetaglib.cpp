@@ -1,14 +1,13 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include <taglib/opusfile.h>
-#include <taglib/vorbisfile.h>
+#include <opusfile.h>
+#include <vorbisfile.h>
 
 #include <QFile>
-#include <QFileInfo>
-#include <QThread>
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
 
@@ -63,6 +62,10 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
+QString fileTypeToString(taglib::FileType fileType) {
+    return QVariant::fromValue(fileType).toString();
+}
+
 } // anonymous namespace
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
@@ -92,14 +95,17 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Nothing to import"
                 << "from file" << m_fileName
-                << "with type" << m_fileType;
+                << "of type" << fileTypeToString(m_fileType);
         return afterImport(ImportResult::Unavailable);
     }
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "Importing"
-                        << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
+                        << ((pTrackMetadata && pCoverImage)
+                                           ? "track metadata and cover art"
+                                           : (pTrackMetadata ? "track metadata"
+                                                             : "cover art"))
                         << "from file" << m_fileName
-                        << "with type" << m_fileType;
+                        << "of type" << fileTypeToString(m_fileType);
     }
 
     // Rationale: If a file contains different types of tags only
@@ -109,7 +115,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
     // is read and data in subsequent tags is ignored.
 
     switch (m_fileType) {
-    case taglib::FileType::MP3: {
+    case taglib::FileType::MPEG: {
         TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -132,7 +138,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             // Note (TagLib 1.1.11): TagLib::MPEG::File::tag() returns a
             // valid pointer even if neither an ID3v2 nor an ID3v1 tag is
             // present!
-            // See also: https://bugs.launchpad.net/mixxx/+bug/1865957
+            // See also: https://github.com/mixxxdj/mixxx/issues/9891
             const TagLib::Tag* pTag = file.tag();
             if (pTag) {
                 taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
@@ -196,7 +202,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::OGG: {
+    case taglib::FileType::OggVorbis: {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -205,14 +211,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (pTag) {
             taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
                     *pTag,
-                    taglib::FileType::OGG,
+                    taglib::FileType::OggVorbis,
                     resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
         break;
     }
-    case taglib::FileType::OPUS: {
+    case taglib::FileType::Opus: {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -221,14 +227,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (pTag) {
             taglib::xiph::importTrackMetadataFromTag(pTrackMetadata,
                     *pTag,
-                    taglib::FileType::OPUS,
+                    taglib::FileType::Opus,
                     resetMissingTagMetadata);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
         break;
     }
-    case taglib::FileType::WV: {
+    case taglib::FileType::WavPack: {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
@@ -283,14 +289,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Cannot import track metadata"
                 << "from file" << m_fileName
-                << "with unknown or unsupported type" << m_fileType;
+                << "of unknown or unsupported type" << fileTypeToString(m_fileType);
         return afterImport(ImportResult::Failed);
     }
 
     kLogger.info()
             << "No track metadata or cover art found"
             << "in file" << m_fileName
-            << "with type" << m_fileType;
+            << "of type" << fileTypeToString(m_fileType);
     return afterImport(ImportResult::Unavailable);
 }
 
@@ -320,11 +326,25 @@ class MpegTagSaver : public TagSaver {
     }
 
     bool saveModifiedTags() override {
+        DEBUG_ASSERT(hasModifiedTags());
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 12)
         // NOTE(uklotzde, 2016-08-28): Only save the tags that have
         // actually been modified! Otherwise TagLib 1.11 adds unwanted
         // ID3v1 tags, even if the file does not already contain those
         // legacy tags.
         return m_file.save(m_modifiedTagsBitmask);
+#else
+        // Keep ID3v1 tag synchronized if it already exists in the file
+        const auto duplicateTags =
+                m_file.hasID3v1Tag()
+                ? TagLib::File::DuplicateTags::Duplicate
+                : TagLib::File::DuplicateTags::DoNotDuplicate;
+        return m_file.save(
+                m_modifiedTagsBitmask,
+                TagLib::File::StripTags::StripNone,
+                TagLib::ID3v2::Version::v4,
+                duplicateTags);
+#endif
     }
 
   private:
@@ -448,7 +468,7 @@ class OggTagSaver : public TagSaver {
         (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
-        // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
+        // Launchpad issue: https://github.com/mixxxdj/mixxx/issues/9680
         Q_UNUSED(pFile);
         Q_UNUSED(trackMetadata);
         kLogger.warning() << "Skipping export of metadata into Ogg file due to "
@@ -458,7 +478,7 @@ class OggTagSaver : public TagSaver {
 #else
         return pFile->isOpen() &&
                 taglib::xiph::exportTrackMetadataIntoTag(
-                        pFile->tag(), trackMetadata, taglib::FileType::OGG);
+                        pFile->tag(), trackMetadata, taglib::FileType::OggVorbis);
 #endif
     }
 
@@ -487,7 +507,7 @@ class OpusTagSaver : public TagSaver {
             const TrackMetadata& trackMetadata) {
         return pFile->isOpen() &&
                 taglib::xiph::exportTrackMetadataIntoTag(
-                        pFile->tag(), trackMetadata, taglib::FileType::OPUS);
+                        pFile->tag(), trackMetadata, taglib::FileType::Opus);
     }
 
     TagLib::Ogg::Opus::File m_file;
@@ -603,12 +623,10 @@ class AiffTagSaver : public TagSaver {
 std::pair<MetadataSource::ExportResult, QDateTime>
 MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    // NOTE(uklotzde): Log unconditionally (with debug level) to
-    // identify files in the log file that might have caused a
-    // crash while exporting metadata.
-    kLogger.debug() << "Exporting track metadata"
-                    << "into file" << m_fileName
-                    << "with type" << m_fileType;
+    // Modifying an external file is a potentially dangerous operation.
+    // If this operation unexpectedly crashes or corrupts data we need
+    // to identify the file that is affected.
+    kLogger.info() << "Exporting track metadata into file:" << m_fileName;
 
     SafelyWritableFile safelyWritableFile(m_fileName,
             SafelyWritableFile::SafetyMode::Edit);
@@ -622,7 +640,7 @@ MetadataSourceTagLib::exportTrackMetadata(
 
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
-    case taglib::FileType::MP3: {
+    case taglib::FileType::MPEG: {
         pTagSaver = std::make_unique<MpegTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
@@ -634,15 +652,15 @@ MetadataSourceTagLib::exportTrackMetadata(
         pTagSaver = std::make_unique<FlacTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::OGG: {
+    case taglib::FileType::OggVorbis: {
         pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::OPUS: {
+    case taglib::FileType::Opus: {
         pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::WV: {
+    case taglib::FileType::WavPack: {
         pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
@@ -658,8 +676,8 @@ MetadataSourceTagLib::exportTrackMetadata(
         kLogger.debug()
                 << "Cannot export track metadata"
                 << "into file" << m_fileName
-                << "with unknown or unsupported type"
-                << m_fileType;
+                << "of unknown or unsupported type"
+                << fileTypeToString(m_fileType);
         return afterExport(ExportResult::Unsupported);
     }
 

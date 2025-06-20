@@ -4,12 +4,15 @@
 #include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_controlleroutputmappingtablemodel.cpp"
 
-ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent)
-        : ControllerMappingTableModel(pParent) {
+ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent,
+        ControlPickerMenu* pControlPickerMenu,
+        QTableView* pTableView)
+        : ControllerMappingTableModel(pParent, pControlPickerMenu, pTableView) {
 }
 
 ControllerOutputMappingTableModel::~ControllerOutputMappingTableModel() {
@@ -20,7 +23,7 @@ void ControllerOutputMappingTableModel::apply() {
         // Clear existing output mappings and insert all the output mappings in
         // the table into the mapping.
         QMultiHash<ConfigKey, MidiOutputMapping> mappings;
-        for (const MidiOutputMapping& mapping : qAsConst(m_midiOutputMappings)) {
+        for (const MidiOutputMapping& mapping : std::as_const(m_midiOutputMappings)) {
             // There can be multiple output mappings for the same output
             // control, so we need to use a QMultiHash here.
             mappings.insert(mapping.controlKey, mapping);
@@ -112,7 +115,7 @@ QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
             case MIDI_COLUMN_OFF:
                 return new MidiByteDelegate(pParent);
             case MIDI_COLUMN_ACTION:
-                return new ControlDelegate(this);
+                return new ControlDelegate(this, m_pControlPickerMenu);
         }
     }
     return nullptr;
@@ -187,6 +190,53 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
         }
     }
     return QVariant();
+}
+
+QString ControllerOutputMappingTableModel::getDisplayString(const QModelIndex& index) const {
+    if (!m_pMidiMapping || !m_pTableView || !index.isValid()) {
+        return QString();
+    }
+
+    int row = index.row();
+    int column = index.column();
+    const MidiOutputMapping& mapping = m_midiOutputMappings.at(row);
+
+    switch (column) {
+    case MIDI_COLUMN_COMMENT:
+        return mapping.description;
+    case MIDI_COLUMN_ON:
+        return QString::number(mapping.output.on);
+    case MIDI_COLUMN_OFF:
+        return QString::number(mapping.output.off);
+    case MIDI_COLUMN_MIN:
+        return QString::number(mapping.output.min);
+    case MIDI_COLUMN_MAX:
+        return QString::number(mapping.output.max);
+    case MIDI_COLUMN_CHANNEL:
+    case MIDI_COLUMN_OPCODE:
+    case MIDI_COLUMN_CONTROL: {
+        QStyledItemDelegate* del = getDelegateForIndex(index);
+        VERIFY_OR_DEBUG_ASSERT(del) {
+            return QString();
+        }
+        return del->displayText(data(index, Qt::DisplayRole), QLocale());
+    }
+    case MIDI_COLUMN_ACTION: {
+        QStyledItemDelegate* del = getDelegateForIndex(index);
+        VERIFY_OR_DEBUG_ASSERT(del) {
+            return QString();
+        }
+        // Return both the raw ConfigKey group + key and the translated display
+        // string and the translated description from ControlPickerMenu.
+        // Note: this may contain duplicate key strings in case this is an
+        // untranslated script control
+        return data(index, Qt::UserRole).toString() + QStringLiteral(" ") +
+                del->displayText(
+                        QVariant::fromValue(mapping.controlKey), QLocale());
+    }
+    default:
+        return QString();
+    }
 }
 
 bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,

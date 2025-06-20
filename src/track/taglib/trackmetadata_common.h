@@ -1,7 +1,7 @@
 #pragma once
 
-#include <taglib/tag.h>
-#include <taglib/tstringlist.h>
+#include <tag.h>
+#include <tstringlist.h>
 
 #include <QByteArray>
 #include <QFlags>

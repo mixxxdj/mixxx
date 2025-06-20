@@ -1,5 +1,8 @@
 #include "effects/backends/builtin/filtereffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
 
 namespace {
@@ -65,12 +68,12 @@ EffectManifestPointer FilterEffect::getManifest() {
 
 FilterGroupState::FilterGroupState(const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
-          m_loFreq(kMaxCorner / engineParameters.sampleRate()),
+          m_loFreq(kMaxCorner),
           m_q(0.707106781),
-          m_hiFreq(kMinCorner / engineParameters.sampleRate()) {
+          m_hiFreq(kMinCorner) {
     m_buffer = mixxx::SampleBuffer(engineParameters.samplesPerBuffer());
-    m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
-    m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
+    m_pLowFilter = new EngineFilterBiquad1Low(engineParameters.sampleRate(), m_loFreq, m_q, true);
+    m_pHighFilter = new EngineFilterBiquad1High(engineParameters.sampleRate(), m_hiFreq, m_q, true);
 }
 
 FilterGroupState::~FilterGroupState() {
@@ -83,10 +86,6 @@ void FilterEffect::loadEngineEffectParameters(
     m_pLPF = parameters.value("lpf");
     m_pQ = parameters.value("q");
     m_pHPF = parameters.value("hpf");
-}
-
-FilterEffect::~FilterEffect() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void FilterEffect::processChannel(
@@ -102,16 +101,13 @@ void FilterEffect::processChannel(
     double lpf;
     double q = m_pQ->value();
 
-    const double minCornerNormalized = kMinCorner / engineParameters.sampleRate();
-    const double maxCornerNormalized = kMaxCorner / engineParameters.sampleRate();
-
     if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
-        hpf = minCornerNormalized;
-        lpf = maxCornerNormalized;
+        hpf = kMinCorner;
+        lpf = kMaxCorner;
     } else {
-        hpf = m_pHPF->value() / engineParameters.sampleRate();
-        lpf = m_pLPF->value() / engineParameters.sampleRate();
+        hpf = m_pHPF->value();
+        lpf = m_pLPF->value();
     }
 
     if ((pState->m_loFreq != lpf) ||
@@ -132,22 +128,22 @@ void FilterEffect::processChannel(
             double qmax = 4 - 2 / 0.6 * ratio;
             clampedQ = math_min(clampedQ, qmax);
         }
-        pState->m_pLowFilter->setFrequencyCorners(1, lpf, clampedQ);
-        pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
+        pState->m_pLowFilter->setFrequencyCorners(engineParameters.sampleRate(), lpf, clampedQ);
+        pState->m_pHighFilter->setFrequencyCorners(engineParameters.sampleRate(), hpf, clampedQ);
     }
 
     const CSAMPLE* pLpfInput = pState->m_buffer.data();
     CSAMPLE* pHpfOutput = pState->m_buffer.data();
-    if (lpf >= maxCornerNormalized && pState->m_loFreq >= maxCornerNormalized) {
+    if (lpf >= kMaxCorner && pState->m_loFreq >= kMaxCorner) {
         // Lpf disabled Hpf can write directly to output
         pHpfOutput = pOutput;
         pLpfInput = pHpfOutput;
     }
 
-    if (hpf > minCornerNormalized) {
+    if (hpf > kMinCorner) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pHighFilter->process(pInput, pHpfOutput, engineParameters.samplesPerBuffer());
-    } else if (pState->m_hiFreq > minCornerNormalized) {
+    } else if (pState->m_hiFreq > kMinCorner) {
         // hpf disabling
         pState->m_pHighFilter->processAndPauseFilter(pInput,
                 pHpfOutput,
@@ -157,10 +153,10 @@ void FilterEffect::processChannel(
         pLpfInput = pInput;
     }
 
-    if (lpf < maxCornerNormalized) {
+    if (lpf < kMaxCorner) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pLowFilter->process(pLpfInput, pOutput, engineParameters.samplesPerBuffer());
-    } else if (pState->m_loFreq < maxCornerNormalized) {
+    } else if (pState->m_loFreq < kMaxCorner) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
                 pOutput,

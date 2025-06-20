@@ -1,10 +1,13 @@
 #include "library/rekordbox/rekordboxfeature.h"
 
 #include <mp3guessenc.h>
+#include <rekordbox_anlz.h>
+#include <rekordbox_pdb.h>
 
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
+#include <QString>
 #include <QTextCodec>
 #include <QtDebug>
 
@@ -12,8 +15,6 @@
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
-#include "library/rekordbox/rekordbox_anlz.h"
-#include "library/rekordbox/rekordbox_pdb.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -161,6 +162,9 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 }
 
 // This function is executed in a separate thread other than the main thread
+// The returned list owns the pointers, but we can't use a unique_ptr because
+// the result is passed by a const reference inside QFuture and than copied
+// to the main thread requiring a copy-able object.
 QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -191,10 +195,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << drive.filePath();
             data << IS_RECORDBOX_DEVICE;
-            TreeItem* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     std::move(displayPath),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #elif defined(__LINUX__)
@@ -219,13 +223,10 @@ QList<TreeItem*> findRekordboxDevices() {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            QList<QString> data;
-            data << device.filePath();
-            data << IS_RECORDBOX_DEVICE;
-            TreeItem* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     device.fileName(),
-                    QVariant(data));
-            foundDevices << foundDevice;
+                    QVariant(QList<QString>{device.filePath(), IS_RECORDBOX_DEVICE}));
+            foundDevices << pFoundDevice;
         }
     }
 #else // __APPLE__
@@ -238,10 +239,10 @@ QList<TreeItem*> findRekordboxDevices() {
             QList<QString> data;
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-            auto* foundDevice = new TreeItem(
+            auto* pFoundDevice = new TreeItem(
                     device.fileName(),
                     QVariant(data));
-            foundDevices << foundDevice;
+            foundDevices << pFoundDevice;
         }
     }
 #endif
@@ -254,9 +255,16 @@ inline bool instanceof (const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-QString toUnicode(const std::string& toConvert) {
-    return QTextCodec::codecForName("UTF-16BE")
+QString fromUtf16LeString(const std::string& toConvert) {
+    // Kaitai uses std::string as single container for all string encodings.
+    return QTextCodec::codecForName("UTF-16LE")
             ->toUnicode(toConvert.data(), static_cast<int>(toConvert.length()));
+}
+
+QString fromUtf16BeString(const std::string& toConvert) {
+    // Kaitai uses std::string as single container for all string encodings.
+    int length = static_cast<int>(toConvert.length()) - 2; // strip off trailing nullbyte
+    return QTextCodec::codecForName("UTF-16BE")->toUnicode(toConvert.data(), length);
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
@@ -274,10 +282,10 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
         rekordbox_pdb_t::device_sql_long_ascii_t* longAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_long_ascii_t*>(deviceString->body());
         text = QString::fromStdString(longAsciiString->text());
-    } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
-        rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
-                static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        text = toUnicode(longUtf16beString->text());
+    } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16le_t>(deviceString->body())) {
+        rekordbox_pdb_t::device_sql_long_utf16le_t* longUtf16leString =
+                static_cast<rekordbox_pdb_t::device_sql_long_utf16le_t*>(deviceString->body());
+        text = fromUtf16LeString(longUtf16leString->text());
     }
 
     // Some strings read from Rekordbox *.PDB files contain random null characters
@@ -286,7 +294,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
 }
 
 int createDevicePlaylist(QSqlDatabase& database, const QString& devicePath) {
-    int playlistID = -1;
+    int playlistID = kInvalidPlaylistId;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
     queryInsertIntoDevicePlaylist.prepare(
@@ -490,11 +498,11 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
-    rekordbox_pdb_t reckordboxDB = rekordbox_pdb_t(&ks);
+    rekordbox_pdb_t rekordboxDB = rekordbox_pdb_t(&ks);
 
     // There are other types of tables (eg. COLOR), these are the only ones we are
     // interested at the moment. Perhaps when/if
-    // https://bugs.launchpad.net/mixxx/+bug/1100882
+    // https://github.com/mixxxdj/mixxx/issues/6852
     // is completed, this can be revisited.
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
@@ -523,70 +531,47 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     bool folderOrPlaylistFound = false;
 
     for (int tableOrderIndex = 0; tableOrderIndex < totalTables; tableOrderIndex++) {
-        for (std::vector<rekordbox_pdb_t::table_t*>::iterator table =
-                        reckordboxDB.tables()->begin();
-                table != reckordboxDB.tables()->end();
-                ++table) {
-            if ((*table)->type() == tableOrder[tableOrderIndex]) {
-                uint16_t lastIndex = (*table)->last_page()->index();
-                rekordbox_pdb_t::page_ref_t* currentRef = (*table)->first_page();
+        for (const auto& table : *rekordboxDB.tables()) {
+            if (table->type() == tableOrder[tableOrderIndex]) {
+                uint16_t lastIndex = table->last_page()->index();
+                rekordbox_pdb_t::page_ref_t* currentRef = table->first_page();
 
                 while (true) {
                     rekordbox_pdb_t::page_t* page = currentRef->body();
 
                     if (page->is_data_page()) {
-                        for (std::vector<rekordbox_pdb_t::row_group_t*>::
-                                        iterator rowGroup =
-                                                page->row_groups()->begin();
-                                rowGroup != page->row_groups()->end();
-                                ++rowGroup) {
-                            for (std::vector<rekordbox_pdb_t::row_ref_t*>::
-                                            iterator rowRef = (*rowGroup)
-                                                                      ->rows()
-                                                                      ->begin();
-                                    rowRef != (*rowGroup)->rows()->end();
-                                    ++rowRef) {
-                                if ((*rowRef)->present()) {
+                        for (const auto& rowgroup : *page->row_groups()) {
+                            for (const auto& rowRef : *rowgroup->rows()) {
+                                if (rowRef->present()) {
                                     switch (tableOrder[tableOrderIndex]) {
                                     case rekordbox_pdb_t::PAGE_TYPE_KEYS: {
-                                        // Key found, update map
-                                        rekordbox_pdb_t::key_row_t* key =
-                                                static_cast<rekordbox_pdb_t::
-                                                                key_row_t*>(
-                                                        (*rowRef)->body());
+                                        auto* key =
+                                                static_cast<rekordbox_pdb_t::key_row_t*>(
+                                                        rowRef->body());
                                         keysMap[key->id()] = getText(key->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_GENRES: {
-                                        // Genre found, update map
-                                        rekordbox_pdb_t::genre_row_t* genre =
-                                                static_cast<rekordbox_pdb_t::
-                                                                genre_row_t*>(
-                                                        (*rowRef)->body());
+                                        auto* genre =
+                                                static_cast<rekordbox_pdb_t::genre_row_t*>(
+                                                        rowRef->body());
                                         genresMap[genre->id()] = getText(genre->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ARTISTS: {
-                                        // Artist found, update map
-                                        rekordbox_pdb_t::artist_row_t* artist =
-                                                static_cast<rekordbox_pdb_t::
-                                                                artist_row_t*>(
-                                                        (*rowRef)->body());
+                                        auto* artist =
+                                                static_cast<rekordbox_pdb_t::artist_row_t*>(
+                                                        rowRef->body());
                                         artistsMap[artist->id()] = getText(artist->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ALBUMS: {
-                                        // Album found, update map
-                                        rekordbox_pdb_t::album_row_t* album =
-                                                static_cast<rekordbox_pdb_t::
-                                                                album_row_t*>(
-                                                        (*rowRef)->body());
+                                        auto* album =
+                                                static_cast<rekordbox_pdb_t::album_row_t*>(
+                                                        rowRef->body());
                                         albumsMap[album->id()] = getText(album->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES: {
-                                        // Playlist to track mapping found, update map
-                                        rekordbox_pdb_t::playlist_entry_row_t*
-                                                playlistEntry = static_cast<
-                                                        rekordbox_pdb_t::
-                                                                playlist_entry_row_t*>(
-                                                        (*rowRef)->body());
+                                        auto* playlistEntry =
+                                                static_cast<rekordbox_pdb_t::playlist_entry_row_t*>(
+                                                        rowRef->body());
                                         playlistTrackMap
                                                 [playlistEntry->playlist_id()]
                                                 [playlistEntry->entry_index()] =
@@ -594,11 +579,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                                                 ->track_id();
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_TRACKS: {
-                                        // Track found, insert into database
                                         insertTrack(database,
-                                                static_cast<rekordbox_pdb_t::
-                                                                track_row_t*>(
-                                                        (*rowRef)->body()),
+                                                static_cast<rekordbox_pdb_t::track_row_t*>(
+                                                        rowRef->body()),
                                                 query,
                                                 queryInsertIntoDevicePlaylistTracks,
                                                 artistsMap,
@@ -612,12 +595,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                         audioFilesCount++;
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_TREE: {
-                                        // Playlist tree node found, update map
-                                        rekordbox_pdb_t::playlist_tree_row_t*
-                                                playlistTree = static_cast<
-                                                        rekordbox_pdb_t::
-                                                                playlist_tree_row_t*>(
-                                                        (*rowRef)->body());
+                                        auto* playlistTree =
+                                                static_cast<rekordbox_pdb_t::playlist_tree_row_t*>(
+                                                        rowRef->body());
 
                                         playlistNameMap[playlistTree->id()] =
                                                 getText(playlistTree->name());
@@ -632,6 +612,8 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                         folderOrPlaylistFound = true;
                                     } break;
                                     default:
+                                        // we currently don't handle any other
+                                        // data, even though there is more.
                                         break;
                                     }
                                 }
@@ -691,12 +673,8 @@ void buildPlaylistTree(
 
         QString currentPath = playlistPath + kPLaylistPathDelimiter + playlistItemName;
 
-        QList<QString> data;
-
-        data << currentPath;
-        data << IS_NOT_RECORDBOX_DEVICE;
-
-        TreeItem* child = parent->appendChild(playlistItemName, QVariant(data));
+        TreeItem* child = parent->appendChild(playlistItemName,
+                QVariant(QList<QString>{currentPath, IS_NOT_RECORDBOX_DEVICE}));
 
         // Create a playlist for this child
         QSqlQuery queryInsertIntoPlaylist(database);
@@ -723,7 +701,7 @@ void buildPlaylistTree(
             return;
         }
 
-        int playlistID = -1;
+        int playlistID = kInvalidPlaylistId;
         while (idQuery.next()) {
             playlistID = idQuery.value(idQuery.record().indexOf("id")).toInt();
         }
@@ -734,7 +712,7 @@ void buildPlaylistTree(
                 " (playlist_id, track_id, position) "
                 "VALUES (:playlist_id, :track_id, :position)");
 
-        if (playlistTrackMap.count(childID)) {
+        if (playlistTrackMap.contains(childID)) {
             // Add playlist tracks for children
             for (uint32_t trackIndex = 1; trackIndex <=
                     static_cast<uint32_t>(playlistTrackMap[childID].size());
@@ -793,7 +771,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     ScopedTransaction transaction(database);
 
     int trackID = -1;
-    int playlistID = -1;
+    int playlistID = kInvalidPlaylistId;
     QSqlQuery tracksQuery(database);
     tracksQuery.prepare("select id from " + kRekordboxLibraryTable + " where device=:device");
     tracksQuery.bindValue(":device", child->getLabel());
@@ -913,27 +891,21 @@ void readAnalyze(TrackPointer track,
     QList<memory_cue_loop_t> memoryCuesAndLoops;
     int lastHotCueIndex = 0;
 
-    for (std::vector<rekordbox_anlz_t::tagged_section_t*>::iterator section =
-                    anlz.sections()->begin();
-            section != anlz.sections()->end();
-            ++section) {
-        switch ((*section)->fourcc()) {
+    for (const auto& section : *anlz.sections()) {
+        switch (section->fourcc()) {
         case rekordbox_anlz_t::SECTION_TAGS_BEAT_GRID: {
             if (!ignoreCues) {
                 break;
             }
 
-            rekordbox_anlz_t::beat_grid_tag_t* beatGridTag =
+            auto* beatGridTag =
                     static_cast<rekordbox_anlz_t::beat_grid_tag_t*>(
-                            (*section)->body());
+                            section->body());
 
             QVector<mixxx::audio::FramePos> beats;
 
-            for (std::vector<rekordbox_anlz_t::beat_grid_beat_t*>::iterator
-                            beat = beatGridTag->beats()->begin();
-                    beat != beatGridTag->beats()->end();
-                    ++beat) {
-                int time = static_cast<int>((*beat)->time()) - timingOffset;
+            for (const auto& beat : *beatGridTag->beats()) {
+                int time = static_cast<int>(beat->time()) - timingOffset;
                 // Ensure no offset times are less than 1
                 if (time < 1) {
                     time = 1;
@@ -952,15 +924,12 @@ void readAnalyze(TrackPointer track,
                 break;
             }
 
-            rekordbox_anlz_t::cue_tag_t* cuesTag =
+            auto* cuesTag =
                     static_cast<rekordbox_anlz_t::cue_tag_t*>(
-                            (*section)->body());
+                            section->body());
 
-            for (std::vector<rekordbox_anlz_t::cue_entry_t*>::iterator
-                            cueEntry = cuesTag->cues()->begin();
-                    cueEntry != cuesTag->cues()->end();
-                    ++cueEntry) {
-                int time = static_cast<int>((*cueEntry)->time()) - timingOffset;
+            for (const auto& cueEntry : *cuesTag->cues()) {
+                int time = static_cast<int>(cueEntry->time()) - timingOffset;
                 // Ensure no offset times are less than 1
                 if (time < 1) {
                     time = 1;
@@ -970,7 +939,7 @@ void readAnalyze(TrackPointer track,
 
                 switch (cuesTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
-                    switch ((*cueEntry)->type()) {
+                    switch (cueEntry->type()) {
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
@@ -979,7 +948,7 @@ void readAnalyze(TrackPointer track,
                         memoryCuesAndLoops << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        int endTime = static_cast<int>((*cueEntry)->loop_time()) - timingOffset;
+                        int endTime = static_cast<int>(cueEntry->loop_time()) - timingOffset;
                         // Ensure no offset times are less than 1
                         if (endTime < 1) {
                             endTime = 1;
@@ -995,7 +964,7 @@ void readAnalyze(TrackPointer track,
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    int hotCueIndex = static_cast<int>((*cueEntry)->hot_cue() - 1);
+                    int hotCueIndex = static_cast<int>(cueEntry->hot_cue() - 1);
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
@@ -1015,15 +984,12 @@ void readAnalyze(TrackPointer track,
                 break;
             }
 
-            rekordbox_anlz_t::cue_extended_tag_t* cuesExtendedTag =
+            auto* cuesExtendedTag =
                     static_cast<rekordbox_anlz_t::cue_extended_tag_t*>(
-                            (*section)->body());
+                            section->body());
 
-            for (std::vector<rekordbox_anlz_t::cue_extended_entry_t*>::iterator
-                            cueExtendedEntry = cuesExtendedTag->cues()->begin();
-                    cueExtendedEntry != cuesExtendedTag->cues()->end();
-                    ++cueExtendedEntry) {
-                int time = static_cast<int>((*cueExtendedEntry)->time()) - timingOffset;
+            for (const auto& cueExtendedEntry : *cuesExtendedTag->cues()) {
+                int time = static_cast<int>(cueExtendedEntry->time()) - timingOffset;
                 // Ensure no offset times are less than 1
                 if (time < 1) {
                     time = 1;
@@ -1033,20 +999,20 @@ void readAnalyze(TrackPointer track,
 
                 switch (cuesExtendedTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
-                    switch ((*cueExtendedEntry)->type()) {
+                    switch (cueExtendedEntry->type()) {
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
                         memoryCue.endPosition = mixxx::audio::kInvalidFramePos;
-                        memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
+                        memoryCue.comment = fromUtf16BeString(cueExtendedEntry->comment());
                         memoryCue.color = colorFromID(static_cast<int>(
-                                (*cueExtendedEntry)->color_id()));
+                                cueExtendedEntry->color_id()));
                         memoryCuesAndLoops << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
                         int endTime =
                                 static_cast<int>(
-                                        (*cueExtendedEntry)->loop_time()) -
+                                        cueExtendedEntry->loop_time()) -
                                 timingOffset;
                         // Ensure no offset times are less than 1
                         if (endTime < 1) {
@@ -1057,14 +1023,14 @@ void readAnalyze(TrackPointer track,
                         loop.startPosition = position;
                         loop.endPosition = mixxx::audio::FramePos(
                                 sampleRateKhz * static_cast<double>(endTime));
-                        loop.comment = toUnicode((*cueExtendedEntry)->comment());
-                        loop.color = colorFromID(static_cast<int>((*cueExtendedEntry)->color_id()));
+                        loop.comment = fromUtf16BeString(cueExtendedEntry->comment());
+                        loop.color = colorFromID(static_cast<int>(cueExtendedEntry->color_id()));
                         memoryCuesAndLoops << loop;
                     } break;
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    int hotCueIndex = static_cast<int>((*cueExtendedEntry)->hot_cue() - 1);
+                    int hotCueIndex = static_cast<int>(cueExtendedEntry->hot_cue() - 1);
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
@@ -1072,14 +1038,14 @@ void readAnalyze(TrackPointer track,
                             position,
                             mixxx::audio::kInvalidFramePos,
                             hotCueIndex,
-                            toUnicode((*cueExtendedEntry)->comment()),
+                            fromUtf16BeString(cueExtendedEntry->comment()),
                             mixxx::RgbColor(qRgb(
                                     static_cast<int>(
-                                            (*cueExtendedEntry)->color_red()),
+                                            cueExtendedEntry->color_red()),
                                     static_cast<int>(
-                                            (*cueExtendedEntry)->color_green()),
-                                    static_cast<int>((*cueExtendedEntry)
-                                                             ->color_blue()))));
+                                            cueExtendedEntry->color_green()),
+                                    static_cast<int>(cueExtendedEntry
+                                                    ->color_blue()))));
                 } break;
                 }
             }
@@ -1220,6 +1186,9 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Position)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -1236,7 +1205,9 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     qDebug() << "RekordboxTrackModel::getTrack";
 
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString location = getFieldVariant(
+            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)
+                               .toString();
 
     if (!QFile(location).exists()) {
         return track;
@@ -1293,7 +1264,9 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     mixxx::audio::SampleRate sampleRate = track->getSampleRate();
 
-    QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
+    QString anlzPath =
+            getFieldVariant(index, ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH)
+                    .toString();
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
 
     if (QFile(anlzPathExt).exists()) {
@@ -1306,12 +1279,19 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
-    track->setKeys(KeyFactory::makeBasicKeysFromText(
-            index.sibling(index.row(), fieldIndex("key")).data().toString(),
+    // Form 5.4.3 Key format depends on the preferences option:
+    // Classic: Abm,B,Ebm,F#,Bbm,Db,Fm,Ab,…,F#m,A,Dbm,E
+    // Alphanumeric (Camelot): 1A,1B,2A,2B,3A,3B,4A,4B,…,11A,11B,12A,12B
+    // Not reckognized: 1m, 01A
+    // Earlier versions allow any format
+    // Decision: We normalize the KeyText here to not write garbage to the
+    // file metadata and it is unlikely to loose extra info.
+    track->setKeys(KeyFactory::makeBasicKeysNormalized(
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY).toString(),
             mixxx::track::io::key::USER));
 
     track->setColor(mixxx::RgbColor::fromQVariant(
-            index.sibling(index.row(), fieldIndex("color")).data()));
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COLOR)));
 
     return track;
 }
@@ -1335,42 +1315,41 @@ RekordboxFeature::RekordboxFeature(
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;
-    QStringList columns;
-    columns << LIBRARYTABLE_ID
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_RATING
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY
-            << LIBRARYTABLE_COLOR
-            << REKORDBOX_ANALYZE_PATH;
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
-    QStringList searchColumns;
-    searchColumns
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_TRACKNUMBER
-            << TRACKLOCATIONSTABLE_LOCATION
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_KEY;
-    m_trackSource->setSearchColumns(searchColumns);
+    QStringList columns = {
+            LIBRARYTABLE_ID,
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_RATING,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_KEY,
+            LIBRARYTABLE_COLOR,
+            REKORDBOX_ANALYZE_PATH};
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(
+    const QStringList searchColumns = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_TRACKNUMBER,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_COMMENT};
+
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            tableName,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
+    m_pRekordboxPlaylistModel = make_parented<RekordboxPlaylistModel>(
             this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Rekordbox");
@@ -1411,18 +1390,16 @@ RekordboxFeature::~RekordboxFeature() {
     dropTable(database, kRekordboxPlaylistsTable);
     dropTable(database, kRekordboxLibraryTable);
     transaction.commit();
-
-    delete m_pRekordboxPlaylistModel;
 }
 
-void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
+void RekordboxFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
         KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(formatRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
-    libraryWidget->registerView("REKORDBOXHOME", edit);
+    parented_ptr<WLibraryTextBrowser> pEdit = make_parented<WLibraryTextBrowser>(pLibraryWidget);
+    pEdit->setHtml(formatRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
+    pLibraryWidget->registerView("REKORDBOXHOME", pEdit);
 }
 
 void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
@@ -1433,11 +1410,12 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(
+std::unique_ptr<BaseSqlTableModel>
+RekordboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<RekordboxPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    model->setPlaylist(playlist);
-    return model;
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 QVariant RekordboxFeature::title() {
@@ -1482,14 +1460,14 @@ QString RekordboxFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : qAsConst(items)) {
+    for (const auto& item : std::as_const(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));
 
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://bugs.launchpad.net/mixxx/+bug/1744816
+    //https://github.com/mixxxdj/mixxx/issues/9103
     html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
                         .arg(refreshLink));
     return html;
@@ -1510,6 +1488,7 @@ void RekordboxFeature::activate() {
 
     emit enableCoverArtDisplay(true);
     emit switchToView("REKORDBOXHOME");
+    emit disableSearch();
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {
@@ -1555,9 +1534,12 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 }
 
 void RekordboxFeature::onRekordboxDevicesFound() {
-    QList<TreeItem*> foundDevices = m_devicesFuture.result();
-    TreeItem* root = m_pSidebarModel->getRootItem();
+    const QList<TreeItem*> result = m_devicesFuture.result();
+    auto foundDevices = std::vector<std::unique_ptr<TreeItem>>(result.cbegin(), result.cend());
 
+    clearLastRightClickedIndex();
+
+    TreeItem* root = m_pSidebarModel->getRootItem();
     QSqlDatabase database = m_pTrackCollection->database();
 
     if (foundDevices.size() == 0) {
@@ -1584,10 +1566,8 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             TreeItem* child = root->child(deviceIndex);
             bool removeChild = true;
 
-            for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-                TreeItem* deviceFound = foundDevices[foundDeviceIndex];
-
-                if (deviceFound->getLabel() == child->getLabel()) {
+            for (const auto& pDeviceFound : foundDevices) {
+                if (pDeviceFound->getLabel() == child->getLabel()) {
                     removeChild = false;
                     break;
                 }
@@ -1601,28 +1581,26 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             }
         }
 
-        QList<TreeItem*> childrenToAdd;
+        std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
 
-        for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-            TreeItem* deviceFound = foundDevices[foundDeviceIndex];
+        for (auto&& pDeviceFound : foundDevices) {
             bool addNewChild = true;
-
             for (int deviceIndex = 0; deviceIndex < root->childRows(); deviceIndex++) {
                 TreeItem* child = root->child(deviceIndex);
 
-                if (deviceFound->getLabel() == child->getLabel()) {
+                if (pDeviceFound->getLabel() == child->getLabel()) {
                     // This device already exists in the TreeModel, don't add or parse is again
                     addNewChild = false;
                 }
             }
 
             if (addNewChild) {
-                childrenToAdd << deviceFound;
+                childrenToAdd.push_back(std::move(pDeviceFound));
             }
         }
 
         if (!childrenToAdd.empty()) {
-            m_pSidebarModel->insertTreeItemRows(childrenToAdd, 0);
+            m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
         }
     }
 

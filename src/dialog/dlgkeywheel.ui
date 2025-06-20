@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Keywheel</string>
   </property>
+  <property name="windowFlags">
+   <set>Qt::Tool|Qt::WindowStaysOnTopHint</set>
+  </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>

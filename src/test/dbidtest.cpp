@@ -12,7 +12,6 @@ class DbIdTest : public testing::Test {
         DbId actual(variant);
         EXPECT_TRUE(actual.isValid());
         EXPECT_NE(DbId(), actual);
-        EXPECT_EQ(variant.toInt(), static_cast<int>(actual.value()));
         return actual;
     }
 

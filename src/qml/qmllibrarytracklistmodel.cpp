@@ -1,6 +1,7 @@
 #include "qml/qmllibrarytracklistmodel.h"
 
 #include "library/librarytablemodel.h"
+#include "moc_qmllibrarytracklistmodel.cpp"
 
 namespace mixxx {
 namespace qml {

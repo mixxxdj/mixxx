@@ -1,10 +1,7 @@
 #pragma once
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
-#include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
 
@@ -16,6 +13,7 @@ class PhaserGroupState final : public EffectState {
             : EffectState(engineParameters) {
         clear();
     }
+    ~PhaserGroupState() override = default;
 
     void clear() {
         leftPhase = 0;
@@ -39,7 +37,7 @@ class PhaserGroupState final : public EffectState {
 class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
   public:
     PhaserEffect() = default;
-    virtual ~PhaserEffect();
+    ~PhaserEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

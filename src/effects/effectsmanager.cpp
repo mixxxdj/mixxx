@@ -3,13 +3,13 @@
 #include <QDir>
 #include <QMetaType>
 
-#include "control/controlpotmeter.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/outputeffectchain.h"
 #include "effects/chains/quickeffectchain.h"
 #include "effects/chains/standardeffectchain.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectchainpreset.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/presets/effectxmlelements.h"
 #include "effects/visibleeffectslist.h"
@@ -26,18 +26,19 @@ EffectsManager::EffectsManager(
         std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
-          m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
-          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040) {
+          m_loEqFreq(ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040),
+          m_hiEqFreq(ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040),
+          m_initializedFromEffectsXml(false) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
 
-    QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
-            TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                    kEffectMessagePipeFifoSize, kEffectMessagePipeFifoSize);
-    m_pMessenger = EffectsMessengerPointer(new EffectsMessenger(
-            requestPipes.first, requestPipes.second));
-    m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
+    auto [requestPipe, responsePipe] = makeTwoWayMessagePipe<EffectsRequest*,
+            EffectsResponse>(kEffectMessagePipeFifoSize,
+            kEffectMessagePipeFifoSize);
+
+    m_pMessenger = EffectsMessengerPointer::create(std::move(requestPipe));
+    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(std::move(responsePipe));
 
     m_pEffectPresetManager = EffectPresetManagerPointer(
             new EffectPresetManager(pConfig, m_pBackendManager));
@@ -58,6 +59,7 @@ EffectsManager::~EffectsManager() {
     // ~LV2GroupState calls lilv_instance_free, which will segfault if called
     // after ~LV2Backend calls lilv_world_free.
     m_equalizerEffectChains.clear();
+    m_quickStemEffectChains.clear();
     m_quickEffectChains.clear();
     m_standardEffectChains.clear();
     m_outputEffectChain.clear();
@@ -71,6 +73,12 @@ void EffectsManager::setup() {
     addStandardEffectChains();
     addOutputEffectChain();
     // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
+    // Now read effects.xml to load defaults or restore previous states of standard
+    // effect chains and QuickEffect chain, though only for decks that have been
+    // created by now. For decks added later on see addDeck().
+    // Note: flip this bool now so any deck potentially being added while
+    // readEffectsXml() is running is also initialized.
+    m_initializedFromEffectsXml = true;
     readEffectsXml();
 }
 
@@ -127,35 +135,76 @@ EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const 
     return m_standardEffectChains.at(unitNumber);
 }
 
-void EffectsManager::addDeck(const QString& deckGroupName) {
-    addEqualizerEffectChain(deckGroupName);
-    addQuickEffectChain(deckGroupName);
+void EffectsManager::addDeck(const ChannelHandleAndGroup& deckHandleGroup) {
+    addEqualizerEffectChain(deckHandleGroup);
+    addQuickEffectChain(deckHandleGroup);
+    // If a deck is added after setup() was run we need to read effects.xml
+    // again to initialize its QuickEffect chain, either with defaults or the
+    // previous state.
+    if (m_initializedFromEffectsXml) {
+        readEffectsXmlSingleDeck(deckHandleGroup.m_name);
+    }
 }
 
-void EffectsManager::addEqualizerEffectChain(const QString& deckGroupName) {
+void EffectsManager::addStem(const ChannelHandleAndGroup& stemHandleGroup) {
+    VERIFY_OR_DEBUG_ASSERT(!m_quickStemEffectChains.contains(
+            QuickEffectChain::formatEffectChainGroup(stemHandleGroup.name()))) {
+        return;
+    }
+    auto pChainSlot = QuickEffectChainPointer(
+            new QuickEffectChain(stemHandleGroup, this, m_pMessenger));
+    m_quickStemEffectChains.insert(stemHandleGroup.name(), pChainSlot);
+    m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
+
+    // If a stem is added after setup() was run we need to read effects.xml
+    // again to initialize its QuickEffect chain, either with defaults or the
+    // previous state.
+    if (m_initializedFromEffectsXml) {
+        readEffectsXmlSingleDeckStem(stemHandleGroup.m_name);
+    }
+}
+
+void EffectsManager::addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChains.contains(
-            EqualizerEffectChain::formatEffectChainGroup(deckGroupName))) {
+            EqualizerEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {
         return;
     }
 
     auto pChainSlot = EqualizerEffectChainPointer(
-            new EqualizerEffectChain(deckGroupName, this, m_pMessenger));
+            new EqualizerEffectChain(deckHandleGroup, this, m_pMessenger));
 
-    m_equalizerEffectChains.insert(deckGroupName, pChainSlot);
+    m_equalizerEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
-void EffectsManager::addQuickEffectChain(const QString& deckGroupName) {
+void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChains.contains(
-            QuickEffectChain::formatEffectChainGroup(deckGroupName))) {
+            QuickEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {
         return;
     }
 
     auto pChainSlot = QuickEffectChainPointer(
-            new QuickEffectChain(deckGroupName, this, m_pMessenger));
+            new QuickEffectChain(deckHandleGroup, this, m_pMessenger));
 
-    m_quickEffectChains.insert(deckGroupName, pChainSlot);
+    m_quickEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
+}
+
+void EffectsManager::loadDefaultEqsAndQuickEffects() {
+    auto pDefaultEqEffect = m_pChainPresetManager->getDefaultEqEffect();
+    for (const auto& pEqChainSlot : std::as_const(m_equalizerEffectChains)) {
+        const auto pEqEffectSlot = pEqChainSlot->getEffectSlot(0);
+        VERIFY_OR_DEBUG_ASSERT(pEqEffectSlot) {
+            return;
+        }
+        pEqEffectSlot->loadEffectWithDefaults(pDefaultEqEffect);
+    }
+
+    const auto pDefaultQuickEffectPreset =
+            m_pChainPresetManager->getDefaultQuickEffectPreset();
+    for (const auto& pChainSlot : std::as_const(m_quickEffectChains)) {
+        pChainSlot->loadChainPreset(pDefaultQuickEffectPreset);
+    }
 }
 
 EffectChainPointer EffectsManager::getEffectChain(
@@ -177,26 +226,100 @@ void EffectsManager::readEffectsXml() {
     }
     file.close();
 
-    QStringList deckStrings;
-    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
-        deckStrings << it.key();
-    }
+    // Note: QuickEffect and EQ chains are created only for existing main decks,
+    // thus only for those the configured presets are requested
+    const QStringList deckStrings = m_quickEffectChains.keys();
     EffectsXmlData data = m_pChainPresetManager->readEffectsXml(doc, deckStrings);
 
     for (int i = 0; i < data.standardEffectChainPresets.size(); i++) {
         m_standardEffectChains.value(i)->loadChainPreset(data.standardEffectChainPresets.at(i));
     }
 
-    for (auto it = data.quickEffectChainPresets.begin();
-            it != data.quickEffectChainPresets.end();
-            it++) {
-        auto pChainSlot = m_quickEffectChains.value(it.key());
+    if (!data.outputChainPreset.isNull()) {
+        m_outputEffectChain->loadChainPreset(data.outputChainPreset);
+    }
+
+    QHashIterator<QString, EffectManifestPointer> eqIt(data.eqEffectManifests);
+    while (eqIt.hasNext()) {
+        eqIt.next();
+        auto pChainSlot = m_equalizerEffectChains.value(eqIt.key());
         if (pChainSlot) {
-            pChainSlot->loadChainPreset(it.value());
+            const auto pEffectSlot = pChainSlot->getEffectSlot(0);
+            VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+                return;
+            }
+            pEffectSlot->loadEffectWithDefaults(eqIt.value());
+        }
+    }
+
+    QHashIterator<QString, EffectChainPresetPointer> qeDataIt(data.quickEffectChainPresets);
+    while (qeDataIt.hasNext()) {
+        qeDataIt.next();
+        auto pChainSlot = m_quickEffectChains.value(qeDataIt.key());
+        if (pChainSlot) {
+            pChainSlot->loadChainPreset(qeDataIt.value());
+        }
+    }
+
+    QHashIterator<QString, EffectChainPresetPointer> qseDataIt(data.quickStemEffectChainPresets);
+    while (qseDataIt.hasNext()) {
+        qseDataIt.next();
+        auto pChainSlot = m_quickStemEffectChains.value(qseDataIt.key());
+        if (pChainSlot) {
+            pChainSlot->loadChainPreset(qseDataIt.value());
         }
     }
 
     m_pVisibleEffectsList->readEffectsXml(doc, m_pBackendManager);
+}
+
+void EffectsManager::readEffectsXmlSingleDeck(const QString& deckGroup) {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
+    QDomDocument doc;
+
+    if (file.open(QIODevice::ReadOnly)) {
+        doc.setContent(&file);
+    }
+    file.close();
+
+    EffectXmlDataSingleDeck data =
+            m_pChainPresetManager->readEffectsXmlSingleDeck(doc, deckGroup);
+
+    // Load EQ effect
+    auto pEqChainSlot = m_equalizerEffectChains.value(deckGroup);
+    if (pEqChainSlot) {
+        const auto pEffectSlot = pEqChainSlot->getEffectSlot(0);
+        VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+            return;
+        }
+        pEffectSlot->loadEffectWithDefaults(data.eqEffectManifest);
+    }
+
+    // Load Quick Effect
+    auto pQuickEffectChainSlot = m_quickEffectChains.value(deckGroup);
+    if (pQuickEffectChainSlot) {
+        pQuickEffectChainSlot->loadChainPreset(data.quickEffectChainPreset);
+    }
+}
+
+void EffectsManager::readEffectsXmlSingleDeckStem(const QString& deckStemGroup) {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
+    QDomDocument doc;
+
+    if (file.open(QIODevice::ReadOnly)) {
+        doc.setContent(&file);
+    }
+    file.close();
+
+    EffectChainPresetPointer pPreset =
+            m_pChainPresetManager->readEffectsXmlSingleDeckStem(doc, deckStemGroup);
+
+    auto pQuickEffectChainSlot = m_quickStemEffectChains.value(deckStemGroup);
+    if (pQuickEffectChainSlot) {
+        pQuickEffectChainSlot->loadChainPreset(pPreset);
+    }
 }
 
 void EffectsManager::saveEffectsXml() {
@@ -207,22 +330,63 @@ void EffectsManager::saveEffectsXml() {
             "schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
     doc.appendChild(rootElement);
 
+    QHash<QString, EffectManifestPointer> eqEffectManifests;
+    eqEffectManifests.reserve(m_equalizerEffectChains.size());
+    QHashIterator<QString, EqualizerEffectChainPointer> eqIt(m_equalizerEffectChains);
+    while (eqIt.hasNext()) {
+        eqIt.next();
+        const auto pEffectSlot = eqIt.value()->getEffectSlot(0);
+        VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+            return;
+        }
+        auto pManifest = pEffectSlot->getManifest();
+        eqEffectManifests.insert(eqIt.key(), pManifest);
+    }
+
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
-    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
-        auto pPreset = EffectChainPresetPointer::create(it.value().data());
-        quickEffectChainPresets.insert(it.key(), pPreset);
+    quickEffectChainPresets.reserve(m_quickEffectChains.size());
+    QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
+    while (qeIt.hasNext()) {
+        qeIt.next();
+        auto* pQuickEffectChain = qeIt.value().data();
+        auto pPreset = EffectChainPresetPointer::create(pQuickEffectChain);
+        quickEffectChainPresets.insert(qeIt.key(), pPreset);
+    }
+
+    QHash<QString, EffectChainPresetPointer> quickStemEffectChainPresets;
+    quickStemEffectChainPresets.reserve(m_quickStemEffectChains.size());
+    QHashIterator<QString, QuickEffectChainPointer> qseIt(m_quickStemEffectChains);
+    while (qseIt.hasNext()) {
+        qseIt.next();
+        auto* pQuickEffectChain = qseIt.value().data();
+        auto pPreset = EffectChainPresetPointer::create(pQuickEffectChain);
+        quickStemEffectChainPresets.insert(qseIt.key(), pPreset);
     }
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
+    standardEffectChainPresets.reserve(m_standardEffectChains.size());
     for (const auto& pChainSlot : std::as_const(m_standardEffectChains)) {
-        auto pPreset = EffectChainPresetPointer::create(pChainSlot.data());
+        auto* pChain = pChainSlot.data();
+        auto pPreset = EffectChainPresetPointer::create(pChain);
         standardEffectChainPresets.append(pPreset);
     }
 
+    const auto outputChainPreset = m_outputEffectChain.isNull()
+            // required for tests when no output effect chain exists
+            ? EffectChainPresetPointer::create()
+            // no ownership concerns apply because we're just calling
+            // EffectChainPreset::EffectChainPreset(const EffectChain* chain)
+            : EffectChainPresetPointer::create(m_outputEffectChain.data());
+
     m_pChainPresetManager->saveEffectsXml(&doc,
             EffectsXmlData{
-                    quickEffectChainPresets, standardEffectChainPresets});
-    m_pVisibleEffectsList->saveEffectsXml(&doc);
+                    eqEffectManifests,
+                    quickEffectChainPresets,
+                    quickStemEffectChainPresets,
+                    standardEffectChainPresets,
+                    outputChainPreset});
+
+    m_pVisibleEffectsList->saveEffectsXml(&doc, m_pBackendManager);
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     if (!settingsPath.exists()) {

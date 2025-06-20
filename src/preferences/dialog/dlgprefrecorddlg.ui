@@ -181,94 +181,107 @@
        <layout class="QHBoxLayout" name="OptionGroupsLayout"/>
       </item>
 
-      <item row="5" column="0">
-       <widget class="QLabel" name="LabelQuality">
-        <property name="text">
-         <string>Quality</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QSlider" name="SliderQuality">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>11</number>
-        </property>
-        <property name="singleStep">
-         <number>1</number>
-        </property>
-        <property name="pageStep">
-         <number>1</number>
-        </property>
-        <property name="value">
-         <number>9</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="tickInterval">
-         <number>5</number>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QLabel" name="TextQuality">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Quality</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-        <property name="buddy">
-         <cstring>SliderQuality</cstring>
-        </property>
+      <item row="5" column="0" colspan="3">
+       <widget class="QWidget" name="qualityGroup">
+        <layout class="QHBoxLayout" name="qualityHLayout">
+         <item>
+          <widget class="QLabel" name="LabelQuality">
+           <property name="text">
+            <string>Quality</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="SliderQuality">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>11</number>
+           </property>
+           <property name="singleStep">
+            <number>1</number>
+           </property>
+           <property name="pageStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>9</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="tickInterval">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="TextQuality">
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Quality</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+           <property name="buddy">
+            <cstring>SliderQuality</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
 
-      <item row="6" column="0">
-       <widget class="QLabel" name="LabelCompression">
-        <property name="text">
-         <string>Compression Level</string>
-        </property>
+      <item row="6" column="0" colspan="3">
+       <widget class="QWidget" name="compressionGroup">
+        <layout class="QHBoxLayout" name="compressionHLayout">
+         <item>
+          <widget class="QLabel" name="LabelCompression">
+           <property name="text">
+            <string>Compression Level</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="SliderCompression">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="TextCompression">
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Compression</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy">
+            <cstring>SliderCompression</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-      <item row="6" column="1">
-       <widget class="QSlider" name="SliderCompression">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QLabel" name="TextCompression">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Compression</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>SliderCompression</cstring>
-        </property>
-       </widget>
-      </item>
+
      </layout>
     </widget>
    </item>

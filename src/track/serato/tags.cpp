@@ -2,6 +2,8 @@
 
 #include <mp3guessenc.h>
 
+#include <optional>
+
 #include "sources/soundsourceproxy.h"
 #if defined(__COREAUDIO__)
 #include "sources/soundsourcecoreaudio.h"
@@ -35,128 +37,43 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
 /// have a loop and a hotcue with the same number. In Mixxx, loops
 /// and hotcues share indices. Hence, we import them with an offset
 /// of 8 (the maximum number of hotcues in Serato).
-constexpr int kFirstLoopIndex = mixxx::kFirstHotCueIndex + 8;
+constexpr int kFirstSeratoHotCueIndex = 0;
+constexpr int kLastSeratoHotCueIndex = 7;
+constexpr int kFirstSeratoLoopIndex = 0;
+constexpr int kLastSeratoLoopIndex = 7;
+constexpr int kLoopImportIndexOffset = 8;
+
 constexpr int kNumCuesInMarkersTag = 5;
 
-mixxx::RgbColor getColorFromOtherPalette(
-        const ColorPalette& source,
-        const ColorPalette& dest,
-        mixxx::RgbColor color) {
-    DEBUG_ASSERT(source.size() == dest.size());
-    int sourceIndex = source.indexOf(color);
-    if (sourceIndex >= 0 && sourceIndex < dest.size()) {
-        return dest.at(sourceIndex);
+bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
+    if (cueInfo.getType() == mixxx::CueType::Loop &&
+            cueInfo.getEndPositionMillis().value_or(0) == 0) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard loop cue" << cueInfo.getHotCueIndex()
+                   << "with length of 0";
+        return false;
     }
-    return color;
-}
-
-std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
+    if (cueInfo.getType() == mixxx::CueType::HotCue &&
+            cueInfo.getStartPositionMillis().value_or(0) == 0 &&
+            cueInfo.getColor().value_or(mixxx::RgbColor(0)) == mixxx::RgbColor(0)) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard black hot cue" << cueInfo.getHotCueIndex()
+                   << "at position 0";
+        return false;
+    }
     VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
-        qWarning() << "SeratoTags::getCues: Cue without number found!";
-        return std::nullopt;
+        return false;
     }
-
-    int index = *cueInfo.getHotCueIndex();
-    VERIFY_OR_DEBUG_ASSERT(index >= mixxx::kFirstHotCueIndex) {
-        qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
-        return std::nullopt;
-    }
-
-    switch (cueInfo.getType()) {
-    case mixxx::CueType::HotCue:
-        if (index >= kFirstLoopIndex) {
-            qWarning()
-                    << "SeratoTags::getCues: Non-loop Cue with number >="
-                    << kFirstLoopIndex << "found!";
-            return std::nullopt;
-        }
-        break;
-    case mixxx::CueType::Loop:
-        index += kFirstLoopIndex;
-        break;
-    default:
-        return std::nullopt;
-    }
-
-    return index;
+    return true;
 }
 
 } // namespace
 
 namespace mixxx {
 
-/// Serato stores Track colors differently from how they are displayed in
-/// the library column. Instead of the color from the library view, the
-/// value from the color picker is stored instead (which is different).
-/// To make sure that the track looks the same in both Mixxx' and Serato's
-/// libraries, we need to convert between the two values.
-///
-/// See this for details:
-/// https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
-RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
-    if (color == 0xFFFFFF) {
-        return RgbColor::nullopt();
-    }
-
-    if (color == 0x999999) {
-        return RgbColor::optional(0x090909);
-    }
-
-    if (color == 0x000000) {
-        return RgbColor::optional(0x333333);
-    }
-
-    RgbColor::code_t colorCode = color;
-    colorCode = (colorCode < 0x666666) ? colorCode + 0x99999A : colorCode - 0x666666;
-    return RgbColor::optional(colorCode);
-}
-
-RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
-    if (!color) {
-        return RgbColor(0xFFFFFF);
-    }
-
-    RgbColor::code_t colorCode = *color;
-
-    if (colorCode == 0x090909) {
-        return RgbColor(0x999999);
-    }
-
-    if (colorCode == 0x333333) {
-        return RgbColor(0x000000);
-    }
-
-    // Special case: 0x999999 and 0x99999a are not representable as Serato
-    // track color We'll just modify them a little, so that the look the
-    // same in Serato.
-    if (colorCode == 0x999999) {
-        return RgbColor(0x999998);
-    }
-
-    if (colorCode == 0x99999a) {
-        return RgbColor(0x99999b);
-    }
-
-    colorCode = (colorCode < 0x99999A) ? colorCode + 0x666666 : colorCode - 0x99999A;
-    return RgbColor(colorCode);
-}
-
-RgbColor SeratoTags::storedToDisplayedSeratoDJProCueColor(RgbColor color) {
-    return getColorFromOtherPalette(
-            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
-            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
-            color);
-}
-
-RgbColor SeratoTags::displayedToStoredSeratoDJProCueColor(RgbColor color) {
-    return getColorFromOtherPalette(
-            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
-            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
-            color);
-}
-
 double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
+        const QString& fileType,
         const audio::SignalInfo& signalInfo) {
     // The following code accounts for timing offsets required to
     // correctly align timing information (e.g. cue points) exported from
@@ -166,7 +83,7 @@ double SeratoTags::guessTimingOffsetMillis(
     // PR for more detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
     double timingOffset = 0;
-    if (taglib::getFileTypeFromFileName(filePath) == taglib::FileType::MP3) {
+    if (fileType == "mp3") {
         const QString primaryDecoderName =
                 getPrimaryDecoderNameForFilePath(filePath);
         // There should always be an MP3 decoder available
@@ -266,12 +183,12 @@ BeatsImporterPointer SeratoTags::importBeats() const {
             m_seratoBeatGrid.terminalMarker());
 }
 
-CueInfoImporterPointer SeratoTags::importCueInfos() const {
+std::unique_ptr<CueInfoImporter> SeratoTags::createCueInfoImporter() const {
     auto cueInfos = getCueInfos();
     if (cueInfos.isEmpty()) {
         return nullptr;
     }
-    return std::make_shared<SeratoCueInfoImporter>(std::move(cueInfos));
+    return std::make_unique<SeratoCueInfoImporter>(std::move(cueInfos));
 }
 
 QList<CueInfo> SeratoTags::getCueInfos() const {
@@ -283,121 +200,139 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     QMap<int, CueInfo> cueMap;
     const QList<CueInfo> cuesMarkers2 = m_seratoMarkers2.getCues();
     for (const CueInfo& cueInfo : cuesMarkers2) {
-        std::optional<int> index = findIndexForCueInfo(cueInfo);
-        if (!index) {
+        if (!isCueInfoValid(cueInfo)) {
             continue;
         }
-
-        CueInfo newCueInfo(cueInfo);
-        newCueInfo.setHotCueIndex(index);
-
-        RgbColor::optional_t color = cueInfo.getColor();
-        if (color) {
-            // TODO: Make this conversion configurable
-            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+        int hotcueIndex = *cueInfo.getHotCueIndex();
+        if (cueInfo.getType() == CueType::Loop) {
+            if (hotcueIndex < kFirstSeratoLoopIndex ||
+                    hotcueIndex > kLastSeratoLoopIndex) {
+                continue;
+            }
+            hotcueIndex += kLoopImportIndexOffset;
+            CueInfo mixxxCue = cueInfo;
+            mixxxCue.setHotCueIndex(hotcueIndex);
+            cueMap.insert(hotcueIndex, mixxxCue);
+        } else {
+            if (hotcueIndex < kFirstSeratoHotCueIndex ||
+                    hotcueIndex > kLastSeratoHotCueIndex) {
+                continue;
+            }
+            cueMap.insert(*cueInfo.getHotCueIndex(), cueInfo);
         }
-        cueMap.insert(*index, newCueInfo);
     };
-
-    // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
-    // takes data from the "Serato Markers2" tag, so we can exit early
-    // here. If the "Serato Markers_" exists, its data will take precedence.
-    if (m_seratoMarkers.isEmpty()) {
-        return cueMap.values();
-    }
-
-    // The "Serato Markers_" tag always contains entries for the first five
-    // cues. If a cue is not set, that entry is present but empty.
-    // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
-    // Serato DJ Pro considers it as "not set" and ignores it.
-    // To mirror the behaviour of Serato, we need to remove from the output of
-    // this function.
-    QSet<int> unsetCuesInMarkersTag;
-    for (int i = 0; i < kNumCuesInMarkersTag; i++) {
-        unsetCuesInMarkersTag.insert(i);
-    }
 
     const QList<CueInfo> cuesMarkers = m_seratoMarkers.getCues();
-    for (const CueInfo& cueInfo : cuesMarkers) {
-        std::optional<int> index = findIndexForCueInfo(cueInfo);
-        if (!index) {
-            continue;
+    if (cuesMarkers.size() > 0) {
+        // The "Serato Markers_" tag always contains entries for the first five
+        // cues. If a cue is not set, that entry is present but empty.
+        // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
+        // Serato DJ Pro considers it as "not set" and ignores it.
+        // To mirror the behaviour of Serato, we need to remove from the output of
+        // this function.
+        QSet<int> unsetCuesInMarkersTag;
+        unsetCuesInMarkersTag.reserve(kNumCuesInMarkersTag);
+        for (int i = 0; i < kNumCuesInMarkersTag; i++) {
+            unsetCuesInMarkersTag.insert(i);
         }
 
-        // Take a pre-existing CueInfo object that was read from
-        // "SeratoMarkers2" from the CueMap (or a default constructed CueInfo
-        // object if none exists) and use it as template for the new CueInfo
-        // object. Then overwrite all object values that are present in the
-        // "SeratoMarkers_"tag.
-        CueInfo newCueInfo = cueMap.value(*index);
-        newCueInfo.setType(cueInfo.getType());
-        newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
-        newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
-        newCueInfo.setHotCueIndex(index);
-        newCueInfo.setFlags(cueInfo.flags());
+        for (const CueInfo& cueInfo : cuesMarkers) {
+            if (!isCueInfoValid(cueInfo)) {
+                continue;
+            }
+            // Take a pre-existing CueInfo object that was read from
+            // "SeratoMarkers2" from the CueMap (or a default constructed CueInfo
+            // object if none exists) and use it as template for the new CueInfo
+            // object. Then overwrite all object values that are present in the
+            // "SeratoMarkers_"tag.
+            int hotcueIndex = *cueInfo.getHotCueIndex();
+            if (cueInfo.getType() == CueType::Loop) {
+                if (hotcueIndex < kFirstSeratoLoopIndex ||
+                        hotcueIndex > kLastSeratoLoopIndex) {
+                    continue;
+                }
+                hotcueIndex += kLoopImportIndexOffset;
+            } else {
+                if (hotcueIndex < kFirstSeratoHotCueIndex ||
+                        hotcueIndex > kLastSeratoHotCueIndex) {
+                    continue;
+                }
+            }
 
-        RgbColor::optional_t color = cueInfo.getColor();
-        if (color) {
-            // TODO: Make this conversion configurable
-            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+            CueInfo& newCueInfo = cueMap[hotcueIndex];
+            newCueInfo.setType(cueInfo.getType());
+            newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
+            newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+            newCueInfo.setHotCueIndex(hotcueIndex);
+            newCueInfo.setFlags(cueInfo.flags());
+            newCueInfo.setColor(cueInfo.getColor());
+
+            // This cue is set in the "Serato Markers_" tag, so remove it from the
+            // set of unset cues
+            unsetCuesInMarkersTag.remove(hotcueIndex);
+        };
+
+        // Now that we know which cues should be present in the "Serato Markers_"
+        // tag but aren't, remove them from the set.
+        for (const int index : unsetCuesInMarkersTag) {
+            cueMap.remove(index);
         }
-        cueMap.insert(*index, newCueInfo);
-
-        // This cue is set in the "Serato Markers_" tag, so remove it from the
-        // set of unset cues
-        unsetCuesInMarkersTag.remove(*index);
-    };
-
-    // Now that we know which cues should be present in the "Serato Markers_"
-    // tag but aren't, remove them from the set.
-    for (const int index : unsetCuesInMarkersTag) {
-        cueMap.remove(index);
     }
 
-    return cueMap.values();
+    const QList<CueInfo> cueInfos = cueMap.values();
+    // qDebug() << "SeratoTags::getCueInfos()";
+    for (const CueInfo& cueInfo : cueInfos) {
+        qDebug() << cueInfo;
+    }
+
+    return cueInfos;
 }
 
 void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffsetMillis) {
     // Filter out all cues that cannot be mapped to Serato's tag data,
     // ensure that each hotcue number is unique (by using a map), apply the
     // timing offset and split up cues and loops.
-    QMap<int, CueInfo> cueMap;
-    QMap<int, CueInfo> loopMap;
-    for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
+    QList<CueInfo> cueList;
+    for (const CueInfo& cueInfo : std::as_const(cueInfos)) {
         if (!cueInfo.getHotCueIndex()) {
             continue;
         }
 
-        int hotcueIndex = *cueInfo.getHotCueIndex();
-        if (hotcueIndex < kFirstHotCueIndex) {
+        CueInfo cueInfoSeratoAdjusted = cueInfo;
+
+        if (!cueInfo.getStartPositionMillis().has_value()) {
             continue;
         }
-
-        CueInfo newCueInfo(cueInfo);
-        RgbColor color = kDefaultCueColor;
-        if (cueInfo.getColor()) {
-            // TODO: Make this conversion configurable
-            color = displayedToStoredSeratoDJProCueColor(*cueInfo.getColor());
-        }
-        newCueInfo.setColor(color);
-
-        if (!cueInfo.getStartPositionMillis()) {
-            continue;
-        }
-        newCueInfo.setStartPositionMillis(
+        cueInfoSeratoAdjusted.setStartPositionMillis(
                 *cueInfo.getStartPositionMillis() - timingOffsetMillis);
 
-        if (cueInfo.getEndPositionMillis()) {
-            newCueInfo.setEndPositionMillis(*cueInfo.getEndPositionMillis() - timingOffsetMillis);
+        if (cueInfo.getEndPositionMillis().has_value()) {
+            cueInfoSeratoAdjusted.setEndPositionMillis(
+                    *cueInfo.getEndPositionMillis() - timingOffsetMillis);
         }
-        newCueInfo.setFlags(cueInfo.flags());
 
+        int hotcueIndex = *cueInfo.getHotCueIndex();
         switch (cueInfo.getType()) {
         case CueType::HotCue:
-            cueMap.insert(hotcueIndex, newCueInfo);
+            if (hotcueIndex < kFirstSeratoHotCueIndex ||
+                    hotcueIndex > kLastSeratoHotCueIndex) {
+                continue;
+            }
+            cueList.append(cueInfoSeratoAdjusted);
             break;
         case CueType::Loop:
-            loopMap.insert(hotcueIndex, newCueInfo);
+            if (!cueInfoSeratoAdjusted.getEndPositionMillis().has_value()) {
+                qWarning() << "Loop Cue" << hotcueIndex << "has no end position";
+                DEBUG_ASSERT(false);
+                continue;
+            }
+            hotcueIndex -= kLoopImportIndexOffset;
+            if (hotcueIndex < kFirstSeratoLoopIndex ||
+                    hotcueIndex > kLastSeratoLoopIndex) {
+                continue;
+            }
+            cueInfoSeratoAdjusted.setHotCueIndex(hotcueIndex);
+            cueList.append(cueInfoSeratoAdjusted);
             break;
         default:
             qWarning() << "Skipping incompatible cue type";
@@ -405,47 +340,30 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         }
     };
 
-    // Check if loops were imported or set using a constant offset
-    int loopIndexOffset = 0;
-    if (!loopMap.isEmpty()) {
-        if (loopMap.firstKey() >= kFirstLoopIndex) {
-            loopIndexOffset = kFirstLoopIndex;
-        }
-    }
-
-    // Apply loop index offset and create list
-    QList<CueInfo> cueInfoList = cueMap.values();
-    auto it = loopMap.constBegin();
-    while (it != loopMap.constEnd()) {
-        CueInfo cueInfo(it.value());
-        cueInfo.setHotCueIndex(*cueInfo.getHotCueIndex() - loopIndexOffset);
-        cueInfoList.append(cueInfo);
-        it++;
-    }
-
-    m_seratoMarkers.setCues(cueInfoList);
-    m_seratoMarkers2.setCues(cueInfoList);
+    m_seratoMarkers.setCues(cueList);
+    m_seratoMarkers2.setCues(cueList);
 }
 
-RgbColor::optional_t SeratoTags::getTrackColor() const {
-    RgbColor::optional_t color = m_seratoMarkers.getTrackColor();
+std::optional<RgbColor::optional_t> SeratoTags::getTrackColor() const {
+    std::optional<mixxx::SeratoStoredTrackColor> pStoredColor = m_seratoMarkers.getTrackColor();
 
-    if (!color) {
+    if (!pStoredColor) {
         // Markers_ is empty, but we may have a color in Markers2
-        color = m_seratoMarkers2.getTrackColor();
+        pStoredColor = m_seratoMarkers2.getTrackColor();
     }
 
-    if (color) {
-        color = SeratoTags::storedToDisplayedTrackColor(*color);
+    if (!pStoredColor) {
+        return std::nullopt;
     }
 
-    return color;
+    return std::optional<RgbColor::optional_t>(
+            pStoredColor->toDisplayedColor());
 }
 
 void SeratoTags::setTrackColor(const RgbColor::optional_t& color) {
-    mixxx::RgbColor rgbColor = SeratoTags::displayedToStoredTrackColor(color);
-    m_seratoMarkers.setTrackColor(rgbColor);
-    m_seratoMarkers2.setTrackColor(rgbColor);
+    auto storedColor = SeratoStoredTrackColor::fromDisplayedColor(color);
+    m_seratoMarkers.setTrackColor(storedColor);
+    m_seratoMarkers2.setTrackColor(storedColor);
 }
 
 bool SeratoTags::isBpmLocked() const {

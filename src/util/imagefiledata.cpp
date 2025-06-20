@@ -1,10 +1,8 @@
 #include "util/imagefiledata.h"
 
 #include <QBuffer>
-#include <QByteArray>
 #include <QFile>
 #include <QFileInfo>
-#include <QImage>
 #include <QImageReader>
 
 #include "util/assert.h"
@@ -50,10 +48,10 @@ bool ImageFileData::saveFile(const QString& coverArtAbsoluteFilePath) const {
     }
 
     if (QFileInfo(coverArtAbsoluteFilePath).suffix() != m_coverArtFormat) {
-        qWarning() << "Cover Art format and extension does not match"
-                   << "format"
+        qWarning() << "Cover Art format and extension does not match!"
+                   << "Cover art format:"
                    << m_coverArtFormat
-                   << "extension"
+                   << "File extension:"
                    << QFileInfo(coverArtAbsoluteFilePath).suffix();
         return save(coverArtAbsoluteFilePath);
     }

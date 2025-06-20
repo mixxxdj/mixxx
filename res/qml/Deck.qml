@@ -68,7 +68,6 @@ Item {
         FadeBehavior on visible {
             fadeTarget: rateSlider
         }
-
     }
 
     Rectangle {
@@ -128,7 +127,6 @@ Item {
                     anchors.centerIn: parent
                     text: "FX 1"
                 }
-
             }
 
             Rectangle {
@@ -155,7 +153,6 @@ Item {
                     anchors.centerIn: parent
                     text: "FX 2"
                 }
-
             }
 
             Rectangle {
@@ -214,7 +211,6 @@ Item {
                     group: root.group
                     key: "track_samples"
                 }
-
             }
 
             Item {
@@ -250,7 +246,6 @@ Item {
                     anchors.centerIn: parent
                     source: "images/icon_quantize.svg"
                 }
-
             }
 
             Item {
@@ -286,15 +281,12 @@ Item {
                     anchors.centerIn: parent
                     source: "images/icon_passthrough.svg"
                 }
-
             }
-
         }
 
         FadeBehavior on visible {
             fadeTarget: overview
         }
-
     }
 
     Item {
@@ -335,6 +327,54 @@ Item {
         }
 
         Row {
+            anchors.left: playButton.right
+            anchors.leftMargin: 10
+            anchors.bottom: playButton.bottom
+            anchors.topMargin: 5
+            spacing: -1
+
+            Skin.IntroOutroButton {
+                keyPrefix: "intro_start"
+                group: root.group
+
+                text: "Intro\nStart"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+
+            Skin.IntroOutroButton {
+                keyPrefix: "intro_end"
+                group: root.group
+
+                text: "Intro\nEnd"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+
+            Skin.IntroOutroButton {
+                keyPrefix: "outro_start"
+                group: root.group
+
+                text: "Outro\nStart"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+
+            Skin.IntroOutroButton {
+                keyPrefix: "outro_end"
+                group: root.group
+
+                text: "Outro\nEnd"
+
+                width: playButton.height * 2 - 1
+                height: playButton.height
+            }
+        }
+
+        Row {
             anchors.left: cueButton.right
             anchors.top: parent.top
             anchors.leftMargin: 10
@@ -351,9 +391,7 @@ Item {
                     width: playButton.height
                     height: playButton.height
                 }
-
             }
-
         }
 
         Skin.SyncButton {
@@ -367,12 +405,10 @@ Item {
         FadeBehavior on visible {
             fadeTarget: buttonBar
         }
-
     }
 
     Mixxx.PlayerDropArea {
         anchors.fill: parent
         group: root.group
     }
-
 }

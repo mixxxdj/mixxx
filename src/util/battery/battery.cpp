@@ -1,13 +1,15 @@
 #include "util/battery/battery.h"
 
+#include <chrono>
+
 #include "moc_battery.cpp"
 
 // Do not include platform-specific battery implementation unless we are built
 // with battery support (__BATTERY__).
 #ifdef __BATTERY__
-#if defined(Q_OS_WIN)
+#if defined(_WIN32)
 #include "util/battery/batterywindows.h"
-#elif defined(Q_OS_MAC)
+#elif defined(__APPLE__)
 #include "util/battery/batterymac.h"
 #else
 #include "util/battery/batterylinux.h"
@@ -15,8 +17,9 @@
 #endif
 #include "util/math.h"
 
-// interval (in ms) of the timer which calls update()
-constexpr int kiUpdateInterval = 5000;
+using namespace std::chrono_literals;
+// interval of the timer which calls update()
+static constexpr std::chrono::milliseconds kBatteryUpdateInterval = 5000ms;
 
 Battery::Battery(QObject* parent)
         : QObject(parent),
@@ -24,8 +27,8 @@ Battery::Battery(QObject* parent)
           m_dPercentage(0.0),
           m_iMinutesLeft(0),
           m_timer(this) {
-    connect(&m_timer, &GuiTickTimer::timeout, this, &Battery::update);
-    m_timer.start(mixxx::Duration::fromMillis(kiUpdateInterval));
+    connect(&m_timer, &QTimer::timeout, this, &Battery::update);
+    m_timer.start(kBatteryUpdateInterval);
 }
 
 Battery* Battery::getBattery(QObject* parent) {

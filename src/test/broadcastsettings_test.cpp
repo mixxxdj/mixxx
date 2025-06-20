@@ -1,12 +1,12 @@
 #ifdef __BROADCAST__
 
+#include "preferences/broadcastsettings.h"
+
 #include <QFile>
 #include <QString>
 
+#include "preferences/broadcastsettingsmodel.h"
 #include "test/mixxxtest.h"
-#include "preferences/broadcastsettings.h"
-//#include "broadcast/defs_broadcast.h"
-//#include "defs_urls.h"
 
 namespace {
 

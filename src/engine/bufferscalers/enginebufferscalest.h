@@ -1,7 +1,8 @@
 #pragma once
 
+#include <memory>
+
 #include "engine/bufferscalers/enginebufferscale.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 class ReadAheadManager;
@@ -31,7 +32,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     void clear() override;
 
   private:
-    void onSampleRateChanged() override;
+    void onSignalChanged() override;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
@@ -40,7 +41,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     std::unique_ptr<soundtouch::SoundTouch> m_pSoundTouch;
 
     // Temporary buffer for reading from the RAMAN.
-    mixxx::SampleBuffer buffer_back;
+    mixxx::SampleBuffer m_bufferBack;
 
     // Holds the playback direction.
     bool m_bBackwards;

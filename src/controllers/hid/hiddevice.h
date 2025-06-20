@@ -1,24 +1,18 @@
 #pragma once
 
-#include <hidapi.h>
-
 #include <QObject>
+#include <QString>
 #include <string>
 
+#include "controllers/controller.h"
+#include "controllers/hid/hidusagetables.h"
+
 struct ProductInfo;
+struct hid_device_info;
 
 namespace mixxx {
 
 namespace hid {
-
-constexpr unsigned short kGenericDesktopUsagePage = 0x01;
-
-constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
-constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;
-
-// Apple has two two different vendor IDs which are used for different devices.
-constexpr unsigned short kAppleVendorId = 0x5ac;
-constexpr unsigned short kAppleIncVendorId = 0x004c;
 
 /// Detached copy of `struct hid_device_info`.
 ///
@@ -38,15 +32,26 @@ class DeviceInfo final {
             const hid_device_info& device_info);
 
     // The VID.
-    unsigned short vendorId() const {
+    uint16_t getVendorId() const {
         return vendor_id;
     }
     // The PID.
-    unsigned short productId() const {
+    uint16_t getProductId() const {
         return product_id;
     }
-    /// The release number as a binary-coded decimal (BCD).
-    unsigned short releaseNumberBCD() const {
+
+    /// The releaseNumberBCD returns the version of the USB specification to
+    /// which the device conforms. The bcdUSB field contains a BCD version
+    /// number in the format 0xJJMN:
+    /// - JJ: major version number
+    /// - M: minor version number
+    /// - N: sub-minor version number
+    /// Examples:
+    /// - 0200H represents USB 2.0 specification
+    /// - 0300H represents USB 3.0 specification
+    /// - 0310H represents USB 3.1 specification
+    /// Note, that many devices have not set this field as intended
+    uint16_t releaseNumberBCD() const {
         return release_number;
     }
 
@@ -59,25 +64,46 @@ class DeviceInfo final {
         return m_serialNumberRaw.c_str();
     }
 
-    const QString& manufacturerString() const {
+    const QString& getVendorString() const {
         return m_manufacturerString;
     }
-    const QString& productString() const {
+    const QString& getProductString() const {
         return m_productString;
     }
-    const QString& serialNumber() const {
+    const QString& getSerialNumber() const {
         return m_serialNumber;
     }
 
-    bool isValid() const {
-        return !productString().isNull() && !serialNumber().isNull();
+    std::optional<uint8_t> getUsbInterfaceNumber() const {
+        if (m_usbInterfaceNumber == -1) {
+            return std::nullopt;
+        }
+        return m_usbInterfaceNumber;
     }
 
-    QString formatVID() const;
-    QString formatPID() const;
-    QString formatReleaseNumber() const;
-    QString formatInterface() const;
-    QString formatUsage() const;
+    const PhysicalTransportProtocol& getPhysicalTransportProtocol() const {
+        return m_physicalTransportProtocol;
+    }
+
+    uint16_t getUsagePage() const {
+        return usage_page;
+    }
+
+    uint16_t getUsage() const {
+        return usage;
+    }
+
+    QString getUsagePageDescription() const {
+        return mixxx::hid::HidUsageTables::getUsagePageDescription(usage_page);
+    }
+
+    QString getUsageDescription() const {
+        return mixxx::hid::HidUsageTables::getUsageDescription(usage_page, usage);
+    }
+
+    bool isValid() const {
+        return !getProductString().isNull() && !getSerialNumber().isNull();
+    }
     QString formatName() const;
 
     bool matchProductInfo(
@@ -95,7 +121,9 @@ class DeviceInfo final {
     unsigned short release_number;
     unsigned short usage_page;
     unsigned short usage;
-    int interface_number;
+
+    PhysicalTransportProtocol m_physicalTransportProtocol;
+    int m_usbInterfaceNumber;
 
     std::string m_pathRaw;
     std::wstring m_serialNumberRaw;
@@ -103,22 +131,6 @@ class DeviceInfo final {
     QString m_manufacturerString;
     QString m_productString;
     QString m_serialNumber;
-};
-
-class DeviceCategory final : public QObject {
-    // QObject needed for i18n device category
-    Q_OBJECT
-  public:
-    static QString guessFromDeviceInfo(
-            const DeviceInfo& deviceInfo) {
-        return DeviceCategory().guessFromDeviceInfoImpl(deviceInfo);
-    }
-
-  private:
-    QString guessFromDeviceInfoImpl(
-            const DeviceInfo& deviceInfo) const;
-
-    DeviceCategory() = default;
 };
 
 } // namespace hid

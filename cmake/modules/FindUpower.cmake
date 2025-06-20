@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindUpower
 ----------
@@ -48,26 +43,32 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Upower QUIET upower-glib)
 endif()
 
-find_path(Upower_INCLUDE_DIR
+find_path(
+  Upower_INCLUDE_DIR
   NAMES upower.h
   PATH_SUFFIXES upower-glib libupower-glib
-  PATHS ${PC_Upower_INCLUDE_DIRS}
-  DOC "Upower include directory")
+  HINTS ${PC_Upower_INCLUDE_DIRS}
+  DOC "Upower include directory"
+)
 mark_as_advanced(Upower_INCLUDE_DIR)
 
-find_library(Upower_LIBRARY
+find_library(
+  Upower_LIBRARY
   NAMES upower-glib
-  PATHS ${PC_Upower_LIBRARY_DIRS}
+  HINTS ${PC_Upower_LIBRARY_DIRS}
   DOC "Upower library"
 )
 mark_as_advanced(Upower_LIBRARY)
 
+if(DEFINED PC_Upower_VERSION AND NOT PC_Upower_VERSION STREQUAL "")
+  set(Upower_VERSION "${PC_Upower_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Upower
-  DEFAULT_MSG
-  Upower_LIBRARY
-  Upower_INCLUDE_DIR
+  REQUIRED_VARS Upower_LIBRARY Upower_INCLUDE_DIR
+  VERSION_VAR Upower_VERSION
 )
 
 if(Upower_FOUND)
@@ -77,7 +78,8 @@ if(Upower_FOUND)
 
   if(NOT TARGET Upower::Upower)
     add_library(Upower::Upower UNKNOWN IMPORTED)
-    set_target_properties(Upower::Upower
+    set_target_properties(
+      Upower::Upower
       PROPERTIES
         IMPORTED_LOCATION "${Upower_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Upower_CFLAGS_OTHER}"

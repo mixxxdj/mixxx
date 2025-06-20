@@ -43,7 +43,7 @@ const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray::fromRawData(
 //     serato32 value   | 06 32 10 00  00000110001100100001000000000000
 //
 // See this for details:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#custom-serato32-binary-format
+// https://github.com/Holzhaus/serato-tags/blob/main/docs/serato_markers_.md#custom-serato32-binary-format
 
 /// Decode value from Serato's 32-bit custom format to 24-bit plaintext.
 quint32 serato32toUint24(quint8 w, quint8 x, quint8 y, quint8 z) {
@@ -97,7 +97,7 @@ QByteArray SeratoMarkersEntry::dumpID3() const {
                       (m_hasEndPosition ? serato32fromUint24(m_endPosition)
                                         : kNoPosition));
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
-    stream << serato32fromUint24(static_cast<quint32>(m_color))
+    stream << serato32fromUint24(m_color.toQRgb())
            << static_cast<quint8>(m_type) << static_cast<quint8>(m_isLocked);
     return data;
 }
@@ -111,9 +111,9 @@ QByteArray SeratoMarkersEntry::dumpMP4() const {
     stream << static_cast<quint32>(m_startPosition)
            << static_cast<quint32>(m_endPosition);
     stream.writeRawData("\x00\xFF\xFF\xFF\xFF\x00", 6);
-    stream << static_cast<quint8>(qRed(m_color))
-           << static_cast<quint8>(qGreen(m_color))
-           << static_cast<quint8>(qBlue(m_color))
+    stream << static_cast<quint8>(qRed(m_color.toQRgb()))
+           << static_cast<quint8>(qGreen(m_color.toQRgb()))
+           << static_cast<quint8>(qBlue(m_color.toQRgb()))
            << static_cast<quint8>(m_type)
            << static_cast<quint8>(m_isLocked);
     return data;
@@ -159,7 +159,7 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
         return nullptr;
     }
 
-    const RgbColor color = RgbColor(serato32toUint24(colorSerato32));
+    const auto color = SeratoStoredHotcueColor(serato32toUint24(colorSerato32));
 
     // Parse Start Position
     bool hasStartPosition = (startPositionStatus != 0x7F);
@@ -238,7 +238,9 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
                     color,
                     type,
                     isLocked));
-    kLogger.trace() << "SeratoMarkersEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkersEntry (ID3)" << *pEntry;
+    }
     return pEntry;
 }
 
@@ -281,7 +283,7 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
         return nullptr;
     }
 
-    const RgbColor color = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
+    const auto color = SeratoStoredHotcueColor(qRgb(colorRed, colorGreen, colorBlue));
 
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\xFF\xFF\xFF\xFF\x00", sizeof(buffer)) != 0) {
@@ -317,7 +319,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
                     color,
                     type,
                     isLocked));
-    kLogger.trace() << "SeratoMarkersEntry" << *pEntry;
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkersEntry (MP4)" << *pEntry;
+    }
     return pEntry;
 }
 
@@ -329,7 +334,7 @@ bool SeratoMarkers::parse(
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers, data);
     case taglib::FileType::MP4:
@@ -409,7 +414,7 @@ bool SeratoMarkers::parseID3(
 
     quint32 trackColorSerato32;
     stream >> trackColorSerato32;
-    RgbColor trackColor = RgbColor(serato32toUint24(trackColorSerato32));
+    const auto trackColor = SeratoStoredTrackColor(serato32toUint24(trackColorSerato32));
 
     if (stream.status() != QDataStream::Status::Ok) {
         kLogger.warning() << "Parsing SeratoMarkers_ failed:"
@@ -513,7 +518,7 @@ bool SeratoMarkers::parseMP4(
     quint8 colorGreen;
     quint8 colorBlue;
     stream >> field1 >> colorRed >> colorGreen >> colorBlue;
-    RgbColor trackColor = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
+    const auto trackColor = SeratoStoredTrackColor(qRgb(colorRed, colorGreen, colorBlue));
 
     if (field1 != 0x00) {
         // This should never happen with Metadata exported from Serato. We fail
@@ -546,7 +551,7 @@ bool SeratoMarkers::parseMP4(
 
 QByteArray SeratoMarkers::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
@@ -574,8 +579,12 @@ QByteArray SeratoMarkers::dumpID3() const {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dumpID3(), kEntrySizeID3);
     }
-    stream << serato32fromUint24(static_cast<quint32>(
-            m_trackColor.value_or(SeratoTags::kDefaultTrackColor)));
+
+    DEBUG_ASSERT(m_pTrackColor);
+    SeratoStoredTrackColor trackColor = m_pTrackColor.value_or(
+            SeratoStoredTrackColor(SeratoStoredColor::kNoColor));
+    stream << serato32fromUint24(trackColor.toQRgb());
+
     return data;
 }
 
@@ -599,11 +608,13 @@ QByteArray SeratoMarkers::dumpMP4() const {
         stream.writeRawData(pEntry->dumpMP4(), kEntrySizeMP4);
     }
 
-    RgbColor trackColor = m_trackColor.value_or(SeratoTags::kDefaultTrackColor);
+    DEBUG_ASSERT(m_pTrackColor);
+    SeratoStoredTrackColor trackColor = m_pTrackColor.value_or(
+            SeratoStoredTrackColor(SeratoStoredColor::kNoColor));
     stream << static_cast<quint8>(0x00)
-           << static_cast<quint8>(qRed(trackColor))
-           << static_cast<quint8>(qGreen(trackColor))
-           << static_cast<quint8>(qBlue(trackColor));
+           << static_cast<quint8>(qRed(trackColor.toQRgb()))
+           << static_cast<quint8>(qGreen(trackColor.toQRgb()))
+           << static_cast<quint8>(qBlue(trackColor.toQRgb()));
 
     // A newline char is inserted at every 72 bytes of base64-encoded content.
     // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
@@ -629,12 +640,12 @@ QByteArray SeratoMarkers::dumpMP4() const {
 }
 
 QList<CueInfo> SeratoMarkers::getCues() const {
-    qDebug() << "Reading cues from 'Serato Markers_' tag data...";
+    // qDebug() << "Reading cues from 'Serato Markers_' tag data...";
 
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -647,7 +658,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         std::nullopt,
                         cueIndex,
                         QString(),
-                        pEntry->getColor(),
+                        pEntry->getColor().toDisplayedColor(),
                         CueFlag::None);
                 cueInfos.append(cueInfo);
             }
@@ -731,7 +742,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     static_cast<int>(*cueInfo.getStartPositionMillis()),
                     false,
                     0,
-                    *cueInfo.getColor(),
+                    SeratoStoredHotcueColor::fromDisplayedColor(cueInfo.getColor()),
                     static_cast<int>(SeratoMarkersEntry::TypeId::Cue),
                     false);
         } else {
@@ -740,7 +751,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     0,
                     false,
                     0,
-                    RgbColor(0),
+                    SeratoStoredHotcueColor(SeratoStoredColor::kFixedUnsetColor),
                     static_cast<int>(SeratoMarkersEntry::TypeId::Unknown),
                     false);
         }
@@ -761,7 +772,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     // We *could* export the actual color here if we also
                     // import the blue-ish default color in the code above, but
                     // it will not be used by Serato.
-                    SeratoTags::kFixedLoopColor,
+                    SeratoStoredHotcueColor(SeratoStoredColor::kFixedLoopColor),
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
                     cueInfo.isLocked());
         } else {
@@ -770,7 +781,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     0,
                     false,
                     0,
-                    RgbColor(0),
+                    SeratoStoredHotcueColor(SeratoStoredColor::kFixedUnsetColor),
                     // In contrast to cues, unset saved loop have the same type
                     // ID as set ones.
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),

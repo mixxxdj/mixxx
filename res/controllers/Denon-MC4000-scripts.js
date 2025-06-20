@@ -54,8 +54,8 @@ MC4000.init = function () {
     MC4000.rightDeck = new MC4000.Deck(1);
     // VU meters
     // TODO: implement VU meters for the PFL when cue button is on
-    engine.connectControl("[Master]", "VuMeterL", "MC4000.OnVuMeterChangeL");
-    engine.connectControl("[Master]", "VuMeterR", "MC4000.OnVuMeterChangeR");
+    engine.connectControl("[Main]", "vu_meter_left", "MC4000.OnVuMeterChangeL");
+    engine.connectControl("[Main]", "vu_meter_right", "MC4000.OnVuMeterChangeR");
     // Control all sampler levels simultaneously with the single knob on the mixer
     MC4000.samplerLevel = function (channel, control, value, status, group) {
         engine.setValue("[Sampler1]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));
@@ -117,7 +117,7 @@ MC4000.Deck = function (channel) {
     // adds this jog value to an internal 25 sample buffer, and then sets the jog value to zero.
     // The engine takes the average of the 25 sample buffer, divides by 10, and adds this to the rate at
     // which the song is playing (e.g. determined by the pitch fader). Since the effect of this depends on many factors
-    // we can only really give an empirical senstivity which makes jog work "how we like it".
+    // we can only really give an empirical sensitivity which makes jog work "how we like it".
     this.jogWheel = function (channel, control, value, status, group) {
         var numTicks = (value < 0x40) ? value: (value - 0x80);
         if (engine.isScratching(this.engineChannel)) {

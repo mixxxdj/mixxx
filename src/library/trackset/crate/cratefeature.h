@@ -1,17 +1,14 @@
 #pragma once
 
-#include <QAction>
 #include <QList>
 #include <QModelIndex>
-#include <QPoint>
 #include <QPointer>
 #include <QUrl>
 #include <QVariant>
 
 #include "library/trackset/basetracksetfeature.h"
-#include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratetablemodel.h"
-#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
@@ -19,6 +16,9 @@
 // forward declaration(s)
 class Library;
 class WLibrarySidebar;
+class QAction;
+class QPoint;
+class CrateSummary;
 
 class CrateFeature : public BaseTrackSetFeature {
     Q_OBJECT
@@ -42,10 +42,13 @@ class CrateFeature : public BaseTrackSetFeature {
     TreeItemModel* sidebarModel() const override;
 
   public slots:
+    void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
+    void deleteItem(const QModelIndex& index) override;
+    void renameItem(const QModelIndex& index) override;
 
 #ifdef __ENGINEPRIME__
   signals:
@@ -60,7 +63,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString& playlist_file);
+    void slotImportPlaylistFile(const QString& playlistFile, CrateId crateId);
     void slotCreateImportCrate();
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
@@ -92,6 +95,7 @@ class CrateFeature : public BaseTrackSetFeature {
     CrateId crateIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromCrateId(CrateId crateId) const;
 
+    bool isChildIndexSelectedInSidebar(const QModelIndex& index);
     bool readLastRightClickedCrate(Crate* pCrate) const;
 
     QString formatRootViewHtml() const;
@@ -107,6 +111,7 @@ class CrateFeature : public BaseTrackSetFeature {
     // Can be used to restore a similar selection after the sidebar model was rebuilt.
     CrateId m_prevSiblingCrate;
 
+    QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     TrackId m_selectedTrackId;
 

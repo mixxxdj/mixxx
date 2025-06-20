@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QAbstractTableModel>
-#include <QAbstractItemDelegate>
 #include <QMap>
 #include <QVariant>
 
 #include "preferences/broadcastprofile.h"
 
+class QAbstractItemDelegate;
 class BroadcastSettings;
 typedef QSharedPointer<BroadcastSettings> BroadcastSettingsPointer;
 

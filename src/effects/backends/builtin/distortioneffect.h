@@ -1,16 +1,14 @@
 #pragma once
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
-#include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
 
 class DistortionGroupState : public EffectState {
   public:
     DistortionGroupState(const mixxx::EngineParameters& engineParameters);
+    ~DistortionGroupState() override = default;
 
     CSAMPLE_GAIN m_driveGain;
     CSAMPLE m_crossfadeParameter;
@@ -23,6 +21,7 @@ class DistortionGroupState : public EffectState {
 class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
   public:
     DistortionEffect() = default;
+    ~DistortionEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -92,7 +91,7 @@ class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
         pState->m_previousMakeUpGain = gain;
 
         // Crossfade
-        CSAMPLE crossfadeParam = math_min(driveParam / ModeParams::crossfadeEndParam, 1.f);
+        CSAMPLE crossfadeParam = std::min(driveParam / ModeParams::crossfadeEndParam, 1.f);
         SampleUtil::applyRampingGain(pOutput,
                 pState->m_crossfadeParameter,
                 crossfadeParam,

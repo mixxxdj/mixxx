@@ -1,7 +1,7 @@
 <!--
 Description:
   The pitch container with
-  * BPM display with Sync/Reset button overlay (Master sync on long-press)
+  * BPM display with Sync/Reset button overlay (Main sync on long-press)
   * Key display with Match/Reset and up/down button overlays
   * Pitch slider
   (* key offset indicator, not working reliably)
@@ -29,7 +29,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Size>1me,13f</Size>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">pitch_down</SetVariable>
                     <SetVariable name="ObjectName">KeyDown</SetVariable>
                     <SetVariable name="Size">12me,13f</SetVariable>
@@ -37,7 +37,7 @@ Variables:
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
                   </Template>
 
-                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">pitch_up</SetVariable>
                     <SetVariable name="ObjectName">KeyUp</SetVariable>
                     <SetVariable name="Size">12me,13f</SetVariable>
@@ -57,7 +57,7 @@ Variables:
                 <Size>1me,13f</Size>
                 <Children>
                   <!-- KeyMatch, transparent -->
-                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                     <SetVariable name="ObjectName">KeyMatch</SetVariable>
                     <SetVariable name="Size">26me,13f</SetVariable>
@@ -106,7 +106,7 @@ Variables:
             <MaximumSize>50,18</MaximumSize>
             <SizePolicy>f,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/controls/button_2state_right.xml">
+              <Template src="skins:Tango/controls/button_2state_right.xml">
                 <SetVariable name="TooltipId">sync_enabled</SetVariable>
                 <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
                 <SetVariable name="Size">50f,18min</SetVariable>
@@ -135,7 +135,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Size>50f,14f</Size>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
                     <SetVariable name="ObjectName">RateDown</SetVariable>
                     <SetVariable name="Size">13me,13f</SetVariable>
@@ -143,7 +143,7 @@ Variables:
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
                   </Template>
 
-                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
                     <SetVariable name="ObjectName">RateUp</SetVariable>
                     <SetVariable name="Size">13me,13f</SetVariable>
@@ -170,8 +170,8 @@ Variables:
                 <MaximumSize>50,136</MaximumSize>
                 <SizePolicy>f,me</SizePolicy>
                 <TooltipId>rate</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/pitch_handle.svg</Handle>
-                <Slider scalemode="STRETCH">skin:../Tango/knobs_sliders/pitch_scale.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/pitch_handle.svg</Handle>
+                <Slider scalemode="STRETCH">skins:Tango/knobs_sliders/pitch_scale.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>
@@ -180,12 +180,13 @@ Variables:
 
               <!-- Pitch range indicators: prefix / spacer / range number -->
               <WidgetGroup>
+                <ObjectName>RateDisplayBox</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>vertical</Layout>
                 <Size>50f,-1me</Size>
                 <Children>
                   <WidgetGroup>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- Top range limit + prefix -->
@@ -195,21 +196,24 @@ Variables:
                         <Channel><Variable name="chanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>prefix</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
+                      <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
                         <ObjectName>RateDisplayTopRate</ObjectName>
                         <Channel><Variable name="chanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>range</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
                     </Children>
                   </WidgetGroup><!-- Pitch range indicators -->
 
+                  <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+
                   <WidgetGroup>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- Bottom range limit + prefix -->
@@ -220,15 +224,16 @@ Variables:
                         <Position>Bottom</Position>
                         <Align>Bottom</Align>
                         <Display>prefix</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
+                      <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
                         <ObjectName>RateDisplayBottomRate</ObjectName>
                         <Channel><Variable name="chanNum" /></Channel>
                         <Align>Bottom</Align>
                         <Display>range</Display>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
                     </Children>
                   </WidgetGroup><!-- Pitch range indicators -->

@@ -22,7 +22,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
-
         }
     }
 
@@ -32,7 +31,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
-
         }
     }
 
@@ -75,7 +73,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(value);
-
         }
     }
 
@@ -85,7 +82,6 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(-1);
-
         }
     }
 
@@ -95,14 +91,13 @@ Item {
         onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(1);
-
         }
     }
 
     Mixxx.ControlProxy {
         id: numDecksControl
 
-        group: "[Master]"
+        group: "[App]"
         key: "num_decks"
     }
 
@@ -118,13 +113,12 @@ Item {
                 root.loadSelectedTrack(this.group, play);
             }
         }
-
     }
 
     Mixxx.ControlProxy {
         id: numPreviewDecksControl
 
-        group: "[Master]"
+        group: "[App]"
         key: "num_preview_decks"
     }
 
@@ -140,13 +134,12 @@ Item {
                 root.loadSelectedTrack(this.group, play);
             }
         }
-
     }
 
     Mixxx.ControlProxy {
         id: numSamplersControl
 
-        group: "[Master]"
+        group: "[App]"
         key: "num_samplers"
     }
 
@@ -162,7 +155,5 @@ Item {
                 root.loadSelectedTrack(this.group, play);
             }
         }
-
     }
-
 }

@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindKeyFinder
 --------
@@ -50,25 +45,31 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_KeyFinder QUIET libKeyFinder>=2.0)
 endif()
 
-find_path(KeyFinder_INCLUDE_DIR
+find_path(
+  KeyFinder_INCLUDE_DIR
   NAMES keyfinder/keyfinder.h
-  PATHS ${PC_KeyFinder_INCLUDE_DIRS}
-  DOC "KeyFinder include directory")
+  HINTS ${PC_KeyFinder_INCLUDE_DIRS}
+  DOC "KeyFinder include directory"
+)
 mark_as_advanced(KeyFinder_INCLUDE_DIR)
 
-find_library(KeyFinder_LIBRARY
+find_library(
+  KeyFinder_LIBRARY
   NAMES keyfinder
-  PATHS ${PC_KeyFinder_LIBRARY_DIRS}
+  HINTS ${PC_KeyFinder_LIBRARY_DIRS}
   DOC "KeyFinder library"
 )
 mark_as_advanced(KeyFinder_LIBRARY)
 
+if(DEFINED PC_KeyFinder_VERSION AND NOT PC_KeyFinder_VERSION STREQUAL "")
+  set(KeyFinder_VERSION "${PC_KeyFinder_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   KeyFinder
-  DEFAULT_MSG
-  KeyFinder_LIBRARY
-  KeyFinder_INCLUDE_DIR
+  REQUIRED_VARS KeyFinder_LIBRARY KeyFinder_INCLUDE_DIR
+  VERSION_VAR KeyFinder_VERSION
 )
 
 if(KeyFinder_FOUND)
@@ -78,7 +79,8 @@ if(KeyFinder_FOUND)
 
   if(NOT TARGET KeyFinder::KeyFinder)
     add_library(KeyFinder::KeyFinder UNKNOWN IMPORTED)
-    set_target_properties(KeyFinder::KeyFinder
+    set_target_properties(
+      KeyFinder::KeyFinder
       PROPERTIES
         IMPORTED_LOCATION "${KeyFinder_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_KeyFinder_CFLAGS_OTHER}"
@@ -86,9 +88,11 @@ if(KeyFinder_FOUND)
     )
     is_static_library(KeyFinder_IS_STATIC KeyFinder::KeyFinder)
     if(KeyFinder_IS_STATIC)
-      find_package(FFTW REQUIRED)
-      set_property(TARGET KeyFinder::KeyFinder APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        FFTW::FFTW
+      find_package(FFTW3 REQUIRED)
+      set_property(
+        TARGET KeyFinder::KeyFinder
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES FFTW3::fftw3
       )
     endif()
   endif()

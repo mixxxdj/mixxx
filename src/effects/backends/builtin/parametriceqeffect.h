@@ -1,18 +1,13 @@
 #pragma once
 
 #include <QMap>
+#include <memory>
 #include <vector>
 
 #include "audio/types.h"
-#include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/memory.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 // The ParametricEQEffect models the mid bands from a SSL Black EQ (242)
@@ -24,8 +19,9 @@
 class ParametricEQEffectGroupState final : public EffectState {
   public:
     ParametricEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    ~ParametricEQEffectGroupState() override = default;
 
-    void setFilters(int sampleRate);
+    void setFilters(mixxx::audio::SampleRate sampleRate);
 
     // These containers are only appended in the constructor which is called on
     // the main thread, so there is no risk of allocation in the audio thread.
@@ -42,7 +38,7 @@ class ParametricEQEffectGroupState final : public EffectState {
 class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupState> {
   public:
     ParametricEQEffect() = default;
-    virtual ~ParametricEQEffect();
+    ~ParametricEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

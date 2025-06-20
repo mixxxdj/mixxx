@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QMimeType>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPointer>
 #include <QUrl>
 
 #include "network/httpstatuscode.h"
 #include "network/networktask.h"
 #include "util/optional.h"
 #include "util/performancetimer.h"
+
+class QNetworkAccessManager;
 
 namespace mixxx {
 
@@ -127,6 +127,11 @@ class WebTask : public NetworkTask {
             QObject* parent = nullptr);
     ~WebTask() override = default;
 
+    bool isBusy() const {
+        return state() == State::Starting ||
+                state() == State::Pending;
+    }
+
   signals:
     /// Network or server-side abort/timeout/failure
     void networkError(
@@ -164,11 +169,6 @@ class WebTask : public NetworkTask {
         return m_state;
     }
 
-    bool isBusy() const {
-        return state() == State::Starting ||
-                state() == State::Pending;
-    }
-
     bool hasTerminated() const {
         return state() == State::Aborted ||
                 state() == State::TimedOut ||
@@ -181,6 +181,11 @@ class WebTask : public NetworkTask {
             QNetworkReply::NetworkError errorCode,
             const QString& errorString,
             const WebResponseWithContent& responseWithContent);
+
+  protected:
+    virtual void onNetworkError(
+            QNetworkReply* pFinishedNetworkReply,
+            HttpStatusCode statusCode);
 
   private:
     QUrl abortPendingNetworkReply();
@@ -199,7 +204,7 @@ class WebTask : public NetworkTask {
 
     /// Handle network response.
     virtual void doNetworkReplyFinished(
-            QNetworkReply* finishedNetworkReply,
+            QNetworkReply* pFinishedNetworkReply,
             HttpStatusCode statusCode) = 0;
 
     /// Handle the abort and ensure that the task eventually

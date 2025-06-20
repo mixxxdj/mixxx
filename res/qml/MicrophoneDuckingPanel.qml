@@ -37,12 +37,12 @@ Column {
 
             property string duckingModeName: {
                 switch (this.value) {
-                case MicrophoneDuckingPanel.DuckingMode.Auto:
-                    return "Auto";
-                case MicrophoneDuckingPanel.DuckingMode.Manual:
-                    return "Manual";
-                default:
-                    return "Off";
+                    case MicrophoneDuckingPanel.DuckingMode.Auto:
+                        return "Auto";
+                    case MicrophoneDuckingPanel.DuckingMode.Manual:
+                        return "Manual";
+                    default:
+                        return "Off";
                 }
             }
             property bool duckingEnabled: {
@@ -56,7 +56,5 @@ Column {
             group: "[Master]"
             key: "talkoverDucking"
         }
-
     }
-
 }

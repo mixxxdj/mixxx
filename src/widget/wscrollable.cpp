@@ -1,5 +1,8 @@
 #include "widget/wscrollable.h"
 
+#include "moc_wscrollable.cpp"
+#include "skin/legacy/skincontext.h"
+
 WScrollable::WScrollable(QWidget* pParent)
         : QScrollArea(pParent),
           WBaseWidget(this) {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/engineobject.h"
-#include "control/controlobject.h"
 #include "util/performancetimer.h"
 
 class ControlAudioTaperPot;
@@ -24,7 +23,7 @@ class EnginePregain : public EngineObject {
     // reversed without a ramp to zero.
     void setSpeedAndScratching(double speed, bool scratching);
 
-    void process(CSAMPLE* pInOut, const int iBufferSize) override;
+    void process(CSAMPLE* pInOut, const std::size_t bufferSize) override;
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 

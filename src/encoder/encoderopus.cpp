@@ -1,16 +1,15 @@
 #include "encoder/encoderopus.h"
 
-#include <stdlib.h>
-
 #include <QByteArray>
 #include <QMapIterator>
-
 #include <QRandomGenerator>
 #include <QtGlobal>
 
+#include "encoder/encodercallback.h"
 #include "encoder/encoderopussettings.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "util/logger.h"
+#include "util/samplebuffer.h"
 
 namespace {
 // From libjitsi's Opus encoder:
@@ -21,7 +20,7 @@ constexpr int kMaxOpusBufferSize = 1+1275;
 constexpr int kOpusFrameMs = 60;
 constexpr int kOpusChannelCount = 2;
 // Opus only supports 48 and 96 kHz samplerates
-constexpr mixxx::audio::SampleRate kMasterSamplerate = mixxx::audio::SampleRate(48000);
+constexpr mixxx::audio::SampleRate kMainSampleRate = mixxx::audio::SampleRate(48000);
 
 const mixxx::Logger kLogger("EncoderOpus");
 
@@ -73,8 +72,8 @@ int getSerial() {
 } // namespace
 
 //static
-mixxx::audio::SampleRate EncoderOpus::getMasterSamplerate() {
-    return kMasterSamplerate;
+mixxx::audio::SampleRate EncoderOpus::getMainSampleRate() {
+    return kMainSampleRate;
 }
 
 //static
@@ -140,18 +139,18 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
 int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
 
-    if (sampleRate != kMasterSamplerate) {
-        kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
+    if (sampleRate != kMainSampleRate) {
+            kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
 
-        const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
+            const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
 
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_WARNING);
-        props->setTitle(QObject::tr("Encoder"));
-        props->setText(invalidSamplerateMessage);
-        props->setKey(invalidSamplerateMessage);
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
-        return -1;
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+            props->setType(DLG_WARNING);
+            props->setTitle(QObject::tr("Encoder"));
+            props->setText(invalidSamplerateMessage);
+            props->setKey(invalidSamplerateMessage);
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
+            return -1;
     }
     m_sampleRate = sampleRate;
     DEBUG_ASSERT(m_sampleRate == 8000 || m_sampleRate == 12000 ||
@@ -186,7 +185,7 @@ int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUser
         opus_encoder_ctl(m_pOpus, OPUS_SET_VBR_CONSTRAINT(0)); // Unconstrained VBR
     }
 
-    m_readRequired = m_sampleRate * kOpusFrameMs;
+    m_readRequired = m_channels * m_sampleRate * kOpusFrameMs / 1000;
     m_pFifoChunkBuffer = std::make_unique<mixxx::SampleBuffer>(m_readRequired);
     initStream();
 
@@ -369,12 +368,12 @@ void EncoderOpus::pushTagsPacket() {
     }
 }
 
-void EncoderOpus::encodeBuffer(const CSAMPLE *samples, const int size) {
+void EncoderOpus::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
     if (!m_pOpus) {
         return;
     }
 
-    int writeRequired = size;
+    int writeRequired = static_cast<int>(bufferSize);
     int writeAvailable = m_fifoBuffer.writeAvailable();
     if (writeRequired > writeAvailable) {
         kLogger.warning() << "FIFO buffer too small, losing samples!"

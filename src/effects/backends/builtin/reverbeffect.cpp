@@ -1,7 +1,7 @@
 #include "effects/backends/builtin/reverbeffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 
 // static
@@ -75,10 +75,6 @@ void ReverbEffect::loadEngineEffectParameters(
     m_pBandWidthParameter = parameters.value("bandwidth");
     m_pDampingParameter = parameters.value("damping");
     m_pSendParameter = parameters.value("send_amount");
-}
-
-ReverbEffect::~ReverbEffect() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void ReverbEffect::processChannel(

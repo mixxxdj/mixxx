@@ -1,15 +1,17 @@
 #include "widget/weffectchainpresetselector.h"
 
 #include <QAbstractItemView>
-#include <QPaintEvent>
 #include <QStyleOption>
 #include <QStylePainter>
-#include <QtDebug>
 
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectsmanager.h"
-#include "library/library_decl.h"
+#include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
+#include "moc_weffectchainpresetselector.cpp"
 #include "widget/effectwidgetutils.h"
+
+class QPaintEvent;
 
 WEffectChainPresetSelector::WEffectChainPresetSelector(
         QWidget* pParent, EffectsManager* pEffectsManager)
@@ -21,7 +23,7 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
     // Prevent this widget from getting focused by Tab/Shift+Tab
     // to avoid interfering with using the library via keyboard.
     // Allow click focus though so the list can always be opened by mouse,
-    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    // see https://github.com/mixxxdj/mixxx/issues/10184
     setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -30,21 +32,26 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             node, context, m_pEffectsManager);
 
     VERIFY_OR_DEBUG_ASSERT(m_pChain != nullptr) {
-        SKIN_WARNING(node, context)
-                << "EffectChainPresetSelector node could not attach to EffectChain";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectChainPresetSelector node could not "
+                               "attach to EffectChain"));
         return;
     }
 
-    auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChain = dynamic_cast<QuickEffectChain*>(m_pChain.data());
+    auto* pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {
-        chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
+        connect(m_pChainPresetManager.data(),
+                &EffectChainPresetManager::quickEffectChainPresetListUpdated,
+                this,
+                &WEffectChainPresetSelector::populate);
         m_bQuickEffectChain = true;
+    } else {
+        connect(m_pChainPresetManager.data(),
+                &EffectChainPresetManager::effectChainPresetListUpdated,
+                this,
+                &WEffectChainPresetSelector::populate);
     }
-    connect(m_pChainPresetManager.data(),
-            chainPresetListUpdateSignal,
-            this,
-            &WEffectChainPresetSelector::populate);
     connect(m_pChain.data(),
             &EffectChain::chainPresetChanged,
             this,
@@ -70,13 +77,30 @@ void WEffectChainPresetSelector::populate() {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
 
+    const EffectsBackendManagerPointer pBackendManager = m_pEffectsManager->getBackendManager();
+    QStringList effectNames;
     for (int i = 0; i < presetList.size(); i++) {
         auto pChainPreset = presetList.at(i);
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
-        setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
+        QString tooltip =
+                QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
+        for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
+            if (!pEffectPreset->isEmpty()) {
+                EffectManifestPointer pManifest = pBackendManager->getManifest(pEffectPreset);
+                if (pManifest) {
+                    effectNames.append(pManifest->name());
+                }
+            }
+        }
+        if (effectNames.size() > 1) {
+            tooltip.append("<br/>");
+            tooltip.append(effectNames.join("<br/>"));
+        }
+        effectNames.clear();
+        setItemData(i, tooltip, Qt::ToolTipRole);
     }
 
     slotChainPresetChanged(m_pChain->presetName());
@@ -87,17 +111,14 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
-    setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
-    // After selecting an effect move focus to the tracks table in order
-    // to immediately allow keyboard shortcuts again.
-    // TODO(ronso0) switch to previously focused (library?) widget instead
-    ControlObject::set(ConfigKey("[Library]", "focused_widget"),
-            static_cast<double>(FocusWidget::TracksTable));
+    // Clicking a chain item moves keyboard focus to the list view.
+    // Move focus back to the previously focused library widget.
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
     setCurrentIndex(findData(name));
-    setBaseTooltip(name);
+    setBaseTooltip(itemData(currentIndex(), Qt::ToolTipRole).toString());
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {
@@ -118,7 +139,7 @@ void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
     // Quick effect controls in the mixer.
     QStylePainter painter(this);
     QStyleOptionComboBox comboStyle;
-    // Inititialize the style and draw the frame, down-arrow etc.
+    // Initialize the style and draw the frame, down-arrow etc.
     // Note: using 'comboStyle.initFrom(this)' and 'painter.drawComplexControl(...)
     // here would not paint the hover style of the down arrow.
     initStyleOption(&comboStyle);

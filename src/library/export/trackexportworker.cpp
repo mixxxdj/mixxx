@@ -2,12 +2,14 @@
 
 #include <QDebug>
 #include <QFileInfo>
-#include <QMessageBox>
 
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"
+#include "util/logger.h"
 
 namespace {
+
+const mixxx::Logger kLogger("TrackExportWorker");
 
 QString rewriteFilename(const mixxx::FileInfo& fileinfo, int index) {
     // We don't have total control over the inputs, so definitely
@@ -27,9 +29,12 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
     // efficiently.
     QMap<QString, mixxx::FileInfo> copylist;
     for (const auto& pTrack : tracks) {
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
         auto fileInfo = pTrack->getFileInfo();
         if (fileInfo.resolveCanonicalLocation().isEmpty()) {
-            qWarning()
+            kLogger.warning()
                     << "File not found or inaccessible while exporting"
                     << fileInfo;
             // Skip file
@@ -52,7 +57,7 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
                 break;
             }
             if (++duplicateCounter >= 10000) {
-                qWarning()
+                kLogger.warning()
                         << "Failed to generate a unique file name from"
                         << fileName
                         << "while exporting"
@@ -101,7 +106,7 @@ void TrackExportWorker::copyFile(
             switch (makeOverwriteRequest(dest_path)) {
             case OverwriteAnswer::SKIP:
             case OverwriteAnswer::SKIP_ALL:
-                qDebug() << "skipping" << sourceFilename;
+                kLogger.debug() << "skipping" << sourceFilename;
                 return;
             case OverwriteAnswer::OVERWRITE:
             case OverwriteAnswer::OVERWRITE_ALL:
@@ -113,32 +118,32 @@ void TrackExportWorker::copyFile(
             }
             break;
         case OverwriteMode::SKIP_ALL:
-            qDebug() << "skipping" << sourceFilename;
+            kLogger.debug() << "skipping" << sourceFilename;
             return;
         case OverwriteMode::OVERWRITE_ALL:;
         }
 
         // Remove the existing file in preparation for overwriting.
         QFile dest_file(dest_path);
-        qDebug() << "Removing existing file" << dest_path;
+        kLogger.debug() << "removing existing file" << dest_path;
         if (!dest_file.remove()) {
             const QString error_message = tr(
                     "Error removing file %1: %2. Stopping.").arg(
                     dest_path, dest_file.errorString());
-            qWarning() << error_message;
+            kLogger.warning() << error_message;
             m_errorMessage = error_message;
             stop();
             return;
         }
     }
 
-    qDebug() << "Copying" << sourceFilename << "to" << dest_path;
+    kLogger.debug() << "copying" << sourceFilename << "to" << dest_path;
     QFile source_file(sourceFilename);
     if (!source_file.copy(dest_path)) {
         const QString error_message = tr(
                 "Error exporting track %1 to %2: %3. Stopping.").arg(
                 sourceFilename, dest_path, source_file.errorString());
-        qWarning() << error_message;
+        kLogger.warning() << error_message;
         m_errorMessage = error_message;
         stop();
         return;
@@ -165,7 +170,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
     }
 
     if (!mode_future.valid()) {
-        qWarning() << "TrackExportWorker::makeOverwriteRequest invalid answer from future";
+        kLogger.warning() << "invalid answer from future";
         m_errorMessage = tr("Error exporting tracks");
         stop();
         return OverwriteAnswer::CANCEL;

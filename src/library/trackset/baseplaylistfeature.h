@@ -1,27 +1,22 @@
 #pragma once
 
-#include <QAction>
-#include <QList>
 #include <QModelIndex>
-#include <QObject>
-#include <QPair>
 #include <QPointer>
 #include <QSet>
 #include <QString>
-#include <QUrl>
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
 #include "track/trackid.h"
+#include "util/parented_ptr.h"
 
 class WLibrary;
 class KeyboardEventFilter;
 class PlaylistTableModel;
-class TrackCollectionManager;
 class TreeItem;
 class WLibrarySidebar;
-
-constexpr int kInvalidPlaylistId = -1;
+class QAction;
+class QUrl;
 
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT
@@ -31,7 +26,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
             const QString& rootViewName,
-            const QString& iconName);
+            const QString& iconName,
+            const QString& countsDurationTableName,
+            bool keepHiddenTracks = false);
     ~BasePlaylistFeature() override = default;
 
     TreeItemModel* sidebarModel() const override;
@@ -56,12 +53,20 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         slotPlaylistTableChanged(playlistId);
         selectPlaylistInSidebar(playlistId, false);
     };
+    virtual void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
-    virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();
+    void renameItem(const QModelIndex& index) override;
+    void deleteItem(const QModelIndex& index) override;
+
+#ifdef __ENGINEPRIME__
+  signals:
+    void exportAllPlaylists();
+    void exportPlaylist(int playlistId);
+#endif
 
   protected slots:
-    void slotDeletePlaylist();
+    virtual void slotDeletePlaylist();
     void slotDuplicatePlaylist();
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
@@ -69,7 +74,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString& playlist_file);
+    void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
@@ -82,37 +87,49 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         QString label;
     };
 
-    virtual void updateChildModel(int selected_id);
+    virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
-    virtual QString fetchPlaylistLabel(int playlistId) = 0;
+
+    /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
-    int playlistIdFromIndex(const QModelIndex& index);
+    int playlistIdFromIndex(const QModelIndex& index) const;
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
+    bool isChildIndexSelectedInSidebar(const QModelIndex& index);
+
+    QString createPlaylistLabel(const QString& name, int count, int duration) const;
 
     PlaylistDAO& m_playlistDao;
+    QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    QPointer<WLibrary> m_pLibraryWidget;
 
-    QAction* m_pCreatePlaylistAction;
-    QAction* m_pDeletePlaylistAction;
-    QAction* m_pAddToAutoDJAction;
-    QAction* m_pAddToAutoDJTopAction;
-    QAction* m_pAddToAutoDJReplaceAction;
-    QAction* m_pRenamePlaylistAction;
-    QAction* m_pLockPlaylistAction;
-    QAction* m_pImportPlaylistAction;
-    QAction* m_pCreateImportPlaylistAction;
-    QAction* m_pExportPlaylistAction;
-    QAction* m_pExportTrackFilesAction;
-    QAction* m_pDuplicatePlaylistAction;
-    QAction* m_pAnalyzePlaylistAction;
+    parented_ptr<QAction> m_pCreatePlaylistAction;
+    parented_ptr<QAction> m_pDeletePlaylistAction;
+    parented_ptr<QAction> m_pAddToAutoDJAction;
+    parented_ptr<QAction> m_pAddToAutoDJTopAction;
+    parented_ptr<QAction> m_pAddToAutoDJReplaceAction;
+    parented_ptr<QAction> m_pRenamePlaylistAction;
+    parented_ptr<QAction> m_pLockPlaylistAction;
+    parented_ptr<QAction> m_pImportPlaylistAction;
+    parented_ptr<QAction> m_pCreateImportPlaylistAction;
+    parented_ptr<QAction> m_pExportPlaylistAction;
+    parented_ptr<QAction> m_pExportTrackFilesAction;
+    parented_ptr<QAction> m_pDuplicatePlaylistAction;
+    parented_ptr<QAction> m_pAnalyzePlaylistAction;
+#ifdef __ENGINEPRIME__
+    parented_ptr<QAction> m_pExportAllPlaylistsToEngineAction;
+    parented_ptr<QAction> m_pExportPlaylistToEngineAction;
+#endif
 
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
+    const QString m_countsDurationTableName;
+    TrackId m_selectedTrackId;
 
   private slots:
     void slotTrackSelected(TrackId trackId);
@@ -120,8 +137,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
   private:
     void initActions();
+    void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
+    QString fetchPlaylistLabel(int playlistId);
 
-    TrackId m_selectedTrackId;
+
+    const bool m_keepHiddenTracks;
 };

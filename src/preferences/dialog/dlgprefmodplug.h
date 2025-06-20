@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include <QDialog>
-
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 namespace Ui {
 class DlgPrefModplug;
-}
+} // namespace Ui
 
 class DlgPrefModplug : public DlgPreferencePage {
     Q_OBJECT

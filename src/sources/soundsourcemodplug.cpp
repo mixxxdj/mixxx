@@ -1,14 +1,13 @@
 #include "sources/soundsourcemodplug.h"
 
+#include <QFile>
+
 #include "audio/streaminfo.h"
+#include "audio/types.h"
 #include "track/trackmetadata.h"
 #include "util/logger.h"
 #include "util/sample.h"
 #include "util/timer.h"
-
-#include <QFile>
-
-#include <stdlib.h>
 
 namespace mixxx {
 
@@ -100,8 +99,8 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
         pTrackMetadata->refTrackInfo().setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
         pTrackMetadata->setStreamInfo(audio::StreamInfo{
                 audio::SignalInfo{
-                        audio::ChannelCount(kChannelCount),
-                        audio::SampleRate(kSampleRate),
+                        kChannelCount,
+                        kSampleRate,
                 },
                 audio::Bitrate(8),
                 Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)),
@@ -119,7 +118,7 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
-    ScopedTimer t("SoundSourceModPlug::open()");
+    ScopedTimer t(QStringLiteral("SoundSourceModPlug::open()"));
 
     // read module file to byte array
     const QString fileName(getLocalFileName());

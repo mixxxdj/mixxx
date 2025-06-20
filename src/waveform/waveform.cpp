@@ -1,11 +1,12 @@
+#include "waveform/waveform.h"
+
 #include <QtDebug>
 
-#include "waveform/waveform.h"
+#include "analyzer/constants.h"
+#include "engine/engine.h"
 #include "proto/waveform.pb.h"
 
 using namespace mixxx::track;
-
-constexpr int kNumChannels = 2;
 
 // Return the smallest power of 2 which is greater than the desired size when
 // squared.
@@ -28,15 +29,20 @@ Waveform::Waveform(const QByteArray& data)
     readByteArray(data);
 }
 
-Waveform::Waveform(int audioSampleRate, int audioSamples,
-                   int desiredVisualSampleRate, int maxVisualSamples)
+Waveform::Waveform(
+        int audioSampleRate,
+        SINT frameLength,
+        int desiredVisualSampleRate,
+        int maxVisualSamples,
+        int stemCount)
         : m_id(-1),
           m_saveState(SaveState::NotSaved),
           m_dataSize(0),
           m_visualSampleRate(0),
           m_audioVisualRatio(0),
           m_textureStride(1024),
-          m_completion(-1) {
+          m_completion(-1),
+          m_stemCount(stemCount) {
     int numberOfVisualSamples = 0;
     if (audioSampleRate > 0) {
         if (maxVisualSamples == -1) {
@@ -49,18 +55,21 @@ Waveform::Waveform(int audioSampleRate, int audioSamples,
             }
         } else {
             // Waveform Summary (Overview)
-            if (audioSamples > maxVisualSamples) {
-                m_visualSampleRate = (double)maxVisualSamples *
-                        (double)audioSampleRate / (double)audioSamples;
+            if (frameLength > maxVisualSamples / mixxx::kAnalysisChannels) {
+                m_visualSampleRate = static_cast<double>(audioSampleRate) *
+                        maxVisualSamples / mixxx::kAnalysisChannels / frameLength;
             } else {
                 m_visualSampleRate = audioSampleRate;
             }
         }
         m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
-        numberOfVisualSamples = static_cast<int>(audioSamples / m_audioVisualRatio) + 1;
+        numberOfVisualSamples =
+                static_cast<int>(frameLength / m_audioVisualRatio *
+                        mixxx::kAnalysisChannels) +
+                1;
         numberOfVisualSamples += numberOfVisualSamples%2;
     }
-    assign(numberOfVisualSamples, 0);
+    assign(numberOfVisualSamples);
     setCompletion(0);
 }
 
@@ -74,6 +83,11 @@ QByteArray Waveform::toByteArray() const {
 
     io::Waveform::Signal* all = waveform.mutable_signal_all();
     io::Waveform::FilteredSignal* filtered = waveform.mutable_signal_filtered();
+
+    QList<io::Waveform::Signal*> stems;
+    for (int i = 0; i < m_stemCount; i++) {
+        stems.append(waveform.add_signal_stems());
+    }
     // TODO(rryan) get the actual cutoff values from analyzerwaveform.cpp so
     // that if they change we don't have to remember to update these.
 
@@ -96,15 +110,14 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::Signal* high = filtered->mutable_high();
 
     // TODO(vrince) set max/min for each signal
-    int numChannels = kNumChannels;
     all->set_units(io::Waveform::RMS);
-    all->set_channels(numChannels);
+    all->set_channels(mixxx::kEngineChannelOutputCount);
     low->set_units(io::Waveform::RMS);
-    low->set_channels(numChannels);
+    low->set_channels(mixxx::kEngineChannelOutputCount);
     mid->set_units(io::Waveform::RMS);
-    mid->set_channels(numChannels);
+    mid->set_channels(mixxx::kEngineChannelOutputCount);
     high->set_units(io::Waveform::RMS);
-    high->set_channels(numChannels);
+    high->set_channels(mixxx::kEngineChannelOutputCount);
 
     int dataSize = getDataSize();
     for (int i = 0; i < dataSize; ++i) {
@@ -115,8 +128,20 @@ QByteArray Waveform::toByteArray() const {
         high->add_value(datum.filtered.high);
     }
 
+    int stemIdx = 0;
+    for (auto& stem : stems) {
+        stem->set_units(io::Waveform::RMS);
+        stem->set_channels(mixxx::kEngineChannelOutputCount);
+        for (int i = 0; i < dataSize; ++i) {
+            const WaveformData& datum = m_data.at(i);
+            stem->add_value(datum.stems[stemIdx]);
+        }
+        stemIdx++;
+    }
+
     qDebug() << "Writing waveform from byte array:"
              << "dataSize" << dataSize
+             << "stemCount" << m_stemCount
              << "allSignalSize" << all->value_size()
              << "visualSampleRate" << waveform.visual_sample_rate()
              << "audioVisualRatio" << waveform.audio_visual_ratio();
@@ -158,7 +183,8 @@ void Waveform::readByteArray(const QByteArray& data) {
     qDebug() << "Reading waveform from byte array:"
              << "allSignalSize" << all.value_size()
              << "visualSampleRate" << waveform.visual_sample_rate()
-             << "audioVisualRatio" << waveform.audio_visual_ratio();
+             << "audioVisualRatio" << waveform.audio_visual_ratio()
+             << "stemSignalSize" << waveform.signal_stems_size();
 
     resize(all.value_size());
 
@@ -193,6 +219,21 @@ void Waveform::readByteArray(const QByteArray& data) {
         m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
         m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
     }
+    m_stemCount = waveform.signal_stems_size();
+    for (int stemIdx = 0; stemIdx < m_stemCount; ++stemIdx) {
+        const io::Waveform::Signal& stem = waveform.signal_stems(stemIdx);
+        if (stem.units() == io::Waveform::RMS && stem.value_size() > 0) {
+            for (int i = 0; i < std::min(dataSize, stem.value_size()); ++i) {
+                m_data[i].stems[stemIdx] = static_cast<unsigned char>(stem.value(i));
+            }
+        }
+        if (stem.units() != io::Waveform::RMS || dataSize > stem.value_size()) {
+            for (int i = stem.value_size(); i < dataSize; ++i) {
+                m_data[i].stems[stemIdx] = 0;
+            }
+        }
+    }
+
     m_completion = dataSize;
     m_saveState = SaveState::Saved;
 }
@@ -203,18 +244,19 @@ void Waveform::resize(int size) {
     m_data.resize(m_textureStride * m_textureStride);
 }
 
-void Waveform::assign(int size, int value) {
+void Waveform::assign(int size) {
     m_dataSize = size;
     m_textureStride = computeTextureStride(size);
-    m_data.assign(m_textureStride * m_textureStride, value);
+    m_data.assign(m_textureStride * m_textureStride, {});
     m_saveState = SaveState::SavePending;
 }
 
 void Waveform::dump() const {
     qDebug() << "Waveform" << this
-             << "size("+QString::number(getDataSize())+")"
-             << "textureStride("+QString::number(m_textureStride)+")"
-             << "completion("+QString::number(getCompletion())+")"
-             << "visualSampleRate("+QString::number(m_visualSampleRate)+")"
-             << "audioVisualRatio("+QString::number(m_audioVisualRatio)+")";
+             << "size(" + QString::number(getDataSize()) + ")"
+             << "stems(" + QString::number(m_stemCount) + ")"
+             << "textureStride(" + QString::number(m_textureStride) + ")"
+             << "completion(" + QString::number(getCompletion()) + ")"
+             << "visualSampleRate(" + QString::number(m_visualSampleRate) + ")"
+             << "audioVisualRatio(" + QString::number(m_audioVisualRatio) + ")";
 }

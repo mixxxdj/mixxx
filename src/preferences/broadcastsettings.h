@@ -5,8 +5,9 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "preferences/broadcastsettingsmodel.h"
 #include "preferences/broadcastprofile.h"
+
+class BroadcastSettingsModel;
 
 class BroadcastSettings : public QObject {
   Q_OBJECT

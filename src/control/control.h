@@ -9,7 +9,6 @@
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
 #include "preferences/usersettings.h"
-#include "util/mutex.h"
 
 class ControlObject;
 
@@ -34,6 +33,9 @@ class ControlDoublePrivate : public QObject {
   public:
     ~ControlDoublePrivate() override;
 
+    // TODO: don't expose this implementation detail
+    constexpr static double kDefaultValue = 0.0;
+
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
@@ -54,7 +56,7 @@ class ControlDoublePrivate : public QObject {
             bool bIgnoreNops = true,
             bool bTrack = false,
             bool bPersist = false,
-            double defaultValue = 0.0);
+            double defaultValue = kDefaultValue);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
     // Returns a list of all existing instances.
@@ -78,6 +80,14 @@ class ControlDoublePrivate : public QObject {
 
     void setDescription(const QString& description) {
         m_description = description;
+    }
+
+    void setKbdRepeatable(bool enable) {
+        m_kbdRepeatable = enable;
+    }
+
+    bool getKbdRepeatable() const {
+        return m_kbdRepeatable;
     }
 
     // Sets the control value.
@@ -164,7 +174,8 @@ class ControlDoublePrivate : public QObject {
             bool bIgnoreNops,
             bool bTrack,
             bool bPersist,
-            double defaultValue);
+            double defaultValue,
+            bool confirmRequired);
     ControlDoublePrivate(ControlDoublePrivate&&) = delete;
     ControlDoublePrivate(const ControlDoublePrivate&) = delete;
     ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;
@@ -175,22 +186,7 @@ class ControlDoublePrivate : public QObject {
 
     const ConfigKey m_key;
 
-    QAtomicPointer<ControlObject> m_pCreatorCO;
-
-    // Whether the control should persist in the Mixxx user configuration. The
-    // value is loaded from configuration when the control is created and
-    // written to the configuration when the control is deleted.
-    bool m_bPersistInConfiguration;
-
-    // Whether to ignore sets which would have no effect.
-    bool m_bIgnoreNops;
-
-    // Whether to track value changes with the stats framework.
-    bool m_bTrack;
-    QString m_trackKey;
-    int m_trackType;
-    int m_trackFlags;
-    bool m_confirmRequired;
+    QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
     // User-visible, i18n name for what the control is.
     QString m_name;
@@ -203,7 +199,28 @@ class ControlDoublePrivate : public QObject {
     // The default control value.
     ControlValueAtomic<double> m_defaultValue;
 
-    QSharedPointer<ControlNumericBehavior> m_pBehavior;
+    QAtomicPointer<ControlObject> m_pCreatorCO;
+
+    // name of the key to track using stats framework, unless the m_trackingKey isNull().
+    QString m_trackingKey;
+
+    // Note: keep the order of the members below to not introduce gaps due to
+    // memory alignment in this often used class.
+
+    bool m_confirmRequired;
+
+    // Whether the control should persist in the Mixxx user configuration. The
+    // value is loaded from configuration when the control is created and
+    // written to the configuration when the control is deleted.
+    bool m_bPersistInConfiguration;
+
+    // Whether to ignore sets which would have no effect.
+    bool m_bIgnoreNops;
+
+
+    // If true, this control will be issued repeatedly if the keyboard key is held.
+    bool m_kbdRepeatable;
+
 };
 
 /// The constant ControlDoublePrivate version is used as dummy for default
@@ -213,14 +230,8 @@ class ControlDoublePrivateConst : public ControlDoublePrivate {
   public:
     ~ControlDoublePrivateConst() override = default;
 
-    void setInner(double value, QObject* pSender) override {
-        Q_UNUSED(value)
-        Q_UNUSED(pSender)
+  private:
+    void setInner(double, QObject*) override {
         DEBUG_ASSERT(!"Trying to modify a default constructed (const) control object");
     };
-
-  protected:
-    ControlDoublePrivateConst() = default;
-
-    friend ControlDoublePrivate;
 };

@@ -1,27 +1,26 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <memory>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "mixer/deck.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginebuffer.h"
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/deck.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
+#include "preferences/usersettings.h"
 #include "test/signalpathtest.h"
 #include "util/defs.h"
-#include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
 #include "waveform/guitick.h"
@@ -56,7 +55,8 @@ class MockScaler : public EngineBufferScale {
     }
 
   private:
-    void onSampleRateChanged() override {}
+    void onSignalChanged() override {
+    }
 
     double m_processedTempo;
     double m_processedPitch;

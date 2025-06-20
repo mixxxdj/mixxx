@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
-#include <limits>
+#include <cstring>
 
 #include "util/denormalsarezero.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace {
@@ -51,11 +52,11 @@ TEST_F(MathUtilTest, IsNaN) {
 TEST_F(MathUtilTest, IsInf) {
     // Test floats can be recognized as infinity.
     EXPECT_FALSE(util_isinf(0.0f));
-    EXPECT_TRUE(util_isinf(std::numeric_limits<float>::infinity()));
+    EXPECT_TRUE(util_isinf(util_float_infinity()));
 
     // Test doubles can be recognized as infinity.
     EXPECT_FALSE(util_isinf(0.0f));
-    EXPECT_TRUE(util_isinf(std::numeric_limits<double>::infinity()));
+    EXPECT_TRUE(util_isinf(util_double_infinity()));
 }
 
 TEST_F(MathUtilTest, Denormal) {
@@ -64,23 +65,45 @@ TEST_F(MathUtilTest, Denormal) {
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_OFF);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_OFF);
 
-    volatile float fDenormal = std::numeric_limits<float>::min() / 2.0f;
+    // Note: The volatile keyword makes sure that the division is executed on the target
+    // and not by the pre-processor. In case of clang >= 15 the pre-processor flushes to
+    // zero with -ffast-math enabled.
+    volatile float fDenormal = std::numeric_limits<float>::min();
+    fDenormal = fDenormal / 2.0f;
     EXPECT_NE(0.0f, fDenormal);
 
-    volatile double dDenormal = std::numeric_limits<double>::min() / 2.0;
+    volatile double dDenormal = std::numeric_limits<double>::min();
+    dDenormal = dDenormal / 2.0;
     EXPECT_NE(0.0, dDenormal);
 
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 
-    fDenormal = std::numeric_limits<float>::min() / 2.0f;
+    fDenormal = std::numeric_limits<float>::min();
+    fDenormal = fDenormal / 2.0f;
     EXPECT_EQ(0.0f, fDenormal);
 
-    dDenormal = std::numeric_limits<double>::min() / 2.0;
+    dDenormal = std::numeric_limits<double>::min();
+    dDenormal = dDenormal / 2.0;
     EXPECT_EQ(0.0, dDenormal);
 
 #endif
 }
 
+TEST_F(MathUtilTest, DoubleValues) {
+    // This verifies that the infinity value can be copied into -ffastmath code
+
+    // All supported targets are using IEC559 floats
+    static_assert(std::numeric_limits<double>::is_iec559);
+    long long int_value;
+    double double_value = util_double_infinity();
+    std::memcpy(&int_value, &double_value, sizeof(double_value));
+    long long int_diff = int_value - 0x7FF0000000000000; // IEC 559 (IEEE 754) Infinity
+    EXPECT_EQ(int_diff, 0);
+    // Comparing directly does not work because the compiler (clang >= 19) may
+    // optimize the long long roundtrip away, compares as double and discards the
+    // comparison because of -ffastmath (clang >= 19)
+    // EXPECT_EQ(int_value, 0x7FF0000000000000);
+}
 
 }  // namespace

@@ -2,12 +2,126 @@
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
   <SetVariable name="BtnType">embedded</SetVariable>
   <SetVariable name="BtnSize">library</SetVariable>
+  <SetVariable name="CoverName">BeatEditCover</SetVariable>
+  <SetVariable name="CoverConfigKey"><Variable name="Group"/>,bpmlock</SetVariable>
+
+  <SetVariable name="KnobBg">regular</SetVariable>
+  <SetVariable name="KnobIndicator">regular</SetVariable>
+  <SetVariable name="ArcRadius">
+    <Variable name="ArcRadiusBig"/>
+  </SetVariable>
+  <SetVariable name="ArcThickness">
+    <Variable name="ArcThicknessBig"/>
+  </SetVariable>
 
   <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
+      <WidgetGroup>
+        <RequiresStem>true</RequiresStem>
+        <ObjectName>StemControls</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,me</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Size>0me,1me</Size>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <!-- StemControlsInner -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,f</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Size>1f,0min</Size>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <!-- StemControls 4ch -->
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <!-- StemCh1 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">1</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh2 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">2</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh3 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">3</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh4 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">4</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+              <!-- /StemControls 4ch -->
+
+            </Children>
+          </WidgetGroup>
+          <!-- /StemControlsInner -->
+
+          <WidgetGroup>
+            <Size>1me,1me</Size>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- StemControls -->
+
+
       <WidgetGroup>
         <ObjectName>WaveformBox<Variable name="ChanNum"/></ObjectName>
         <Layout>horizontal</Layout>
@@ -18,17 +132,21 @@
             <Channel><Variable name="ChanNum"/></Channel>
             <BgColor><Variable name="BgColorWaveform"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
-            <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
-            <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
-            <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
-            <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
-            <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
+            <!-- Default colors are used for high/mid/low: blue/green/red -->
+            <SignalHighColor></SignalHighColor>
+            <SignalMidColor></SignalMidColor>
+            <SignalLowColor></SignalLowColor>
+            <SignalRGBHighColor></SignalRGBHighColor>
+            <SignalRGBMidColor></SignalRGBMidColor>
+            <SignalRGBLowColor></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
             <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+            <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+            <SlipBorderTopOutlineSize>10</SlipBorderTopOutlineSize>
+            <SlipBorderBottomOutlineSize>20</SlipBorderBottomOutlineSize>
             <PassthroughLabelColor><Variable name="PassthroughLabelColor"/></PassthroughLabelColor>
             <DimBrightThreshold><Variable name="DimBrightThresholdWaveform"/></DimBrightThreshold>
             <!--
@@ -63,6 +181,7 @@
             <Mark>
               <Control>loop_start_position</Control>
               <Text>&#8635;</Text>
+              <Icon>skins:LateNight/classic/style/mark_loop.svg</Icon>
               <Align>top|left</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -87,6 +206,7 @@
             <Mark>
               <Control>intro_start_position</Control>
               <Text>&#9698;</Text>
+              <Icon>skins:LateNight/classic/style/mark_intro.svg</Icon>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
@@ -96,6 +216,7 @@
               <Control>intro_end_position</Control>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Text>&#9698;</Text>
+              <Icon>skins:LateNight/classic/style/mark_intro.svg</Icon>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -114,6 +235,7 @@
               <Control>outro_start_position</Control>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Text>&#9699;</Text>
+              <Icon>skins:LateNight/classic/style/mark_outro.svg</Icon>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -121,6 +243,7 @@
             <Mark>
               <Control>outro_end_position</Control>
               <Text>&#9699;</Text>
+              <Icon>skins:LateNight/classic/style/mark_outro.svg</Icon>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
@@ -148,8 +271,7 @@
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-              <!-- CurPos -->
-              <Template src="skin:/controls/button_1state_right.xml">
+              <Template src="skins:LateNight/controls/button_1state_right_optional.xml"><!-- CurPos -->
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                 <SetVariable name="Size">26f,52f</SetVariable>
@@ -162,13 +284,14 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                  <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
+                    <SetVariable name="TooltipId">beats_translate_earlier_move_half_beat</SetVariable>
                     <SetVariable name="ObjectName">BeatsEarlier</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_half</SetVariable>
                   </Template>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -181,14 +304,15 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                  <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
+                    <SetVariable name="TooltipId">beats_translate_later_move_half_beat</SetVariable>
                     <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_half</SetVariable>
                   </Template>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
@@ -199,18 +323,56 @@
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->
 
+              <WidgetGroup><!-- Undo & Lock -->
+                <Layout>vertical</Layout>
+                <Size>26f,52f</Size>
+                <Children>
+                  <Template src="skins:LateNight/controls/button_1state_optional_invert.xml">
+                    <SetVariable name="TooltipId">beats_undo_adjustment</SetVariable>
+                    <SetVariable name="ObjectName">Undo</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_undo_adjustment</SetVariable>
+                    <SetVariable name="CoverConfigKey"><Variable name="Group"/>,beats_undo_possible</SetVariable>
+                  </Template>
+
+                  <!-- Custom 2-state button where 0 and 1 have the same border image -->
+                  <PushButton>
+                    <TooltipId>bpmlock</TooltipId>
+                    <ObjectName>BpmLockToggle</ObjectName>
+                    <Size>26f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,bpmlock</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                </Children>
+              </WidgetGroup><!-- /Undo & Lock -->
+
               <WidgetGroup><!-- Hotcue shift -->
                 <Layout>vertical</Layout>
                   <Size>26f,52f</Size>
                   <Children>
-                    <Template src="skin:/controls/button_1state_right.xml">
+                    <Template src="skins:LateNight/controls/button_1state_right.xml">
                       <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
                       <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
                       <SetVariable name="Size">26f,26f</SetVariable>
                       <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_earlier</SetVariable>
                       <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_earlier_small</SetVariable>
                     </Template>
-                    <Template src="skin:/controls/button_1state_right.xml">
+                    <Template src="skins:LateNight/controls/button_1state_right.xml">
                       <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                       <SetVariable name="ObjectName">HotcuesLater</SetVariable>
                       <SetVariable name="Size">26f,26f</SetVariable>

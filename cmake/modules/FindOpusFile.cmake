@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindOpus
 --------
@@ -46,26 +41,32 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_OpusFile QUIET opusfile)
 endif()
 
-find_path(OpusFile_INCLUDE_DIR
+find_path(
+  OpusFile_INCLUDE_DIR
   NAMES opusfile.h
   PATH_SUFFIXES opus
-  PATHS ${PC_OpusFile_INCLUDE_DIRS}
-  DOC "Opusfile include directory")
+  HINTS ${PC_OpusFile_INCLUDE_DIRS}
+  DOC "Opusfile include directory"
+)
 mark_as_advanced(OpusFile_INCLUDE_DIR)
 
-find_library(OpusFile_LIBRARY
+find_library(
+  OpusFile_LIBRARY
   NAMES opusfile
-  PATHS ${PC_OpusFile_LIBRARY_DIRS}
+  HINTS ${PC_OpusFile_LIBRARY_DIRS}
   DOC "Opusfile library"
 )
 mark_as_advanced(OpusFile_LIBRARY)
 
+if(DEFINED PC_OpusFile_VERSION AND NOT PC_OpusFile_VERSION STREQUAL "")
+  set(OpusFile_VERSION "${PC_OpusFile_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   OpusFile
-  DEFAULT_MSG
-  OpusFile_LIBRARY
-  OpusFile_INCLUDE_DIR
+  REQUIRED_VARS OpusFile_LIBRARY OpusFile_INCLUDE_DIR
+  VERSION_VAR OpusFile_VERSION
 )
 
 if(OpusFile_FOUND)
@@ -75,7 +76,8 @@ if(OpusFile_FOUND)
 
   if(NOT TARGET OpusFile::OpusFile)
     add_library(OpusFile::OpusFile UNKNOWN IMPORTED)
-    set_target_properties(OpusFile::OpusFile
+    set_target_properties(
+      OpusFile::OpusFile
       PROPERTIES
         IMPORTED_LOCATION "${OpusFile_LIBRARIES}"
         INTERFACE_COMPILE_OPTIONS "${OpusFile_DEFINITIONS}"

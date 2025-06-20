@@ -2,8 +2,8 @@
 
 #include <QDebug>
 #include <QFileInfo>
-#include <QMessageBox>
 
+#include "moc_coverartcopyworker.cpp"
 #include "util/fileaccess.h"
 #include "util/imagefiledata.h"
 #include "util/safelywritablefile.h"
@@ -13,6 +13,17 @@ CoverArtCopyWorker::~CoverArtCopyWorker() {
 }
 
 void CoverArtCopyWorker::run() {
+    m_coverInfo.source = CoverInfo::USER_SELECTED;
+
+    if (m_selectedCoverArtFilePath.isEmpty()) {
+        ImageFileData imageFileData = ImageFileData(m_fetchedCoverArtByteArray);
+        m_coverInfo.type = CoverInfo::FILE;
+        m_coverInfo.coverLocation = m_oldCoverArtFilePath;
+        m_coverInfo.setImageDigest(imageFileData);
+        copyFile(QString(), m_oldCoverArtFilePath);
+        return;
+    }
+
     // Create a security token for the file.
     auto selectedCoverFileAccess = mixxx::FileAccess(mixxx::FileInfo(m_selectedCoverArtFilePath));
 
@@ -23,9 +34,8 @@ void CoverArtCopyWorker::run() {
     }
 
     m_coverInfo.type = CoverInfo::FILE;
-    m_coverInfo.source = CoverInfo::USER_SELECTED;
     m_coverInfo.coverLocation = m_selectedCoverArtFilePath;
-    m_coverInfo.setImage(imageFileData);
+    m_coverInfo.setImageDigest(imageFileData);
 
     if (QFileInfo(m_oldCoverArtFilePath).canonicalPath() ==
             selectedCoverFileAccess.info().canonicalLocationPath()) {
@@ -43,7 +53,9 @@ void CoverArtCopyWorker::copyFile(
         const QString& m_selectedCoverArtFilePath,
         const QString& m_oldCoverArtFilePath) {
     QFileInfo coverArtPathFileInfo(m_oldCoverArtFilePath);
-    ImageFileData imageFileData = ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
+    ImageFileData imageFileData = m_selectedCoverArtFilePath.isEmpty()
+            ? ImageFileData(m_fetchedCoverArtByteArray)
+            : ImageFileData::fromFilePath(m_selectedCoverArtFilePath);
     QString errorMessage = tr("Error while copying the cover art to: %1")
                                    .arg(m_oldCoverArtFilePath);
     if (coverArtPathFileInfo.exists()) {

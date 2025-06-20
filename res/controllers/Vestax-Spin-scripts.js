@@ -335,7 +335,7 @@ VestaxSpin.Button.prototype.handleWheelTouch = function() {
             }
         }
         this.timer = engine.beginTimer(VestaxSpin.SCRATCH_TIMER_PERIOD,
-            "VestaxSpin.GetDeck(\"" + this.group + "\").buttons[\"wheeltouch\"].callback()");
+            () => VestaxSpin.GetDeck(this.group).buttons.wheeltouch.callback());
    }
 }
 

@@ -1,9 +1,19 @@
+#if defined(_MSC_VER)
+#pragma warning(push)
+// https://github.com/taglib/taglib/issues/1185
+// warning C4251: 'TagLib::FileName::m_wname': class
+// 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t>>'
+// needs to have dll-interface to be used by clients of class 'TagLib::FileName'
+#pragma warning(disable : 4251)
+#endif
+
 #include "track/taglib/trackmetadata_xiph.h"
 
-#include <taglib/flacpicture.h>
+#include <flacpicture.h>
 
 #include <array>
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
@@ -363,11 +373,11 @@ void importTrackMetadataFromTag(
     // Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
     // Assuming no distinction between start and end key, RE uses a "INITIALKEY"
     // or a "KEY" vorbis comment.
-    QString key;
-    if (readCommentField(tag, "INITIALKEY", &key) || // recommended field
-            readCommentField(tag, "KEY", &key) ||    // alternative field
+    QString keyText;
+    if (readCommentField(tag, "INITIALKEY", &keyText) || // recommended field
+            readCommentField(tag, "KEY", &keyText) ||    // alternative field
             resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(key);
+        pTrackMetadata->refTrackInfo().setKeyText(keyText);
     }
 
     // Only read track gain (not album gain)
@@ -562,10 +572,10 @@ bool exportTrackMetadataIntoTag(
     }
 
     // Write both INITIALKEY and KEY
-    const TagLib::String key(
-            toTString(trackMetadata.getTrackInfo().getKey()));
-    writeCommentField(pTag, "INITIALKEY", key); // recommended field
-    updateCommentField(pTag, "KEY", key);       // alternative field
+    const TagLib::String keyText =
+            toTString(trackMetadata.getTrackInfo().getKeyText());
+    writeCommentField(pTag, "INITIALKEY", keyText); // recommended field
+    updateCommentField(pTag, "KEY", keyText);       // alternative field
 
     writeCommentField(pTag, "REPLAYGAIN_TRACK_GAIN", toTString(formatTrackGain(trackMetadata)));
     // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
@@ -634,3 +644,7 @@ bool exportTrackMetadataIntoTag(
 } // namespace taglib
 
 } // namespace mixxx
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

@@ -10,8 +10,8 @@
 /// It is basically a PIMPL version of a ControlDoublePrivate Shared pointer
 class PollingControlProxy {
   public:
-    PollingControlProxy(ControlFlags flags = ControlFlag::None)
-            : PollingControlProxy(ConfigKey(), flags) {
+    PollingControlProxy()
+            : m_pControl(ControlDoublePrivate::getDefaultControl()) {
     }
 
     PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)
@@ -54,6 +54,11 @@ class PollingControlProxy {
     /// Returns the normalized parameter of the object. Thread safe, non-blocking.
     double getDefault() const {
         return m_pControl->defaultValue();
+    }
+
+    /// Return the key of the underlying control
+    const ConfigKey& getKey() const {
+        return m_pControl->getKey();
     }
 
     /// Sets the control value to v. Thread safe, non-blocking.

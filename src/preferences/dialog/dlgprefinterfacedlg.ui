@@ -13,58 +13,16 @@
   <property name="windowTitle">
    <string>Interface Preferences</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
-   <item row="3" column="0">
-    <spacer name="verticalSpacer2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="gridLayout_skin">
+
+   <item>
     <widget class="QGroupBox" name="groupBoxSkinOptions">
      <property name="title">
-      <string/>
+      <string>Skin</string>
      </property>
-     <layout class="QGridLayout" name="GridLayout1">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="lableSkin_2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="font">
-         <font/>
-        </property>
-        <property name="text">
-         <string>Skin</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-        <property name="buddy">
-         <cstring>ComboBoxSkinconf</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
+     <layout class="QVBoxLayout" name="skinLayout">
+
+      <item>
        <widget class="QComboBox" name="ComboBoxSkinconf">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -72,12 +30,13 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font">
-         <font/>
+        <property name="accessibleName">
+         <string>Skin selector</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0" rowspan="2">
+
+      <item>
        <widget class="QLabel" name="labelColorScheme">
         <property name="enabled">
          <bool>true</bool>
@@ -96,7 +55,8 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1" rowspan="2" colspan="2">
+
+      <item>
        <widget class="QComboBox" name="ComboBoxSchemeconf">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -104,15 +64,13 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font">
-         <font/>
-        </property>
         <property name="toolTip">
          <string>Select from different color schemes of a skin if available.</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1" colspan="2">
+
+      <item>
        <widget class="QLabel" name="skinDescriptionText">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -131,7 +89,8 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1" colspan="2">
+
+      <item>
        <widget class="QLabel" name="warningLabel">
         <property name="text">
          <string/>
@@ -141,27 +100,26 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
+
+      <item>
        <widget class="QLabel" name="skinPreviewLabel">
         <property name="text">
          <string notr="true">skin preview screenshot goes here</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
-       <spacer name="verticalSpacer1">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>10</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="9" column="0">
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QGroupBox" name="groupBoxMiscOptions">
+     <property name="title">
+      <string>Miscellaneous</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_Misc">
+
+      <item row="0" column="0">
        <widget class="QLabel" name="textLabelLocale">
         <property name="text">
          <string>Locale</string>
@@ -171,114 +129,25 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="1" colspan="2">
+      <item row="0" column="1" colspan="2">
        <widget class="QComboBox" name="ComboBoxLocale">
         <property name="toolTip">
          <string>Locales determine country and language specific settings.</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="0">
+
+      <item row="1" column="0">
        <widget class="QLabel" name="labelScaleFactor">
         <property name="text">
          <string>HiDPI / Retina scaling</string>
         </property>
-       </widget>
-      </item>
-      <item row="11" column="0">
-       <widget class="QLabel" name="labelFullscreenOption">
-        <property name="text">
-         <string>Full-screen mode</string>
-        </property>
         <property name="buddy">
-         <cstring>checkBoxStartFullScreen</cstring>
+         <cstring>spinBoxScaleFactor</cstring>
         </property>
        </widget>
       </item>
-      <item row="11" column="1" colspan="2">
-       <widget class="QCheckBox" name="checkBoxStartFullScreen">
-        <property name="text">
-         <string>Start in full-screen mode</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="0">
-       <widget class="QLabel" name="labelTooltips">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="font">
-         <font/>
-        </property>
-        <property name="text">
-         <string>Tool tips</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-        <property name="buddy">
-         <cstring>radioButtonTooltipsOff</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="1" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QRadioButton" name="radioButtonTooltipsOff">
-          <property name="text">
-           <string>Off</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupTooltips</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioButtonTooltipsLibrary">
-          <property name="text">
-           <string>Library only</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupTooltips</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioButtonTooltipsLibraryAndSkin">
-          <property name="text">
-           <string>Library and Skin</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupTooltips</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="13" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Screen saver</string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBoxScreensaver"/>
-      </item>
-      <item row="8" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="10" column="1">
+      <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
@@ -317,8 +186,142 @@
         </item>
        </layout>
       </item>
+
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelFullscreenOption">
+        <property name="text">
+         <string>Full-screen mode</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxStartFullScreen</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxStartFullScreen">
+        <property name="text">
+         <string>Start in full-screen mode</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelHideMenuBarOption">
+        <property name="text">
+         <string>Menu bar</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxHideMenuBar</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxHideMenuBar">
+        <property name="text">
+         <string>Auto-hide the menu bar, toggle it with a single Alt key press</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelTooltips">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>Tool tips</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="buddy">
+         <cstring>radioButtonTooltipsOff</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonTooltipsOff">
+          <property name="text">
+           <string>Off</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTooltips</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonTooltipsLibrary">
+          <property name="text">
+           <string>Library only</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTooltips</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonTooltipsLibraryAndSkin">
+          <property name="text">
+           <string>Library and Skin</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTooltips</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+
+      <item row="5" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Screen saver</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxScreensaver"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="multiSamplingLabel">
+        <property name="text">
+         <string>Multi-Sampling</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QComboBox" name="multiSamplingComboBox"/>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBoxForceHardwareAcceleration">
+        <property name="text">
+         <string>Force 3D acceleration</string>
+        </property>
+        <property name="toolTip">
+         <string>If checked, Mixxx will always assume 3D acceleration is available. This may lead to pour performance if only CP-backed rendering is available..</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+    </spacer>
    </item>
   </layout>
  </widget>
@@ -327,10 +330,14 @@
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
+  <tabstop>spinBoxScaleFactor</tabstop>
   <tabstop>checkBoxStartFullScreen</tabstop>
+  <tabstop>checkBoxHideMenuBar</tabstop>
   <tabstop>radioButtonTooltipsOff</tabstop>
   <tabstop>radioButtonTooltipsLibrary</tabstop>
   <tabstop>radioButtonTooltipsLibraryAndSkin</tabstop>
+  <tabstop>multiSamplingComboBox</tabstop>
+  <tabstop>checkBoxForceHardwareAcceleration</tabstop>
  </tabstops>
  <resources/>
  <connections/>

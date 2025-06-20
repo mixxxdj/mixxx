@@ -5,9 +5,9 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
-#include <QMenu>
+#include <QLineEdit>
 #include <QMessageBox>
-#include <QStandardItemModel>
+#include <QPushButton>
 #include <QTableView>
 
 #include "moc_colorpaletteeditor.cpp"
@@ -193,7 +193,7 @@ void ColorPaletteEditor::slotAddColor() {
 }
 
 void ColorPaletteEditor::slotRemoveColor() {
-    QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
+    const QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
     for (const auto& index : selection) {
         //row selected
         int row = index.row();
@@ -286,5 +286,5 @@ void ColorPaletteEditor::slotSelectionChanged(
         const QItemSelection& selected,
         const QItemSelection& deselected) {
     Q_UNUSED(deselected);
-    m_pRemoveColorButton->setDisabled(!selected.count());
+    m_pRemoveColorButton->setDisabled(selected.isEmpty());
 }

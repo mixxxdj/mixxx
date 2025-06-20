@@ -2,10 +2,9 @@
 
 #include <string.h>
 
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
-
-static constexpr int numChannels = 2;
 
 template<unsigned int SIZE>
 class EngineFilterPan : public EngineObjectConstIn {
@@ -38,8 +37,7 @@ class EngineFilterPan : public EngineObjectConstIn {
         }
     }
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                         const int iBufferSize) {
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
         int delayLeftSourceFrame;
         int delayRightSourceFrame;
         if (m_leftDelayFrames > 0) {
@@ -52,12 +50,12 @@ class EngineFilterPan : public EngineObjectConstIn {
 
         VERIFY_OR_DEBUG_ASSERT(delayLeftSourceFrame >= 0 &&
                                 delayRightSourceFrame >= 0) {
-            SampleUtil::copy(pOutput, pIn, iBufferSize);
+            SampleUtil::copy(pOutput, pIn, bufferSize);
             return;
         }
 
         if (!m_doRamping) {
-            for (int i = 0; i < iBufferSize / 2; ++i) {
+            for (std::size_t i = 0; i < bufferSize / 2; ++i) {
                 // put sample into delay buffer:
                 m_buf[m_delayFrame * 2] = pIn[i * 2];
                 m_buf[m_delayFrame * 2 + 1] = pIn[i * 2 + 1];
@@ -82,14 +80,14 @@ class EngineFilterPan : public EngineObjectConstIn {
 
             VERIFY_OR_DEBUG_ASSERT(delayOldLeftSourceFrame >= 0 &&
                                     delayOldRightSourceFrame >= 0) {
-                SampleUtil::copy(pOutput, pIn, iBufferSize);
+                SampleUtil::copy(pOutput, pIn, bufferSize);
                 return;
             }
 
             double cross_mix = 0.0;
-            double cross_inc = 2 / static_cast<double>(iBufferSize);
+            double cross_inc = 2 / static_cast<double>(bufferSize);
 
-            for (int i = 0; i < iBufferSize / 2; ++i) {
+            for (std::size_t i = 0; i < bufferSize / 2; ++i) {
                 // put sample into delay buffer:
                 m_buf[m_delayFrame * 2] = pIn[i * 2];
                 m_buf[m_delayFrame * 2 + 1] = pIn[i * 2 + 1];
@@ -123,7 +121,7 @@ class EngineFilterPan : public EngineObjectConstIn {
     int m_leftDelayFrames;
     int m_oldLeftDelayFrames;
     int m_delayFrame;
-    CSAMPLE m_buf[SIZE * numChannels];
+    CSAMPLE m_buf[SIZE * mixxx::kEngineChannelOutputCount];
     bool m_doRamping;
     bool m_doStart;
 };

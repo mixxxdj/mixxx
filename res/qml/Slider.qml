@@ -27,8 +27,6 @@ MixxxControls.Slider {
 
         width: handleImage.paintedWidth
         height: handleImage.paintedHeight
-        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
-        anchors.verticalCenter: root.horizontal ? parent.verticalCenter : undefined
         x: root.horizontal ? (root.visualPosition * (root.width - width)) : ((root.width - width) / 2)
         y: root.vertical ? (root.visualPosition * (root.height - height)) : ((root.height - height) / 2)
 
@@ -40,7 +38,6 @@ MixxxControls.Slider {
             verticalOffset: 5
             color: "#80000000"
         }
-
     }
 
     background: Image {
@@ -49,5 +46,4 @@ MixxxControls.Slider {
         anchors.fill: parent
         anchors.margins: root.barMargin
     }
-
 }

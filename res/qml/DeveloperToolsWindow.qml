@@ -1,6 +1,7 @@
 import "." as Skin
 import Mixxx 1.0 as Mixxx
-import Qt.labs.qmlmodels 1.0
+import QtQml.Models // DelegateChoice for Qt >= 6.9
+import Qt.labs.qmlmodels // DelegateChooser
 import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
@@ -55,7 +56,6 @@ Window {
                         right: 20
                         bottom: 10
                     }
-
                 }
 
                 Text {
@@ -94,9 +94,7 @@ Window {
                 TapHandler {
                     onTapped: controlModel.toggleSortColumn(headerDlgt.column)
                 }
-
             }
-
         }
 
         TableView {
@@ -150,9 +148,7 @@ Window {
                             elide: Text.ElideRight
                             color: Theme.deckTextColor
                         }
-
                     }
-
                 }
 
                 DelegateChoice {
@@ -177,9 +173,7 @@ Window {
                             elide: Text.ElideRight
                             color: Theme.deckTextColor
                         }
-
                     }
-
                 }
 
                 DelegateChoice {
@@ -216,11 +210,8 @@ Window {
 
                             validator: DoubleValidator {
                             }
-
                         }
-
                     }
-
                 }
 
                 DelegateChoice {
@@ -257,17 +248,10 @@ Window {
 
                             validator: DoubleValidator {
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

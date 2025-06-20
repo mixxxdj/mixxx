@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QButtonGroup>
-
+#include "effects/defs.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
-#include "preferences/effectmanifesttablemodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
 class EffectsManager;
+class EffectManifestTableModel;
 
 class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT
@@ -24,7 +23,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
   private slots:
     void effectsTableItemSelected(const QModelIndex& selected);
-    void slotChainPresetSelected(const QModelIndex& selected);
+    void slotHideUnhideEffect();
+    void slotChainPresetSelectionChanged(const QItemSelection& selected);
     void slotImportPreset();
     void slotExportPreset();
     void slotRenamePreset();
@@ -35,11 +35,14 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void setupChainListView(QListView* pListView);
 
     void clearEffectInfo();
-    void clearChainInfoDisableButtons();
+    void clearChainInfo();
+    void updateChainPresetButtons(int selectedIndices);
+    void updateHideUnhideButtons(const QModelIndex& selected = QModelIndex());
     void loadChainPresetLists();
     void saveChainPresetLists();
 
-    bool eventFilter(QObject* pChainList, QEvent* event) override;
+    /// Handles FocusIn and KeyPress events in chain preset lists
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
     QListView* m_pFocusedChainList;
     QListView* unfocusedChainList();
     QTableView* m_pFocusedEffectList;

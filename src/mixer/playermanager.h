@@ -8,8 +8,6 @@
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "engine/channelhandle.h"
-#include "library/library.h"
-#include "library/trackcollectionmanager.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/compatibility/qmutex.h"
@@ -21,7 +19,7 @@ class BaseTrackPlayer;
 class ControlObject;
 class Deck;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class Library;
 class Microphone;
 class PreviewDeck;
@@ -61,7 +59,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            EngineMaster* pEngine);
+            EngineMixer* pEngine);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
@@ -130,6 +128,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the track that was last ejected or unloaded. Can return nullptr or
     // invalid TrackId in case of error.
     TrackPointer getLastEjectedTrack() const;
+    TrackPointer getSecondLastEjectedTrack() const;
 
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
@@ -146,19 +145,28 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Sampler") + QString::number(i + 1) + ']';
+        return QStringLiteral("[Sampler") + QString::number(i + 1) + QChar(']');
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
+        return QStringLiteral("[Channel") + QString::number(i + 1) + QChar(']');
     }
+
+#ifdef __STEM__
+    // Returns the group for the deck and stem where deckIndex and stemInde are zero based
+    static QString groupForDeckStem(int deckIdx, int stemIdx) {
+        DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 4);
+        return QStringLiteral("[Channel") + QString::number(deckIdx + 1) +
+                QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+    }
+#endif
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + ']';
+        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + QChar(']');
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
@@ -168,7 +176,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         // the group [Microphone]. For backwards compatibility we keep it that
         // way.
         if (i > 0) {
-            return QStringLiteral("[Microphone") + QString::number(i + 1) + ']';
+            return QStringLiteral("[Microphone") + QString::number(i + 1) + QChar(']');
         } else {
             return QStringLiteral("[Microphone]");
         }
@@ -177,7 +185,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the group for the ith Auxiliary where i is zero indexed
     static QString groupForAuxiliary(int i) {
         DEBUG_ASSERT(i >= 0);
-        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
+        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + QChar(']');
     }
 
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
@@ -186,7 +194,14 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
+#ifdef __STEM__
+    void slotLoadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+#endif
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
 
@@ -228,8 +243,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // there is no input configured.
     void noMicrophoneInputConfigured();
 
-    // Emitted when the user tries to enable an auxiliary master control when
-    // there is no input configured.
+    // Emitted when the user tries to enable an auxiliary `main_mix` control
+    // when there is no input configured.
     void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no
@@ -242,6 +257,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Emitted when the number of decks changes.
     void numberOfDecksChanged(int decks);
+    void numberOfSamplersChanged(int samplers);
 
     void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void trackAnalyzerIdle();
@@ -274,17 +290,18 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Library* m_pLibrary;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
-    EngineMaster* m_pEngine;
+    EngineMixer* m_pEngine;
     SamplerBank* m_pSamplerBank;
-    ControlObject* m_pCONumDecks;
-    ControlObject* m_pCONumSamplers;
-    ControlObject* m_pCONumPreviewDecks;
-    ControlObject* m_pCONumMicrophones;
-    ControlObject* m_pCONumAuxiliaries;
+    std::unique_ptr<ControlObject> m_pCONumDecks;
+    std::unique_ptr<ControlObject> m_pCONumSamplers;
+    std::unique_ptr<ControlObject> m_pCONumPreviewDecks;
+    std::unique_ptr<ControlObject> m_pCONumMicrophones;
+    std::unique_ptr<ControlObject> m_pCONumAuxiliaries;
     parented_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
+    TrackId m_secondLastEjectedTrackId;
     TrackId m_lastEjectedTrackId;
 
     QList<Deck*> m_decks;

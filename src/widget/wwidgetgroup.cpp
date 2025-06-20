@@ -1,7 +1,7 @@
 #include "widget/wwidgetgroup.h"
 
+#include <QEvent>
 #include <QLayout>
-#include <QMap>
 #include <QStackedLayout>
 #include <QStylePainter>
 
@@ -9,7 +9,6 @@
 #include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
-#include "widget/wwidget.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
@@ -70,12 +69,12 @@ Qt::Alignment WWidgetGroup::layoutAlignment() const {
     return pLayout ? pLayout->alignment() : Qt::Alignment();
 }
 
-void WWidgetGroup::setLayoutAlignment(int alignment) {
+void WWidgetGroup::setLayoutAlignment(Qt::Alignment alignment) {
     //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
 
     QLayout* pLayout = layout();
     if (pLayout) {
-        pLayout->setAlignment(static_cast<Qt::Alignment>(alignment));
+        pLayout->setAlignment(alignment);
     }
 }
 
@@ -104,7 +103,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNode.isNull()) {
         setPixmapBackground(
                 context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::TILE),
+                context.selectScaleMode(backPathNode, Paintable::DrawMode::Tile),
                 context.getScaleFactor());
     }
 
@@ -114,12 +113,14 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNodeHighlighted.isNull()) {
         setPixmapBackgroundHighlighted(
                 context.getPixmapSource(backPathNodeHighlighted),
-                context.selectScaleMode(backPathNodeHighlighted, Paintable::TILE),
+                context.selectScaleMode(backPathNodeHighlighted, Paintable::DrawMode::Tile),
                 context.getScaleFactor());
     }
 
     QLayout* pLayout = nullptr;
     QString layout;
+    bool layoutIsStacked = false;
+
     if (context.hasNodeSelectString(node, "Layout", &layout)) {
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
@@ -129,12 +130,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
             auto* pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
-            // Adding a zero-size dummy widget as index 0 here before
-            // any child is added in the xml template works around
-            // https://bugs.launchpad.net/mixxx/+bug/1627859
-            QWidget *dummyWidget = new QWidget();
-            dummyWidget->setFixedSize(0, 0);
-            pLayout->addWidget(dummyWidget);
+            layoutIsStacked = true;
         }
 
         // Set common layout parameters.
@@ -152,6 +148,16 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
 
     if (pLayout) {
         setLayout(pLayout);
+
+        if (layoutIsStacked) {
+            // Without this zero-sized dummy widget being added before
+            // any child widgets, the stacked layout would force-show
+            // the top item, i.e. ignore the state of its 'visible' connection.
+            // See https://github.com/mixxxdj/mixxx/issues/8655
+            QWidget* dummyWidget = new QWidget();
+            dummyWidget->setFixedSize(0, 0);
+            pLayout->addWidget(dummyWidget);
+        }
     }
 }
 
@@ -230,7 +236,6 @@ void WWidgetGroup::setHighlight(int highlight) {
         return;
     }
     m_highlight = highlight;
-    style()->unpolish(this);
     style()->polish(this);
     update();
     emit highlightChanged(m_highlight);

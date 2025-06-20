@@ -1,5 +1,6 @@
 #include "library/trackset/tracksettablemodel.h"
 
+#include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_tracksettablemodel.cpp"
 
@@ -25,4 +26,16 @@ bool TrackSetTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
+}
+
+int TrackSetTableModel::addTracks(const QModelIndex& index,
+        const QList<QString>& locations) {
+    if (locations.isEmpty()) {
+        return 0;
+    }
+
+    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
+            locations);
+
+    return addTracksWithTrackIds(index, trackIds, nullptr);
 }

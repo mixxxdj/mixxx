@@ -2,23 +2,16 @@
 
 #include "sources/metadatasource.h"
 
-#include "track/taglib/trackmetadata.h"
-
 namespace mixxx {
 
 // Universal default implementation of IMetadataSource using TagLib.
 class MetadataSourceTagLib : public MetadataSource {
   public:
-    explicit MetadataSourceTagLib(
-            const QString& fileName)
-            : m_fileName(fileName),
-              m_fileType(taglib::getFileTypeFromFileName(fileName)) {
-    }
     MetadataSourceTagLib(
             const QString& fileName,
-            taglib::FileType fileType)
+            const QString& fileType)
             : m_fileName(fileName),
-              m_fileType(fileType) {
+              m_fileType(taglib::stringToEnumFileType(fileType)) {
     }
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(

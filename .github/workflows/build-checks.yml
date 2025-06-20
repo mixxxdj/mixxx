@@ -5,20 +5,34 @@ name: build-checks
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
 
 jobs:
   build-checks:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      checks: write #  to create new checks (coverallsapp/github-action)
+
     strategy:
       matrix:
         include:
           - name: clazy
           - name: clang-tidy
           - name: coverage
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.2
+      - name: Add clazy PPA
+        if: matrix.name == 'clazy'
+        # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
+        run: |
+          sudo add-apt-repository ppa:daschuer/clazy
+          sudo apt update
       - name: Install build dependencies
         run: tools/debian_buildenv.sh setup
       - name: Create build directory
@@ -27,9 +41,11 @@ jobs:
         if: matrix.name == 'clazy'
         # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
         run: |
+          clazy --version
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
             -DWARNINGS_FATAL=ON \
+            -DQT6=ON \
             -DOPTIMIZE=off \
             -DBATTERY=ON \
             -DBROADCAST=ON \
@@ -53,11 +69,14 @@ jobs:
           CXX: clazy
       - name: Configure (clang-tidy)
         if: matrix.name == 'clang-tidy'
+        # Our code contains the use of infinity(), which Clang >= 18 reports
+        # as error, if you compile with -fast-math
         run: |
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCLANG_TIDY=clang-tidy \
             -DWARNINGS_FATAL=ON \
+            -DQT6=ON \
             -DBATTERY=ON \
             -DBROADCAST=ON \
             -DBULK=ON \
@@ -72,6 +91,7 @@ jobs:
             -DMAD=ON \
             -DMODPLUG=ON \
             -DWAVPACK=ON \
+            -DCMAKE_CXX_FLAGS="-Wno-nan-infinity-disabled" \
             ..
         working-directory: build
         env:
@@ -84,6 +104,8 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
             -DOPTIMIZE=off \
+            -DQT6=ON \
+            -DQML=ON \
             -DCOVERAGE=ON \
             -DWARNINGS_FATAL=OFF \
             -DDEBUG_ASSERTIONS_FATAL=OFF \
@@ -104,13 +126,13 @@ jobs:
             ..
         working-directory: build
       - name: Set up problem matcher
-        uses: ammaraskar/gcc-problem-matcher@master
+        uses: ammaraskar/gcc-problem-matcher@0.3.0
       - name: Build
         # Do not abort on errors and build/check the whole project
         run: cmake --build . -j $(nproc) -- --keep-going
         working-directory: build
         env:
-          CLAZY_CHECKS: level2,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression,no-missing-typeinfo,no-base-class-event
+          CLAZY_CHECKS: level2,container-inside-loop,heap-allocated-small-trivial-type,isempty-vs-count,qhash-with-char-pointer-key,qproperty-type-mismatch,tr-non-literal,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression
           CLAZY_IGNORE_DIRS: lib/.*
       - name: "Test"
         if: matrix.name == 'coverage'
@@ -139,8 +161,8 @@ jobs:
       - name: "Upload Coverage Report to coveralls.io"
         if: matrix.name == 'coverage'
         continue-on-error: true
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2.3.6
         with:
-          flag-name: ubuntu-22.04
+          flag-name: ubuntu-24.04
           path-to-lcov: build/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Major Version</key><integer>1</integer>
+	<key>Minor Version</key><integer>1</integer>
+	<key>Date</key><date>2023-04-25T13:17:12Z</date>
+	<key>Application Version</key><string>1.3.5.3</string>
+	<key>Features</key><integer>5</integer>
+	<key>Show Content Ratings</key><true/>
+	<key>Music Folder</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/</string>
+	<key>Library Persistent ID</key><string>6DC25EC7224B4943</string>
+	<key>Tracks</key>
+	<dict>
+		<key>467</key>
+		<dict>
+			<key>Track ID</key><integer>467</integer>
+			<key>Name</key><string>In the Summertime</string>
+			<key>Artist</key><string>Mungo Jerry</string>
+			<key>Album Artist</key><string>Mungo Jerry</string>
+			<key>Composer</key><string>Dorset</string>
+			<key>Album</key><string>In the Summertime</string>
+			<key>Genre</key><string>Rock</string>
+			<key>Kind</key><string>Purchased AAC audio file</string>
+			<key>Size</key><integer>8484658</integer>
+			<key>Total Time</key><integer>214626</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>1</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>16</integer>
+			<key>Year</key><integer>1970</integer>
+			<key>Date Modified</key><date>2023-04-25T12:50:59Z</date>
+			<key>Date Added</key><date>2023-04-25T14:13:36Z</date>
+			<key>Bit Rate</key><integer>256</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Release Date</key><date>1970-01-01T12:00:00Z</date>
+			<key>Normalization</key><integer>1865</integer>
+			<key>Compilation</key><true/>
+			<key>Sort Album</key><string>In the Summertime</string>
+			<key>Sort Artist</key><string>Mungo Jerry</string>
+			<key>Sort Name</key><string>In the Summertime</string>
+			<key>Persistent ID</key><string>C7BBCE8A598C5E0B</string>
+			<key>Track Type</key><string>File</string>
+			<key>Purchased</key><true/>
+			<key>Location</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/Music/Compilations/In%20the%20Summertime/01%20In%20the%20Summertime.m4a</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>470</key>
+		<dict>
+			<key>Track ID</key><integer>470</integer>
+			<key>Name</key><string>Beast of Burden (Live)</string>
+			<key>Artist</key><string>The Rolling Stones</string>
+			<key>Album Artist</key><string>The Rolling Stones</string>
+			<key>Composer</key><string>Keith Richards &#38; Mick Jagger</string>
+			<key>Album</key><string>Sweet Summer Sun, Live in Hyde Park 2013 (Live) - Single</string>
+			<key>Genre</key><string>Rock</string>
+			<key>Kind</key><string>Purchased AAC audio file</string>
+			<key>Size</key><integer>11437833</integer>
+			<key>Total Time</key><integer>306527</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>1</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>3</integer>
+			<key>Year</key><integer>2013</integer>
+			<key>Date Modified</key><date>2023-04-25T12:52:09Z</date>
+			<key>Date Added</key><date>2023-04-25T14:13:36Z</date>
+			<key>Bit Rate</key><integer>256</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Release Date</key><date>2013-07-22T07:00:00Z</date>
+			<key>Normalization</key><integer>7486</integer>
+			<key>Sort Album</key><string>Sweet Summer Sun, Live in Hyde Park 2013 (Live) - Single</string>
+			<key>Sort Album Artist</key><string>Rolling Stones</string>
+			<key>Sort Artist</key><string>Rolling Stones</string>
+			<key>Sort Name</key><string>Beast of Burden (Live)</string>
+			<key>Persistent ID</key><string>F5DD2A5AF43460FC</string>
+			<key>Track Type</key><string>File</string>
+			<key>Purchased</key><true/>
+			<key>Location</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/Music/The%20Rolling%20Stones/Sweet%20Summer%20Sun,%20Live%20in%20Hyde%20Park%202013%20(Live)%20-%20Single/01%20Beast%20of%20Burden%20(Live).m4a</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>473</key>
+		<dict>
+			<key>Track ID</key><integer>473</integer>
+			<key>Name</key><string>What I'd Say</string>
+			<key>Artist</key><string>Ray Charles</string>
+			<key>Album Artist</key><string>Ray Charles</string>
+			<key>Album</key><string>What I'd Say</string>
+			<key>Genre</key><string>Rock</string>
+			<key>Kind</key><string>Purchased AAC audio file</string>
+			<key>Size</key><integer>11000345</integer>
+			<key>Total Time</key><integer>304013</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>1</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>2012</integer>
+			<key>Date Modified</key><date>2023-04-25T12:51:05Z</date>
+			<key>Date Added</key><date>2023-04-25T14:13:36Z</date>
+			<key>Bit Rate</key><integer>256</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Release Date</key><date>2012-08-23T00:00:00Z</date>
+			<key>Normalization</key><integer>4339</integer>
+			<key>Sort Album</key><string>What I'd Say</string>
+			<key>Sort Artist</key><string>Ray Charles</string>
+			<key>Sort Name</key><string>What I'd Say</string>
+			<key>Persistent ID</key><string>6B15F4E7DAF366C7</string>
+			<key>Track Type</key><string>File</string>
+			<key>Purchased</key><true/>
+			<key>Location</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/Music/Ray%20Charles/What%20I'd%20Say/01%20What%20I'd%20Say.m4a</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>476</key>
+		<dict>
+			<key>Track ID</key><integer>476</integer>
+			<key>Name</key><string>Are You Gonna Be My Girl</string>
+			<key>Artist</key><string>Jet</string>
+			<key>Album Artist</key><string>Jet</string>
+			<key>Composer</key><string>Cam Muncey &#38; Nic Cester</string>
+			<key>Album</key><string>Are You Gonna Be My Girl - Single</string>
+			<key>Genre</key><string>Rock</string>
+			<key>Kind</key><string>Purchased AAC audio file</string>
+			<key>Size</key><integer>7824514</integer>
+			<key>Total Time</key><integer>213800</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>1</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>1</integer>
+			<key>Year</key><integer>2003</integer>
+			<key>Date Modified</key><date>2023-04-25T12:55:27Z</date>
+			<key>Date Added</key><date>2023-04-25T14:13:36Z</date>
+			<key>Bit Rate</key><integer>256</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Release Date</key><date>2003-08-25T12:00:00Z</date>
+			<key>Normalization</key><integer>11520</integer>
+			<key>Sort Album</key><string>Are You Gonna Be My Girl - Single</string>
+			<key>Sort Artist</key><string>Jet</string>
+			<key>Sort Name</key><string>Are You Gonna Be My Girl</string>
+			<key>Persistent ID</key><string>0358C36EFB35699F</string>
+			<key>Track Type</key><string>File</string>
+			<key>Purchased</key><true/>
+			<key>Location</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/Music/Jet/Are%20You%20Gonna%20Be%20My%20Girl%20-%20Single/01%20Are%20You%20Gonna%20Be%20My%20Girl.m4a</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>479</key>
+		<dict>
+			<key>Track ID</key><integer>479</integer>
+			<key>Name</key><string>Highway to Hell</string>
+			<key>Artist</key><string>AC/DC</string>
+			<key>Album Artist</key><string>AC/DC</string>
+			<key>Composer</key><string>Angus Young, Bon Scott &#38; Malcolm Young</string>
+			<key>Album</key><string>Highway to Hell</string>
+			<key>Genre</key><string>Hard Rock</string>
+			<key>Kind</key><string>Purchased AAC audio file</string>
+			<key>Size</key><integer>8245330</integer>
+			<key>Total Time</key><integer>208110</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>1</integer>
+			<key>Track Number</key><integer>1</integer>
+			<key>Track Count</key><integer>10</integer>
+			<key>Year</key><integer>1979</integer>
+			<key>Date Modified</key><date>2023-04-25T12:50:28Z</date>
+			<key>Date Added</key><date>2023-04-25T14:13:36Z</date>
+			<key>Bit Rate</key><integer>256</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Release Date</key><date>1979-07-27T07:00:00Z</date>
+			<key>Normalization</key><integer>10652</integer>
+			<key>Sort Album</key><string>Highway to Hell</string>
+			<key>Sort Artist</key><string>AC/DC</string>
+			<key>Sort Name</key><string>Highway to Hell</string>
+			<key>Persistent ID</key><string>AA472ACC8CCF0EDE</string>
+			<key>Track Type</key><string>File</string>
+			<key>Purchased</key><true/>
+			<key>Location</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/Music/AC_DC/Highway%20to%20Hell/01%20Highway%20to%20Hell.m4a</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+		<key>482</key>
+		<dict>
+			<key>Track ID</key><integer>482</integer>
+			<key>Name</key><string>Play Ball</string>
+			<key>Artist</key><string>AC/DC</string>
+			<key>Album Artist</key><string>AC/DC</string>
+			<key>Composer</key><string>Angus Young &#38; Malcolm Young</string>
+			<key>Album</key><string>Rock or Bust</string>
+			<key>Genre</key><string>Rock</string>
+			<key>Kind</key><string>Purchased AAC audio file</string>
+			<key>Size</key><integer>6728062</integer>
+			<key>Total Time</key><integer>167129</integer>
+			<key>Disc Number</key><integer>1</integer>
+			<key>Disc Count</key><integer>1</integer>
+			<key>Track Number</key><integer>2</integer>
+			<key>Track Count</key><integer>11</integer>
+			<key>Year</key><integer>2014</integer>
+			<key>Date Modified</key><date>2023-04-25T12:50:29Z</date>
+			<key>Date Added</key><date>2023-04-25T14:13:36Z</date>
+			<key>Bit Rate</key><integer>256</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Release Date</key><date>2014-10-07T07:00:00Z</date>
+			<key>Normalization</key><integer>9774</integer>
+			<key>Sort Album</key><string>Rock or Bust</string>
+			<key>Sort Artist</key><string>AC/DC</string>
+			<key>Sort Name</key><string>Play Ball</string>
+			<key>Persistent ID</key><string>001E38A54546DD36</string>
+			<key>Track Type</key><string>File</string>
+			<key>Purchased</key><true/>
+			<key>Location</key><string>file:///Users/mixxxtest/Test%20Library/Media.localized/Music/AC_DC/Rock%20or%20Bust/02%20Play%20Ball.m4a</string>
+			<key>File Folder Count</key><integer>5</integer>
+			<key>Library Folder Count</key><integer>1</integer>
+		</dict>
+	</dict>
+	<key>Playlists</key>
+	<array>
+		<dict>
+			<key>Name</key><string>Library</string>
+			<key>Description</key><string></string>
+			<key>Master</key><true/>
+			<key>Playlist ID</key><integer>65</integer>
+			<key>Playlist Persistent ID</key><string>0000000000000005</string>
+			<key>Visible</key><false/>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>470</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>479</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>482</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Downloaded</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1172</integer>
+			<key>Playlist Persistent ID</key><string>68E2E48A22A0801D</string>
+			<key>Distinguished Kind</key><integer>65</integer>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>479</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>482</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>470</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Music</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1181</integer>
+			<key>Playlist Persistent ID</key><string>47E98243439B17EE</string>
+			<key>Distinguished Kind</key><integer>4</integer>
+			<key>Music</key><true/>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>479</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>482</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>470</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Folder A</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1425</integer>
+			<key>Playlist Persistent ID</key><string>916A358E1A377577</string>
+			<key>All Items</key><true/>
+			<key>Folder</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Folder B</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1498</integer>
+			<key>Playlist Persistent ID</key><string>F3ECD20348F7C12C</string>
+			<key>Parent Persistent ID</key><string>916A358E1A377577</string>
+			<key>All Items</key><true/>
+			<key>Folder</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Playlist A</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1431</integer>
+			<key>Playlist Persistent ID</key><string>E227F4EBD312F7E1</string>
+			<key>Parent Persistent ID</key><string>F3ECD20348F7C12C</string>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Playlist B</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1436</integer>
+			<key>Playlist Persistent ID</key><string>558075E9122B3136</string>
+			<key>Parent Persistent ID</key><string>F3ECD20348F7C12C</string>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Playlist C</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1494</integer>
+			<key>Playlist Persistent ID</key><string>BA8725842B1738C3</string>
+			<key>Parent Persistent ID</key><string>916A358E1A377577</string>
+			<key>All Items</key><true/>
+		</dict>
+		<dict>
+			<key>Name</key><string>Downloaded</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1440</integer>
+			<key>Playlist Persistent ID</key><string>FF52978149C39F36</string>
+			<key>All Items</key><true/>
+			<key>Smart Info</key>
+			<data>
+			AQEAAwAAAAIAAAAZAAAAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAA==
+			</data>
+			<key>Smart Criteria</key>
+			<data>
+			U0xzdAABAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIUAAAQAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAB
+			AAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+			</data>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>479</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>482</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>467</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>473</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>470</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>476</integer>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>Name</key><string>Playlist D</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>1449</integer>
+			<key>Playlist Persistent ID</key><string>9AC2F34D7B2BAB0E</string>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>470</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>482</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>479</integer>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

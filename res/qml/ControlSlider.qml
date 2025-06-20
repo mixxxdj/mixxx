@@ -16,5 +16,4 @@ Skin.Slider {
     TapHandler {
         onDoubleTapped: control.reset()
     }
-
 }

@@ -1,11 +1,10 @@
 #pragma once
 
 #include <QVector>
+#include <optional>
 
 #include "audio/frame.h"
-#include "audio/types.h"
 #include "track/bpm.h"
-#include "util/math.h"
 
 class BeatUtils {
   public:
@@ -39,6 +38,13 @@ class BeatUtils {
 
     static QVector<mixxx::audio::FramePos> getBeats(const QVector<ConstRegion>& constantRegions);
 
+    static std::optional<mixxx::Bpm> trySnap(mixxx::Bpm minBpm,
+            mixxx::Bpm centerBpm,
+            mixxx::Bpm maxBpm,
+            double fraction);
+
     static mixxx::Bpm roundBpmWithinRange(
             mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm);
 };
+
+Q_DECLARE_TYPEINFO(BeatUtils::ConstRegion, Q_PRIMITIVE_TYPE);

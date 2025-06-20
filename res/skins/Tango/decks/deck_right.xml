@@ -17,7 +17,7 @@ Variables:
   <SingletonDefinition>
     <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
     <Children>
-      <Template src="skin:../Tango/decks/row_overview_right.xml"/>
+      <Template src="skins:Tango/decks/row_overview_right.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -30,8 +30,8 @@ Variables:
           <WidgetGroup><!-- Symmetric Artist + Time -->
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/decks/loop_indicator.xml"/>
-              <Template src="skin:../Tango/decks/row_text_right.xml"/>
+              <Template src="skins:Tango/decks/loop_indicator.xml"/>
+              <Template src="skins:Tango/decks/row_text_right.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -42,8 +42,8 @@ Variables:
           <WidgetGroup><!-- Parallel Artist + Time -->
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/decks/loop_indicator.xml"/>
-              <Template src="skin:../Tango/decks/row_text_left.xml"/>
+              <Template src="skins:Tango/decks/loop_indicator.xml"/>
+              <Template src="skins:Tango/decks/row_text_left.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -73,7 +73,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/mixer/vumeter_floating.xml">
+              <Template src="skins:Tango/mixer/vumeter_floating.xml">
                 <SetVariable name="Label">Deck<Variable name="chanNum"/></SetVariable>
               </Template>
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -86,14 +86,14 @@ Variables:
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /VUMeter -->
 
       <!-- Pitch slider & Key controls -->
-      <Template src="skin:../Tango/decks/rate_pitch_key.xml"/>
+      <Template src="skins:Tango/decks/rate_pitch_key.xml"/>
 
       <WidgetGroup>
         <Size>3f,1min</Size>
@@ -115,7 +115,7 @@ Variables:
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:../Tango/decks/spinny_cover_maxi.xml"/>
+              <Template src="skins:Tango/decks/spinny_cover_maxi.xml"/>
 
               <!-- 3px margin to main deck -->
               <WidgetGroup>
@@ -135,7 +135,7 @@ Variables:
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -145,11 +145,11 @@ Variables:
         <Layout>vertical</Layout>
         <SizePolicy>f,min</SizePolicy>
         <Children>
-          <Template src="skin:../Tango/mixer/mixer_channel_right.xml"/>
+          <Template src="skins:Tango/mixer/mixer_channel_right.xml"/>
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Mixer -->
@@ -176,7 +176,7 @@ Variables:
                 <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:../Tango/decks/row_comment_fx_right.xml"/>
+              <Template src="skins:Tango/decks/row_comment_fx_right.xml"/>
 
               <SingletonContainer>
                 <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
@@ -198,7 +198,7 @@ Variables:
                 <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:../Tango/decks/row_comment_fx_right.xml"/>
+              <Template src="skins:Tango/decks/row_comment_fx_right.xml"/>
 
               <WidgetGroup><!--
                 <ObjectName>DeckOverviewBox<Variable name="chanNum"/></ObjectName> -->
@@ -221,9 +221,9 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/decks/row_transport_right.xml" />
+          <Template src="skins:Tango/decks/row_transport_right.xml" />
 
-          <Template src="skin:../Tango/decks/row_loop_jump.xml">
+          <Template src="skins:Tango/decks/row_loop_jump.xml">
             <SetVariable name="SpaceLeft">70</SetVariable>
             <SetVariable name="SpaceRight">-1</SetVariable>
           </Template>

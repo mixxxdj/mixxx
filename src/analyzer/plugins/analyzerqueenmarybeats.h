@@ -1,13 +1,11 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
+#include <memory>
+#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
-#include "util/memory.h"
-#include "util/samplebuffer.h"
 
 class DetectionFunction;
 
@@ -33,7 +31,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     }
 
     bool initialize(mixxx::audio::SampleRate sampleRate) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
     bool finalize() override;
 
     bool supportsBeatTracking() const override {

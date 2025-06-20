@@ -1,13 +1,14 @@
 #pragma once
 
-#include <QObject>
-#include <QScopedPointer>
 #include <QString>
 #include <QThread>
 #include <future>
 
 #include "track/track_decl.h"
-#include "util/fileinfo.h"
+
+namespace mixxx {
+class FileInfo;
+} // namespace mixxx
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs

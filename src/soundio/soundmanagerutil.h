@@ -4,21 +4,22 @@
 #include <QList>
 #include <QString>
 #include <QtDebug>
+#include <span>
 
+#include "audio/types.h"
 #include "util/compatibility/qhash.h"
-#include "util/fifo.h"
 #include "util/types.h"
 
 /// Describes a group of channels, typically a pair for stereo sound in Mixxx.
 class ChannelGroup {
   public:
-    ChannelGroup(unsigned char channelBase, unsigned char channels);
+    ChannelGroup(unsigned char channelBase, mixxx::audio::ChannelCount channels);
     unsigned char getChannelBase() const;
-    unsigned char getChannelCount() const;
+    mixxx::audio::ChannelCount getChannelCount() const;
     bool clashesWith(const ChannelGroup& other) const;
 
     uint hashValue() const {
-        return (m_channels << 8) |
+        return (m_channels.value() << 8) |
                 m_channelBase;
     }
     friend qhash_seed_t qHash(
@@ -36,7 +37,7 @@ class ChannelGroup {
 
   private:
     unsigned char m_channelBase; // base (first) channel used on device
-    unsigned char m_channels; // number of channels used (s/b 2 in most cases)
+    mixxx::audio::ChannelCount m_channels; // number of channels used (s/b 2 in most cases)
 };
 
 inline bool operator!=(
@@ -56,87 +57,101 @@ public:
     /// methods including getStringFromType, isIndexed, getTypeFromInt,
     /// channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     /// (if necessary), etc.
-    enum AudioPathType {
-        MASTER,
-        HEADPHONES,
-        BOOTH,
-        BUS,
-        DECK,
-        VINYLCONTROL,
-        MICROPHONE,
-        AUXILIARY,
-        RECORD_BROADCAST,
-        INVALID, // if this isn't last bad things will happen -bkgood
-    };
-    AudioPath(unsigned char channelBase, unsigned char channels);
-    virtual ~AudioPath() = default;
-    AudioPathType getType() const;
-    ChannelGroup getChannelGroup() const;
-    unsigned char getIndex() const;
-    bool channelsClash(const AudioPath &other) const;
-    QString getString() const;
-    static QString getStringFromType(AudioPathType type);
-    static QString getTrStringFromType(AudioPathType type, unsigned char index);
-    static AudioPathType getTypeFromString(QString string);
-    static bool isIndexed(AudioPathType type);
-    static AudioPathType getTypeFromInt(int typeInt);
+  enum class AudioPathType : int {
+      Main,
+      Headphones,
+      Booth,
+      Bus,
+      Deck,
+      VinylControl,
+      Microphone,
+      Auxiliary,
+      RecordBroadcast,
+      Invalid, // if this isn't last bad things will happen -bkgood
+  };
+  AudioPath(unsigned char channelBase, mixxx::audio::ChannelCount channels);
+  virtual ~AudioPath() = default;
+  AudioPathType getType() const;
+  ChannelGroup getChannelGroup() const;
+  unsigned char getIndex() const;
+  bool channelsClash(const AudioPath& other) const;
+  QString getString() const;
+  static QString getStringFromType(AudioPathType type);
+  static QString getTrStringFromType(AudioPathType type, unsigned char index);
+  static AudioPathType getTypeFromString(QString string);
+  static bool isIndexed(AudioPathType type);
+  static AudioPathType getTypeFromInt(int typeInt);
 
-    /// Returns the minimum number of channels needed on a sound device for an
-    /// AudioPathType.
-    static unsigned char minChannelsForType(AudioPathType type);
+  /// Returns the minimum number of channels needed on a sound device for an
+  /// AudioPathType.
+  static mixxx::audio::ChannelCount minChannelsForType(AudioPathType type);
 
-    // Returns the maximum number of channels needed on a sound device for an
-    // AudioPathType.
-    static unsigned char maxChannelsForType(AudioPathType type);
+  // Returns the maximum number of channels needed on a sound device for an
+  // AudioPathType.
+  static mixxx::audio::ChannelCount maxChannelsForType(AudioPathType type);
 
-    uint hashValue() const {
+  uint hashValue() const {
         // Exclude m_channelGroup from hash value!
         // See also: operator==()
         // TODO: Why??
-        return (m_type << 8) |
+        return (static_cast<int>(m_type) << 8) |
                 m_index;
-    }
+  }
     friend qhash_seed_t qHash(
             const AudioPath& path,
             qhash_seed_t seed = 0) {
         return qHash(path.hashValue(), seed);
     }
 
-    friend bool operator==(
-            const AudioPath& lhs,
-            const AudioPath& rhs) {
-        // Exclude m_channelGroup from comparison!
-        // See also: hashValue()/qHash()
-        // TODO: Why??
-        return lhs.m_type == rhs.m_type &&
-                lhs.m_index == rhs.m_index;
-    }
+    // CppCoreGuidelines C.161: Use non-member functions for symmetric operators
+    friend constexpr bool operator<(const AudioPath& lhs,
+            const AudioPath& rhs) noexcept;
+    friend constexpr bool operator==(const AudioPath& lhs,
+            const AudioPath& rhs) noexcept;
 
-protected:
+  protected:
     virtual void setType(AudioPathType type) = 0;
     ChannelGroup m_channelGroup;
     AudioPathType m_type;
     unsigned char m_index;
 };
 
-inline bool operator!=(
-        const AudioPath& lhs,
-        const AudioPath& rhs) {
-    return !(lhs == rhs);
+// TODO: turn this into operator<=> once all targets fully support that
+// XCode 14 probably and GCC 10
+constexpr bool operator<(const AudioPath& lhs,
+        const AudioPath& rhs) noexcept {
+    // Exclude m_channelGroup from comparison!
+    // See also: hashValue()/qHash()
+    // TODO: Why??
+    return std::tie(lhs.m_type, lhs.m_index) <
+            std::tie(rhs.m_type, rhs.m_index);
+}
+
+constexpr bool operator==(const AudioPath& lhs,
+        const AudioPath& rhs) noexcept {
+    // Exclude m_channelGroup from comparison!
+    // See also: hashValue()/qHash()
+    // TODO: Why??
+    return std::tie(lhs.m_type, lhs.m_index) ==
+            std::tie(rhs.m_type, rhs.m_index);
 }
 
 /// A source of audio in Mixxx that is to be output to a group of
 /// channels on an audio interface.
 class AudioOutput : public AudioPath {
   public:
-    AudioOutput(AudioPathType type, unsigned char channelBase,
-                unsigned char channels,
-                unsigned char index = 0);
+    AudioOutput(AudioPathType type,
+            unsigned char channelBase,
+            mixxx::audio::ChannelCount channels,
+            unsigned char index = 0);
     ~AudioOutput() override = default;
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-    bool isHidden();
+    bool isHidden() const {
+        return m_type == AudioPathType::RecordBroadcast;
+    }
+
   protected:
     void setType(AudioPathType type) override;
 };
@@ -159,12 +174,19 @@ class AudioOutputBuffer : public AudioOutput {
 /// that is be processed in Mixxx.
 class AudioInput : public AudioPath {
   public:
-    AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-               unsigned char channels = 0, unsigned char index = 0);
+    AudioInput(AudioPathType type = AudioPathType::Invalid,
+            unsigned char channelBase = 0,
+            mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount(),
+            unsigned char index = 0);
     ~AudioInput() override;
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+    // implemented for regularity with AudioOutput
+    bool isHidden() const {
+        return false;
+    }
+
   protected:
     void setType(AudioPathType type) override;
 };
@@ -186,10 +208,10 @@ class AudioInputBuffer : public AudioInput {
 
 
 class AudioSource {
-public:
+  public:
     virtual ~AudioSource() = default;
 
-    virtual const CSAMPLE* buffer(const AudioOutput& output) const = 0;
+    virtual std::span<const CSAMPLE> buffer(const AudioOutput& output) const = 0;
 
     /// This is called by SoundManager whenever an output is connected for this
     /// source. When this is called it is guaranteed that no callback is
@@ -207,7 +229,7 @@ public:
 };
 
 class AudioDestination {
-public:
+  public:
     virtual ~AudioDestination() = default;
 
     /// This is called by SoundManager whenever there are new samples from the

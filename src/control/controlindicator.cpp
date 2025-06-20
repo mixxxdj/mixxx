@@ -2,15 +2,18 @@
 
 #include "control/controlproxy.h"
 #include "moc_controlindicator.cpp"
-#include "util/math.h"
+
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+} // namespace
 
 ControlIndicator::ControlIndicator(const ConfigKey& key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_pCOIndicator250millis(make_parented<ControlProxy>(
-                  "[Master]", "indicator_250millis", this)),
+                  kAppGroup, QStringLiteral("indicator_250ms"), this)),
           m_pCOIndicator500millis(make_parented<ControlProxy>(
-                  "[Master]", "indicator_500millis", this)) {
+                  kAppGroup, QStringLiteral("indicator_500ms"), this)) {
     connect(this,
             &ControlIndicator::blinkValueChanged,
             this,

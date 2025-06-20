@@ -3,7 +3,6 @@
 #include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/analyzertrack.h"
 #include "moc_trackanalysisscheduler.cpp"
-#include "track/track.h"
 #include "track/trackid.h"
 #include "util/logger.h"
 

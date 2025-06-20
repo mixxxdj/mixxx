@@ -24,18 +24,19 @@ WPushButton,
 #LibraryFeatureControls QRadioButton,
 WRecordingDuration,
 WTime,
-WTrackText,
 WTrackProperty,
 QSpinBox,
 WBeatSpinBox,
 QToolTip,
 WTrackTableViewHeader,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu QCheckBox,
 WTrackTableViewHeader::section,
 WLibrarySidebar QMenu,
 WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
@@ -101,14 +102,18 @@ WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -151,7 +156,9 @@ WBeatSpinBox,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::item:selected,
-WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
@@ -159,6 +166,7 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectSelector::indicator:unchecked:selected,
@@ -168,6 +176,16 @@ WEffectSelector::indicator:unchecked:selected,
   color: #000;
   /* remove OS focus indicator */
   outline: none;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #000;
+    selection-background-color: lightgray;
+    border: 0px;
+    outline: none;
   }
   /* Remove 3D border from unchecked effects checkmark space */
   WEffectSelector::item:selected,
@@ -239,6 +257,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -294,6 +313,7 @@ WEffectSelector QAbstractScrollArea,
   WSearchLineEdit::indicator,
   WSearchLineEdit::drop-down,
   WSearchLineEdit::indicator:unchecked,
+  WTrackTableViewHeader QMenu QCheckBox,
   #fadeModeCombobox::checked,
   #fadeModeCombobox::indicator,
   #fadeModeCombobox::drop-down,
@@ -322,7 +342,7 @@ WEffectSelector QAbstractScrollArea,
   /* checked checkbox */
   /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
   WLibrarySidebar QMenu::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -351,10 +371,12 @@ WEffectSelector QAbstractScrollArea,
   #MainMenu::item:disabled,
   #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
+  WLibraryTextBrowser QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
-  QLineEdit QMenu::item:disabled {
+  QLineEdit QMenu::item:disabled,
+  QPlainTextEdit QMenu::item:disabled {
     color: #666;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled {
@@ -367,15 +389,23 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
-  QLineEdit QMenu::separator {
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
     border-top: 1px solid #71777a;
   }
 
   WLibrarySidebar QMenu::indicator,
-  WTrackTableViewHeader QMenu::indicator,
+  WTrackTableViewHeader QMenu QCheckBox::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
     border-width: 1px;
     border-style: solid;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator,
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    border: 0px;
+    background-color: transparent;
+    image: url(skin:/btn/btn_search_menu.svg);
+    margin-left: 2px;
   }
 
 #EffectSelectorGroup[highlight="1"] {
@@ -410,6 +440,23 @@ WCueMenuPopup QLabel {
   qproperty-iconSize: 20px;
   outline: none;
 }
+#CueSavedLoopButton {
+  /* set any border to allow styles for other properties as well */
+  border: 1px solid #060613;
+/* To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 43px;
+  padding: 0px;
+  background-color: #aab2b7;
+  qproperty-icon: url(skin:/btn/btn_hotcue_loop.png);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  outline: none;
+}
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #F90562;
+}
 #CueLabelEdit {
   border: 1px solid #060613;
   border-radius: 0px;
@@ -436,7 +483,6 @@ WLibraryTextBrowser,
 WLibrarySidebar {
   border: 1px solid #585858;
   font-weight: normal;
-  color: #9e9e9e;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
 /* In selected library rows this sets the color of
@@ -450,14 +496,48 @@ WLibraryTextBrowser {
   padding-left: 10px;
 }
 
+WTrackTableView,
+WLibraryTextBrowser,
+WLibrarySidebar,
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  color: #9e9e9e;
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #9e9e9e;
+}
+
+
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  border: 0px;
+}
+
 WTrackTableView::item:selected,
 WSearchLineEdit::item:selected,
 WSearchLineEdit::item:checked,
 WLibrarySidebar::item:selected,
 WLibrarySidebar::branch:selected,
-#LibraryBPMButton::item:selected {
-  color: #fff;
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+  color: #fff; */
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
   background-color: #656d75;
+  }
+  /* Highlight currentIndex which can be moved with Ctrl + arrow keys */
+  WTrackTableView::item:!selected:focus {
+    /* For outline to be applied, background-color must be set, too ...
+       Use a value between #0f0f0f and #1a1a1a (alternate-background-color) */
+    background-color: #151515;
+    outline: 1px solid #fff;
+    color: #fff;
   }
   WSearchLineEdit::item:checked:!selected {
     color: #fff;
@@ -470,15 +550,21 @@ WLibrarySidebar::branch:selected,
   WSearchLineEdit::indicator {
     width:  0;
   }
-WLibrarySidebar,
-WLibrarySidebar::item:focus {
+WLibrarySidebar {
   outline: none;
+}
+WLibrarySidebar::item:selected:focus {
+  outline: none;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
 }
 
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #c9c9c9;
 }
@@ -486,17 +572,37 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #c9c9c9;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
+  WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
+  }
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
     border: 1px solid #656d75;
+  }
+  WTrackPropertyEditor {
+    font-size: 13px;
+    border-width: 1px;
+    border-style: solid;
+  }
+  #TitleEjectRow WTrackPropertyEditor {
+    margin-top: 4px;
   }
 
   /* BPM lock icon in the library "BPM" column. */
@@ -506,9 +612,9 @@ WTrackTableView {
     #LibraryBPMButton::indicator:unchecked {
       image: url(skin:/btn/btn_lib_bpm_unlocked.svg);
       }
-  #LibraryBPMButton::item {
-    color: #cfcfcf;
-    }
+    #LibraryBPMButton::indicator:unchecked:selected {
+      image: url(skin:/btn/btn_lib_bpm_unlocked_black.svg);
+      }
     WLibrary > QCheckBox {
       text-align: right;
       alignment: right;
@@ -556,15 +662,10 @@ WTrackTableView {
 
 
   /* checkbox in library "Played" column */
-  WTrackTableView::indicator {
-    margin: 0px;
-    padding: 0px;
-    border: 0px;
-    }
-  WTrackTableView::indicator:unchecked {
+  #LibraryPlayedCheckbox::indicator:unchecked {
     image: url(skin:/btn/btn_lib_checkbox.svg);
     }
-  WTrackTableView::indicator:checked {
+  #LibraryPlayedCheckbox::indicator:checked {
     image: url(skin:/btn/btn_lib_checkbox_checked.svg);
     }
 
@@ -618,6 +719,7 @@ WLibrarySidebar {
   Defined by SearchBox	*/
   margin: 0px;
   }
+  WTrackPropertyEditor,
   WTrackTableView:focus,
   WLibrarySidebar:focus,
   #LibraryContainer WLibraryTextBrowser:focus {
@@ -676,7 +778,7 @@ WTrackTableViewHeader {
 /*	Library header 'buttons'	*/
 WTrackTableViewHeader::section {
   height: 1.1em;
-  padding: 0.1em;
+  padding: 0.1em -0.7em 0.1em 0.1em;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;
@@ -949,6 +1051,10 @@ QPushButton#pushButtonRepeatPlaylist {
 
 #HotcueButton {
     background-color: #aab2b7;
+}
+#HotcueButton[displayValue="1"][type="loop"],
+#HotcueButton[displayValue="2"][type="loop"] {
+    image: url(skin:/btn/btn_hotcue_loop.png) no-repeat;
 }
 
 WRateRange {

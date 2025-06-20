@@ -12,14 +12,14 @@ case "$1" in
     setup)
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
-            bionic) # Ubuntu 18.04 LTS
+            focal|jammy|bullseye|victoria|vera|vanessa|virginia) # <= Ubuntu 22.04.5 LTS
                 PACKAGES_EXTRA=(
-                    libmp4v2-dev
+                    libqt6shadertools6-dev
                 )
                 ;;
-            *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
+            *)
                 PACKAGES_EXTRA=(
-                    libavformat-dev
+                    qt6-shadertools-dev
                 )
         esac
 
@@ -34,6 +34,16 @@ case "$1" in
             sudo apt-get install libjack-jackd2-dev;
         fi
 
+        # Install a faster linker. Prefer mold, fall back to lld
+        if apt-cache show mold 2>%1 >/dev/null;
+        then
+            sudo apt-get install -y --no-install-recommends mold
+        else
+            if apt-cache show lld 2>%1 >/dev/null;
+            then
+                sudo apt-get install -y --no-install-recommends lld
+            fi
+        fi
 
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
@@ -48,12 +58,17 @@ case "$1" in
             fonts-ubuntu \
             g++ \
             lcov \
+            libavformat-dev \
+            libbenchmark-dev \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
             libfaad-dev \
             libfftw3-dev \
             libflac-dev \
+            libgmock-dev \
+            libgtest-dev \
+            libgl1-mesa-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \
@@ -65,10 +80,10 @@ case "$1" in
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt5opengl5-dev \
-            libqt5sql5-sqlite \
-            libqt5svg5-dev \
-            libqt5x11extras5-dev \
+            libqt6core5compat6-dev\
+            libqt6opengl6-dev \
+            libqt6sql6-sqlite \
+            libqt6svg6-dev \
             librubberband-dev \
             libshout-idjc-dev \
             libsndfile1-dev \
@@ -80,15 +95,23 @@ case "$1" in
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
+            lv2-dev \
             markdown \
             portaudio19-dev \
             protobuf-compiler \
-            qt5keychain-dev \
-            qtdeclarative5-dev \
-            qml-module-qtquick-controls \
-            qml-module-qtquick-controls2 \
-            qml-module-qt-labs-qmlmodels \
-            qml-module-qtquick-shapes \
+            qtkeychain-qt6-dev \
+            qt6-declarative-private-dev \
+            qt6-base-private-dev \
+            qt6-qpa-plugins \
+            qml6-module-qt5compat-graphicaleffects \
+            qml6-module-qtqml-workerscript \
+            qml6-module-qtquick-controls \
+            qml6-module-qtquick-layouts \
+            qml6-module-qtquick-nativestyle \
+            qml6-module-qtquick-shapes \
+            qml6-module-qtquick-templates \
+            qml6-module-qtquick-window \
+            qml6-module-qt-labs-qmlmodels \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)

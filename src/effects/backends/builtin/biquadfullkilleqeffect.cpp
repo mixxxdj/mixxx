@@ -1,6 +1,9 @@
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 
 namespace {
@@ -142,9 +145,9 @@ void BiquadFullKillEQEffectGroupState::setFilters(
     m_lvMixIso->setFilters(sampleRate, lowFreqCorner, highFreqCorner);
 }
 
-BiquadFullKillEQEffect::BiquadFullKillEQEffect() {
-    m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+BiquadFullKillEQEffect::BiquadFullKillEQEffect()
+        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
+          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
 }
 
 void BiquadFullKillEQEffect::loadEngineEffectParameters(
@@ -170,10 +173,10 @@ void BiquadFullKillEQEffect::processChannel(
     Q_UNUSED(groupFeatures);
 
     if (pState->m_oldSampleRate != engineParameters.sampleRate() ||
-            (pState->m_loFreqCorner != m_pLoFreqCorner->get()) ||
-            (pState->m_highFreqCorner != m_pHiFreqCorner->get())) {
-        pState->m_loFreqCorner = m_pLoFreqCorner->get();
-        pState->m_highFreqCorner = m_pHiFreqCorner->get();
+            (pState->m_loFreqCorner != m_pLoFreqCorner.get()) ||
+            (pState->m_highFreqCorner != m_pHiFreqCorner.get())) {
+        pState->m_loFreqCorner = m_pLoFreqCorner.get();
+        pState->m_highFreqCorner = m_pHiFreqCorner.get();
         pState->m_oldSampleRate = engineParameters.sampleRate();
         pState->setFilters(engineParameters.sampleRate(),
                 pState->m_loFreqCorner,
@@ -377,7 +380,7 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_highKill->pauseFilter();
     }
 
-    if (activeFilters == 0) {
+    if (activeFilters == 0 && pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 
@@ -407,7 +410,7 @@ void BiquadFullKillEQEffect::processChannel(
                 fLow,
                 fMid,
                 fHigh,
-                m_pLoFreqCorner->get(),
-                m_pHiFreqCorner->get());
+                m_pLoFreqCorner.get(),
+                m_pHiFreqCorner.get());
     }
 }

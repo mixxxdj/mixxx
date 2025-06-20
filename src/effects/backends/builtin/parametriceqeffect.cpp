@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/parametriceqeffect.h"
 
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 
 namespace {
 constexpr int kBandCount = 2;
@@ -22,10 +23,10 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-            "An gentle 2-band parametric equalizer based on biquad filters.\n"
+            "A gentle 2-band parametric equalizer based on biquad filters.\n"
             "It is designed as a complement to the steep mixing equalizers."));
     pManifest->setEffectRampsFromDry(true);
-    pManifest->setIsMasterEQ(true);
+    pManifest->setIsMainEQ(true);
 
     EffectManifestParameterPointer gain1 = pManifest->addParameter();
     gain1->setId("gain1");
@@ -34,7 +35,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain1->setDescription(QObject::tr(
             "Gain for Filter 1"));
     gain1->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    gain1->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    gain1->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain1->setNeutralPointOnScale(0.5);
     gain1->setRange(-18, 0, 18); // dB
 
@@ -59,7 +60,6 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
             "Center frequency for Filter 1, from 100 Hz to 14 kHz"));
     center1->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     center1->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
-    center1->setNeutralPointOnScale(0.5);
     center1->setRange(100, kDefaultCenter1, 14000);
 
     EffectManifestParameterPointer gain2 = pManifest->addParameter();
@@ -69,7 +69,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain2->setDescription(QObject::tr(
             "Gain for Filter 2"));
     gain2->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    gain2->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    gain2->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain2->setNeutralPointOnScale(0.5);
     gain2->setRange(-18, 0, 18); // dB
 
@@ -94,7 +94,6 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
             "Center frequency for Filter 2, from 100 Hz to 14 kHz"));
     center2->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     center2->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
-    center2->setNeutralPointOnScale(0.5);
     center2->setRange(100, kDefaultCenter2, 14000);
 
     return pManifest;
@@ -119,7 +118,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState(
     }
 }
 
-void ParametricEQEffectGroupState::setFilters(int sampleRate) {
+void ParametricEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
     for (int i = 0; i < kBandCount; i++) {
         m_bands[i]->setFrequencyCorners(
                 sampleRate, m_oldCenter[i], m_oldQ[i], m_oldGain[i]);
@@ -134,9 +133,6 @@ void ParametricEQEffect::loadEngineEffectParameters(
     m_pPotGain.append(parameters.value("gain2"));
     m_pPotQ.append(parameters.value("q2"));
     m_pPotCenter.append(parameters.value("center2"));
-}
-
-ParametricEQEffect::~ParametricEQEffect() {
 }
 
 void ParametricEQEffect::processChannel(
@@ -189,7 +185,9 @@ void ParametricEQEffect::processChannel(
             pState->m_bands[1]->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            if (pOutput != pInput) {
+                SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            }
         }
     }
 

@@ -1,10 +1,11 @@
 #pragma once
 
-class GitInfoStore {
-  public:
-    static const char* branch();
-    static const char* describe();
-    static const char* date();
-    static int commitCount();
-    static bool dirty();
-};
+#include <QString>
+
+namespace GitInfoStore {
+QString branch();
+QString describe();
+QString date();
+int commitCount();
+bool dirty();
+} // namespace GitInfoStore

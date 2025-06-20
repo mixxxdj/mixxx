@@ -1,8 +1,5 @@
 #include "widget/weffectchain.h"
 
-#include <QtDebug>
-
-#include "effects/effectsmanager.h"
 #include "moc_weffectchain.cpp"
 #include "widget/effectwidgetutils.h"
 
@@ -19,8 +16,10 @@ void WEffectChain::setup(const QDomNode& node, const SkinContext& context) {
     if (pChainSlot) {
         setEffectChain(pChainSlot);
     } else {
-        SKIN_WARNING(node, context)
-                << "EffectChain node could not attach to effect chain slot.";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectChain node could not attach to effect "
+                               "chain slot."));
     }
 }
 

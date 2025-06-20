@@ -3,11 +3,11 @@
 #include <QString>
 #include <QVariant>
 #include <QtGlobal>
+#include <memory>
 
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
 #include "engine/channelhandle.h"
-#include "util/memory.h"
 #include "util/messagepipe.h"
 
 class EngineEffectChain;
@@ -22,7 +22,7 @@ struct EffectsRequest {
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
         // Effects cannot currently be toggled for output channels;
-        // the outputs that effects are applied to are hardwired in EngineMaster
+        // the outputs that effects are applied to are hardwired in EngineMixer
         ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
         DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
 
@@ -42,20 +42,6 @@ struct EffectsRequest {
               value(0.0) {
         pTargetChain = nullptr;
         pTargetEffect = nullptr;
-    }
-
-    // This is called from the main thread by EffectsManager after receiving a
-    // response from EngineEffectsManager in the audio engine thread.
-    ~EffectsRequest() {
-        if (type == ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
-            VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
-                return;
-            }
-            // This only deletes the container used to passed the EffectStates
-            // to EffectProcessorImpl. The EffectStates are managed by
-            // EffectProcessorImpl.
-            delete EnableInputChannelForChain.pEffectStatesMapArray;
-        }
     }
 
     MessageType type;
@@ -86,7 +72,6 @@ struct EffectsRequest {
             SignalProcessingStage signalProcessingStage;
         } RemoveEffectChain;
         struct {
-            EffectStatesMapArray* pEffectStatesMapArray;
             ChannelHandle channelHandle;
         } EnableInputChannelForChain;
         struct {

@@ -121,9 +121,12 @@
       </layout>
      </widget>
      <widget class="QWidget" name="results_page">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_3">
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelSelect">
          <property name="styleSheet">
           <string notr="true">QLabel { font-weight: bold; }</string>
          </property>
@@ -132,8 +135,14 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="0">
         <widget class="QTreeWidget" name="tags">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
          <property name="editTriggers">
           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
          </property>
@@ -181,14 +190,132 @@
          </column>
         </widget>
        </item>
+       <item row="0" column="1">
+        <layout class="QVBoxLayout" name="coverFetcherLayout">
+         <item>
+          <widget class="QLabel" name="currentCoverLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel { font-weight: bold; }</string>
+           </property>
+           <property name="text">
+            <string>Current Cover Art</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="currentCover" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>250</horstretch>
+             <verstretch>250</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" name="currentCoverArtLayout">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="fetchedCoverLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel { font-weight: bold; }</string>
+           </property>
+           <property name="text">
+            <string>Found Cover Art</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="fetchedCover" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>250</horstretch>
+             <verstretch>250</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" name="fetchedCoverArtLayout">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_9">
+    <layout class="QHBoxLayout" name="progressRetryLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QVBoxLayout" name="progressMessageLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
+       </property>
        <item>
         <widget class="QProgressBar" name="loadingProgressBar">
          <property name="value">
@@ -196,23 +323,49 @@
          </property>
         </widget>
        </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="successMessage">
+       <item>
+        <widget class="QLabel" name="statusMessage">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
          <property name="text">
           <string>The results are ready to be applied.</string>
          </property>
         </widget>
        </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Maximum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20000</width>
+             <height>0</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
       </layout>
      </item>
      <item>
       <widget class="QPushButton" name="btnRetry">
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="text">
         <string>Retry</string>
        </property>
@@ -221,7 +374,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="btnsLowerLayout">
      <item>
       <widget class="QPushButton" name="btnPrev">
        <property name="text">
@@ -237,10 +390,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3"/>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="btnSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -251,6 +401,20 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxTags">
+       <property name="text">
+        <string>Tags</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxCover">
+       <property name="text">
+        <string>Cover</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnApply">
@@ -278,6 +442,8 @@
   <tabstop>submit_tree</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
+  <tabstop>checkBoxTags</tabstop>
+  <tabstop>checkBoxCover</tabstop>
   <tabstop>btnApply</tabstop>
   <tabstop>btnQuit</tabstop>
   <tabstop>btnRetry</tabstop>

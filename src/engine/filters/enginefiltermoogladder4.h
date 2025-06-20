@@ -10,15 +10,10 @@
 // Based on C Source from R. Lindner published at public domain
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
-#include <memory.h>
-#include <stdio.h>
-
-#include <QDebug>
-
+#include "audio/types.h"
+#include "engine/engine.h"
 #include "engine/engineobject.h"
-#include "util/math.h"
 #include "util/sample.h"
-#include "util/timer.h"
 
 namespace {
 
@@ -53,12 +48,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   public:
     EngineFilterMoogLadderBase(
-            unsigned int sampleRate, float cutoff, float resonance) {
-        initBuffers();
-        setParameter(sampleRate, cutoff, resonance);
-        m_postGain = m_postGainNew;
-        m_kacr = m_kacrNew;
-        m_k2vg = m_k2vgNew;
+            mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
+         initBuffers();
+         setParameter(sampleRate, cutoff, resonance);
+         m_postGain = m_postGainNew;
+         m_kacr = m_kacrNew;
+         m_k2vg = m_k2vgNew;
     }
 
     virtual ~EngineFilterMoogLadderBase() {
@@ -72,7 +67,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     // cutoff  in Hz
     // resonance  range 0 ... 4 (4 = self resonance)
-    void setParameter(int sampleRate, float cutoff, float resonance) {
+    void setParameter(mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
         constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
 
         float kfc = cutoff / sampleRate;
@@ -93,11 +88,23 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Resonance correction for self oscillation ~4
         m_kacrNew = resonance * (-3.9364f * (kfc * kfc) + 1.8409f * kfc + 0.9968f);
 
+        // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
+        // notebook used to derive this
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            m_postGainNew = 1;
+            // This for all intents and purposes is just 1.0, so let's just stick with that
+            // m_postGainNew = 0.9999999983339118f + (4.58745459575558e-13f * resonance);
+            m_postGainNew = 1.0;
         } else {
-            m_postGainNew = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
-                    * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
+            // Analyzing this filter as a linear system will show a small dip in
+            // passband/DC gain when the cutoff frequency is around 10 kHz:
+            // https://github.com/mixxxdj/mixxx/pull/11177#issuecomment-1374833386
+            //
+            // In practice this is either not a noticeable issue when running
+            // music through the filter, or it might even be desirable as it
+            // keeps the overall gain increase a bit lower when the resonance is
+            // turned up and the cutoff frequency is around 10 kHz. This may be
+            // worth more experimentation in the future.
+            m_postGainNew = 1.0001784074555027f + (0.9331585678097162f * resonance);
         }
 
         m_doRamping = true;
@@ -110,19 +117,19 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     // it is an alternative for using pauseFillter() calls
     void processAndPauseFilter(const CSAMPLE* M_RESTRICT pIn,
             CSAMPLE* M_RESTRICT pOutput,
-            const int iBufferSize) {
-        process(pIn, pOutput, iBufferSize);
+            const std::size_t bufferSize) {
+        process(pIn, pOutput, bufferSize);
         SampleUtil::linearCrossfadeBuffersOut(
                 pOutput, // fade out filtered
                 pIn,     // fade in dry
-                iBufferSize);
+                bufferSize,
+                mixxx::kEngineChannelOutputCount);
         initBuffers();
     }
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                         const int iBufferSize) {
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
         if (!m_doRamping) {
-            for (int i = 0; i < iBufferSize; i += 2) {
+            for (std::size_t i = 0; i < bufferSize; i += 2) {
                 pOutput[i] = processSample(pIn[i], &m_buf[0]);
                 pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
             }
@@ -131,9 +138,9 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             float startKacr = m_kacr;
             float startK2vg = m_k2vg;
             double cross_mix = 0.0;
-            double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+            double cross_inc = 2.0 / static_cast<double>(bufferSize);
 
-            for (int i = 0; i < iBufferSize; i += 2) {
+            for (std::size_t i = 0; i < bufferSize; i += 2) {
                 cross_mix += cross_inc;
                 m_postGain = static_cast<float>(m_postGainNew * cross_mix +
                         startPostGain * (1.0 - cross_mix));
@@ -148,15 +155,15 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             m_kacr = m_kacrNew;
             m_k2vg = m_k2vgNew;
             double cross_mix = 0.0;
-            double cross_inc = 4.0 / static_cast<double>(iBufferSize);
-            for (int i = 0; i < iBufferSize; i += 2) {
+            double cross_inc = 4.0 / static_cast<double>(bufferSize);
+            for (std::size_t i = 0; i < bufferSize; i += 2) {
                 // Do a linear cross fade between the output of the old
                 // Filter and the new filter.
                 // The new filter is settled for Input = 0 and it sees
                 // all frequencies of the rectangular start impulse.
                 // Since the group delay, after which the start impulse
                 // has passed is unknown here, we just what the half
-                // iBufferSize until we use the samples of the new filter.
+                // bufferSize until we use the samples of the new filter.
                 // In one of the previous version we have faded the Input
                 // of the new filter but it turns out that this produces
                 // a gain drop due to the filter delay which is more
@@ -166,7 +173,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 double new1 = processSample(pIn[i], &m_buf[0]);
                 double new2 = processSample(pIn[i+1], &m_buf[1]);
 
-                if (i < iBufferSize / 2) {
+                if (i < bufferSize / 2) {
                     pOutput[i] = old1;
                     pOutput[i + 1] = old2;
                 } else {
@@ -259,12 +266,16 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<MoogMode::LowPassOversampling> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4Low(mixxx::audio::SampleRate sampleRate,
+            double freqCorner1,
+            double resonance);
 };
 
 
 class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<MoogMode::HighPassOversampling> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4High(mixxx::audio::SampleRate sampleRate,
+            double freqCorner1,
+            double resonance);
 };

@@ -5,6 +5,10 @@ name: Build
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
 
 jobs:
   build:
@@ -12,10 +16,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 22.04 (gcc)
-            os: ubuntu-22.04
+          - name: Ubuntu 24.04
+            os: ubuntu-24.04
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
+              -DQT6=ON
+              -DQML=ON
               -DBULK=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
@@ -25,87 +30,127 @@ jobs:
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 22.04 DEB
+            artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: Arch Linux (Qt 6.3, gcc)
-            os: ubuntu-22.04
-            # The Dockerfile for this container can be found at:
-            # https://github.com/Holzhaus/mixxx-ci-docker
-            container: holzhaus/mixxx-ci:20220612-qt6
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DQT6=ON
-              -DBULK=ON
-              -DFFMPEG=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            qt_qpa_platform: offscreen
-          - name: macOS 11
-            os: macos-11
+          - name: macOS 13 x64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=OFF
-              -DWAVPACK=OFF
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=OFF
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: x64
             buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_buildenv.sh
-            artifacts_name: macOS DMG
+            buildenv_script: tools/macos_release_buildenv.sh
+            artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: Windows 2019 (MSVC)
-            os: windows-2019
-            # TODO: Re-enable FFmpeg after licensing issues have been clarified
+          - name: macOS 13 arm64
+            os: macos-13
+            cmake_args: >-
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=ON
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
+            # TODO: Fix this broken test on macOS
+            crosscompile: true
+            cpack_generator: DragNDrop
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: arm64
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
+            artifacts_name: macOS ARM DMG
+            artifacts_path: build/*.dmg
+            artifacts_slug: macos-macosarm
+            qt_qpa_platform: offscreen
+          - name: Windows 2022 x64
+            os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DBULK=OFF
-              -DFFMPEG=OFF
+              -DBULK=ON
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=ON
               -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-windows-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
-            compiler_cache: sccache
-            compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
-            artifacts_name: Windows Installer
+            artifacts_name: Windows x64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
             qt_qpa_platform: windows
+            arch: x64
+          - name: Windows 11 ARM64
+            os: windows-11-arm
+            # Attention: If you change the cmake_args for the Windows CI build,
+            #            also adjust the for the local Windows build setup in
+            #            ./tools/windows_buildenv.bat
+            cmake_args: >-
+              -DBULK=ON
+              -DHSS1394=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMEDIAFOUNDATION=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=ON
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-windows-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
+            cc: cl
+            cxx: cl
+            # TODO: Fix these broken tests on Windows
+            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            cpack_generator: WIX
+            buildenv_basepath: C:\buildenv
+            buildenv_script: tools/windows_buildenv.bat
+            artifacts_name: Windows ARM64 Installer
+            artifacts_path: build/*.msi
+            artifacts_slug: windows-winarm
+            qt_qpa_platform: windows
+            arch: arm64
 
     env:
-      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
-      APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
-      MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
+      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
     runs-on: ${{ matrix.os }}
@@ -113,25 +158,12 @@ jobs:
     container: ${{ matrix.container }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
+      artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
+      artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-winarm }}
     steps:
-      - name: "[Windows] Set up Cargo cache"
-        if: runner.os == 'Windows'
-        uses: actions/cache@v3
-        id: sccache-build-cache
-        with:
-          path: C:\Users\runneradmin\.cargo
-          key: sccache-${{ env.SCCACHE_VERSION }}
-
-      # This needs to be done first because something later messes with $PATH in a way that breaks cargo
-      # by causing it to find link.exe from Git for Windows instead of MSVC.
-      - name: "[Windows] Build and install sccache"
-        shell: bash
-        if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-        run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
-
       - name: "Check out repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.2
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -148,96 +180,111 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v1.13
-        # Ubuntu 22.04 should use the CMake version from the repos, and Visual
-        # Studio on Windows comes with its own CMake version anyway.
+        uses: jwlawson/actions-setup-cmake@v2.0
+        # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.19.x"
+          cmake-version: "3.21.x"
+
+      - name: "[Windows] Set up cmake"
+        uses: jwlawson/actions-setup-cmake@v2.0
+        # Ubuntu 24.04 should use the CMake version from the repos.
+        # On windows-11-arm this action installs the x64 version which has unwanted side effects
+        if: matrix.os == 'windows-2022'
+        with:
+          # This is a workaround for a SSL false positive in cmake 3.26.4
+          # When downloading the manual. 3.21 is required for installing the
+          # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
+          cmake-version: "3.21.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
-        uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: "[Windows 11 ARM64] Install ARM64 CMake"
+        if: matrix.os == 'windows-11-arm'
+        run: |
+          Invoke-WebRequest -Uri https://github.com/Kitware/CMake/releases/download/v3.30.1/cmake-3.30.1-windows-arm64.zip -OutFile cmake-arm64.zip
+          Expand-Archive cmake-arm64.zip -DestinationPath $env:USERPROFILE\cmake
+          $cmakePath = "$env:USERPROFILE\cmake\cmake-3.30.1-windows-arm64\bin"
+          $cmakePath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $env:Path += ";$cmakePath"
+          cmake --version
 
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
-        id: buildenv_name
         run: ${{ matrix.buildenv_script }} name
 
       - name: "[macOS/Windows] Set up build environment cache"
         if: runner.os != 'Linux'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.buildenv_basepath }}
           key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
 
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
         run: |
-          # Decrypt the certificate
-          openssl enc -aes-256-cbc -d -md sha512 \
-            -k "${MACOS_CODESIGN_OPENSSL_PASSWORD}" \
-            -in /Users/runner/work/mixxx/mixxx/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc \
-            -out ~/certificate.p12
+          # Decode the certificate
+          echo "${{ env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}" | base64 -d -o ~/certificate.p12
 
           # Create a temporary keychain for the certificate and import it.
           security create-keychain -p mixxx Mixxx.keychain
           security unlock-keychain -p mixxx Mixxx.keychain
           security import ~/certificate.p12 -k Mixxx.keychain \
             -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
+          security find-certificate -a -Z Mixxx.keychain
+          APPLE_CODESIGN_IDENTITY="$(security find-certificate -a -Z Mixxx.keychain | grep ^SHA-1 | cut -d " " -f3 | uniq)"
           security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
           # Add keychain to search list
           security list-keychains -s Mixxx.keychain
           # Prevent keychain access from timing out
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
+          echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
-      - name: "[Windows] Set up Windows code signing"
-        env:
-          WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
-          WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
-          WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
-          WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
-        if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
-        run: |
-          iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
-          appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
-
-      - name: "Set up build environment"
-        id: buildenv
-        if: matrix.buildenv_script != null
+      - name: "[macOS/Linux] Set up build environment"
+        if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-      - name: "[Ubuntu/macOS] Set compiler cache size limit"
-        # A full build without a cache fills the cache with about 300 MB.
-        # GitHub Actions gives us 5 GB of cache for free.
-        # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
-        # We use a new cache key for every job, so we would run out of
-        # space frequently if the cache was much bigger.
-        run: ${{ matrix.compiler_cache }} -M 524288
-        if: runner.os != 'windows'
+      - name: "[Windows] Set up build environment"
+        if: matrix.buildenv_script != null && runner.os == 'Windows'
+        # With the cmd shell the ERRORLEVEL is checked
+        shell: cmd
+        run: ${{ matrix.buildenv_script }} setup
+        env:
+          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+          BUILDENV_RELEASE: TRUE
 
-      - name: "Set up compiler cache"
-        uses: actions/cache@v3
+      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+        if: runner.os != 'windows'
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
+
+      - name: "[Ubuntu/macOS] Set up ccache"
+        # GitHub Actions gives us 10 GB of cache.
+        # 4 runs * 2 GB = 8 GB
+        run: |
+          ${{ matrix.compiler_cache }} --zero-stats
+          ${{ matrix.compiler_cache }} --max-size=2G
+        if: runner.os != 'windows'
 
       - name: "Create build directory"
         run: mkdir build
@@ -247,6 +294,7 @@ jobs:
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DWARNINGS_FATAL=ON
           -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON
@@ -267,11 +315,11 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
-        uses: ammaraskar/gcc-problem-matcher@master
+        uses: ammaraskar/gcc-problem-matcher@0.3.0
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
-        uses: ammaraskar/msvc-problem-matcher@master
+        uses: ammaraskar/msvc-problem-matcher@0.3.0
 
       - name: "Build"
         run: cmake --build . --config RelWithDebInfo
@@ -279,15 +327,17 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
-          SCCACHE_CACHE_SIZE: 2G
 
-      - name: "Print compiler cache stats"
-        run: ${{ matrix.compiler_cache }} -s
+      - name: "[Ubuntu/macOS] Print compiler cache stats"
+        if: runner.os != 'windows'
+        run: |
+          ${{ matrix.compiler_cache }} --show-stats
+          ${{ matrix.compiler_cache }} --cleanup
 
       - name: "Test"
+        if: matrix.crosscompile != true
         run: ctest --timeout 45 ${{ matrix.ctest_args }}
         working-directory: build
         env:
@@ -299,16 +349,61 @@ jobs:
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: Benchmark
+        if: matrix.crosscompile != true
         run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
         working-directory: build
         env:
           # Render analyzer waveform tests to an offscreen buffer
           QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
+      - name: "[Windows] Sign executables"
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+        uses: azure/trusted-signing-action@v0.5.1
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://weu.codesigning.azure.net/
+          trusted-signing-account-name: mixxx
+          certificate-profile-name: mixxx
+          files-folder: build
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          timeout: 600
+
+      - name: "[Windows 11 ARM64] Install WiX Toolset3"
+        if: matrix.os == 'windows-11-arm'
+        run: |
+          choco install wixtoolset
+          Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+          refreshenv
+          echo "WIX=$env:WIX" >> $env:GITHUB_ENV
+
       - name: "Package"
+        id: package
         if: matrix.cpack_generator != null
-        run: cpack -G ${{ matrix.cpack_generator }} -V
-        working-directory: build
+        # Use retry loop to work around a race condition on macOS causing
+        # 'Resource busy' errors with 'hdiutil'. See
+        # https://github.com/actions/runner-images/issues/7522
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 30
+          max_attempts: ${{ runner.os == 'macOS' && 12 || 1 }}
+          retry_wait_seconds: 1
+          command: |
+            cd build
+            cpack -G ${{ matrix.cpack_generator }} -V
+
+      - name: Upload failed packaging logs
+        if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-packages-wix
+          path: D:/a/mixxx/mixxx/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
@@ -318,10 +413,12 @@ jobs:
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.os == 'ubuntu-22.04' && matrix.container == null
+        if: matrix.name == 'Ubuntu 24.04'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
+          elif [[ "${{ github.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
           else
@@ -332,18 +429,31 @@ jobs:
         working-directory: build
 
       - name: "[macOS] Sign, Notarize, and Staple Package"
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
+        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
         run: packaging/macos/sign_notarize_staple.sh build/*.dmg
         env:
-          APPLE_ID_USERNAME: rryan@mixxx.org
-          APPLE_BUNDLE_ID: org.mixxx.mixxx
+          APPLE_ID_USERNAME: daschuer@mixxx.org
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
-          ASC_PROVIDER: FLYL4D545V
+          APPLE_TEAM_ID: JBLRSP95FC
 
-      - name: "[Windows] Sign Package"
-        if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
-        run: signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
-        working-directory: build
+      - name: "[Windows] Sign installer"
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+        uses: azure/trusted-signing-action@v0.5.1
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://weu.codesigning.azure.net/
+          trusted-signing-account-name: mixxx
+          certificate-profile-name: mixxx
+          files-folder: build
+          files-folder-filter: msi
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          timeout: 600
 
       - name: "Prepare for deployment"
         # Copy the desired directory structure to the deploy/ directory. This
@@ -373,7 +483,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
         if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
         run: |
-          $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+          if (Test-Path "C:\msys64\usr\bin") {
+            $msysPath="C:\msys64"
+          } else {
+            choco install msys2 -y
+            $msysPath="C:\tools\msys64"
+          }
+          $Env:PATH="$msysPath\usr\bin;$Env:PATH"
           pacman -S --noconfirm coreutils bash rsync openssh
           # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
           # Bash) does not work properly and leads to errors like these:
@@ -388,14 +504,14 @@ jobs:
           #
           # Also see related issue:
           # https://github.com/actions/virtual-environments/issues/594
-          Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          Copy-Item -Path "$msysPath\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
           # By default, MSYS2 uses an
           # /etc/profile file that changes
           # the current working directory
           # when bash is started. We don't
           # want this behavior,so we just
           # delete it.
-          Remove-Item -Path "C:\msys64\etc\profile"
+          Remove-Item -Path "$msysPath\etc\profile"
           # Add MSYS2's tools to %PATH%.
           Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
@@ -432,7 +548,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -441,9 +557,14 @@ jobs:
     name: "Update manifest file on download server"
     runs-on: ubuntu-latest
     needs: build
+    # Always run this job, even if one or more jobs from the `build` jobs
+    # fail to allow partial updates of the manifest.
+    # Don't run it on forks that do not have access to our external
+    # infrastructure, though.
+    if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
@@ -465,6 +586,7 @@ jobs:
             export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
           fi;
           python3 tools/deploy.py generate-manifest
+          --update
           --output-dir 'deploy/'
           --dest-path "${DEPLOY_PATH}"
           --dest-url 'https://downloads.mixxx.org'

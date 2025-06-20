@@ -5,12 +5,12 @@
 #include <QObject>
 #include <QSet>
 #include <QString>
+#include <memory>
 
 #include "preferences/usersettings.h"
 #include "proto/skin.pb.h"
 #include "skin/legacy/skinparser.h"
 #include "skin/legacy/tooltips.h"
-#include "util/memory.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 class WBaseWidget;
@@ -22,6 +22,7 @@ class RecordingManager;
 class ControllerManager;
 class SkinContext;
 class WLabel;
+class WStemLabel;
 class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
@@ -75,6 +76,11 @@ class LegacySkinParser : public QObject, public SkinParser {
     template <class T>
     QWidget* parseLabelWidget(const QDomElement& element);
     void setupLabelWidget(const QDomElement& element, WLabel* pLabel);
+
+#ifdef __STEM__
+    QWidget* parseStemLabelWidget(const QDomElement& element);
+#endif
+
     QWidget* parseText(const QDomElement& node);
     QWidget* parseTrackProperty(const QDomElement& node);
     QWidget* parseStarRating(const QDomElement& node);
@@ -87,6 +93,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectChainPresetButton(const QDomElement& node);
     QWidget* parseEffectChainPresetSelector(const QDomElement& node);
     QWidget* parseEffectName(const QDomElement& node);
+    QWidget* parseEffectMetaKnob(const QDomElement& node);
     QWidget* parseEffectParameterName(const QDomElement& node);
     QWidget* parseEffectParameterKnob(const QDomElement& node);
     QWidget* parseEffectParameterKnobComposed(const QDomElement& node);
@@ -94,6 +101,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectPushButton(const QDomElement& node);
     QWidget* parseEffectSelector(const QDomElement& node);
     QWidget* parseHotcueButton(const QDomElement& node);
+    QWidget* parsePlayButton(const QDomElement& node);
+    QWidget* parseCueButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
@@ -134,6 +143,7 @@ class LegacySkinParser : public QObject, public SkinParser {
                      bool setupPosition=true);
     void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
     void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
+    QString localizeShortcutKeys(const QString& shortcut);
     QString getLibraryStyle(const QDomNode& node);
 
     QString lookupNodeGroup(const QDomElement& node);
@@ -147,6 +157,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString parseLaunchImageStyle(const QDomNode& node);
     QString stylesheetAbsIconPaths(QString& style);
+    bool requiresStem(const QDomElement& node);
     void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);
 
     UserSettingsPointer m_pConfig;

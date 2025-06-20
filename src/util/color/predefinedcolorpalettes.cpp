@@ -4,9 +4,9 @@ namespace {
 
 // Default Mixxx Hotcue Color Palette
 constexpr mixxx::RgbColor kColorMixxxRed(0xC50A08);
-constexpr mixxx::RgbColor kColorMixxxYellow(0x32BE44);
-constexpr mixxx::RgbColor kColorMixxxGreen(0x42D4F4);
-constexpr mixxx::RgbColor kColorMixxxCeleste(0xF8D200);
+constexpr mixxx::RgbColor kColorMixxxGreen(0x32BE44);
+constexpr mixxx::RgbColor kColorMixxxCeleste(0x42D4F4);
+constexpr mixxx::RgbColor kColorMixxxYellow(0xF8D200);
 constexpr mixxx::RgbColor kColorMixxxBlue(0x0044FF);
 constexpr mixxx::RgbColor kColorMixxxPurple(0xAF00CC);
 constexpr mixxx::RgbColor kColorMixxxPink(0xFCA6D7);
@@ -144,6 +144,103 @@ constexpr mixxx::RgbColor kVirtualDJTrackColorBlue(0x0000FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorFuchsia(0xFF00FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorWhite(0xFFFFFF);
 
+// Default Mixxx Key Color Palette (obtained from Mixxx Keywheel)
+
+constexpr mixxx::RgbColor kMixxxKeyColor1(0xFC4949);
+constexpr mixxx::RgbColor kMixxxKeyColor2(0xFE642D);
+constexpr mixxx::RgbColor kMixxxKeyColor3(0xF98C27);
+constexpr mixxx::RgbColor kMixxxKeyColor4(0xFED600);
+constexpr mixxx::RgbColor kMixxxKeyColor5(0x99FE00);
+constexpr mixxx::RgbColor kMixxxKeyColor6(0x42FE3E);
+constexpr mixxx::RgbColor kMixxxKeyColor7(0x0AD58F);
+constexpr mixxx::RgbColor kMixxxKeyColor8(0x0AE7E7);
+constexpr mixxx::RgbColor kMixxxKeyColor9(0x04C9FE);
+constexpr mixxx::RgbColor kMixxxKeyColor10(0x3D8AFD);
+constexpr mixxx::RgbColor kMixxxKeyColor11(0xAC64FE);
+constexpr mixxx::RgbColor kMixxxKeyColor12(0xFD3FEA);
+
+// Traktor Key Color Palette
+// NOTE: C Major is 1d in Open Key Notation
+
+constexpr mixxx::RgbColor kTraktorKeyColor1(0xB960A2);
+constexpr mixxx::RgbColor kTraktorKeyColor2(0x8269AB);
+constexpr mixxx::RgbColor kTraktorKeyColor3(0x527FC0);
+constexpr mixxx::RgbColor kTraktorKeyColor4(0x3CC0EF);
+constexpr mixxx::RgbColor kTraktorKeyColor5(0x5BC1CE);
+constexpr mixxx::RgbColor kTraktorKeyColor6(0x4CB686);
+constexpr mixxx::RgbColor kTraktorKeyColor7(0x73B629);
+constexpr mixxx::RgbColor kTraktorKeyColor8(0x9FC516);
+constexpr mixxx::RgbColor kTraktorKeyColor9(0xFDD615);
+constexpr mixxx::RgbColor kTraktorKeyColor10(0xF28B2E);
+constexpr mixxx::RgbColor kTraktorKeyColor11(0xEC6637);
+constexpr mixxx::RgbColor kTraktorKeyColor12(0xE84C4D);
+
+// Mixed In Key Key Color Palette
+// NOTE: C Major is 8B in Camelot Notation
+
+constexpr mixxx::RgbColor kMIKKeyColor1(0xF17EDB);
+constexpr mixxx::RgbColor kMIKKeyColor2(0xD18BFD);
+constexpr mixxx::RgbColor kMIKKeyColor3(0x9EB4FD);
+constexpr mixxx::RgbColor kMIKKeyColor4(0x4DD3F8);
+constexpr mixxx::RgbColor kMIKKeyColor5(0x01EAEC);
+constexpr mixxx::RgbColor kMIKKeyColor6(0x00EECB);
+constexpr mixxx::RgbColor kMIKKeyColor7(0x20EF7F);
+constexpr mixxx::RgbColor kMIKKeyColor8(0x7FF448);
+constexpr mixxx::RgbColor kMIKKeyColor9(0xE0CA6D);
+constexpr mixxx::RgbColor kMIKKeyColor10(0xFDA078);
+constexpr mixxx::RgbColor kMIKKeyColor11(0xFF8693);
+constexpr mixxx::RgbColor kMIKKeyColor12(0xFD7EB3);
+
+// Accessible Color Palettes
+// When arranged in a circle, the hue varies vertically and lightness/saturation
+// varies horizontally so that every color is unique, but adjacent colors are
+// similar.
+
+// Protanopia / Protanomaly
+
+constexpr mixxx::RgbColor kProtKeyColor1(0x2626D9);
+constexpr mixxx::RgbColor kProtKeyColor2(0x7582D7);
+constexpr mixxx::RgbColor kProtKeyColor3(0xA7C2DD);
+constexpr mixxx::RgbColor kProtKeyColor4(0xB8E0E0);
+constexpr mixxx::RgbColor kProtKeyColor5(0xA7DDC2);
+constexpr mixxx::RgbColor kProtKeyColor6(0x75D782);
+constexpr mixxx::RgbColor kProtKeyColor7(0x26D926);
+constexpr mixxx::RgbColor kProtKeyColor8(0x0DA522);
+constexpr mixxx::RgbColor kProtKeyColor9(0x02783D);
+constexpr mixxx::RgbColor kProtKeyColor10(0x006666);
+constexpr mixxx::RgbColor kProtKeyColor11(0x023D78);
+constexpr mixxx::RgbColor kProtKeyColor12(0x0D22A5);
+
+// Deuteranopia / Deuteranomaly
+
+constexpr mixxx::RgbColor kDeutKeyColor1(0xD92626);
+constexpr mixxx::RgbColor kDeutKeyColor2(0xD77582);
+constexpr mixxx::RgbColor kDeutKeyColor3(0xDDA7C2);
+constexpr mixxx::RgbColor kDeutKeyColor4(0xE0B8E0);
+constexpr mixxx::RgbColor kDeutKeyColor5(0xC2A7DD);
+constexpr mixxx::RgbColor kDeutKeyColor6(0x8275D7);
+constexpr mixxx::RgbColor kDeutKeyColor7(0x2626D9);
+constexpr mixxx::RgbColor kDeutKeyColor8(0x220DA5);
+constexpr mixxx::RgbColor kDeutKeyColor9(0x3D0278);
+constexpr mixxx::RgbColor kDeutKeyColor10(0x660066);
+constexpr mixxx::RgbColor kDeutKeyColor11(0x78023D);
+constexpr mixxx::RgbColor kDeutKeyColor12(0xA50D22);
+
+// Deuteranopia / Deuteranomaly
+
+constexpr mixxx::RgbColor kTritKeyColor1(0x26D926);
+constexpr mixxx::RgbColor kTritKeyColor2(0x82D775);
+constexpr mixxx::RgbColor kTritKeyColor3(0xC2DDA7);
+constexpr mixxx::RgbColor kTritKeyColor4(0xE0E0B8);
+constexpr mixxx::RgbColor kTritKeyColor5(0xDDC2A7);
+constexpr mixxx::RgbColor kTritKeyColor6(0xD78275);
+constexpr mixxx::RgbColor kTritKeyColor7(0xD92626);
+constexpr mixxx::RgbColor kTritKeyColor8(0xA5220D);
+constexpr mixxx::RgbColor kTritKeyColor9(0x783D02);
+constexpr mixxx::RgbColor kTritKeyColor10(0x666600);
+constexpr mixxx::RgbColor kTritKeyColor11(0x3D7802);
+constexpr mixxx::RgbColor kTritKeyColor12(0x22A50D);
+
 // Replaces "no color" values and is used for new cues if auto_hotcue_colors is
 // disabled
 constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
@@ -154,12 +251,12 @@ namespace mixxx {
 
 const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
         ColorPalette(
-                QStringLiteral("Mixxx Hotcue Colors"),
+                QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPaletes", "Mixxx Hotcue Colors")),
                 {
                         kColorMixxxRed,
-                        kColorMixxxYellow,
                         kColorMixxxGreen,
                         kColorMixxxCeleste,
+                        kColorMixxxYellow,
                         kColorMixxxBlue,
                         kColorMixxxPurple,
                         kColorMixxxPink,
@@ -171,34 +268,36 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                 // controllers with >8 hotcue buttons, for example a Novation Launchpad.
                 {0, 1, 2, 3, 4, 5, 6, 7});
 
-const ColorPalette PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Serato DJ Track Metadata Hotcue Colors"),
-                {
-                        kSeratoTrackMetadataHotcueColorRed,
-                        kSeratoTrackMetadataHotcueColorOrange,
-                        kSeratoTrackMetadataHotcueColorBrown,
-                        kSeratoTrackMetadataHotcueColorYellow,
-                        kSeratoTrackMetadataHotcueColorEmerald,
-                        kSeratoTrackMetadataHotcueColorKelly,
-                        kSeratoTrackMetadataHotcueColorGreen,
-                        kSeratoTrackMetadataHotcueColorSea,
-                        kSeratoTrackMetadataHotcueColorJade,
-                        kSeratoTrackMetadataHotcueColorTurquoise,
-                        kSeratoTrackMetadataHotcueColorTeal,
-                        kSeratoTrackMetadataHotcueColorBlue,
-                        kSeratoTrackMetadataHotcueColorDarkBlue,
-                        kSeratoTrackMetadataHotcueColorViolet,
-                        kSeratoTrackMetadataHotcueColorPurple,
-                        kSeratoTrackMetadataHotcueColorFuchsia,
-                        kSeratoTrackMetadataHotcueColorMagenta,
-                        kSeratoTrackMetadataHotcueColorCarmine,
-                },
-                {0, 2, 12, 3, 6, 15, 9, 14});
+const ColorPalette
+        PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette =
+                ColorPalette(
+                        QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                                "Serato DJ Track Metadata Hotcue Colors")),
+                        {
+                                kSeratoTrackMetadataHotcueColorRed,
+                                kSeratoTrackMetadataHotcueColorOrange,
+                                kSeratoTrackMetadataHotcueColorBrown,
+                                kSeratoTrackMetadataHotcueColorYellow,
+                                kSeratoTrackMetadataHotcueColorEmerald,
+                                kSeratoTrackMetadataHotcueColorKelly,
+                                kSeratoTrackMetadataHotcueColorGreen,
+                                kSeratoTrackMetadataHotcueColorSea,
+                                kSeratoTrackMetadataHotcueColorJade,
+                                kSeratoTrackMetadataHotcueColorTurquoise,
+                                kSeratoTrackMetadataHotcueColorTeal,
+                                kSeratoTrackMetadataHotcueColorBlue,
+                                kSeratoTrackMetadataHotcueColorDarkBlue,
+                                kSeratoTrackMetadataHotcueColorViolet,
+                                kSeratoTrackMetadataHotcueColorPurple,
+                                kSeratoTrackMetadataHotcueColorFuchsia,
+                                kSeratoTrackMetadataHotcueColorMagenta,
+                                kSeratoTrackMetadataHotcueColorCarmine,
+                        },
+                        {0, 2, 12, 3, 6, 15, 9, 14});
 
 const ColorPalette PredefinedColorPalettes::kSeratoDJProHotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Serato DJ Pro Hotcue Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Serato DJ Pro Hotcue Colors")),
                 {
                         kSeratoDJProHotcueColorRed1,
                         kSeratoDJProHotcueColorOrange1,
@@ -249,26 +348,28 @@ const QList<mixxx::RgbColor> kRekordboxColorsSelection = {
 // (0x10B176) as the default cue color.
 
 const ColorPalette PredefinedColorPalettes::kRekordboxCOLD1HotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Rekordbox COLD1 Hotcue Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Rekordbox COLD1 Hotcue Colors")),
                 kRekordboxColorsSelection,
                 {5, 8, 1, 6, 7, 2, 7, 5});
 
 const ColorPalette PredefinedColorPalettes::kRekordboxCOLD2HotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Rekordbox COLD2 Hotcue Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Rekordbox COLD2 Hotcue Colors")),
                 kRekordboxColorsSelection,
                 {7, 5, 5, 5, 3, 4, 3, 2});
 
-const ColorPalette PredefinedColorPalettes::kRekordboxCOLORFULHotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Rekordbox COLORFUL Hotcue Colors"),
-                kRekordboxColorsSelection,
-                {15, 5, 10, 2, 8, 13, 4, 12});
+const ColorPalette
+        PredefinedColorPalettes::kRekordboxCOLORFULHotcueColorPalette =
+                ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP(
+                                     "PredefinedColorPalettes",
+                                     "Rekordbox COLORFUL Hotcue Colors")),
+                        kRekordboxColorsSelection,
+                        {15, 5, 10, 2, 8, 13, 4, 12});
 
 const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
         ColorPalette(
-                QStringLiteral("Mixxx Track Colors"),
+                QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes", "Mixxx Track Colors")),
                 {
                         kMixxxTrackColorDarkRed,
                         kMixxxTrackColorRed,
@@ -292,8 +393,8 @@ const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
                 });
 
 const ColorPalette PredefinedColorPalettes::kRekordboxTrackColorPalette =
-        ColorPalette(
-                QStringLiteral("Rekordbox Track Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Rekordbox Track Colors")),
                 {
                         kRekordboxTrackColorPink,
                         kRekordboxTrackColorRed,
@@ -306,8 +407,8 @@ const ColorPalette PredefinedColorPalettes::kRekordboxTrackColorPalette =
                 });
 
 const ColorPalette PredefinedColorPalettes::kSeratoDJProTrackColorPalette =
-        ColorPalette(
-                QStringLiteral("Serato DJ Pro Track Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Serato DJ Pro Track Colors")),
                 {
                         kSeratoDJProTrackColorGrey1,
                         kSeratoDJProTrackColorGrey2,
@@ -332,8 +433,8 @@ const ColorPalette PredefinedColorPalettes::kSeratoDJProTrackColorPalette =
                 });
 
 const ColorPalette PredefinedColorPalettes::kTraktorProTrackColorPalette =
-        ColorPalette(
-                QStringLiteral("Traktor Pro Track Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Traktor Pro Track Colors")),
                 {
                         kTraktorProTrackColorRed,
                         kTraktorProTrackColorOrange,
@@ -345,8 +446,8 @@ const ColorPalette PredefinedColorPalettes::kTraktorProTrackColorPalette =
                 });
 
 const ColorPalette PredefinedColorPalettes::kVirtualDJTrackColorPalette =
-        ColorPalette(
-                QStringLiteral("VirtualDJ Track Colors"),
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "VirtualDJ Track Colors")),
                 {
                         kVirtualDJTrackColorRed,
                         kVirtualDJTrackColorYellow,
@@ -357,11 +458,123 @@ const ColorPalette PredefinedColorPalettes::kVirtualDJTrackColorPalette =
                         kVirtualDJTrackColorWhite,
                 });
 
+const ColorPalette PredefinedColorPalettes::kMixxxKeyColorPalette =
+        ColorPalette(
+                QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes", "Mixxx Key Colors")),
+                {
+                        kMixxxKeyColor1,
+                        kMixxxKeyColor2,
+                        kMixxxKeyColor3,
+                        kMixxxKeyColor4,
+                        kMixxxKeyColor5,
+                        kMixxxKeyColor6,
+                        kMixxxKeyColor7,
+                        kMixxxKeyColor8,
+                        kMixxxKeyColor9,
+                        kMixxxKeyColor10,
+                        kMixxxKeyColor11,
+                        kMixxxKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kTraktorKeyColorPalette =
+        ColorPalette(
+                QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes", "Traktor Key Colors")),
+                {
+                        kTraktorKeyColor1,
+                        kTraktorKeyColor2,
+                        kTraktorKeyColor3,
+                        kTraktorKeyColor4,
+                        kTraktorKeyColor5,
+                        kTraktorKeyColor6,
+                        kTraktorKeyColor7,
+                        kTraktorKeyColor8,
+                        kTraktorKeyColor9,
+                        kTraktorKeyColor10,
+                        kTraktorKeyColor11,
+                        kTraktorKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kMIKKeyColorPalette =
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Mixed In Key - Key Colors")),
+                {
+                        kMIKKeyColor1,
+                        kMIKKeyColor2,
+                        kMIKKeyColor3,
+                        kMIKKeyColor4,
+                        kMIKKeyColor5,
+                        kMIKKeyColor6,
+                        kMIKKeyColor7,
+                        kMIKKeyColor8,
+                        kMIKKeyColor9,
+                        kMIKKeyColor10,
+                        kMIKKeyColor11,
+                        kMIKKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kProtKeyColorPalette =
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Protanopia / Protanomaly Key Colors")),
+                {
+                        kProtKeyColor1,
+                        kProtKeyColor2,
+                        kProtKeyColor3,
+                        kProtKeyColor4,
+                        kProtKeyColor5,
+                        kProtKeyColor6,
+                        kProtKeyColor7,
+                        kProtKeyColor8,
+                        kProtKeyColor9,
+                        kProtKeyColor10,
+                        kProtKeyColor11,
+                        kProtKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kDeutKeyColorPalette =
+        ColorPalette(
+                QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                        "Deuteranopia / Deuteranomaly Key Colors")),
+                {
+                        kDeutKeyColor1,
+                        kDeutKeyColor2,
+                        kDeutKeyColor3,
+                        kDeutKeyColor4,
+                        kDeutKeyColor5,
+                        kDeutKeyColor6,
+                        kDeutKeyColor7,
+                        kDeutKeyColor8,
+                        kDeutKeyColor9,
+                        kDeutKeyColor10,
+                        kDeutKeyColor11,
+                        kDeutKeyColor12,
+                });
+
+const ColorPalette PredefinedColorPalettes::kTritKeyColorPalette =
+        ColorPalette(QStringLiteral(QT_TRANSLATE_NOOP("PredefinedColorPalettes",
+                             "Tritanopia / Tritanomaly Key Colors")),
+                {
+                        kTritKeyColor1,
+                        kTritKeyColor2,
+                        kTritKeyColor3,
+                        kTritKeyColor4,
+                        kTritKeyColor5,
+                        kTritKeyColor6,
+                        kTritKeyColor7,
+                        kTritKeyColor8,
+                        kTritKeyColor9,
+                        kTritKeyColor10,
+                        kTritKeyColor11,
+                        kTritKeyColor12,
+                });
+
 const ColorPalette PredefinedColorPalettes::kDefaultHotcueColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
 
 const ColorPalette PredefinedColorPalettes::kDefaultTrackColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxTrackColorPalette;
+
+const ColorPalette PredefinedColorPalettes::kDefaultKeyColorPalette =
+        mixxx::PredefinedColorPalettes::kMixxxKeyColorPalette;
 
 const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
@@ -376,6 +589,13 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         mixxx::PredefinedColorPalettes::kSeratoDJProTrackColorPalette,
         mixxx::PredefinedColorPalettes::kTraktorProTrackColorPalette,
         mixxx::PredefinedColorPalettes::kVirtualDJTrackColorPalette,
+        // Key Color Palettes
+        mixxx::PredefinedColorPalettes::kMixxxKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kTraktorKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kMIKKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kProtKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kDeutKeyColorPalette,
+        mixxx::PredefinedColorPalettes::kTritKeyColorPalette,
 };
 
 const mixxx::RgbColor PredefinedColorPalettes::kDefaultCueColor =

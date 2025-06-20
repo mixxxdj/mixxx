@@ -1,14 +1,13 @@
 #include "recording/recordingmanager.h"
 
+#include <QDateTime>
 #include <QDir>
 #include <QMessageBox>
 #include <QMutex>
 #include <QStorageInfo>
-#include <climits>
 
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
@@ -17,7 +16,7 @@
 
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
-RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
+RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine)
         : m_pConfig(pConfig),
           m_recordingDir(""),
           m_recording_base_file(""),
@@ -179,7 +178,10 @@ void RecordingManager::setRecordingDir() {
         if (recordDir.mkpath(recordDir.absolutePath())) {
             qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
-            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            // Using qt_error_string() since QDir has not yet a wrapper for error strings.
+            // https://bugreports.qt.io/browse/QTBUG-1483
+            qDebug() << "Failed to create folder" << recordDir.absolutePath()
+                     << "for recordings:" << qt_error_string();
         }
     }
     m_recordingDir = recordDir.absolutePath();
@@ -207,9 +209,9 @@ void RecordingManager::slotDurationRecorded(quint64 duration) {
 
 // Copy from the implementation in enginerecord.cpp
 QString RecordingManager::getRecordedDurationStr(unsigned int duration) {
-    return QString("%1:%2")
-                 .arg(duration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(duration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(duration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(duration % 60, 2, 10, QChar('0')); // seconds
 }
 
 // Only called when recording is active.
@@ -323,7 +325,7 @@ quint64 RecordingManager::getFileSplitSize() {
     } else if (fileSizeStr == SPLIT_120MIN) {
         return SIZE_4GB; //Ignore size limit. use time limit
     } else {
-        return SIZE_650MB;
+        return SIZE_4GB; // default
     }
 }
 

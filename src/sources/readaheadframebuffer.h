@@ -92,17 +92,6 @@ class ReadAheadFrameBuffer final {
     bool tryContinueReadingFrom(
             FrameIndex readIndex);
 
-    enum class DiscontinuityOverlapMode {
-        Ignore,
-        Rewind,
-        Default = Rewind, // recommended default
-    };
-    enum class DiscontinuityGapMode {
-        Skip,
-        FillWithSilence,
-        Default = FillWithSilence, // recommended default
-    };
-
     /// Drain as many buffered sample frames as possible and copy them
     /// into the output buffer.
     ///
@@ -130,18 +119,12 @@ class ReadAheadFrameBuffer final {
     /// All discontinuities in the output stream, i.e. both gaps and overlapping
     /// regions are unexpected and will trigger a debug assertion.
     ///
-    /// The output sample buffer may be null. In this case the consumed
-    /// samples are dropped instead of copied.
-    ///
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
-    WritableSampleFrames consumeAndFillBuffer(ReadableSampleFrames inputBuffer,
+    WritableSampleFrames consumeAndFillBuffer(
+            const ReadableSampleFrames& inputBuffer,
             const WritableSampleFrames& outputBuffer,
-            FrameIndex minOutputIndex,
-            std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode>
-                    discontinuityModes = std::make_pair(
-                            DiscontinuityOverlapMode::Default,
-                            DiscontinuityGapMode::Default));
+            FrameIndex minOutputIndex);
 
   private:
     void adjustCapacityBeforeBuffering(
@@ -153,11 +136,8 @@ class ReadAheadFrameBuffer final {
     /// frame. The buffering mode controls how a gap between the
     /// last buffered frame and the next input frame is handled.
     ///
-    /// Returns the unread portion of the readable sample frames,
-    /// which should typically be empty.
-    ReadableSampleFrames fillBuffer(
-            const ReadableSampleFrames& inputBuffer,
-            DiscontinuityGapMode discontinuityGapMode);
+    /// Returns true on success
+    bool fillBuffer(const ReadableSampleFrames& inputBuffer);
 
     /// Advance the read position thereby discarding samples
     /// from the front of the FIFO buffer.

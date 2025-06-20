@@ -1,20 +1,24 @@
 #include "widget/wcolorpickeraction.h"
 
+#include <QHBoxLayout>
+#include <memory>
+
 #include "moc_wcolorpickeraction.cpp"
 
 WColorPickerAction::WColorPickerAction(WColorPicker::Options options, const ColorPalette& palette, QWidget* parent)
-        : QWidgetAction(parent),
-          m_pColorPicker(make_parented<WColorPicker>(options, palette)) {
-    connect(m_pColorPicker.get(), &WColorPicker::colorPicked, this, &WColorPickerAction::colorPicked);
-
-    QHBoxLayout* pLayout = new QHBoxLayout();
-    pLayout->addWidget(m_pColorPicker);
-    pLayout->setSizeConstraint(QLayout::SetFixedSize);
-
-    QWidget* pWidget = new QWidget();
+        : QWidgetAction(parent) {
+    auto pWidget = std::make_unique<QWidget>();
+    auto pLayout = make_parented<QHBoxLayout>(pWidget.get());
     pWidget->setLayout(pLayout);
     pWidget->setSizePolicy(QSizePolicy());
-    setDefaultWidget(pWidget);
+    m_pColorPicker = make_parented<WColorPicker>(options, palette, pWidget.get());
+    pLayout->addWidget(m_pColorPicker);
+    pLayout->setSizeConstraint(QLayout::SetFixedSize);
+    setDefaultWidget(pWidget.release());
+    connect(m_pColorPicker.get(),
+            &WColorPicker::colorPicked,
+            this,
+            &WColorPickerAction::colorPicked);
 }
 
 void WColorPickerAction::resetSelectedColor() {

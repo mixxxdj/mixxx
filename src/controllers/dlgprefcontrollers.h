@@ -1,15 +1,17 @@
 #pragma once
 
-#include <QTreeWidgetItem>
 #include <memory>
 
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
+class ControlProxy;
 class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
+class QTreeWidgetItem;
 
 /// Controllers Overview in the preferences
 ///
@@ -39,6 +41,13 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   private slots:
     void rescanControllers();
+#ifdef __PORTMIDI__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotMidiThroughChanged(Qt::CheckState state);
+#else
+    void slotMidiThroughChanged(bool checked);
+#endif
+#endif
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 
   private:
@@ -52,4 +61,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QTreeWidgetItem* m_pControllersRootItem;
     QList<DlgPrefController*> m_controllerPages;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
+
+    const parented_ptr<ControlProxy> m_pNumDecks;
+    const parented_ptr<ControlProxy> m_pNumSamplers;
 };

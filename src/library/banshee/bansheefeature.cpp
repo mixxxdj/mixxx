@@ -6,10 +6,8 @@
 
 #include "library/banshee/bansheedbconnection.h"
 #include "library/banshee/bansheeplaylistmodel.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/dao/settingsdao.h"
 #include "library/library.h"
-#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
 #include "moc_bansheefeature.cpp"
 #include "track/track.h"
 
@@ -92,8 +90,8 @@ void BansheeFeature::activate() {
         m_isActivated =  true;
 
         std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
-        QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
-        for (const BansheeDbConnection::Playlist& playlist: playlists) {
+        const QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
+        for (const BansheeDbConnection::Playlist& playlist : playlists) {
             qDebug() << playlist.name;
             // append the playlist to the child model
             pRootItem->appendChild(playlist.name, playlist.playlistId);
@@ -110,7 +108,7 @@ void BansheeFeature::activate() {
         emit featureLoadingFinished(this);
     }
 
-    m_pBansheePlaylistModel->setTableModel(0); // Gets the master playlist
+    m_pBansheePlaylistModel->selectPlaylist(0); // Loads the main playlist
     emit showTrackModel(m_pBansheePlaylistModel);
     emit enableCoverArtDisplay(false);
 }
@@ -120,7 +118,7 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     int playlistID = item->getData().toInt();
     if (playlistID > 0) {
         qDebug() << "Activating " << item->getLabel();
-        m_pBansheePlaylistModel->setTableModel(playlistID);
+        m_pBansheePlaylistModel->selectPlaylist(playlistID);
         emit showTrackModel(m_pBansheePlaylistModel);
         emit enableCoverArtDisplay(false);
     }
@@ -141,7 +139,7 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
                     new BansheePlaylistModel(this,
                             m_pLibrary->trackCollectionManager(),
                             &m_connection);
-            pPlaylistModelToAdd->setTableModel(playlistID);
+            pPlaylistModelToAdd->selectPlaylist(playlistID);
             pPlaylistModelToAdd->select();
 
             // Copy Tracks

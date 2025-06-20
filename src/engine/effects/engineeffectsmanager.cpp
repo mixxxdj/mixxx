@@ -1,30 +1,28 @@
 #include "engine/effects/engineeffectsmanager.h"
 
+#include "audio/types.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectchain.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
-        : m_pResponsePipe(pResponsePipe),
-          m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN) {
+EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe&& responsePipe)
+        : m_responsePipe(std::move(responsePipe)),
+          m_buffer1(kMaxEngineSamples),
+          m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
 
-EngineEffectsManager::~EngineEffectsManager() {
-}
-
 void EngineEffectsManager::onCallbackStart() {
     EffectsRequest* request = nullptr;
-    while (m_pResponsePipe->readMessage(&request)) {
+    while (m_responsePipe.readMessage(&request)) {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
         case EffectsRequest::ADD_EFFECT_CHAIN:
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            if (processEffectsRequest(*request, m_pResponsePipe.data())) {
+            if (processEffectsRequest(*request, &m_responsePipe)) {
                 processed = true;
             }
             break;
@@ -45,12 +43,11 @@ void EngineEffectsManager::onCallbackStart() {
                 response.status = EffectsResponse::NO_SUCH_CHAIN;
                 break;
             }
-        }
             processed = request->pTargetChain->processEffectsRequest(
-                    *request, m_pResponsePipe.data());
+                    *request, &m_responsePipe);
             if (processed) {
                 // When an effect becomes active (part of a chain), keep
-                // it in our master list so that we can respond to
+                // it in our main list so that we can respond to
                 // requests about it.
                 if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
                     m_effects.append(request->AddEffectToChain.pEffect);
@@ -64,6 +61,7 @@ void EngineEffectsManager::onCallbackStart() {
                 response.status = EffectsResponse::INVALID_REQUEST;
             }
             break;
+        }
         case EffectsRequest::SET_EFFECT_PARAMETERS:
         case EffectsRequest::SET_PARAMETER_PARAMETERS:
             VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
@@ -73,7 +71,7 @@ void EngineEffectsManager::onCallbackStart() {
             }
 
             processed = request->pTargetEffect
-                                ->processEffectsRequest(*request, m_pResponsePipe.data());
+                                ->processEffectsRequest(*request, &m_responsePipe);
 
             if (!processed) {
                 // If we got here, the message was not handled for an
@@ -89,7 +87,7 @@ void EngineEffectsManager::onCallbackStart() {
         }
 
         if (!processed) {
-            m_pResponsePipe->writeMessage(response);
+            m_responsePipe.writeMessage(response);
         }
     }
 }
@@ -97,8 +95,8 @@ void EngineEffectsManager::onCallbackStart() {
 void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate) {
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer effects do not make use of it.
     GroupFeatureState featureState;
@@ -116,11 +114,12 @@ void EngineEffectsManager::processPostFaderInPlace(
         const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pInOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain,
-        const CSAMPLE_GAIN newGain) {
+        CSAMPLE_GAIN oldGain,
+        CSAMPLE_GAIN newGain,
+        bool fadeout) {
     processInner(SignalProcessingStage::Postfader,
             inputHandle,
             outputHandle,
@@ -130,7 +129,8 @@ void EngineEffectsManager::processPostFaderInPlace(
             sampleRate,
             groupFeatures,
             oldGain,
-            newGain);
+            newGain,
+            fadeout);
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
@@ -138,11 +138,12 @@ void EngineEffectsManager::processPostFaderAndMix(
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain,
-        const CSAMPLE_GAIN newGain) {
+        CSAMPLE_GAIN oldGain,
+        CSAMPLE_GAIN newGain,
+        bool fadeout) {
     processInner(SignalProcessingStage::Postfader,
             inputHandle,
             outputHandle,
@@ -152,7 +153,8 @@ void EngineEffectsManager::processPostFaderAndMix(
             sampleRate,
             groupFeatures,
             oldGain,
-            newGain);
+            newGain,
+            fadeout);
 }
 
 void EngineEffectsManager::processInner(
@@ -161,11 +163,12 @@ void EngineEffectsManager::processInner(
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
+        std::size_t numSamples,
+        mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain,
-        const CSAMPLE_GAIN newGain) {
+        CSAMPLE_GAIN oldGain,
+        CSAMPLE_GAIN newGain,
+        bool fadeout) {
     const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
 
     if (pIn == pOut) {
@@ -180,7 +183,8 @@ void EngineEffectsManager::processInner(
                             pOut,
                             numSamples,
                             sampleRate,
-                            groupFeatures)) {
+                            groupFeatures,
+                            fadeout)) {
                 }
             }
         }
@@ -217,7 +221,8 @@ void EngineEffectsManager::processInner(
                             pIntermediateOutput,
                             numSamples,
                             sampleRate,
-                            groupFeatures)) {
+                            groupFeatures,
+                            fadeout)) {
                     // Output of this chain becomes the input of the next chain.
                     pIntermediateInput = pIntermediateOutput;
                 }

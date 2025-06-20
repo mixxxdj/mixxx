@@ -36,7 +36,7 @@ constexpr MP4SampleId kSampleBlockIdMin = 1;
 constexpr SINT kNumberOfPrefetchFrames = 2112;
 
 // The TrackId is a 1-based index of the tracks in an MP4 file
-constexpr u_int32_t kMinTrackId = 1;
+constexpr uint32_t kMinTrackId = 1;
 
 // http://www.iis.fraunhofer.de/content/dam/iis/de/doc/ame/wp/FraunhoferIIS_Application-Bulletin_AAC-Transport-Formats.pdf
 // Footnote 13: "The usual frame length for AAC-LC is 1024 samples, but a 960 sample version
@@ -52,9 +52,9 @@ constexpr MP4Duration kDefaultFramesPerSampleBlock = 1024;
 //   https://github.com/sannies/mp4parser/blob/master/isoparser/src/main/java/org/mp4parser/boxes/iso14496/part1/objectdescriptors/DecoderConfigDescriptor.java
 //   http://mutagen-specs.readthedocs.io/en/latest/mp4/
 //   http://perso.telecom-paristech.fr/~dufourd/mpeg-4/tools.html
-constexpr u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
+constexpr uint32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
 
-inline u_int32_t getMaxTrackId(MP4FileHandle hFile) {
+inline uint32_t getMaxTrackId(MP4FileHandle hFile) {
     // The maximum TrackId equals the number of all tracks
     // in an MP4 file. We pass nullptr and 0 as arguments
     // to avoid any type/subtype filtering at this point!
@@ -76,8 +76,8 @@ inline bool isValidMediaDataName(const char* mediaDataName) {
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
 MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
-    const u_int32_t maxTrackId = getMaxTrackId(hFile);
-    for (u_int32_t trackId = kMinTrackId; trackId <= maxTrackId; ++trackId) {
+    const uint32_t maxTrackId = getMaxTrackId(hFile);
+    for (uint32_t trackId = kMinTrackId; trackId <= maxTrackId; ++trackId) {
         const char* trackType = MP4GetTrackType(hFile, trackId);
         if (!isValidTrackType(trackType)) {
             kLogger.warning() << "Unsupported track type"
@@ -102,10 +102,10 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
                               << fileName;
             continue;
         }
-        const u_int8_t audioType = MP4GetTrackEsdsObjectTypeId(hFile, trackId);
+        const uint8_t audioType = MP4GetTrackEsdsObjectTypeId(hFile, trackId);
         if (MP4_IS_AAC_AUDIO_TYPE(audioType)) {
             if (MP4_MPEG4_AUDIO_TYPE == audioType) {
-                const u_int8_t mpeg4AudioType =
+                const uint8_t mpeg4AudioType =
                         MP4GetTrackAudioMpeg4Type(hFile, trackId);
                 if (MP4_IS_MPEG4_AAC_AUDIO_TYPE(mpeg4AudioType)) {
                     return trackId;
@@ -151,7 +151,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
 constexpr size_t kMinADTSHeaderLength = 7;
 
 size_t getADTSHeaderLength(
-        const u_int8_t* pInputBuffer,
+        const uint8_t* pInputBuffer,
         size_t sizeofInputBuffer) {
     // The size of the raw data block must be strictly greater than
     // the size of only ADTS header alone, i.e. additional sample
@@ -178,7 +178,7 @@ size_t getADTSHeaderLength(
 }
 
 inline bool startsWithADTSHeader(
-        const u_int8_t* pInputBuffer,
+        const uint8_t* pInputBuffer,
         size_t sizeofInputBuffer) {
     return 0 < getADTSHeaderLength(pInputBuffer, sizeofInputBuffer);
 }
@@ -262,7 +262,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
         if (mode == OpenMode::Strict) {
             // Abort and give another decoder with lower priority
             // the chance to open the same file.
-            // Fixes https://bugs.launchpad.net/mixxx/+bug/1504113
+            // Fixes https://github.com/mixxxdj/mixxx/issues/8248
             return OpenResult::Aborted;
         } else {
             // Fallback: Use a default value
@@ -282,7 +282,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
 
     // Determine the maximum input size (in bytes) of a
     // sample block for the selected track.
-    const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
+    const uint32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
     if (maxSampleBlockInputSize == 0) {
         kLogger.warning() << "Failed to read MP4 DecoderConfigDescriptor.bufferSizeDB:"
@@ -292,7 +292,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
     if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
         // Workaround for a possible bug in libmp4v2 2.0.0 (Ubuntu 16.04)
         // that returns 4278190742 when opening a corrupt file.
-        // https://bugs.launchpad.net/mixxx/+bug/1594169
+        // https://github.com/mixxxdj/mixxx/issues/8577
         kLogger.warning() << "MP4 DecoderConfigDescriptor.bufferSizeDB ="
                           << maxSampleBlockInputSize
                           << ">"
@@ -413,9 +413,10 @@ bool SoundSourceM4A::replaceDecoder(
     } else {
         pNewConfig->outputFormat = faad2::FMT_FLOAT;
         const auto desiredChannelCount =
-                getSignalInfo().getChannelCount().isValid()
-                ? getSignalInfo().getChannelCount()
-                : m_openParams.getSignalInfo().getChannelCount();
+                std::min(getSignalInfo().getChannelCount().isValid()
+                                ? getSignalInfo().getChannelCount()
+                                : m_openParams.getSignalInfo().getChannelCount(),
+                        mixxx::kMaxEngineChannelInputCount);
         if (desiredChannelCount == 1 || desiredChannelCount == 2) {
             pNewConfig->downMatrix = 1;
         } else {
@@ -627,8 +628,8 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 // Fill input buffer from file
                 if (isValidSampleBlockId(m_curSampleBlockId)) {
                     // Read data for next sample block into input buffer
-                    u_int8_t* pInputBuffer = m_inputBuffer.data();
-                    u_int32_t inputBufferLength = m_inputBuffer.size(); // in/out parameter
+                    uint8_t* pInputBuffer = m_inputBuffer.data();
+                    uint32_t inputBufferLength = m_inputBuffer.size(); // in/out parameter
                     if (!MP4ReadSample(m_hFile,
                                 m_trackId,
                                 m_curSampleBlockId,

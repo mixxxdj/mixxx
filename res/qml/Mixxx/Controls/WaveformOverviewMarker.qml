@@ -33,9 +33,7 @@ Item {
                 x: 0
                 y: root.height
             }
-
         }
-
     }
 
     Mixxx.ControlProxy {
@@ -48,5 +46,4 @@ Item {
             marker.x = Math.round(root.width * value * Screen.devicePixelRatio) / Screen.devicePixelRatio;
         }
     }
-
 }

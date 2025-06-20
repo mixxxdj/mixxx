@@ -1,8 +1,8 @@
 #pragma once
 
-#include <taglib/xiphcomment.h>
+#include <xiphcomment.h>
 
-#include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_file.h"
 
 namespace mixxx {
 

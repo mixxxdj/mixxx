@@ -2,26 +2,31 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QList>
 #include <QObject>
 #include <gsl/pointers>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
 
-class EngineMaster;
+class EngineMixer;
 class EngineBuffer;
+struct GroupFeatureState;
 
 constexpr int kNoTrigger = -1;
 static_assert(
         mixxx::audio::FramePos::kLegacyInvalidEnginePosition == kNoTrigger,
         "Invalid engine position value mismatch");
+
+// This value is used to make sure the initial seek after loading a track is
+// not omitted. Therefore this value must be different for 0.0 or any likely
+// value for the main cue
+constexpr auto kInitialPlayPosition =
+        mixxx::audio::FramePos::fromEngineSamplePos(
+                std::numeric_limits<double>::lowest());
 
 /**
  * EngineControl is an abstract base class for objects which implement
@@ -43,20 +48,20 @@ class EngineControl : public QObject {
             UserSettingsPointer pConfig);
     ~EngineControl() override;
 
-    // Called by EngineBuffer::process every latency period. See the above
-    // comments for information about guarantees that hold during this call. An
-    // EngineControl can perform any upkeep operations that are necessary during
-    // this call.
-    virtual void process(const double dRate,
+    /// Called by EngineBuffer::process every latency period.
+    /// See the above comments for information about guarantees that hold during this call.
+    /// An EngineControl can perform any upkeep operations necessary here.
+    /// @param dRate current playback rate in audio frames per second
+    virtual void process(const double rate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize);
+            const std::size_t bufferSize);
 
-    // hintReader allows the EngineControl to provide hints to the reader to
-    // indicate that the given portion of a song is a potential imminent seek
-    // target.
+    /// hintReader allows the EngineControl to provide hints to the reader
+    /// to indicate that the given portion of a song
+    /// is a potential imminent seek target.
     virtual void hintReader(gsl::not_null<HintVector*> pHintList);
 
-    virtual void setEngineMaster(EngineMaster* pEngineMaster);
+    virtual void setEngineMixer(EngineMixer* pEngineMixer);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setFrameInfo(mixxx::audio::FramePos currentPosition,
             mixxx::audio::FramePos trackEndPosition,
@@ -68,7 +73,7 @@ class EngineControl : public QObject {
             mixxx::audio::FramePos endPosition,
             bool enabled);
 
-    // Called to collect player features for effects processing.
+    /// Collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
         Q_UNUSED(pGroupFeatures);
     }
@@ -98,13 +103,14 @@ class EngineControl : public QObject {
     }
     void seek(double fractionalPosition);
     void seekAbs(mixxx::audio::FramePos position);
-    // Seek to an exact sample and don't allow quantizing adjustment.
-    void seekExact(mixxx::audio::FramePos position);
-    // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
+    /// Seek to an exact frame, no quantizing
+    /// virtual only for tests!
+    virtual void seekExact(mixxx::audio::FramePos position);
+    /// Return an EngineBuffer to target for syncing. Returns nullptr if none found.
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
-    EngineMaster* getEngineMaster();
+    EngineMixer* getEngineMixer();
     EngineBuffer* getEngineBuffer();
 
     const QString m_group;
@@ -112,7 +118,7 @@ class EngineControl : public QObject {
 
   private:
     ControlValueAtomic<FrameInfo> m_frameInfo;
-    EngineMaster* m_pEngineMaster;
+    EngineMixer* m_pEngineMixer;
     EngineBuffer* m_pEngineBuffer;
 
     friend class CueControlTest;

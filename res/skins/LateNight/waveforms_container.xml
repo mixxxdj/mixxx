@@ -4,12 +4,26 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-
       <WidgetGroup>
         <ObjectName>WaveformsContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+
+          <WidgetGroup>
+            <RequiresStem>true</RequiresStem>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                <SetVariable name="TooltipId">show_stem_controls</SetVariable>
+                <SetVariable name="ObjectName">StemControlsToggle</SetVariable>
+                <SetVariable name="Size">26f,52f</SetVariable>
+                <SetVariable name="BtnSize"></SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_stem_controls</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <Layout>vertical</Layout>
@@ -20,7 +34,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:waveform.xml">
+                  <Template src="skins:LateNight/waveform.xml">
                     <SetVariable name="ChanNum">3</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
@@ -37,7 +51,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:waveform.xml">
+                  <Template src="skins:LateNight/waveform.xml">
                     <SetVariable name="ChanNum">1</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
@@ -50,7 +64,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:waveform.xml">
+                  <Template src="skins:LateNight/waveform.xml">
                     <SetVariable name="ChanNum">2</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
@@ -63,7 +77,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:waveform.xml">
+                  <Template src="skins:LateNight/waveform.xml">
                     <SetVariable name="ChanNum">4</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
@@ -80,7 +94,7 @@
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:/controls/button_2state_persist.xml">
+          <Template src="skins:LateNight/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">show_beatgrid_controls</SetVariable>
             <SetVariable name="ObjectName">BeatgridControlsToggle</SetVariable>
             <SetVariable name="Size">26f,52f</SetVariable>

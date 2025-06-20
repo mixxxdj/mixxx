@@ -14,44 +14,19 @@
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
-class SoundManager;
-class DlgPrefSound;
-class DlgPrefLibrary;
-class DlgPrefController;
-class DlgPrefControllers;
-#ifdef __VINYLCONTROL__
-class DlgPrefVinyl;
-#endif // __VINYLCONTROL__
-class DlgPrefInterface;
-class DlgPrefWaveform;
-class DlgPrefDeck;
-class DlgPrefColors;
-class DlgPrefEQ;
-class DlgPrefEffects;
-class DlgPrefCrossfader;
-class DlgPrefAutoDJ;
-#ifdef __BROADCAST__
-class DlgPrefBroadcast;
-#endif // __BROADCAST__
-class DlgPrefRecord;
-class DlgPrefBeats;
-class DlgPrefKey;
-class DlgPrefReplayGain;
-class LV2Backend;
 class ControllerManager;
+class DlgPrefControllers;
+class DlgPrefSound;
 class EffectsManager;
-class PlayerManager;
 class Library;
+class SoundManager;
 class VinylControlManager;
-#ifdef __MODPLUG__
-class DlgPrefModplug;
-#endif // __MODPLUG__
 
 namespace mixxx {
 class ScreensaverManager;
 namespace skin {
 class SkinLoader;
-}
+} // namespace skin
 } // namespace mixxx
 
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
@@ -84,11 +59,13 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
-    void switchToPage(DlgPreferencePage* pPage);
+    void switchToPage(const QString& pageTitle, DlgPreferencePage* pPage);
 
   public slots:
     void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
-    void showSoundHardwarePage();
+    void showSoundHardwarePage(
+            std::optional<mixxx::preferences::SoundHardwareTab> tab =
+                    std::nullopt);
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();
@@ -101,9 +78,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     // Emitted if the user clicks Reset to Defaults.
     void resetToDefaults();
 
-  signals:
     void reloadUserInterface();
-    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+    void tooltipModeChanged(mixxx::preferences::Tooltips tooltipMode);
+    void menuBarAutoHideChanged();
 
   protected:
     bool eventFilter(QObject*, QEvent*);
@@ -112,6 +89,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   private:
     DlgPreferencePage* currentPage();
+    void fixSliderStyle();
     QList<PreferencesPage> m_allPages;
     void onShow();
     void onHide();
@@ -122,6 +100,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     QStringList m_geometry;
     UserSettingsPointer m_pConfig;
+    std::unique_ptr<DlgPrefSound> m_pSoundDlg;
     PreferencesPage m_soundPage;
     DlgPrefControllers* m_pControllersDlg;
 

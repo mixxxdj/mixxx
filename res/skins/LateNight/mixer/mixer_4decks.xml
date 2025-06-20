@@ -10,25 +10,25 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:/mixer/channel_4decks.xml">
+          <Template src="skins:LateNight/mixer/channel_4decks.xml">
             <SetVariable name="ChanNum">3</SetVariable>
             <SetVariable name="xfaderLeft">default</SetVariable>
             <SetVariable name="xfaderRight">warning</SetVariable>
           </Template>
 
-          <Template src="skin:/mixer/channel_4decks.xml">
+          <Template src="skins:LateNight/mixer/channel_4decks.xml">
             <SetVariable name="ChanNum">1</SetVariable>
             <SetVariable name="xfaderLeft">default</SetVariable>
             <SetVariable name="xfaderRight">warning</SetVariable>
           </Template>
 
-          <Template src="skin:/mixer/channel_4decks.xml">
+          <Template src="skins:LateNight/mixer/channel_4decks.xml">
             <SetVariable name="ChanNum">2</SetVariable>
             <SetVariable name="xfaderLeft">warning</SetVariable>
             <SetVariable name="xfaderRight">default</SetVariable>
           </Template>
 
-          <Template src="skin:/mixer/channel_4decks.xml">
+          <Template src="skins:LateNight/mixer/channel_4decks.xml">
             <SetVariable name="ChanNum">4</SetVariable>
             <SetVariable name="xfaderLeft">warning</SetVariable>
             <SetVariable name="xfaderRight">default</SetVariable>

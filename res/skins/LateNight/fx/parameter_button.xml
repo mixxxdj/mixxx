@@ -34,13 +34,13 @@
             <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
             <State>
               <Number>0</Number>
-              <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter_active.svg</Pressed>
             </State>
             <State>
               <Number>1</Number>
-              <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter_active.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter_active.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_fx_parameter_active.svg</Pressed>
             </State>
             <Connection>
               <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
@@ -52,25 +52,17 @@
 
       <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>AlignBottom</ObjectName>
-        <Layout>horizontal</Layout>
+      <EffectButtonParameterName>
+        <ObjectName>FxButtonLabel</ObjectName>
         <SizePolicy>me,f</SizePolicy>
         <MinimumSize>40,10</MinimumSize>
         <MaximumSize>58,10</MaximumSize>
-        <Children>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-          <EffectButtonParameterName>
-            <ObjectName>FxButtonLabel</ObjectName>
-            <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-            <Alignment>center</Alignment>
-          </EffectButtonParameterName>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-        </Children>
-      </WidgetGroup>
-
+        <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+        <Alignment>center</Alignment>
+        <Elide>right</Elide>
+      </EffectButtonParameterName>
 
     </Children>
     <Connection>

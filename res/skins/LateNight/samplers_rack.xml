@@ -3,13 +3,32 @@
 
   <!-- Create Singletons for samplers 1-4 because they're needed when
     showing 4 or 8 samplers... -->
-  <Template src="skin:/samplers/singletons.xml"/>
+  <Template src="skins:LateNight/samplers/singletons.xml"/>
   <!-- ...the create a singleton for samplers_8decks.xml because it's used
     when showing 8 or 16 samplers. -->
   <SingletonDefinition>
     <ObjectName>Samplers_1-8</ObjectName>
     <Children>
-      <Template src="skin:/samplers/samplers_8decks.xml"/>
+      <Template src="skins:LateNight/samplers/samplers_8decks.xml">
+        <SetVariable name="Count">1-8</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Samplers_9-16</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/samplers/samplers_row.xml">
+        <SetVariable name="Count">9-16</SetVariable>
+        <SetVariable name="Sampler1">9</SetVariable>
+        <SetVariable name="Sampler2">10</SetVariable>
+        <SetVariable name="Sampler3">11</SetVariable>
+        <SetVariable name="Sampler4">12</SetVariable>
+        <SetVariable name="Sampler5">13</SetVariable>
+        <SetVariable name="Sampler6">14</SetVariable>
+        <SetVariable name="Sampler7">15</SetVariable>
+        <SetVariable name="Sampler8">16</SetVariable>
+      </Template>
     </Children>
   </SingletonDefinition>
 
@@ -22,7 +41,9 @@
         <Children>
 
           <!--4 Samplers -->
-          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:/samplers/samplers_4decks.xml"/>
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skins:LateNight/samplers/samplers_4decks.xml">
+            <SetVariable name="Count">1-4</SetVariable>
+          </Template>
 
           <!--8 Samplers -->
           <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
@@ -41,7 +62,9 @@
               <SingletonContainer>
                 <ObjectName>Samplers_1-8</ObjectName>
               </SingletonContainer>
-              <Template src="skin:/samplers/samplers_16decks.xml"/>
+              <SingletonContainer>
+                <ObjectName>Samplers_9-16</ObjectName>
+              </SingletonContainer>
             </Children>
           </WidgetGroup>
 
@@ -50,7 +73,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <ConfigKey>[Skin],show_samplers</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

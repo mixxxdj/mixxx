@@ -1,9 +1,6 @@
 #include "analyzer/plugins/buffering_utils.h"
 
 #include "util/math.h"
-#include "util/sample.h"
-
-#include <string.h>
 
 namespace mixxx {
 

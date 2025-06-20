@@ -10,8 +10,7 @@ Variables:
 -->
 <Template>
   <SetVariable name="FxUnit">[EqualizerRack1_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="FxNum">1</SetVariable>
-  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
 
   <WidgetGroup>
     <ObjectName>EQKnobContainerRight</ObjectName>
@@ -41,20 +40,20 @@ Variables:
               <EffectParameterKnobComposed>
                 <ObjectName>EQKnob</ObjectName>
                 <Size>30f,26f</Size>
-                <Knob>skin:../Tango/knobs_sliders/knob_white.svg</Knob>
-                <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <Knob>skins:Tango/knobs_sliders/knob_white.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>2.000</KnobCenterYOffset>
                 <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
-                <Effect><Variable name="FxNum"/></Effect>
+                <Effect>1</Effect>
                 <EffectParameter><Variable name="FxParameter"/></EffectParameter>
                 <Connection>
                   <ConfigKey><Variable name="FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
               </EffectParameterKnobComposed>
 
-              <Template src="skin:../Tango/mixer/eq_button.xml">
+              <Template src="skins:Tango/mixer/eq_button.xml">
                 <SetVariable name="ObjectName">EQKilledUnderlay</SetVariable>
                 <SetVariable name="Size">30f,26f</SetVariable>
               </Template>
@@ -66,7 +65,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/mixer/eq_button.xml">
+              <Template src="skins:Tango/mixer/eq_button.xml">
                 <SetVariable name="ObjectName">EQKillButton</SetVariable>
                 <SetVariable name="Size">12f,26f</SetVariable>
               </Template>

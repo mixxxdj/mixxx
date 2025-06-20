@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/controls/enginecontrol.h"
-#include "control/controlvalue.h"
 #include "util/parented_ptr.h"
 
 class ControlObject;
@@ -26,7 +25,6 @@ class KeyControl : public EngineControl {
     };
 
     KeyControl(const QString& group, UserSettingsPointer pConfig);
-    ~KeyControl() override;
 
     // Returns a struct, with the results of the last pitch and tempo calculations
     KeyControl::PitchTempoRatio getPitchTempoRatio();
@@ -54,23 +52,23 @@ class KeyControl : public EngineControl {
     // ControlObjects that come from EngineBuffer
     parented_ptr<ControlProxy> m_pRateRatio;
 
-    ControlProxy* m_pVCRate;
-    ControlProxy* m_pVCEnabled;
+    parented_ptr<ControlProxy> m_pVCRate;
+    parented_ptr<ControlProxy> m_pVCEnabled;
 
-    ControlProxy* m_pKeylock;
-    ControlPotmeter* m_pPitch;
-    ControlPotmeter* m_pPitchAdjust;
-    ControlPushButton* m_pButtonSyncKey;
-    ControlPushButton* m_pButtonResetKey;
-    ControlPushButton* m_keylockMode;
-    ControlPushButton* m_keyunlockMode;
+    parented_ptr<ControlProxy> m_pKeylock;
+    std::unique_ptr<ControlPotmeter> m_pPitch;
+    std::unique_ptr<ControlPotmeter> m_pPitchAdjust;
+    std::unique_ptr<ControlPushButton> m_pButtonSyncKey;
+    std::unique_ptr<ControlPushButton> m_pButtonResetKey;
+    std::unique_ptr<ControlPushButton> m_keylockMode;
+    std::unique_ptr<ControlPushButton> m_keyunlockMode;
 
     // The current loaded file's detected key
-    ControlObject* m_pFileKey;
+    std::unique_ptr<ControlObject> m_pFileKey;
 
     // The current effective key of the engine
-    ControlObject* m_pEngineKey;
-    ControlPotmeter* m_pEngineKeyDistance;
+    std::unique_ptr<ControlObject> m_pEngineKey;
+    std::unique_ptr<ControlPotmeter> m_pEngineKeyDistance;
 
     struct PitchTempoRatio m_pitchRateInfo;
     QAtomicInt m_updatePitchRequest;

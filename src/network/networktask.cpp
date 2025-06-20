@@ -1,5 +1,7 @@
 #include "network/networktask.h"
 
+#include <QNetworkAccessManager>
+
 #include "moc_networktask.cpp"
 #include "util/counter.h"
 #include "util/logger.h"

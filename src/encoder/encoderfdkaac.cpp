@@ -8,6 +8,7 @@
 #include <QString>
 #include <QStringList>
 
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
@@ -85,7 +86,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
              << QStringLiteral("libfdk-aac.so.2");
 
     QStringList errorMessages;
-    for (const auto& libname : qAsConst(libnames)) {
+    for (const auto& libname : std::as_const(libnames)) {
         m_pLibrary = std::make_unique<QLibrary>(libname, 2);
         if (m_pLibrary->load()) {
             kLogger.debug() << "Successfully loaded encoder library" << m_pLibrary->fileName();
@@ -104,7 +105,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     }
 
     if (!m_pLibrary || !m_pLibrary->isLoaded()) {
-        for (const auto& errorMessage : qAsConst(errorMessages)) {
+        for (const auto& errorMessage : std::as_const(errorMessages)) {
             kLogger.warning() << "Failed to load AAC encoder library:" << errorMessage;
         }
         return;
@@ -131,12 +132,12 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         kLogger.warning() << "Failed to load AAC encoder library: Interface of"
                           << m_pLibrary->fileName() << "is not as expected";
 
-        kLogger.debug() << "aacEncGetLibInfo:" << aacEncGetLibInfo;
-        kLogger.debug() << "aacEncOpen:" << aacEncOpen;
-        kLogger.debug() << "aacEncClose:" << aacEncClose;
-        kLogger.debug() << "aacEncEncode:" << aacEncEncode;
-        kLogger.debug() << "aacEncInfo:" << aacEncInfo;
-        kLogger.debug() << "aacEncoder_SetParam:" << aacEncoder_SetParam;
+        kLogger.debug() << "aacEncGetLibInfo:" << reinterpret_cast<void*>(aacEncGetLibInfo);
+        kLogger.debug() << "aacEncOpen:" << reinterpret_cast<void*>(aacEncOpen);
+        kLogger.debug() << "aacEncClose:" << reinterpret_cast<void*>(aacEncClose);
+        kLogger.debug() << "aacEncEncode:" << reinterpret_cast<void*>(aacEncEncode);
+        kLogger.debug() << "aacEncInfo:" << reinterpret_cast<void*>(aacEncInfo);
+        kLogger.debug() << "aacEncoder_SetParam:" << reinterpret_cast<void*>(aacEncoder_SetParam);
         return;
     }
 
@@ -179,7 +180,7 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
 
     // Try to find a butt installation in one of the
     // potential paths above
-    for (const auto& topPath : qAsConst(searchPaths)) {
+    for (const auto& topPath : std::as_const(searchPaths)) {
         QDir folder(topPath);
         if (!folder.exists()) {
             continue;
@@ -187,13 +188,12 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
 
         // Typical name for a butt installation folder
         // is "butt-x.x.x" so list subfolders beginning with "butt"
-        QStringList nameFilters("butt*");
-        QStringList subfolders =
-                folder.entryList(nameFilters, QDir::Dirs, QDir::Name);
+        const QStringList subfolders =
+                folder.entryList(QStringList{"butt*"}, QDir::Dirs, QDir::Name);
 
         // If a butt installation is found, try
         // to find libfdk-aac in it
-        for (const auto& subName : qAsConst(subfolders)) {
+        for (const auto& subName : subfolders) {
             if (!folder.cd(subName)) {
                 continue;
             }
@@ -351,11 +351,11 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     return 0;
 }
 
-void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const int sampleCount) {
+void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
     if (!m_pInputFifo) {
         return;
     }
-    int writeCount = sampleCount;
+    int writeCount = static_cast<int>(bufferSize);
     int writeAvailable = m_pInputFifo->writeAvailable();
     if (writeCount > writeAvailable) {
         kLogger.warning() << "FIFO buffer too small, losing samples!"

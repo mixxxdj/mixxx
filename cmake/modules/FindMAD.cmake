@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindMAD
 -------
@@ -48,26 +43,32 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_MAD QUIET mad)
 endif()
 
-find_path(MAD_INCLUDE_DIR
+find_path(
+  MAD_INCLUDE_DIR
   NAMES mad.h
-  PATHS ${PC_MAD_INCLUDE_DIRS}
+  HINTS ${PC_MAD_INCLUDE_DIRS}
   PATH_SUFFIXES mad
-  DOC "MAD include directory")
+  DOC "MAD include directory"
+)
 mark_as_advanced(MAD_INCLUDE_DIR)
 
-find_library(MAD_LIBRARY
+find_library(
+  MAD_LIBRARY
   NAMES mad
-  PATHS ${PC_MAD_LIBRARY_DIRS}
+  HINTS ${PC_MAD_LIBRARY_DIRS}
   DOC "MAD library"
 )
 mark_as_advanced(MAD_LIBRARY)
 
+if(DEFINED PC_MAD_VERSION AND NOT PC_MAD_VERSION STREQUAL "")
+  set(MAD_VERSION "${PC_MAD_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   MAD
-  DEFAULT_MSG
-  MAD_LIBRARY
-  MAD_INCLUDE_DIR
+  REQUIRED_VARS MAD_LIBRARY MAD_INCLUDE_DIR
+  VERSION_VAR MAD_VERSION
 )
 
 if(MAD_FOUND)
@@ -77,7 +78,8 @@ if(MAD_FOUND)
 
   if(NOT TARGET MAD::MAD)
     add_library(MAD::MAD UNKNOWN IMPORTED)
-    set_target_properties(MAD::MAD
+    set_target_properties(
+      MAD::MAD
       PROPERTIES
         IMPORTED_LOCATION "${MAD_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_MAD_CFLAGS_OTHER}"

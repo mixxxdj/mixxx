@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QAction>
 #include <QMenu>
-#include <QPixmap>
-#include <QWidget>
 
 #include "library/coverart.h"
 #include "library/export/coverartcopyworker.h"
+
+class QAction;
 
 // This class implements a context-menu with all CoverArt user actions. Callers
 // must call setCoverArt before calling exec or popup. This class does

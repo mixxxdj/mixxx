@@ -5,15 +5,18 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
-#include <QtConcurrent>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStyleFactory>
 
-#include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
 #include "moc_dlgreplacecuecolor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
+#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/defs.h"
 
 namespace {
 
@@ -57,7 +60,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     setupUi(this);
     setWindowModality(Qt::ApplicationModal);
 
-    spinBoxHotcueIndex->setMaximum(NUM_HOT_CUES);
+    spinBoxHotcueIndex->setMaximum(kMaxNumberOfHotcues);
 
     QIcon icon = QIcon::fromTheme("dialog-warning");
     if (!icon.isNull()) {
@@ -77,8 +80,8 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     // from the rest of the application (when not styled via QSS), but that's
     // better than having buttons without any colors (which would make the
     // color picker unusable).
-    pushButtonNewColor->setStyle(m_pStyle);
-    pushButtonCurrentColor->setStyle(m_pStyle);
+    pushButtonNewColor->setStyle(m_pStyle.get());
+    pushButtonCurrentColor->setStyle(m_pStyle.get());
 
     // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);
@@ -90,9 +93,11 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     }
     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(firstColor));
 
-    // Add menu for new color button
+    // Add menu for 'New color' button
     m_pNewColorPickerAction = make_parented<WColorPickerAction>(
-            WColorPicker::Option::AllowCustomColor,
+            WColorPicker::Option::AllowCustomColor |
+                    // TODO(xxx) remove this once the preferences are themed via QSS
+                    WColorPicker::Option::NoExtStyleSheet,
             colorPaletteSettings.getHotcueColorPalette(),
             this);
     m_pNewColorPickerAction->setObjectName("HotcueColorPickerAction");
@@ -110,7 +115,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     m_pNewColorMenu->addAction(m_pNewColorPickerAction);
     pushButtonNewColor->setMenu(m_pNewColorMenu);
 
-    // Set up current color button
+    // Set up 'Current color' button
     setButtonColor(pushButtonCurrentColor,
             mixxx::RgbColor::toQColor(
                     mixxx::PredefinedColorPalettes::kDefaultCueColor));
@@ -122,13 +127,15 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
 
-    // Add menu for current color button
+    // Add menu for 'Current color' button
     m_pCurrentColorPickerAction = make_parented<WColorPickerAction>(
-            WColorPicker::Option::AllowCustomColor,
+            WColorPicker::Option::AllowCustomColor |
+                    // TODO(xxx) remove this once the preferences are themed via QSS
+                    WColorPicker::Option::NoExtStyleSheet,
             colorPaletteSettings.getHotcueColorPalette(),
             this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
-    m_pNewColorPickerAction->setSelectedColor(
+    m_pCurrentColorPickerAction->setSelectedColor(
             mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
@@ -146,11 +153,19 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     // Update dialog widgets when conditions checkboxes are (un)checked
     connect(checkBoxCurrentColorCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
     connect(checkBoxHotcueIndexCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
 
@@ -171,9 +186,6 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             });
 
     slotUpdateWidgets();
-}
-
-DlgReplaceCueColor::~DlgReplaceCueColor() {
 }
 
 void DlgReplaceCueColor::setColorPalette(const ColorPalette& palette) {
@@ -308,7 +320,7 @@ void DlgReplaceCueColor::slotApply() {
     }
 
     // Flush cached tracks to database
-    QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
+    const QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
     for (const TrackId& trackId : cachedTrackIds) {
         TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (pTrack) {
@@ -341,7 +353,7 @@ void DlgReplaceCueColor::slotApply() {
             continue;
         }
         CueDatabaseRow row = {DbId(selectQuery.value(idColumn)),
-                TrackId(selectQuery.value(trackIdColumn).toInt()),
+                TrackId(selectQuery.value(trackIdColumn)),
                 *color};
         rows << row;
         trackIds << row.trackId;
@@ -385,14 +397,14 @@ void DlgReplaceCueColor::slotApply() {
     bool canceled = false;
 
     QMultiMap<TrackPointer, DbId> cues;
-    for (const auto& row : qAsConst(rows)) {
+    for (const auto& row : std::as_const(rows)) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
             canceled = true;
             break;
         }
         query.bindValue(":id", row.id.toVariant());
-        query.bindValue(":track_id", row.trackId.value());
+        query.bindValue(":track_id", row.trackId.toVariant());
         query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);

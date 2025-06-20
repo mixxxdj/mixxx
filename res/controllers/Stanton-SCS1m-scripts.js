@@ -74,15 +74,15 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
 
     // Connect signals
         // Vu Meters
-    engine.connectControl("[Master]","VuMeterL","StantonSCS1m.MasterLVu");
-    engine.connectControl("[Master]","VuMeterR","StantonSCS1m.MasterRVu");
-    engine.connectControl("[Channel1]","VuMeter","StantonSCS1m.Channel1Vu");
-    engine.connectControl("[Channel2]","VuMeter","StantonSCS1m.Channel2Vu");
+    engine.connectControl("[Main]", "vu_meter_left", "StantonSCS1m.MasterLVu");
+    engine.connectControl("[Main]", "vu_meter_right", "StantonSCS1m.MasterRVu");
+    engine.connectControl("[Channel1]","vu_meter","StantonSCS1m.Channel1Vu");
+    engine.connectControl("[Channel2]","vu_meter","StantonSCS1m.Channel2Vu");
 
         // Clipping LED
-    engine.connectControl("[Master]","PeakIndicator","StantonSCS1m.MasterClip");
-    engine.connectControl("[Channel1]","PeakIndicator","StantonSCS1m.Channel1Clip");
-    engine.connectControl("[Channel2]","PeakIndicator","StantonSCS1m.Channel2Clip");
+    engine.connectControl("[Master]","peak_indicator","StantonSCS1m.MasterClip");
+    engine.connectControl("[Channel1]","peak_indicator","StantonSCS1m.Channel1Clip");
+    engine.connectControl("[Channel2]","peak_indicator","StantonSCS1m.Channel2Clip");
 
         // Pitch displays
     engine.connectControl("[Channel1]","rate","StantonSCS1m.pitchDisplay1");
@@ -92,11 +92,11 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel1]","rateRange","StantonSCS1m.pitchColor1");
     engine.connectControl("[Channel2]","rateRange","StantonSCS1m.pitchColor2");
 
-        // Virtual platter LEDs & time displays
-    engine.connectControl("[Channel1]","visual_playposition","StantonSCS1m.positionUpdates1");
-    engine.connectControl("[Channel2]","visual_playposition","StantonSCS1m.positionUpdates2");
-    engine.connectControl("[Channel1]","duration","StantonSCS1m.durationChange1");
-    engine.connectControl("[Channel2]","duration","StantonSCS1m.durationChange2");
+    // Virtual platter LEDs & time displays
+    engine.connectControl("[Channel1]", "playposition", "StantonSCS1m.positionUpdates1");
+    engine.connectControl("[Channel2]", "playposition", "StantonSCS1m.positionUpdates2");
+    engine.connectControl("[Channel1]", "duration", "StantonSCS1m.durationChange1");
+    engine.connectControl("[Channel2]", "duration", "StantonSCS1m.durationChange2");
 
         // Faders
     engine.connectControl("[Master]","crossfader","StantonSCS1m.crossFaderStart");
@@ -109,7 +109,7 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
 
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     // Set active deck to last available so the below will switch to #1.
-    StantonSCS1m.hotCueDeck = engine.getValue("[Master]","num_decks");
+    StantonSCS1m.hotCueDeck = engine.getValue("[App]", "num_decks");
     StantonSCS1m.hotCueDeckChange(StantonSCS1m.channel, 34, 0x7F, 0x90+StantonSCS1m.channel);
     StantonSCS1m.hotCueDeckChange(StantonSCS1m.channel, 34, 0x00, 0x80+StantonSCS1m.channel);
 
@@ -464,7 +464,7 @@ StantonSCS1m.hotCueDeckChange = function (channel, control, value, status) {
         if (StantonSCS1m.modifier["hotCueToggleTime"] != 0.0 && ((new Date() - StantonSCS1m.modifier["hotCueToggleTime"])>300)) return;
 
         StantonSCS1m.connectPresetSignals(channel,true);    // Disconnect previous ones
-        if (StantonSCS1m.hotCueDeck == engine.getValue("[Master]","num_decks")) StantonSCS1m.hotCueDeck=1;
+        if (StantonSCS1m.hotCueDeck == engine.getValue("[App]", "num_decks")) StantonSCS1m.hotCueDeck=1;
         else StantonSCS1m.hotCueDeck++;
         // Change bank button color
         if (StantonSCS1m.hotCueDeck % 2 == 0) midi.sendShortMsg(0x90 + channel,34,64);   // On
@@ -745,7 +745,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
         if (trackTimeRemaining<=30 && trackTimeRemaining>15) {   // If <30s left, flash slowly
             if (StantonSCS1m.timer["30s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS1m.timer["30s-d"+deck] = engine.beginTimer(500,"StantonSCS1m.displayFlash("+deck+")");
+                StantonSCS1m.timer["30s-d"+deck] = engine.beginTimer(500, () => { StantonSCS1m.displayFlash(deck); });
                 if (StantonSCS1m.timer["15s-d"+deck] != -1) {
                     // Stop the 15s timer if it was running
                     engine.stopTimer(StantonSCS1m.timer["15s-d"+deck]);
@@ -755,7 +755,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
         } else if (trackTimeRemaining<=15 && trackTimeRemaining>0) { // If <15s left, flash quickly
             if (StantonSCS1m.timer["15s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS1m.timer["15s-d"+deck] = engine.beginTimer(125,"StantonSCS1m.displayFlash("+deck+")");
+                StantonSCS1m.timer["15s-d"+deck] = engine.beginTimer(125,() => { StantonSCS1m.displayFlash(deck); });
                 if (StantonSCS1m.timer["30s-d"+deck] != -1) {
                     // Stop the 30s timer if it was running
                     engine.stopTimer(StantonSCS1m.timer["30s-d"+deck]);

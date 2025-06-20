@@ -1,7 +1,6 @@
 #pragma once
 
-// this also includes vorbis/codec.h
-#include <vorbis/vorbisenc.h>
+#include <vorbis/codec.h>
 
 #include <QFile>
 
@@ -20,7 +19,7 @@ class EncoderVorbis : public Encoder {
     ~EncoderVorbis() override;
 
     int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
-    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;

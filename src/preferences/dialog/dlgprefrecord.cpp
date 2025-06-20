@@ -1,10 +1,9 @@
 #include "preferences/dialog/dlgprefrecord.h"
 
 #include <QFileDialog>
+#include <QRadioButton>
 #include <QStandardPaths>
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
 #include "moc_dlgprefrecord.cpp"
@@ -18,7 +17,7 @@ constexpr bool kDefaultCueEnabled = true;
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_selFormat(QString(), QString(), false, QString()) {
+          m_selFormat({QString(), QString(), false, QString()}) {
     setupUi(this);
 
     // Setting recordings path.
@@ -93,11 +92,13 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     if (index >= 0) {
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
-    }
-    else {
+    } else {
         //Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
+        saveSplitSize();
     }
+
+    setScrollSafeGuard(comboBoxSplitting);
 
     // Do the one-time connection of signals here.
     connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
@@ -120,11 +121,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             &DlgPrefRecord::slotSliderCompression);
 }
 
-DlgPrefRecord::~DlgPrefRecord()
-{
+DlgPrefRecord::~DlgPrefRecord() {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
-    for (QRadioButton* button : qAsConst(m_formatButtons)) {
+    for (QRadioButton* button : std::as_const(m_formatButtons)) {
         if (LosslessEncLayout->indexOf(button) != -1) {
             LosslessEncLayout->removeWidget(button);
         } else {
@@ -132,15 +132,14 @@ DlgPrefRecord::~DlgPrefRecord()
         }
         button->deleteLater();
     }
-    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+    for (QAbstractButton* widget : std::as_const(m_optionWidgets)) {
         OptionGroupsLayout->removeWidget(widget);
         widget->deleteLater();
     }
     m_optionWidgets.clear();
 }
 
-void DlgPrefRecord::slotApply()
-{
+void DlgPrefRecord::slotApply() {
     saveRecordingFolder();
     saveMetaData();
     saveEncoding();
@@ -149,8 +148,7 @@ void DlgPrefRecord::slotApply()
 }
 
 // This function updates/refreshes the contents of this dialog.
-void DlgPrefRecord::slotUpdate()
-{
+void DlgPrefRecord::slotUpdate() {
     // Find out the max width of the labels. This is needed to keep the
     // UI fixed in size when hiding or showing elements.
     // It is not perfect, but it didn't get better than this.
@@ -188,8 +186,7 @@ void DlgPrefRecord::slotUpdate()
     }
 }
 
-void DlgPrefRecord::slotResetToDefaults()
-{
+void DlgPrefRecord::slotResetToDefaults() {
     m_formatButtons.first()->setChecked(true);
     m_selFormat = EncoderFactory::getFactory().getFormatFor(
             m_formatButtons.first()->objectName());
@@ -207,9 +204,7 @@ void DlgPrefRecord::slotResetToDefaults()
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 }
 
-
-void DlgPrefRecord::slotBrowseRecordingsDir()
-{
+void DlgPrefRecord::slotBrowseRecordingsDir() {
     QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose recordings directory"),
             m_pConfig->getValueString(
@@ -227,8 +222,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir()
     }
 }
 
-void DlgPrefRecord::slotFormatChanged()
-{
+void DlgPrefRecord::slotFormatChanged() {
     QObject *senderObj = sender();
     m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
     setupEncoderUI();
@@ -239,33 +233,25 @@ void DlgPrefRecord::setupEncoderUI() {
             EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
-        LabelQuality->setVisible(true);
-        SliderQuality->setVisible(true);
-        TextQuality->setVisible(true);
+        qualityGroup->setVisible(true);
         SliderQuality->setMinimum(0);
         SliderQuality->setMaximum(settings->getQualityValues().size()-1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
-        LabelQuality->setVisible(false);
-        SliderQuality->setVisible(false);
-        TextQuality->setVisible(false);
+        qualityGroup->setVisible(false);
     }
     if (settings->usesCompressionSlider()) {
-        LabelCompression->setVisible(true);
-        SliderCompression->setVisible(true);
-        TextCompression->setVisible(true);
+        compressionGroup->setVisible(true);
         SliderCompression->setMinimum(0);
         SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
-        LabelCompression->setVisible(false);
-        SliderCompression->setVisible(false);
-        TextCompression->setVisible(false);
+        compressionGroup->setVisible(false);
     }
 
-    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+    for (QAbstractButton* widget : std::as_const(m_optionWidgets)) {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
@@ -284,7 +270,7 @@ void DlgPrefRecord::setupEncoderUI() {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
-        for (const QString& name : qAsConst(group.controlNames)) {
+        for (const QString& name : std::as_const(group.controlNames)) {
             QAbstractButton* widget;
             if (group.controlNames.size() == 1) {
                 QCheckBox* button = new QCheckBox(name, this);
@@ -312,8 +298,7 @@ void DlgPrefRecord::setupEncoderUI() {
     }
 }
 
-void DlgPrefRecord::slotSliderQuality()
-{
+void DlgPrefRecord::slotSliderQuality() {
     updateTextQuality();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
@@ -328,13 +313,11 @@ void DlgPrefRecord::updateTextQuality() {
     bool isVbr = false;
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        int i=0;
-        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+        for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
                 }
-                i++;
             }
         }
     }
@@ -348,8 +331,7 @@ void DlgPrefRecord::updateTextQuality() {
     }
 }
 
-void DlgPrefRecord::slotSliderCompression()
-{
+void DlgPrefRecord::slotSliderCompression() {
     updateTextCompression();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
@@ -380,9 +362,7 @@ void DlgPrefRecord::loadMetaData() {
     LineEditAlbum->setText(m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")));
 }
 
-
-void DlgPrefRecord::saveRecordingFolder()
-{
+void DlgPrefRecord::saveRecordingFolder() {
     QString newPath = LineEditRecordings->text();
     if (newPath != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
         QFileInfo fileInfo(newPath);
@@ -411,8 +391,8 @@ void DlgPrefRecord::saveRecordingFolder()
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), newPath);
     }
 }
-void DlgPrefRecord::saveMetaData()
-{
+
+void DlgPrefRecord::saveMetaData() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
@@ -437,7 +417,7 @@ void DlgPrefRecord::saveEncoding() {
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+        for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
                     settings->setGroupOption(group.groupCode, i);

@@ -1,29 +1,164 @@
 build:
-  - default.nix
-  - CMakeLists.txt
-  - build/**
-  - cmake/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - default.nix
+          - CMakeLists.txt
+          - build/**
+          - cmake/**
+
+cmake:
+  - changed-files:
+      - any-glob-to-any-file:
+          - cmake/**
 
 code quality:
-  - src/test/**
-  - .clang-format
-  - .codespell
-  - .eslint*
-  - .flake8
-  - .pre-commit-config.yaml
-  - pyproject.toml
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/test/**
+          - .clang-format
+          - .codespell
+          - .eslint*
+          - .flake8
+          - .pre-commit-config.yaml
+          - pyproject.toml
 
-controllers:
-  - res/controllers/**
+controller backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/controllers/**
+
+controller mappings:
+  - changed-files:
+      - any-glob-to-any-file:
+          - res/controllers/**
+
+developer experience:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/ISSUE_TEMPLATE/**
+          - .github/labeler.yml
+          - tools/**
+          - .pre-commit-config.yaml
+          - CODE_OF_CONDUCT.md
+          - CONTRIBUTING.md
+          - README.md
+          - src/dialog/dlgdevelopertools*
+
+analyzer:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/analyzer/**
+
+broadcast:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/broadcast/**
+
+effects:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/effects/**
+
+engine:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/engine/**
+
+sync:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/engine/sync/**
 
 library:
-  - src/library/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/**
+
+autodj:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/autodj/**
+
+browse:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/browse/**
+
+itunes:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/itunes/**
+
+rekordbox:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/rekordbox/**
+
+scanner:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/scanner/**
+
+search:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/searchquery*
+
+serato:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/library/serato/**
+
+packaging:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packaging/**
+
+preferences:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/preferences/**
+
+qml:
+  - changed-files:
+      - any-glob-to-any-file:
+          - res/qml/**
+          - src/qml/**
 
 skins:
-  - res/skins/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - res/skins/**
+
+soundio:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/soundio/**
+
+soundsource:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/sources/soundsource*
+
+sync-branches:
+  - all:
+      - base-branch: ['\d+\.\d+']
+      - head-branch: ["main", '\d+\.\d+']
 
 ui:
-  - src/**.ui
-  - src/dialog/**
-  - src/preferences/**
-  - src/widget/**
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/**.ui
+          - src/dialog/**
+          - src/preferences/**
+          - src/widget/**
+
+vinylcontrol:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/vinylcontrol/**
+
+waveform:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/waveform/**

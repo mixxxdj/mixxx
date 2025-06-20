@@ -7,7 +7,6 @@
 #include <QList>
 #include <QMutex>
 #include <QSharedPointer>
-#include <QStandardItem>
 #include <QThread>
 #include <QWaitCondition>
 #include <QWeakPointer>
@@ -23,6 +22,7 @@
 // other than the GUI thread.
 class BrowseTableModel;
 class BrowseThread;
+class QStandardItem;
 
 typedef QSharedPointer<BrowseThread> BrowseThreadPointer;
 

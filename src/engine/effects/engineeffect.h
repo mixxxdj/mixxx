@@ -1,20 +1,16 @@
 #pragma once
 
-#include <QList>
 #include <QMap>
 #include <QSet>
 #include <QString>
 #include <QVector>
-#include <QtDebug>
+#include <memory>
 
+#include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
-#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
@@ -30,16 +26,11 @@ class EngineEffect final : public EffectsRequestHandler {
             const QSet<ChannelHandleAndGroup>& registeredInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
     /// Called in main thread by EffectSlot
+    // Doesn't deal with ownership; only for conditional debug output
     ~EngineEffect();
 
-    /// Called in main thread to allocate an EffectState
-    EffectState* createState(const mixxx::EngineParameters& engineParameters);
-
-    /// Called in audio thread to load EffectStates received from the main thread
-    void loadStatesForInputChannel(ChannelHandle inputChannel,
-            EffectStatesMap* pStatesMap);
-    /// Called from the main thread for garbage collection after an input channel is disabled
-    void deleteStatesForInputChannel(ChannelHandle inputChannel);
+    /// Called from the main thread to make sure that the channel already has states
+    void initalizeInputChannel(ChannelHandle inputChannel);
 
     /// Called in audio thread
     bool processEffectsRequest(
@@ -51,8 +42,8 @@ class EngineEffect final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const unsigned int numSamples,
-            const unsigned int sampleRate,
+            const std::size_t numSamples,
+            const mixxx::audio::SampleRate sampleRate,
             const EffectEnableState chainEnableState,
             const GroupFeatureState& groupFeatures);
 
@@ -81,5 +72,4 @@ class EngineEffect final : public EffectsRequestHandler {
     QVector<EngineEffectParameterPointer> m_parameters;
     QMap<QString, EngineEffectParameterPointer> m_parametersById;
 
-    DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };

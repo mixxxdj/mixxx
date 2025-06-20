@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/tstring.h>
+#include <textidentificationframe.h>
+#include <tstring.h>
 
 #include <QDir>
 #include <QtDebug>
+#include <memory>
 
 #include "test/mixxxtest.h"
 #include "track/beats.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/beatsimporter.h"
-#include "util/memory.h"
 
 namespace {
 
@@ -51,7 +51,7 @@ class SeratoBeatGridTest : public testing::Test {
         dir.setFilter(QDir::Files);
         dir.setNameFilters(QStringList() << "*.octet-stream");
 
-        QFileInfoList fileList = dir.entryInfoList();
+        const QFileInfoList fileList = dir.entryInfoList();
         EXPECT_FALSE(fileList.isEmpty());
         for (const QFileInfo& fileInfo : fileList) {
             qDebug() << "--- File:" << fileInfo.fileName();
@@ -88,11 +88,11 @@ TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP3) {
     parseBeatGridDataInDirectory(
             QDir(MixxxTest::getOrInitTestDir().filePath(
                     QStringLiteral("serato/data/mp3/beatgrid"))),
-            mixxx::taglib::FileType::MP3);
+            mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoBeatGridTest, ParseEmptyDataMP3) {
-    parseEmptyBeatGridData(mixxx::taglib::FileType::MP3);
+    parseEmptyBeatGridData(mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP4) {

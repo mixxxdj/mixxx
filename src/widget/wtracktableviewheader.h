@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QAction>
 #include <QHeaderView>
 #include <QMap>
 #include <QMenu>
-#include <QWidget>
-#include <QContextMenuEvent>
 
 #include "proto/headers.pb.h"
 
 class TrackModel;
+class QAction;
+class QCheckBox;
+class QContextMenuEvent;
+class QWidget;
 
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU
@@ -65,6 +66,9 @@ class WTrackTableViewHeader : public QHeaderView {
      /** returns false if the header state is stored in the database (on first time usgae) **/
     bool hasPersistedHeaderState();
 
+  signals:
+    void shuffle();
+
   private slots:
     void showOrHideColumn(int);
 
@@ -74,5 +78,5 @@ class WTrackTableViewHeader : public QHeaderView {
     TrackModel* getTrackModel();
 
     QMenu m_menu;
-    QMap<int, QAction*> m_columnActions;
+    QMap<int, QCheckBox*> m_columnCheckBoxes;
 };

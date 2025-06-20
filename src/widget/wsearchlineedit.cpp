@@ -2,18 +2,22 @@
 
 #include <QAbstractItemView>
 #include <QApplication>
+#include <QCompleter>
 #include <QFont>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QShortcut>
 #include <QSizePolicy>
-#include <QStyle>
+#include <QStringLiteral>
+#include <QToolButton>
 
 #include "moc_wsearchlineedit.cpp"
+#include "preferences/configobject.h"
 #include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/parented_ptr.h"
 #include "wskincolor.h"
-#include "wwidget.h"
 
 #define ENABLE_TRACE_LOG false
 
@@ -25,6 +29,7 @@ const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kDisabledText = QStringLiteral("- - -");
 
+const QString kLibraryConfigGroup = QStringLiteral("[Library]");
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
 // Border width, max. 2 px when focused (in official skins)
@@ -59,16 +64,29 @@ constexpr int WSearchLineEdit::kMaxSearchEntries;
 
 //static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
+bool WSearchLineEdit::s_completionsEnabled = kCompletionsEnabledDefault;
+bool WSearchLineEdit::s_historyShortcutsEnabled = kHistoryShortcutsEnabledDefault;
 
 //static
 void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
 }
 
+// static
+void WSearchLineEdit::setSearchCompletionsEnabled(bool searchCompletionsEnabled) {
+    s_completionsEnabled = searchCompletionsEnabled;
+}
+
+// static
+void WSearchLineEdit::setSearchHistoryShortcutsEnabled(bool searchHistoryShortcutsEnabled) {
+    s_historyShortcutsEnabled = searchHistoryShortcutsEnabled;
+}
+
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig),
+          m_completer(make_parented<QCompleter>(this)),
           m_clearButton(make_parented<QToolButton>(this)),
           m_queryEmitted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
@@ -82,6 +100,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
+
+    m_completer->setModel(model());
+    m_completer->setCompletionMode(QCompleter::CompletionMode::InlineCompletion);
+    updateCompleter();
 
     // The goal is to make Esc natively close the popup, while in the line edit it
     // should move the keyboard focus to the tracks table. Unfortunately, eventFilter()
@@ -99,12 +121,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             &QAbstractButton::clicked,
             this,
             &WSearchLineEdit::slotClearSearch);
-
-    QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            &WSearchLineEdit::slotSetShortcutFocus);
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
@@ -195,31 +211,35 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     setPalette(pal);
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
-            tr("Clear the search bar input field") + "\n\n" +
+            tr("Clear the search bar input field"));
+}
 
-            tr("Shortcut") + ": \n" +
-            tr("Ctrl+Backspace"));
-
+void WSearchLineEdit::setupToolTip(const QString& searchInCurrentViewShortcut,
+        const QString& searchInAllTracksShortcut) {
     setBaseTooltip(tr("Search", "noun") + "\n" +
-            tr("Enter a string to search for") + "\n" +
-            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
-            "\n" + tr("For more information see User Manual > Mixxx Library") +
-            "\n\n" +
-            tr("Shortcuts") + ": \n" +
-            tr("Ctrl+F") + "  " +
-            tr("Focus", "Give search bar input focus") + "\n" +
-            tr("Return") + " " +
-            tr("Trigger search before search-as-you-type timeout or"
-               "jump to tracks view afterwards") +
+            tr("Enter a string to search for.") + " " +
+            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990.") +
+            "\n" + tr("See User Manual > Mixxx Library for more information.") +
+            "\n\n" + searchInCurrentViewShortcut + ": " +
+            tr("Focus/Select All (Search in current view)",
+                    "Give search bar input focus") +
+            "\n" + searchInAllTracksShortcut + ": " +
+            tr("Focus/Select All (Search in \'Tracks\' library view)") +
+            "\n\n" + tr("Additional Shortcuts When Focused:") + "\n" +
+            tr("Return") + ": " +
+            tr("Trigger search before search-as-you-type timeout or "
+               "focus tracks view afterwards") +
             "\n" +
-            tr("Ctrl+Backspace") + "  " +
-            tr("Clear input", "Clear the search bar input field") + "\n" +
-            tr("Ctrl+Space") + "  " +
+            tr("Esc or Ctrl+Return") + ": " +
+            tr("Immediately trigger search and focus tracks view",
+                    "Exit search bar and leave focus") +
+            "\n" + tr("Ctrl+Space") + ": " +
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
-            tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
-            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+            tr("Delete or Backspace") +
+            " (" + tr("in search history") + "): " +
+            tr("Delete query from history"));
 }
 
 void WSearchLineEdit::loadQueriesFromConfig() {
@@ -262,12 +282,12 @@ void WSearchLineEdit::saveQueriesInConfig() {
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QComboBox::resizeEvent(e);
-    m_innerHeight = height() - 2 * kBorderWidth;
+    int innerHeight = height() - 2 * kBorderWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
     // we will resize the Clear button icon only if height has changed.
-    if (m_clearButton->size().height() != m_innerHeight) {
-        QSize newSize = QSize(m_innerHeight, m_innerHeight);
+    if (m_clearButton->size().height() != innerHeight) {
+        QSize newSize = QSize(innerHeight, innerHeight);
         m_clearButton->resize(newSize);
         m_clearButton->setIconSize(newSize);
         // Needed to update the Clear button and the down arrow
@@ -277,10 +297,10 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     int top = rect().top() + kBorderWidth;
     if (layoutDirection() == Qt::LeftToRight) {
         m_clearButton->move(rect().right() -
-                        static_cast<int>(1.7 * m_innerHeight) - kBorderWidth,
+                        static_cast<int>(1.7 * innerHeight) - kBorderWidth,
                 top);
     } else {
-        m_clearButton->move(static_cast<int>(0.7 * m_innerHeight) + kBorderWidth,
+        m_clearButton->move(static_cast<int>(0.7 * innerHeight) + kBorderWidth,
                 top);
     }
 }
@@ -288,7 +308,15 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 QString WSearchLineEdit::getSearchText() const {
     if (isEnabled()) {
         DEBUG_ASSERT(!currentText().isNull());
-        return currentText();
+        QString text = currentText();
+        QString completionPrefix;
+        if (hasCompletionAvailable(&completionPrefix)) {
+            // Search for the entered text until the user has accepted the
+            // completion by pressing Enter or changed/deselected the selected
+            // completion text with Right or Left key
+            return completionPrefix;
+        }
+        return text;
     } else {
         return QString();
     }
@@ -327,6 +355,9 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         // If we're at the top of the list the Up key clears the search bar,
         // no matter if it's a saved or unsaved query.
         // Otherwise Up is handled by the combobox itself.
+        if (!s_historyShortcutsEnabled) {
+            return;
+        }
         currentTextIndex = findCurrentTextIndex();
         if (currentTextIndex == 0 ||
                 (currentTextIndex == -1 && !currentText().isEmpty())) {
@@ -337,6 +368,9 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
     case Qt::Key_Down:
         // After clearing the text field the Down key
         // is expected to show the latest query
+        if (!s_historyShortcutsEnabled) {
+            return;
+        }
         if (currentText().isEmpty()) {
             setCurrentIndex(0);
             return;
@@ -347,11 +381,33 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             slotSaveSearch();
         }
         break;
+    case Qt::Key_Left:
+    case Qt::Key_Right: {
+        // Both keys may change or clear the selection (suggested completion).
+        const bool hadSelectedTextBeforeKeyPressed = hasSelectedText();
+        QComboBox::keyPressEvent(keyEvent);
+        if (hadSelectedTextBeforeKeyPressed && !hasSelectedText()) {
+            // Selection is removed, search the full text now.
+            triggerSearchDebounced();
+        }
+        return;
+    }
     case Qt::Key_Enter:
-    case Qt::Key_Return:
+    case Qt::Key_Return: {
         if (slotClearSearchIfClearButtonHasFocus()) {
             return;
         }
+        if (keyEvent->modifiers() & Qt::ControlModifier) {
+            // Esc and Ctrl+Enter should have the same effect
+            emit setLibraryFocus(FocusWidget::TracksTable);
+            return;
+        }
+        if (hasCompletionAvailable()) {
+            QComboBox::keyPressEvent(keyEvent);
+            slotTriggerSearch();
+            return;
+        }
+
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
@@ -362,9 +418,10 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             emit setLibraryFocus(FocusWidget::TracksTable);
         }
         return;
+    }
     case Qt::Key_Space:
         // Open/close popup with Ctrl + space
-        if (keyEvent->modifiers() == Qt::ControlModifier) {
+        if (s_historyShortcutsEnabled && keyEvent->modifiers() == Qt::ControlModifier) {
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -391,23 +448,24 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         break;
     }
 
-    return QComboBox::keyPressEvent(keyEvent);
+    QComboBox::keyPressEvent(keyEvent);
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "focusInEvent";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "focusInEvent";
+    }
     QComboBox::focusInEvent(event);
+    updateCompleter();
     updateClearAndDropdownButton(currentText());
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "focusOutEvent";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "focusOutEvent";
+    }
     slotSaveSearch();
     QComboBox::focusOutEvent(event);
     if (m_debouncingTimer.isActive()) {
@@ -419,21 +477,21 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 }
 
 void WSearchLineEdit::setTextBlockSignals(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "setTextBlockSignals"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "setTextBlockSignals"
+                << text;
+    }
     blockSignals(true);
     setCurrentText(text);
     blockSignals(false);
 }
 
 void WSearchLineEdit::slotDisableSearch() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotDisableSearch";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotDisableSearch";
+    }
     if (!isEnabled()) {
         return;
     }
@@ -443,37 +501,39 @@ void WSearchLineEdit::slotDisableSearch() {
 }
 
 void WSearchLineEdit::enableSearch(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "enableSearch"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "enableSearch"
+                << text;
+    }
     // Set enabled BEFORE updating the edit box!
     setEnabled(true);
     updateEditBox(text);
 }
 
 void WSearchLineEdit::slotRestoreSearch(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotRestoreSearch"
-            << text;
-#endif // ENABLE_TRACE_LOG
-    if (text.isNull()) {
-        slotDisableSearch();
-    } else {
-        // we save the current search before we switch to a new text
-        slotSaveSearch();
-        enableSearch(text);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotRestoreSearch"
+                << text;
     }
+    // we save the current search before we switch to a new text
+    slotSaveSearch();
+    enableSearch(text);
+}
+
+void WSearchLineEdit::triggerSearchDebounced() {
+    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
+    DEBUG_ASSERT(s_debouncingTimeoutMillis >= kMinDebouncingTimeoutMillis);
+    m_debouncingTimer.start(s_debouncingTimeoutMillis);
 }
 
 void WSearchLineEdit::slotTriggerSearch() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotTriggerSearch"
-            << getSearchText();
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotTriggerSearch"
+                << getSearchText();
+    }
     DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
@@ -483,40 +543,36 @@ void WSearchLineEdit::slotTriggerSearch() {
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
     m_saveTimer.stop();
-    QString cText = currentText().trimmed();
+    // Keep original text for UI, potentially with trailing spaces
+    QString cText = currentText();
     int cIndex = findCurrentTextIndex();
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "save search. Text:"
-            << cText
-            << "Index:"
-            << cIndex;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "save search. Text:"
+                << cText
+                << "Index:"
+                << cIndex;
+    }
     if (cText.isEmpty() || !isEnabled()) {
         return;
     }
-    if (cIndex == -1) {
-        removeItem(-1);
+
+    if (cIndex > 0) {
+        // If query exists and is not at the top, remove the original index
+        removeItem(cIndex);
+    }
+    if (cIndex > 0 || cIndex == -1) {
+        // If the query doesn't exist yet or was not at top, insert it at the top
+        insertItem(0, cText.trimmed());
+    }
+    setCurrentIndex(0);
+
+    while (count() > kMaxSearchEntries) {
+        removeItem(kMaxSearchEntries);
     }
 
-    // Check if the text is already listed
-    QSet<QString> querySet;
-    for (int index = 0; index < count(); index++) {
-        querySet.insert(itemText(index));
-    }
-    if (querySet.contains(cText)) {
-        // If query exists clear the box and use its index to set the currentIndex
-        int cIndex = findData(cText, Qt::DisplayRole);
-        setCurrentIndex(cIndex);
-        return;
-    } else {
-        // Else add it at the top
-        insertItem(0, cText);
-        setCurrentIndex(0);
-        while (count() > kMaxSearchEntries) {
-            removeItem(kMaxSearchEntries);
-        }
-    }
+    // Set the text without spaces for UI
+    setTextBlockSignals(cText);
 }
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
@@ -573,10 +629,10 @@ void WSearchLineEdit::deleteSelectedListItem() {
 }
 
 void WSearchLineEdit::refreshState() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "refreshState";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "refreshState";
+    }
     if (isEnabled()) {
         enableSearch(getSearchText());
     } else {
@@ -604,11 +660,11 @@ void WSearchLineEdit::showPopup() {
 }
 
 void WSearchLineEdit::updateEditBox(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "updateEditBox"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "updateEditBox"
+                << text;
+    }
     DEBUG_ASSERT(isEnabled());
 
     if (text.isEmpty()) {
@@ -623,11 +679,11 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
 }
 
 void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "updateClearAndDropdownButton"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "updateClearAndDropdownButton"
+                << text;
+    }
     // If the popup is open there's no need to further adjust the style, this is
     // invoked by focusInEvent when the popup is closed.
     // NOTE(ronso0) Also, when changing the text programmatically while the popup
@@ -644,11 +700,12 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 
     // Ensure the text is not obscured by the clear button. Otherwise no text,
     // no clear button, so the placeholder should use the entire width.
-    const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
+    const int innerHeight = height() - 2 * kBorderWidth;
+    const int paddingPx = text.isEmpty() ? 0 : innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
     // Hide the nonfunctional drop-down button (set width to 0) if the search is disabled.
-    const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
+    const int dropDownWidth = isEnabled() ? static_cast<int>(innerHeight * 0.7) : 0;
 
     const QString styleSheet = QStringLiteral(
             "WSearchLineEdit { padding-%1: %2px; }"
@@ -662,8 +719,17 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
                                        .arg(clearPos,
                                                QString::number(paddingPx),
                                                QString::number(dropDownWidth),
-                                               QString::number(m_innerHeight));
+                                               QString::number(innerHeight));
     setStyleSheet(styleSheet);
+}
+
+void WSearchLineEdit::updateCompleter() {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "updateCompleter";
+    }
+
+    lineEdit()->setCompleter(s_completionsEnabled ? m_completer.toWeakRef() : nullptr);
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {
@@ -674,10 +740,10 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 }
 
 void WSearchLineEdit::slotClearSearch() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotClearSearch";
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotClearSearch";
+    }
     if (!isEnabled()) {
         return;
     }
@@ -688,7 +754,7 @@ void WSearchLineEdit::slotClearSearch() {
     // and gives the user the chance for entering a new search
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
+    // See also: https://github.com/mixxxdj/mixxx/issues/8665
     // Note that just clear() would also erase all combobox items,
     // thus clear the entire search history.
     lineEdit()->clear();
@@ -711,45 +777,60 @@ void WSearchLineEdit::slotIndexChanged(int index) {
 }
 
 void WSearchLineEdit::slotTextChanged(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "slotTextChanged"
-            << text;
-#endif // ENABLE_TRACE_LOG
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "slotTextChanged"
+                << text;
+    }
     m_queryEmitted = false;
-    m_debouncingTimer.stop();
     if (!isEnabled()) {
+        m_debouncingTimer.stop();
         setTextBlockSignals(kDisabledText);
         return;
     }
     updateClearAndDropdownButton(text);
-    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-    if (s_debouncingTimeoutMillis > 0) {
-        m_debouncingTimer.start(s_debouncingTimeoutMillis);
-    } else {
-        // Don't (re-)activate the timer if the timeout is invalid.
-        // Disabling the timer permanently by setting the timeout
-        // to an invalid value is an expected and valid use case.
-        DEBUG_ASSERT(!m_debouncingTimer.isActive());
-    }
+    triggerSearchDebounced();
     m_saveTimer.start(kSaveTimeoutMillis);
 }
 
-void WSearchLineEdit::slotSetShortcutFocus() {
-    if (hasFocus()) {
+void WSearchLineEdit::setFocus(Qt::FocusReason focusReason) {
+    if (!hasFocus()) {
+        // selectAll will be called by setFocus - but only if hasFocus
+        // was false previously and focusReason is Tab, Backtab or Shortcut
+        QWidget::setFocus(focusReason);
+    } else if (focusReason == Qt::TabFocusReason ||
+            focusReason == Qt::BacktabFocusReason ||
+            focusReason == Qt::ShortcutFocusReason) {
+        // If this widget already had focus (which can happen when the user
+        // presses the shortcut key while already in the searchbox),
+        // we need to manually simulate this behavior instead.
         lineEdit()->selectAll();
-    } else {
-        setFocus(Qt::ShortcutFocusReason);
     }
 }
 
 // Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
     setFont(font);
-    if (lineEdit()) {
-        lineEdit()->setFont(font);
-        // Decreasing the font doesn't trigger a resizeEvent,
-        // so we immediately refresh the controls manually.
-        updateClearAndDropdownButton(getSearchText());
+    lineEdit()->setFont(font);
+    // Decreasing the font doesn't trigger a resizeEvent,
+    // so we immediately refresh the controls manually.
+    updateClearAndDropdownButton(getSearchText());
+}
+
+bool WSearchLineEdit::hasSelectedText() const {
+    return lineEdit()->hasSelectedText();
+}
+
+bool WSearchLineEdit::hasCompletionAvailable(QString* completionPrefix) const {
+    QCompleter* pCompleter = completer();
+    QString prefix = pCompleter ? pCompleter->completionPrefix() : QString();
+    if (!prefix.isEmpty() && hasSelectedText() &&
+            lineEdit()->text().startsWith(prefix) &&
+            prefix.size() == lineEdit()->cursorPosition()) {
+        if (completionPrefix) {
+            *completionPrefix = prefix;
+        }
+        return true;
     }
+    return false;
 }

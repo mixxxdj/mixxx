@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QDomNode>
-#include <QEvent>
 #include <QSplitter>
 
 #include "preferences/usersettings.h"
-#include "skin/legacy/skincontext.h"
 #include "widget/wbasewidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT

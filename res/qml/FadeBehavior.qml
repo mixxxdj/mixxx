@@ -30,7 +30,5 @@ Behavior {
             easing.type: Easing.OutQuad
             duration: 150
         }
-
     }
-
 }

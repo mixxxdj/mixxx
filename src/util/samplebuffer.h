@@ -2,11 +2,11 @@
 
 
 #include <algorithm> // std::swap
-#include <span>
+#include <utility>   // std::exchange
 
+#include "util/sample.h"
 #include "util/span.h"
 #include "util/types.h"
-
 
 namespace mixxx {
 
@@ -35,38 +35,49 @@ namespace mixxx {
 //
 class SampleBuffer final {
   public:
-    SampleBuffer()
-        : m_data(nullptr),
-          m_size(0) {
+    constexpr SampleBuffer()
+            : m_data(nullptr),
+              m_size(0) {
     }
-    explicit SampleBuffer(SINT size);
+    explicit SampleBuffer(SINT size)
+            : m_data((size > 0) ? SampleUtil::alloc(size) : nullptr),
+              m_size((m_data != nullptr) ? size : 0) {
+    }
     SampleBuffer(SampleBuffer&) = delete;
-    SampleBuffer(SampleBuffer&& that)
-        : m_data(that.m_data),
-          m_size(that.m_size) {
-        that.m_data = nullptr;
-        that.m_size = 0;
+    SampleBuffer(SampleBuffer&& that) noexcept
+            : m_data(std::exchange(that.m_data, nullptr)),
+              m_size(std::exchange(that.m_size, 0)) {
     }
-    virtual ~SampleBuffer() final;
+    ~SampleBuffer() {
+        SampleUtil::free(m_data);
+    }
 
     SampleBuffer& operator=(SampleBuffer& that) = delete;
-    SampleBuffer& operator=(SampleBuffer&& that) {
-        swap(that);
+    SampleBuffer& operator=(SampleBuffer&& that) noexcept {
+        SampleUtil::free(m_data);
+        m_data = std::exchange(that.m_data, nullptr);
+        m_size = std::exchange(that.m_size, 0);
         return *this;
     }
 
-    constexpr SINT size() const {
+    constexpr SINT size() const noexcept {
         return m_size;
     }
 
-    CSAMPLE* data(SINT offset = 0) {
+    constexpr CSAMPLE* data() noexcept {
+        return m_data;
+    }
+    constexpr const CSAMPLE* data() const noexcept {
+        return m_data;
+    }
+    CSAMPLE* data(SINT offset) noexcept {
         DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
         return m_data + offset;
     }
-    const CSAMPLE* data(SINT offset = 0) const {
+    const CSAMPLE* data(SINT offset) const noexcept {
         DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
@@ -74,17 +85,17 @@ class SampleBuffer final {
         return m_data + offset;
     }
 
-    std::span<CSAMPLE> span() {
+    std::span<CSAMPLE> span() noexcept {
         return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
-    std::span<const CSAMPLE> span() const {
+    std::span<const CSAMPLE> span() const noexcept {
         return mixxx::spanutil::spanFromPtrLen(m_data, m_size);
     }
 
-    CSAMPLE& operator[](SINT index) {
+    CSAMPLE& operator[](SINT index) noexcept {
         return *data(index);
     }
-    const CSAMPLE& operator[](SINT index) const {
+    const CSAMPLE& operator[](SINT index) const noexcept {
         return *data(index);
     }
 
@@ -92,22 +103,43 @@ class SampleBuffer final {
     // implementation of all STL containers. Required for exception
     // safe programming and as a workaround for the missing resize
     // operation.
-    void swap(SampleBuffer& that) {
+    void swap(SampleBuffer& that) noexcept {
         std::swap(m_data, that.m_data);
         std::swap(m_size, that.m_size);
     }
 
     // Fills the whole buffer with zeroes
-    void clear();
+    void clear() noexcept {
+        SampleUtil::clear(data(), size());
+    }
+
+    void clear(SINT nsamples) noexcept {
+        DEBUG_ASSERT(nsamples <= size());
+        SampleUtil::clear(data(), nsamples);
+    }
 
     // Fills the whole buffer with the same value
-    void fill(CSAMPLE value);
+    void fill(CSAMPLE value) noexcept {
+        SampleUtil::fill(data(), value, size());
+    }
 
-    class ReadableSlice {
+    void copy(const SampleBuffer& other, SINT nsamples) noexcept {
+        DEBUG_ASSERT(size() >= nsamples);
+        DEBUG_ASSERT(other.size() >= nsamples);
+        SampleUtil::copy(data(), other.data(), nsamples);
+    }
+
+    void copy(const SampleBuffer& other) noexcept {
+        SampleUtil::copy(data(), other.data(), std::min<SINT>(size(), other.size()));
+    }
+
+    /// Deprecated: use std::span<const CSAMPLE>, SampleBuffer::span() const and
+    /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
+    class ReadableSlice final {
       public:
-        ReadableSlice()
-            : m_data(nullptr),
-              m_length(0) {
+        constexpr ReadableSlice()
+                : m_data(nullptr),
+                  m_length(0) {
         }
         ReadableSlice(const CSAMPLE* data, SINT length)
             : m_data(data),
@@ -120,35 +152,44 @@ class SampleBuffer final {
               m_length(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
-        const CSAMPLE* data(SINT offset = 0) const {
+        const CSAMPLE* data() const noexcept {
+            return m_data;
+        }
+        const CSAMPLE* data(SINT offset) const {
             DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
             DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT length(SINT offset = 0) const {
+        SINT length() const noexcept {
+            return m_length;
+        }
+        SINT length(SINT offset) const noexcept {
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
             DEBUG_ASSERT(m_length >= offset);
             return m_length - offset;
         }
-        bool empty() const {
+        bool empty() const noexcept {
             return (m_data == nullptr) || (m_length <= 0);
         }
-        const CSAMPLE& operator[](SINT index) const {
+        const CSAMPLE& operator[](SINT index) const noexcept {
             return *data(index);
         }
+
       private:
         const CSAMPLE* m_data;
         SINT m_length;
     };
 
-    class WritableSlice {
+    /// Deprecated: use std::span<CSAMPLE>, SampleBuffer::span() and
+    /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
+    class WritableSlice final {
       public:
-        WritableSlice()
-            : m_data(nullptr),
-              m_length(0) {
+        constexpr WritableSlice()
+                : m_data(nullptr),
+                  m_length(0) {
         }
         WritableSlice(CSAMPLE* data, SINT length)
             : m_data(data),
@@ -165,25 +206,32 @@ class SampleBuffer final {
               m_length(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
-        CSAMPLE* data(SINT offset = 0) const {
+        CSAMPLE* data() const noexcept {
+            return m_data;
+        }
+        CSAMPLE* data(SINT offset) const noexcept {
             DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
             DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT length(SINT offset = 0) const {
+        SINT length() const noexcept {
+            return m_length;
+        }
+        SINT length(SINT offset) const noexcept {
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
             DEBUG_ASSERT(m_length >= offset);
             return m_length - offset;
         }
-        bool empty() const {
+        bool empty() const noexcept {
             return (m_data == nullptr) || (m_length <= 0);
         }
-        CSAMPLE& operator[](SINT index) const {
+        CSAMPLE& operator[](SINT index) const noexcept {
             return *data(index);
         }
+
       private:
         CSAMPLE* m_data;
         SINT m_length;
@@ -200,7 +248,7 @@ namespace std {
 
 // Template specialization of std::swap() for SampleBuffer
 template<>
-inline void swap(::mixxx::SampleBuffer& lhs, ::mixxx::SampleBuffer& rhs) {
+inline void swap(::mixxx::SampleBuffer& lhs, ::mixxx::SampleBuffer& rhs) noexcept {
     lhs.swap(rhs);
 }
 

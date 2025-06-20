@@ -1,9 +1,9 @@
+#include "library/dao/analysisdao.h"
+
 #include <QSqlQuery>
-#include <QSqlResult>
-#include <QSqlError>
+#include <QSqlRecord>
 #include <QtDebug>
 
-#include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
 #include "preferences/waveformsettings.h"
 #include "util/performancetimer.h"

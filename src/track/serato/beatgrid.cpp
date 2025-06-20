@@ -1,7 +1,5 @@
 #include "track/serato/beatgrid.h"
 
-#include <QtEndian>
-
 #include "util/logger.h"
 
 namespace {
@@ -102,7 +100,9 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
     SeratoBeatGridNonTerminalMarkerPointer pMarker =
             std::make_shared<SeratoBeatGridNonTerminalMarker>(
                     positionSecs, beatsTillNextMarker);
-    kLogger.trace() << "SeratoBeatGridNonTerminalMarker" << *pMarker;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoBeatGridNonTerminalMarker" << *pMarker;
+    }
     return pMarker;
 }
 
@@ -163,7 +163,9 @@ SeratoBeatGridTerminalMarkerPointer SeratoBeatGridTerminalMarker::parseID3(
 
     SeratoBeatGridTerminalMarkerPointer pMarker =
             std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm);
-    kLogger.trace() << "SeratoBeatGridTerminalMarker" << *pMarker;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoBeatGridTerminalMarker" << *pMarker;
+    }
     return pMarker;
 }
 
@@ -176,7 +178,7 @@ bool SeratoBeatGrid::parse(SeratoBeatGrid* seratoBeatGrid,
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoBeatGrid, data);
     case taglib::FileType::MP4:
@@ -365,7 +367,7 @@ bool SeratoBeatGrid::parseBase64Encoded(
 
 QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:

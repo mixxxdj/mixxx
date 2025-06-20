@@ -1,10 +1,9 @@
 #pragma once
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-
-class ControlPushButton;
-class ControlProxy;
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "preferences/usersettings.h"
 
 class PotmeterControls : public QObject {
     Q_OBJECT
@@ -19,6 +18,8 @@ class PotmeterControls : public QObject {
     void setSmallStepCount(int count) {
         m_smallStepCount = count;
     }
+
+    void addAlias(const ConfigKey& key);
 
   public slots:
     // Increases the value.
@@ -44,8 +45,17 @@ class PotmeterControls : public QObject {
     void setIsDefault(bool isDefault);
 
   private:
-    ControlProxy* m_pControl;
-    ControlPushButton* m_pControlDefault;
+    ControlProxy m_control;
+    ControlPushButton m_controlUp;
+    ControlPushButton m_controlDown;
+    ControlPushButton m_controlUpSmall;
+    ControlPushButton m_controlDownSmall;
+    ControlPushButton m_controlSetDefault;
+    ControlPushButton m_controlSetZero;
+    ControlPushButton m_controlSetOne;
+    ControlPushButton m_controlSetMinusOne;
+    ControlPushButton m_controlToggle;
+    ControlPushButton m_controlMinusToggle;
     int m_stepCount;
     double m_smallStepCount;
 };
@@ -72,6 +82,11 @@ class ControlPotmeter : public ControlObject {
     // Sets the minimum and maximum allowed value. The control value is reset
     // when calling this method
     void setRange(double dMinValue, double dMaxValue, bool allowOutOfBounds);
+
+    void addAlias(const ConfigKey& key) {
+        ControlObject::addAlias(key);
+        m_controls.addAlias(key);
+    };
 
   private slots:
     // Used to check if the current control value matches the default value.

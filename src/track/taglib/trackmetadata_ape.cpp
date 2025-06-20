@@ -1,5 +1,6 @@
 #include "track/taglib/trackmetadata_ape.h"
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
@@ -58,7 +59,7 @@ bool importCoverImageFromTag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     if (tag.itemListMap().contains("COVER ART (FRONT)")) {
         const TagLib::ByteVector nullStringTerminator(1, 0);
         TagLib::ByteVector item =
-                tag.itemListMap()["COVER ART (FRONT)"].value();
+                tag.itemListMap()["COVER ART (FRONT)"].binaryData();
         int pos = item.find(nullStringTerminator); // skip the filename
         if (++pos > 0) {
             const TagLib::ByteVector data(item.mid(pos));
@@ -91,7 +92,7 @@ void importTrackMetadataFromTag(
             pTrackMetadata,
             tag);
 
-    // NOTE(uklotzde, 2018-01-28, https://bugs.launchpad.net/mixxx/+bug/1745847)
+    // NOTE(uklotzde, 2018-01-28, https://github.com/mixxxdj/mixxx/issues/9112)
     // It turns out that the keys for APEv2 tags are case-sensitive and
     // some tag editors seem to write UPPERCASE Vorbis keys instead of
     // the CamelCase APEv2 keys suggested by the Picard Mapping table:
@@ -313,7 +314,7 @@ bool exportTrackMetadataIntoTag(TagLib::APE::Tag* pTag, const TrackMetadata& tra
 
     writeItem(pTag, "BPM", toTString(formatBpm(trackMetadata)));
 
-    writeItem(pTag, "INITIALKEY", toTString(trackMetadata.getTrackInfo().getKey()));
+    writeItem(pTag, "INITIALKEY", toTString(trackMetadata.getTrackInfo().getKeyText()));
 
     writeItem(pTag, "REPLAYGAIN_TRACK_GAIN", toTString(formatTrackGain(trackMetadata)));
     writeItem(pTag, "REPLAYGAIN_TRACK_PEAK", toTString(formatTrackPeak(trackMetadata)));

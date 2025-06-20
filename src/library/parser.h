@@ -21,7 +21,6 @@ it afterwards for proper functioning
 **/
 
 #include <QList>
-#include <QObject>
 #include <QString>
 
 #include "util/fileinfo.h"

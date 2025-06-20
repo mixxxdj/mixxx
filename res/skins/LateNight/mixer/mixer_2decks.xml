@@ -14,7 +14,7 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:/mixer/channel_left.xml">
+          <Template src="skins:LateNight/mixer/channel_left.xml">
             <SetVariable name="ChanNum">1</SetVariable>
             <SetVariable name="xfaderLeft">default</SetVariable>
             <SetVariable name="xfaderRight">warning</SetVariable>
@@ -30,7 +30,7 @@
                 <Layout>horizontal</Layout>
                 <Size>0min,26f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_2state.xml">
+                  <Template src="skins:LateNight/controls/button_2state.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -38,7 +38,7 @@
                     <SetVariable name="ConfigKey">[Channel1],pfl</SetVariable>
                   </Template>
                   <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
-                  <Template src="skin:/controls/button_2state.xml">
+                  <Template src="skins:LateNight/controls/button_2state.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -60,7 +60,7 @@
                   </SingletonContainer>
                   <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
                   <SingletonContainer>
-                    <ObjectName>VuMeterMaster_Dark</ObjectName>
+                    <ObjectName>VuMeterMain_Dark</ObjectName>
                   </SingletonContainer>
                   <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
                   <SingletonContainer>
@@ -71,7 +71,7 @@
             </Children>
           </WidgetGroup><!-- Pfl + VU -->
 
-          <Template src="skin:/mixer/channel_right.xml">
+          <Template src="skins:LateNight/mixer/channel_right.xml">
             <SetVariable name="ChanNum">2</SetVariable>
             <SetVariable name="xfaderLeft">warning</SetVariable>
             <SetVariable name="xfaderRight">default</SetVariable>
@@ -139,7 +139,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <WidgetGroup><Size>min,2f</Size></WidgetGroup>
-                      <Template src="skin:/controls/button_xfader_deck.xml">
+                      <Template src="skins:LateNight/controls/button_xfader_deck.xml">
                         <SetVariable name="Group">[Channel1]</SetVariable>
                         <SetVariable name="xfaderLeft">default</SetVariable>
                         <SetVariable name="xfaderRight">warning</SetVariable>
@@ -187,8 +187,8 @@
               <SliderComposed><!-- without EQ knobs -->
                 <TooltipId>crossfader</TooltipId>
                 <Size>85f,40f</Size>
-                <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
-                <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_crossfader_small.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_crossfader_small.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <BarColor><Variable name="BarColorCrossfader"/></BarColor>
                 <BarWidth><Variable name="BarWidth"/></BarWidth>
@@ -251,7 +251,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <WidgetGroup><Size>min,2f</Size></WidgetGroup>
-                      <Template src="skin:/controls/button_xfader_deck.xml">
+                      <Template src="skins:LateNight/controls/button_xfader_deck.xml">
                         <SetVariable name="Group">[Channel2]</SetVariable>
                         <SetVariable name="xfaderLeft">warning</SetVariable>
                         <SetVariable name="xfaderRight">default</SetVariable>

@@ -52,7 +52,5 @@ MixxxControls.Knob {
             y: height
             color: root.color
         }
-
     }
-
 }

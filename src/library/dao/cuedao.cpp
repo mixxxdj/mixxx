@@ -1,17 +1,15 @@
 #include "library/dao/cuedao.h"
 
+#include <QThread>
 #include <QVariant>
 #include <QtDebug>
-#include <QtSql>
 
 #include "engine/engine.h"
 #include "library/queryutil.h"
-#include "track/track.h"
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
-#include "util/performancetimer.h"
 
 namespace {
 
@@ -40,19 +38,32 @@ inline QString labelFromQVariant(const QVariant& value) {
 CuePointer cueFromRow(const QSqlRecord& row) {
     const auto id = DbId(row.value(row.indexOf("id")));
     TrackId trackId(row.value(row.indexOf("track_id")));
-    int type = row.value(row.indexOf("type")).toInt();
+    auto type = static_cast<mixxx::CueType>(row.value(row.indexOf("type")).toInt());
     const auto position =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    row.value(row.indexOf("position")).toInt());
-    int lengthFrames = row.value(row.indexOf("length")).toInt() / mixxx::kEngineChannelCount;
+                    row.value(row.indexOf("position")).toDouble());
+    double lengthFrames = row.value(row.indexOf("length")).toDouble() /
+            mixxx::kEngineChannelOutputCount;
     int hotcue = row.value(row.indexOf("hotcue")).toInt();
     QString label = labelFromQVariant(row.value(row.indexOf("label")));
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(row.value(row.indexOf("color")));
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
     }
+    if (type == mixxx::CueType::Loop && lengthFrames == 0.0) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard loop cue" << hotcue << "found in database with length of 0";
+        return CuePointer();
+    }
+    if (type == mixxx::CueType::HotCue &&
+            position == mixxx::audio::FramePos(0) &&
+            *color == mixxx::RgbColor(0)) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard black hot cue" << hotcue << "found in database at position 0";
+        return CuePointer();
+    }
     CuePointer pCue(new Cue(id,
-            static_cast<mixxx::CueType>(type),
+            type,
             position,
             lengthFrames,
             hotcue,
@@ -73,7 +84,7 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     DEBUG_ASSERT(
             query.isPrepared() &&
             !query.hasError());
-    query.bindValue(":id", trackId.toVariant());
+    query.bindValue(":id", trackId);
     if (!query.execPrepared()) {
         kLogger.warning()
                 << "Failed to load cues of track"
@@ -84,7 +95,7 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     QMap<int, CuePointer> hotCuesByNumber;
     while (query.next()) {
         CuePointer pCue = cueFromRow(query.record());
-        VERIFY_OR_DEBUG_ASSERT(pCue) {
+        if (!pCue) {
             continue;
         }
         int hotCueNumber = pCue->getHotCue();
@@ -170,7 +181,7 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     query.bindValue(":track_id", trackId.toVariant());
     query.bindValue(":type", static_cast<int>(cue->getType()));
     query.bindValue(":position", cue->getPosition().toEngineSamplePosMaybeInvalid());
-    query.bindValue(":length", cue->getLengthFrames() * mixxx::kEngineChannelCount);
+    query.bindValue(":length", cue->getLengthFrames() * mixxx::kEngineChannelOutputCount);
     query.bindValue(":hotcue", cue->getHotCue());
     query.bindValue(":label", labelToQVariant(cue->getLabel()));
     query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
@@ -187,21 +198,6 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     }
     DEBUG_ASSERT(cue->getId().isValid());
     cue->setDirty(false);
-    return true;
-}
-
-bool CueDAO::deleteCue(Cue* cue) const {
-    //qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
-    if (!cue->getId().isValid()) {
-        return false;
-    }
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE id=:id"));
-    query.bindValue(":id", cue->getId().toVariant());
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
-    }
     return true;
 }
 
@@ -233,7 +229,7 @@ void CueDAO::saveTrackCues(
     DEBUG_ASSERT(
             query.isPrepared() &&
             !query.hasError());
-    query.bindValue(":track_id", trackId.toVariant());
+    query.bindValue(":track_id", trackId);
     if (!query.execPrepared()) {
         kLogger.warning()
                 << "Failed to delete orphaned cues of track"

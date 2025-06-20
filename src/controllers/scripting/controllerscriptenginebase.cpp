@@ -1,11 +1,19 @@
 #include "controllers/scripting/controllerscriptenginebase.h"
 
-#include "control/controlobject.h"
+#include <QJSEngine>
+
 #include "controllers/controller.h"
 #include "controllers/scripting/colormapperjsproxy.h"
 #include "errordialoghandler.h"
-#include "mixer/playermanager.h"
+#ifdef MIXXX_USE_QML
+#include <QQmlEngine>
+#endif
+
 #include "moc_controllerscriptenginebase.cpp"
+#ifdef MIXXX_USE_QML
+#include "qml/asyncimageprovider.h"
+#endif
+#include "util/cmdlineargs.h"
 
 ControllerScriptEngineBase::ControllerScriptEngineBase(
         Controller* controller, const RuntimeLoggingCategory& logger)
@@ -13,20 +21,62 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
           m_pJSEngine(nullptr),
           m_pController(controller),
           m_logger(logger),
+          m_bAbortOnWarning(false),
+#ifdef MIXXX_USE_QML
+          m_bQmlMode(false),
+#endif
           m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 }
+
+#ifdef MIXXX_USE_QML
+void ControllerScriptEngineBase::registerTrackCollectionManager(
+        std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
+    s_pTrackCollectionManager = std::move(pTrackCollectionManager);
+}
+
+void ControllerScriptEngineBase::handleQMLErrors(const QList<QQmlError>& qmlErrors) {
+    for (const QQmlError& error : std::as_const(qmlErrors)) {
+        showQMLExceptionDialog(error, m_bErrorsAreFatal);
+    }
+}
+#endif
 
 bool ControllerScriptEngineBase::initialize() {
     VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine) {
         return false;
     }
 
-    // Create the Script Engine
-    m_pJSEngine = std::make_shared<QJSEngine>(this);
+    m_bAbortOnWarning = CmdlineArgs::Instance().getControllerAbortOnWarning();
 
-    m_pJSEngine->installExtensions(QJSEngine::ConsoleExtension);
+    // Create the Script Engine
+#ifdef MIXXX_USE_QML
+    if (!m_bQmlMode) {
+#endif
+        m_pJSEngine = std::make_shared<QJSEngine>(this);
+
+        m_pJSEngine->installExtensions(QJSEngine::ConsoleExtension);
+#ifdef MIXXX_USE_QML
+    } else {
+        auto pQmlEngine = std::make_shared<QQmlEngine>(this);
+        pQmlEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
+        if (s_pTrackCollectionManager) {
+            mixxx::qml::AsyncImageProvider* pImageProvider = new mixxx::qml::AsyncImageProvider(
+                    s_pTrackCollectionManager);
+            pQmlEngine->addImageProvider(mixxx::qml::AsyncImageProvider::kProviderName,
+                    pImageProvider);
+        } else {
+            DEBUG_ASSERT(!"TrackCollectionManager is missing");
+            qCWarning(m_logger) << "TrackCollectionManager hasn't been registered yet";
+        }
+        connect(pQmlEngine.get(),
+                &QQmlEngine::warnings,
+                this,
+                &ControllerScriptEngineBase::handleQMLErrors);
+        m_pJSEngine = std::move(pQmlEngine);
+    }
+#endif
 
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
 
@@ -54,6 +104,7 @@ bool ControllerScriptEngineBase::initialize() {
 
 void ControllerScriptEngineBase::shutdown() {
     DEBUG_ASSERT(m_pJSEngine.use_count() == 1);
+    emit beforeShutdown();
     m_pJSEngine.reset();
 }
 
@@ -66,28 +117,24 @@ void ControllerScriptEngineBase::reload() {
 }
 
 bool ControllerScriptEngineBase::executeFunction(
-        QJSValue functionObject, const QJSValueList& args) {
+        QJSValue* pFunctionObject, const QJSValueList& args) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pJSEngine) {
         return false;
     }
 
-    if (functionObject.isError()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toString();
-        return false;
-    }
-
-    // If it's not a function, we're done.
-    if (!functionObject.isCallable()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toVariant() << "Not a function";
+    const bool isError = pFunctionObject->isError();
+    const bool isCallable = pFunctionObject->isCallable();
+    if (isError || !isCallable) {
+        logOrThrowError((isError ? QStringLiteral("\"%1\" resulted in an error")
+                                 : QStringLiteral("\"%1\" is not callable"))
+                                .arg(pFunctionObject->toString()));
         return false;
     }
 
     // If it does happen to be a function, call it.
-    QJSValue returnValue = functionObject.call(args);
+    QJSValue returnValue = pFunctionObject->call(args);
     if (returnValue.isError()) {
         showScriptExceptionDialog(returnValue);
         return false;
@@ -109,7 +156,7 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     if (filename.isEmpty()) {
         filename = QStringLiteral("<passed code>");
     }
-    QString errorText = QString("Uncaught exception: %1:%2: %3").arg(filename, line, errorMessage);
+    QString errorText = QString("Uncaught exception: %1:%2:\n%3").arg(filename, line, errorMessage);
 
     // Do not include backtrace in dialog key because it might contain midi
     // slider values that will differ most of the time. This would break
@@ -117,11 +164,43 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     QString key = errorText;
 
     // Add backtrace to the error details
-    errorText += QStringLiteral("\nBacktrace: ") + backtrace;
+    errorText += QStringLiteral("\n\nBacktrace: ") + backtrace;
     qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);
+    }
+}
+
+#ifdef MIXXX_USE_QML
+void ControllerScriptEngineBase::showQMLExceptionDialog(
+        const QQmlError& error, bool bFatalError) {
+    VERIFY_OR_DEBUG_ASSERT(error.isValid()) {
+        return;
+    }
+
+    QString filename = error.url().isLocalFile() ? error.url().toLocalFile()
+                                                 : error.url().toString();
+
+    if (filename.isEmpty()) {
+        filename = QStringLiteral("<passed code>");
+    }
+    QString errorText = QStringLiteral("Uncaught exception: %1:%2: %3")
+                                .arg(filename, QString::number(error.line()), error.description());
+
+    qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
+
+    if (!m_bDisplayingExceptionDialog) {
+        scriptErrorDialog(errorText, errorText, bFatalError);
+    }
+}
+#endif
+
+void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
+    if (m_bAbortOnWarning) {
+        throwJSError(errorMessage);
+    } else {
+        qCWarning(m_logger) << errorMessage;
     }
 }
 

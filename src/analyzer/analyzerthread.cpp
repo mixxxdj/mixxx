@@ -9,7 +9,6 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-#include "engine/engine.h"
 #include "library/dao/analysisdao.h"
 #include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
@@ -18,7 +17,6 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
-#include "util/timer.h"
 
 namespace {
 
@@ -123,21 +121,28 @@ void AnalyzerThread::doRun() {
     m_lastBusyProgressEmittedTimer.start();
 
     mixxx::AudioSource::OpenParams openParams;
-    openParams.setChannelCount(mixxx::kAnalysisChannels);
+    openParams.setChannelCount(mixxx::kAnalysisMaxChannels);
 
     while (awaitWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack.has_value());
-        kLogger.debug() << "Analyzing" << m_currentTrack->getTrack()->getFileInfo();
+        kLogger.debug() << "Analyzing" << m_currentTrack->getTrack()->getLocation();
 
         // Get the audio
-        const auto audioSource =
+        mixxx::AudioSourcePointer audioSource =
                 SoundSourceProxy(m_currentTrack->getTrack()).openAudioSource(openParams);
         if (!audioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << m_currentTrack->getTrack()->getFileInfo();
+                    << m_currentTrack->getTrack()->getLocation();
             emitDoneProgress(kAnalyzerProgressUnknown);
             continue;
+        }
+
+        // If we have a non-even multi channel audio source (mono or )
+        if (audioSource->getSignalInfo().getChannelCount() % mixxx::kAnalysisChannels) {
+            audioSource = std::make_shared<mixxx::AudioSourceStereoProxy>(
+                    audioSource,
+                    mixxx::kAnalysisFramesPerChunk);
         }
 
         bool processTrack = false;
@@ -146,7 +151,8 @@ void AnalyzerThread::doRun() {
             if (analyzer.initialize(
                         *m_currentTrack,
                         audioSource->getSignalInfo().getSampleRate(),
-                        audioSource->frameLength() * mixxx::kAnalysisChannels)) {
+                        audioSource->getSignalInfo().getChannelCount(),
+                        audioSource->frameLength())) {
                 processTrack = true;
             }
         }
@@ -222,12 +228,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const mixxx::AudioSourcePointer& audioSource) {
     DEBUG_ASSERT(m_currentTrack.has_value());
 
-    mixxx::AudioSourceStereoProxy audioSourceProxy(
-            audioSource,
-            mixxx::kAnalysisFramesPerChunk);
     DEBUG_ASSERT(
-            audioSourceProxy.getSignalInfo().getChannelCount() ==
-            mixxx::kAnalysisChannels);
+            0 == audioSource->getSignalInfo().getChannelCount() % mixxx::kAnalysisChannels);
 
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
@@ -249,7 +251,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
         // Request the next chunk of audio data
         const auto readableSampleFrames =
-                audioSourceProxy.readSampleFrames(
+                audioSource->readSampleFrames(
                         mixxx::WritableSampleFrames(
                                 chunkFrameRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
@@ -262,17 +264,17 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
         // Shrink the original range of the current chunks to the actual available
         // range.
-        chunkFrameRange = intersect(chunkFrameRange, audioSourceProxy.frameIndexRange());
+        chunkFrameRange = intersect(chunkFrameRange, audioSource->frameIndexRange());
         // The audio data that has just been read should still fit into the adjusted
         // chunk range.
         DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(chunkFrameRange));
 
         // We also need to adjust the remaining frame range for the next requests.
-        remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
+        remainingFrameRange = intersect(remainingFrameRange, audioSource->frameIndexRange());
         // Currently the range will never grow, but lets also account for this case
         // that might become relevant in the future.
         VERIFY_OR_DEBUG_ASSERT(remainingFrameRange.empty() ||
-                remainingFrameRange.end() == audioSourceProxy.frameIndexRange().end()) {
+                remainingFrameRange.end() == audioSource->frameIndexRange().end()) {
             if (chunkFrameRange.length() < mixxx::kAnalysisFramesPerChunk) {
                 // If we have read an incomplete chunk while the range has grown
                 // we need to discard the read results and re-read the current
@@ -281,13 +283,13 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                 remainingFrameRange.growFront(chunkFrameRange.length());
                 continue;
             }
-            DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());
+            DEBUG_ASSERT(remainingFrameRange.end() < audioSource->frameIndexRange().end());
             kLogger.warning()
                     << "Unexpected growth of the audio source while reading"
                     << mixxx::IndexRange::forward(
-                            remainingFrameRange.end(), audioSourceProxy.frameIndexRange().end());
+                               remainingFrameRange.end(), audioSource->frameIndexRange().end());
             remainingFrameRange.growBack(
-                    audioSourceProxy.frameIndexRange().end() - remainingFrameRange.end());
+                    audioSource->frameIndexRange().end() - remainingFrameRange.end());
         }
 
         sleepWhileSuspended();
@@ -310,8 +312,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 3rd step: Update & emit progress
         if (audioSource->frameLength() > 0) {
             const double frameProgress =
-                    double(audioSource->frameLength() - remainingFrameRange.length()) /
-                    double(audioSource->frameLength());
+                    static_cast<double>(audioSource->frameLength() - remainingFrameRange.length()) /
+                    audioSource->frameLength();
             // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
                     math_min(kAnalyzerProgressFinalizing,

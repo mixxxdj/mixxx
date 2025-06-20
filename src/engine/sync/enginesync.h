@@ -2,12 +2,14 @@
 
 #include <gtest/gtest_prod.h>
 
-#include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
 class InternalClock;
 class EngineChannel;
+
+const QString kBpmConfigGroup = QStringLiteral("[BPM]");
+const QString kSyncLockAlgorithmConfigKey = QStringLiteral("sync_lock_algorithm");
 
 /// EngineSync is the heart of the Mixxx Sync Lock engine.  It knows which objects
 /// (Decks, Internal Clock, etc) are participating in Sync and what their statuses
@@ -15,6 +17,16 @@ class EngineChannel;
 /// stop, or request their status to change.
 class EngineSync : public SyncableListener {
   public:
+    // Remove pick SyncLockAlgorithm when new beatgrid detection
+    // and editing code is committed and we no longer need the lock bpm fallback option.
+    enum SyncLockAlgorithm {
+        // New behavior, which should work if beatgrids are reliable.
+        PREFER_SOFT_LEADER,
+        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
+        // for auto DJ mode.
+        PREFER_LOCK_BPM
+    };
+
     explicit EngineSync(UserSettingsPointer pConfig);
     ~EngineSync() override;
 
@@ -59,14 +71,14 @@ class EngineSync : public SyncableListener {
 
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getLeaderChannel() const;
-    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
-    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize);
 
   private:
-    /// Iterate over decks, and based on sync and play status, pick a new Leader.
-    /// if enabling_syncable is not null, we treat it as if it were enabled because we may
-    /// be in the process of enabling it.
-    Syncable* pickLeader(Syncable* enabling_syncable);
+    /// Iterate over decks, and based on sync and play status, pick a new Leader, or return the
+    /// explicit leader if the one has been selected. If triggering_syncable is not null, we treat
+    /// it as if it had newStatus because we may be in the process of enabling or disabling it.
+    Syncable* pickLeader(Syncable* triggering_syncable, bool newStatus);
 
     /// Find a deck to match against, used in the case where there is no sync Leader.
     /// Looks first for a playing deck, and falls back to the first non-playing deck.
@@ -139,17 +151,6 @@ class EngineSync : public SyncableListener {
         }
         return false;
     }
-
-    // TODO: Remove pick algorithms during 2.4 development phase when new beatgrid detection
-    // and editing code is committed and we no longer need the lock bpm fallback option.
-    // If this code makes it to release we will all be very sad.
-    enum SyncLockAlgorithm {
-        // New behavior, which should work if beatgrids are reliable.
-        PREFER_IMPLICIT_LEADER,
-        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
-        // for auto DJ mode.
-        PREFER_LOCK_BPM
-    };
 
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsLeader);
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesLeader);

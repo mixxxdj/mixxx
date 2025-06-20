@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QObject>
+#include <QString>
+#include <QStringView>
+#include <optional>
 
-#include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/duration.h"
-#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 #include "util/stat.h"
+#include "util/stringformat.h"
 
-const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+static constexpr Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
 
 // A Timer that is instrumented for reporting elapsed times to StatsManager
@@ -17,8 +18,8 @@ const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::
 // computed for the times.
 class Timer {
   public:
-    Timer(const QString& key,
-          Stat::ComputeFlags compute = kDefaultComputeFlags);
+    Timer(QString key,
+            Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
 
     // Restart the timer returning the time duration since it was last
@@ -33,103 +34,67 @@ class Timer {
   protected:
     QString m_key;
     Stat::ComputeFlags m_compute;
-    bool m_running;
     PerformanceTimer m_time;
 };
 
-class SuspendableTimer : public Timer {
-  public:
-    SuspendableTimer(const QString& key,
-            Stat::ComputeFlags compute = kDefaultComputeFlags);
-    void start();
-    mixxx::Duration suspend();
-    void go();
-    mixxx::Duration elapsed(bool report);
-
-  private:
-    mixxx::Duration m_leapTime;
-};
-
+// TODO: replace with std::experimental::scope_exit<Timer> once stabilized
 class ScopedTimer {
   public:
-    ScopedTimer(const char* key, int i,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), QString::number(i), compute);
+    // Allows the timer to contain a format string which is only assembled
+    // when we're not in `--developer` mode.
+    /// @param compute Flags to use for the Stat::ComputeFlags (can be omitted)
+    /// @param key The format string as QStringLiteral to identify the timer
+    /// @param args The arguments to pass to the format string
+    template<typename T, typename... Ts>
+    ScopedTimer(Stat::ComputeFlags compute, T&& key, Ts&&... args)
+            : m_maybeTimer(std::nullopt) {
+        // we take a T here so we can detect the type and warn the user accordingly
+        // instead of paying for an implicit runtime conversion at the call site
+        static_assert(std::is_same_v<T, QString>,
+                "only QString is supported as key type. Wrap it in u\"\""
+                "_s or QStringLiteral() "
+                "to avoid runtime UTF-16 conversion.");
+        // we can now assume that T is a QString.
+        if (!CmdlineArgs::Instance().getDeveloper()) {
+            return; // leave timer in cancelled state
         }
-    }
-
-    ScopedTimer(const char* key, const char *arg = NULL,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg ? QString(arg) : QString(), compute);
-        }
-    }
-
-    ScopedTimer(const char* key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg, compute);
-        }
-    }
-
-    virtual ~ScopedTimer() {
-        if (m_pTimer) {
-            if (!m_cancel) {
-                m_pTimer->elapsed(true);
+        DEBUG_ASSERT(key.capacity() == 0);
+        m_maybeTimer = std::make_optional<Timer>(([&]() {
+            // only try to call QString::arg when we've been given parameters
+            if constexpr (sizeof...(args) > 0) {
+                return key.arg(convertToQStringConvertible(std::forward<Ts>(args))...);
+            } else {
+                return key;
             }
-            m_pTimer->~Timer();
+        })(),
+                compute);
+        m_maybeTimer->start();
+    }
+
+    template<typename T, typename... Ts>
+    ScopedTimer(T&& key, Ts&&... args)
+            : ScopedTimer(kDefaultComputeFlags, std::forward<T>(key), std::forward<Ts>(args)...) {
+    }
+
+    ~ScopedTimer() noexcept {
+        if (m_maybeTimer) {
+            m_maybeTimer->elapsed(true);
         }
     }
 
-    inline void initialize(const QString& key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags) {
-        QString strKey;
-        if (arg.isEmpty()) {
-            strKey = key;
-        } else {
-            strKey = key.arg(arg);
-        }
-        m_pTimer = new(m_timerMem) Timer(strKey, compute);
-        m_pTimer->start();
-    }
+    // copying would technically be possible, but likely not intended
+    ScopedTimer(const ScopedTimer&) = delete;
+    ScopedTimer& operator=(const ScopedTimer&) = delete;
+
+    ScopedTimer(ScopedTimer&&) = default;
+    ScopedTimer& operator=(ScopedTimer&&) = default;
 
     void cancel() {
-        m_cancel = true;
+        m_maybeTimer.reset();
     }
-  private:
-    Timer* m_pTimer;
-    char m_timerMem[sizeof(Timer)];
-    bool m_cancel;
-};
-
-// A timer that provides a similar API to QTimer but uses render events from the
-// VSyncThread as its source of timing events. This means the timer cannot fire
-// at a rate faster than the user's configured waveform FPS.
-class GuiTickTimer : public QObject {
-    Q_OBJECT
-  public:
-    GuiTickTimer(QObject* pParent);
-
-    void start(mixxx::Duration interval);
-    bool isActive() const { return m_bActive; }
-    void stop();
-
-  signals:
-    void timeout();
-
-  private slots:
-    void slotGuiTick(double v);
 
   private:
-    parented_ptr<ControlProxy> m_pGuiTick;
-    mixxx::Duration m_interval;
-    mixxx::Duration m_lastUpdate;
-    bool m_bActive;
+    // use std::optional to avoid heap allocation which is frequent
+    // because of ScopedTimer's temporary nature
+    std::optional<Timer> m_maybeTimer;
 };

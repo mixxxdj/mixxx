@@ -5,7 +5,6 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
-#include "library/library_decl.h"
 #include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
@@ -17,7 +16,7 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
     // Prevent this widget from getting focused by Tab/Shift+Tab
     // to avoid interfering with using the library via keyboard.
     // Allow click focus though so the list can always be opened by mouse,
-    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    // see https://github.com/mixxxdj/mixxx/issues/10184
     setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -42,8 +41,10 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
                 this,
                 &WEffectSelector::slotEffectSelected);
     } else {
-        SKIN_WARNING(node, context)
-                << "EffectSelector node could not attach to effect slot.";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectSelector node could not attach to effect "
+                               "slot."));
     }
 
     populate();
@@ -89,11 +90,9 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
     m_pEffectSlot->loadEffectWithDefaults(pManifest);
 
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
-    // After selecting an effect send Shift+Tab to move focus to tracks table
-    // in order to immediately allow keyboard shortcuts again.
-    // TODO(ronso0) switch to previously focused (library?) widget instead
-    ControlObject::set(ConfigKey("[Library]", "focused_widget"),
-            static_cast<double>(FocusWidget::TracksTable));
+    // Clicking an effect item moves keyboard focus to the list view.
+    // Move focus back to the previously focused library widget.
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
 void WEffectSelector::slotEffectUpdated() {

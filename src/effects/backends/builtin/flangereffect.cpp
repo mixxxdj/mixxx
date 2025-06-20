@@ -1,7 +1,7 @@
 #include "effects/backends/builtin/flangereffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 
 namespace {
@@ -50,7 +50,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     width->setDescription(QObject::tr(
             "Delay amplitude of the LFO (low frequency oscillator)"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    width->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     width->setRange(0.0, kMaxLfoWidthMs / 2, kMaxLfoWidthMs);
 
     EffectManifestParameterPointer manual = pManifest->addParameter();
@@ -61,7 +61,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
             "Delay offset of the LFO (low frequency oscillator).\n"
             "With width at zero, this allows for manually sweeping over the entire delay range."));
     manual->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    manual->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    manual->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     manual->setRange(kMinDelayMs, kCenterDelayMs, kMaxDelayMs);
 
     EffectManifestParameterPointer regen = pManifest->addParameter();
@@ -108,10 +108,6 @@ void FlangerEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
-FlangerEffect::~FlangerEffect() {
-    //qDebug() << debugString() << "destroyed";
-}
-
 void FlangerEffect::processChannel(
         FlangerGroupState* pState,
         const CSAMPLE* pInput,
@@ -121,14 +117,13 @@ void FlangerEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
-    if (groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.beat_length.has_value()) {
         // lfoPeriodParameter is a number of beats
         lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), kMinLfoBeats);
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec *
-                engineParameters.sampleRate();
+        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length->frames;
     } else {
         // lfoPeriodParameter is a number of seconds
         lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) *
@@ -138,8 +133,8 @@ void FlangerEffect::processChannel(
     // When the period is changed, the position of the sound shouldn't
     // so time need to be recalculated
     if (pState->previousPeriodFrames != -1.0) {
-        pState->lfoFrames *= static_cast<unsigned int>(
-                lfoPeriodFrames / pState->previousPeriodFrames);
+        pState->lfoFrames = static_cast<unsigned int>(
+                lfoPeriodFrames / pState->previousPeriodFrames * pState->lfoFrames);
     }
     pState->previousPeriodFrames = lfoPeriodFrames;
 

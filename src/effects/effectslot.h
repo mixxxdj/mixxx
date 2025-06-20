@@ -4,19 +4,10 @@
 #include <QSharedPointer>
 #include <QString>
 
-#include "control/controlencoder.h"
-#include "control/controlobject.h"
-#include "control/controlpotmeter.h"
-#include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
 #include "effects/backends/effectmanifest.h"
-#include "effects/effectbuttonparameterslot.h"
-#include "effects/effectknobparameterslot.h"
-#include "effects/effectparameter.h"
-#include "effects/presets/effectpreset.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/engine.h"
+#include "preferences/usersettings.h"
 #include "util/class.h"
 
 class EffectProcessor;
@@ -28,6 +19,9 @@ class EngineEffectChain;
 class ControlProxy;
 class EffectParameter;
 class EffectKnobParameterSlot;
+class ControlPotmeter;
+class ControlPushButton;
+class ControlEncoder;
 
 typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 
@@ -123,7 +117,7 @@ class EffectSlot : public QObject {
         return m_group;
     }
 
-    void fillEffectStatesMap(EffectStatesMap* pStatesMap) const;
+    void initalizeInputChannel(ChannelHandle inputChannel);
 
     EffectManifestPointer getManifest() const;
 

@@ -24,7 +24,7 @@ Variables:
         <Size>50f,24f</Size>
         <Children>
           <!-- Play -->
-          <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+          <Template src="skins:Tango/controls/button_play_2state_right_display.xml">
             <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
@@ -35,13 +35,13 @@ Variables:
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
           </Template>
           <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
           </Template>
           <!-- Play indicator, blinks depending on Cue mode -->
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="ObjectName">PlayIndicator</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
@@ -51,20 +51,38 @@ Variables:
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <Template src="skin:../Tango/controls/button_2state_right_display.xml">
-        <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
-        <SetVariable name="ObjectName">CueButton</SetVariable>
-        <SetVariable name="Size">24f,24f</SetVariable>
-        <SetVariable name="state_0_text">Q</SetVariable>
-        <SetVariable name="state_1_text">Q</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,cue_default</SetVariable>
-        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_gotoandstop</SetVariable>
-        <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,cue_indicator</SetVariable>
-      </Template>
+      <CueButton>
+        <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+        <ObjectName>CueButton</ObjectName>
+        <Size>24f,24f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
+        <Group><Variable name="group"/></Group>
+        <State>
+          <Number>0</Number>
+          <Text>Q</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Q</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+      </CueButton>
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <Template src="skin:../Tango/decks/hotcues_deck_right.xml"/>
+      <Template src="skins:Tango/decks/hotcues_deck_right.xml"/>
 
       <WidgetGroup><!-- Deck Controls + Star rating -->
         <ObjectName>DeckControlsRight</ObjectName>
@@ -102,7 +120,7 @@ Variables:
           </WidgetGroup><!-- /Stars -->
 
           <!-- Deck Controls which are always visible -->
-          <Template src="skin:../Tango/controls/button_deck_control_2state_perm.xml">
+          <Template src="skins:Tango/controls/button_deck_control_2state_perm.xml">
             <SetVariable name="Width">20max</SetVariable>
             <SetVariable name="TooltipId">quantize</SetVariable>
             <SetVariable name="state_0_icon">quantize_off.svg</SetVariable>
@@ -110,7 +128,7 @@ Variables:
             <SetVariable name="Control">quantize</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_deck_control_3state_perm.xml">
+          <Template src="skins:Tango/controls/button_deck_control_3state_perm.xml">
             <SetVariable name="Width">20max</SetVariable>
             <SetVariable name="TooltipId">orientation</SetVariable>
             <SetVariable name="state_0_icon">xfader_left_attention.svg</SetVariable>
@@ -119,7 +137,7 @@ Variables:
             <SetVariable name="Control">orientation</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_deck_control_2state_perm.xml">
+          <Template src="skins:Tango/controls/button_deck_control_2state_perm.xml">
             <SetVariable name="Width">22max</SetVariable>
             <SetVariable name="TooltipId">repeat</SetVariable>
             <SetVariable name="state_0_icon">repeat_off.svg</SetVariable>
@@ -127,7 +145,7 @@ Variables:
             <SetVariable name="Control">repeat</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_deck_control_2state_perm.xml">
+          <Template src="skins:Tango/controls/button_deck_control_2state_perm.xml">
             <SetVariable name="Width">22max</SetVariable>
             <SetVariable name="TooltipId">slip_mode</SetVariable>
             <SetVariable name="state_0_icon">slipmode_off.svg</SetVariable>
@@ -135,7 +153,7 @@ Variables:
             <SetVariable name="Control">slip_enabled</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_deck_control_1state_perm.xml">
+          <Template src="skins:Tango/controls/button_deck_control_1state_perm.xml">
             <SetVariable name="Width">18max</SetVariable>
             <SetVariable name="TooltipId">eject</SetVariable>
             <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
@@ -143,7 +161,7 @@ Variables:
             <SetVariable name="Control">eject</SetVariable>
           </Template>
 
-          <Template src="skin:../Tango/controls/button_deck_control_2state_perm.xml">
+          <Template src="skins:Tango/controls/button_deck_control_2state_perm.xml">
             <SetVariable name="Width">18max</SetVariable>
             <SetVariable name="TooltipId">keylock</SetVariable>
             <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
@@ -159,7 +177,7 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/controls/button_deck_control_2state_opt.xml">
+              <Template src="skins:Tango/controls/button_deck_control_2state_opt.xml">
                 <SetVariable name="Width">20f</SetVariable>
                 <SetVariable name="TooltipId">quantize</SetVariable>
                 <SetVariable name="state_0_icon">quantize_off.svg</SetVariable>
@@ -167,7 +185,7 @@ Variables:
                 <SetVariable name="Control">quantize</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/controls/button_deck_control_3state_opt.xml">
+              <Template src="skins:Tango/controls/button_deck_control_3state_opt.xml">
                 <SetVariable name="Width">20f</SetVariable>
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="state_0_icon">xfader_left_attention.svg</SetVariable>
@@ -176,7 +194,7 @@ Variables:
                 <SetVariable name="Control">orientation</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/controls/button_deck_control_2state_opt.xml">
+              <Template src="skins:Tango/controls/button_deck_control_2state_opt.xml">
                 <SetVariable name="Width">22f</SetVariable>
                 <SetVariable name="TooltipId">repeat</SetVariable>
                 <SetVariable name="state_0_icon">repeat_off.svg</SetVariable>
@@ -184,7 +202,7 @@ Variables:
                 <SetVariable name="Control">repeat</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/controls/button_deck_control_2state_opt.xml">
+              <Template src="skins:Tango/controls/button_deck_control_2state_opt.xml">
                 <SetVariable name="Width">22f</SetVariable>
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
                 <SetVariable name="state_0_icon">slipmode_off.svg</SetVariable>
@@ -192,7 +210,7 @@ Variables:
                 <SetVariable name="Control">slip_enabled</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/controls/button_deck_control_1state_opt.xml">
+              <Template src="skins:Tango/controls/button_deck_control_1state_opt.xml">
                 <SetVariable name="Width">18f</SetVariable>
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
@@ -200,7 +218,7 @@ Variables:
                 <SetVariable name="Control">eject</SetVariable>
               </Template>
 
-              <Template src="skin:../Tango/controls/button_deck_control_2state_opt.xml">
+              <Template src="skins:Tango/controls/button_deck_control_2state_opt.xml">
                 <SetVariable name="Width">18f</SetVariable>
                 <SetVariable name="TooltipId">keylock</SetVariable>
                 <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
@@ -220,7 +238,7 @@ Variables:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/controls/button_2state_persist.xml">
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
                 <SetVariable name="ObjectName">DeckControlsToggle_Right</SetVariable>
                 <!-- Size needs to be changed in size_detector_stars.xml, too -->
                 <SetVariable name="Size">15f,22f</SetVariable>

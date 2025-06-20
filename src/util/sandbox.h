@@ -5,19 +5,20 @@
 #include <QFileInfo>
 #include <QHash>
 #include <QSharedPointer>
+#include <QtGlobal>
 
 #include "preferences/configobject.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileinfo.h"
 
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
 #include <CoreFoundation/CFURL.h>
 #endif
 
 struct SandboxSecurityToken {
     ~SandboxSecurityToken();
     QString m_path;
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
     SandboxSecurityToken(const QString& path, CFURLRef url);
     CFURLRef m_url;
 #endif
@@ -33,7 +34,7 @@ class Sandbox {
     static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     static QString migrateOldSettings();
 #endif
 
@@ -53,8 +54,14 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SecurityTokenPointer openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
-    static SecurityTokenPointer openSecurityTokenForDir(const QDir& dir, bool create);
+#define SECURITY_TOKEN_NODISCARD_RATIONALE                             \
+    ("A new security token should be used, e.g. by assigning it to a " \
+     "variable, otherwise it will be invalidated immediately.")
+
+    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
+    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    openSecurityTokenForDir(const QDir& dir, bool create);
 
   private:
     Sandbox() = delete;
@@ -62,8 +69,9 @@ class Sandbox {
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 
     // Must hold s_mutex to call this.
-    static SecurityTokenPointer openTokenFromBookmark(const QString& canonicalPath,
-                                                      const QString& bookmarkBase64);
+    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    openTokenFromBookmark(
+            const QString& canonicalPath, const QString& bookmarkBase64);
 
     // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);

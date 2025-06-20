@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 Findmp3lame
 -----------
@@ -41,15 +36,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_path(mp3lame_INCLUDE_DIR
-  NAMES lame/lame.h
-  DOC "LAME include directory")
+find_path(mp3lame_INCLUDE_DIR NAMES lame/lame.h DOC "LAME include directory")
 mark_as_advanced(mp3lame_INCLUDE_DIR)
 
-find_library(mp3lame_LIBRARY
-  NAMES mp3lame mp3lame-static
-  DOC "LAME library"
-)
+find_library(mp3lame_LIBRARY NAMES mp3lame mp3lame-static DOC "LAME library")
 mark_as_advanced(mp3lame_LIBRARY)
 
 include(FindPackageHandleStandardArgs)
@@ -66,7 +56,8 @@ if(mp3lame_FOUND)
 
   if(NOT TARGET mp3lame::mp3lame)
     add_library(mp3lame::mp3lame UNKNOWN IMPORTED)
-    set_target_properties(mp3lame::mp3lame
+    set_target_properties(
+      mp3lame::mp3lame
       PROPERTIES
         IMPORTED_LOCATION "${mp3lame_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${mp3lame_INCLUDE_DIR}"

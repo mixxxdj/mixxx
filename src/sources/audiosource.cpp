@@ -27,6 +27,7 @@ AudioSource::AudioSource(
           m_signalInfo(signalInfo),
           m_bitrate(inner.m_bitrate),
           m_frameIndexRange(inner.m_frameIndexRange) {
+    DEBUG_ASSERT(m_frameIndexRange.orientation() != IndexRange::Orientation::Backward);
 }
 
 AudioSource::OpenResult AudioSource::open(
@@ -192,7 +193,7 @@ bool AudioSource::verifyReadable() {
     // Counterexample: The broken FAAD version 2.9.1 is able to open a file
     // but then fails to decode any sample frames.
     const SINT numSampleFrames =
-            math_min(kVerifyReadableMaxFrameCount, frameIndexRange().length());
+            std::min(kVerifyReadableMaxFrameCount, frameIndexRange().length());
     SampleBuffer sampleBuffer(
             m_signalInfo.frames2samples(numSampleFrames));
     WritableSampleFrames writableSampleFrames(
