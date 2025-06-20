@@ -1927,6 +1927,7 @@ class S4Mk3Deck extends Deck {
 
         // state variable for whether the disc + slipmat are slipping
         // FIXME: nomenclature clash with the Mixxx "slip" mode (called "flux" in Traktor)
+        // curiously, it is referred to as "censor" mode in part of the Mixxx documentation
         this.isSlipping = false;
 
         // manager for the motor output buffer on this deck
@@ -2013,8 +2014,6 @@ class S4Mk3Deck extends Deck {
                     this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
                     return;
                 }
-
-                // console.warn(value, parameterValue, this.tempoFader.hardwarePosition);
 
                 // const oldCentered = this.centered;
                 if (Math.abs(parameterValue - 0.5) < this.toleranceWindow) {
@@ -2812,12 +2811,12 @@ class S4Mk3Deck extends Deck {
         // every 2880 ticks (one full rotation).
         // Therefore we only care about the first position input.
         this.wheelPosition = new Component({
-            prev_data: null,
+            prevData: null,
             deck: this,
             velocity: 0,
-            prev_pitch: 0,
+            prevPitch: 0,
             vFilter: this.velFilter,
-            input: function(in_position, in_timestamp) {
+            input: function(inPosition, inTimestamp) {
                 // The input to the wheel is pulled from the HID input report #3
                 // value: 16-bit integer that indicates angular position. Every step
                 //        represents 1/8th of a degree of rotation.
@@ -2826,25 +2825,25 @@ class S4Mk3Deck extends Deck {
                 
                 // Since we're calculating velocity as difference in position,
                 // we have to init the previous value to zero
-                if (this.prev_data === null) {
-                    this.prev_data = [in_position, in_timestamp];
+                if (this.prevData === null) {
+                    this.prevData = [inPosition, inTimestamp];
                     return; // velocity is implicitly zero here on the return
                 }
 
                 // After the 1st iteration, proceed as normal. Save the previous data
-                let [prev_position, prev_timestamp] = this.prev_data;
+                let [prevPosition, prevTimestamp] = this.prevData;
 
                 // Unwrap the previous counter value if the new one rolls over to zero
-                if (in_timestamp < prev_timestamp) {
-                    prev_timestamp -= wheelTimerMax;
+                if (inTimestamp < prevTimestamp) {
+                    prevTimestamp -= wheelTimerMax;
                 }
                 
                 // Unwrap over/under-runs in the position signal
-                let diff = in_position - prev_position;
+                let diff = inPosition - prevPosition;
                 if (diff > wheelPositionMax / 2) {
-                    prev_position += wheelPositionMax;
+                    prevPosition += wheelPositionMax;
                 } else if (diff < -wheelPositionMax / 2) {
-                    prev_position -= wheelPositionMax;
+                    prevPosition -= wheelPositionMax;
                 }
                 
                 // Using the unwrapped position reference, calculate 1st derivative
@@ -2856,7 +2855,7 @@ class S4Mk3Deck extends Deck {
                 // example: position difference of 3 and timestamp difference of 2ms = 200000ns
                 //          results in 1.5e-05 or 0.000015
                 //          multiply by 100MHz or 100000000 produces 1500 ticks per second
-                const currentVelocity_tickspersecond = wheelClockFreq * (in_position - prev_position)/(in_timestamp - prev_timestamp);
+                const currentVelocityTicksPerSecond = wheelClockFreq * (inPosition - prevPosition)/(inTimestamp - prevTimestamp);
                 
                 // then, normalize it with reference to the target rotation speed of the platter
                 // regardless of how the pitch is being adjusted. In other words, the "rate_ratio"
@@ -2864,24 +2863,16 @@ class S4Mk3Deck extends Deck {
                 // platter is spinning relative to the playback rate of 1.0
                 //     Therefore we simply divide the ticks per second by the ticks per degree
                 // which eliminates the units of measure and leaves us with a ratio.
-                const currentVelocity_normalized = currentVelocity_tickspersecond / baseEncoderTicksPerDegree;
+                const currentVelocityNormalized = currentVelocityTicksPerSecond / baseEncoderTicksPerDegree;
                 
-                // Removing this conditional assignment because it seems off.
-                // if ((currentVelocity <= 0) === (oldVelocity <= 0)) {
-                //     oldVelocity = (oldVelocity + currentVelocity)/2; // ???: what is this doing
-                // } else {
-                //     oldVelocity = currentVelocity;
-                // }
-                // this.speed = wheelAbsoluteMax*speed*10;???
-                
-                // New input filtering:
+                // Input filtering:
                 // Using a weighted average convolution filter ie., an FIR filter,
                 // applly a lowpass to the velocity which is otherwise quite noisy.
-                this.vFilter.insert(currentVelocity_normalized); // push/pop to the circular buffer
+                this.vFilter.insert(currentVelocityNormalized); // push/pop to the circular buffer
                 this.velocity = this.vFilter.runFilter(); // sum of products with filter coeffs
 
                 // Overwrite the previous position/time data with the current values
-                this.prev_data = [in_position, in_timestamp];
+                this.prevData = [inPosition, inTimestamp];
 
                 // At this point, all of our velocity computation is complete.
                 // Now, we decide what to do with this information.
@@ -2908,16 +2899,11 @@ class S4Mk3Deck extends Deck {
 
                     // ***NEW*** quantizing the output playback (when not slipping)
                     if (this.deck.isSlipping == false){
-                        // let vel_target = engine.getValue(this.deck.group, "rate_ratio");
-                        // let vel_err_quant_steps = Math.round((this.velocity - vel_target)/PLAYBACK_QUANTIZE_ERROR_STEP);
-                        // this.velocity = vel_target + (vel_err_quant_steps * PLAYBACK_QUANTIZE_ERROR_STEP);
-                        // this.velocity = 1.25;
-
-                        // try aggressive smoothing instead for a second
+                        // apply simple smoothing filter to the velocity input when the disc is not slipping/scratching
                         this.velocity = this.prev_pitch + (NONSLIP_PITCH_SMOOTHING*(this.velocity - this.prev_pitch));
                         this.prev_pitch = this.velocity;
                     }
-                    engine.setValue(this.group, "scratch2", this.velocity);
+                    engine.setValue(this.group, "scratch2", this.velocity); // why is this still here? I thought we weren't "always scratching" anymore
                     break;
                 case wheelModes.loopIn:
                     {
@@ -3127,7 +3113,7 @@ class S4Mk3MotorManager {
     constructor(deck) {
         this.deck = deck;
         // Set the Left/Right motor identifier
-        // NOTE: THIS ASSUMES THAT THE FIRST DECK ON THE LEFT IS 1
+        // NOTE: CURRENTLY THIS ASSUMES THAT THE FIRST DECK ON THE LEFT IS 1
         //       AND THE FIRST DECK ON THE RIGHT IS 2
         if (this.deck.decks[0] == 1) {
             this.deckMotorID = MotorBuffIDLeft;
@@ -3140,12 +3126,9 @@ class S4Mk3MotorManager {
         }
         this.motorBuffMgr = this.deck.motorBuffMgr;
 
-        this.userHold = 0; // REMOVE
         this.oldValue = [0, 0];
-        // this.baseFactor = parseInt(110 * BaseRevolutionsPerMinute); //FIXME: hardcoded
-        // this.zeroSpeedForce = 1650; //FIXME: move hardcoded value to header
         this.currentMaxWheelForce = MaxWheelForce;
-        this.prev_playbackError = 0;
+        this.prev_playbackError = 0; // JUNE 20 2025 --- RESUME HERE
         this.P_term = 0;
         this.I_accumulator = 0;
         this.D_term = 0;
