@@ -270,6 +270,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
 
+    latencyCompensationLabel->setText(latencyCompensationLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_LATENCY_URL));
+
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
                "consider for using Mixxx.")
