@@ -284,7 +284,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     slotScratchingEngineChanged(m_pScratchingEngine->get());
     qDebug() << "setting scratch engine to " << m_pScaleVinyl;
 
-    m_pScale = m_pScaleVinyl; // m_pScale = m_pScaleVinyl originally.
+    m_pScale = m_pScaleVinyl;
     qDebug() << "current scaler " << m_pScale;
 
     m_pScale->clear(); // delete scaler state stored previously
@@ -922,7 +922,7 @@ void EngineBuffer::processTrackLocked(
     // this is the scaling ratio for resampling
     double baseSampleRate = 0.0;
     if (sampleRate.isValid()) {
-        baseSampleRate = m_trackSampleRateOld / sampleRate; // basesamplerate is some ratio
+        baseSampleRate = m_trackSampleRateOld / sampleRate; // base_rate
     }
 
     // Sync requests can affect rate, so process those first.
@@ -1145,6 +1145,25 @@ void EngineBuffer::processTrackLocked(
     // If the buffer is not paused, then scale the audio.
     if (!bCurBufferPaused) {
         // Perform scaling of Reader buffer into buffer.
+        // ---
+        // For a given output sample rate (ex. 44.1KHz), setting [audio buffer (ms)]
+        // in mixxx preferences corresponds to setting `bufferSize` such that
+        // `bufferSize` = num_channels * num_frames_per_[audio buffer (ms)].
+        // `bufferSize` interleaved samples must be written to the DAC on each callback
+        // (this function is part of the callback chain).
+        // Ex. @44.1KHz, 92.9ms buffer -> bufferSize = 8192 (approx)
+        // ---
+        // When slowing down/speeding up track tempo, resample is required to
+        // ensure that exactly `bufferSize` samples are being written to the
+        // DAC, even though the duration of track playback
+        // (and therefore num_frames_per_[audio buffer (ms)]) would have changed.
+        // Ex. Scaling tempo by a factor of 3 would create a situation where
+        // 8192 * 3 samples represent a single 92.9ms buffer. Without resample,
+        // only the first 8192 (=`bufferSize`) samples would be returned to the DAC
+        // in the current callback, representing only 92.9/3 ms of audio. The rest
+        // will be lost, corresponding to 2 * 92.9/3 ms of lost audio before the
+        // next callback. To avoid this, a resample must be performed (here, a downsample)
+        // to represent 8192*3 samples of digital audio using 8192 samples only.
         const double framesRead = m_pScale->scaleBuffer(pOutput, bufferSize);
         // qDebug() << "Buffer not paused, read " << framesRead << " frames";
 
@@ -1197,7 +1216,7 @@ void EngineBuffer::processTrackLocked(
     for (const auto& pControl : std::as_const(m_engineControls)) {
         // m_playPos is already updated here and points to the end of the played buffer
         pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
-        pControl->process(rate, m_playPos, bufferSize);
+        pControl->process(rate, m_playPos, bufferSize); // no-op
     }
 
     m_scratching_old = is_scratching;
