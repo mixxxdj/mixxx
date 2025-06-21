@@ -974,7 +974,13 @@ TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy) {
 
     EXPECT_TRUE(evaluateAndAssert(code)) << "Evaluation error in test code";
     loadTrackSync("id3-test-data/all.mp3");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
     for (auto [property, expected] : expectedValues.asKeyValueRange()) {
+#else
+    for (auto it = expectedValues.constBegin(); it != expectedValues.constEnd(); ++it) {
+        const QString& property = it.key();
+        const QString& expected = it.value();
+#endif
         auto const playerActual = evaluate("player." + property).toString();
         auto const slotActual = evaluate("result." + property).toString();
         EXPECT_QSTRING_EQ(expected, playerActual)
