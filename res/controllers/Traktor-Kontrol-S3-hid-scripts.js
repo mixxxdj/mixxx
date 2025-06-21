@@ -5,7 +5,7 @@
 // Traktor Kontrol S3 HID controller script v2.00
 // Last modification: January 2023
 // Authors: Owen Williams, Robbert van der Helm
-// https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3
+// https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 //
 ///////////////////////////////////////////////////////////////////////////////////
 //
@@ -1112,10 +1112,17 @@ TraktorS3.Deck = class {
     }
 
     loadTrackHandler(field) {
-        if (this.shiftPressed) {
-            engine.setValue(this.activeChannel, "eject", field.value);
+        // If the library is selected, load the track based on which encoder was
+        // pressed. Otherwise just do whatever the default action is for the
+        // focused menu or widget.
+        if (engine.getValue("[Library]", "focused_widget") === 3) {
+            if (this.shiftPressed) {
+                engine.setValue(this.activeChannel, "eject", field.value);
+            } else {
+                engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            }
         } else {
-            engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            engine.setValue("[Library]", "GoToItem", field.value);
         }
     }
 
