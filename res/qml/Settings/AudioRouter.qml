@@ -53,25 +53,97 @@ Rectangle {
         }
     }
 
-    function generateDeviceList(devices, existing) {
-        let cards = {}
-        const hwAlsa = / (\(hw:\d+,\d+\))/;
-        for (let device of devices) {
-            let components = device.displayName.split(':')
-            let cardName = components.shift().trim()
-            let deviceName = components.length > 0 ? components.join(":").trim() : "Default"
-            let hw = deviceName.match(hwAlsa, "")
-            if (!cards[cardName]) {
-                cards[cardName] = {
-                    gateways: {},
-                    channelCount: 0,
+    // FriendlyName aims to parse the raw device name extract it in such a way that it gets grouped within the UI
+    // Note that naming structures changes across API and devices. This function is experimental and aims to be extended with more logic
+    // If not extraction works, it will fallback to return the device name as "card name" (a.k.a a group on the router) and a single channel names "Default"
+    function friendlyName(api, rawName) {
+        switch (api) {
+            case "ALSA": {
+                const hwAlsa = / (\(hw:\d+,\d+\))/;
+                let components = rawName.split(':')
+                let cardName = components.shift().trim()
+                let deviceName = components.length > 0 ? components.join(":").trim().replace(hwAlsa, "") : "Default"
+                return [cardName, deviceName]
+            }
+            case "MME": {
+            // API truncates the name to 31 chars
+                if (rawName.length === 31 && rawName.substr(-1) !== ')') {
+                const match = /(.+) \((.*)/.exec(rawName)
+                    if (match) {
+                        const [_, deviceName, cardName, ..._loopback] = match
+                        return [cardName, deviceName]
+                    }
+                    break
                 }
             }
+            case "ASIO":
+            case "DirectSound":
+                    case "WASAPI": {
+                const match = /(.+) \((.*)\)( \[Loopback\])?/.exec(rawName)
+                    if (match) {
+                        const [_, deviceName, cardName, ..._loopback] = match
+                        return [cardName, deviceName]
+                }
+                break
+            }
+            case "WDM-KS": {
+                const match = /(.+) \((.*)\)( \[Loopback\])?/.exec(rawName.replace(/\r?\n/g, ''))
+                if (match) {
+                    let [_, deviceName, cardName, ..._loopback] = match
+                    if (cardName.startsWith("@System32\\drivers")) {
+                        let components = cardName.split(";")
+                        cardName = components[components.length - 1]
+                    }
+                    return [cardName, deviceName]
+                }
+                break
+            }
+        }
 
-            cards[cardName].gateways[hw ? hw[1] : deviceName] = {
-                name: deviceName.replace(hwAlsa, ""),
-                node: existing[cardName]?.gateways?.[hw ? hw[1] : deviceName]?.node ?? null,
-                address: hw ? hw[1] : null,
+        return [rawName, ""]
+    }
+
+    function generateDeviceList(api, devices, existing) {
+        console.log(`generating device list for: ${JSON.stringify(devices)}`)
+        let cards = {}
+        // cardName -> deviceName -> duplicateCount
+        let deviceNameDuplicate = {}
+        for (let device of devices) {
+            let [cardName, deviceName] = root.friendlyName(api, device.displayName)
+            cardName = !cardName ? "Unnamed card" : cardName
+            deviceName = !deviceName ? "Default" : deviceName
+            console.log(`cardName=${cardName},deviceName=${deviceName}`)
+            console.log(`cards=${cards[cardName]}`)
+            if (cards[cardName] === undefined) {
+                cards[cardName] = {
+                    gateways: {
+                        [deviceName]: {
+                            name: deviceName,
+                            node: existing[cardName]?.gateways?.[deviceName]?.node ?? null,
+                            device: device,
+                            channels: device.channelCount
+                        }
+                    },
+                    channelCount: device.channelCount,
+                }
+                continue
+            }
+
+            // If the group (card name) has already a "Default" channel, we add the new channel as "Default #N" for better UX
+            if (cards[cardName].gateways[deviceName] !== undefined) {
+                if (deviceNameDuplicate[cardName] === undefined) {
+                    deviceNameDuplicate[cardName] = {
+                        [deviceName]: 1
+                    }
+                } else {
+                    deviceNameDuplicate[cardName][deviceName] = (deviceNameDuplicate[cardName][deviceName] ?? 0) + 1
+                }
+                deviceName = `${deviceName} #${deviceNameDuplicate[cardName][deviceName] + 1}`
+            }
+
+            cards[cardName].gateways[deviceName] = {
+                name: deviceName,
+                node: existing[cardName]?.gateways?.[deviceName]?.node ?? null,
                 device: device,
                 channels: device.channelCount
             }
@@ -81,8 +153,9 @@ Rectangle {
     }
 
     function update(api) {
-        root.inputs = generateDeviceList(manager.availableInputDevices(api), root.inputs)
-        root.outputs = generateDeviceList(manager.availableOutputDevices(api), root.outputs)
+        console.log(`Using sound api: ${api} ${typeof api}`)
+        root.inputs = generateDeviceList(api, manager.availableInputDevices(api), root.inputs)
+        root.outputs = generateDeviceList(api, manager.availableOutputDevices(api), root.outputs)
         root.loadConnections()
     }
 
