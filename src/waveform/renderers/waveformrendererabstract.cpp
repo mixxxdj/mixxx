@@ -3,6 +3,7 @@
 WaveformRendererAbstract::WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer)
         : m_waveformRenderer(waveformWidgetRenderer),
           m_dirty(true),
+          m_lastPlayMarkerPos(-1.0),
           m_scaleFactor(1.0) {
 }
 

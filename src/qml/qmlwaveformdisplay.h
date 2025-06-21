@@ -31,13 +31,16 @@ namespace mixxx {
 namespace qml {
 
 class QmlPlayerProxy;
+class QmlTrackProxy;
 
 class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public WaveformWidgetRenderer {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QmlPlayerProxy* player READ getPlayer WRITE setPlayer
-                    NOTIFY playerChanged REQUIRED)
-    Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged REQUIRED)
+                    NOTIFY playerChanged)
+    Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged)
+    Q_PROPERTY(QmlTrackProxy* track READ getTrack WRITE setStaticTrack NOTIFY trackChanged)
+    Q_PROPERTY(double position READ getPosition WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQmlListProperty<QmlWaveformRendererFactory> renderers READ renderers)
     Q_PROPERTY(double zoom READ getZoom WRITE setZoom NOTIFY zoomChanged)
     Q_PROPERTY(QColor backgroundColor READ getBackgroundColor WRITE
@@ -62,6 +65,12 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     }
 
     void setGroup(const QString& group) override;
+    void setPosition(double position);
+    void setStaticTrack(QmlTrackProxy* track);
+    QmlTrackProxy* getTrack() const {
+        return m_pTrack;
+    }
+    double getPosition() const;
     void setZoom(double zoom) {
         WaveformWidgetRenderer::setZoom(zoom);
         emit zoomChanged();
@@ -98,6 +107,12 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     void playerChanged();
     void zoomChanged();
     void groupChanged(const QString& group);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void trackChanged(QmlTrackProxy* track);
+#else
+    void trackChanged(mixxx::qml::QmlTrackProxy* track);
+#endif
+    void positionChanged(double);
     void backgroundColorChanged();
 
   private:
@@ -108,6 +123,8 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     QColor m_backgroundColor{QColor(0, 0, 0, 255)};
 
     PerformanceTimer m_timer;
+    QmlTrackProxy* m_pTrack;
+    QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
 
     std::chrono::milliseconds m_syncInterval;
     enum class DirtyFlag : int {
