@@ -2118,7 +2118,7 @@ void BeatLoopingControl::slotActivate(double value, LoopingControl::LoopAnchorPo
 }
 
 void BeatLoopingControl::slotActivateRoll(double v, LoopingControl::LoopAnchorPoint anchor) {
-    //qDebug() << "slotActivateRoll" << m_dBeatLoopSize << "v" << v;
+    qDebug() << "slotActivateRoll" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
         emit activateBeatLoopRoll(this, anchor);
     } else {
