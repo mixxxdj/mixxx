@@ -108,9 +108,6 @@ var MidiFighterTwister;
                         0xa400c0: 108, // Purple
                     }),
                     type: components.Button.prototype.types.toggle,
-                    outValueScale: function(_value) {
-                        return this.colorMapper.getValueForNearestColor(engine.getParameter(this.group, this.colorKey));
-                    },
                     shift: function() {
                         this.inKey = "volume_set_default";
                         this.outKey = "volume_set_default";
