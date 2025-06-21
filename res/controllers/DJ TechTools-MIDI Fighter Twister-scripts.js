@@ -151,18 +151,15 @@ var MidiFighterTwister;
                     group: `[QuickEffectRack1_[Channel${deckNums[0]}_Stem${i + 1}]]`,
                     midi: [0xB0, this.midiModifier(0x21 + (4 * i))],
                     key: "super1",
-                    inValueScale: function(value) {
-                        if (this.inKey === "loaded_chain_preset") {
-                            const val = (value/this.max) * engine.getParameter(this.group, "num_chain_presets");
-                            return val;
-                        }
-                        return components.Encoder.prototype.inValueScale(value);
-                    },
                     shift: function() {
                         this.inKey = "loaded_chain_preset";
                         this.outKey = "loaded_chain_preset";
                         this.on = engine.getSetting("stemFxOnColor");
                         this.off = engine.getSetting("stemFxOffColor");
+                        this.inValueScale = function(value) {
+                            const val = (value/this.max) * engine.getParameter(this.group, "num_chain_presets");
+                            return Math.trunc(val);
+                        };
                         this.disconnect();
                         this.connect();
                         this.trigger();
@@ -172,6 +169,9 @@ var MidiFighterTwister;
                         this.outKey = this.key;
                         this.on = components.Button.prototype.on;
                         this.off = components.Button.prototype.off;
+                        this.inValueScale = function(value) {
+                            return components.Encoder.prototype.inValueScale(value);
+                        };
                         this.disconnect();
                         this.connect();
                         this.trigger();
