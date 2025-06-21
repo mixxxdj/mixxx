@@ -427,6 +427,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setUntilMarkTextHeightLimit(toUntilMarkTextHeightLimit(
             m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
                     toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
+    setStemReorderOnChange(m_config->getValue(
+            ConfigKey("[Waveform]", "stem_reorder_on_change"), true));
+    setStemOpacity(static_cast<float>(
+            m_config->getValue(ConfigKey("[Waveform]", "stem_opacity"), 0.75)));
+    setStemOutlineOpacity(static_cast<float>(m_config->getValue(
+            ConfigKey("[Waveform]", "stem_outline_opacity"), 0.15)));
 
     return true;
 }
@@ -1360,6 +1366,33 @@ void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
                 toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit));
     }
     emit untilMarkTextHeightLimitChanged(value);
+}
+
+void WaveformWidgetFactory::setStemReorderOnChange(bool value) {
+    m_stemReorderOnChange = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "stem_reorder_on_change"),
+                value);
+    }
+    emit stemReorderOnChangeChanged(value);
+}
+
+void WaveformWidgetFactory::setStemOutlineOpacity(float value) {
+    m_stemOutlineOpacity = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "stem_outline_opacity"),
+                static_cast<double>(value));
+    }
+    emit stemOutlineOpacityChanged(value);
+}
+
+void WaveformWidgetFactory::setStemOpacity(float value) {
+    m_stemOpacity = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "stem_opacity"),
+                static_cast<double>(value));
+    }
+    emit stemOpacityChanged(value);
 }
 
 // static
