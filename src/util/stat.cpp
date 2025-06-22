@@ -1,6 +1,8 @@
 #include "util/stat.h"
 
+#include <QDebug>
 #include <QStringList>
+#include <chrono>
 #include <limits>
 
 #include "util/math.h"
@@ -71,8 +73,25 @@ void Stat::processReport(const StatReport& report) {
 
 QDebug operator<<(QDebug dbg, const Stat& stat) {
     QStringList stats;
-    auto toMs = [](double ns) -> QString {
-        return QString::number(ns / 1e6, 'f', 3) + QStringLiteral("ms");
+
+    auto formatTime = [](double ns) -> QString {
+        using namespace std::chrono;
+
+        // Converting input to integral nanoseconds for safe duration_cast
+        auto nanosecondsVal = duration_cast<nanoseconds>(duration<double, std::nano>(ns));
+
+        if (nanosecondsVal >= seconds(1)) {
+            double sec = ns / 1e9;
+            return QString::number(sec, 'f', 2) + " s";
+        } else if (nanosecondsVal >= milliseconds(1)) {
+            double ms = ns / 1e6;
+            return QString::number(ms, 'f', 2) + " ms";
+        } else if (nanosecondsVal >= microseconds(1)) {
+            double us = ns / 1e3;
+            return QString::number(us, 'f', 2) + " µs";
+        } else {
+            return QString::number(ns, 'f', 2) + " ns";
+        }
     };
 
     if (stat.m_compute & Stat::COUNT) {
@@ -80,13 +99,13 @@ QDebug operator<<(QDebug dbg, const Stat& stat) {
     }
 
     if (stat.m_compute & Stat::SUM) {
-        stats << "sum=" + toMs(stat.m_sum);
+        stats << "sum=" + formatTime(stat.m_sum);
     }
 
     if (stat.m_compute & Stat::AVERAGE) {
         QString value = "average=";
         if (stat.m_report_count > 0) {
-            value += toMs(stat.m_sum / stat.m_report_count);
+            value += formatTime(stat.m_sum / stat.m_report_count);
         } else {
             value += "XXX";
         }
@@ -96,7 +115,7 @@ QDebug operator<<(QDebug dbg, const Stat& stat) {
     if (stat.m_compute & Stat::MIN) {
         QString value = "min=";
         if (stat.m_report_count > 0) {
-            value += toMs(stat.m_min);
+            value += formatTime(stat.m_min);
         } else {
             value += "XXX";
         }
@@ -106,7 +125,7 @@ QDebug operator<<(QDebug dbg, const Stat& stat) {
     if (stat.m_compute & Stat::MAX) {
         QString value = "max=";
         if (stat.m_report_count > 0) {
-            value += toMs(stat.m_max);
+            value += formatTime(stat.m_max);
         } else {
             value += "XXX";
         }
@@ -115,9 +134,9 @@ QDebug operator<<(QDebug dbg, const Stat& stat) {
 
     if (stat.m_compute & Stat::SAMPLE_VARIANCE) {
         double variance = stat.variance();
-        stats << "variance=" + toMs(variance) + "^2";
+        stats << "variance=" + formatTime(variance) + "^2";
         if (variance >= 0.0) {
-            stats << "stddev=" + toMs(sqrt(variance));
+            stats << "stddev=" + formatTime(sqrt(variance));
         }
     }
 
@@ -128,7 +147,7 @@ QDebug operator<<(QDebug dbg, const Stat& stat) {
     if (stat.m_compute & Stat::HISTOGRAM) {
         QStringList histogram;
         for (auto it = stat.m_histogram.constBegin(); it != stat.m_histogram.constEnd(); ++it) {
-            histogram << QString::number(it.key() / 1e6, 'f', 3) + "ms:" +
+            histogram << formatTime(static_cast<double>(it.key())) + ":" +
                             QString::number(it.value());
         }
         stats << "histogram=" + histogram.join(", ");
