@@ -1,41 +1,38 @@
-#ifndef GENREDAO_H
-#define GENREDAO_H
+#pragma once
 
 #include <QList>
 #include <QString>
 
 #include "library/dao/dao.h"
 #include "library/dao/genre.h"
+#include "util/db/dbid.h"
 
-class DbConnection; // Forward Declaration to reduce compile dependencies
-
-// Data Access Object for all genre-related database operations.
-class GenreDAO final : public DAO {
+/// Data Access Object for managing music genres
+/// Supports multiple genres per track via normalized tables
+class GenreDAO : public DAO {
   public:
-    explicit GenreDAO(DbConnection* dbConnection);
+    explicit GenreDAO();
+    ~GenreDAO() override = default;
 
-    // Adds a new genre to the 'genres' table if it doesn't exist.
-    // Returns the ID of the new or existing genre. On failure, returns DbId_Invalid.
+    /// Adds a new genre or returns the ID if it already exists
     DbId addGenre(const QString& name);
 
-    // Retrieves a genre by its name. Returns an invalid Genre if not found.
+    /// Search for a genre by name (case-insensitive)
     Genre getGenreByName(const QString& name);
 
-    // Retrieves a genre by its ID. Returns an invalid Genre if not found.
+    /// Retrieve a genre by ID
     Genre getGenreById(DbId id);
 
-    // Retrieves a list of all genres associated with a specific track.
+    /// Gets all genres associated with a track
     QList<Genre> getGenresForTrack(DbId trackId);
 
-    // Sets all genres for a specific track, replacing any existing associations.
+    /// Set genres for a track (atomic operation)
+    /// Removes all existing associations and creates new ones
     bool setGenresForTrack(DbId trackId, const QList<DbId>& genreIds);
 
-    // Retrieves all genres from the database.
+    /// Gets all genres present in the database
     QList<Genre> getAllGenres();
 
-    // Deletes genres from the 'genres' table that are no longer associated with any tracks.
-    // Returns the number of rows deleted, or -1 on error.
+    /// Remove unused genres from any track
     int deleteUnusedGenres();
 };
-
-#endif

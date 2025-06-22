@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "library/dao/directorydao.h"
+#include "library/dao/genredao.h" // Added support for multiple genres
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -48,6 +49,12 @@ class TrackCollectionManager: public QObject,
         return m_externalCollections;
     }
 
+    // Access to GenreDAO for managing multiple genres
+    GenreDAO* genreDAO() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_pGenreDAO.get();
+    }
+
     TrackPointer getTrackById(
             TrackId trackId) const;
     TrackPointer getTrackByRef(
@@ -61,6 +68,32 @@ class TrackCollectionManager: public QObject,
     bool updateTrackGenre(
             Track* pTrack,
             const QString& genre) const;
+
+    /// New methods for handling multiple genres
+    /// Set multiple genres for a track (replaces previous ones)
+    bool updateTrackGenres(
+            Track* pTrack,
+            const QStringList& genres) const;
+
+    /// Adds genres to a track (keeps existing ones)
+    bool addTrackGenres(
+            Track* pTrack,
+            const QStringList& genres) const;
+
+    /// Removes specific genres from a track
+    bool removeTrackGenres(
+            Track* pTrack,
+            const QStringList& genres) const;
+
+    /// Gets all genres associated with a track
+    QList<Genre> getTrackGenres(TrackId trackId) const;
+
+    /// Ottiene tutti i generi disponibili nel database
+    QList<Genre> getAllGenres() const;
+
+    /// Cleans unused genres from the database
+    int cleanupUnusedGenres() const;
+
 #if defined(__EXTRA_METADATA__)
     bool updateTrackMood(
             Track* pTrack,
@@ -100,6 +133,16 @@ class TrackCollectionManager: public QObject,
     void libraryScanFinished();
     void libraryScanSummary(const LibraryScanResultSummary& result);
 
+    /// New signals for genre management
+    /// Emitted when a track's genres are changed
+    void trackGenresUpdated(TrackId trackId, const QList<Genre>& genres);
+
+    /// Fired when a new genre is added to the database
+    void genreAdded(const Genre& genre);
+
+    /// Emitted when unused genres are deleted
+    void unusedGenresRemoved(int count);
+
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
@@ -124,12 +167,22 @@ class TrackCollectionManager: public QObject,
             Track* pTrack,
             TrackMetadataExportMode mode) const;
 
+    /// Helper methods for genre management
+    /// Converts a list of genre names to a list of IDs
+    /// Creates new genres if necessary
+    QList<DbId> convertGenreNamesToIds(const QStringList& genreNames) const;
+
+    /// Converts a list of Genre structures into a list of names
+    QStringList convertGenresToNames(const QList<Genre>& genres) const;
+
     const UserSettingsPointer m_pConfig;
 
     const parented_ptr<TrackCollection> m_pInternalCollection;
 
+    // Added GenreDAO for multiple genre management
+    std::unique_ptr<GenreDAO> m_pGenreDAO;
+
     QList<ExternalTrackCollection*> m_externalCollections;
 
-    // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
 };

@@ -1,20 +1,31 @@
-#ifndef GENRE_H
-#define GENRE_H
+#pragma once
 
+#include <QMetaType>
 #include <QString>
 
 #include "util/db/dbid.h"
 
-// Represents a single genre entity from the database.
-// This struct is used to pass genre data between the DAO and other Mixxx parts.
 struct Genre {
-    DbId id = DbId_Invalid;
+    DbId id;
     QString name;
 
-    // Overload operator== for easy comparison, e.g. in QList::contains()
+    Genre() = default;
+    Genre(DbId genreId, const QString& genreName)
+            : id(genreId),
+              name(genreName) {
+    }
+
+    bool isValid() const {
+        return id.isValid() && !name.isEmpty();
+    }
+
     bool operator==(const Genre& other) const {
-        return id == other.id;
+        return id == other.id && name == other.name;
+    }
+
+    bool operator!=(const Genre& other) const {
+        return !(*this == other);
     }
 };
 
-#endif
+Q_DECLARE_METATYPE(Genre)

@@ -78,15 +78,15 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
-// === Multi-Genre Support (Flat Model) ===
+// Tabella Genres
 const QString TableGenres = QStringLiteral("genres");
 const QString GenresId = QStringLiteral("id");
 const QString GenresName = QStringLiteral("name");
 
+// Tabella Genre-Tracks Junction
 const QString TableGenreTracks = QStringLiteral("genre_tracks");
 const QString GenreTracksTrackId = QStringLiteral("track_id");
 const QString GenreTracksGenreId = QStringLiteral("genre_id");
-// === END of Multi-Genre Support constants ===
 
 namespace mixxx {
 namespace trackschema {

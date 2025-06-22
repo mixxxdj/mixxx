@@ -5,47 +5,49 @@
 #include <QVariant>
 
 #include "library/dao/trackschema.h"
-#include "util/db/dbconnection.h"
-#include "util/db/sqlite.h" // For SQuery and LOG_FAILED_QUERY
-#include "util/db/sqltransaction.h"
+#include "util/assert.h"
 #include "util/logger.h"
 
 namespace {
 mixxx::Logger kLogger("GenreDAO");
+
+#define LOG_FAILED_QUERY(query) qDebug() << __FILE__ << __LINE__ << "FAILED QUERY [" \
+                                         << (query).executedQuery() << "]" << (query).lastError()
 }
 
-// base DAO constructor
-GenreDAO::GenreDAO(DbConnection* dbConnection)
+GenreDAO::GenreDAO()
         : DAO() {
-    setDb(dbConnection);
 }
 
 DbId GenreDAO::addGenre(const QString& name) {
     const QString trimmedName = name.trimmed();
     if (trimmedName.isEmpty()) {
-        return invalidId();
+        return DbId();
     }
 
+    // First Check if genre exists
     Genre existingGenre = getGenreByName(trimmedName);
-    if (existingGenre.id != invalidId()) {
+    if (existingGenre.isValid()) {
         return existingGenre.id;
     }
 
-    QSqlQuery query = SQuery(m_pDb);
+    // Insert new genre
+    QSqlQuery query(database());
     query.prepare(QString("INSERT INTO %1 (%2) VALUES (:name)")
                     .arg(TableGenres, GenresName));
     query.bindValue(":name", trimmedName);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Failed to insert new genre:" << trimmedName;
-        return invalidId();
+        return DbId();
     }
-    return query.lastInsertId().toLongLong();
+
+    return DbId(query.lastInsertId());
 }
 
 Genre GenreDAO::getGenreByName(const QString& name) {
-    QSqlQuery query = SQuery(m_pDb);
-    query.prepare(QString("SELECT %1, %2 FROM %3 WHERE %2 = :name")
+    QSqlQuery query(database());
+    query.prepare(QString("SELECT %1, %2 FROM %3 WHERE %2 = :name COLLATE NOCASE")
                     .arg(GenresId, GenresName, TableGenres));
     query.bindValue(":name", name);
 
@@ -55,31 +57,34 @@ Genre GenreDAO::getGenreByName(const QString& name) {
         }
         return Genre();
     }
-    return Genre{query.value(0).toLongLong(), query.value(1).toString()};
+
+    return Genre{DbId(query.value(0)), query.value(1).toString()};
 }
 
 Genre GenreDAO::getGenreById(DbId id) {
-    if (id == invalidId()) {
+    if (!id.isValid()) {
         return Genre();
     }
-    QSqlQuery query = SQuery(m_pDb);
+
+    QSqlQuery query(database());
     query.prepare(QString("SELECT %1, %2 FROM %3 WHERE %1 = :id")
                     .arg(GenresId, GenresName, TableGenres));
-    query.bindValue(":id", QVariant::fromValue(id));
+    query.bindValue(":id", id.toVariant());
 
     if (!query.exec() || !query.next()) {
         return Genre();
     }
-    return Genre{query.value(0).toLongLong(), query.value(1).toString()};
+
+    return Genre{DbId(query.value(0)), query.value(1).toString()};
 }
 
 QList<Genre> GenreDAO::getGenresForTrack(DbId trackId) {
     QList<Genre> genres;
-    if (trackId == invalidId()) {
+    if (!trackId.isValid()) {
         return genres;
     }
 
-    QSqlQuery query = SQuery(m_pDb);
+    QSqlQuery query(database());
     query.prepare(
             QString("SELECT g.%1, g.%2 FROM %3 AS g "
                     "JOIN %4 AS gt ON g.%1 = gt.%5 "
@@ -91,7 +96,7 @@ QList<Genre> GenreDAO::getGenresForTrack(DbId trackId) {
                             TableGenreTracks,
                             GenreTracksGenreId,
                             GenreTracksTrackId));
-    query.bindValue(":trackId", QVariant::fromValue(trackId));
+    query.bindValue(":trackId", trackId.toVariant());
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Failed to get genres for track id:" << trackId;
@@ -99,56 +104,68 @@ QList<Genre> GenreDAO::getGenresForTrack(DbId trackId) {
     }
 
     while (query.next()) {
-        genres.append(Genre{query.value(0).toLongLong(), query.value(1).toString()});
+        genres.append(Genre{DbId(query.value(0)), query.value(1).toString()});
     }
+
     return genres;
 }
 
 bool GenreDAO::setGenresForTrack(DbId trackId, const QList<DbId>& genreIds) {
-    if (trackId == invalidId()) {
+    if (!trackId.isValid()) {
         return false;
     }
 
-    SqlTransaction transaction(m_pDb);
-    if (!transaction.begin()) {
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.transaction()) {
         kLogger.warning() << "Failed to begin transaction for setGenresForTrack";
         return false;
     }
 
-    QSqlQuery deleteQuery = SQuery(m_pDb);
+    // First remove all existing associations
+    QSqlQuery deleteQuery(database());
     deleteQuery.prepare(QString("DELETE FROM %1 WHERE %2 = :trackId")
                     .arg(TableGenreTracks, GenreTracksTrackId));
-    deleteQuery.bindValue(":trackId", QVariant::fromValue(trackId));
+    deleteQuery.bindValue(":trackId", trackId.toVariant());
+
     if (!deleteQuery.exec()) {
-        LOG_FAILED_QUERY(deleteQuery);
-        transaction.rollback();
+        LOG_FAILED_QUERY(deleteQuery) << "Failed to delete existing genre associations";
+        db.rollback();
         return false;
     }
 
+    // Then add new associations
     if (!genreIds.isEmpty()) {
-        QSqlQuery insertQuery = SQuery(m_pDb);
+        QSqlQuery insertQuery(database());
         insertQuery.prepare(QString("INSERT INTO %1 (%2, %3) VALUES (:trackId, :genreId)")
                         .arg(TableGenreTracks, GenreTracksTrackId, GenreTracksGenreId));
 
         for (const DbId genreId : genreIds) {
-            if (genreId != invalidId()) {
-                insertQuery.bindValue(":trackId", QVariant::fromValue(trackId));
-                insertQuery.bindValue(":genreId", QVariant::fromValue(genreId));
+            if (genreId.isValid()) {
+                insertQuery.bindValue(":trackId", trackId.toVariant());
+                insertQuery.bindValue(":genreId", genreId.toVariant());
                 if (!insertQuery.exec()) {
-                    LOG_FAILED_QUERY(insertQuery);
-                    transaction.rollback();
+                    LOG_FAILED_QUERY(insertQuery) << "Failed to insert genre association";
+                    db.rollback();
                     return false;
                 }
             }
         }
     }
 
-    return transaction.commit();
+    // Transaction commit
+    if (!db.commit()) {
+        kLogger.warning() << "Failed to commit transaction for setGenresForTrack";
+        db.rollback();
+        return false;
+    }
+
+    return true;
 }
 
 QList<Genre> GenreDAO::getAllGenres() {
     QList<Genre> genres;
-    QSqlQuery query = SQuery(m_pDb);
+
+    QSqlQuery query(database());
     query.prepare(QString("SELECT %1, %2 FROM %3 ORDER BY %2")
                     .arg(GenresId, GenresName, TableGenres));
 
@@ -158,19 +175,23 @@ QList<Genre> GenreDAO::getAllGenres() {
     }
 
     while (query.next()) {
-        genres.append(Genre{query.value(0).toLongLong(), query.value(1).toString()});
+        genres.append(Genre{DbId(query.value(0)), query.value(1).toString()});
     }
+
     return genres;
 }
 
 int GenreDAO::deleteUnusedGenres() {
-    const QString sql = QString("DELETE FROM %1 WHERE %2 NOT IN (SELECT DISTINCT %3 FROM %4)")
+    const QString sql = QString(
+            "DELETE FROM %1 WHERE %2 NOT IN "
+            "(SELECT DISTINCT %3 FROM %4)")
                                 .arg(TableGenres, GenresId, GenreTracksGenreId, TableGenreTracks);
 
-    QSqlQuery query = SQuery(m_pDb);
+    QSqlQuery query(database());
     if (!query.exec(sql)) {
         LOG_FAILED_QUERY(query) << "Failed to delete unused genres";
         return -1;
     }
+
     return query.numRowsAffected();
 }
