@@ -57,7 +57,18 @@ Rectangle {
     // Note that naming structures changes across API and devices. This function is experimental and aims to be extended with more logic
     // If not extraction works, it will fallback to return the device name as "card name" (a.k.a a group on the router) and a single channel names "Default"
     function friendlyName(api, rawName) {
+        // "api" value can be found in https://github.com/PortAudio/portaudio
         switch (api) {
+            // TODO unimplemented, need some data or platform to test with
+            // case "JACK Audio Connection Kit":
+            // case "OSS":
+            // case "iOS Audio":
+            // case "Core Audio":
+            // case "AudioIO":
+            // case "AudioScience HPI":
+            // case "PulseAudio":
+            // case "sndio":
+
             case "ALSA": {
                 const hwAlsa = / (\(hw:\d+,\d+\))/;
                 let components = rawName.split(':')
@@ -77,8 +88,8 @@ Rectangle {
                 }
             }
             case "ASIO":
-            case "DirectSound":
-                    case "WASAPI": {
+            case "Windows DirectSound":
+                    case "Windows WASAPI": {
                 const match = /(.+) \((.*)\)( \[Loopback\])?/.exec(rawName)
                     if (match) {
                         const [_, deviceName, cardName, ..._loopback] = match
@@ -86,7 +97,7 @@ Rectangle {
                 }
                 break
             }
-            case "WDM-KS": {
+            case "Windows WDM-KS": {
                 const match = /(.+) \((.*)\)( \[Loopback\])?/.exec(rawName.replace(/\r?\n/g, ''))
                 if (match) {
                     let [_, deviceName, cardName, ..._loopback] = match
