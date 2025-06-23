@@ -248,6 +248,7 @@ TEST_F(LegacyControllerMappingValidationTest, MidiMappingsValid) {
     }
 }
 
+#ifdef __HID__
 TEST_F(LegacyControllerMappingValidationTest, HidMappingsValid) {
     foreach (const MappingInfo& mapping,
             m_pEnumerator->getMappingsByExtension(HID_MAPPING_EXTENSION)) {
@@ -258,7 +259,9 @@ TEST_F(LegacyControllerMappingValidationTest, HidMappingsValid) {
         EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
     }
 }
+#endif
 
+#ifdef __BULK__
 TEST_F(LegacyControllerMappingValidationTest, BulkMappingsValid) {
     foreach (const MappingInfo& mapping,
             m_pEnumerator->getMappingsByExtension(BULK_MAPPING_EXTENSION)) {
@@ -269,3 +272,4 @@ TEST_F(LegacyControllerMappingValidationTest, BulkMappingsValid) {
         EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
     }
 }
+#endif
