@@ -20,6 +20,7 @@ class DirectoryDAO : public DAO {
         Ok,
         AlreadyWatching,
         InvalidOrMissingDirectory,
+        UnreadableDirectory,
         SqlError,
     };
     AddResult addDirectory(const mixxx::FileInfo& newDir) const;
@@ -31,8 +32,14 @@ class DirectoryDAO : public DAO {
     };
     RemoveResult removeDirectory(const mixxx::FileInfo& oldDir) const;
 
+    enum class RelocateResult {
+        Ok,
+        InvalidOrMissingDirectory,
+        UnreadableDirectory,
+        SqlError,
+    };
     // TODO: Move this function out of the DAO
-    QList<RelocatedTrack> relocateDirectory(
+    std::pair<RelocateResult, QList<RelocatedTrack>> relocateDirectory(
             const QString& oldDirectory,
             const QString& newDirectory) const;
 };

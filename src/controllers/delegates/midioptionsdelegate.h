@@ -17,4 +17,7 @@ class MidiOptionsDelegate : public QStyledItemDelegate {
 
     void setModelData(QWidget* editor, QAbstractItemModel* model,
                       const QModelIndex& index) const;
+
+  private slots:
+    void commitAndCloseEditor(int index);
 };

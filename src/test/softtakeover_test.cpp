@@ -1,13 +1,15 @@
+#include "controllers/softtakeover.h"
+
 #include <gtest/gtest.h>
-#include <QtDebug>
+
 #include <QScopedPointer>
+#include <QtDebug>
+#include <memory>
 
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
-#include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"
-#include "util/memory.h"
 #include "util/time.h"
 
 namespace {

@@ -1,5 +1,6 @@
 #include "library/dao/cuedao.h"
 
+#include <QThread>
 #include <QVariant>
 #include <QtDebug>
 

@@ -3,11 +3,11 @@
 #include <tstring.h>
 
 #include <QtDebug>
+#include <memory>
 
 #include "track/bpm.h"
 #include "track/taglib/trackmetadata.h"
 #include "track/taglib/trackmetadata_common.h"
-#include "util/memory.h"
 
 namespace {
 

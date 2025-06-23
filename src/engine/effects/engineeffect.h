@@ -4,12 +4,13 @@
 #include <QSet>
 #include <QString>
 #include <QVector>
+#include <memory>
 
+#include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
@@ -41,7 +42,7 @@ class EngineEffect final : public EffectsRequestHandler {
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const unsigned int numSamples,
-            const unsigned int sampleRate,
+            const mixxx::audio::SampleRate sampleRate,
             const EffectEnableState chainEnableState,
             const GroupFeatureState& groupFeatures);
 

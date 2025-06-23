@@ -16,19 +16,6 @@ constexpr SINT kInvalidChunkIndex = -1;
 
 } // anonymous namespace
 
-// One chunk should contain 1/2 - 1/4th of a second of audio.
-// 8192 frames contain about 170 ms of audio at 48 kHz, which
-// is well above (hopefully) the latencies people are seeing.
-// At 10 ms latency one chunk is enough for 17 callbacks.
-// Additionally the chunk size should be a power of 2 for
-// easier memory alignment.
-// TODO(XXX): The optimum value of the "constant" kFrames depends
-// on the properties of the AudioSource as the remarks above suggest!
-const mixxx::audio::ChannelCount CachingReaderChunk::kChannels = mixxx::kEngineChannelCount;
-const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
-const SINT CachingReaderChunk::kSamples =
-        CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
-
 CachingReaderChunk::CachingReaderChunk(
         mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : m_index(kInvalidChunkIndex),

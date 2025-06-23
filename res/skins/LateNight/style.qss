@@ -88,6 +88,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WTrackPropertyEditor,
 QLineEdit QMenu,
 WCoverArtMenu,
 QLabel#labelRecPrefix,
@@ -174,11 +175,40 @@ WSearchLineEdit::item:selected,
   WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator,
   WEffectChainPresetButton QMenu QCheckBox::indicator {
+    /* Note that the border is added to the base size of 0.7em x 0.7em
+       set in default.qss */
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
     /* remove OS focus indicator */
     outline: none;
+  }
+  WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    width: 13px;
+    height: 13px;
+  }
+  /* disabled menu item and checkbox */
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    background-color: #222;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+    border: 0px;
+    background-color: transparent;
+    image: url(skins:LateNight/palemoon/buttons/btn__search.svg);
+    margin-left: 2px;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    background-color: transparent;
+  }
+
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    image: url(skins:LateNight/palemoon/buttons/btn__search_disabled.svg);
   }
 
 /************** font sizes / alignment ****************************************/
@@ -244,6 +274,7 @@ WBeatSpinBox,
 #BpmTextSmall,
 #FxUnitLabel,
 #SamplerTitle,
+WTrackPropertyEditor,
 WTime,
 WRecordingDuration {
   font-size: 16px;
@@ -300,6 +331,11 @@ WTrackTableViewHeader::item {
     padding: 0 0.15em;
   }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  border: 0px;
+}
 
 #HotcueButton {
   /* ronso0
@@ -445,6 +481,13 @@ WSpinny { /*
 }
 #RateSliderBoxCompactSync {
   margin-left: 5px;
+}
+
+WTrackProperty,
+WTrackProperty[selected="false"] {
+  background-color: transparent;
+  border: 0px solid transparent;
+  border-radius: 1px;
 }
 /************** Decks  ********************************************************/
 

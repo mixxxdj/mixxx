@@ -50,8 +50,8 @@ class MixxxMainWindow : public QMainWindow {
     /// creates the menu_bar and inserts the file Menu
     void createMenuBar();
     void connectMenuBar();
-    void setInhibitScreensaver(mixxx::ScreenSaverPreference inhibit);
-    mixxx::ScreenSaverPreference getInhibitScreensaver();
+    void setInhibitScreensaver(mixxx::preferences::ScreenSaver inhibit);
+    mixxx::preferences::ScreenSaver getInhibitScreensaver();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
@@ -78,11 +78,16 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
+#ifndef __APPLE__
+    /// Update whether the menubar is toggled pressing the Alt key and show/hide
+    /// it accordingly
+    void slotUpdateMenuBarAltKeyConnection();
+#endif
 
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
   private slots:
-    void slotTooltipModeChanged(mixxx::TooltipsPreference tt);
+    void slotTooltipModeChanged(mixxx::preferences::Tooltips tt);
 
   signals:
     void skinLoaded();
@@ -105,6 +110,10 @@ class MixxxMainWindow : public QMainWindow {
     void tryParseAndSetDefaultStyleSheet();
 
     bool confirmExit();
+#ifndef __APPLE__
+    void alwaysHideMenuBarDlg();
+#endif
+
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
     QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
@@ -116,6 +125,14 @@ class MixxxMainWindow : public QMainWindow {
 
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
+#ifndef __APPLE__
+    Qt::WindowStates m_prevState;
+#endif
+
+    parented_ptr<QMessageBox> m_noVinylInputDialog;
+    parented_ptr<QMessageBox> m_noPassthroughInputDialog;
+    parented_ptr<QMessageBox> m_noMicInputDialog;
+    parented_ptr<QMessageBox> m_noAuxInputDialog;
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
@@ -125,6 +142,7 @@ class MixxxMainWindow : public QMainWindow {
 #ifdef __LINUX__
     const bool m_supportsGlobalMenuBar;
 #endif
+    bool m_inRebootMixxxView;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
@@ -136,9 +154,9 @@ class MixxxMainWindow : public QMainWindow {
     std::unique_ptr<mixxx::LibraryExporter> m_pLibraryExporter;
 #endif
 
-    mixxx::TooltipsPreference m_toolTipsCfg;
+    mixxx::preferences::Tooltips m_toolTipsCfg;
 
-    mixxx::ScreenSaverPreference m_inhibitScreensaver;
+    mixxx::preferences::ScreenSaver m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
 };

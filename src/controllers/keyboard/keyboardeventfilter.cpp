@@ -11,6 +11,9 @@ KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfi
         QObject* parent,
         const char* name)
         : QObject(parent),
+#ifndef __APPLE__
+          m_altPressedWithoutKey(false),
+#endif
           m_pKbdConfigObject(nullptr) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
@@ -42,6 +45,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         QKeySequence ks = getKeySeq(ke);
         if (!ks.isEmpty()) {
+#ifndef __APPLE__
+            m_altPressedWithoutKey = false;
+#endif
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
@@ -68,9 +74,32 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 }
             }
             return result;
+#ifndef __APPLE__
+        } else {
+            // getKeySeq() returns empty string if the press was a modifier only
+            if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
+                // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
+                // Alt modifier is sufficient.
+                // Activate this in case there are issues on Windows
+                // || ke->key() == Qt::Key_Alt) {
+                m_altPressedWithoutKey = true;
+            }
+#endif
         }
     } else if (e->type() == QEvent::KeyRelease) {
         QKeyEvent* ke = (QKeyEvent*)e;
+
+#ifndef __APPLE__
+        // QAction hotkeys are consumed by the object that created them, e.g.
+        // WMainMenuBar, so we will not receive menu hotkey keypress events here.
+        // However, it may happen that we receive a RELEASE event for an Alt+key
+        // combo for which no KEYPRESS was registered.
+        // So react only to Alt-only releases.
+        if (m_altPressedWithoutKey && ke->key() == Qt::Key_Alt) {
+            emit altPressedWithoutKeys();
+        }
+        m_altPressedWithoutKey = false;
+#endif
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
@@ -120,28 +149,36 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
 // static
 QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
-    if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
-        // Do not act on Modifier only, avoid returning "khmer vowel sign ie (U+17C0)"
+    if ((e->key() >= Qt::Key_Shift && e->key() <= Qt::Key_Alt) ||
+            e->key() == Qt::Key_AltGr) {
+        // Do not act on Modifier only, Shift, Ctrl, Meta, Alt and AltGr
+        // avoid returning "khmer vowel sign ie (U+17C0)"
         return {};
     }
 
+    // Note: test for individual modifiers, don't use e->modifiers() for composing
+    // the QKeySequence because on macOS arrow key events are sent with the Num
+    // modifier for some reason. This result in a key sequence for which there
+    // would be no match in our keyseq/control hash.
+    // See https://github.com/mixxxdj/mixxx/issues/13305
+    QString modseq;
+    if (e->modifiers() & Qt::ShiftModifier) {
+        modseq += "Shift+";
+    }
+    if (e->modifiers() & Qt::ControlModifier) {
+        modseq += "Ctrl+";
+    }
+    if (e->modifiers() & Qt::AltModifier) {
+        modseq += "Alt+";
+    }
+    if (e->modifiers() & Qt::MetaModifier) {
+        modseq += "Meta+";
+    }
+
+    const QString keyseq = QKeySequence(e->key()).toString();
+    const QKeySequence k = QKeySequence(modseq + keyseq);
+
     if (CmdlineArgs::Instance().getDeveloper()) {
-        QString modseq;
-        QKeySequence k;
-        if (e->modifiers() & Qt::ShiftModifier) {
-            modseq += "Shift+";
-        }
-        if (e->modifiers() & Qt::ControlModifier) {
-            modseq += "Ctrl+";
-        }
-        if (e->modifiers() & Qt::AltModifier) {
-            modseq += "Alt+";
-        }
-        if (e->modifiers() & Qt::MetaModifier) {
-            modseq += "Meta+";
-        }
-        QString keyseq = QKeySequence(e->key()).toString();
-        k = QKeySequence(modseq + keyseq);
         if (e->type() == QEvent::KeyPress) {
             qDebug() << "keyboard press: " << k.toString();
         } else if (e->type() == QEvent::KeyRelease) {
@@ -149,11 +186,7 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         }
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    return QKeySequence(e->modifiers() | e->key());
-#else
-    return QKeySequence(e->modifiers() + e->key());
-#endif
+    return k;
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {

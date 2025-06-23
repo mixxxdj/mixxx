@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 Findhidapi
 ----------
@@ -42,6 +37,8 @@ The following cache variables may also be set:
   The path to the hidapi-lbusb library.
 
 #]=======================================================================]
+
+include(IsStaticLibrary)
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
@@ -121,6 +118,23 @@ if(hidapi_FOUND)
          INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
          INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
       )
+
+      find_package(Libudev)
+      if(Libudev_FOUND)
+        is_static_library(hidapi_IS_STATIC hidapi::hidapi)
+        if(hidapi_IS_STATIC)
+          set_property(TARGET hidapi::hidapi APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            Libudev::Libudev
+          )
+        endif()
+
+        is_static_library(hidapi-hidraw_IS_STATIC hidapi::hidraw)
+        if(hidapi-hidraw_IS_STATIC)
+          set_property(TARGET hidapi::hidraw APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            Libudev::Libudev
+          )
+        endif()
+      endif()
     endif()
   endif()
 endif()

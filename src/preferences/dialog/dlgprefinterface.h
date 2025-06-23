@@ -44,7 +44,8 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   signals:
     void reloadUserInterface();
-    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+    void menuBarAutoHideChanged();
+    void tooltipModeChanged(mixxx::preferences::Tooltips tooltipMode);
 
   private:
     void notifyRebootNecessary();
@@ -68,9 +69,10 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_colorScheme;
     QString m_colorSchemeOnUpdate;
     QString m_localeOnUpdate;
-    mixxx::TooltipsPreference m_tooltipMode;
+    mixxx::preferences::MultiSamplingMode m_multiSampling;
+    mixxx::preferences::Tooltips m_tooltipMode;
     double m_dScaleFactor;
     double m_minScaleFactor;
     double m_dDevicePixelRatio;
-    mixxx::ScreenSaverPreference m_screensaverMode;
+    mixxx::preferences::ScreenSaver m_screensaverMode;
 };

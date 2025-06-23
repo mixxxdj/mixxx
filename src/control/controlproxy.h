@@ -6,7 +6,6 @@
 
 #include "control/control.h"
 #include "preferences/usersettings.h"
-#include "util/platform.h"
 
 //// This class is the successor of ControlObjectThread. It should be used for
 /// new code to avoid unnecessary locking during send if no slot is connected.
@@ -59,7 +58,7 @@ class ControlProxy : public QObject {
             break;
         case Qt::BlockingQueuedConnection:
             // We must not block the signal source by a blocking connection
-            M_FALLTHROUGH_INTENDED;
+            [[fallthrough]];
         default:
             DEBUG_ASSERT(false);
             return false;

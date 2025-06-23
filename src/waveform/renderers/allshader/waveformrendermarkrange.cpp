@@ -97,7 +97,7 @@ void allshader::WaveformRenderMarkRange::paintGL() {
         }
 
         QColor color = markRange.enabled() ? markRange.m_activeColor : markRange.m_disabledColor;
-        color.setAlphaF(0.3);
+        color.setAlphaF(0.3f);
 
         fillRect(QRectF(startPosition, 0, span, m_waveformRenderer->getBreadth()), color);
     }

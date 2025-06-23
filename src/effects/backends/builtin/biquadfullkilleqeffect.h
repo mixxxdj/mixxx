@@ -1,11 +1,12 @@
 #pragma once
 
+#include <memory>
+
 #include "control/pollingcontrolproxy.h"
 #include "effects/backends/builtin/lvmixeqbase.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "engine/filters/enginefilterbiquad1.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 

@@ -31,15 +31,18 @@
                 <Layout>stacked</Layout>
                 <Size>57f,-1me</Size>
                 <Children>
-                  <!-- In order to make the bpm display tappable, we use an old-style
-                  widget group and put the bpm pushbutton on top of the display. -->
+                  <!-- invisible Tempo/BPM tap button on top of BPM display -->
                   <PushButton>
-                    <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                    <TooltipId>tempo_tap_bpm_tap_visual_bpm</TooltipId>
                     <ObjectName>BpmTap</ObjectName>
                     <Size>57f,-1me</Size>
                     <NumberStates>1</NumberStates>
                     <Connection>
+                      <ConfigKey><Variable name="Group"/>,tempo_tap</ConfigKey>
+                    </Connection>
+                    <Connection>
                       <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
                   <WidgetGroup><!-- BPM + rate -->
@@ -51,6 +54,7 @@
                         <ObjectName>BpmText</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>57f,22f</Size>
+                        <Alignment>center</Alignment>
                         <NumberOfDigits>2</NumberOfDigits>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
@@ -59,6 +63,7 @@
                       <NumberRate>
                         <TooltipId>rate_display</TooltipId>
                         <ObjectName>RateText</ObjectName>
+                        <Alignment>center</Alignment>
                         <Channel><Variable name="ChanNum" /></Channel>
                         <NumberOfDigits>2</NumberOfDigits>
                       </NumberRate>

@@ -54,12 +54,27 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
             this, &DlgPrefKey::pluginSelected);
     setScrollSafeGuard(plugincombo);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(banalyzerenabled, &QCheckBox::checkStateChanged,
+#else
     connect(banalyzerenabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::analyzerEnabled);
+#endif
+            this,
+            &DlgPrefKey::analyzerEnabled);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(bfastAnalysisEnabled, &QCheckBox::checkStateChanged,
+#else
     connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::fastAnalysisEnabled);
+#endif
+            this,
+            &DlgPrefKey::fastAnalysisEnabled);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(breanalyzeEnabled, &QCheckBox::checkStateChanged,
+#else
     connect(breanalyzeEnabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::reanalyzeEnabled);
+#endif
+            this,
+            &DlgPrefKey::reanalyzeEnabled);
 
     connect(radioNotationOpenKey, &QRadioButton::toggled,
             this, &DlgPrefKey::setNotationOpenKey);
@@ -90,10 +105,10 @@ void DlgPrefKey::loadSettings() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    QString notation_name = m_keySettings.getKeyNotation();
-    KeyUtils::KeyNotation notation_type;
+    KeyUtils::KeyNotation notation_type =
+            KeyUtils::keyNotationFromString(m_keySettings.getKeyNotation());
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
-    if (notation_name == KEY_NOTATION_CUSTOM) {
+    if (notation_type == KeyUtils::KeyNotation::Custom) {
         radioNotationCustom->setChecked(true);
         // Read the custom notation from the config and store it in a temp QMap
         for (auto it = m_keyLineEdits.constBegin();
@@ -101,20 +116,15 @@ void DlgPrefKey::loadSettings() {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
             notation[it.key()] = it.value()->text();
         }
-        notation_type = KeyUtils::KeyNotation::Custom;
     } else {
-        if (notation_name == KEY_NOTATION_LANCELOT) {
+        if (notation_type == KeyUtils::KeyNotation::Lancelot) {
             radioNotationLancelot->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::Lancelot;
-        } else if (notation_name == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::LancelotAndTraditional) {
             radioNotationLancelotAndTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::LancelotAndTraditional;
-        } else if (notation_name == KEY_NOTATION_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::Traditional) {
             radioNotationTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::Traditional;
-        } else if (notation_name == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::OpenKeyAndTraditional) {
             radioNotationOpenKeyAndTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::OpenKeyAndTraditional;
         } else { // KEY_NOTATION_OPEN_KEY and unknown names
             radioNotationOpenKey->setChecked(true);
             notation_type = KeyUtils::KeyNotation::OpenKey;
@@ -162,9 +172,7 @@ void DlgPrefKey::slotResetToDefaults() {
         radioNotationOpenKey->setChecked(true);
         notation_type = KeyUtils::KeyNotation::OpenKey;
     }
-    setNotation(notation_type);
-
-    slotUpdate();
+    setNotation(notation_type); // calls slotUpdate()
 }
 
 void DlgPrefKey::pluginSelected(int i) {
@@ -175,18 +183,33 @@ void DlgPrefKey::pluginSelected(int i) {
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::analyzerEnabled(Qt::CheckState state) {
+    m_bAnalyzerEnabled = (state == Qt::Checked);
+#else
 void DlgPrefKey::analyzerEnabled(int i) {
     m_bAnalyzerEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::fastAnalysisEnabled(Qt::CheckState state) {
+    m_bFastAnalysisEnabled = (state == Qt::Checked);
+#else
 void DlgPrefKey::fastAnalysisEnabled(int i) {
     m_bFastAnalysisEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
-void DlgPrefKey::reanalyzeEnabled(int i){
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::reanalyzeEnabled(Qt::CheckState state) {
+    m_bReanalyzeEnabled = (state == Qt::Checked);
+#else
+void DlgPrefKey::reanalyzeEnabled(int i) {
     m_bReanalyzeEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 

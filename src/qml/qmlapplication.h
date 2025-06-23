@@ -1,11 +1,10 @@
 #pragma once
 
 #include <QApplication>
-#include <QFileSystemWatcher>
 #include <QQmlApplicationEngine>
 
 #include "coreservices.h"
-#include "preferences/dialog/dlgpreferences.h"
+#include "qmlautoreload.h"
 
 namespace mixxx {
 namespace qml {
@@ -16,7 +15,7 @@ class QmlApplication : public QObject {
     QmlApplication(
             QApplication* app,
             std::shared_ptr<CoreServices> pCoreServices);
-    ~QmlApplication() override = default;
+    ~QmlApplication() override;
 
   public slots:
     void loadQml(const QString& path);
@@ -27,8 +26,7 @@ class QmlApplication : public QObject {
     QString m_mainFilePath;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
-    QFileSystemWatcher m_fileWatcher;
-    std::shared_ptr<DlgPreferences> m_pDlgPreferences;
+    QmlAutoReload m_autoReload;
 };
 
 } // namespace qml

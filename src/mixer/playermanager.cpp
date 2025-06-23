@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -105,6 +106,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
+          m_pLibrary(nullptr),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
@@ -435,12 +437,19 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioPathType::Deck, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioPathType::Deck,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    deckIndex),
+            m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-    m_pSoundManager->registerInput(
-            AudioInput(AudioPathType::VinylControl, 0, 2, deckIndex), pEngineDeck);
+    m_pSoundManager->registerInput(AudioInput(AudioPathType::VinylControl,
+                                           0,
+                                           mixxx::audio::ChannelCount::stereo(),
+                                           deckIndex),
+            pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);
@@ -688,6 +697,16 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
             // so clone another playing deck instead of loading the selected track
             clone = true;
         }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
+        }
     }
 
     if (clone) {
@@ -709,10 +728,8 @@ void PlayerManager::slotLoadLocationToPlayer(
 void PlayerManager::slotLoadLocationToPlayerMaybePlay(
         const QString& location, const QString& group) {
     bool play = false;
-    LoadWhenDeckPlaying loadWhenDeckPlaying =
-            static_cast<LoadWhenDeckPlaying>(
-                    m_pConfig->getValue(kConfigKeyLoadWhenDeckPlaying,
-                            static_cast<int>(kDefaultLoadWhenDeckPlaying)));
+    LoadWhenDeckPlaying loadWhenDeckPlaying = m_pConfig->getValue(
+            kConfigKeyLoadWhenDeckPlaying, kDefaultLoadWhenDeckPlaying);
     switch (loadWhenDeckPlaying) {
     case LoadWhenDeckPlaying::AllowButStopDeck:
     case LoadWhenDeckPlaying::Reject:

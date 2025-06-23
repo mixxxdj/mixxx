@@ -85,15 +85,11 @@ class TrackCollection : public QObject,
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
-
   signals:
     // Forwarded signals from LibraryScanner
     void scanTrackAdded(TrackPointer pTrack);
 
     // Forwarded signals from TrackDAO
-    void trackClean(TrackId trackId);
     void trackDirty(TrackId trackId);
     void tracksAdded(const QSet<TrackId>& trackIds);
     void tracksChanged(const QSet<TrackId>& trackIds);
@@ -132,6 +128,9 @@ class TrackCollection : public QObject,
     QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& trackFiles,
             TrackDAO::ResolveTrackIdFlags flags);
+    QList<TrackId> resolveTrackIds(
+            const QList<QUrl>& urls,
+            TrackDAO::ResolveTrackIdFlags flags);
     QList<TrackId> resolveTrackIdsFromUrls(
             const QList<QUrl>& urls,
             bool addMissing);
@@ -159,10 +158,9 @@ class TrackCollection : public QObject,
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
 
-    bool addDirectory(const mixxx::FileInfo& rootDir);
-    bool removeDirectory(const mixxx::FileInfo& rootDir);
-
-    void relocateDirectory(const QString& oldDir, const QString& newDir);
+    DirectoryDAO::AddResult addDirectory(const mixxx::FileInfo& rootDir);
+    DirectoryDAO::RemoveResult removeDirectory(const mixxx::FileInfo& rootDir);
+    DirectoryDAO::RelocateResult relocateDirectory(const QString& oldDir, const QString& newDir);
 
     bool saveTrack(Track* pTrack) const;
 

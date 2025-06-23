@@ -197,13 +197,18 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         }
 
         const MidiInputMapping& mapping = m_midiInputMappings.at(row);
+
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);
             case MIDI_COLUMN_OPCODE:
                 return MidiUtils::opCodeValue(MidiUtils::opCodeFromStatus(mapping.key.status));
             case MIDI_COLUMN_CONTROL:
+                if (MidiUtils::isMessageTwoBytes(mapping.key.status)) {
                 return mapping.key.control;
+                } else {
+                return QVariant();
+                }
             case MIDI_COLUMN_OPTIONS:
                 // UserRole is used for sorting.
                 if (role == Qt::UserRole) {
@@ -211,14 +216,24 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                 }
                 return QVariant::fromValue(mapping.options);
             case MIDI_COLUMN_ACTION: {
+                const auto* const pControl = std::get_if<ConfigKey>(&mapping.control);
+                if (!pControl) {
+                    const auto* const ppJSValue =
+                            std::get_if<std::shared_ptr<QJSValue>>(
+                                    &mapping.control);
+                    if (ppJSValue && *ppJSValue) {
+                    return QVariant::fromValue((*ppJSValue)->toString());
+                    }
+                    return QVariant();
+                }
                 if (role == Qt::UserRole) { // sort by displaystring
                     QStyledItemDelegate* del = getDelegateForIndex(index);
                     VERIFY_OR_DEBUG_ASSERT(del) {
-                    return QString();
+                    return QVariant();
                     }
-                    return del->displayText(QVariant::fromValue(mapping.control), QLocale());
+                    return del->displayText(QVariant::fromValue(*pControl), QLocale());
                 }
-                return QVariant::fromValue(mapping.control);
+                return QVariant::fromValue(*pControl);
             }
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
@@ -237,6 +252,10 @@ QString ControllerInputMappingTableModel::getDisplayString(const QModelIndex& in
     int row = index.row();
     int column = index.column();
     const MidiInputMapping& mapping = m_midiInputMappings.at(row);
+
+    if (!std::holds_alternative<ConfigKey>(mapping.control)) {
+        return QString();
+    }
 
     switch (column) {
     case MIDI_COLUMN_COMMENT: {
@@ -257,13 +276,16 @@ QString ControllerInputMappingTableModel::getDisplayString(const QModelIndex& in
         VERIFY_OR_DEBUG_ASSERT(del) {
             return QString();
         }
+        QString displayText;
         // Return both the raw ConfigKey group + key and the translated display
         // string and the translated description from ControlPickerMenu.
         // Note: this may contain duplicate key strings in case this is an
         // untranslated script control
-        return data(index, Qt::UserRole).toString() + QStringLiteral(" ") +
-                del->displayText(
-                        QVariant::fromValue(mapping.control), QLocale());
+        const auto* const pControl = std::get_if<ConfigKey>(&mapping.control);
+        if (pControl) {
+            displayText = pControl->group + QChar(',') + pControl->item + QChar(' ');
+        }
+        return displayText + data(index, Qt::UserRole).toString();
     }
     default:
         return QString();

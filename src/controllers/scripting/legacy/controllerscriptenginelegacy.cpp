@@ -91,12 +91,24 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
 }
 
 void ControllerScriptEngineLegacy::setScriptFiles(
-        const QList<LegacyControllerMapping::ScriptFileInfo>& scripts) {
+        QList<LegacyControllerMapping::ScriptFileInfo> scripts) {
     const QStringList paths = m_fileWatcher.files();
     if (!paths.isEmpty()) {
         m_fileWatcher.removePaths(paths);
     }
-    m_scriptFiles = scripts;
+    m_scriptFiles = std::move(scripts);
+}
+
+void ControllerScriptEngineLegacy::setSettings(
+        const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings) {
+    m_settings.clear();
+    for (const auto& pSetting : std::as_const(settings)) {
+        QString name = pSetting->variableName();
+        VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
+            continue;
+        }
+        m_settings[name] = pSetting->value();
+    }
 }
 
 bool ControllerScriptEngineLegacy::initialize() {
@@ -123,6 +135,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
             new ControllerScriptInterfaceLegacy(this, m_logger);
+
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
@@ -192,8 +205,8 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
             static_cast<uint>(data.size()),
     };
 
-    for (const QJSValue& function : std::as_const(m_incomingDataFunctions)) {
-        ControllerScriptEngineBase::executeFunction(function, args);
+    for (auto&& function : m_incomingDataFunctions) {
+        ControllerScriptEngineBase::executeFunction(&function, args);
     }
 
     return true;
@@ -245,8 +258,9 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
         // issue). Translating this will help users to fix the issue even
         // when they don't speak english.
         props->setDetails(tr("File:") + QStringLiteral(" ") + filename +
-                QStringLiteral("\n") + tr("Error:") + QStringLiteral(" ") +
-                input.errorString());
+                        QStringLiteral("\n") + tr("Error:") + QStringLiteral(" ") +
+                        input.errorString(),
+                true /* use monospace font / expand Details box */);
 
         // Ask above layer to display the dialog & handle user response
         ErrorDialogHandler::instance()->requestErrorDialog(props);

@@ -16,11 +16,15 @@ class QOpenGLTexture;
 
 namespace allshader {
 class WaveformRendererPreroll;
+class WaveformRendererSlipPreroll;
 }
 
-class allshader::WaveformRendererPreroll final : public allshader::WaveformRenderer {
+class allshader::WaveformRendererPreroll : public allshader::WaveformRenderer {
   public:
-    explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererPreroll(
+            WaveformWidgetRenderer* waveformWidgetRenderer,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play);
     ~WaveformRendererPreroll() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
@@ -35,6 +39,8 @@ class allshader::WaveformRendererPreroll final : public allshader::WaveformRende
     float m_markerBreadth{};
     float m_markerLength{};
     OpenGLTexture2D m_texture;
+
+    bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };

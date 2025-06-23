@@ -63,6 +63,10 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flag
     return nullptr;
 }
 
+bool ControlObject::exists(const ConfigKey& key) {
+    return !ControlDoublePrivate::getControl(key, ControlFlag::NoWarnIfMissing).isNull();
+}
+
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     m_pControl->setValueFromMidi(o, v);
 }

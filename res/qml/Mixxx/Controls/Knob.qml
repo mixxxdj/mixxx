@@ -63,6 +63,13 @@ Item {
         anchors.fill: parent
         antialiasing: true
         visible: root.arc
+        // Enable smooth curves. For QtQuick Shapes, this currently only works
+        // by enabling multisampling, so we use 4xMSAA here.
+        //
+        // See https://www.qt.io/blog/2017/07/07/let-there-be-shapes for details.
+        property int multiSamplingLevel: Mixxx.Config.getMultiSamplingLevel()
+        layer.enabled: multiSamplingLevel > 1
+        layer.samples: multiSamplingLevel
 
         ShapePath {
             id: arcPath

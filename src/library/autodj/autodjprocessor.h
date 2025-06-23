@@ -155,7 +155,7 @@ class AutoDJProcessor : public QObject {
         ADJ_IS_INACTIVE,
         ADJ_QUEUE_EMPTY,
         ADJ_BOTH_DECKS_PLAYING,
-        ADJ_DECKS_3_4_PLAYING,
+        ADJ_UNUSED_DECK_PLAYING,
         ADJ_NOT_TWO_DECKS
     };
 
@@ -219,6 +219,7 @@ class AutoDJProcessor : public QObject {
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
+    void playlistFirstTrackChanged();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);

@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindVorbis
 ----------
@@ -42,6 +37,8 @@ The following cache variables may also be set:
   Libraries needed to link to vorbis.
 
 #]=======================================================================]
+
+include(IsStaticLibrary)
 
 find_path(Vorbis_vorbis_INCLUDE_DIR
   NAMES vorbis/codec.h
@@ -101,3 +98,15 @@ find_package_handle_standard_args(Vorbis
     REQUIRED_VARS Vorbis_vorbis_INCLUDE_DIR Vorbis_vorbis_LIBRARY
     HANDLE_COMPONENTS
 )
+
+if(Vorbis_vorbis_FOUND)
+  is_static_library(Vorbis_vorbis_IS_STATIC Vorbis::vorbis)
+  if(Vorbis_vorbis_IS_STATIC)
+    find_package(Ogg)
+    if(Ogg_FOUND)
+      set_property(TARGET Vorbis::vorbis APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        Ogg::ogg
+      )
+    endif()
+  endif()
+endif()

@@ -1,26 +1,49 @@
 #pragma once
 
-#include <QDebug>
-#include <QDir>
-#include <QHash>
-#include <QList>
-#include <QSharedPointer>
-#include <QString>
-#include <memory>
+#include <util/assert.h>
 
+#include <QDir>
+#include <QFileInfo>
+
+#include "controllers/legacycontrollersettings.h"
+#include "controllers/legacycontrollersettingslayout.h"
 #include "defs_urls.h"
+#include "preferences/usersettings.h"
 
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
 class LegacyControllerMapping {
-  public:
+  protected:
     LegacyControllerMapping()
-            : m_bDirty(false) {
+            : m_bDirty(false),
+              m_deviceDirection(DeviceDirection::Bidirectionnal) {
     }
+    LegacyControllerMapping(const LegacyControllerMapping& other)
+            : m_productMatches(other.m_productMatches),
+              m_bDirty(other.m_bDirty),
+              m_deviceId(other.m_deviceId),
+              m_filePath(other.m_filePath),
+              m_name(other.m_name),
+              m_author(other.m_author),
+              m_description(other.m_description),
+              m_forumlink(other.m_forumlink),
+              m_manualPage(other.m_manualPage),
+              m_wikilink(other.m_wikilink),
+              m_schemaVersion(other.m_schemaVersion),
+              m_mixxxVersion(other.m_mixxxVersion),
+              m_settings(other.m_settings),
+              m_settingsLayout(other.m_settingsLayout.get() != nullptr
+                              ? other.m_settingsLayout->clone()
+                              : nullptr),
+              m_scripts(other.m_scripts),
+              m_deviceDirection(other.m_deviceDirection) {
+    }
+    LegacyControllerMapping& operator=(const LegacyControllerMapping&) = delete;
+    LegacyControllerMapping(LegacyControllerMapping&&) = delete;
+    LegacyControllerMapping& operator=(LegacyControllerMapping&&) = delete;
     virtual ~LegacyControllerMapping() = default;
 
-    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
-
+  public:
     struct ScriptFileInfo {
         ScriptFileInfo()
                 : builtin(false) {
@@ -31,6 +54,19 @@ class LegacyControllerMapping {
         QFileInfo file;
         bool builtin;
     };
+
+    // TODO (xxx): this is a temporary solution to address devices that don't
+    // support and need bidirectional communication and lead to
+    // polling/performance issues. The proper solution would involve refactoring
+    // the bulk integration to perform a better endpoint capability discovery
+    // and let Mixxx decide communication direction depending of the hardware
+    // capabilities
+    enum class DeviceDirection : uint8_t {
+        Outgoing = 0x1,
+        Incoming = 0x2,
+        Bidirectionnal = 0x3
+    };
+    Q_DECLARE_FLAGS(DeviceDirections, DeviceDirection)
 
     /// Adds a script file to the list of controller scripts for this mapping.
     /// @param filename Name of the script file to add
@@ -50,50 +86,106 @@ class LegacyControllerMapping {
         setDirty(true);
     }
 
+    /// Adds a setting option to the list of setting option for this mapping.
+    /// The option added must be a valid option.
+    /// @param option The option to add
+    /// @return whether or not the setting was added successfully.
+    bool addSetting(std::shared_ptr<AbstractLegacyControllerSetting> option) {
+        VERIFY_OR_DEBUG_ASSERT(option->valid()) {
+            return false;
+        }
+        for (const auto& setting : std::as_const(m_settings)) {
+            if (*setting == *option) {
+                qWarning() << "Mapping setting duplication detected for "
+                              "setting with name"
+                           << option->variableName()
+                           << ". Keeping the first occurrence.";
+                return false;
+            }
+        }
+        m_settings.append(option);
+        return true;
+    }
+
+    /// @brief Set a setting layout as they should be perceived when edited in
+    /// the preference dialog.
+    /// @param layout The layout root element
+    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement>&& layout) {
+        VERIFY_OR_DEBUG_ASSERT(layout.get()) {
+            return;
+        }
+        m_settingsLayout = std::move(layout);
+    }
+
     const QList<ScriptFileInfo>& getScriptFiles() const {
         return m_scripts;
     }
 
-    inline void setDirty(bool bDirty) {
+    const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
+        return m_settings;
+    }
+
+    bool hasDirtySettings() const {
+        for (const auto& setting : m_settings) {
+            if (setting->isDirty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    LegacyControllerSettingsLayoutElement* getSettingsLayout() {
+        return m_settingsLayout.get();
+    }
+
+    void setDeviceDirection(DeviceDirections aDeviceDirection) {
+        m_deviceDirection = aDeviceDirection;
+    }
+
+    DeviceDirections getDeviceDirection() const {
+        return m_deviceDirection;
+    }
+
+    void setDirty(bool bDirty) {
         m_bDirty = bDirty;
     }
 
-    inline bool isDirty() const {
+    bool isDirty() const {
         return m_bDirty;
     }
 
-    inline void setDeviceId(const QString& id) {
+    void setDeviceId(const QString& id) {
         m_deviceId = id;
         setDirty(true);
     }
 
-    inline QString deviceId() const {
+    QString deviceId() const {
         return m_deviceId;
     }
 
-    inline void setFilePath(const QString& filePath) {
+    void setFilePath(const QString& filePath) {
         m_filePath = filePath;
         setDirty(true);
     }
 
-    inline QString filePath() const {
+    QString filePath() const {
         return m_filePath;
     }
 
-    inline QDir dirPath() const {
+    QDir dirPath() const {
         return QFileInfo(filePath()).absoluteDir();
     }
 
-    inline void setName(const QString& name) {
+    void setName(const QString& name) {
         m_name = name;
         setDirty(true);
     }
 
-    inline QString name() const {
+    QString name() const {
         return m_name;
     }
 
-    inline void setAuthor(const QString& author) {
+    void setAuthor(const QString& author) {
         m_author = author;
         setDirty(true);
     }
@@ -174,6 +266,12 @@ class LegacyControllerMapping {
 
     virtual bool isMappable() const = 0;
 
+    void loadSettings(UserSettingsPointer pConfig,
+            const QString& controllerName) const;
+    void saveSettings(UserSettingsPointer pConfig,
+            const QString& controllerName) const;
+    void resetSettings();
+
     // Optional list of controller device match details
     QList<QHash<QString, QString>> m_productMatches;
 
@@ -191,5 +289,8 @@ class LegacyControllerMapping {
     QString m_schemaVersion;
     QString m_mixxxVersion;
 
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
+    std::unique_ptr<LegacyControllerSettingsLayoutElement> m_settingsLayout;
     QList<ScriptFileInfo> m_scripts;
+    DeviceDirections m_deviceDirection;
 };

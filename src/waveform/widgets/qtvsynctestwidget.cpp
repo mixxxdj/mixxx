@@ -1,6 +1,5 @@
 #include "waveform/widgets/qtvsynctestwidget.h"
 
-#include <QGLContext>
 #include <QPainter>
 #include <QtDebug>
 

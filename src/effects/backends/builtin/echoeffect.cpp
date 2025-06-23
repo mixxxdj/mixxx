@@ -132,7 +132,7 @@ void EchoEffect::processChannel(
     const auto pingpong_frac = static_cast<CSAMPLE_GAIN>(m_pPingPongParameter->value());
 
     int delay_frames;
-    if (groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.beat_length.has_value()) {
         // period is a number of beats
         if (m_pQuantizeParameter->toBool()) {
             period = std::max(roundToFraction(period, 4), 1 / 8.0);
@@ -142,8 +142,7 @@ void EchoEffect::processChannel(
         } else if (period < 1 / 8.0) {
             period = 1 / 8.0;
         }
-        delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
-                engineParameters.sampleRate());
+        delay_frames = static_cast<int>(period * groupFeatures.beat_length->frames);
     } else {
         // period is a number of seconds
         period = std::max(period, 1 / 8.0);

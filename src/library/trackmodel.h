@@ -4,7 +4,6 @@
 #include <QList>
 #include <QUrl>
 #include <QVector>
-#include <QtSql>
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
@@ -15,8 +14,8 @@
 /// which display track lists.
 class TrackModel {
   public:
-    static const int kHeaderWidthRole = Qt::UserRole + 0;
-    static const int kHeaderNameRole = Qt::UserRole + 1;
+    static constexpr int kHeaderWidthRole = Qt::UserRole + 0;
+    static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
 
@@ -52,6 +51,8 @@ class TrackModel {
         RemoveCrate = 1u << 15u,
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
+        Properties = 1u << 18u,
+        Sorting = 1u << 19u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -128,6 +129,15 @@ class TrackModel {
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
+    virtual int getTrackRowByPosition(int position) const {
+        Q_UNUSED(position);
+        return -1;
+    }
+
+    virtual const QList<int> getSelectedPositions(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+        return {};
+    }
 
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
@@ -139,6 +149,16 @@ class TrackModel {
 
     virtual void removeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
+    }
+    virtual void cutTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
+    virtual void copyTracks(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+    }
+    virtual QList<int> pasteTracks(const QModelIndex& index) {
+        Q_UNUSED(index);
+        return QList<int>();
     }
     virtual void hideTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
@@ -152,6 +172,14 @@ class TrackModel {
     virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
         Q_UNUSED(index);
         Q_UNUSED(locations);
+        return 0;
+    }
+    virtual int addTracksWithTrackIds(const QModelIndex& index,
+            const QList<TrackId>& tracks,
+            int* pOutInsertionPos) {
+        Q_UNUSED(index);
+        Q_UNUSED(tracks);
+        Q_UNUSED(pOutInsertionPos);
         return 0;
     }
     virtual void moveTrack(const QModelIndex& sourceIndex,
@@ -217,7 +245,6 @@ class TrackModel {
 
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key
-    /// @param baseOnly return only a identifier for the whole subsystem
     virtual QString modelKey(bool noSearch) const = 0;
 
     virtual bool getRequireConfirmationToHideRemoveTracks() {

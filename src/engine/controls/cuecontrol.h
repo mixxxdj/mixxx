@@ -35,6 +35,7 @@ enum class SeekOnLoadMode {
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
     IntroStart = 3, // Use intro start cue point
+    FirstHotcue = 4,
 };
 
 /// Used for requesting a specific hotcue type when activating/setting a
@@ -90,6 +91,7 @@ class HotcueControl : public QObject {
     mixxx::audio::FramePos getEndPosition() const;
     void setEndPosition(mixxx::audio::FramePos endPosition);
 
+    mixxx::CueType getType() const;
     void setType(mixxx::CueType type);
 
     void setStatus(HotcueControl::Status status);
@@ -213,6 +215,7 @@ class CueControl : public EngineControl {
 
   private slots:
     void quantizeChanged(double v);
+    void slotCueModeChanged(double v);
 
     void cueUpdated();
     void trackAnalyzed();
@@ -306,8 +309,8 @@ class CueControl : public EngineControl {
     QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
-    ControlObject* m_pCuePoint;
-    ControlObject* m_pCueMode;
+    std::unique_ptr<ControlObject> m_pCuePoint;
+    std::unique_ptr<ControlObject> m_pCueMode;
     std::unique_ptr<ControlPushButton> m_pCueSet;
     std::unique_ptr<ControlPushButton> m_pCueClear;
     std::unique_ptr<ControlPushButton> m_pCueCDJ;
@@ -352,8 +355,8 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlProxy> m_pVinylControlMode;
 
     std::unique_ptr<ControlObject> m_pHotcueFocus;
-    std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
-    std::unique_ptr<ControlObject> m_pHotcueFocusColorPrev;
+    std::unique_ptr<ControlPushButton> m_pHotcueFocusColorNext;
+    std::unique_ptr<ControlPushButton> m_pHotcueFocusColorPrev;
 
     parented_ptr<ControlProxy> m_pPassthrough;
 

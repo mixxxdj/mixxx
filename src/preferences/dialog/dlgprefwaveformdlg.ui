@@ -459,6 +459,108 @@ Select from different types of displays for the waveform, which differ primarily
      </item>
 
      <item row="11" column="0">
+      <widget class="QLabel" name="untilMarkLabel">
+       <property name="text">
+        <string>Play marker hints</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="3">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="untilMarkShowBeatsCheckBox">
+         <property name="text">
+          <string>Beats until next marker</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="untilMarkAlignLabel">
+         <property name="text">
+          <string>Placement</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>untilMarkAlignComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="untilMarkTextPointSizeLabel">
+         <property name="text">
+          <string>Preferred font size</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>untilMarkTextPointSizeSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="untilMarkTextHeightLimitLabel">
+         <property name="text">
+          <string>Text height limit</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>untilMarkTextHeightLimitComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+        <item row="1" column="0">
+        <widget class="QCheckBox" name="untilMarkShowTimeCheckBox">
+         <property name="text">
+          <string>Time until next marker</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="untilMarkAlignComboBox"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QSpinBox" name="untilMarkTextPointSizeSpinBox">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="suffix">
+          <string> pt</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>30</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QComboBox" name="untilMarkTextHeightLimitComboBox"/>
+       </item>
+      </layout>
+     </item>
+     <item row="14" column="1" colspan="2">
+      <widget class="QLabel" name="requiresGLSLLabel">
+       <property name="text">
+        <string>This functionality requires a waveform type marked "(GLSL)".</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="0">
       <widget class="QLabel" name="cachedWaveforms">
        <property name="text">
         <string>Caching</string>
@@ -468,7 +570,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="3">
+     <item row="15" column="1" colspan="3">
       <layout class="QGridLayout" name="cachingGridLayout">
        <item row="4" column="0">
         <widget class="QPushButton" name="clearCachedWaveforms">
@@ -520,7 +622,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="13" column="0" colspan="4">
+     <item row="17" column="0" colspan="4">
       <widget class="QGroupBox" name="openGLStatus">
        <property name="title">
         <string>OpenGL status</string>
@@ -613,6 +715,10 @@ Select from different types of displays for the waveform, which differ primarily
   <tabstop>lowVisualGain</tabstop>
   <tabstop>midVisualGain</tabstop>
   <tabstop>highVisualGain</tabstop>
+  <tabstop>untilMarkShowBeatsCheckBox</tabstop>
+  <tabstop>untilMarkShowTimeCheckBox</tabstop>
+  <tabstop>untilMarkAlignComboBox</tabstop>
+  <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
   <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
   <tabstop>clearCachedWaveforms</tabstop>

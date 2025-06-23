@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_vinylcontrolxwax.cpp"
@@ -45,6 +46,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_iVCMode(static_cast<int>(mode->get())),
           m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
           m_dOldFilePos(0.0),
+          m_deltaFilePos(0.0),
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
           m_bWasReversed(false),
@@ -61,6 +63,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dLastTrackSelectPos(0.0),
           m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
+          m_initialRelativeDriftAmt(0.0),
+          m_deltaRelativeDriftAmount(0.0),
           m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
@@ -135,22 +139,23 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         latency = 20;
     }
 
-    int iSampleRate = m_pConfig->getValueString(
-        ConfigKey("[Soundcard]","Samplerate")).toULong();
+    const auto sampleRate = mixxx::audio::SampleRate(
+            m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate"))
+                    .toUInt());
 
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
     m_iPitchRingSize = static_cast<int>(60000 / (rpm * latency * 4));
     m_pPitchRing.resize(m_iPitchRingSize);
 
-    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
+    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << sampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
 
     // Initialize the timecoder structure. Use the static mutex so that we only
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, iSampleRate, /* phono */ false);
+    timecoder_init(&timecoder, tc_def, speed, sampleRate.value(), /* phono */ false);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -200,7 +205,7 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 
 
 void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
-    ScopedTimer t("VinylControlXwax::analyzeSamples");
+    ScopedTimer t(u"VinylControlXwax::analyzeSamples");
     auto gain = static_cast<CSAMPLE_GAIN>(m_pVinylControlInputGain->get());
 
     // We only support amplifying with the VC pre-amp.
@@ -285,10 +290,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     if (m_iPosition != -1) {
         m_dVinylPosition = static_cast<double>(m_iPosition) / 1000.0 - m_iLeadInTime;
     }
-
-    // Initialize drift control to zero in case we don't get any position data
-    // to calculate it with.
-    double dDriftControl = 0.0;
 
     // Get the playback position in the file in seconds.
     double filePosition = playPos->get() * m_dOldDuration;
@@ -447,13 +448,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     if(bHaveSignal) {
         //POSITION: MAYBE  PITCH: YES
 
-        //We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
-        //qDebug() << "Pitch" << dVinylPitch;
-
         if (m_iPosition != -1) {
             //POSITION: YES  PITCH: YES
-            //add a value to the pitch ring (for averaging / smoothing the pitch)
-            //qDebug() << fabs(((m_dVinylPosition - m_dVinylPositionOld) * (dVinylPitch / fabs(dVinylPitch))));
 
             bool reversed = static_cast<bool>(reverseButton->get());
             if (!reversed && m_bWasReversed) {
@@ -463,6 +459,11 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             //save the absolute amount of drift for when we need to estimate vinyl position
             m_dDriftAmt = m_dVinylPosition - filePosition;
+
+            if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
+                m_deltaFilePos = filePosition - m_dOldFilePos;
+                m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(m_deltaFilePos);
+            }
 
             //qDebug() << "drift" << m_dDriftAmt;
 
@@ -477,8 +478,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 }
                 m_bForceResync = false;
-            } else if (fabs(m_dVinylPosition - filePosition) > 0.1 &&
-                       m_dVinylPosition < -2.0) {
+            } else if (fabs(m_dDriftAmt) > 0.1 &&
+                    m_dVinylPosition < -2.0) {
                 //At first I thought it was a bug to resync to leadin in relative mode,
                 //but after using it that way it's actually pretty convenient.
                 //qDebug() << "Vinyl leadin";
@@ -488,14 +489,14 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     m_pRateRatio->set(fabs(dVinylPitch));
                 }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
+                    (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
                 //qDebug() << "resync position (>15.0 sec)";
                 //qDebug() << m_dVinylPosition << m_dVinylPositionOld << m_dVinylPosition - m_dVinylPositionOld;
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
-                       fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
+                    fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
@@ -509,15 +510,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 return;
             } else {
                 togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
-            }
-
-            // Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
-            // (This is caused by the manufacturing process of the vinyl.)
-            if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    fabs(m_dDriftAmt) > 0.1 && fabs(m_dDriftAmt) < 5.0) {
-                dDriftControl = m_dDriftAmt * .01;
-            } else {
-                dDriftControl = 0.0;
             }
 
             m_dVinylPositionOld = m_dVinylPosition;
@@ -538,7 +530,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                     fabs(dVinylPitch) < 0.05 &&
-                    fabs(m_dDriftAmt) >= 0.3) {
+                    fabs(m_dDriftAmt) >= 1.0) {
                 //qDebug() << "slow, out of sync, syncing position";
                 syncPosition();
             }
@@ -549,6 +541,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
             }
         }
+
+        // Vinyl rate is exactly what is detected.
+        m_pVCRate->set(dVinylPitch);
 
         //playbutton status may have changed
         reportedPlayButton = playButton->toBool();
@@ -566,7 +561,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             m_iPitchRingFilled = 0;
         }
 
-        //only smooth when we have good position (no smoothing for scratching)
+        // Smoothed pitch is only used for UI display, not actual rate.
         double averagePitch = 0.0;
         if (m_iPosition != -1 && reportedPlayButton) {
             for (int i = 0; i < m_iPitchRingFilled; ++i) {
@@ -580,10 +575,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             averagePitch = dVinylPitch;
         }
 
-        m_pVCRate->set(averagePitch + dDriftControl);
         if (uiUpdateTime(filePosition)) {
-            double true_pitch = averagePitch + dDriftControl;
-            double pitch_difference = true_pitch - m_dDisplayPitch;
+            double pitch_difference = averagePitch - m_dDisplayPitch;
 
             // The true pitch can show a misleading amount of variance --
             // differences of .1% or less can show up as 1 or 2 bpm changes.
@@ -592,7 +585,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             if (fabs(pitch_difference) > 0.5) {
                 // For large changes in pitch (start/stop, usually), immediately
                 // update the display.
-                m_dDisplayPitch = true_pitch;
+                m_dDisplayPitch = averagePitch;
             } else if (fabs(pitch_difference) > 0.005) {
                 // For medium changes in pitch, take 4 callback loops to
                 // converge on the correct amount.
@@ -623,14 +616,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         m_pRateRatio->set(1.0);
 
-        if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                fabs(m_dVinylPosition - filePosition) >= 0.1) {
-            //qDebug() << "stopped, out of sync, syncing position";
-            syncPosition();
-        }
-
-        if(fabs(filePosition - m_dOldFilePos) >= 0.1 ||
-               filePosition == m_dOldFilePos) {
+        if (fabs(filePosition - m_dOldFilePos) >= 0.3 ||
+                filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
             resetSteadyPitch(0.0, 0.0);
@@ -646,6 +633,20 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             vinylStatus->set(VINYL_STATUS_OK);
         }
     }
+}
+
+// returns the delta between the current drift amount and the last reset value of the drift amount.
+double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
+    // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
+    // when passthrough is enabled or is playing in reverse
+    if (std::fabs(m_deltaRelativeDriftAmount) > 1.5 ||
+            std::fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
+            m_passthroughEnabled.toBool() || reverseButton->toBool() ||
+            m_scratchPositionEnabled.toBool()) {
+        m_initialRelativeDriftAmt = m_dDriftAmt;
+    }
+
+    return m_dDriftAmt - m_initialRelativeDriftAmt;
 }
 
 void VinylControlXwax::enableRecordEndMode() {

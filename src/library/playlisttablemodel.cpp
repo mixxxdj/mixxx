@@ -197,30 +197,35 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-int PlaylistTableModel::addTracks(const QModelIndex& index,
-        const QList<QString>& locations) {
-    if (locations.isEmpty()) {
+int PlaylistTableModel::addTracksWithTrackIds(const QModelIndex& insertionIndex,
+        const QList<TrackId>& trackIds,
+        int* pOutInsertionPos) {
+    if (trackIds.isEmpty()) {
         return 0;
     }
 
-    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
-            locations);
-
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
-    int position = index.sibling(index.row(), positionColumn).data().toInt();
+    int position = index(insertionIndex.row(), positionColumn).data().toInt();
 
     // Handle weird cases like a drag and drop to an invalid index
     if (position <= 0) {
         position = rowCount() + 1;
     }
 
+    if (pOutInsertionPos) {
+        *pOutInsertionPos = position;
+    }
+
     int tracksAdded = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().insertTracksIntoPlaylist(
             trackIds, m_iPlaylistId, position);
 
-    if (locations.size() - tracksAdded > 0) {
+    if (trackIds.size() - tracksAdded > 0) {
+        QString playlistName = m_pTrackCollectionManager->internalCollection()
+                                       ->getPlaylistDAO()
+                                       .getPlaylistName(m_iPlaylistId);
         qDebug() << "PlaylistTableModel::addTracks could not add"
-                 << locations.size() - tracksAdded
-                 << "to playlist" << m_iPlaylistId;
+                 << trackIds.size() - tracksAdded
+                 << "to playlist id" << m_iPlaylistId << "name" << playlistName;
     }
     return tracksAdded;
 }
@@ -258,6 +263,10 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTracksFromPlaylist(
             m_iPlaylistId,
             std::move(trackPositions));
+
+    if (trackPositions.contains(1)) {
+        emit firstTrackChanged();
+    }
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -283,6 +292,10 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     }
 
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
+
+    if (oldPosition == 1 || newPosition == 1) {
+        emit firstTrackChanged();
+    }
 }
 
 bool PlaylistTableModel::isLocked() {
@@ -299,6 +312,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         // this is used to exclude the already loaded track at pos #1 if used from running Auto-DJ
         excludePos = exclude.sibling(exclude.row(), positionColumn).data().toInt();
     }
+    int numOfTracks = rowCount();
     if (shuffle.count() > 1) {
         // if there is more then one track selected, shuffle selection only
         foreach (QModelIndex shuffleIndex, shuffle) {
@@ -308,8 +322,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
             }
         }
     } else {
-        // if there is only one track selected, shuffle all tracks
-        int numOfTracks = rowCount();
+        // if there is no track or only one selected, shuffle all tracks
         for (int i = 0; i < numOfTracks; i++) {
             int oldPosition = index(i, positionColumn).data().toInt();
             if (oldPosition != excludePos) {
@@ -318,13 +331,25 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         }
     }
     // Set up list of all IDs
-    int numOfTracks = rowCount();
     for (int i = 0; i < numOfTracks; i++) {
         int position = index(i, positionColumn).data().toInt();
         TrackId trackId(index(i, idColumn).data());
         allIds.insert(position, trackId);
     }
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
+}
+
+const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {
+    if (indices.isEmpty()) {
+        return {};
+    }
+    QList<int> positions;
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (auto idx : indices) {
+        int pos = idx.siblingAtColumn(positionColumn).data().toInt();
+        positions.append(pos);
+    }
+    return positions;
 }
 
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
@@ -369,14 +394,16 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::ResetPlayed |
             Capability::RemoveFromDisk |
             Capability::Hide |
-            Capability::Analyze;
+            Capability::Analyze |
+            Capability::Properties;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
-        // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
+        // Only allow Add to AutoDJ and sorting if we aren't currently showing
+        // the AutoDJ queue.
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist | Capability::Sorting;
     } else {
         caps |= Capability::Remove;
     }

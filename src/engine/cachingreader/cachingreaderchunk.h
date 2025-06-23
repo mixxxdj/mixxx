@@ -15,17 +15,25 @@
 // and the worker.
 class CachingReaderChunk {
 public:
-    static const mixxx::audio::ChannelCount kChannels;
-    static const SINT kFrames;
-    static const SINT kSamples;
+  // One chunk should contain 1/2 - 1/4th of a second of audio.
+  // 8192 frames contain about 170 ms of audio at 48 kHz, which
+  // is well above (hopefully) the latencies people are seeing.
+  // At 10 ms latency one chunk is enough for 17 callbacks.
+  // Additionally the chunk size should be a power of 2 for
+  // easier memory alignment.
+  // TODO(XXX): The optimum value of the "constant" kFrames depends
+  // on the properties of the AudioSource as the remarks above suggest!
+  static constexpr mixxx::audio::ChannelCount kChannels = mixxx::kEngineChannelCount;
+  static constexpr SINT kFrames = 8192; // ~ 170 ms at 48 kHz
+  static constexpr SINT kSamples = kFrames * kChannels;
 
-    // Converts frames to samples
-    static SINT frames2samples(SINT frames) {
-        return frames * kChannels;
-    }
-    static double dFrames2samples(SINT frames) {
-        return static_cast<double>(frames) * kChannels;
-    }
+  // Converts frames to samples
+  static constexpr SINT frames2samples(SINT frames) noexcept {
+      return frames * kChannels;
+  }
+  static constexpr double dFrames2samples(SINT frames) noexcept {
+      return static_cast<double>(frames) * kChannels;
+  }
     // Converts samples to frames
     static SINT samples2frames(SINT samples) {
         DEBUG_ASSERT(0 == (samples % kChannels));
@@ -36,7 +44,7 @@ public:
     static SINT indexForFrame(
             /*const mixxx::AudioSourcePointer& pAudioSource,*/
             SINT frameIndex) {
-        //DEBUG_ASSERT(pAudioSource->frameIndexRange().contains(frameIndex));
+        // DEBUG_ASSERT(pAudioSource->frameIndexRange().contains(frameIndex));
         const SINT frameIndexOffset = frameIndex /*- pAudioSource->frameIndexMin()*/;
         return frameIndexOffset / kFrames;
     }
@@ -45,7 +53,7 @@ public:
     CachingReaderChunk(const CachingReaderChunk&) = delete;
     CachingReaderChunk(CachingReaderChunk&&) = delete;
 
-    SINT getIndex() const {
+    SINT getIndex() const noexcept {
         return m_index;
     }
 
@@ -74,9 +82,9 @@ protected:
     void init(SINT index);
 
 private:
-    SINT frameIndexOffset() const {
+  SINT frameIndexOffset() const noexcept {
         return m_index * kFrames;
-    }
+  }
 
     SINT m_index;
 
@@ -104,7 +112,7 @@ public:
         READ_PENDING
     };
 
-    State getState() const {
+    State getState() const noexcept {
         return m_state;
     }
 
@@ -139,8 +147,8 @@ public:
             CachingReaderChunkForOwner** ppTail);
 
 private:
-    State m_state;
+  State m_state;
 
-    CachingReaderChunkForOwner* m_pPrev; // previous item in double-linked list
-    CachingReaderChunkForOwner* m_pNext; // next item in double-linked list
+  CachingReaderChunkForOwner* m_pPrev; // previous item in double-linked list
+  CachingReaderChunkForOwner* m_pNext; // next item in double-linked list
 };

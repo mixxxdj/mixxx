@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <optional>
 
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"

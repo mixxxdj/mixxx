@@ -65,9 +65,6 @@ SINT AnalyzerSilence::findFirstSoundInChunk(std::span<const CSAMPLE> samples) {
 SINT AnalyzerSilence::findLastSoundInChunk(std::span<const CSAMPLE> samples) {
     // -1 is required, because the distance from the fist sample index (0) to crend() is 1,
     SINT ret = std::distance(first_sound(samples.rbegin(), samples.rend()), samples.rend()) - 1;
-    if (ret == -1) {
-        ret = samples.size();
-    }
     return ret;
 }
 
@@ -93,7 +90,7 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
     }
     if (m_signalStart >= 0) {
         const SINT lastSoundSample = findLastSoundInChunk(samples);
-        if (lastSoundSample < count - 1) { // not only sound or silence
+        if (lastSoundSample >= 0) {
             m_signalEnd = m_framesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
         }
     }

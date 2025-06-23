@@ -7,9 +7,10 @@
 #include "engine/filters/enginefilterlinkwitzriley8.h"
 #include "util/defs.h"
 
-static constexpr unsigned int kStartupSamplerate = 44100;
-static constexpr unsigned int kStartupLoFreq = 246;
-static constexpr unsigned int kStartupHiFreq = 2484;
+namespace {
+constexpr unsigned int kStartupLoFreq = 246;
+constexpr unsigned int kStartupHiFreq = 2484;
+} // namespace
 
 // static
 QString LinkwitzRiley8EQEffect::getId() {
@@ -41,17 +42,17 @@ LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
           old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
-          m_oldSampleRate(kStartupSamplerate),
+          m_oldSampleRate(engineParameters.sampleRate()),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
-    m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pMidBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pLowBuf = SampleUtil::alloc(kMaxEngineSamples);
+    m_pMidBuf = SampleUtil::alloc(kMaxEngineSamples);
+    m_pHighBuf = SampleUtil::alloc(kMaxEngineSamples);
 
-    m_low1 = new EngineFilterLinkwitzRiley8Low(kStartupSamplerate, kStartupLoFreq);
-    m_high1 = new EngineFilterLinkwitzRiley8High(kStartupSamplerate, kStartupLoFreq);
-    m_low2 = new EngineFilterLinkwitzRiley8Low(kStartupSamplerate, kStartupHiFreq);
-    m_high2 = new EngineFilterLinkwitzRiley8High(kStartupSamplerate, kStartupHiFreq);
+    m_low1 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupLoFreq);
+    m_high1 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupLoFreq);
+    m_low2 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupHiFreq);
+    m_high2 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupHiFreq);
 }
 
 LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
@@ -64,7 +65,8 @@ LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
     SampleUtil::free(m_pHighBuf);
 }
 
-void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
+void LinkwitzRiley8EQEffectGroupState::setFilters(
+        mixxx::audio::SampleRate sampleRate, int lowFreq, int highFreq) {
     m_low1->setFrequencyCorners(sampleRate, lowFreq);
     m_high1->setFrequencyCorners(sampleRate, lowFreq);
     m_low2->setFrequencyCorners(sampleRate, highFreq);

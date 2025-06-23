@@ -12,7 +12,9 @@ class WaveformRendererRGB;
 
 class allshader::WaveformRendererRGB final : public allshader::WaveformRendererSignalBase {
   public:
-    explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play);
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;
@@ -24,6 +26,8 @@ class allshader::WaveformRendererRGB final : public allshader::WaveformRendererS
     mixxx::RGBShader m_shader;
     VertexData m_vertices;
     RGBData m_colors;
+
+    bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
 };

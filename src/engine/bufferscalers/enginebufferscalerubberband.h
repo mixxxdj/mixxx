@@ -3,9 +3,9 @@
 #include <rubberband/RubberBandStretcher.h>
 
 #include <array>
+#include <memory>
 
 #include "engine/bufferscalers/enginebufferscale.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 class ReadAheadManager;

@@ -64,13 +64,20 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::apiChanged);
+    apiLabel->setText(apiLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SOUND_API_URL));
 
     sampleRateComboBox->clear();
-    for (auto& srate : m_pSoundManager->getSampleRates()) {
-        if (srate > 0) {
+    const auto sampleRates = m_pSoundManager->getSampleRates();
+    for (const auto& sampleRate : sampleRates) {
+        if (sampleRate.isValid()) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(tr("%1 Hz").arg(srate), srate);
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate));
         }
     }
     connect(sampleRateComboBox,
@@ -120,6 +127,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
 
+    // TODO These settings are applied immediately via ControlProxies.
+    // While this is handy for testing the delays, it breaks the rule to
+    // apply only in slotApply(). Add hint to UI?
     connect(latencyCompensationSpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -254,6 +264,18 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     setScrollSafeGuardForAllInputWidgets(this);
 
+    micMonitorModeLabel->setText(micMonitorModeLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
+
+    latencyCompensationLabel->setText(latencyCompensationLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_LATENCY_URL));
+
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
                "consider for using Mixxx.")
@@ -263,18 +285,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
 }
 
-/// Slot called when the preferences dialog is opened or this pane is
-/// selected.
+/// Slot called when the preferences dialog is opened.
 void DlgPrefSound::slotUpdate() {
-    // this is unfortunate, because slotUpdate is called every time
-    // we change to this pane, we lose changed and unapplied settings
-    // every time. There's no real way around this, just another argument
-    // for a prefs rewrite -- bkgood
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
-    m_settingsModified = false;
 }
 
 /// Slot called when the Apply or OK button is pressed.
@@ -386,6 +402,10 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSoundItem::selectedChannelsChanged,
             this,
             &DlgPrefSound::deviceChannelsChanged);
+    connect(pItem,
+            &DlgPrefSoundItem::configuredDeviceNotFound,
+            this,
+            &DlgPrefSound::configuredDeviceNotFound);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
     if (pItem->isInput()) {
@@ -433,7 +453,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
     }
-    int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
+    int sampleRateIndex = sampleRateComboBox->findData(
+            QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
@@ -560,8 +581,7 @@ void DlgPrefSound::updateAPIs() {
 /// Slot called when the sample rate combo box changes to update the
 /// sample rate in the config.
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(
-            sampleRateComboBox->itemData(index).toUInt());
+    m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
@@ -622,7 +642,11 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                 static_cast<unsigned int>(SoundManagerConfig::
                                 JackAudioBufferSizeIndex::Size4096fpp));
     } else {
-        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
+        DEBUG_ASSERT(sampleRateComboBox->itemData(sampleRateIndex)
+                             .canConvert<mixxx::audio::SampleRate>());
+        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
+                                    .value<mixxx::audio::SampleRate>()
+                                    .toDouble();
         unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
         // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
         // don't right now!), so we iterate over all the buffer sizes until we
@@ -675,6 +699,18 @@ void DlgPrefSound::settingChanged() {
     if (m_loading) {
         return; // doesn't count if we're just loading prefs
     }
+    m_settingsModified = true;
+}
+
+/// Slot called when a device from the config can not be selected, i.e. is
+/// currently not available. This may happen during startup when MixxxMainWindow
+/// opens this page to allow users to make adjustments in case configured
+/// devices are busy/missing.
+/// The issue is that the visual state (combobox(es) with 'None') does not match
+/// the untouched config state. This set the modified flag so slotApply() will
+/// apply the (seemingly) unchanged configuration if users simply click Apply/Okay
+/// because they are okay to continue without these devices.
+void DlgPrefSound::configuredDeviceNotFound() {
     m_settingsModified = true;
 }
 
@@ -857,7 +893,9 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString lineBreak("<br/>");
+            const QString lineBreak("<br/>");
+            const QString kMicMonitorHintTrString =
+                    tr("Refer to the Mixxx User Manual for details.");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation->get() == 0.0) {
                 latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
@@ -868,7 +906,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
@@ -878,7 +919,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "for Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else {

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 class GetKeyMode;

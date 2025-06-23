@@ -220,6 +220,11 @@ void LibraryScanner::slotStartScan() {
     // verified.
     m_libraryHashDao.invalidateAllDirectories();
 
+    // Make sure that `directory` in in track_locations table is indeed a
+    // directory path. This works around / removes residues of a bug where tracks
+    // are falsely marked missing because `directory` == `location`.
+    m_trackDao.cleanupTrackLocationsDirectory();
+
     // Mark all the tracks in the library as needing verification of their
     // existence. (ie. we want to check they're still on your hard drive where
     // we think they are)
@@ -489,7 +494,7 @@ void LibraryScanner::cancel() {
 
 void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
-    ScopedTimer timer("LibraryScanner::queueTask");
+    ScopedTimer timer(u"LibraryScanner::queueTask");
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
         return;
     }
@@ -531,7 +536,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, mixxx::cache_key_t hash) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
+    ScopedTimer timer(u"LibraryScanner::slotDirectoryHashedAndScanned");
     //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
@@ -550,7 +555,7 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
 }
 
 void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryUnchanged");
+    ScopedTimer timer(u"LibraryScanner::slotDirectoryUnchanged");
     //kLogger.debug() << "slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
@@ -560,43 +565,37 @@ void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
 
 void LibraryScanner::slotTrackExists(const QString& trackPath) {
     //kLogger.debug() << "slotTrackExists" << trackPath;
-    ScopedTimer timer("LibraryScanner::slotTrackExists");
+    ScopedTimer timer(u"LibraryScanner::slotTrackExists");
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedTrack(trackPath);
     }
 }
 
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
-    //kLogger.debug() << "slotAddNewTrack" << trackPath;
-    ScopedTimer timer("LibraryScanner::addNewTrack");
+    // kLogger.debug() << "slotAddNewTrack" << trackPath;
+    ScopedTimer timer(u"LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
             trackPath,
             false);
-    if (pTrack) {
-        DEBUG_ASSERT(!pTrack->isDirty());
-        // The track's actual location might differ from the
-        // given trackPath
-        const QString trackLocation(pTrack->getLocation());
-        // Acknowledge successful track addition
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackLocation);
-        }
-        // Signal the main instance of TrackDAO, that there is
-        // a new track in the database.
-        emit trackAdded(pTrack);
-        emit progressLoading(trackLocation);
-    } else {
-        // Acknowledge failed track addition
-        // TODO(XXX): Is it really intended to acknowledge a failed
-        // track addition with a trackAdded() signal??
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackPath);
-        }
-        kLogger.warning()
-                << "Failed to add track to library:"
-                << trackPath;
+    if (!pTrack) {
+        // This happens only when there is an issue with the database which
+        // has been logged already. No need for yet another warning here.
+        return;
     }
+
+    DEBUG_ASSERT(!pTrack->isDirty());
+    // The track's actual location might differ from the
+    // given trackPath
+    const QString trackLocation = pTrack->getLocation();
+    // Acknowledge successful track addition
+    if (m_scannerGlobal) {
+        m_scannerGlobal->trackAdded(trackLocation);
+    }
+    // Signal the main instance of TrackDAO, that there is
+    // a new track in the database.
+    emit trackAdded(pTrack);
+    emit progressLoading(trackLocation);
 }
 
 bool LibraryScanner::changeScannerState(ScannerState newState) {

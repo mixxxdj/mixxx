@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QQmlEngine>
 #include <QQmlParserStatus>
-#include <QtQml>
 #include <memory>
 
 #include "control/controlproxy.h"

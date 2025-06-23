@@ -7,6 +7,7 @@
 
 #include "engine/controls/cuecontrol.h"
 #include "moc_colorpaletteeditormodel.cpp"
+#include "util/make_const_iterator.h"
 #include "util/rangelist.h"
 
 namespace {
@@ -77,12 +78,13 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         auto hotcueIndexList = pHotcueIndexListItem->getHotcueIndexList();
 
         // make sure no index is outside of range
-        DEBUG_ASSERT(std::is_sorted(hotcueIndexList.cbegin(), hotcueIndexList.cend()));
+        DEBUG_ASSERT(std::is_sorted(hotcueIndexList.constBegin(), hotcueIndexList.constEnd()));
         auto endUpper = std::upper_bound(
-                hotcueIndexList.begin(), hotcueIndexList.end(), NUM_HOT_CUES);
-        hotcueIndexList.erase(endUpper, hotcueIndexList.end());
-        auto endLower = std::upper_bound(hotcueIndexList.begin(), hotcueIndexList.end(), 0);
-        hotcueIndexList.erase(hotcueIndexList.begin(), endLower);
+                hotcueIndexList.constBegin(), hotcueIndexList.constEnd(), NUM_HOT_CUES);
+        constErase(&hotcueIndexList, endUpper, hotcueIndexList.constEnd());
+        auto endLower = std::upper_bound(
+                hotcueIndexList.constBegin(), hotcueIndexList.constEnd(), 0);
+        constErase(&hotcueIndexList, hotcueIndexList.constBegin(), endLower);
 
         for (int i = 0; i < rowCount(); ++i) {
             auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
@@ -171,7 +173,7 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
             }
         }
     }
-    // If we have a non consequitive list of hotcue indexes, indexes are shifted down
+    // If we have a non consecutive list of hotcue indexes, indexes are shifted down
     // due to the sorting nature of QMap. This is intended, this way we have a color for every hotcue.
     return ColorPalette(name, colors, hotcueColorIndices.values());
 }

@@ -281,7 +281,9 @@ Description:
 
           <WidgetGroup><!-- Clock + latency display -->
             <ObjectName>ClockBox</ObjectName>
-            <Size>52f,28f</Size>
+            <MinimumSize>52,28</MinimumSize>
+            <MaximumSize>64,28</MaximumSize>
+            <SizePolicy>max</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
@@ -292,9 +294,6 @@ Description:
                   <Time>
                     <TooltipId>time</TooltipId>
                     <ObjectName>Clock</ObjectName>
-                    <!-- <ShowSeconds>false</ShowSeconds>
-                    <ClockFormat>12AP</ClockFormat>
-                    This has no effect, neither has 'text-align' in qss.   -->
                     <Align>center</Align>
                   </Time>
                 </Children>

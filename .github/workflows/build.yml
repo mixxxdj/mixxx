@@ -3,8 +3,7 @@
 name: Build
 
 on:
-  push:
-  pull_request:
+  workflow_call:
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -15,33 +14,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 22.04 (gcc)
+          - name: Ubuntu 22.04
             os: ubuntu-22.04
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=ON
-              -DFFMPEG=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
-            compiler_cache: ccache
-            compiler_cache_path: /home/runner/.cache/ccache
-            compiler_cache_id: qt5
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 22.04 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-jammy
-            qt_qpa_platform: offscreen
-          - name: Ubuntu 22.04 (Qt 6.2, gcc)
-            os: ubuntu-22.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
               -DQT6=ON
+              -DQML=ON
               -DBULK=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
@@ -55,22 +32,23 @@ jobs:
             compiler_cache_id: qt6
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv_qt6.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 22.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 11 x64
-            os: macos-11
+          - name: macOS 13 x64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-osx-min1012-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012-release
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -83,17 +61,18 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 11 arm64
-            os: macos-11
+          - name: macOS 13 arm64
+            os: macos-13
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             crosscompile: true
             cpack_generator: DragNDrop
@@ -113,14 +92,14 @@ jobs:
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=OFF
+              -DBULK=ON
               -DFFMPEG=OFF
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
@@ -138,7 +117,6 @@ jobs:
 
     env:
       # macOS codesigning
-      APPLE_CODESIGN_IDENTITY: EF241CF990A9BE5477438AEE1F308F76F33FD100
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
@@ -151,7 +129,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -174,7 +152,7 @@ jobs:
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.19.x"
+          cmake-version: "3.21.x"
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
@@ -193,7 +171,7 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
-          brew install ccache ninja
+          brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
@@ -218,12 +196,15 @@ jobs:
           security unlock-keychain -p mixxx Mixxx.keychain
           security import ~/certificate.p12 -k Mixxx.keychain \
             -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
+          security find-certificate -a -Z Mixxx.keychain
+          APPLE_CODESIGN_IDENTITY="$(security find-certificate -a -Z Mixxx.keychain | grep ^SHA-1 | cut -d " " -f3 | uniq)"
           security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
           # Add keychain to search list
           security list-keychains -s Mixxx.keychain
           # Prevent keychain access from timing out
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
+          echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
@@ -266,6 +247,7 @@ jobs:
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DWARNINGS_FATAL=ON
           -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON
@@ -298,7 +280,6 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
 
@@ -332,13 +313,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/azure-code-signing-action@v0.3.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: exe
@@ -349,8 +330,17 @@ jobs:
 
       - name: "Package"
         if: matrix.cpack_generator != null
-        run: cpack -G ${{ matrix.cpack_generator }} -V
-        working-directory: build
+        # Use retry loop to work around a race condition on macOS causing
+        # 'Resource busy' errors with 'hdiutil'. See
+        # https://github.com/actions/runner-images/issues/7522
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 30
+          max_attempts: 12
+          retry_wait_seconds: 1
+          command: |
+            cd build
+            cpack -G ${{ matrix.cpack_generator }} -V
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
@@ -360,11 +350,11 @@ jobs:
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.os == 'ubuntu-22.04' && matrix.container == null
+        if: matrix.name == 'Ubuntu 22.04'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.4" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
@@ -387,13 +377,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/azure-code-signing-action@v0.3.0
+        uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          code-signing-account-name: mixxx
+          trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: msi
@@ -489,7 +479,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -500,10 +490,12 @@ jobs:
     needs: build
     # Always run this job, even if one or more jobs from the `build` jobs
     # fail to allow partial updates of the manifest.
-    if: always()
+    # Don't run it on forks that do not have access to our external
+    # infrastructure, though.
+    if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 

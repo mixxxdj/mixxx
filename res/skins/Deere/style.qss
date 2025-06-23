@@ -225,14 +225,39 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #006596;
 }
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #d2d2d2;
+}
+
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryPlayedCheckbox::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
 
 /* Selected rows in Tree and Tracks table */
 WTrackTableView::item:selected,
 WLibrarySidebar::item:selected,
-#LibraryBPMButton::item:selected {
-  color: #D6D6D6;
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
+  /* disabled since it interferes with selection-color
+   which we use in DefaultDelegate and TableItemDelegate to
+   blend the highlight color with the played/missing color.
+  color: #D6D6D6; */
+  /* This is not required for painting the background,
+   but it is for applying the focus outline. */
   background-color: #006596;
-}
+  }
+  /* Highlight currentIndex which can be moved with Ctrl + arrow keys */
+  WTrackTableView::item:!selected:focus {
+    /* For outline to be applied, background-color must be set, too ...
+       Use a value between #1F1F1F and #1A1A1A (alternate-background-color) */
+    background-color: #1d1d1d;
+    outline: 1px solid #fff;
+    color: #fff;
+  }
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
@@ -247,11 +272,14 @@ WTrackTableView,
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #D6D6D6;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #D6D6D6;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
 }
 
 WTrackTableView:focus,
@@ -268,19 +296,25 @@ WLibraryTextBrowser {
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 WBeatSpinBox,
+/* Track label inline editor */
+WTrackPropertyEditor,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
+}
+WLibrary QLineEdit,
+WTrackPropertyEditor,
+#LibraryBPMSpinBox {
   border: 1px solid #006596;
 }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:unchecked {
+#LibraryPlayedCheckbox::indicator:unchecked {
   image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
 }
-WTrackTableView::indicator:checked {
+#LibraryPlayedCheckbox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
 }
 
@@ -353,7 +387,7 @@ WTrackTableViewHeader {
 WTrackTableViewHeader::section {
   height: 1.1em;
   font-weight: bold;
-  padding: 0.1em;
+  padding: 0.1em -1em 0.1em 0.1em;
   background-color: #1A1A1A;
   border-top: none;
   border-left: none;
@@ -833,6 +867,7 @@ WPushButton,
 WKey,
 WTime,
 WTrackProperty,
+WTrackPropertyEditor,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
@@ -1088,32 +1123,42 @@ WBeatSpinBox,
 }
 
 /* Start editable widgets in decks */
-#BpmKeyEditRowCollapsed:hover,
-#BpmKeyEditRowExpanded:hover,
+/* emphasize editable widgets on hover */
+#BpmKeyEditTriggerRow:hover,
 #PositionGutter:hover,
 #PlayPositionTextSmall:hover,
-#StarratingGutter:hover {
-  /* emphasize editable widgets on hover */
-  border: 1px solid #FF6600;
+#StarratingGutter:hover,
+WTrackProperty:hover {
   background-color: rgba(255, 102, 0, 128);
-}
-#BpmKeyEditRowCollapsed {
+  }
+  #BpmKeyEditRowCollapsed:hover,
+  WTrackProperty[selected="true"] {
+    border: 1px solid #FF6600;
+  }
+
+#BpmKeyEditTriggerRow[value="1"] {
   qproperty-layoutAlignment: 'AlignCenter';
   /* emphasize active widget */
   border: 1px solid #666666;
+  border-left: 0px;
 }
 
 #BpmKeyEditRowExpanded {
   /* emphasize active widget */
   border: 1px solid #FF6600;
-  background-color: rgba(255, 102, 0, 64);
+  border-right: 0px;
   color: #D6D6D6;
+  qproperty-layoutSpacing: 2;
 }
 
 #BpmKeyEditTrigger {
-  /* make trigger button transparent */
   background-color: none;
   border: none;
+  border-radius: 0px;
+}
+#BpmKeyEditTrigger[value="1"] {
+  border: 1px solid #FF6600;
+  border-left: 0px;
 }
 
 #BpmKeyEditRowControls {
@@ -1125,6 +1170,31 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 2;
 }
 
+#BeatEditCover {
+  background-color: rgba(51, 51, 51, 120);
+}
+
+/* This defines the width of the key/cents display per selected notation. */
+#KeyLabelExpander[highlight="0"],  /* Invalid */
+#KeyLabelExpander[highlight="1"],  /* Custom */
+#KeyLabelExpander[highlight="2"],  /* OpenKey */
+#KeyLabelExpander[highlight="3"] { /* Lancelot */
+  /* Widest key is 12A + cents */
+  min-width: 97px;
+  max-width: 97px;
+}
+#KeyLabelExpander[highlight="4"] { /*Traditional */
+  /* The widest key is "D#m/Ebm" + cents */
+  min-width: 138px;
+  max-width: 138px;
+}
+#KeyLabelExpander[highlight="5"],  /* OpenKeyAndTraditional */
+#KeyLabelExpander[highlight="6"] { /* LancelotAndTraditional */
+  /* The widest key is "7m (D#m/Ebm)" + cents */
+  min-width: 175px;
+  max-width: 175px;
+}
+
 #HotcueShiftButtons {
   qproperty-layoutSpacing: 2;
 }
@@ -1133,11 +1203,10 @@ WBeatSpinBox,
   padding-right: 1px;
 }
 
-#BpmKeyInfoShow {
+#BpmKeyInfoShowHide[highlight="0"] {
   image: url(skin:/../Deere/icon/ic_chevron_left_24x48px.svg) center center;
 }
-
-#BpmKeyInfoHide {
+#BpmKeyInfoShowHide[highlight="1"] {
   image: url(skin:/../Deere/icon/ic_chevron_right_24x48px.svg) center center;
 }
 /* End editable widgets in decks */
@@ -1583,6 +1652,11 @@ WStarRating {
   font-size: 15px;
 }
 
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
+  font-size: 15px;
+}
+
 #SampleDecksContainer {
 }
 
@@ -1621,7 +1695,9 @@ WWidgetGroup {
  *******************************************************************************/
 
 WPushButton,
-WEffectChainPresetButton {
+WEffectChainPresetButton,
+#BpmLockToggle[value="1"],
+#LoopAnchor[value="1"] {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1631,7 +1707,9 @@ WEffectChainPresetButton {
 
 WPushButton:hover,
 #PlayToggle:hover,
-WEffectChainPresetButton:hover {
+WEffectChainPresetButton:hover,
+#BpmLockToggle[value="1"]:hover,
+#LoopAnchor[value="1"]:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;
@@ -1994,6 +2072,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -2260,9 +2339,11 @@ WTrackMenu QMenu QCheckBox::indicator {
   /* remove OS focus indicator */
   outline: none;
 }
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  border: 0px;
+  background-color: transparent;
+}
 
-QLineEdit QMenu::icon:selected,
-QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
 WTrackTableViewHeader QMenu QCheckBox::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
@@ -2272,6 +2353,7 @@ WTrackMenu QMenu QCheckBox::indicator:selected {
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
+WLibraryTextBrowser QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -2353,8 +2435,24 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   outline: none;
 }
 
-#CueDeleteButton:hover {
+#CueSavedLoopButton {
+/* tall button, about the same height as cue number + label edit box */
+  width: 28px;
+  height: 46px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  qproperty-icon: url(skin:/../Deere/icon/ic_loop_48px.svg);
+  background-color: #3B3B3B;
+  border-radius: 2px;
+  outline: none;
+}
+
+#CueDeleteButton:hover, #CueSavedLoopButton:hover {
   background-color: #4B4B4B;
+}
+
+#CueSavedLoopButton:checked {
+  background-color: #006596;
 }
 
 WRateRange {

@@ -10,8 +10,15 @@
 #include "widget/wglwidget.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
-        : m_pWidget(pWidget) {
+        : m_pWidget(pWidget),
+          m_pTrackDropTarget(nullptr) {
     setFormat(WaveformWidgetFactory::getSurfaceFormat());
+#ifdef __EMSCRIPTEN__
+    // This is required to ensure that QOpenGLWindows have no minimum size (When
+    // targeting WebAssembly, the widgets will otherwise always have a minimum
+    // width and minimum height of 100 pixels).
+    setFlag(Qt::FramelessWindowHint);
+#endif
     // Prevent this window/widget from getting keyboard focus on click.
     setFlag(Qt::WindowDoesNotAcceptFocus);
 }
@@ -66,21 +73,50 @@ bool OpenGLWindow::event(QEvent* pEv) {
         // Tooltip don't work by forwarding the events. This mimics the
         // tooltip behavior.
         if (t == QEvent::MouseMove) {
-            ToolTipQOpenGL::singleton().start(
-                    m_pWidget, dynamic_cast<QMouseEvent*>(pEv)->globalPos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPosition().toPoint();
+#else
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPos();
+#endif
+            ToolTipQOpenGL::singleton().start(m_pWidget, eventPosition);
         }
+
         if (t == QEvent::Leave) {
             ToolTipQOpenGL::singleton().stop();
         }
 
-        if (t == QEvent::DragEnter || t == QEvent::DragMove ||
-                t == QEvent::DragLeave || t == QEvent::Drop) {
-            // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
-            // and even result in a recursive call to this method, so we use our own mechanism.
-            if (m_pWidget->trackDropTarget()) {
-                return m_pWidget->trackDropTarget()->handleDragAndDropEventFromWindow(pEv);
-            }
+        // Drag & Drop events are not delivered correctly when using QApplication::sendEvent
+        // and even result in a recursive call to this method, so we use our own mechanism.
 
+        if (t == QEvent::DragEnter) {
+            DEBUG_ASSERT(!m_pTrackDropTarget);
+            TrackDropTarget* pTrackDropTarget = m_pWidget->trackDropTarget();
+            if (pTrackDropTarget) {
+                bool ret = pTrackDropTarget->handleDragAndDropEventFromWindow(pEv);
+                if (pEv->isAccepted()) {
+                    m_pTrackDropTarget = pTrackDropTarget;
+                }
+                return ret;
+            }
+            pEv->ignore();
+            return false; // clazy:exclude=base-class-event
+        }
+
+        if (t == QEvent::DragMove) {
+            if (m_pTrackDropTarget) {
+                bool ret = m_pTrackDropTarget->handleDragAndDropEventFromWindow(pEv);
+                return ret;
+            }
+            pEv->ignore();
+            return false; // clazy:exclude=base-class-event
+        }
+
+        if (t == QEvent::DragLeave || t == QEvent::Drop) {
+            if (m_pTrackDropTarget) {
+                bool ret = m_pTrackDropTarget->handleDragAndDropEventFromWindow(pEv);
+                m_pTrackDropTarget = nullptr;
+                return ret;
+            }
             pEv->ignore();
             return false; // clazy:exclude=base-class-event
         }

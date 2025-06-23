@@ -246,32 +246,34 @@ void DlgTagFetcher::slotPrev() {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
+    tags->clear();
+    m_data = Data();
     if (m_pTrack) {
-        tags->clear();
         disconnect(m_pTrack.get(),
                 &Track::changed,
                 this,
                 &DlgTagFetcher::slotTrackChanged);
-        m_data = Data();
     }
-    tags->clear();
 
-    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(CoverInfo{}, QPixmap{});
 
     m_coverCache.clear();
-
-    m_pTrack = pTrack;
-    if (!m_pTrack) {
-        return;
-    }
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
     checkBoxTags->setDisabled(true);
     checkBoxCover->setDisabled(true);
     statusMessage->setVisible(false);
+
+    m_pTrack = pTrack;
+    if (!m_pTrack) {
+        loadingProgressBar->setVisible(false);
+        return;
+    }
+
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
+    loadingProgressBar->setToolTip(QString());
     addDivider(tr("Original tags"), tags);
     addTagRow(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
 
@@ -435,6 +437,7 @@ void DlgTagFetcher::retry() {
     checkBoxTags->setDisabled(true);
     checkBoxCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
+    loadingProgressBar->setToolTip(QString());
     m_tagFetcher.startFetch(m_pTrack);
 }
 
@@ -481,15 +484,15 @@ void DlgTagFetcher::setPercentOfEachRecordings(int totalRecordingsFound) {
 
 void DlgTagFetcher::fetchTagFinished(
         TrackPointer pTrack,
-        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases,
+        const QString& whyEmptyMessage) {
     VERIFY_OR_DEBUG_ASSERT(pTrack == m_pTrack) {
         return;
     }
     m_data.m_tags = guessedTrackReleases;
     if (guessedTrackReleases.size() == 0) {
         loadingProgressBar->setValue(kMaximumValueOfQProgressBar);
-        QString emptyMessage = tr("Could not find this track in the MusicBrainz database.");
-        loadingProgressBar->setFormat(emptyMessage);
+        loadingProgressBar->setFormat(whyEmptyMessage);
         return;
     } else {
         btnApply->setDisabled(true);
@@ -535,8 +538,16 @@ void DlgTagFetcher::slotNetworkResult(
         const QString& app,
         const QString& message,
         int code) {
-    QString cantConnect = tr("Can't connect to %1: %2");
-    loadingProgressBar->setFormat(cantConnect.arg(app, message));
+    const QString cantConnect = tr("Can't connect to %1: %2").arg(app, message);
+    const QFontMetrics metrics(loadingProgressBar->font());
+    const QString elidedCantConnect = metrics.elidedText(
+            cantConnect,
+            Qt::ElideRight,
+            loadingProgressBar->width() - 4);
+    loadingProgressBar->setFormat(elidedCantConnect);
+    if (cantConnect != elidedCantConnect) {
+        loadingProgressBar->setToolTip(cantConnect);
+    }
     qWarning() << "Error while fetching track metadata!"
                << "Service:" << app
                << "HTTP Status:" << httpError
@@ -569,7 +580,7 @@ void DlgTagFetcher::tagSelected() {
     m_data.m_selectedTag = tagIndex;
 
     m_fetchedCoverArtByteArrays.clear();
-    m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
@@ -601,7 +612,7 @@ void DlgTagFetcher::slotCoverFound(
             m_pTrack &&
             m_pTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
-        m_pWCurrentCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCurrentCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 
@@ -662,7 +673,7 @@ void DlgTagFetcher::loadPixmapToLabel(const QPixmap& pixmap) {
     statusMessage->clear();
     statusMessage->setVisible(true);
 
-    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
+    m_pWFetchedCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
 
     checkBoxCover->setEnabled(!pixmap.isNull());
 }

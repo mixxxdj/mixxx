@@ -60,7 +60,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                     sampleEndPosition);
                     if (visible || currentMarkEndPoint > 0) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.4);
+                        color.setAlphaF(0.4f);
 
                         QLinearGradient gradient(QPointF(0, 0),
                                 QPointF(0, m_waveformRenderer->getHeight()));
@@ -107,7 +107,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                             sampleEndPosition);
                     if (currentMarkEndPoint < m_waveformRenderer->getHeight()) {
                         QColor color = pMark->fillColor();
-                        color.setAlphaF(0.4);
+                        color.setAlphaF(0.4f);
 
                         QLinearGradient gradient(QPointF(0, 0),
                                 QPointF(m_waveformRenderer->getWidth(), 0));

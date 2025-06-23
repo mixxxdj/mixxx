@@ -14,8 +14,10 @@ QuantizeControl::QuantizeControl(const QString& group,
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
+    m_pCONextBeat->setKbdRepeatable(true);
     m_pCONextBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
     m_pCOPrevBeat = new ControlObject(ConfigKey(group, "beat_prev"));
+    m_pCOPrevBeat->setKbdRepeatable(true);
     m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
     m_pCOClosestBeat = new ControlObject(ConfigKey(group, "beat_closest"));
     m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
@@ -67,8 +69,6 @@ void QuantizeControl::playPosChanged(mixxx::audio::FramePos position) {
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to
     // do so.
-    // NOTE: This bypasses the epsilon calculation, but is there a way
-    //       that could actually cause a problem?
     const auto prevBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pCOPrevBeat->get());
@@ -88,7 +88,7 @@ void QuantizeControl::lookupBeatPositions(mixxx::audio::FramePos position) {
     if (pBeats) {
         mixxx::audio::FramePos prevBeatPosition;
         mixxx::audio::FramePos nextBeatPosition;
-        pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
+        pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false);
         // FIXME: -1.0 is a valid frame position, should we set the COs to NaN?
         m_pCOPrevBeat->set(prevBeatPosition.toEngineSamplePosMaybeInvalid());
         m_pCONextBeat->set(nextBeatPosition.toEngineSamplePosMaybeInvalid());

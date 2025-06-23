@@ -148,6 +148,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
+    comboBoxLoadPoint->addItem(tr("First hotcue"), static_cast<int>(SeekOnLoadMode::FirstHotcue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
     comboBoxLoadPoint->addItem(tr("Beginning of track"), static_cast<int>(SeekOnLoadMode::Beginning));
     bool seekModeExisted = m_pConfig->exists(ConfigKey("[Controls]", "CueRecall"));
@@ -259,6 +260,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         m_iRateRangePercent = kDefaultRateRangePercent;
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
+    // Write verified value back to config so DlgPrefLibrary can use it to
+    // calculate the 'fuzzy' BPM search range
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+            ConfigValue{m_iRateRangePercent});
 
     // Key lock mode
     connect(buttonGroupKeyLockMode,
@@ -689,24 +694,27 @@ void DlgPrefDeck::slotApply() {
     for (ControlProxy* pControl : std::as_const(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_cueMode);
 
-    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, static_cast<int>(m_loadWhenDeckPlaying));
+    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, m_loadWhenDeckPlaying);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
 
     // Set rate range
-    setRateRangeForAllDecks(m_iRateRangePercent);
+    // Set the config value before setting the CO values in setRateRangeForAllDecks()
+    // because a proxy in DlgPrefLibrary listens to [Channe1],rate_range changes
+    // in order to update the fuzzy BPM range with the new value of "RateRangePercent".
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
                         m_iRateRangePercent);
+    setRateRangeForAllDecks(m_iRateRangePercent);
 
-    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
-            static_cast<int>(m_bRateDownIncreasesSpeed));
+            m_bRateDownIncreasesSpeed);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
 
-    int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
+    BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
@@ -716,8 +724,8 @@ void DlgPrefDeck::slotApply() {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
     }
 
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-                   ConfigValue(configSPAutoReset));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            configSPAutoReset);
 
     if (radioButtonSoftLeader->isChecked()) {
         m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
@@ -728,21 +736,21 @@ void DlgPrefDeck::slotApply() {
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
-                        static_cast<int>(m_keylockMode));
+            m_keylockMode);
     // Set key lock behavior for every group
     for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
-                        static_cast<int>(m_keyunlockMode));
+            m_keyunlockMode);
     // Set key un-lock behavior for every group
     for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
     RateControl::setRateRampMode(m_bRateRamping);
-    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), static_cast<int>(m_bRateRamping));
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
 
     RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);

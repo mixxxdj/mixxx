@@ -152,8 +152,8 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     // Scope for MMutexLocker.
     {
         const MMutexLocker locker(&s_qCOHashMutex);
-        const auto it = s_qCOHash.find(key);
-        if (it != s_qCOHash.end()) {
+        const auto it = s_qCOHash.constFind(key);
+        if (it != s_qCOHash.constEnd()) {
             auto pControl = it.value().lock();
             if (pControl) {
                 auto actualKey = pControl->getKey();
@@ -227,7 +227,7 @@ QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::getAllInstance
     QList<QSharedPointer<ControlDoublePrivate>> result;
     MMutexLocker locker(&s_qCOHashMutex);
     result.reserve(s_qCOHash.size());
-    for (auto it = s_qCOHash.begin(); it != s_qCOHash.end(); ++it) {
+    for (auto it = s_qCOHash.constBegin(); it != s_qCOHash.constEnd(); ++it) {
         auto pControl = it.value().lock();
         if (pControl) {
             result.append(std::move(pControl));

@@ -3,8 +3,7 @@
 name: pre-commit
 
 on:
-  push:
-  pull_request:
+  workflow_call:
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -18,7 +17,7 @@ jobs:
     container: holzhaus/mixxx-ci:20220930
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.2.2
         with:
           # Unfortunately we need the whole history and can't use a shallow clone
           # because the Appstream Metadata hook parses the history to find the
@@ -51,6 +50,8 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           SKIP: no-commit-to-branch
+          # https://github.com/paleite/eslint-plugin-diff?tab=readme-ov-file#ci-setup
+          ESLINT_PLUGIN_DIFF_COMMIT: ${{ github.event.pull_request.base.ref }}
         with:
           # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
           # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
@@ -67,14 +68,14 @@ jobs:
 
       - name: "Upload patch artifact"
         if: failure() && env.UPLOAD_PATCH_FILE != null
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ env.UPLOAD_PATCH_FILE }}
           path: ${{ env.UPLOAD_PATCH_FILE }}
 
       - name: "Upload pre-commit.log"
         if: failure() && env.UPLOAD_PATCH_FILE == null
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: pre-commit.log
           path: /github/home/.cache/pre-commit/pre-commit.log

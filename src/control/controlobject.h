@@ -33,6 +33,9 @@ class ControlObject : public QObject {
         return getControl(key, flags);
     }
 
+    // Checks whether a ControlObject exists or not
+    static bool exists(const ConfigKey& key);
+
     QString name() const {
         return m_pControl ?  m_pControl->name() : QString();
     }

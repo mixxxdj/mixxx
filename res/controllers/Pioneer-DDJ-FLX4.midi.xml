@@ -118,7 +118,7 @@
                 <group>[Channel1]</group>
                 <key>reverseroll</key>
                 <status>0x90</status>
-                <midino>0x47</midino>
+                <midino>0x0E</midino>
                 <options>
                     <Normal/>
                 </options>
@@ -138,7 +138,7 @@
                 <group>[Channel2]</group>
                 <key>reverseroll</key>
                 <status>0x91</status>
-                <midino>0x47</midino>
+                <midino>0x0E</midino>
                 <options>
                     <Normal/>
                 </options>
@@ -894,27 +894,6 @@
                 <key>pfl</key>
                 <status>0x91</status>
                 <midino>0x54</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
-                <description>CUE Channel +SHIFT - press - Adjust BPM to match tapped BPM</description>
-                <group>[Channel1]</group>
-                <key>bpm_tap</key>
-                <status>0x90</status>
-                <midino>0x68</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <description>CUE Channel +SHIFT - press - Adjust BPM to match tapped BPM</description>
-                <group>[Channel2]</group>
-                <key>bpm_tap</key>
-                <status>0x91</status>
-                <midino>0x68</midino>
                 <options>
                     <normal/>
                 </options>

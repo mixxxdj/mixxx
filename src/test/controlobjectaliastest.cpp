@@ -24,7 +24,6 @@ const QString kSkinGroup = QStringLiteral("[Skin]");
 class ControlObjectAliasTest : public MixxxTest {
 };
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 TEST_F(ControlObjectAliasTest, GuiTick) {
     auto guiTick = GuiTick();
 
@@ -36,7 +35,6 @@ TEST_F(ControlObjectAliasTest, GuiTick) {
     auto period50msLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("guiTick50ms")));
     EXPECT_DOUBLE_EQ(period50ms.get(), period50msLegacy.get());
 }
-#endif
 
 TEST_F(ControlObjectAliasTest, ControlIndicatorTimer) {
     auto controlIndicatorTimer = mixxx::ControlIndicatorTimer();

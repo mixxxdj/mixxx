@@ -10,6 +10,15 @@
 
 class TrackCollectionManager;
 
+/// Base class for tabular track list views.
+///
+/// The abstract model behind `WTrackTableView`.
+///
+/// Closely coupled with `BaseSqlTableModel` from which it has been extracted once.
+///
+/// Serves as an extension point for integrating external track data into Mixxx.
+/// It allows to view track lists provided by external libraries using `WTrackTableView`
+/// without importing redundant data into the Mixxx database.
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
     DISALLOW_COPY_AND_ASSIGN(BaseTrackTableModel);
@@ -21,6 +30,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const char* settingsNamespace);
     ~BaseTrackTableModel() override = default;
 
+    QVariant getFieldVariant(const QModelIndex& index, ColumnCache::Column column) const;
+    QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
+    QString getFieldString(const QModelIndex& index, ColumnCache::Column column) const;
+
     ///////////////////////////////////////////////////////
     //  Overridable functions
     ///////////////////////////////////////////////////////
@@ -28,6 +41,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual int fieldIndex(
             ColumnCache::Column column) const {
         return m_columnCache.fieldIndex(column);
+    }
+
+    virtual int endFieldIndex() const {
+        return m_columnCache.endFieldIndex();
     }
 
     ///////////////////////////////////////////////////////
@@ -81,6 +98,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.fieldIndex(fieldName);
     }
 
+    void cutTracks(const QModelIndexList& indices) override;
+    void copyTracks(const QModelIndexList& indices) const override;
+    QList<int> pasteTracks(const QModelIndex& index) override;
+
     bool isColumnHiddenByDefault(
             int column) override;
 
@@ -101,28 +122,20 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int kBpmColumnPrecisionMaximum = 10;
     static void setBpmColumnPrecision(int precision);
 
-  protected:
-    static constexpr int defaultColumnWidth() {
-        return 50;
-    }
-    static QStringList defaultTableColumns();
+    static constexpr bool kApplyPlayedTrackColorDefault = true;
+    static void setApplyPlayedTrackColor(bool apply);
 
+  protected:
     // Build a map from the column names to their indices
-    // used by fieldIndex(). This function has to be called
+    // used by fieldIndex().
     void initTableColumnsAndHeaderProperties(
-            const QStringList& tableColumns = defaultTableColumns());
+            const QStringList& tableColumns);
 
     QString columnNameForFieldIndex(int index) const {
         return m_columnCache.columnNameForFieldIndex(index);
     }
 
-    // A simple helper function for initializing header title and width.
-    // Note that the ideal width of a column is based on the width of
-    // its data, not the title string itself.
-    void setHeaderProperties(
-            ColumnCache::Column column,
-            const QString& title,
-            int defaultWidth = 0);
+    void setHeaderProperties(ColumnCache::Column column);
 
     ColumnCache::Column mapColumn(int column) const {
         if (column >= 0 && column < m_columnHeaders.size()) {
@@ -153,8 +166,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     //  Overridable functions
     ///////////////////////////////////////////////////////
 
-    virtual void initHeaderProperties();
-
     // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(
             const QModelIndex& index) const;
@@ -162,10 +173,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(
             const QModelIndex& index) const;
 
-    /// At least one of the following functions must be overridden,
-    /// because each default implementation will call the other
-    /// function!!
-    ///
     /// Return the raw data value at the given index.
     ///
     /// Expected types by ColumnCache field (pass-through = not validated):
@@ -211,10 +218,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
-            const QModelIndex& index) const;
-    virtual QVariant rawSiblingValue(
-            const QModelIndex& index,
-            ColumnCache::Column siblingField) const;
+            const QModelIndex& index) const = 0;
 
     QVariant roleValue(
             const QModelIndex& index,
@@ -250,6 +254,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QPixmap& pixmap);
 
   private:
+    QVariant rawSiblingValue(
+            const QModelIndex& index,
+            ColumnCache::Column siblingField) const;
+
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
     // the internal database.
@@ -268,6 +276,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
+    QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
 
     ColumnCache m_columnCache;
 
@@ -277,11 +287,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     };
     QVector<ColumnHeader> m_columnHeaders;
 
-    int countValidColumnHeaders() const;
-
     TrackId m_previewDeckTrackId;
 
     mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
+
+    static bool s_bApplyPlayedTrackColor;
 };

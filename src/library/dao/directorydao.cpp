@@ -79,9 +79,16 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     if (!newDir.exists() || !newDir.isDir()) {
         kLogger.warning()
                 << "Failed to add"
-                << newDir
+                << newDir.location()
                 << ": Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
+    }
+    if (!newDir.isReadable()) {
+        kLogger.warning()
+                << "Aborting to to add"
+                << newDir.location()
+                << ": Directory can not be read";
+        return AddResult::UnreadableDirectory;
     }
     const auto newCanonicalLocation = newDir.canonicalLocation();
     DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
@@ -91,7 +98,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     // Worst that can happen is that we have orphan tracks in the database that
     // would be moved to missing after the rescan (which is required anyway after
     // having added a new dir).
-    for (auto&& oldDir : loadAllDirectories(true)) {
+    for (auto&& oldDir : loadAllDirectories(true /* ignore missing */)) {
         const auto oldCanonicalLocation = oldDir.canonicalLocation();
         DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
         if (mixxx::FileInfo::isRootSubCanonicalLocation(
@@ -126,7 +133,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
         if (RemoveResult::Ok != removeDirectory(oldDir)) {
             kLogger.warning()
                     << "Failed to remove obsolete child directory"
-                    << oldDir;
+                    << oldDir.location();
             DEBUG_ASSERT(!"removeDirectory failed");
             continue;
         }
@@ -161,7 +168,7 @@ DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
     return RemoveResult::Ok;
 }
 
-QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
+std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::relocateDirectory(
         const QString& oldDirectory,
         const QString& newDirectory) const {
     // Don't verify the old directory with
@@ -170,7 +177,28 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     //  valid location.
     // Just work with the QString; in case of an invalid path track relocation
     // will simply fail if the database query yields no results.
-    DEBUG_ASSERT(newDirectory == mixxx::FileInfo(newDirectory).location());
+    const mixxx::FileInfo newFileInfo(newDirectory);
+    DEBUG_ASSERT(newDirectory == newFileInfo.location());
+
+    if (!newFileInfo.exists() || !newFileInfo.isDir()) {
+        kLogger.warning()
+                << "Aborting to relocate"
+                << oldDirectory
+                << ": "
+                << newDirectory
+                << "does not exist or is inaccessible";
+        return {RelocateResult::InvalidOrMissingDirectory, {}};
+    }
+    if (!newFileInfo.isReadable()) {
+        kLogger.warning()
+                << "Aborting to relocate"
+                << oldDirectory
+                << ": "
+                << newDirectory
+                << "can not be read";
+        return {RelocateResult::UnreadableDirectory, {}};
+    }
+
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldDirectory also has a zombie
     // track location in newDirectory then the replace query will fail because the
@@ -183,7 +211,7 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
                                 << oldDirectory << "to" << newDirectory;
-        return {};
+        return {RelocateResult::SqlError, {}};
     }
 
     // Appending '/' is required to disambiguate files from parent
@@ -199,7 +227,7 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     query.bindValue(":oldDirectoryPrefix", oldDirectoryPrefix);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-        return {};
+        return {RelocateResult::SqlError, {}};
     }
 
     QList<DbId> loc_ids;
@@ -233,10 +261,10 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         query.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "could not relocate path of track";
-            return {};
+            return {RelocateResult::SqlError, relocatedTracks};
         }
     }
 
     qDebug() << "Relocated tracks:" << relocatedTracks.size();
-    return relocatedTracks;
+    return {RelocateResult::Ok, relocatedTracks};
 }

@@ -11,7 +11,7 @@ class WaveformRendererFiltered;
 
 class allshader::WaveformRendererFiltered final : public allshader::WaveformRendererSignalBase {
   public:
-    explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget, bool rgbStacked);
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;
@@ -20,6 +20,7 @@ class allshader::WaveformRendererFiltered final : public allshader::WaveformRend
     void paintGL() override;
 
   private:
+    const bool m_bRgbStacked;
     mixxx::UnicolorShader m_shader;
     VertexData m_vertices[4];
 

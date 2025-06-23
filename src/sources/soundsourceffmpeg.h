@@ -20,18 +20,17 @@ class SoundSourceFFmpeg : public SoundSource {
 
     void close() override;
 
+    static QString formatErrorString(int errnum);
+
   protected:
     ReadableSampleFrames readSampleFramesClamped(
             const WritableSampleFrames& sampleFrames) override;
 
-  private:
-    OpenResult tryOpen(
+    virtual OpenResult tryOpen(
             OpenMode mode,
             const OpenParams& params) override;
 
-    bool initResampling(
-            audio::ChannelCount* pResampledChannelCount,
-            audio::SampleRate* pResampledSampleRate);
+  private:
     const CSAMPLE* resampleDecodedAVFrame();
 
     // Seek to the requested start index (if needed) or return false
@@ -84,10 +83,8 @@ class SoundSourceFFmpeg : public SoundSource {
       private:
         AVFormatContext* m_pavInputFormatContext;
     };
-    InputAVFormatContextPtr m_pavInputFormatContext;
 
-    AVStream* m_pavStream;
-
+  protected:
     // Takes ownership of an opened (audio) codec context and ensures that
     // the corresponding AVCodecContext is closed, either explicitly or
     // implicitly by the destructor. The wrapper can only be moved,
@@ -131,7 +128,37 @@ class SoundSourceFFmpeg : public SoundSource {
       private:
         AVCodecContext* m_pavCodecContext;
     };
+
+    bool initResampling(
+            audio::ChannelCount* pResampledChannelCount,
+            audio::SampleRate* pResampledSampleRate);
+
+  public:
+    // The following static functions are used by children and closely related
+    // classes, this is why these static methods aren't defined as protected.
+    static AVFormatContext* openInputFile(const QString& fileName);
+    static bool openDecodingContext(AVCodecContext* pavCodecContext);
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    static void initChannelLayoutFromStream(
+            AVChannelLayout* pUninitializedChannelLayout,
+            const AVStream& avStream);
+#else
+    static int64_t getStreamChannelLayout(const AVStream& avStream);
+#endif
+    static IndexRange getStreamFrameIndexRange(const AVStream& avStream);
+    static SINT getStreamSeekPrerollFrameCount(const AVStream& avStream);
+    static FrameCount frameBufferCapacityForStream(const AVStream& avStream);
+
+  protected:
+    InputAVFormatContextPtr m_pavInputFormatContext;
+    AVStream* m_pavStream;
     AVCodecContextPtr m_pavCodecContext;
+    AVFrame* m_pavDecodedFrame;
+    FrameCount m_seekPrerollFrameCount;
+    ReadAheadFrameBuffer m_frameBuffer;
+
+    // FFmpeg static constants
+    static constexpr AVSampleFormat s_avSampleFormat = AV_SAMPLE_FMT_FLT;
 
     // Resampler
     class SwrContextPtr final {
@@ -184,12 +211,7 @@ class SoundSourceFFmpeg : public SoundSource {
 
     AVPacket* m_pavPacket;
 
-    AVFrame* m_pavDecodedFrame;
     AVFrame* m_pavResampledFrame;
-
-    FrameCount m_seekPrerollFrameCount;
-
-    ReadAheadFrameBuffer m_frameBuffer;
 
     const unsigned int m_avutilVersion;
 };

@@ -1,0 +1,448 @@
+lang	source
+*	
+*	#
+*	%
+*	%1
+*	0
+*	1/32
+*	1/16
+*	1/8
+*	1/4
+*	1/2
+*	1
+*	2
+*	4
+*	8
+*	16
+*	32
+*	64
+*	256
+*	16 Hz
+*	Icecast 1
+*	Icecast 2
+*	Shoutcast 1
+*	MP3
+*	Ogg Vorbis
+*	http://www.mixxx.org
+*	http://www.xwax.co.uk
+*	4%
+*	8% (Technics SL-1210)
+*	10%
+*	16%
+*	24%
+*	50%
+*	90%
+*	20.05 kHz
+*	%1 ms
+*	Banshee
+*	BPM
+*	BPM:
+*	BPM +1
+*	BPM -1
+*	BPM +0.1
+*	BPM -0.1
+*	3/4 BPM
+*	2/3 BPM
+*	3/2 BPM
+*	4/3 BPM
+*	MusicBrainz
+*	ReplayGain
+*	ReplayGain:
+*	ReplayGain 2.0 (ITU-R BS.1770)
+*	ReplayGain 1.0
+*	CUP (Cue + Play)
+*	%1 Hz
+*	iTunes
+*	Traktor
+*	Rhythmbox
+*	Serato
+*	hh:mm
+*	Opus
+*	AAC
+*	HE-AAC
+*	HE-AACv2
+*	Mono
+*	ICQ
+*	AIM
+*	IRC
+*	Soft Takeover
+*	SoftTakeover
+*	Opcode
+*	Note On
+*	Note Off
+*	CC
+*	Lancelot
+*	OpenKey
+*	Ctrl+S
+*	Ctrl+Shift+O
+*	Ctrl+P
+*	Ctrl+
+*	Ctrl+R
+*	Ctrl+L
+*	Ctrl+F
+*	Ctrl+t
+*	Ctrl+y
+*	Ctrl+u
+*	Ctrl+i
+*	Ctrl+o
+*	Ctrl+,
+*	Ctrl+q
+*	Ctrl+n
+*	Ctrl+1
+*	Ctrl+2
+*	Ctrl+3
+*	Ctrl+4
+*	Ctrl+6
+*	Ctrl+`
+*	Ctrl+Shift+L
+*	Ctrl+Shift+N
+*	Ctrl+Shift+R
+*	Ctrl+Shift+T
+*	Ctrl+Shift+E
+*	Ctrl+Shift+B
+*	Ctrl+Shift+D
+*	Ctrl+Backspace
+*	Ctrl+Space
+*	500 px
+*	250 px
+*	...
+*	 ms
+*	20 ms
+*	Pro-Logic Surround
+*	-30 LUFS
+*	-6 LUFS
+*	-12 dB
+*	0 dB
+*	+12 dB
+*	44 dB
+*	HSV
+*	RGB
+*	RGB L/R
+*	RGB Stacked
+*	VSyncTest
+*	Rot64
+*	Rot64Inv
+*	Rot64Fast
+*	Diff
+*	Spread64
+*	HercJog
+*	SelectKnob
+*	14-bit (LSB)
+*	14-bit (MSB)
+*	Bitcrusher
+*	Ping Pong
+*	Triplets
+*	Q
+*	Q 1
+*	Q 2
+*	Flanger
+*	Regen
+*	Mix
+*	Autopan
+*	Bessel4 ISO
+ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
+*	%1:%2
+*	Bessel8 ISO
+*	LR8 ISO
+*	BQ EQ
+*	BQ EQ/ISO
+*	Loudness
+*	16 bits
+*	24 bits
+*	Param EQ
+*	CBR
+*	Rekordbox
+*	%1: %2
+*	F12
+*	Esc
+*	Stereo
+*	2x MSAA
+*	4x MSAA
+*	8x MSAA
+*	16x MSAA
+*	 px
+*	TextLabel
+*	&OK
+*	LPF
+*	HPF
+*	Stem #%1
+*	FPS: n/a
+*	<i>FPS: %0/%1</i>
+*	\u276f
+*	\u276e
+de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL	Album
+de,da,fr,lb,ms,nl,oc,sv	Genre
+de,it,pl	Bitrate:
+es,es_419,es_AR,es_CO,es_MX,ca,es_ES	Error:
+pt_BR,de,el,id,it,nl,ro	Deck %1
+hu,da,de,el,eu,id,nb,nl,pl,pt*,ro,sn,tr,vi	Sampler %1
+hu,id,nl,sn	Auxiliary %1
+*	Crossfader
+*	Cue
+hu,ca,de,et,fr,nb,pl,ro,sv,tr	Port
+hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	A
+hu,pt,pt_PT,et,fi,nl,pl,pt_BR,ro,zh*	Bb
+hu,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	B
+hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	C
+hu,fi,nl,pl,pt_BR,ro,sl,zh*	Db
+hu,pt,pt_PT,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	D
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*	Eb
+hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	E
+hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	F
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	F#
+hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	G
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*	Ab
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	Am
+hu,et,fi,nl,pl,pt_BR,ro,zh*	Bbm
+hu,et,fi,nl,pl,pt_BR,ro,zh*	Bm
+hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK	Cm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	C#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*	Dm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	Ebm
+hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*	Em
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	Fm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	F#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	Gm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	G#m
+*	10Hz
+*	10ms
+*	5ms
+*	100Hz
+*	250ms
+*	50ms
+hu,bs,de,eo,eu,fr,hr,it,lb,lt,lv,nb,nl,pt_PT,ro,sk,sv,vi	Min
+hu,bs,de,eu,fr,hr,it,lb,nl,ro,sk,sv,vi	Max
+pt,pt_BR,ca,de,fr,it,nl,pl,pt_PT,sl,sv	Tremolo
+pt_BR,da,de,id,it,nl,pt,ro	Mixer
+pt_BR,de,it,nl,pt_PT	Reloop
+de,es*,nl,pt_BR,vi	Hotcues
+de,es*	Hotcues %1-%2
+nl,pl	Hotcue index
+de,it,nl,pl,es_ES	Hotcue #%1
+fr,de,sv	Information
+fr,es*	Simple
+ca,es*	Color
+nl	is
+nl	Cover
+nl	Track BPM: 
+nl	MIDI Controller
+nl	Help
+nl	Later
+nl	Auxiliary
+nl,vi	Quantize
+nl	Biquad Equalizer
+nl,ro,sv	Live Mix
+nl,sv	Center 2
+nl	Waveform
+nl	Meta Knob Link
+nl	Effect Parameter
+nl	Equalizer Parameter
+nl	Vinyl Status
+nl	Track Album
+nl	audio interface
+nl	HID Interface %1: 
+ro	Sum
+sk	M3U Playlist (*.m3u)
+sn	Slip Mode
+sn,sv	Sync
+sn	Deck %1 Quick Effect Super Knob
+sn	Quick Effect
+sq_AL	Quick Links
+sv	Full
+sv	Period
+vi	Shuffle
+vi	Relink
+nl	Vinyl Type
+nl,sl	OpenGL status
+nl	Waveforms
+nl	&Help
+nl	Modplug Decoder
+nl,sv	Center 1
+nl	Label...
+sn	Super Knob
+ca,es*,gl,ro	Control
+nl	Volume Fader
+nl	Mid EQ
+nl	Loop %1 Beats
+nl	Loop Roll %1 Beats
+nl	Sync / Sync Lock
+nl	Samplers
+nl,pt_PT,ro	Website
+nl,oc,pl	Live mix
+nl,sv	Metadata
+nl	Mapping Info
+nl	Intro start
+nl	Type:
+nl	Equalizer Plugin
+nl,sv,vi	Reverb
+nl	Encoder
+it,nl,pl,ro,vi	Downsampling
+it,nl	32 bits float
+nl	Queen Mary Key Detector
+it	Pitch
+it,nl	Hot cues
+it	&File
+it,nl	database
+sn	Key
+lb,nl	Crossfader Curve
+nb,nn,ro,sv,sq_AL	Artist
+nl	Cover Art
+nl	Scan
+nl,pt*	Item
+ca	Controls
+ca,de,fr,nb,oc,pl,ro,sl,sv,sq_AL	Format
+ca,fr,nl,ro,sv	Permanent
+ca,de,es*,fr,gl,pt*,ro,sv,tr	Global
+ca	Colors
+ca,de,es*,it,pl,pt*,sv	Pitch Bend
+ca,de,es*,fr,pl,pt*,ro,sv,tr	Normal
+ca,de,es*,fr,it,nl,pl,pt*,ro,sv	Script
+ca,nl	Moog Ladder 4 Filter
+ca,es*	Mid/Side
+ca,es*,fr,sl	Triplet
+ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
+*	MESA vblank_mode = 1
+ca,de,fr,it,nl,pl,sv,es*	Intro
+cs,de,fr,sl	Formant
+da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv	Auto DJ
+da,fr,nb,nl,nn	Type
+de,nl,pl,sv	Status
+da,de,it,nl	Computer
+da,lb,nl	USB Controller
+da,de,id,nl,sk,sl,sv	Parameter
+da,de,id,nl,sl,sv	Parameter %1
+da,nl	Platform:
+fr	Description
+fr	Microphone %1
+it,sn	Slot %1
+fr,gl,it,nl,pt*	Volume
+fr	Orientation
+fr	Gain
+fr	Options
+fr	Action
+fr,nl,ro	sec.
+fr	Compression
+fr,nl	Type (#)
+fr	Placement
+fr,gl,pt*	Interface
+fr	Question
+fr	Microphone
+fr	%1 minutes
+fr,it	Bypass Fr.
+fr	Gain 1
+fr	Gain 2
+fr,it,ru,es*	Queen Mary University London
+fr,nl	Distortion
+fr,de	Ratio (:1)
+fr,de	Ratio
+fr	Variance
+fr	&Options
+fr,nl	Focus
+hy,vi,zh_CN,zh_TW	_copy
+it,nl	Loop In
+it,nl	Loop Out
+it,nl	Keylock
+it,nl	Loop Roll Beats
+it,nl	Waveform Zoom
+it	File:
+it,nl,pt_BR	Log
+it,nl,pl,pt_BR,pt_PT	Login
+it	Fine
+it	Deck Equalizers
+it,nl,es*	Lead-In
+it	Frame rate
+it,nl,pt_BR	Caching
+it,nl	skin
+it	decks
+de	Timer (Fallback)
+de,fr,it,nl,pl,sv,es*	Outro
+de,nl	Loops
+el,pt_BR	Tool tips
+el,es*,eu,id,it,lb,nb,pt*,tr	Scratching
+es*,fr,it,nl,pt*,sq_AL	&Ok
+es*,pt_BR	Switch
+es*,pt*	Manual
+et,hr,it,tr,vi	BPM Tap
+fr,it,nl,zh*	 pt
+it	Password
+nl,sv,vi	Equalizers
+nl,it	Controllers
+nl	Audio Buffer
+nl,sv	OpenGL Direct Rendering
+nl,zh*	Hard Clip
+nl,zh*	Hard
+sv	(status text)
+da	Input
+de,nl	Moog Filter
+de,fr,it,nl,pt*,ro,sv	Phaser
+de,it,nl,pt_PT,ru	Bessel4 LV-Mix Isolator
+de,it,nl,pt_PT,ru,sv	Bessel8 LV-Mix Isolator
+de,nl,pt,pt_PT,ru,sv	LinkwitzRiley8 Isolator
+de,es*,fr,gl	Balance
+de,fr	Phase
+de,it,nl,es*	Drive
+de,fr,it,pl	Passthrough
+de,it,nl	Glitch
+de,it	Beatgrids
+de,nl,pt_BR,pt_PT,ro,vi	Sampler
+de,es*,it,nl,pt_BR,ro,vi	Hotcue
+de	Loop-In Marker
+de	Loop-Out Marker
+de,it	Beatloop
+nl,it,zh*	Booth
+de,it,nl,pt_BR,ro	Deck
+de,fr,it,nl,pl	Echo
+de,it,nl,sv	Feedback
+de,nl,sl,sv	Filter
+de	Regeneration
+de,it,nl,pl,pt,pt_PT,ru,zh*	BW
+de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
+nl	Track #
+de	Name
+de,et,fr,nb,nl,pl,ro,sl	Transport
+de,lt,nl,pt_BR	Cues
+de,es*,hu,it,nl,pt_BR,ro,tr,vi,zh,zh_HK	Hotcue %1
+de,pt,pt_BR,vi	Looping
+de,hu,it,nl,sk	Stop
+de,fr,ru,sn	Dry/Wet
+de,el,it,nl,pt_BR,pt_PT	Skin
+de,it,nl	Controller
+de,nl,pl,it	BPM / Beatgrid
+de,nl	Loop Beats
+de,fr	Navigation
+de,et,it,nl,pl,pt_BR,tr	Host
+de	Controller Name
+de	Name:
+de	Mappings
+de,it,nl	Multi-Sampling
+de,sv,sq_AL	Version:
+de,lb,oc,pt_BR,pt_PT	Linear
+de,nl,vi	Tags
+de	Sound API
+de,it,ja,nl,pt*,ro	Deck 1
+de,it,ja,nl,pt*,ro	Deck 2
+de,it,ja,nl	Deck 3
+de,it,ja,nl	Deck 4
+de,fr,it,nl,sl	 fps
+de,nl	Decks
+de,nl	Track
+de,nl	Tracks
+it	legacy
+nl	Waveform type
+es*,it,nl,zh*	Knee (dBFS)
+es*,it,nl,zh*	Knee
+es*,nl,de	Release
+it,nl	Auto Makeup Gain
+it,nl	Makeup
+it	controllers
+nl	&Reset
+nl	Compressor
+nl,de	Release (ms)
+it	Tempo Tap
+zh*	Soft Clipping
+zh*	Hard Clipping
+sq_AL	Off
+sq_AL	Artist + Album
+it	Okay
+de	Attack (ms)
+de	Attack

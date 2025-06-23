@@ -17,15 +17,27 @@
 #include "widget/wwidget.h"
 
 class PlayerManager;
-;
 class QDomNode;
 class SkinContext;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
+    WOverview(
+            const QString& group,
+            PlayerManager* pPlayerManager,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
+
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
+
+    enum class Type {
+        Filtered,
+        HSV,
+        RGB,
+    };
+    Q_ENUM(Type);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -39,11 +51,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
-    WOverview(
-            const QString& group,
-            PlayerManager* pPlayerManager,
-            UserSettingsPointer pConfig,
-            QWidget* parent = nullptr);
 
     void mouseMoveEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
@@ -53,42 +60,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
-
-    inline int length() {
-        return m_orientation == Qt::Horizontal ? width() : height();
-    }
-
-    inline int breadth() {
-        return m_orientation == Qt::Horizontal ? height() : width();
-    }
-
-    ConstWaveformPointer getWaveform() const {
-        return m_pWaveform;
-    }
-
-    double getTrackSamples() const {
-        if (m_trackLoaded) {
-            return m_trackSamplesControl->get();
-        } else {
-            // Ignore the value, because the engine can still have the old track
-            // during loading
-            return 0.0;
-        }
-    }
-
-    QImage m_waveformSourceImage;
-    QImage m_waveformImageScaled;
-
-    WaveformSignalColors m_signalColors;
-
-    // Hold the last visual sample processed to generate the pixmap
-    int m_actualCompletion;
-
-    bool m_pixmapDone;
-    float m_waveformPeak;
-
-    float m_diffGain;
-    qreal m_devicePixelRatio;
 
   private slots:
     void onEndOfTrackChange(double v);
@@ -102,10 +73,23 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
 
+    void slotTypeControlChanged(double v);
+    void slotNormalizeOrVisualGainChanged();
+
   private:
     // Append the waveform overview pixmap according to available data
     // in waveform
-    virtual bool drawNextPixmapPart() = 0;
+    bool drawNextPixmapPart();
+    void drawNextPixmapPartHSV(QPainter* pPainter,
+            ConstWaveformPointer pWaveform,
+            const int nextCompletion);
+    void drawNextPixmapPartLMH(QPainter* pPainter,
+            ConstWaveformPointer pWaveform,
+            const int nextCompletion);
+    void drawNextPixmapPartRGB(QPainter* pPainter,
+            ConstWaveformPointer pWaveform,
+            const int nextCompletion);
+
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
@@ -130,20 +114,50 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void updateCues(const QList<CuePointer> &loadedCues);
 
+    inline int length() {
+        return m_orientation == Qt::Horizontal ? width() : height();
+    }
+
+    inline int breadth() {
+        return m_orientation == Qt::Horizontal ? height() : width();
+    }
+
+    inline bool isPosInAllowedPosDragZone(const QPoint pos) {
+        const QRect dragZone = rect().marginsAdded(QMargins(
+                m_dragMarginH,
+                m_dragMarginV,
+                m_dragMarginH,
+                m_dragMarginV));
+        return dragZone.contains(pos);
+    }
+
+    ConstWaveformPointer getWaveform() const {
+        return m_pWaveform;
+    }
+
+    double getTrackSamples() const {
+        if (m_trackLoaded) {
+            return m_trackSamplesControl.get();
+        } else {
+            // Ignore the value, because the engine can still have the old track
+            // during loading
+            return 0.0;
+        }
+    }
+
+    // Hold the last visual sample processed to generate the pixmap
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
-    ControlProxy* m_endOfTrackControl;
+
+    Type m_type;
+    int m_actualCompletion;
+    bool m_pixmapDone;
+    float m_waveformPeak;
+    float m_diffGain;
+    qreal m_devicePixelRatio;
     bool m_endOfTrack;
     bool m_bPassthroughEnabled;
-    ControlProxy* m_pRateRatioControl;
-    ControlProxy* m_trackSampleRateControl;
-    ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playpositionControl;
-    ControlProxy* m_pPassthroughControl;
-
-    // Current active track
-    TrackPointer m_pCurrentTrack;
-    ConstWaveformPointer m_pWaveform;
 
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
@@ -155,19 +169,46 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPickupPos;
     // position of the overlay shadow
     int m_iPlayPos;
-
-    WaveformMarkPointer m_pHoveredMark;
     bool m_bTimeRulerActive;
+    Qt::Orientation m_orientation;
+    int m_dragMarginH;
+    int m_dragMarginV;
+    int m_iLabelFontSize;
+
+    // Coefficient value-position linear transposition
+    double m_a;
+    double m_b;
+
+    AnalyzerProgress m_analyzerProgress;
+    bool m_trackLoaded;
+    WaveformMarkPointer m_pHoveredMark;
+    double m_scaleFactor;
+
+    // Current active track
+    TrackPointer m_pCurrentTrack;
+    ConstWaveformPointer m_pWaveform;
+
+    QImage m_waveformSourceImage;
+    QImage m_waveformImageScaled;
+
+    WaveformSignalColors m_signalColors;
+
+    parented_ptr<ControlProxy> m_endOfTrackControl;
+    parented_ptr<ControlProxy> m_pRateRatioControl;
+    PollingControlProxy m_trackSampleRateControl;
+    PollingControlProxy m_trackSamplesControl;
+    PollingControlProxy m_playpositionControl;
+    parented_ptr<ControlProxy> m_pPassthroughControl;
+    parented_ptr<ControlProxy> m_pTypeControl;
+
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
     WaveformMarkLabel m_timeRulerDistanceLabel;
 
-    Qt::Orientation m_orientation;
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
     QColor m_backgroundColor;
-    int m_iLabelFontSize;
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
     QColor m_axesColor;
@@ -177,18 +218,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_playedOverlayColor;
     QColor m_lowColor;
     int m_dimBrightThreshold;
-    QLabel* m_pPassthroughLabel;
+    parented_ptr<QLabel> m_pPassthroughLabel;
 
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;
-
-    // Coefficient value-position linear transposition
-    double m_a;
-    double m_b;
-
-    AnalyzerProgress m_analyzerProgress;
-    bool m_trackLoaded;
-    double m_scaleFactor;
 };

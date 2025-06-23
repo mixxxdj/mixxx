@@ -11,7 +11,7 @@
     <ObjectName>FxMetaKnob</ObjectName>
     <SizePolicy>f,max</SizePolicy>
     <Children>
-      <KnobComposed>
+      <EffectMetaKnob>
         <TooltipId>EffectSlot_metaknob</TooltipId>
         <Size>35f,30f</Size>
         <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_small_<Variable name="KnobColor"/>.svg</Knob>
@@ -23,11 +23,12 @@
         <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
         <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
         <ArcColor><Variable name="ArcColorSuper"/></ArcColor>
-        <ArcUnipolar>true</ArcUnipolar>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
         <Connection>
           <ConfigKey>[<Variable name="FxRack_FxUnit_FxNum"/>],meta</ConfigKey>
         </Connection>
-      </KnobComposed>
+      </EffectMetaKnob>
     </Children>
   </WidgetGroup>
 </Template>

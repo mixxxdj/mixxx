@@ -4,8 +4,20 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
 
+REM Detect host architecture
+IF /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    SET "HOST_ARCH=x64"
+) else IF /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    SET "HOST_ARCH=arm64"
+) else (
+    echo ^Error: Unknown processor architecture: %PROCESSOR_ARCHITECTURE%
+    PAUSE
+    EXIT /B 1
+)
+
 IF NOT DEFINED PLATFORM (
-    SET PLATFORM=x64
+    ECHO ^Info: The PLATFORM environment variable is not defined. Using host's PROCESSOR_ARCHITECTURE=%PROCESSOR_ARCHITECTURE%.
+    SET "PLATFORM=%HOST_ARCH%"
 )
 
 IF NOT DEFINED BUILDENV_BASEPATH (
@@ -20,16 +32,25 @@ IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
 
-IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.4-rel
-    set VCPKG_TARGET_TRIPLET=x64-windows-release
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-release-498634a
-    SET BUILDENV_SHA256=369eb68e3a5daba3af85f990d1b60740260825e2685687d0fdb787c1ba42a542
+IF /I "%PLATFORM%"=="x64" (
+    IF DEFINED BUILDENV_RELEASE (
+        SET BUILDENV_BRANCH=2.5-rel
+        SET VCPKG_TARGET_TRIPLET=x64-windows-release
+        vcpkg_update_main
+        SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
+        SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
+    ) ELSE (
+        SET BUILDENV_BRANCH=2.5
+        SET VCPKG_TARGET_TRIPLET=x64-windows
+        SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-c15790e
+        SET BUILDENV_SHA256=138e4685ec73c6a6a509f71f8573be581403b091e4ecea2314df2cc79f9720b9
+    )
 ) ELSE (
-    SET BUILDENV_BRANCH=2.4
-    set VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-00e79d1
-    SET BUILDENV_SHA256=088bf27e8701edf132ce0e23e8947028653f3e5c5d1df54af9f0c0cc72f71196
+    ECHO ^ERROR: Unsupported PLATFORM: %PLATFORM%
+    ECHO ^Please refer to the following guide to manually build the vcpkg environment:"
+    ECHO ^https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    PAUSE
+    EXIT /B 1
 )
 
 IF "%~1"=="" (
@@ -107,6 +128,7 @@ EXIT /B 0
     IF DEFINED GITHUB_ENV (
         ECHO MIXXX_VCPKG_ROOT=!MIXXX_VCPKG_ROOT!>>!GITHUB_ENV!
         ECHO CMAKE_GENERATOR=!CMAKE_GENERATOR!>>!GITHUB_ENV!
+        ECHO VCPKG_TARGET_TRIPLET=!VCPKG_TARGET_TRIPLET!>>!GITHUB_ENV!
     ) ELSE (
         ECHO ^Generating "CMakeSettings.json"...
         CALL :GENERATE_CMakeSettings_JSON
@@ -203,16 +225,18 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "configurationType": "%2",
     >>"%CMakeSettings%" echo       "enableClangTidyCodeAnalysis": true,
     >>"%CMakeSettings%" echo       "generator": "Ninja",
-    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
+    REM <compiler>_<architecture>_<host_arch>
+    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!HOST_ARCH!" ],
     >>"%CMakeSettings%" echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
     >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
+    REM <platform>-<compiler>-<architecture>
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
     CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "True"
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
     REM CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
@@ -228,6 +252,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING"  "!VCPKG_TARGET_TRIPLET!"

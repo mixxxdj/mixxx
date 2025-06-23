@@ -1,6 +1,6 @@
 <!--
 Description:
-  An extra line below/above waveform overview that contains FX asssign buttons and
+  An extra line below/above waveform overview that contains FX assign buttons and
   track comment (optional)
 Variables:
   chanNum : the channel number

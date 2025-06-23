@@ -383,10 +383,9 @@ void writeTextIdentificationFrame(
         auto pFrame =
                 std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
         pFrame->setText(toTString(text));
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // pTag takes the ownership of pFrame
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -415,10 +414,9 @@ void writeUserTextIdentificationFrame(
                     std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(toTString(text));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // pTag takes the ownership of pFrame
+            pTag->addFrame(pFrame.release());
         }
     }
 }
@@ -489,10 +487,9 @@ void writeCommentsFrame(
                     std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
             pFrame->setDescription(toTString(description));
             pFrame->setText(text);
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+
+            // pTag takes the ownership of pFrame
+            pTag->addFrame(pFrame.release());
         }
     }
     // Cleanup: Remove non-standard comment frames to avoid redundant and
@@ -577,10 +574,9 @@ void writeGeneralEncapsulatedObjectFrame(
         pFrame->setDescription(toTString(description));
         pFrame->setObject(toTByteVector(data));
         pFrame->setMimeType(mimeType);
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
+
+        // pTag takes the ownership of pFrame
+        pTag->addFrame(pFrame.release());
     }
 }
 
@@ -1061,21 +1057,21 @@ void importTrackMetadataFromTag(
                     tag,
                     kFrameDescriptionSeratoBeatGrid);
     if (!seratoBeatGrid.isEmpty()) {
-        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MP3);
+        parseSeratoBeatGrid(pTrackMetadata, seratoBeatGrid, FileType::MPEG);
     }
     const QByteArray seratoMarkers =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers);
     if (!seratoMarkers.isEmpty()) {
-        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MP3);
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MPEG);
     }
     const QByteArray seratoMarkers2 =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers2);
     if (!seratoMarkers2.isEmpty()) {
-        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MP3);
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MPEG);
     }
 }
 
@@ -1346,15 +1342,15 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoBeatGrid,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MPEG));
         writeGeneralEncapsulatedObjectFrame(
                 pTag,
                 kFrameDescriptionSeratoMarkers2,
-                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MPEG));
     }
 
     return true;

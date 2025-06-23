@@ -83,7 +83,7 @@ LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
     SampleUtil::free(m_pBuf);
 }
 
-void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
+void LoudnessContourEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate, double gain) {
     m_low->setFrequencyCorners(
             sampleRate, kLoPeakFreq, kLoPleakQ, gain);
     m_high->setFrequencyCorners(
@@ -103,15 +103,13 @@ void LoudnessContourEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
     double filterGainDb = pState->m_oldFilterGainDb;
     auto gain = static_cast<CSAMPLE_GAIN>(pState->m_oldGain);
 
     if (enableState != EffectEnableState::Disabling) {
-        bool useGain = m_pUseGain->toBool() && groupFeatures.has_gain;
+        bool useGain = m_pUseGain->toBool() && groupFeatures.gain.has_value();
         double loudness = m_pLoudness->value();
-        double gainKnob = groupFeatures.gain;
+        double gainKnob = groupFeatures.gain.value_or(1.0);
 
         filterGainDb = loudness;
 
@@ -141,7 +139,9 @@ void LoudnessContourEffect::processChannel(
     if (filterGainDb == 0) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        }
     } else {
         pState->m_low->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         pState->m_high->process(pOutput, pState->m_pBuf, engineParameters.samplesPerBuffer());

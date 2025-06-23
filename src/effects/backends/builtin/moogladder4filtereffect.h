@@ -11,7 +11,7 @@ class MoogLadder4FilterGroupState : public EffectState {
     MoogLadder4FilterGroupState(const mixxx::EngineParameters& engineParameters);
     ~MoogLadder4FilterGroupState() override;
 
-    void setFilters(int sampleRate, double lowFreq, double highFreq);
+    void setFilters(mixxx::audio::SampleRate sampleRate, double lowFreq, double highFreq);
 
     CSAMPLE* m_pBuf;
     EngineFilterMoogLadder4Low* m_pLowFilter;

@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "audio/frame.h"
+#include "audio/types.h"
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
@@ -113,7 +114,7 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int sampleRate, double numSamples);
+    void trackLoaded(TrackPointer pTrack, mixxx::audio::SampleRate sampleRate, double numSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

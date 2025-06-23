@@ -28,6 +28,9 @@ class allshader::LRRGBWaveformWidget final : public allshader::WaveformWidget {
     static constexpr bool useOpenGLShaders() {
         return true;
     }
+    static constexpr bool useTextureForWaveform() {
+        return false;
+    }
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
     }

@@ -2,11 +2,10 @@
 
 #include <QAtomicInt>
 #include <QThreadStorage>
+#include <memory>
 
-#include "util/db/dbconnection.h"
-#include "util/memory.h"
 #include "util/assert.h"
-
+#include "util/db/dbconnection.h"
 
 namespace mixxx {
 

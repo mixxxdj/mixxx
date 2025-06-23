@@ -10,7 +10,6 @@ Checks: >-
   readability-qualified-auto
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
-AnalyzeTemporaryDtors: false
 FormatStyle: none
 User: user
 CheckOptions:

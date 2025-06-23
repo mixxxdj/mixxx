@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "audio/frame.h"
+#include "audio/types.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
@@ -219,6 +220,8 @@ class EngineBuffer : public EngineObject {
     void seekAbs(mixxx::audio::FramePos);
     void seekExact(mixxx::audio::FramePos);
 
+    void verifyPlay();
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -237,7 +240,7 @@ class EngineBuffer : public EngineObject {
     void slotTrackLoading();
     void slotTrackLoaded(
             TrackPointer pTrack,
-            int trackSampleRate,
+            mixxx::audio::SampleRate trackSampleRate,
             double trackNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);
@@ -283,7 +286,6 @@ class EngineBuffer : public EngineObject {
         return m_previousBufferSeek;
     }
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
-    void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput,
             const int iBufferSize,
@@ -337,6 +339,11 @@ class EngineBuffer : public EngineObject {
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
     double m_speed_old;
+
+    // The actual speed is the speed calculated from buffer start and end position
+    // It can differ form m_speed_old which holds the requested speed.
+    // It is the average of one fuffer, in case speed ramping is applied in the scalers.
+    double m_actual_speed;
 
     // The previous callback's tempo ratio.
     double m_tempo_ratio_old;

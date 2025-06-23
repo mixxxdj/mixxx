@@ -161,7 +161,6 @@ void DlgPrefColors::slotResetToDefaults() {
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size());
     comboBoxLoopDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 1);
-    slotApply();
 }
 
 // Apply and save any changes made in the dialog

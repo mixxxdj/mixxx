@@ -41,8 +41,10 @@ class BulkController : public Controller {
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -56,11 +58,10 @@ class BulkController : public Controller {
   protected:
     void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
+  private:
     int open() override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void sendBytes(const QByteArray& data) override;
@@ -72,14 +73,17 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short vendor_id;
-    unsigned short product_id;
-    unsigned char in_epaddr;
-    unsigned char out_epaddr;
-    QString manufacturer;
-    QString product;
+    unsigned short m_vendorId;
+    unsigned short m_productId;
+    unsigned char m_inEndpointAddr;
+    unsigned char m_outEndpointAddr;
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    unsigned int m_interfaceNumber;
+#endif
+    QString m_manufacturer;
+    QString m_product;
 
     QString m_sUID;
     BulkReader* m_pReader;
-    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

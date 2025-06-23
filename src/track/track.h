@@ -2,7 +2,9 @@
 
 #include <QList>
 #include <QObject>
+#include <QStack>
 #include <QUrl>
+#include <memory>
 
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
@@ -14,7 +16,7 @@
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
-#include "util/memory.h"
+#include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {
@@ -150,7 +152,7 @@ class Track : public QObject {
 
     void setReplayGain(const mixxx::ReplayGain&);
     // Adjust ReplayGain by multiplying the given gain amount.
-    void adjustReplayGainFromPregain(double);
+    void adjustReplayGainFromPregain(double gain, const QString& requestingPlayerGroup);
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
@@ -179,7 +181,7 @@ class Track : public QObject {
 
     // Returns the content of the year library column.
     // This was original only the four digit (gregorian) calendar year of the release date
-    // but allows to store any user string. Now it is altenatively used as
+    // but allows to store any user string. Now it is alternatively used as
     // recording date/time in the ISO 8601 yyyy-MM-ddTHH:mm:ss format tunkated at any point,
     // following the TDRC ID3v2.4 frame or if not exists, TYER + TDAT.
     QString getYear() const;
@@ -348,6 +350,11 @@ class Track : public QObject {
     bool trySetBeats(mixxx::BeatsPointer pBeats);
     bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
+    void undoBeatsChange();
+    bool canUndoBeatsChange() const {
+        return !m_pBeatsUndoStack.isEmpty();
+    }
+
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!
     ///
@@ -425,6 +432,7 @@ class Track : public QObject {
     void trackTotalChanged(const QString&);
     void commentChanged(const QString&);
     void bpmChanged();
+    void bpmLockChanged(bool locked);
     void keyChanged();
     void timesPlayedChanged();
     void durationChanged();
@@ -437,7 +445,7 @@ class Track : public QObject {
     void replayGainUpdated(mixxx::ReplayGain replayGain);
     // This signal indicates that ReplayGain is being adjusted, and pregains should be
     // adjusted in the opposite direction to compensate (no audible change).
-    void replayGainAdjusted(const mixxx::ReplayGain&);
+    void replayGainAdjusted(const mixxx::ReplayGain&, const QString& requestingPlayerGroup);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void ratingUpdated(int rating);
     void cuesUpdated();
@@ -561,6 +569,9 @@ class Track : public QObject {
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;
+    QStack<mixxx::BeatsPointer> m_pBeatsUndoStack;
+    bool m_undoingBeatsChange;
+    PerformanceTimer m_beatChangeTimer;
 
     // Visual waveform data
     ConstWaveformPointer m_waveform;

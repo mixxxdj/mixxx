@@ -3,6 +3,7 @@
 #include <hidapi.h>
 
 #include "controllers/hid/hiddevice.h"
+#include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
@@ -14,7 +15,8 @@ constexpr size_t kSizeOfFifoInReports = 32;
 } // namespace
 
 HidIoGlobalOutputReportFifo::HidIoGlobalOutputReportFifo()
-        : m_fifoQueue(kSizeOfFifoInReports) {
+        : m_fifoQueue(kSizeOfFifoInReports),
+          m_hidWriteErrorLogged(false) {
 }
 
 void HidIoGlobalOutputReportFifo::addReportDatasetToFifo(const quint8 reportId,
@@ -53,7 +55,7 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
     if (pFront == nullptr) {
         // No data in FIFO to be send
         // Return with false, to signal the caller, that no time consuming IO
-        // operation was ncessary
+        // operation was necessary
         return false;
     }
 
@@ -69,15 +71,26 @@ bool HidIoGlobalOutputReportFifo::sendNextReportDataset(QMutex* pHidDeviceAndPol
             reinterpret_cast<const unsigned char*>(reportToSend.constData()),
             reportToSend.size());
     if (result == -1) {
-        qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
-                             << mixxx::convertWCStringToQString(
-                                        hid_error(pHidDevice),
-                                        kMaxHidErrorMessageSize);
+        if (!m_hidWriteErrorLogged) {
+            qCWarning(logOutput)
+                    << "Unable to send data to" << deviceInfo.formatName()
+                    << ":"
+                    << mixxx::convertWCStringToQString(
+                               hid_error(pHidDevice), kMaxHidErrorMessageSize)
+                    << "Note that, this message is only logged once and may "
+                       "not appear again until all hid_read errors have "
+                       "disappeared.";
+
+            // Stop logging error messages if every hid_write() fails to avoid large log files
+            m_hidWriteErrorLogged = true;
+        }
+    } else {
+        m_hidWriteErrorLogged = false;
     }
 
     hidDeviceLock.unlock();
 
-    if (result != -1) {
+    if (result != -1 && CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                            << " " << result << "bytes (including ReportID of"
                            << static_cast<quint8>(reportToSend[0])

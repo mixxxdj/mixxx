@@ -1,6 +1,5 @@
 #include "widget/weffectchainpresetbutton.h"
 
-#include <QCheckBox>
 #include <QWidgetAction>
 
 #include "effects/effectparameter.h"
@@ -11,6 +10,7 @@
 #include "moc_weffectchainpresetbutton.cpp"
 #include "util/parented_ptr.h"
 #include "widget/effectwidgetutils.h"
+#include "widget/wmenucheckbox.h"
 
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
         : QPushButton(parent),
@@ -129,48 +129,41 @@ void WEffectChainPresetButton::populateMenu() {
                 effectSlotNumPrefix + pEffectSlot->getManifest()->displayName(),
                 m_pMenu);
 
-        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
-        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
         int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NumTypes);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
                     static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
-            for (const auto& pParameter : loadedParameters.value(parameterType)) {
-                auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
-                pCheckbox->setChecked(true);
-                pCheckbox->setText(pParameter->manifest()->name());
-                auto handler = [pCheckbox{pCheckbox.get()}, pEffectSlot, pParameter] {
-                    if (pCheckbox->isChecked()) {
-                        pEffectSlot->showParameter(pParameter);
-                    } else {
-                        pEffectSlot->hideParameter(pParameter);
-                    }
-                };
-                connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
 
-                auto pAction = make_parented<QWidgetAction>(pEffectMenu);
-                pAction->setDefaultWidget(pCheckbox.get());
+            const auto& loadedParameters = pEffectSlot->getLoadedParameters().value(parameterType);
+            const auto& hiddenParameters = pEffectSlot->getHiddenParameters().value(parameterType);
+            for (const auto& parameters : {loadedParameters, hiddenParameters}) {
+                for (const auto& pParameter : parameters) {
+                    auto pCheckbox = make_parented<WMenuCheckBox>(pEffectMenu);
+                    pCheckbox->setChecked(true);
+                    pCheckbox->setText(pParameter->manifest()->name());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+                    auto handler = [pEffectSlot, pParameter](Qt::CheckState state) {
+                        if (state == Qt::Checked) {
+#else
+                    auto handler = [pEffectSlot, pParameter](int state) {
+                        if (static_cast<bool>(state)) {
+#endif
+                            pEffectSlot->showParameter(pParameter);
+                        } else {
+                            pEffectSlot->hideParameter(pParameter);
+                        }
+                    };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+                    connect(pCheckbox.get(), &QCheckBox::checkStateChanged, this, handler);
+#else
+                    connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
+#endif
 
-                pEffectMenu->addAction(pAction.get());
-            }
+                    auto pAction = make_parented<QWidgetAction>(pEffectMenu);
+                    pAction->setDefaultWidget(pCheckbox.get());
 
-            for (const auto& pParameter : hiddenParameters.value(parameterType)) {
-                auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
-                pCheckbox->setChecked(false);
-                pCheckbox->setText(pParameter->manifest()->name());
-                auto handler = [pCheckbox{pCheckbox.get()}, pEffectSlot, pParameter] {
-                    if (pCheckbox->isChecked()) {
-                        pEffectSlot->showParameter(pParameter);
-                    } else {
-                        pEffectSlot->hideParameter(pParameter);
-                    }
-                };
-                connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
-
-                auto pAction = make_parented<QWidgetAction>(pEffectMenu);
-                pAction->setDefaultWidget(pCheckbox.get());
-
-                pEffectMenu->addAction(pAction.get());
+                    pEffectMenu->addAction(pAction.get());
+                }
             }
         }
         pEffectMenu->addSeparator();

@@ -105,7 +105,9 @@ void DistortionEffect::processChannel(
     CSAMPLE driveParam = static_cast<CSAMPLE>(m_pDrive->value());
 
     if (driveParam < 0.01) {
-        SampleUtil::copy(pOutput, pInput, numSamples);
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, numSamples);
+        }
         return;
     }
 
@@ -122,7 +124,9 @@ void DistortionEffect::processChannel(
 
     default:
         // We should never enter here, but we act as a noop effect just in case.
-        SampleUtil::copy(pOutput, pInput, numSamples);
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, numSamples);
+        }
         return;
     }
 }

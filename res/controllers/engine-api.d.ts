@@ -18,12 +18,33 @@ declare interface ScriptConnection {
      * Note: To execute all callback functions connected to a ControlObject at once, use {@link engine.trigger} instead
      */
     trigger(): void;
+
+    /**
+     * String representation of the unique UUID of this connection instance
+     */
+    readonly id: string;
+
+    /**
+     * whether the connection instance is actually responds to changes to the ControlObject it was created for.
+     * This is always true for a newly created instance and usually false after calling {@link disconnect}
+     */
+    readonly isConnected: boolean;
 }
 
 
 /** ControllerScriptInterfaceLegacy */
 
 declare namespace engine {
+    type SettingValue = string | number | boolean;
+    /**
+     * Gets the value of a controller setting
+     * The value is either set in the preferences dialog,
+     * or got restored from file.
+     * @param name Name of the setting (as specified in the XML file of the mapping)
+     * @returns Value of the setting, or undefined in failure case
+     */
+    function getSetting(name: string): SettingValue | undefined;
+
     /**
      * Gets the control value
      *
@@ -138,7 +159,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
      * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
-     * @deprecated Use {@link makeConnection} instead
+     * @deprecated Use {@link engine.makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
 
@@ -152,7 +173,10 @@ declare namespace engine {
      */
     function trigger(group: string, name: string): void;
 
-    /** @deprecated Use {@link console.log} instead */
+    /**
+     * @param message string to be logged
+     * @deprecated Use {@link console.log} instead
+     */
     function log(message: string): void;
 
     type TimerID = number;
@@ -240,7 +264,7 @@ declare namespace engine {
     function softTakeoverIgnoreNextValue(group: string, name: string): void;
 
     /**
-     * To achieve a brake effect of the playback speed
+     * To achieve a brake effect of the playback speed.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
      *
      * @param deck The deck number to use, e.g: 1
@@ -248,24 +272,30 @@ declare namespace engine {
      * @param factor Defines how quickly the deck should come to a stop.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that brake called with low factors (about 0.5 and lower),
-     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.0]
-     * @param rate The initial speed of the deck when enabled. "1" (default) means 10x speed in forward.
+     *               would keep the deck running although the resulting very low sounds are not audible anymore.
+     *               Calling it with negative factor and negative rate will cause an infinite, accelerating spinback. [default = 1.0]
+     * @param rate The initial speed of the deck when enabled. Only values  smaller than "1" (default) are considered.
+     *             Value "1" and higher means the current tempo (rate) is used.
      *             Negative values like "-1" also work, though then it's spinning reverse obviously. [default = 1.0]
      */
     function brake(deck: number, activate: boolean, factor?: number, rate?: number): void;
 
     /**
-     * To achieve a spinback effect of the playback speed
+     * To achieve a spinback effect of the playback speed.
+     * This is a wrapper for brake(), which is called with 'factor' with reversed sign.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
      *
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
      *               Start with a value of 1 and increase to increase the acceleration.
-     *               Be aware that spinback called with low factors (about 0.5 and lower),
-     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.8]
-     * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x speed in reverse.
-     *             Positive values like "10" also work, though then it's spinning forward obviously. [default = -10.0]
+     *               Be aware that spinback called with low (positive) factors (about 0.5 and lower),
+     *               would keep the deck running although the resulting very low sounds are not audible anymore.
+     *               Be also aware that calling it with negative factor and negative rate will cause an infinite,
+     *               accelerating spinback that can only be stopped with brake()/spinback() (activate = false) or
+     *               softStart() (activate = true). [default = 1.8]
+     * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x the current speed in reverse.
+     *             With positive values lower than "1" and higher also work, though then it's spinning forward obviously. [default = -10.0]
      */
     function spinback(deck: number, activate: boolean, factor?: number, rate?: number): void;
 

@@ -98,6 +98,58 @@ ApplicationWindow {
             }
         }
 
+        WaveformRow {
+            id: deck3waveform
+
+            group: "[Channel3]"
+            width: root.width
+            height: 60
+            visible: root.show4decks && !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck3waveform
+            }
+        }
+
+        WaveformRow {
+            id: deck1waveform
+
+            group: "[Channel1]"
+            width: root.width
+            height: 60
+            visible: !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck1waveform
+            }
+        }
+
+        WaveformRow {
+            id: deck2waveform
+
+            group: "[Channel2]"
+            width: root.width
+            height: 60
+            visible: !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck2waveform
+            }
+        }
+
+        WaveformRow {
+            id: deck4waveform
+
+            group: "[Channel4]"
+            width: root.width
+            height: 60
+            visible: root.show4decks && !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: deck4waveform
+            }
+        }
+
         Skin.DeckRow {
             id: decks12
 

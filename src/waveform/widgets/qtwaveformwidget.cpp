@@ -1,6 +1,5 @@
 #include "waveform/widgets/qtwaveformwidget.h"
 
-#include <QGLContext>
 #include <QPainter>
 #include <QtDebug>
 

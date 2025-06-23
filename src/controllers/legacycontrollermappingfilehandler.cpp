@@ -45,20 +45,20 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
         return nullptr;
     }
 
-    LegacyControllerMappingFileHandler* pHandler = nullptr;
+    std::unique_ptr<LegacyControllerMappingFileHandler> pHandler;
     if (mappingFile.fileName().endsWith(
                 MIDI_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
-        pHandler = new LegacyMidiControllerMappingFileHandler();
+        pHandler = std::make_unique<LegacyMidiControllerMappingFileHandler>();
     } else if (mappingFile.fileName().endsWith(
                        HID_MAPPING_EXTENSION, Qt::CaseInsensitive) ||
             mappingFile.fileName().endsWith(
                     BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
 #ifdef __HID__
-        pHandler = new LegacyHidControllerMappingFileHandler();
+        pHandler = std::make_unique<LegacyHidControllerMappingFileHandler>();
 #endif
     }
 
-    if (pHandler == nullptr) {
+    if (!pHandler) {
         qDebug() << "Mapping" << mappingFile.absoluteFilePath()
                  << "has an unrecognized extension.";
         return nullptr;
@@ -66,6 +66,7 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
 
     std::shared_ptr<LegacyControllerMapping> pMapping = pHandler->load(
             mappingFile.absoluteFilePath(), systemMappingsPath);
+
     if (pMapping) {
         pMapping->setDirty(false);
     }
@@ -108,6 +109,85 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     mapping->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
 
+void LegacyControllerMappingFileHandler::parseMappingSettings(
+        const QDomElement& root, LegacyControllerMapping* mapping) const {
+    if (root.isNull() || !mapping) {
+        return;
+    }
+
+    QDomElement settings = root.firstChildElement("settings");
+    if (settings.isNull()) {
+        return;
+    }
+
+    std::unique_ptr<LegacyControllerSettingsLayoutContainer> settingLayout =
+            std::make_unique<LegacyControllerSettingsLayoutContainer>(
+                    LegacyControllerSettingsLayoutContainer::Disposition::
+                            VERTICAL);
+    parseMappingSettingsElement(settings, mapping, settingLayout.get());
+    mapping->setSettingLayout(std::move(settingLayout));
+}
+
+void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
+        const QDomElement& current,
+        LegacyControllerMapping* pMapping,
+        LegacyControllerSettingsLayoutContainer* pLayout)
+        const {
+    for (QDomElement element = current.firstChildElement();
+            !element.isNull();
+            element = element.nextSiblingElement()) {
+        const QString& tagName = element.tagName().toLower();
+        if (tagName == "option") {
+            std::shared_ptr<AbstractLegacyControllerSetting> pSetting =
+                    LegacyControllerSettingBuilder::build(element);
+            if (pSetting.get() == nullptr) {
+                qDebug() << "Ignoring unsupported controller setting in file"
+                         << pMapping->filePath() << "at line"
+                         << element.lineNumber() << ".";
+                continue;
+            }
+            if (!pSetting->valid()) {
+                qDebug() << "The parsed setting in file" << pMapping->filePath()
+                         << "at line" << element.lineNumber()
+                         << "appears to be invalid. It will be ignored.";
+                continue;
+            }
+            if (pMapping->addSetting(pSetting)) {
+                pLayout->addItem(pSetting);
+            } else {
+                qDebug() << "The parsed setting in file" << pMapping->filePath()
+                         << "at line" << element.lineNumber()
+                         << "couldn't be added. Its layout information will also be ignored.";
+                continue;
+            }
+        } else if (tagName == "row") {
+            LegacyControllerSettingsLayoutContainer::Disposition orientation =
+                    element.attribute("orientation").trimmed().toLower() ==
+                            "vertical"
+                    ? LegacyControllerSettingsLayoutContainer::VERTICAL
+                    : LegacyControllerSettingsLayoutContainer::HORIZONTAL;
+            std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
+                    std::make_unique<LegacyControllerSettingsLayoutContainer>(
+                            LegacyControllerSettingsLayoutContainer::HORIZONTAL,
+                            orientation);
+            parseMappingSettingsElement(element, pMapping, row.get());
+            pLayout->addItem(std::move(row));
+        } else if (tagName == "group") {
+            std::unique_ptr<LegacyControllerSettingsLayoutContainer> group =
+                    std::make_unique<LegacyControllerSettingsGroup>(
+                            element.attribute("label"));
+            parseMappingSettingsElement(element, pMapping, group.get());
+            pLayout->addItem(std::move(group));
+        } else {
+            qDebug() << "Ignoring unsupported tag" << tagName
+                     << "in file" << pMapping->filePath()
+                     << "on line" << element.lineNumber()
+                     << "for controller layout settings. Check the documentation supported tags.";
+            continue;
+        }
+    }
+}
+
 QDomElement LegacyControllerMappingFileHandler::getControllerNode(
         const QDomElement& root) {
     if (root.isNull()) {
@@ -130,6 +210,17 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
 
     QString deviceId = controller.attribute("id", "");
     mapping->setDeviceId(deviceId);
+
+    // See TODO in LegacyControllerMapping::DeviceDirection - `direction` should
+    // only be used as a workaround till the bulk integration gets refactored
+    QString deviceDirection = controller.attribute("direction", "").toLower();
+    if (deviceDirection == "in") {
+        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Incoming);
+    } else if (deviceDirection == "out") {
+        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Outgoing);
+    } else {
+        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Bidirectionnal);
+    }
 
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
@@ -193,7 +284,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QString blank =
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
             "<MixxxControllerPreset>\n"
-            "</<MixxxControllerPreset>\n";
+            "</MixxxControllerPreset>\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();

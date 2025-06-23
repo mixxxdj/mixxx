@@ -7,6 +7,7 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -75,6 +76,8 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
+void paFinishedCallback(void* soundDevice);
+
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         SoundManager* sm,
         const PaDeviceInfo* deviceInfo,
@@ -93,10 +96,11 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_lastCallbackEntrytoDacSecs(0),
+          m_callbackResult(paAbort) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
-    m_dSampleRate = deviceInfo->defaultSampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
     if (m_deviceTypeId == paALSA) {
         // PortAudio gives the device name including the ALSA hw device. The
         // ALSA hw device is an only somewhat reliable identifier; it may change
@@ -117,8 +121,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     }
     m_deviceId.portAudioIndex = devIndex;
     m_strDisplayName = QString::fromUtf8(deviceInfo->name);
-    m_iNumInputChannels = m_deviceInfo->maxInputChannels;
-    m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
+    m_numInputChannels = mixxx::audio::ChannelCount(m_deviceInfo->maxInputChannels);
+    m_numOutputChannels = mixxx::audio::ChannelCount(m_deviceInfo->maxOutputChannels);
 
     m_inputParams.device = 0;
     m_inputParams.channelCount = 0;
@@ -206,8 +210,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     // Sample rate
-    if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0;
+    if (!m_sampleRate.isValid()) {
+        m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;
@@ -225,8 +229,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
-    double bufferMSec = framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz and buffer size:"
+    double bufferMSec = framesPerBuffer / m_sampleRate.toDouble() * 1000;
+    qDebug() << "Requested sample rate: " << m_sampleRate << "Hz and buffer size:"
              << bufferMSec << "ms";
 
     qDebug() << "Output channels:" << m_outputParams.channelCount
@@ -337,7 +341,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     err = Pa_OpenStream(&pStream,
             pInputParams,
             pOutputParams,
-            m_dSampleRate,
+            m_sampleRate.toDouble(),
             framesPerBuffer,
             paClipOff, // Stream flags
             pCallback,
@@ -358,11 +362,19 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 #endif
 
+    // Set the finished callback. See makeStreamInactiveAndWait()
+    m_bFinished = false;
+    Pa_SetStreamFinishedCallback(pStream, paFinishedCallback);
+
+    // Tell the callback to return paContinue, once running.
+    m_callbackResult.store(paContinue, std::memory_order_release);
+
     // Start stream
     err = Pa_StartStream(pStream);
     if (err != paNoError) {
         qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
+        m_callbackResult.store(paAbort, std::memory_order_release);
         err = Pa_CloseStream(pStream);
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:"
@@ -375,9 +387,9 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
-    m_dSampleRate = streamDetails->sampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(streamDetails->sampleRate);
     double currentLatencyMSec = streamDetails->outputLatency * 1000;
-    qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:"
+    qDebug() << "   Actual sample rate: " << m_sampleRate << "Hz, latency:"
              << currentLatencyMSec << "ms";
 
     if (isClkRefDevice) {
@@ -386,51 +398,87 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
         ControlObject::set(
                 ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
                 currentLatencyMSec);
-        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_dSampleRate);
+        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
-    m_pStream = pStream;
+    m_pStream.store(pStream, std::memory_order_release);
+
     return SoundDeviceStatus::Ok;
 }
 
 bool SoundDevicePortAudio::isOpen() const {
-    return m_pStream != nullptr;
+    return m_pStream.load() != nullptr;
+}
+
+void paFinishedCallback(void* soundDevice) {
+    // This callback is called by PortAudio when Pa_IsStreamStopped becomes true.
+    // This is triggered when Mixxx sets the return value from the process callback
+    // to paAbort to indicate the stream has to finish. The return value is set in
+    // the SoundDevicePortAudio::close() method.
+    return ((SoundDevicePortAudio*)soundDevice)->finishedCallback();
+}
+
+void SoundDevicePortAudio::finishedCallback() {
+    // Called by paFinishedCallback
+    std::unique_lock lock(m_finishedMutex);
+    m_bFinished = true;
+    m_finishedCV.notify_one();
+}
+
+void SoundDevicePortAudio::makeStreamInactiveAndWait() {
+    // Tell the process callback to return paAbort, which will cause
+    // PortAudio to make the stream inactive as soon as possible. This
+    // has the advantage over calling Pa_StopStream directly, that it
+    // will not wait until all the buffers have been flushed, which
+    // can take a few (annoying) seconds when you're doing soundcard input.
+    m_callbackResult.store(paAbort, std::memory_order_release);
+
+    // We wait until the stream has become inactive, by waiting until the
+    // finishedCallback - as set with Pa_SetStreamFinishedCallback - has
+    // been called, using m_bFinished and conditional variable m_finishedCV.
+    // Without this, we can have a deadlock when we call Pa_StopStream
+    // later on.
+    {
+        std::unique_lock lock(m_finishedMutex);
+        if (!m_finishedCV.wait_for(lock, std::chrono::seconds(1), [&] { return m_bFinished; })) {
+            // The timeout should not be reached, because when the process
+            // callback returns paAbort, the stream will finish as soon as possible.
+            // We have it as a last resort in case inactivating the stream stalls.
+            qWarning() << "PortAudio: Timeout reached when waiting for PortAudio finish callback";
+        }
+    }
 }
 
 SoundDeviceStatus SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
-    PaStream* pStream = m_pStream;
-    m_pStream = nullptr;
+
+    PaStream* pStream = m_pStream.load(std::memory_order_relaxed);
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
-        // 1 means the stream is stopped. 0 means active.
+        // 1 means the stream is stopped. 0 means active, negative means error
+        // (PaUtil_ValidateStreamPointer() failing, when passing a nullptr or
+        // wrong pointer type)
+        VERIFY_OR_DEBUG_ASSERT(err >= 0) {
+            qWarning() << "PortAudio: Pa_IsStreamStopped returned error:"
+                       << Pa_GetErrorText(err) << m_deviceId;
+            return SoundDeviceStatus::Error;
+        }
         if (err == 1) {
-            //qDebug() << "PortAudio: Stream already stopped, but no error.";
-            return SoundDeviceStatus::Ok;
-        }
-        // Real PaErrors are always negative.
-        if (err < 0) {
-            qWarning() << "PortAudio: Stream already stopped:"
-                       << Pa_GetErrorText(err) << m_deviceId;
-            return SoundDeviceStatus::Error;
-        }
+            qWarning() << "PortAudio: Stream already stopped";
+        } else {
+            // Tell the process callback to return paAbort and wait for the
+            // callback set with Pa_SetStreamFinishedCallback to be called.
+            makeStreamInactiveAndWait();
 
-        //Stop the stream.
-        err = Pa_StopStream(pStream);
-        //PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream seems to wait
-                                                   //until all the buffers have been flushed, which can take a
-                                                   //few (annoying) seconds when you're doing soundcard input.
-                                                   //(it flushes the input buffer, and then some, or something)
-                                                   //BIG FAT WARNING: Pa_AbortStream() will kill threads while they're
-                                                   //waiting on a mutex, which will leave the mutex in an screwy
-                                                   //state. Don't use it!
-
-        if (err != paNoError) {
-            qWarning() << "PortAudio: Stop stream error:"
-                       << Pa_GetErrorText(err) << m_deviceId;
-            return SoundDeviceStatus::Error;
+            // We can now safely call Pa_StopStream, which should not block as the
+            // stream has become inactive.
+            err = Pa_StopStream(pStream);
+            if (err != paNoError) {
+                qWarning() << "PortAudio: Error while attempting to stop stream:"
+                           << Pa_GetErrorText(err) << m_deviceId;
+            }
         }
 
         // Close stream
@@ -440,6 +488,9 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
                        << Pa_GetErrorText(err) << m_deviceId;
             return SoundDeviceStatus::Error;
         }
+
+        // We can now safely set m_pStream to null
+        m_pStream.store(nullptr, std::memory_order_release);
     }
 
     m_outputFifo.reset();
@@ -454,8 +505,11 @@ QString SoundDevicePortAudio::getError() const {
 }
 
 void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
-    PaStream* pStream = m_pStream;
-    if (pStream && m_inputParams.channelCount && m_inputFifo) {
+    PaStream* pStream = m_pStream.load(std::memory_order_acquire);
+    if (!pStream) {
+        return;
+    }
+    if (m_inputParams.channelCount && m_inputFifo) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         if (m_syncBuffers == 0) { // "Experimental (no delay)"
 
@@ -585,9 +639,11 @@ void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
 }
 
 void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
-    PaStream* pStream = m_pStream;
-
-    if (pStream && m_outputParams.channelCount && m_outputFifo) {
+    PaStream* pStream = m_pStream.load(std::memory_order_acquire);
+    if (!pStream) {
+        return;
+    }
+    if (m_outputParams.channelCount && m_outputFifo) {
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int writeAvailable = m_outputFifo->writeAvailable();
         int writeCount = outChunkSize;
@@ -662,7 +718,7 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                    	copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
+                        copyCount = qMin(readAvailable, copyCount + m_numOutputChannels);
                     } else {
                         m_outputDrift = true;
                     }
@@ -819,7 +875,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Buffer empty";
         }
     }
-    return paContinue;
+    return m_callbackResult.load(std::memory_order_acquire);
 }
 
 int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
@@ -871,7 +927,7 @@ int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
             //qDebug() << "callbackProcess read:" << "Buffer empty";
         }
     }
-    return paContinue;
+    return m_callbackResult.load(std::memory_order_acquire);
 }
 
 int SoundDevicePortAudio::callbackProcessClkRef(
@@ -905,10 +961,17 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #endif
         m_bSetThreadPriority = true;
 
-#ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
+
+        // On Emscripten (WebAssembly) denormals-as-zero/flush-as-zero are
+        // neither supported nor configurable. This may lead to degraded
+        // performance compared to other platforms and may be addressed in the
+        // future if/when WebAssembly adds support for DAZ/FTZ. For further
+        // discussion and links see https://github.com/mixxxdj/mixxx/pull/12917
+
+#if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -976,7 +1039,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     // Send audio from the soundcard's input off to the SoundManager...
     if (in) {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess input %1",
+        ScopedTimer t(u"SoundDevicePortAudio::callbackProcess input %1",
                 m_deviceId.debugName());
         composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, framesPerBuffer);
@@ -985,13 +1048,13 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     m_pSoundManager->readProcess(framesPerBuffer);
 
     {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
+        ScopedTimer t(u"SoundDevicePortAudio::callbackProcess prepare %1",
                 m_deviceId.debugName());
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
 
     if (out) {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess output %1",
+        ScopedTimer t(u"SoundDevicePortAudio::callbackProcess output %1",
                 m_deviceId.debugName());
 
         if (m_outputParams.channelCount <= 0) {
@@ -999,7 +1062,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
                     << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:"
                     << m_outputParams.channelCount;
             // Bail out.
-            return paContinue;
+            m_callbackResult.store(paAbort, std::memory_order_relaxed);
         }
 
         composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
@@ -1009,7 +1072,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     updateAudioLatencyUsage(framesPerBuffer);
 
-    return paContinue;
+    return m_callbackResult.load(std::memory_order_acquire);
 }
 
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(
@@ -1043,7 +1106,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
     PaTime callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
             - timeInfo->currentTime;
-    double bufferSizeSec = framesPerBuffer / m_dSampleRate;
+    double bufferSizeSec = framesPerBuffer / m_sampleRate.toDouble();
 
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
@@ -1086,10 +1149,10 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_audioLatencyUsage.set(
-                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
         // qDebug() << m_audioLatencyUsage

@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QFlags>
 #include <algorithm>
 #include <cstring> // memset
 
-#include <QFlags>
-
-#include "util/types.h"
+#include "audio/types.h"
 #include "util/platform.h"
+#include "util/types.h"
 
 // A group of utilities for working with samples.
 class SampleUtil {
@@ -27,7 +27,7 @@ class SampleUtil {
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
-    static CSAMPLE* alloc(SINT size);
+    [[nodiscard]] static CSAMPLE* alloc(SINT size);
 
     // Frees a 16-byte aligned buffer allocated by SampleUtil::alloc()
     static void free(CSAMPLE* pBuffer);
@@ -35,17 +35,24 @@ class SampleUtil {
     // Sets every sample in pBuffer to zero
     inline
     static void clear(CSAMPLE* pBuffer, SINT numSamples) {
-        // Special case: This works, because the binary representation
-        // of 0.0f is 0!
-        memset(pBuffer, 0, sizeof(*pBuffer) * numSamples);
-        //fill(pBuffer, CSAMPLE_ZERO, iNumSamples);
+        DEBUG_ASSERT(numSamples >= 0);
+        // We need to cast `numSamples` to an unsigned type to fix a
+        // `-Wstringop-overflow` warning on GCC 14.1.1. Casting to unsigned is
+        // okay, because the `DEBUG_ASSERT` above catches negative values
+        // anyway.
+        const auto sampleCount = static_cast<std::size_t>(numSamples);
+        // Special case: We can use memset here, because the binary representation
+        // of 0.0f is 0! This is much faster without optimizations than using
+        // `fill()`.
+        memset(pBuffer, 0, sizeof(*pBuffer) * sampleCount);
     }
 
     // Sets every sample in pBuffer to value
     inline
     static void fill(CSAMPLE* pBuffer, CSAMPLE value,
             SINT numSamples) {
-        std::fill(pBuffer, pBuffer + numSamples, value);
+        DEBUG_ASSERT(numSamples >= 0);
+        std::fill_n(pBuffer, numSamples, value);
     }
 
     // Copies every sample from pSrc to pDest
@@ -92,22 +99,26 @@ class SampleUtil {
         return CSAMPLE_GAIN_clamp(in);
     }
 
-    inline static SINT roundPlayPosToFrameStart(double playPos, int numChannels) {
+    inline static SINT roundPlayPosToFrameStart(
+            double playPos, mixxx::audio::ChannelCount numChannels) {
         SINT playPosFrames = static_cast<SINT>(round(playPos / numChannels));
         return playPosFrames * numChannels;
     }
 
-    inline static SINT truncPlayPosToFrameStart(double playPos, int numChannels) {
+    inline static SINT truncPlayPosToFrameStart(
+            double playPos, mixxx::audio::ChannelCount numChannels) {
         SINT playPosFrames = static_cast<SINT>(playPos / numChannels);
         return playPosFrames * numChannels;
     }
 
-    inline static SINT floorPlayPosToFrameStart(double playPos, int numChannels) {
+    inline static SINT floorPlayPosToFrameStart(
+            double playPos, mixxx::audio::ChannelCount numChannels) {
         SINT playPosFrames = static_cast<SINT>(floor(playPos / numChannels));
         return playPosFrames * numChannels;
     }
 
-    inline static SINT ceilPlayPosToFrameStart(double playPos, int numChannels) {
+    inline static SINT ceilPlayPosToFrameStart(
+            double playPos, mixxx::audio::ChannelCount numChannels) {
         SINT playPosFrames = static_cast<SINT>(ceil(playPos / numChannels));
         return playPosFrames * numChannels;
     }
@@ -122,7 +133,6 @@ class SampleUtil {
 
     inline static SINT floorPlayPosToFrame(double playPos) {
         return static_cast<SINT>(floor(playPos / kPlayPositionChannels));
-
     }
 
     inline static SINT ceilPlayPosToFrame(double playPos) {
@@ -290,8 +300,9 @@ class SampleUtil {
     // channels are discarded.
     // pBuffer must contain (numFrames * numChannels) samples
     // (numFrames * 2) samples will be written into pBuffer
-    static void stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
-            int numChannels);
+    static void stripMultiToStereo(CSAMPLE* pBuffer,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels);
 
     // Copies and strips interleaved multi-channel sample data in pSrc with
     // numChannels >= 2 down to stereo samples into pDest. Only samples from
@@ -299,8 +310,10 @@ class SampleUtil {
     // channels will be ignored.
     // pSrc must contain (numFrames * numChannels) samples
     // (numFrames * 2) samples will be written into pDest
-    static void copyMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            SINT numFrames, int numChannels);
+    static void copyMultiToStereo(CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames,
+            mixxx::audio::ChannelCount numChannels);
 
     // reverses stereo sample in place
     static void reverse(CSAMPLE* pBuffer, SINT numSamples);

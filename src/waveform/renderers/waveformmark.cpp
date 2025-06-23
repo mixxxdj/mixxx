@@ -16,12 +16,12 @@ namespace {
 constexpr float lineHoverPadding = 5.0;
 
 Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
-    QStringList stringFlags = alignString.toLower()
-                                      .split('|',
+    const QStringList stringFlags = alignString.toLower()
+                                            .split('|',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-                                              Qt::SkipEmptyParts);
+                                                    Qt::SkipEmptyParts);
 #else
-                                              QString::SkipEmptyParts);
+                                                    QString::SkipEmptyParts);
 #endif
 
     Qt::Alignment hflags;
@@ -67,6 +67,30 @@ float overlappingMarkerIncrement(const float labelRectHeight, const float breadt
     return std::max(minIncrement, fullIncrement - std::max(0.f, threshold - breadth));
 }
 
+#define FOO
+
+bool isShowUntilNextPositionControl(const QString& positionControl) {
+    // To identify which markers are included in the beat/time until next marker
+    // display, in addition to the hotcues
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    using namespace Qt::Literals::StringLiterals;
+    constexpr std::array list = {"cue_point"_L1,
+            "intro_start_position"_L1,
+            "intro_end_position"_L1,
+            "outro_start_position"_L1,
+            "outro_end_position"_L1};
+#else
+    const std::array list = {QLatin1String{"cue_point"},
+            QLatin1String{"intro_start_position"},
+            QLatin1String{"intro_end_position"},
+            QLatin1String{"outro_start_position"},
+            QLatin1String{"outro_end_position"}};
+#endif
+    return std::any_of(list.cbegin(), list.cend(), [positionControl](auto& view) {
+        return view == positionControl;
+    });
+}
+
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
@@ -75,14 +99,23 @@ WaveformMark::WaveformMark(const QString& group,
         int priority,
         const WaveformSignalColors& signalColors,
         int hotCue)
-        : m_linePosition{}, m_breadth{}, m_level{}, m_iPriority(priority), m_iHotCue(hotCue) {
+        : m_linePosition{},
+          m_breadth{},
+          m_level{},
+          m_iPriority(priority),
+          m_iHotCue(hotCue),
+          m_showUntilNext{} {
     QString positionControl;
     QString endPositionControl;
+    QString typeControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
+        typeControl = "hotcue_" + QString::number(hotCue + 1) + "_type";
+        m_showUntilNext = true;
     } else {
         positionControl = context.selectString(node, "Control");
+        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
     }
 
     if (!positionControl.isEmpty()) {
@@ -90,6 +123,7 @@ WaveformMark::WaveformMark(const QString& group,
     }
     if (!endPositionControl.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
+        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");
@@ -170,13 +204,8 @@ bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
 
 // Helper struct to calculate the geometry and fontsize needed by generateImage
 // to draw the label and text
-struct MarkerGeometry {
-    bool m_isSymbol; // is the label normal text or a single symbol (e.g. open circle arrow)
-    QFont m_font;
-    QRectF m_contentRect;
-    QRectF m_labelRect;
-    QSizeF m_imageSize;
-
+class MarkerGeometry {
+  public:
     MarkerGeometry(const QString& label,
             bool useIcon,
             Qt::Alignment align,
@@ -280,10 +309,37 @@ struct MarkerGeometry {
         return QSize{static_cast<int>(m_imageSize.width() * devicePixelRatio),
                 static_cast<int>(m_imageSize.height() * devicePixelRatio)};
     }
+
+    const QFont font() const {
+        return m_font;
+    }
+
+    const QRectF& contentRect() const {
+        return m_contentRect;
+    }
+
+    const QRectF& labelRect() const {
+        return m_labelRect;
+    }
+
+    const QSizeF& imageSize() const {
+        return m_imageSize;
+    }
+
+  private:
+    bool m_isSymbol; // is the label normal text or a single symbol (e.g. open circle arrow)
+    QFont m_font;
+    QRectF m_contentRect;
+    QRectF m_labelRect;
+    QSizeF m_imageSize;
 };
 
 QImage WaveformMark::generateImage(float devicePixelRatio) {
-    assert(needsImageUpdate());
+    DEBUG_ASSERT(needsImageUpdate());
+
+    if (m_breadth == 0.0f) {
+        return {};
+    }
 
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
@@ -310,14 +366,10 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
     // Determine mark text.
     if (getHotCue() >= 0) {
-        constexpr int kMaxCueLabelLength = 23;
         if (!label.isEmpty()) {
             label.prepend(": ");
         }
         label.prepend(QString::number(getHotCue() + 1));
-        if (label.size() > kMaxCueLabelLength) {
-            label = label.left(kMaxCueLabelLength - 3) + "...";
-        }
     }
 
     const bool useIcon = m_iconPath != "";
@@ -325,11 +377,14 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     // Determine drawing geometries
     const MarkerGeometry markerGeometry{label, useIcon, m_align, m_breadth, m_level};
 
-    m_label.setAreaRect(markerGeometry.m_labelRect);
+    m_label.setAreaRect(markerGeometry.labelRect());
 
     // Create the image
     QImage image{markerGeometry.getImageSize(devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied};
+    VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
+        return image;
+    }
     image.setDevicePixelRatio(devicePixelRatio);
 
     // Fill with transparent pixels
@@ -344,53 +399,53 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     painter.setWorldMatrixEnabled(false);
 
     // Draw marker lines
-    const auto hcenter = markerGeometry.m_imageSize.width() / 2.f;
+    const auto hcenter = markerGeometry.imageSize().width() / 2.f;
     m_linePosition = static_cast<float>(hcenter);
 
     // Draw the center line
     painter.setPen(fillColor());
-    painter.drawLine(QLineF(hcenter, 0.f, hcenter, markerGeometry.m_imageSize.height()));
+    painter.drawLine(QLineF(hcenter, 0.f, hcenter, markerGeometry.imageSize().height()));
 
     painter.setPen(borderColor());
     painter.drawLine(QLineF(hcenter - 1.f,
             0.f,
             hcenter - 1.f,
-            markerGeometry.m_imageSize.height()));
+            markerGeometry.imageSize().height()));
     painter.drawLine(QLineF(hcenter + 1.f,
             0.f,
             hcenter + 1.f,
-            markerGeometry.m_imageSize.height()));
+            markerGeometry.imageSize().height()));
 
     if (useIcon || label.length() != 0) {
         painter.setPen(borderColor());
 
         // Draw the label rounded rect with border
         QPainterPath path;
-        path.addRoundedRect(markerGeometry.m_labelRect, 2.f, 2.f);
+        path.addRoundedRect(markerGeometry.labelRect(), 2.f, 2.f);
         painter.fillPath(path, fillColor());
         painter.drawPath(path);
 
         // Center m_contentRect.width() and m_contentRect.height() inside m_labelRect
         // and apply the offset x,y so the text ends up in the centered width,height.
-        QPointF pos(markerGeometry.m_labelRect.x() +
-                        (markerGeometry.m_labelRect.width() -
-                                markerGeometry.m_contentRect.width()) /
+        QPointF pos(markerGeometry.labelRect().x() +
+                        (markerGeometry.labelRect().width() -
+                                markerGeometry.contentRect().width()) /
                                 2.f -
-                        markerGeometry.m_contentRect.x(),
-                markerGeometry.m_labelRect.y() +
-                        (markerGeometry.m_labelRect.height() -
-                                markerGeometry.m_contentRect.height()) /
+                        markerGeometry.contentRect().x(),
+                markerGeometry.labelRect().y() +
+                        (markerGeometry.labelRect().height() -
+                                markerGeometry.contentRect().height()) /
                                 2.f -
-                        markerGeometry.m_contentRect.y());
+                        markerGeometry.contentRect().y());
 
         if (useIcon) {
             QSvgRenderer svgRenderer(m_iconPath);
-            svgRenderer.render(&painter, QRectF(pos, markerGeometry.m_contentRect.size()));
+            svgRenderer.render(&painter, QRectF(pos, markerGeometry.contentRect().size()));
         } else {
             // Draw the text
             painter.setBrush(Qt::transparent);
             painter.setPen(labelColor());
-            painter.setFont(markerGeometry.m_font);
+            painter.setFont(markerGeometry.font());
 
             painter.drawText(pos, label);
         }

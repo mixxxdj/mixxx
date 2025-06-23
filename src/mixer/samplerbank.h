@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 
 class ControlObject;
 class ControlProxy;

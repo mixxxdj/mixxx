@@ -98,7 +98,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         // Previous read was a cache miss, but now we got something back.
         // Apply ramping gain, because the last buffer has unwanted silence
         // and new samples without fading are causing a pop.
-        SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
+        SampleUtil::applyRampingGain(pOutput,
+                CSAMPLE_GAIN_ZERO,
+                CSAMPLE_GAIN_ONE,
+                samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
         m_cacheMissHappened = false;
     }
@@ -186,6 +189,12 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                         m_pCrossFadeBuffer,
                         crossFadeSamples);
             }
+        } else {
+            // No samples for crossfading, ramp to zero
+            SampleUtil::applyRampingGain(pOutput,
+                    CSAMPLE_GAIN_ONE,
+                    CSAMPLE_GAIN_ZERO,
+                    samples_from_reader);
         }
     }
 
@@ -274,22 +283,8 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     }
 
     double filePlayposition = 0;
-    bool shouldNotifySeek = false;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
         ReadLogEntry& entry = m_readAheadLog.front();
-
-        // Notify EngineControls that we have taken a seek.
-        // Every new entry start with a seek
-        // (Not looping control)
-        if (shouldNotifySeek) {
-            if (m_pRateControl) {
-                const auto seekPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePos(
-                                entry.virtualPlaypositionStart);
-                m_pRateControl->notifySeek(seekPosition);
-            }
-        }
-
         // Advance our idea of the current virtual playposition to this
         // ReadLogEntry's start position.
         filePlayposition = entry.advancePlayposition(&numConsumedSamples);
@@ -298,7 +293,6 @@ double ReadAheadManager::getFilePlaypositionFromLog(
             // This entry is empty now.
             m_readAheadLog.pop_front();
         }
-        shouldNotifySeek = true;
     }
 
     return filePlayposition;

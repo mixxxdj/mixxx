@@ -58,7 +58,7 @@
                         <BackPath>style/style_bg_deck_top_mid.png</BackPath>
                         <Children>
                           <WidgetGroup>
-                            <ObjectName>ArtistAndTimeRow</ObjectName>
+                            <ObjectName>TitleEjectRow</ObjectName>
                             <Size>0e,23f</Size>
                             <Layout>horizontal</Layout>
                             <Children>
@@ -122,7 +122,8 @@
                                 </Style>
                                 <Property>artist</Property>
                                 <Channel><Variable name="channum"/></Channel>
-                                <SizePolicy>me,max</SizePolicy>
+                                <!-- <Size>0e,19f</Size> -->
+                                <SizePolicy>me,me</SizePolicy>
                                 <Elide>right</Elide>
                               </TrackProperty>
                               <NumberPos>

@@ -1,6 +1,7 @@
 #include "library/trackset/playlistfeature.h"
 
 #include <QMenu>
+#include <QSqlTableModel>
 #include <QtDebug>
 
 #include "library/library.h"
@@ -14,7 +15,9 @@
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
+#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wtracktableview.h"
 
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
@@ -29,6 +32,12 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
+
+    m_pShufflePlaylistAction = new QAction(tr("Shuffle Playlist"), this);
+    connect(m_pShufflePlaylistAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotShufflePlaylist);
 }
 
 QVariant PlaylistFeature::title() {
@@ -58,6 +67,10 @@ void PlaylistFeature::onRightClickChild(
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
+    menu.addSeparator();
+    // TODO If playlist is selected and has more than one track selected
+    // show "Shuffle selected tracks", else show "Shuffle playlist"?
+    menu.addAction(m_pShufflePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDuplicatePlaylistAction);
@@ -177,6 +190,49 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     return playlistLabels;
 }
 
+void PlaylistFeature::slotShufflePlaylist() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        qDebug() << "Can't shuffle locked playlist" << playlistId
+                 << m_playlistDao.getPlaylistName(playlistId);
+        return;
+    }
+
+    // Shuffle all tracks
+    // If the playlist is loaded/visible shuffle only selected tracks
+    QModelIndexList selection;
+    if (isChildIndexSelectedInSidebar(m_lastRightClickedIndex) &&
+            m_pPlaylistTableModel->getPlaylist() == playlistId) {
+        if (m_pLibraryWidget) {
+            WTrackTableView* view = dynamic_cast<WTrackTableView*>(
+                    m_pLibraryWidget->getActiveView());
+            if (view != nullptr) {
+                selection = view->selectionModel()->selectedIndexes();
+            }
+        }
+        m_pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
+    } else {
+        // Create a temp model so we don't need to select the playlist
+        // in the persistent model in order to shuffle it
+        std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+                std::make_unique<PlaylistTableModel>(this,
+                        m_pLibrary->trackCollectionManager(),
+                        "mixxx.db.model.playlist_shuffle");
+        pPlaylistTableModel->selectPlaylist(playlistId);
+        pPlaylistTableModel->setSort(
+                pPlaylistTableModel->fieldIndex(
+                        ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+                Qt::AscendingOrder);
+        pPlaylistTableModel->select();
+
+        pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
+    }
+}
+
 /// Purpose: When inserting or removing playlists,
 /// we require the sidebar model not to reset.
 /// This method queries the database and does dynamic insertion
@@ -265,6 +321,9 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
             idsToBeUpdated.insert(playlistId);
         }
     }
+    // Update the playlists set to allow toggling bold correctly after
+    // tracks have been dropped on sidebar items
+    m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
     updateChildModel(idsToBeUpdated);
 }
 

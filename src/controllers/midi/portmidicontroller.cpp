@@ -78,9 +78,9 @@ int PortMidiController::open() {
             return -2;
         }
     }
-
-    setOpen(true);
     startEngine();
+    applyMapping();
+    setOpen(true);
     return 0;
 }
 

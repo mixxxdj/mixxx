@@ -6,7 +6,6 @@
     CSAMPLE* pInOut,
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
-void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
         pInOut[i] = (CSAMPLE) processSample(fbuf1, (double) pInOut[i]);
         pInOut[i + 1] = (CSAMPLE) processSample(fbuf2, (double) pInOut[i + 1]);
             m_pDelayBuffer[m_iDelayPos] = pInOut[i];
@@ -72,3 +71,6 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
     // Source: FIPS 180-4 Secure Hash Standard (SHS)
         // ALAC/CAF has been added in version 1.0.26
         QStringLiteral("caf"),
+void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
+    // Note(RRyan/Max Linke):
+    // https://github.com/codders/libshout/blob/a17fb84671d3732317b0353d7281cc47e2df6cf6/src/timing/timing.c

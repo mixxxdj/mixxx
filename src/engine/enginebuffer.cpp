@@ -72,6 +72,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pReader(nullptr),
           m_playPos(kInitialPlayPosition),
           m_speed_old(0),
+          m_actual_speed(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
           m_reverse_old(false),
@@ -91,7 +92,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
           m_bPlayAfterLoading(false),
-          m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_pCrossfadeBuffer(SampleUtil::alloc(kMaxEngineSamples)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
     // This should be a static assertion, but isValid() is not constexpr.
@@ -100,7 +101,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_queuedSeek.setValue(kNoQueuedSeek);
 
     // zero out crossfade buffer
-    SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pCrossfadeBuffer, kMaxEngineSamples);
 
     m_pReader = new CachingReader(group, pConfig);
     connect(m_pReader, &CachingReader::trackLoading,
@@ -527,7 +528,7 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
-        int trackSampleRate,
+        mixxx::audio::SampleRate trackSampleRate,
         double trackNumSamples) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
@@ -539,7 +540,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_playPos = kInitialPlayPosition; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
     m_pTrackSamples->set(trackNumSamples);
-    m_pTrackSampleRate->set(trackSampleRate);
+    m_pTrackSampleRate->set(trackSampleRate.toDouble());
     m_pTrackLoaded->forceSet(1);
 
     // Reset slip mode
@@ -651,12 +652,18 @@ void EngineBuffer::notifyTrackLoaded(
     }
 
     if (pNewTrack) {
-        connect(
-                pNewTrack.get(),
+        connect(pNewTrack.get(),
                 &Track::beatsUpdated,
                 this,
                 &EngineBuffer::slotUpdatedTrackBeats,
                 Qt::DirectConnection);
+        connect(pNewTrack.get(),
+                &Track::bpmLockChanged,
+                m_pBpmControl,
+                &BpmControl::trackBpmLockChanged,
+                Qt::DirectConnection);
+        bool bpmLocked = pNewTrack.get()->isBpmLocked();
+        m_pBpmControl->trackBpmLockChanged(bpmLocked);
     }
 
     // Inform BaseTrackPlayer via a queued connection
@@ -838,7 +845,7 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 
 void EngineBuffer::processTrackLocked(
         CSAMPLE* pOutput, const int iBufferSize, mixxx::audio::SampleRate sampleRate) {
-    ScopedTimer t("EngineBuffer::process_pauselock");
+    ScopedTimer t(u"EngineBuffer::process_pauselock");
 
     m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackEndPositionOld = getTrackEndPosition();
@@ -1106,7 +1113,11 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
+    m_actual_speed = (m_playPos - playpos_old) / (iBufferSize / 2);
+    // qDebug() << "Ramped Speed" << m_actual_speed / m_speed_old;
+
     for (const auto& pControl : std::as_const(m_engineControls)) {
+        // m_playPos is already updated here and points to the end of the played buffer
         pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
         pControl->process(rate, m_playPos, iBufferSize);
     }
@@ -1193,6 +1204,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         m_rate_old = 0;
         m_speed_old = 0;
+        m_actual_speed = 0;
         m_scratching_old = false;
     }
 
@@ -1570,7 +1582,7 @@ double EngineBuffer::getRateRatio() const {
 
 void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (m_pBpmControl != nullptr) {
-        m_pBpmControl->collectFeatures(pGroupFeatures);
+        m_pBpmControl->collectFeatures(pGroupFeatures, m_actual_speed);
     }
 }
 

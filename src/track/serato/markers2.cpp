@@ -76,7 +76,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2BpmLockEntry::parse(const QByteArray& d
 
     const bool locked = data.at(0);
     SeratoMarkers2BpmLockEntry* pEntry = new SeratoMarkers2BpmLockEntry(locked);
-    kLogger.trace() << "SeratoMarkers2BpmLockEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2BpmLockEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -116,7 +118,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
             static_cast<quint8>(data.at(3))));
 
     SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
-    kLogger.trace() << "SeratoMarkers2ColorEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2ColorEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -205,7 +209,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     }
 
     SeratoMarkers2CueEntry* pEntry = new SeratoMarkers2CueEntry(index, position, color, label);
-    kLogger.trace() << "SeratoMarkers2CueEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2CueEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -316,7 +322,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
 
     SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(
             index, startPosition, endPosition, color, locked, label);
-    kLogger.trace() << "SeratoMarkers2LoopEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2LoopEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -359,14 +367,14 @@ bool SeratoMarkers2::parse(
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers2, data);
     case taglib::FileType::MP4:
         return parseBase64Encoded(seratoMarkers2, data);
     case taglib::FileType::FLAC:
         return parseFLAC(seratoMarkers2, data);
-    case taglib::FileType::OGG:
+    case taglib::FileType::OggVorbis:
         return parseCommon(seratoMarkers2, data);
     default:
         return false;
@@ -439,7 +447,9 @@ bool SeratoMarkers2::parseCommon(
             pEntry = SeratoMarkers2LoopEntry::parse(entryData);
         } else {
             pEntry = SeratoMarkers2EntryPointer(new SeratoMarkers2UnknownEntry(entryType, entryData));
-            kLogger.trace() << "SeratoMarkers2UnknownEntry" << *pEntry;
+            if (kLogger.traceEnabled()) {
+                kLogger.trace() << "SeratoMarkers2UnknownEntry" << *pEntry;
+            }
         }
 
         if (!pEntry) {
@@ -494,14 +504,14 @@ bool SeratoMarkers2::parseFLAC(
 
 QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
         return dumpBase64Encoded();
     case taglib::FileType::FLAC:
         return dumpFLAC();
-    case taglib::FileType::OGG:
+    case taglib::FileType::OggVorbis:
         return dumpCommon();
     default:
         DEBUG_ASSERT(false);
@@ -592,7 +602,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2::findEntryByType(
 }
 
 QList<CueInfo> SeratoMarkers2::getCues() const {
-    qDebug() << "Reading cues from 'Serato Markers2' tag data...";
+    // qDebug() << "Reading cues from 'Serato Markers2' tag data...";
 
     QList<CueInfo> cueInfos;
 
@@ -795,7 +805,7 @@ QByteArray SeratoMarkers2::dumpFLAC() const {
 }
 
 std::optional<SeratoStoredTrackColor> SeratoMarkers2::getTrackColor() const {
-    kLogger.debug() << "Reading track color from 'Serato Markers2' tag data...";
+    // kLogger.debug() << "Reading track color from 'Serato Markers2' tag data...";
 
     for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
@@ -845,7 +855,7 @@ void SeratoMarkers2::setTrackColor(SeratoStoredTrackColor color) {
 }
 
 bool SeratoMarkers2::isBpmLocked() const {
-    kLogger.debug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
+    // kLogger.debug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
 
     for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {

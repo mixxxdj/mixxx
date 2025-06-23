@@ -8,7 +8,7 @@
 // Changelog v1.2
 // Fixed clearing/lighting leds for hotcues if song has them set or not
 // Incorporated Pitch Ranges into Button/LCD
-// Incorprated BPM in LCD (may still not happen on first load)
+// Incorporated BPM in LCD (may still not happen on first load)
 // Updates LCD with Vinyl and Hotcue messages
 
 // ---- remaining issues

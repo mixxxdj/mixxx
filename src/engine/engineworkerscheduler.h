@@ -26,11 +26,12 @@ class EngineWorkerScheduler : public QThread {
   private:
     // Indicates whether workerReady has been called since the last time
     // runWorkers was run. This should only be touched from the engine callback.
-    bool m_bWakeScheduler;
-
-    std::vector<EngineWorker*> m_workers;
+    std::atomic<bool> m_bWakeScheduler;
 
     QWaitCondition m_waitCondition;
+
+    // mutex protects m_workers and m_bQuit
     QMutex m_mutex;
-    volatile bool m_bQuit;
+    std::vector<EngineWorker*> m_workers;
+    bool m_bQuit;
 };

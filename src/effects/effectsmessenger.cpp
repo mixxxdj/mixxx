@@ -2,6 +2,7 @@
 
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectchain.h"
+#include "util/make_const_iterator.h"
 
 EffectsMessenger::EffectsMessenger(
         std::unique_ptr<EffectsRequestPipe> pRequestPipe)
@@ -53,16 +54,15 @@ void EffectsMessenger::processEffectsResponses() {
 
     EffectsResponse response;
     while (m_pRequestPipe->readMessage(&response)) {
-        QHash<qint64, EffectsRequest*>::iterator it =
-                m_activeRequests.find(response.request_id);
+        auto it = m_activeRequests.constFind(response.request_id);
 
-        VERIFY_OR_DEBUG_ASSERT(it != m_activeRequests.end()) {
+        VERIFY_OR_DEBUG_ASSERT(it != m_activeRequests.constEnd()) {
             qWarning() << debugString()
                        << "WARNING: EffectsResponse with an inactive request_id:"
                        << response.request_id;
         }
 
-        while (it != m_activeRequests.end() &&
+        while (it != m_activeRequests.constEnd() &&
                 it.key() == response.request_id) {
             EffectsRequest* pRequest = it.value();
 
@@ -73,7 +73,7 @@ void EffectsMessenger::processEffectsResponses() {
             collectGarbage(pRequest);
 
             delete pRequest;
-            it = m_activeRequests.erase(it);
+            it = constErase(&m_activeRequests, it);
         }
     }
 }

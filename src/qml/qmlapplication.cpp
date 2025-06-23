@@ -45,7 +45,7 @@ QmlApplication::QmlApplication(
         : m_pCoreServices(pCoreServices),
           m_mainFilePath(pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
-          m_fileWatcher({m_mainFilePath}) {
+          m_autoReload() {
     m_pCoreServices->initialize(app);
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {
@@ -56,19 +56,15 @@ QmlApplication::QmlApplication(
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
-    m_pDlgPreferences = std::make_shared<DlgPreferences>(
-            m_pCoreServices->getScreensaverManager(),
-            nullptr,
-            m_pCoreServices->getSoundManager(),
-            m_pCoreServices->getControllerManager(),
-            m_pCoreServices->getVinylControlManager(),
-            m_pCoreServices->getEffectsManager(),
-            m_pCoreServices->getSettingsManager(),
-            m_pCoreServices->getLibrary());
+    std::shared_ptr<QDialog> pDlgPreferences = m_pCoreServices->makeDlgPreferences();
     // Without this, QApplication will quit when the last QWidget QWindow is
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
-    m_pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
+    pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
+
+    // Since DlgPreferences is only meant to be used in the main QML engine, it
+    // follows a strict singleton pattern design
+    QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(pDlgPreferences, this);
 
     // Any uncreateable non-singleton types registered here require arguments
     // that we don't want to expose to QML directly. Instead, they can be
@@ -78,22 +74,30 @@ QmlApplication::QmlApplication(
     // system, which would improve nothing, or we had to expose them as
     // singletons to that they can be accessed by components instantiated by
     // QML, which would also be suboptimal.
-    QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(m_pDlgPreferences, this);
-    QmlEffectsManagerProxy::s_pInstance = new QmlEffectsManagerProxy(
-            pCoreServices->getEffectsManager(), this);
-    QmlPlayerManagerProxy::s_pInstance =
-            new QmlPlayerManagerProxy(pCoreServices->getPlayerManager(), this);
-    QmlConfigProxy::s_pInstance = new QmlConfigProxy(pCoreServices->getSettings(), this);
-    QmlLibraryProxy::s_pInstance = new QmlLibraryProxy(pCoreServices->getLibrary(), this);
+    QmlEffectsManagerProxy::registerEffectsManager(pCoreServices->getEffectsManager());
+    QmlPlayerManagerProxy::registerPlayerManager(pCoreServices->getPlayerManager());
+    QmlConfigProxy::registerUserSettings(pCoreServices->getSettings());
+    QmlLibraryProxy::registerLibrary(pCoreServices->getLibrary());
 
     loadQml(m_mainFilePath);
 
     pCoreServices->getControllerManager()->setUpDevices();
 
-    connect(&m_fileWatcher,
-            &QFileSystemWatcher::fileChanged,
+    connect(&m_autoReload,
+            &QmlAutoReload::triggered,
             this,
-            &QmlApplication::loadQml);
+            [this]() {
+                loadQml(m_mainFilePath);
+            });
+}
+
+QmlApplication::~QmlApplication() {
+    // Delete all the QML singletons in order to prevent leak detection in CoreService
+    QmlEffectsManagerProxy::registerEffectsManager(nullptr);
+    QmlPlayerManagerProxy::registerPlayerManager(nullptr);
+    QmlConfigProxy::registerUserSettings(nullptr);
+    QmlLibraryProxy::registerLibrary(nullptr);
+    QmlDlgPreferencesProxy::s_pInstance->deleteLater();
 }
 
 void QmlApplication::loadQml(const QString& path) {
@@ -101,7 +105,8 @@ void QmlApplication::loadQml(const QString& path) {
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
 
-    const QFileInfo fileInfo(path);
+    m_autoReload.clear();
+    m_pAppEngine->addUrlInterceptor(&m_autoReload);
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
 
     // No memory leak here, the QQmlEngine takes ownership of the provider

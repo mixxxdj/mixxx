@@ -21,7 +21,7 @@ class ControllerScriptEngineBase : public QObject {
 
     virtual bool initialize();
 
-    bool executeFunction(QJSValue functionObject, const QJSValueList& arguments = {});
+    bool executeFunction(QJSValue* pFunctionObject, const QJSValueList& arguments = {});
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
@@ -39,6 +39,9 @@ class ControllerScriptEngineBase : public QObject {
     bool isTesting() const {
         return m_bTesting;
     }
+
+  signals:
+    void beforeShutdown();
 
   protected:
     virtual void shutdown();
@@ -63,4 +66,5 @@ class ControllerScriptEngineBase : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
     friend class ColorMapperJSProxy;
+    friend class MidiControllerTest;
 };

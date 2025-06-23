@@ -274,8 +274,8 @@
             <control>
                 <status>0x9f</status>
                 <midino>0x3e</midino>
-                <group>[Channel2]</group>
-                <key>NovationDicer.flangeEffect</key>
+                <group>[QuickEffectRack1_[Channel2]_Effect1]</group>
+                <key>NovationDicer.toggleQuickEffect</key>
                 <description></description>
                 <options>
                     <script-binding/>
@@ -574,8 +574,8 @@
             <control>
                 <status>0x9c</status>
                 <midino>0x3e</midino>
-                <group>[Channel1]</group>
-                <key>NovationDicer.flangeEffect</key>
+                <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
+                <key>NovationDicer.toggleQuickEffect</key>
                 <description></description>
                 <options>
                     <script-binding/>
@@ -779,8 +779,8 @@
                 <off>0x0</off>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>flanger</key>
+                <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
+                <key>enabled</key>
                 <description></description>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
@@ -856,8 +856,8 @@
                 <off>0x0</off>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>flanger</key>
+                <group>[QuickEffectRack1_[Channel2]_Effect1]</group>
+                <key>enabled</key>
                 <description></description>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>

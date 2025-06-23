@@ -7,6 +7,7 @@
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
 #include "util/fpclassify.h"
+#include "util/make_const_iterator.h"
 #include "util/time.h"
 
 #define SCRATCH_DEBUG_OUTPUT false
@@ -77,15 +78,15 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
 
     // Free all the ControlObjectScripts
     {
-        auto it = m_controlCache.begin();
-        while (it != m_controlCache.end()) {
+        auto it = m_controlCache.constBegin();
+        while (it != m_controlCache.constEnd()) {
             qCDebug(m_logger)
                     << "Deleting ControlObjectScript"
                     << it.key().group
                     << it.key().item;
             delete it.value();
             // Advance iterator
-            it = m_controlCache.erase(it);
+            it = constErase(&m_controlCache, it);
         }
     }
 }
@@ -105,6 +106,29 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
         }
     }
     return coScript;
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy) {
+        return QJSValue::UndefinedValue;
+    }
+    if (name.isEmpty()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("getSetting called with empty name "
+                               "string, returning undefined")
+                        .arg(name));
+        return QJSValue::UndefinedValue;
+    }
+
+    const auto it = m_pScriptEngineLegacy->m_settings.constFind(name);
+    if (it != m_pScriptEngineLegacy->m_settings.constEnd()) {
+        return it.value();
+    } else {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown controllerSetting (%1) returning undefined")
+                        .arg(name));
+        return QJSValue::UndefinedValue;
+    }
 }
 
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
@@ -274,7 +298,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
 
     if (coScript->addScriptConnection(connection)) {
         return pJsEngine->newQObject(
-                new ScriptConnectionJSProxy(connection));
+                new ScriptConnectionJSProxy(std::move(connection)));
     }
 
     return QJSValue();
@@ -393,19 +417,17 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
             // not break.
             ScriptConnection connection = coScript->firstConnection();
 
-            qCWarning(m_logger) << "Tried to make duplicate connection between (" +
-                            group + ", " + name + ") and " +
-                            passedCallback.toString() +
-                            " but this is not allowed when passing a callback "
-                            "as a string. " +
-                            "If you actually want to create duplicate "
-                            "connections, " +
-                            "use engine.makeConnection. Returning reference to "
-                            "connection " +
-                            connection.id.toString();
+            qCWarning(m_logger).nospace()
+                    << "Tried to make duplicate connection between (" << group
+                    << ", " << name << ") and " << passedCallback.toString()
+                    << " but this is not allowed when passing a callback "
+                       "as a string. If you actually want to create duplicate "
+                       "connections, use engine.makeConnection. "
+                       "Returning reference to connection "
+                    << connection.id.toString();
 
             return pJsEngine->newQObject(
-                    new ScriptConnectionJSProxy(connection));
+                    new ScriptConnectionJSProxy(std::move(connection)));
         }
     } else if (passedCallback.isQObject()) {
         // Assume a ScriptConnection and assume that the script author
@@ -548,12 +570,12 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
     // why but this causes segfaults in ~QScriptValue while scratching if we
     // don't copy here -- even though internalExecute passes the QScriptValues
     // by value. *boggle*
-    const TimerInfo timerTarget = it.value();
+    TimerInfo timerTarget = it.value();
     if (timerTarget.oneShot) {
         stopTimer(timerId);
     }
 
-    m_pScriptEngineLegacy->executeFunction(timerTarget.callback);
+    m_pScriptEngineLegacy->executeFunction(&timerTarget.callback);
 }
 
 void ControllerScriptInterfaceLegacy::softTakeover(

@@ -31,8 +31,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
           m_pTrackTableView(new WTrackTableView(this,
                   m_pConfig,
                   pLibrary,
-                  parent->getTrackTableBackgroundColorOpacity(),
-                  /*no sorting*/ false)),
+                  parent->getTrackTableBackgroundColorOpacity())),
           m_bShowButtonText(parent->getShowButtonText()),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
@@ -248,18 +247,6 @@ void DlgAutoDJ::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
 
-void DlgAutoDJ::activateSelectedTrack() {
-    m_pTrackTableView->activateSelectedTrack();
-}
-
-void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgAutoDJ::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
 void DlgAutoDJ::shufflePlaylistButton(bool) {
     QModelIndexList indexList = m_pTrackTableView->selectionModel()->selectedRows();
 
@@ -297,10 +284,10 @@ void DlgAutoDJ::autoDJError(AutoDJProcessor::AutoDJError error) {
                 tr("One deck must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
-    case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+    case AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING:
         QMessageBox::warning(nullptr,
                 tr("Auto DJ"),
-                tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
+                tr("Decks not used for Auto DJ must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
     case AutoDJProcessor::ADJ_OK:
@@ -356,8 +343,7 @@ void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
     ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
-void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
-    bool checked = static_cast<bool>(checkState);
+void DlgAutoDJ::slotRepeatPlaylistChanged(bool checked) {
     m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
             checked);
 }
@@ -389,6 +375,10 @@ bool DlgAutoDJ::hasFocus() const {
 
 void DlgAutoDJ::setFocus() {
     m_pTrackTableView->setFocus();
+}
+
+void DlgAutoDJ::pasteFromSidebar() {
+    m_pTrackTableView->pasteFromSidebar();
 }
 
 void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {

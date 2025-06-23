@@ -9,8 +9,9 @@
 namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
-        WaveformWidgetRenderer* waveformWidget)
-        : WaveformRendererSignalBase(waveformWidget) {
+        WaveformWidgetRenderer* waveformWidget, bool bRgbStacked)
+        : WaveformRendererSignalBase(waveformWidget),
+          m_bRgbStacked(bRgbStacked) {
 }
 
 void WaveformRendererFiltered::onSetup(const QDomNode& node) {
@@ -147,15 +148,27 @@ void WaveformRendererFiltered::paintGL() {
     m_shader.setUniformValue(matrixLocation, matrix);
 
     QColor colors[4];
-    colors[0].setRgbF(static_cast<float>(m_rgbLowColor_r),
-            static_cast<float>(m_rgbLowColor_g),
-            static_cast<float>(m_rgbLowColor_b));
-    colors[1].setRgbF(static_cast<float>(m_rgbMidColor_r),
-            static_cast<float>(m_rgbMidColor_g),
-            static_cast<float>(m_rgbMidColor_b));
-    colors[2].setRgbF(static_cast<float>(m_rgbHighColor_r),
-            static_cast<float>(m_rgbHighColor_g),
-            static_cast<float>(m_rgbHighColor_b));
+    if (m_bRgbStacked) {
+        colors[0].setRgbF(static_cast<float>(m_rgbLowColor_r),
+                static_cast<float>(m_rgbLowColor_g),
+                static_cast<float>(m_rgbLowColor_b));
+        colors[1].setRgbF(static_cast<float>(m_rgbMidColor_r),
+                static_cast<float>(m_rgbMidColor_g),
+                static_cast<float>(m_rgbMidColor_b));
+        colors[2].setRgbF(static_cast<float>(m_rgbHighColor_r),
+                static_cast<float>(m_rgbHighColor_g),
+                static_cast<float>(m_rgbHighColor_b));
+    } else {
+        colors[0].setRgbF(static_cast<float>(m_lowColor_r),
+                static_cast<float>(m_lowColor_g),
+                static_cast<float>(m_lowColor_b));
+        colors[1].setRgbF(static_cast<float>(m_midColor_r),
+                static_cast<float>(m_midColor_g),
+                static_cast<float>(m_midColor_b));
+        colors[2].setRgbF(static_cast<float>(m_highColor_r),
+                static_cast<float>(m_highColor_g),
+                static_cast<float>(m_highColor_b));
+    }
     colors[3].setRgbF(static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b),

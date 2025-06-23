@@ -332,8 +332,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
                     continue;
                 }
 
-                for (const auto& pParameter :
-                        m_allParameters.value(parameterType)) {
+                const auto& allParameters = m_allParameters.value(parameterType);
+                for (const auto& pParameter : allParameters) {
                     if (pParameter->manifest()->id() == parameterPreset.id()) {
                         m_loadedParameters[parameterType].append(pParameter);
                         break;

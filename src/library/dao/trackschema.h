@@ -5,6 +5,11 @@
 #define LIBRARY_TABLE "library"
 #define TRACKLOCATIONS_TABLE "track_locations"
 
+#define PLAYLIST_TABLE "Playlists"
+#define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
+
+#define AUTODJ_TABLE "Auto DJ"
+
 const QString LIBRARYTABLE_ID = QStringLiteral("id");
 const QString LIBRARYTABLE_ARTIST = QStringLiteral("artist");
 const QString LIBRARYTABLE_TITLE = QStringLiteral("title");
@@ -55,6 +60,18 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = QStringLiteral("directory");
 const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
 const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
+
+const QString PLAYLISTTABLE_ID = QStringLiteral("id");
+const QString PLAYLISTTABLE_NAME = QStringLiteral("name");
+const QString PLAYLISTTABLE_POSITION = QStringLiteral("position");
+const QString PLAYLISTTABLE_HIDDEN = QStringLiteral("hidden");
+const QString PLAYLISTTABLE_DATECREATED = QStringLiteral("date_created");
+const QString PLAYLISTTABLE_DATEMODIFIED = QStringLiteral("date_modified");
+
+const QString PLAYLISTTRACKSTABLE_TRACKID = QStringLiteral("track_id");
+const QString PLAYLISTTRACKSTABLE_POSITION = QStringLiteral("position");
+const QString PLAYLISTTRACKSTABLE_PLAYLISTID = QStringLiteral("playlist_id");
+const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_added");
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 

@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QString>
+#include <optional>
 
 #include "effects/backends/effectmanifestparameter.h"
 #include "util/class.h"
@@ -49,6 +50,13 @@ class EffectParameterSlotBase : public QObject {
     }
 
     virtual void setParameter(double value) = 0;
+
+    std::optional<double> neutralPointOnScale() const {
+        if (m_pManifestParameter == nullptr) {
+            return std::nullopt;
+        }
+        return m_pManifestParameter->neutralPointOnScale();
+    }
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.

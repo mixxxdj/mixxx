@@ -70,13 +70,13 @@ BulkController::BulkController(libusb_context* context,
                   get_string(handle, desc->iSerialNumber))),
           m_context(context),
           m_phandle(handle),
-          in_epaddr(0),
-          out_epaddr(0) {
-    vendor_id = desc->idVendor;
-    product_id = desc->idProduct;
+          m_inEndpointAddr(0),
+          m_outEndpointAddr(0) {
+    m_vendorId = desc->idVendor;
+    m_productId = desc->idProduct;
 
-    manufacturer = get_string(handle, desc->iManufacturer);
-    product = get_string(handle, desc->iProduct);
+    m_manufacturer = get_string(handle, desc->iManufacturer);
+    m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
 
     setDeviceCategory(tr("USB Controller"));
@@ -97,14 +97,22 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMutableMapping = pMapping;
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
-std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+QList<LegacyControllerMapping::ScriptFileInfo> BulkController::getMappingScriptFiles() {
     if (!m_pMapping) {
-        return nullptr;
+        return {};
     }
-    return m_pMapping->clone();
+    return m_pMapping->getScriptFiles();
+}
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {
@@ -122,13 +130,20 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
     bool ok;
     // Product and vendor match is always required
     value = product.vendor_id.toInt(&ok, 16);
-    if (!ok || vendor_id != value) {
+    if (!ok || m_vendorId != value) {
         return false;
     }
     value = product.product_id.toInt(&ok, 16);
-    if (!ok || product_id != value) {
+    if (!ok || m_productId != value) {
         return false;
     }
+
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    value = product.interface_number.toInt(&ok, 16);
+    if (!ok || m_interfaceNumber != static_cast<unsigned int>(value)) {
+        return false;
+    }
+#endif
 
     // Match found
     return true;
@@ -143,10 +158,13 @@ int BulkController::open() {
     /* Look up endpoint addresses in supported database */
     int i;
     for (i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == vendor_id) &&
-            (bulk_supported[i].product_id == product_id)) {
-            in_epaddr = bulk_supported[i].in_epaddr;
-            out_epaddr = bulk_supported[i].out_epaddr;
+        if ((bulk_supported[i].vendor_id == m_vendorId) &&
+                (bulk_supported[i].product_id == m_productId)) {
+            m_inEndpointAddr = bulk_supported[i].in_epaddr;
+            m_outEndpointAddr = bulk_supported[i].out_epaddr;
+#if defined(__WINDOWS__) || defined(__APPLE__)
+            m_interfaceNumber = bulk_supported[i].interface_number;
+#endif
             break;
         }
     }
@@ -159,7 +177,7 @@ int BulkController::open() {
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == nullptr) {
         m_phandle = libusb_open_device_with_vid_pid(
-            m_context, vendor_id, product_id);
+                m_context, m_vendorId, m_productId);
     }
 
     if (m_phandle == nullptr) {
@@ -167,13 +185,43 @@ int BulkController::open() {
         return -1;
     }
 
-    setOpen(true);
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    if (m_interfaceNumber && libusb_kernel_driver_active(m_phandle, m_interfaceNumber) == 1) {
+        qCDebug(m_logBase) << "Found a driver active for" << getName();
+        if (libusb_detach_kernel_driver(m_phandle, 0) == 0)
+            qCDebug(m_logBase) << "Kernel driver detached for" << getName();
+        else {
+            qCWarning(m_logBase) << "Couldn't detach kernel driver for" << getName();
+            libusb_close(m_phandle);
+            return -1;
+        }
+    }
+
+    if (m_interfaceNumber) {
+        int ret = libusb_claim_interface(m_phandle, m_interfaceNumber);
+        if (ret < 0) {
+            qCWarning(m_logBase) << "Cannot claim interface for" << getName()
+                                 << ":" << libusb_error_name(ret);
+            libusb_close(m_phandle);
+            return -1;
+        } else {
+            qCDebug(m_logBase) << "Claimed interface for" << getName();
+        }
+    }
+#endif
+
     startEngine();
 
     if (m_pReader != nullptr) {
         qCWarning(m_logBase) << "BulkReader already present for" << getName();
+    } else if (m_pMapping &&
+            !(m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Incoming)) {
+        qDebug() << "The mapping for the bulk device" << getName()
+                 << "doesn't require reading the data. Ignoring BulkReader "
+                    "setup.";
     } else {
-        m_pReader = new BulkReader(m_phandle, in_epaddr);
+        m_pReader = new BulkReader(m_phandle, m_inEndpointAddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
@@ -182,7 +230,8 @@ int BulkController::open() {
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-
+    applyMapping();
+    setOpen(true);
     return 0;
 }
 
@@ -195,10 +244,12 @@ int BulkController::close() {
     qCInfo(m_logBase) << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
-    if (m_pReader == nullptr) {
+    if (m_pReader == nullptr &&
+            m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Incoming) {
         qCWarning(m_logBase) << "BulkReader not present for" << getName()
                              << "yet the device is open!";
-    } else {
+    } else if (m_pReader) {
         disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
         qCInfo(m_logBase) << "  Waiting on reader to finish";
@@ -212,6 +263,15 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    if (m_interfaceNumber) {
+        int ret = libusb_release_interface(m_phandle, m_interfaceNumber);
+        if (ret < 0) {
+            qCWarning(m_logBase) << "Cannot release interface for" << getName()
+                                 << ":" << libusb_error_name(ret);
+        }
+    }
+#endif
     qCInfo(m_logBase) << "  Closing device";
     libusb_close(m_phandle);
     m_phandle = nullptr;
@@ -230,18 +290,29 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
 }
 
 void BulkController::sendBytes(const QByteArray& data) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
+            m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Outgoing) {
+        qDebug() << "The mapping for the bulk device" << getName()
+                 << "doesn't require sending data. Ignoring sending request.";
+        return;
+    }
+
     int ret;
     int transferred;
 
     // XXX: don't get drunk again.
-    ret = libusb_bulk_transfer(m_phandle, out_epaddr,
-                               (unsigned char *)data.constData(), data.size(),
-                               &transferred, 0);
+    ret = libusb_bulk_transfer(m_phandle,
+            m_outEndpointAddr,
+            (unsigned char*)data.constData(),
+            data.size(),
+            &transferred,
+            0);
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
-                               << "serial #" << m_sUID;
+                               << "serial #" << m_sUID << "-" << libusb_error_name(ret);
     } else {
-        qCDebug(m_logOutput) << ret << "bytes sent to" << getName()
+        qCDebug(m_logOutput) << transferred << "bytes sent to" << getName()
                              << "serial #" << m_sUID;
     }
 }

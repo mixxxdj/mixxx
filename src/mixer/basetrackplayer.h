@@ -1,27 +1,30 @@
 #pragma once
 
+#include <memory>
+
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
+#include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
-#include "util/memory.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
 class EngineMixer;
 class ControlObject;
 class ControlProxy;
+class ControlEncoder;
 class EffectsManager;
 class QString;
 class EngineDeck;
 
 constexpr int kUnreplaceDelay = 500;
 
-// Interface for not leaking implementation details of BaseTrackPlayer into the
-// rest of Mixxx. Also makes testing a lot easier.
+/// Interface for not leaking implementation details of BaseTrackPlayer into the
+/// rest of Mixxx. Also makes testing a lot easier.
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
@@ -37,12 +40,16 @@ class BaseTrackPlayer : public BasePlayer {
 
     virtual TrackPointer getLoadedTrack() const = 0;
     virtual void setupEqControls() = 0;
+    virtual bool isTrackMenuControlAvailable() {
+        return false;
+    };
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
+    virtual void slotSetAndConfirmTrackMenuControl(bool){};
     virtual void slotTrackRatingChangeRequest(int){};
 
   signals:
@@ -52,6 +59,7 @@ class BaseTrackPlayer : public BasePlayer {
     void playerEmpty();
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
+    void trackMenuChangeRequest(bool show);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -76,6 +84,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     void setupEqControls() final;
 
+    /// Returns true if PushButton has been created and no slot is currently
+    /// connected to trackMenuChangeRequest().
+    /// PushButtons persist skin reload, connected widgets don't, i.e. the
+    /// connection is removed on skin reload and available again afterwards.
+    bool isTrackMenuControlAvailable() final;
     /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
@@ -89,8 +102,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     /// When the replaygain is adjusted, we modify the track pregain
     /// to compensate so there is no audible change in volume.
-    void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
+    void slotAdjustReplayGain(mixxx::ReplayGain replayGain, const QString& requestingPlayerGroup);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
+    void slotTrackColorSelector(int steps);
+
+    /// Called via signal from WTrackProperty. Just set and confirm as requested.
+    void slotSetAndConfirmTrackMenuControl(bool visible) final;
     /// Slot for change signals from WStarRating (absolute values)
     void slotTrackRatingChangeRequest(int rating) final;
     void slotPlayToggled(double);
@@ -145,6 +162,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;
+    std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
+    std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+    std::unique_ptr<ControlEncoder> m_pTrackColorSelect;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
@@ -172,6 +192,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlPushButton> m_pShowTrackMenuControl;
 
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;

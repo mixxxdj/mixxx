@@ -1,7 +1,6 @@
 #pragma once
 
 #include "util/duration.h"
-#include "util/performancetimer.h"
 
 class ThreadCpuTimer {
   public:

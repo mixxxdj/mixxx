@@ -28,11 +28,14 @@ class PlaylistTableModel final : public TrackSetTableModel {
     /// This function should only be used by AUTODJ
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    int addTracksWithTrackIds(const QModelIndex& index,
+            const QList<TrackId>& trackIds,
+            int* pOutInsertionPos) final;
     bool isLocked() final;
 
     /// Get the total duration of all tracks referenced by the given model indices
     mixxx::Duration getTotalDuration(const QModelIndexList& indices);
+    const QList<int> getSelectedPositions(const QModelIndexList& indices) const override;
 
     Capabilities getCapabilities() const final;
 
@@ -40,6 +43,9 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
+
+  signals:
+    void firstTrackChanged();
 
   private:
     void initSortColumnMapping() override;

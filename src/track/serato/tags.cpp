@@ -73,6 +73,7 @@ namespace mixxx {
 
 double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
+        const QString& fileType,
         const audio::SignalInfo& signalInfo) {
     // The following code accounts for timing offsets required to
     // correctly align timing information (e.g. cue points) exported from
@@ -82,7 +83,7 @@ double SeratoTags::guessTimingOffsetMillis(
     // PR for more detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
     double timingOffset = 0;
-    if (taglib::getFileTypeFromFileName(filePath) == taglib::FileType::MP3) {
+    if (fileType == "mp3") {
         const QString primaryDecoderName =
                 getPrimaryDecoderNameForFilePath(filePath);
         // There should always be an MP3 decoder available
@@ -279,7 +280,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     }
 
     const QList<CueInfo> cueInfos = cueMap.values();
-    qDebug() << "SeratoTags::getCueInfos()";
+    // qDebug() << "SeratoTags::getCueInfos()";
     for (const CueInfo& cueInfo : cueInfos) {
         qDebug() << cueInfo;
     }

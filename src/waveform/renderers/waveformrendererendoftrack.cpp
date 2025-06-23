@@ -57,7 +57,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         return;
     }
 
-    //ScopedTimer t("WaveformRendererEndOfTrack::draw");
+    // ScopedTimer t(u"WaveformRendererEndOfTrack::draw");
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 

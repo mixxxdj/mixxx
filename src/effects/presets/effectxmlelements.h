@@ -20,6 +20,7 @@ const QString kEqualizerEffects(QStringLiteral("EqualizerEffects"));
 const QString kChainPresetName(QStringLiteral("ChainPresetName"));
 
 const QString kVisibleEffects(QStringLiteral("VisibleEffects"));
+const QString kHiddenEffects(QStringLiteral("HiddenEffects"));
 
 const QString kChainsRoot(QStringLiteral("Chains"));
 const QString kChain(QStringLiteral("EffectChain"));

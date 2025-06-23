@@ -1,12 +1,14 @@
 #include "qmldlgpreferencesproxy.h"
 
 #include "moc_qmldlgpreferencesproxy.cpp"
+#include "util/assert.h"
 
 namespace mixxx {
 namespace qml {
 
 QmlDlgPreferencesProxy::QmlDlgPreferencesProxy(
-        std::shared_ptr<DlgPreferences> pDlgPreferences, QObject* parent)
+        std::shared_ptr<QDialog> pDlgPreferences,
+        QObject* parent)
         : QObject(parent),
           m_pDlgPreferences(pDlgPreferences) {
 }
@@ -17,7 +19,8 @@ void QmlDlgPreferencesProxy::show() {
 
 // static
 QmlDlgPreferencesProxy* QmlDlgPreferencesProxy::create(
-        QQmlEngine* pQmlEngine, QJSEngine* pJsEngine) {
+        QQmlEngine* pQmlEngine,
+        QJSEngine* pJsEngine) {
     Q_UNUSED(pQmlEngine);
 
     // The implementation of this method is mostly taken from the code example

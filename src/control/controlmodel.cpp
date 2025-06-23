@@ -1,5 +1,7 @@
 #include "control/controlmodel.h"
 
+#include <QStringBuilder>
+
 #include "moc_controlmodel.cpp"
 
 ControlModel::ControlModel(QObject* pParent)

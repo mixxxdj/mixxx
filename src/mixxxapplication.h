@@ -2,6 +2,8 @@
 
 #include <QApplication>
 
+#include "util/duration.h"
+
 class ControlProxy;
 
 class MixxxApplication : public QApplication {
@@ -10,9 +12,9 @@ class MixxxApplication : public QApplication {
     MixxxApplication(int& argc, char** argv);
     ~MixxxApplication() override = default;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     bool notify(QObject*, QEvent*) override;
-#endif
+
+    void setNotifyWarningThreshold(int threshold);
 
   private:
     bool touchIsRightButton();
@@ -20,5 +22,6 @@ class MixxxApplication : public QApplication {
 
     int m_rightPressedButtons;
     ControlProxy* m_pTouchShift;
-
+    bool m_isDeveloper;
+    mixxx::Duration m_eventNotifyExecTimeWarningThreshold;
 };

@@ -5,6 +5,7 @@
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 
 namespace {
@@ -36,22 +37,26 @@ ControllerJSProxy* Controller::jsProxy() {
     return new ControllerJSProxy(this);
 }
 
-void Controller::startEngine()
-{
-    qCInfo(m_logBase) << "  Starting engine";
+void Controller::startEngine() {
+    qCInfo(m_logBase) << "Starting engine";
     if (m_pScriptEngineLegacy) {
-        qCWarning(m_logBase) << "Controller: Engine already exists! Restarting:";
+        qCWarning(m_logBase) << "startEngine(): Engine already exists! Restarting:";
         stopEngine();
     }
     m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this, m_logBase);
+    QObject::connect(m_pScriptEngineLegacy,
+            &ControllerScriptEngineBase::beforeShutdown,
+            this,
+            &Controller::slotBeforeEngineShutdown);
 }
 
 void Controller::stopEngine() {
-    qCInfo(m_logBase) << "  Shutting down engine";
+    qCInfo(m_logBase) << "Shutting down engine";
     if (!m_pScriptEngineLegacy) {
-        qCWarning(m_logBase) << "Controller::stopEngine(): No engine exists!";
+        qCWarning(m_logBase) << "No engine exists!";
         return;
     }
+
     delete m_pScriptEngineLegacy;
     m_pScriptEngineLegacy = nullptr;
 }
@@ -59,15 +64,13 @@ void Controller::stopEngine() {
 bool Controller::applyMapping() {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
-    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
-
     // Load the script code into the engine
     if (!m_pScriptEngineLegacy) {
-        qCWarning(m_logBase) << "Controller::applyMapping(): No engine exists!";
+        qCWarning(m_logBase) << "No engine exists!";
         return false;
     }
 
-    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = getMappingScriptFiles();
     if (scriptFiles.isEmpty()) {
         qCWarning(m_logBase)
                 << "No script functions available! Did the XML file(s) load "
@@ -76,6 +79,8 @@ bool Controller::applyMapping() {
     }
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+
+    m_pScriptEngineLegacy->setSettings(getMappingSettings());
     return m_pScriptEngineLegacy->initialize();
 }
 
@@ -104,14 +109,14 @@ void Controller::send(const QList<int>& data, unsigned int length) {
     sendBytes(msg);
 }
 
-void Controller::triggerActivity()
-{
-     // Inhibit Updates for 1000 milliseconds
+void Controller::triggerActivity() {
+    // Inhibit Updates for 1000 milliseconds
     if (m_userActivityInhibitTimer.elapsed() > 1000) {
         mixxx::ScreenSaverHelper::triggerUserActivity();
         m_userActivityInhibitTimer.start();
     }
 }
+
 void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     if (!m_pScriptEngineLegacy) {
         //qWarning() << "Controller::receive called with no active engine!";
@@ -122,7 +127,9 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (m_logInput().isDebugEnabled()) {
+    if (CmdlineArgs::Instance()
+                    .getControllerDebug() &&
+            m_logInput().isDebugEnabled()) {
         // Formatted packet display
         QString message = QString("t:%2, %3 bytes:\n")
                                   .arg(timestamp.formatMillisWithUnit(),
@@ -146,4 +153,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     }
 
     m_pScriptEngineLegacy->handleIncomingData(data);
+}
+void Controller::slotBeforeEngineShutdown() {
+    /* Override this to get called before the JS engine shuts down */
+    qCDebug(m_logInput) << "Engine shutdown";
 }

@@ -60,7 +60,6 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
             "Center frequency for Filter 1, from 100 Hz to 14 kHz"));
     center1->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     center1->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
-    center1->setNeutralPointOnScale(0.5);
     center1->setRange(100, kDefaultCenter1, 14000);
 
     EffectManifestParameterPointer gain2 = pManifest->addParameter();
@@ -95,7 +94,6 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
             "Center frequency for Filter 2, from 100 Hz to 14 kHz"));
     center2->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     center2->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
-    center2->setNeutralPointOnScale(0.5);
     center2->setRange(100, kDefaultCenter2, 14000);
 
     return pManifest;
@@ -120,7 +118,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState(
     }
 }
 
-void ParametricEQEffectGroupState::setFilters(int sampleRate) {
+void ParametricEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
     for (int i = 0; i < kBandCount; i++) {
         m_bands[i]->setFrequencyCorners(
                 sampleRate, m_oldCenter[i], m_oldQ[i], m_oldGain[i]);
@@ -187,7 +185,9 @@ void ParametricEQEffect::processChannel(
             pState->m_bands[1]->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            if (pOutput != pInput) {
+                SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            }
         }
     }
 

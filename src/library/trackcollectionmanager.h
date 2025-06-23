@@ -5,6 +5,7 @@
 #include <QSet>
 #include <memory>
 
+#include "library/dao/directorydao.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -72,9 +73,10 @@ class TrackCollectionManager: public QObject,
     void purgeTracks(const QList<TrackRef>& trackRefs) const;
     void purgeAllTracks(const QDir& rootDir) const;
 
-    bool addDirectory(const mixxx::FileInfo& newDir) const;
-    bool removeDirectory(const mixxx::FileInfo& oldDir) const;
-    void relocateDirectory(const QString& oldDir, const QString& newDir) const;
+    DirectoryDAO::AddResult addDirectory(const mixxx::FileInfo& newDir) const;
+    DirectoryDAO::RemoveResult removeDirectory(const mixxx::FileInfo& oldDir) const;
+    DirectoryDAO::RelocateResult relocateDirectory(
+            const QString& oldDir, const QString& newDir) const;
 
     TrackPointer getOrAddTrack(
             const TrackRef& trackRef,

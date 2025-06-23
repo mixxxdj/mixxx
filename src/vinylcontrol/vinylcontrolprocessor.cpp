@@ -204,7 +204,7 @@ bool VinylControlProcessor::deckConfigured(int index) const {
 void VinylControlProcessor::receiveBuffer(const AudioInput& input,
         const CSAMPLE* pBuffer,
         unsigned int nFrames) {
-    ScopedTimer t("VinylControlProcessor::receiveBuffer");
+    ScopedTimer t(u"VinylControlProcessor::receiveBuffer");
     if (input.getType() != AudioPathType::VinylControl) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;

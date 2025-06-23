@@ -1,11 +1,11 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/duration.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
 
 class VisualPlayPosition;

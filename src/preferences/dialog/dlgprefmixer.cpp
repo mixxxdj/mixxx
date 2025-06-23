@@ -16,6 +16,7 @@
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefmixer.cpp"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 #include "util/rescaler.h"
 
@@ -52,7 +53,7 @@ constexpr int kFrequencyLowerLimit = 16;
 constexpr int kXfaderGridHLines = 3;
 constexpr int kXfaderGridVLines = 5;
 
-bool isMixingEQ(EffectManifest* pManifest) {
+bool isMixingEQ(const EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
@@ -93,7 +94,9 @@ DlgPrefMixer::DlgPrefMixer(
           m_gainAutoReset(false),
           m_eqBypass(false),
           m_initializing(true),
-          m_updatingMainEQ(false) {
+          m_updatingMainEQ(false),
+          m_applyingDeckEQs(false),
+          m_applyingQuickEffects(false) {
     setupUi(this);
 
     // Update the crossfader curve graph and other settings when the
@@ -222,13 +225,12 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotEQEffectSelectionChanged);
-        // Update the combobox in case the effect was changed from anywhere else
+        // Update the combobox in case the effect was changed from anywhere else.
+        // This will wipe pending EQ effect changes.
         connect(pEqEffectSlot.data(),
                 &EffectSlot::effectChanged,
                 this,
-                [this]() {
-                    slotPopulateDeckEqSelectors();
-                });
+                &DlgPrefMixer::slotPopulateDeckEqSelectors);
 
         // Create the QuickEffect selector /////////////////////////////////////
         auto pQuickEffectComboBox = make_parented<QComboBox>(this);
@@ -239,20 +241,13 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 this,
                 &DlgPrefMixer::slotQuickEffectSelectionChanged);
         // Update the combobox when the effect was changed in WEffectChainPresetSelector
-        // or with controllers
+        // or with controllers. This will wipe pending QuickEffect changes.
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
         DEBUG_ASSERT(pChain);
-        // TODO(xxx) Connecting the signal to a lambda that capture the parented_ptr
-        // pQuickEffectComboBox and sets the combobox index causes a crash in
-        // applyQuickEffects() even though the signal hasn_t been emitted, yet.
-        // Hence we just capture the deck group and the new preset's name and set
-        // the index in a separate slot for now.
         connect(pChain.data(),
                 &EffectChain::chainPresetChanged,
                 this,
-                [this, deckGroup](const QString& name) {
-                    slotQuickEffectChangedOnDeck(deckGroup, name);
-                });
+                &DlgPrefMixer::slotPopulateQuickEffectSelectors);
 
         // Add the new widgets
         gridLayout_3->addWidget(pLabel, deckNo, 0);
@@ -276,6 +271,10 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
 }
 
 void DlgPrefMixer::slotPopulateDeckEqSelectors() {
+    if (m_applyingDeckEQs) {
+        return;
+    }
+
     m_ignoreEqQuickEffectBoxSignals = true; // prevents a recursive call
 
     const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
@@ -338,6 +337,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
 }
 
 void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
+    if (m_applyingQuickEffects) {
+        return;
+    }
     m_ignoreEqQuickEffectBoxSignals = true;
 
     QList<EffectChainPresetPointer> presetList =
@@ -423,12 +425,12 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
         for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
             auto* eqBox = m_deckEqEffectSelectors[deck];
             eqBox->setEnabled(!m_eqBypass);
-            slotPopulateDeckEqSelectors();
 
             auto* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setEnabled(true);
-            slotPopulateQuickEffectSelectors();
         }
+        slotPopulateDeckEqSelectors();
+        slotPopulateQuickEffectSelectors();
     }
 }
 
@@ -469,7 +471,6 @@ void DlgPrefMixer::slotResetToDefaults() {
 
     setDefaultShelves();
     comboBoxMainEq->setCurrentIndex(0); // '---' no EQ
-    slotApply();
 }
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
@@ -504,23 +505,8 @@ void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
     }
 }
 
-/// The Quick Effect was changed via the GUI or controls, update the combobox
-void DlgPrefMixer::slotQuickEffectChangedOnDeck(const QString& deckGroup,
-        const QString& presetName) {
-    int deck;
-    if (PlayerManager::isDeckGroup(deckGroup, &deck)) {
-        deck -= 1; // decks indices are 0-based
-        auto* pBox = m_deckQuickEffectSelectors[deck];
-        VERIFY_OR_DEBUG_ASSERT(pBox) {
-            return;
-        }
-        pBox->blockSignals(true);
-        pBox->setCurrentIndex(pBox->findText(presetName));
-        pBox->blockSignals(false);
-    }
-}
-
 void DlgPrefMixer::applyDeckEQs() {
+    m_applyingDeckEQs = true;
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
@@ -560,9 +546,11 @@ void DlgPrefMixer::applyDeckEQs() {
         }
     }
     m_ignoreEqQuickEffectBoxSignals = false;
+    m_applyingDeckEQs = false;
 }
 
 void DlgPrefMixer::applyQuickEffects() {
+    m_applyingQuickEffects = true;
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckQuickEffectSelectors.size(); deck++) {
@@ -593,6 +581,7 @@ void DlgPrefMixer::applyQuickEffects() {
         }
     }
     m_ignoreEqQuickEffectBoxSignals = false;
+    m_applyingQuickEffects = false;
 }
 
 void DlgPrefMixer::slotHiEqSliderChanged() {
@@ -1211,11 +1200,11 @@ const QList<EffectManifestPointer> DlgPrefMixer::getDeckEqManifests() const {
             allManifests.end(),
             [](const auto& pManifest) { return isMixingEQ(pManifest.data()); });
     if (m_eqEffectsOnly) {
-        allManifests.erase(nonEqsStartIt, allManifests.end());
+        erase(&allManifests, nonEqsStartIt, allManifests.end());
     } else {
         // Add a null item between EQs and non-EQs. The combobox fill function
         // will use this to insert a separator.
-        allManifests.insert(nonEqsStartIt, EffectManifestPointer());
+        insert(&allManifests, nonEqsStartIt, EffectManifestPointer());
     }
     return allManifests;
 }

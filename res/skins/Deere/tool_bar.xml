@@ -34,8 +34,7 @@
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Time</ObjectName>
-                <Size>52f,20f</Size>
-                <CustomFormat>hh:mm</CustomFormat>
+                <Size>56f,20f</Size>
               </Time>
 
               <Template src="skin:vumeter_latency.xml">

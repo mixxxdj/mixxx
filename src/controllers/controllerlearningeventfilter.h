@@ -42,7 +42,7 @@ class ControllerLearningEventFilter : public QObject {
     void stopListening();
 
   signals:
-    void controlClicked(ControlObject* pControl);
+    void controlClicked(const ConfigKey& controlKey);
 
   private:
     QHash<QWidget*, ControlInfo> m_widgetControlInfo;

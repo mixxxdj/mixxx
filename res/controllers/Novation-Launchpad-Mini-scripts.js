@@ -338,10 +338,10 @@ function ZoomKey(dir) {
     that.onPush = function()
     {
         // range is 1..10
-        if ( ZoomKey.zoom < 10 && this.dir == "+" ) {
+        if (ZoomKey.zoom < 10 && this.dir === "+") {
             ZoomKey.zoom++;
         }
-        if ( ZoomKey.zoom > 1 && this.dir == "-") {
+        if (ZoomKey.zoom > 1 && this.dir === "-") {
             ZoomKey.zoom--;
         }
 

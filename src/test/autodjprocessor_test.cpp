@@ -10,6 +10,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "engine/engine.h"
+#include "library/dao/trackschema.h"
 #include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
@@ -271,7 +272,9 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck2.
@@ -300,6 +303,8 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     EXPECT_DOUBLE_EQ(-1.0, mixer.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Seek the outgoing track to where outro start cue is placed. It should
     // start fading.
@@ -588,12 +593,12 @@ TEST_F(AutoDJProcessorTest, DecksPlayingWarning) {
 TEST_F(AutoDJProcessorTest, Decks34PlayingWarning) {
     deck3.play.set(1);
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
-    EXPECT_EQ(AutoDJProcessor::ADJ_DECKS_3_4_PLAYING, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING, err);
 
     deck3.play.set(0);
     deck4.play.set(1);
     err = pProcessor->toggleAutoDJ(true);
-    EXPECT_EQ(AutoDJProcessor::ADJ_DECKS_3_4_PLAYING, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING, err);
 }
 
 TEST_F(AutoDJProcessorTest, QueueEmpty) {

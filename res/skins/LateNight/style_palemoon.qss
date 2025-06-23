@@ -337,11 +337,23 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
+WTrackProperty:hover,
+WTrackProperty:hover[selected="false"],
+WTrackProperty:hover[selected="true"],
+WTrackProperty[selected="true"],
 #BpmTapContainer:hover,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
-  border-radius: 1px;
-}
+  }
+  WTrackProperty:hover[selected="true"],
+  WTrackProperty[selected="true"] {
+    background-color: #181819;
+  }
+  #BpmTap[pressed="true"],
+  WTrackProperty[selected="true"] {
+    border: 1px solid #7d350d;
+/*    border: 1px solid #888;*/
+  }
 
 /* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
@@ -1142,6 +1154,16 @@ WEffectSelector:!editable:on {
 #SkinSettingsMixerToggle {
   background-color: rgba(15, 15, 15, 255);
 }
+
+/* Cover for the beatgrid edit buttons in the waveform container
+   and the CurPos button in the deck settings near the overview.
+   Hue has to match the bg color of the buttons want to we cover */
+#BeatEditCover {
+  background-color: rgba(21, 21, 23, 180);
+}
+#BeatEditCoverDecks {
+  background-color: rgba(25, 25, 26, 180);
+}
 /*********************************************************************
 ******************* Container layouts, margins etc. *****************/
 
@@ -1193,10 +1215,9 @@ WEffectChainPresetSelector,
 WSearchLineEdit,
 WTime,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
-#LibraryBPMSpinBox,
-#LibraryBPMButton::item,
 WTrackTableView,
-WTrackTableView::indicator,
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item,
 WLibraryTextBrowser,
 WLibrarySidebar,
 #LibraryFeatureControls QLabel,
@@ -1211,6 +1232,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 QLineEdit QMenu,
@@ -1220,7 +1242,13 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 WCoverArtMenu {
   color: #c2b3a5;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #c2b3a5;
+}
+
   /* dim ivory / light brown */
   #Deck1 WStarRating, #DeckCompact1 WStarRating,
   #Deck2 WStarRating, #DeckCompact2 WStarRating,
@@ -1348,7 +1376,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
@@ -1366,7 +1394,9 @@ WEffectChainPresetSelector QAbstractScrollArea,
   color: #444;
 }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
 #PassthroughButton[displayValue="1"],
@@ -1439,20 +1469,23 @@ QPushButton#pushButtonRecording:checked {
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
-WPushButton#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #SyncDeck[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
 #LibraryFeatureControls QPushButton:enabled,
-#CueDeleteButton {
+#CueDeleteButton,
+#CueSavedLoopButton {
   outline: none;
   border-width: 2px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
   /*
   WPushButton#BpmTap[displayValue="1"], */
-  WPushButton#VinylButton[displayValue="1"],
+  WPushButton#VinylStatus[displayValue="1"],
+  WPushButton#VinylStatus[displayValue="2"],
+  WPushButton#VinylStatus[displayValue="3"],
   #SyncDeck[displayValue="1"],
   WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
@@ -1472,26 +1505,11 @@ WEffectSelector:!editable,
   QPushButton#pushButtonRecording:checked,
   WEffectSelector:!editable:on,
   #fadeModeCombobox:!editable:on,
-  #CueDeleteButton[pressed="true"] {
+  #CueDeleteButton[pressed="true"],
+  #CueSavedLoopButton[pressed="true"],
+  #CueSavedLoopButton:checked {
     border-width: 2px;
     border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
-  }
-
-  WTrackTableViewHeader {
-    border-bottom-right-radius: 1px solid #000;
-    outline: none;
-  }
-  WTrackTableViewHeader::section {
-    outline: none;
-    border-width: 1px 2px 1px 1px;
-    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
-  }
-  WTrackTableViewHeader::up-arrow,
-  WTrackTableViewHeader::down-arrow {
-    outline: none;
-    /* ToDo: restore image
-    border-width: 1px 2px 1px 0px;
-    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
   }
 
   #LibraryFeatureControls QPushButton:!enabled {
@@ -1580,6 +1598,7 @@ WBeatSpinBox::down-button {
   }
   /* dim buttons in top-level containers */
   #LoopControls WPushButton[displayValue="0"],
+  WPushButton#LoopAnchor[displayValue="1"],
   #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
   WPushButton#SyncLeader[value="0"],
@@ -1620,6 +1639,7 @@ WBeatSpinBox::down-button {
   /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
+  #CueSavedLoopButton,
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
   /* library controls */
@@ -1652,7 +1672,6 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
-#VinylButton[displayValue="1"],
 #PassthroughButton[displayValue="1"],
 #BroadcastButton[displayValue="4"], /* warning */
 QPushButton#pushButtonAutoDJ:checked,
@@ -1671,14 +1690,14 @@ QPushButton#pushButtonAnalyze:checked {
 #SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
+WPushButton#LoopAnchor[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
 #BeatgridControls WPushButton[pressed="true"]/*,
-#CueDeleteButton[pressed="true"]*/ {
+#CueDeleteButton[pressed="true"],
+#CueSavedLoopButton[pressed="true"],
+#CueSavedLoopButton:checked*/ {
   background-color: #7d350d;
-  }
-  #BpmTap[pressed="true"] {
-   border: 1px solid #7d350d;
   }
 
 /* Red */
@@ -1691,6 +1710,7 @@ QPushButton#pushButtonRecording:checked,
 /* Green for Fx toggles, QuickEffect + Fx12 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #438225;
   }
@@ -1702,7 +1722,7 @@ QPushButton#pushButtonRecording:checked,
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"],
+#FxUnit4 #FxToggleButton[displayValue="1"]
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
@@ -1791,7 +1811,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 
 /* Yellow */
 #RecFeedback[displayValue="1"],     /* initialize recording */
-#BroadcastButton[displayValue="1"] {  /* connecting */
+#BroadcastButton[displayValue="1"], /* connecting */
+WPushButton#VinylStatus[displayValue="2"] {  /* blinks when the needle reaches the end of the record */
   background-color: #d09300;
 }
 
@@ -1799,9 +1820,10 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #395579;
 }
 
-/* pink */
-#BroadcastButton[displayValue="3"], /* failure */
-#RecFeedback[displayValue="3"] {
+/* pink for error / failure / warning */
+#BroadcastButton[displayValue="3"],
+#RecFeedback[displayValue="3"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
@@ -1841,7 +1863,14 @@ WPushButton#CrossfaderButton[displayValue="0"],
 WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"] {
   background-color: transparent;
 }
 
@@ -2077,6 +2106,12 @@ WPushButton#PlayDeck[value="0"] {
   }
   #LoopOut[pressed="true"] {
     image: url(skins:LateNight/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
+  }
+#LoopAnchor[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_start.svg) no-repeat center center;
+  }
+  #LoopAnchor[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__loop_anchor_end.svg) no-repeat center center;
   }
 
 #JumpForward {
@@ -2324,6 +2359,20 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
 
+  #BpmLockToggle[value="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__bpm_locked.svg);
+    }
+    #BpmLockToggle[value="0"] {
+      image: url(skins:LateNight/palemoon/buttons/btn__bpm_unlocked.svg);
+    }
+
+  #Undo[value="0"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__undo.svg) no-repeat center center;
+    }
+    #Undo[value="1"] {
+      image: url(skins:LateNight/palemoon/buttons/btn__undo_active.svg) no-repeat center center;
+    }
+
   #BeatCurposLarge[displayValue="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__beat_curpos_large.svg) no-repeat center center;
     }
@@ -2360,13 +2409,13 @@ WPushButton#PlayDeck[value="0"] {
     }
   #HotcuesEarlier {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
-  }
+    }
     #HotcuesEarlier[pressed="true"] {
       image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
     }
   #HotcuesLater {
     image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
-  }
+    }
     #HotcuesLater[pressed="true"] {
       image: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
     }
@@ -2476,20 +2525,32 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 /* widgets in cue popup menu */
-WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
+WCueMenuPopup #CueDeleteButton,
+WCueMenuPopup #CueSavedLoopButton {
   width: 24px;
   height: 42px;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
 }
+WCueMenuPopup #CueDeleteButton {
+  /* Note: we can't use qproperty-icon here because it's evauated only once
+     and therefore won't style the checked state */
+  image: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
+}
+  WCueMenuPopup #CueDeleteButton:pressed {
+    background-color: #b24c12;
+    outline: none;
+    image: url(skins:LateNight/palemoon/buttons/btn__delete_active.svg);
+  }
 
-WCueMenuPopup #CueDeleteButton:pressed {
+WCueMenuPopup #CueSavedLoopButton {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
+}
+WCueMenuPopup #CueSavedLoopButton:pressed,
+WCueMenuPopup #CueSavedLoopButton:checked {
   background-color: #b24c12;
   outline: none;
-  /* not applied: */
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__delete_active.svg);
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
 }
+
 WCueMenuPopup #CueLabelEdit {
   /*border: 1px solid #c2b3a5;*/
   border-radius: 0px;
@@ -2533,6 +2594,7 @@ WLibraryTextBrowser,
 WLibrarySidebar,
 #SkinSettings,
 WSearchLineEdit,
+WTrackPropertyEditor,
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 #spinBoxTransition,
@@ -2558,10 +2620,25 @@ WLibrarySidebar {
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
-  color: #fff;
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+   color: #fff;*/
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
   background-color: #2c454f;
-}
+  }
+  /* Highlight currentIndex which can be moved with Ctrl + arrow keys */
+  WTrackTableView::item:!selected:focus {
+    /* For outline to be applied, background-color must be set, too ...
+       Use a value between #0f0f0f and #0a0a0a (alternate-background-color) */
+    background-color: #0c0c0c;
+    outline: 1px solid #fff;
+    color: #fff;
+  }
+
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
@@ -2583,26 +2660,34 @@ WLibrarySidebar {
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
+  /* This is the color used to paint the text of missing tracks. */
+  qproperty-trackMissingColor: #f856e7; /* pink */
 }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
-#LibraryBPMSpinBox {
+#LibraryBPMSpinBox,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
   color: #ddd;
   selection-color: #000;
   selection-background-color: #ccc;
-  border: 1px solid #2c454f;
-}
+  border: 1px solid #257b82;
+  border-radius: 0px;
+  }
 
 /* Entire BPM cell */
 /* Lock icon at the left */
@@ -2631,6 +2716,10 @@ WLibrary QPlainTextEdit,
       image: url(skins:LateNight/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
       }
 
+#LibraryPlayedCheckbox::indicator:unchecked {
+  image: url(skins:LateNight/palemoon/buttons/btn__lib_checkbox.svg);
+}
+
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
   margin: 0px;
@@ -2649,16 +2738,40 @@ WLibrary QPlainTextEdit,
 /*********** table header styles *********************************/
 
 WTrackTableViewHeader {
+  border-bottom-right-radius: 1px solid #000;
+  outline: none;
+}
+
+WTrackTableViewHeader::section {
+/* Setting an image causes QHeaderView to reserve space for the sort indicator,
+   i.e. column titles are truncated, even where no indicators are shown.
+   The arrow width and padding are set in style.qss (0.8em + .15em),
+   so let's set a negative padding-right to shift the text. This will push the
+   reserved space out of the visible region, but the actual arrow will still be visible.
+   Now the arrow overlaps the column title again like in Qt5 (bug), so the arrow images
+   could use a background-color to cover the text, or a gradient to fade it out gently. */
+  padding: 2px -0.95em 0px 3px;
+  outline: none;
+  border-width: 1px 2px 1px 1px;
+  border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
+}
+
+WTrackTableViewHeader::up-arrow,
+WTrackTableViewHeader::down-arrow {
+  outline: none;
+  /* horizontal gradient to fade out the text */
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 transparent,
+    stop: 0.2 #171719,
+    stop: 1 #171719);
   }
-  WTrackTableViewHeader::section {
-    padding: 2px 1px 0px 3px;
-    }
-    WTrackTableViewHeader::up-arrow {
-      image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_up.svg);
-    }
-    WTrackTableViewHeader::down-arrow {
-      image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_down.svg);
-    }
+  WTrackTableViewHeader::up-arrow {
+    image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_up.svg);
+  }
+  WTrackTableViewHeader::down-arrow {
+    image: url(skins:LateNight/palemoon/buttons/btn__lib_sort_down.svg);
+  }
+
 
 
 
@@ -2937,6 +3050,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -2967,10 +3081,10 @@ WSearchLineEdit::item {
 /* ::indicator:!checked won't work. use 'unchecked' */
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
-WTrackTableViewHeader QMenu::item:selected,
 WTrackTableViewHeader QMenu QCheckBox:selected,
 WTrackTableViewHeader QMenu QCheckBox:focus,
 WTrackTableViewHeader QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -3030,6 +3144,7 @@ WSearchLineEdit::item:selected,
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
+WLibraryTextBrowser QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -3050,6 +3165,10 @@ QPlainTextEdit QMenu::item:disabled {
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #333;
+  }
+  /* use the same color for the vertical separator in Search related menu */
+  WSearchRelatedCheckBox {
+    qproperty-separatorColor: #333;
   }
 
   #MainMenu QMenu::right-arrow,
@@ -3074,14 +3193,9 @@ QPlainTextEdit QMenu::item:disabled {
       image: url(skins:LateNight/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
-  /* This is the only way to select the 'Played' checkbox.
-    Note that this also selects the BPM lock, so style that afterwards. */
-  WTrackTableView::indicator:unchecked {
-    image: url(skins:LateNight/palemoon/buttons/btn__lib_checkbox.svg);
-  }
   WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
-  WTrackTableView::indicator:checked,
+  #LibraryPlayedCheckbox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked {
     image: url(skins:LateNight/palemoon/buttons/btn__lib_checkmark_blue.svg);
@@ -3090,15 +3204,7 @@ QPlainTextEdit QMenu::item:disabled {
   WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skins:LateNight/palemoon/buttons/btn__effect_selected.svg);
-    width: 13px;
-    height: 13px;
     margin-left: 6px;
-  }
-  /* disabled menu item and checkbox */
-  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    background-color: #222;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
     image: url(skins:LateNight/palemoon/buttons/btn__lib_checkmark_grey.svg);

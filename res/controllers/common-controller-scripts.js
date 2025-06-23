@@ -48,19 +48,27 @@ var printObject = function(obj, maxdepth) {
 
 
 var stringifyObject = function(obj, maxdepth, checked, prefix) {
-    if (!maxdepth) { maxdepth = 2; }
+    if (!maxdepth) {
+        maxdepth = 2;
+    }
     try {
         return JSON.stringify(obj, null, maxdepth);
     } catch (e) {
-        if (!checked) { checked = []; }
-        if (!prefix) { prefix = ""; }
+        if (!checked) {
+            checked = [];
+        }
+        if (!prefix) {
+            prefix = "";
+        }
         if (maxdepth > 0 && typeof obj === "object" && obj !== null &&
             Object.getPrototypeOf(obj) !== "" && !arrayContains(checked, obj)) {
             checked.push(obj);
             let output = "{\n";
             for (const property in obj) {
                 const value = obj[property];
-                if (typeof value === "function") { continue; }
+                if (typeof value === "function") {
+                    continue;
+                }
                 output += prefix + property + ": "
                     + stringifyObject(value, maxdepth - 1, checked, prefix + "  ")
                     + "\n";
@@ -74,7 +82,9 @@ var stringifyObject = function(obj, maxdepth, checked, prefix) {
 
 var arrayContains = function(array, elem) {
     for (let i = 0; i < array.length; i++) {
-        if (array[i] === elem) { return true; }
+        if (array[i] === elem) {
+            return true;
+        }
     }
     return false;
 };
@@ -97,7 +107,9 @@ var msecondstominutes = function(msecs) {
     const secs = (msecs / 1000) | 0;
     msecs %= 1000;
     msecs = Math.round(msecs * 100 / 1000);
-    if (msecs === 100) { msecs = 99; }
+    if (msecs === 100) {
+        msecs = 99;
+    }
 
     return (m < 10 ? "0" + m : m)
         + ":"
@@ -243,7 +255,7 @@ script.triggerControl = function(group, control, delay) {
         delay = 200;
     }
     engine.setValue(group, control, 1);
-    engine.beginTimer(delay, () => engine.setValue(group, control, 0) , true);
+    engine.beginTimer(delay, () => engine.setValue(group, control, 0), true);
 };
 
 /* -------- ------------------------------------------------------
@@ -399,7 +411,9 @@ script.posMod = function(a, m) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.loopMove = function(group, direction, numberOfBeats) {
-    if (!numberOfBeats || numberOfBeats === 0) { numberOfBeats = 0.5; }
+    if (!numberOfBeats || numberOfBeats === 0) {
+        numberOfBeats = 0.5;
+    }
 
     if (direction < 0) {
         engine.setValue(group, "loop_move", -numberOfBeats);
@@ -527,15 +541,17 @@ bpm.tapButton = function(deck) {
     // a tap is considered missed when the delta of this press is 80% longer than the previous one
     // and a tap is considered double when the delta is shorter than 40% of the previous one.
     // these numbers are just guesses that produced good results in practice
-    if ((tapDelta > bpm.previousTapDelta * 1.8)||(tapDelta < bpm.previousTapDelta * 0.6)) {
+    if ((tapDelta > bpm.previousTapDelta * 1.8) || (tapDelta < bpm.previousTapDelta * 0.6)) {
         return;
     }
     bpm.previousTapDelta = tapDelta;
     bpm.tap.push(60 / tapDelta);
     // Keep the last 8 samples for averaging
-    if (bpm.tap.length > 8) { bpm.tap.shift(); }
+    if (bpm.tap.length > 8) {
+        bpm.tap.shift();
+    }
     let sum = 0;
-    for (let i=0; i<bpm.tap.length; i++) {
+    for (let i = 0; i < bpm.tap.length; i++) {
         sum += bpm.tap[i];
     }
     const average = sum / bpm.tap.length;
@@ -546,7 +562,7 @@ bpm.tapButton = function(deck) {
     // was supposed to return the tracks bpm (which it did before the change).
     // "file_bpm" is supposed to return the set BPM of the loaded track of the
     // channel.
-    let fRateScale = average/engine.getValue(group, "file_bpm");
+    let fRateScale = average / engine.getValue(group, "file_bpm");
 
     // Adjust the rate:
     fRateScale = (fRateScale - 1.) / engine.getValue(group, "rateRange");
@@ -565,7 +581,6 @@ script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/;
 script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/;
 
 // ----------------- Object definitions --------------------------
-
 
 
 var ButtonState = {"released": 0x00, "pressed": 0x7F};
@@ -648,7 +663,7 @@ Control.prototype.setValue = function(group, inputValue) {
                 * (this.maxInput - this.midInput);
         }
         if (inputValue > currentRelative - this.maxJump
-                && inputValue < currentRelative + this.maxJump) {
+            && inputValue < currentRelative + this.maxJump) {
             engine.setValue(group, this.mappedFunction, outputValue);
         }
     } else {

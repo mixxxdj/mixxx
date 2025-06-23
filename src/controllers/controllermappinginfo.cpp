@@ -89,13 +89,15 @@ MappingInfo::MappingInfo(const QString& mapping_path)
 }
 
 ProductInfo MappingInfo::parseBulkProduct(const QDomElement& element) const {
-    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03">
+    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105"
+    // in_epaddr="0x82" out_epaddr="0x03" interface_number="0x04" />
     ProductInfo product;
     product.protocol = element.attribute("protocol");
     product.vendor_id = element.attribute("vendor_id");
     product.product_id = element.attribute("product_id");
     product.in_epaddr = element.attribute("in_epaddr");
     product.out_epaddr = element.attribute("out_epaddr");
+    product.interface_number = element.attribute("interface_number");
     return product;
 }
 

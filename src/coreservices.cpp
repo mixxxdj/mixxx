@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QStandardPaths>
 #include <QtGlobal>
 
@@ -22,6 +24,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
@@ -29,6 +32,7 @@
 #include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "util/clipboard.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
@@ -43,10 +47,12 @@
 #include "util/sandbox.h"
 #endif
 
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <X11/Xlib.h>
-#include <X11/Xlibint.h>
+#ifdef Q_OS_LINUX
+#include <X11/XKBlib.h>
+#endif
 
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <X11/Xlibint.h>
 #include <QtX11Extras/QX11Info>
 
 #include "engine/channelhandle.h"
@@ -96,11 +102,234 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 
 #endif
 
+#if defined(Q_OS_LINUX)
+QLocale localeFromXkbSymbol(const QString& xkbLayout) {
+    // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
+    static const QMap<QString, QLocale> xkbToLocaleMap = {
+            {"cz", QLocale(QLocale::Czech, QLocale::CzechRepublic)},              // cs_CZ.kbd.cfg
+            {"de", QLocale(QLocale::German, QLocale::Germany)},                   // de_DE.kbd.cfg
+            {"de+nodeadkeys", QLocale(QLocale::German, QLocale::Germany)},        // de_DE.kbd.cfg
+            {"es", QLocale(QLocale::Spanish, QLocale::Spain)},                    // es_ES.kbd.cfg
+            {"es+nodeadkeys", QLocale(QLocale::Spanish, QLocale::Spain)},         // es_ES.kbd.cfg
+            {"fr", QLocale(QLocale::French, QLocale::France)},                    // fr_FR.kbd.cfg
+            {"fr+nodeadkeys", QLocale(QLocale::French, QLocale::France)},         // fr_FR.kbd.cfg
+            {"dk", QLocale(QLocale::Danish, QLocale::Denmark)},                   // da_DK.kbd.cfg
+            {"dk+nodeadkeys", QLocale(QLocale::Danish, QLocale::Denmark)},        // da_DK.kbd.cfg
+            {"gr", QLocale(QLocale::Greek, QLocale::Greece)},                     // el_GR.kbd.cfg
+            {"gr+nodeadkeys", QLocale(QLocale::Greek, QLocale::Greece)},          // el_GR.kbd.cfg
+            {"fi", QLocale(QLocale::Finnish, QLocale::Finland)},                  // fi_FI.kbd.cfg
+            {"it", QLocale(QLocale::Italian, QLocale::Italy)},                    // it_IT.kbd.cfg
+            {"it+nodeadkeys", QLocale(QLocale::Italian, QLocale::Italy)},         // it_IT.kbd.cfg
+            {"us", QLocale(QLocale::English, QLocale::UnitedStates)},             // en_US.kbd.cfg
+            {"ru", QLocale(QLocale::Russian, QLocale::Russia)},                   // ru_RU.kbd.cfg
+            {"ch", QLocale(QLocale::German, QLocale::Switzerland)},               // de_CH.kbd.cfg
+            {"ch+de_nodeadkeys", QLocale(QLocale::German, QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"ch+fr", QLocale(QLocale::French, QLocale::Switzerland)},            // fr_CH.kbd.cfg
+            {"ch+fr_nodeadkeys", QLocale(QLocale::French, QLocale::Switzerland)}  // fr_CH.kbd.cfg
+    };
+    return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
+}
+
+QLocale localeFromXkbName(const QString& xkbLayout) {
+    // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
+    static const QMap<QString, QLocale> xkbToLocaleMap = {
+            {"Czech",
+                    QLocale(QLocale::Czech,
+                            QLocale::CzechRepublic)}, // cs_CZ.kbd.cfg
+            {"German",
+                    QLocale(QLocale::German,
+                            QLocale::Germany)}, // de_DE.kbd.cfg
+            {"German (no dead keys)",
+                    QLocale(QLocale::German,
+                            QLocale::Germany)}, // de_DE.kbd.cfg
+            {"Spanish",
+                    QLocale(QLocale::Spanish, QLocale::Spain)}, // es_ES.kbd.cfg
+            {"Spanish (no dead keys)",
+                    QLocale(QLocale::Spanish, QLocale::Spain)}, // es_ES.kbd.cfg
+            {"French",
+                    QLocale(QLocale::French, QLocale::France)}, // fr_FR.kbd.cfg
+            {"French (no dead keys)",
+                    QLocale(QLocale::French, QLocale::France)}, // fr_FR.kbd.cfg
+            {"Danish",
+                    QLocale(QLocale::Danish,
+                            QLocale::Denmark)}, // da_DK.kbd.cfg
+            {"Danish (no dead keys)",
+                    QLocale(QLocale::Danish,
+                            QLocale::Denmark)}, // da_DK.kbd.cfg
+            {"Greek",
+                    QLocale(QLocale::Greek, QLocale::Greece)}, // el_GR.kbd.cfg
+            {"Greek (no dead keys)",
+                    QLocale(QLocale::Greek, QLocale::Greece)}, // el_GR.kbd.cfg
+            {"Finnish",
+                    QLocale(QLocale::Finnish,
+                            QLocale::Finland)}, // fi_FI.kbd.cfg
+            {"Italian",
+                    QLocale(QLocale::Italian, QLocale::Italy)}, // it_IT.kbd.cfg
+            {"Italian (no dead keys)",
+                    QLocale(QLocale::Italian, QLocale::Italy)}, // it_IT.kbd.cfg
+            {"English (US)",
+                    QLocale(QLocale::English,
+                            QLocale::UnitedStates)}, // en_US.kbd.cfg
+            {"Russian",
+                    QLocale(QLocale::Russian,
+                            QLocale::Russia)}, // ru_RU.kbd.cfg
+            {"German (Switzerland)",
+                    QLocale(QLocale::German,
+                            QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"German (Switzerland, no dead keys)",
+                    QLocale(QLocale::German,
+                            QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"French (Switzerland)",
+                    QLocale(QLocale::French,
+                            QLocale::Switzerland)}, // fr_CH.kbd.cfg
+            {"French (Switzerland, no dead keys)",
+                    QLocale(QLocale::French,
+                            QLocale::Switzerland)} // fr_CH.kbd.cfg
+    };
+    return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
+}
+
+inline bool isGnomeSession() {
+    const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
+    return desktop.contains("gnome");
+}
+
+inline bool isXfceSession() {
+    const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
+    return desktop.contains("xfce");
+}
+
+QString getCurrentXkbLayoutName() {
+    XkbIgnoreExtension(False);
+    Display* pDisplay = XkbOpenDisplay(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    if (!pDisplay) {
+        // No X11 / XWayland running or no Xkb in use
+        return {};
+    }
+
+    XkbStateRec state;
+    if (XkbGetState(pDisplay, XkbUseCoreKbd, &state) != Success) {
+        qWarning() << "XkbGetState failed";
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+
+    XkbDescPtr pDesc = XkbGetMap(pDisplay, 0, XkbUseCoreKbd);
+    if (!pDesc) {
+        qWarning() << "XkbGetMap failed";
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+
+    XkbGetNames(pDisplay, XkbGroupNamesMask, pDesc);
+    if (!pDesc->names) {
+        qWarning() << "XkbGetNames failed";
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+    char* pGroupName = XGetAtomName(pDisplay, pDesc->names->groups[state.group]);
+    if (!pGroupName) {
+        qWarning() << "XGetAtomName failed";
+        XkbFreeNames(pDesc, XkbGroupNamesMask, True);
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+    QString layoutName = QString(pGroupName);
+    XFree(pGroupName);
+    XkbFreeNames(pDesc, XkbKeyNamesMask, True);
+    XCloseDisplay(pDisplay);
+    return layoutName;
+}
+#endif
+
+// Returns the locale of the current keyboard layout
+// On macOS and Windows QGuiApplication::inputMethod() is used straight away.
+// On Linux it first tries to via X11/XWayland. That works even if Mixxx itself
+// is running with Wayland. If XWayland is not installed it falls back to
+// dconf/xfconf-query and than QGuiApplication::inputMethod() which is equivalent
+// to "ibus engine". QGuiApplication::inputMethod() does not work with GNOME and XFCE
+// https://bugreports.qt.io/browse/QTBUG-137302
 inline QLocale inputLocale() {
-    // Use the default config for local keyboard
+#if defined(Q_OS_LINUX)
+    QString layoutName = getCurrentXkbLayoutName();
+    if (!layoutName.isEmpty()) {
+        qDebug() << "Keyboard Layout from XKB:" << layoutName;
+        return localeFromXkbName(layoutName);
+    }
+    if (isGnomeSession()) {
+        // In a Gnome session QGuiApplication::inputMethod() is not necessarily correct
+        // https://github.com/mixxxdj/mixxx/issues/14838
+        // If this auto detection still fails the user may use a Custom.kb.cfg
+        QProcess sourcesProc;
+        sourcesProc.start("dconf",
+                {"read", "/org/gnome/desktop/input-sources/mru-sources"});
+        if (sourcesProc.waitForFinished(100)) {
+            const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            // Expecting something like this: [('xkb', 'de'), ('xkb', 'us')]
+            // The first match is the current layout.
+            // This matches entries like ('xkb', 'us') and extracts the layout
+            // code (e.g. 'us', 'de')
+            static const QRegularExpression re(QStringLiteral("\\('xkb',\\s*'([^']+)'\\)"));
+            QRegularExpressionMatch match = re.match(sourcesStr);
+            if (match.hasMatch()) {
+                const QString layout = match.captured(1);
+                ;
+                qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
+                return localeFromXkbSymbol(layout);
+            } else {
+                // mru-sources (most recently used source) is empty when user
+                // has only one keyboard layout enabled. Use it from sources.
+                sourcesProc.start("dconf",
+                        {"read", "/org/gnome/desktop/input-sources/sources"});
+                if (sourcesProc.waitForFinished(100)) {
+                    const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+                    // Expecting something like this: [('xkb', 'de')]
+                    QRegularExpressionMatch match = re.match(sourcesStr);
+                    if (match.hasMatch()) {
+                        const QString layout = match.captured(1);
+                        qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
+                        return localeFromXkbSymbol(layout);
+                    } else {
+                        qDebug() << "No valid keyboard layout found in dconf:" << sourcesStr;
+                    }
+                } else {
+                    qDebug() << "Failed to read Keyboard Layout from dconf.";
+                }
+            }
+        } else {
+            qDebug() << "Failed to read Keyboard Layout from dconf.";
+        }
+    } else if (isXfceSession()) {
+        // In a Xfce session QGuiApplication::inputMethod() is not necessarily correct
+        // https://github.com/mixxxdj/mixxx/issues/14838
+        // If this auto detection still fails the user may use a Custom.kb.cfg
+        const QStringList args{"-c", "keyboard-layout", "-p", "/Default/XkbLayout"};
+        QProcess sourcesProc;
+        sourcesProc.start("xfconf-query", args);
+        if (sourcesProc.waitForFinished(100)) {
+            QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            // Expecting comma-separated layouts: de,gr,cz
+            // The first is the current layout.
+            if (sourcesStr.length() >= 2) {
+                const QStringList allLayouts = sourcesStr.split(',');
+                const QString currLayout = allLayouts[0];
+                qDebug() << "Keyboard Layout from XFCE xfconf:" << currLayout;
+                return localeFromXkbSymbol(currLayout);
+            } else {
+                qDebug() << "No valid keyboard layout found in xfconf:" << sourcesStr;
+            }
+        } else {
+            qDebug() << "Failed to read Keyboard Layout from xfconf.";
+        }
+    }
+#endif
+
     QInputMethod* pInputMethod = QGuiApplication::inputMethod();
     return pInputMethod ? pInputMethod->locale() : QLocale(QLocale::English);
 }
+
 } // anonymous namespace
 
 namespace mixxx {
@@ -111,7 +340,7 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
           m_isInitialized(false) {
     m_runtime_timer.start();
     mixxx::Time::start();
-    ScopedTimer t("CoreServices::CoreServices");
+    ScopedTimer t(u"CoreServices::CoreServices");
     // All this here is running without without start up screen
     // Defer long initializations to CoreServices::initialize() which is
     // called after the GUI is initialized
@@ -211,7 +440,7 @@ void CoreServices::initialize(QApplication* pApp) {
         return;
     }
 
-    ScopedTimer t("CoreServices::initialize");
+    ScopedTimer t(u"CoreServices::initialize");
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
@@ -334,6 +563,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
+    Clipboard::createInstance();
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
             this,
@@ -354,7 +584,7 @@ void CoreServices::initialize(QApplication* pApp) {
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
 
-    bool hasChanged_MusicDir = false;
+    bool musicDirAdded = false;
 
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
@@ -368,10 +598,9 @@ void CoreServices::initialize(QApplication* pApp) {
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
                         QStandardPaths::MusicLocation));
-        if (!fd.isEmpty()) {
-            // adds Folder to database.
-            m_pLibrary->slotRequestAddDir(fd);
-            hasChanged_MusicDir = true;
+        // request to add directory to database.
+        if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
+            musicDirAdded = true;
         }
     }
 
@@ -422,7 +651,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
-    if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
+    if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }
 
@@ -529,6 +758,21 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
+std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+    // Note: We return here the base class pointer to make the coreservices.h usable
+    // in test classes where header included from dlgpreferences.h are not accessible.
+    std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
+            getScreensaverManager(),
+            nullptr,
+            getSoundManager(),
+            getControllerManager(),
+            getVinylControlManager(),
+            getEffectsManager(),
+            getSettingsManager(),
+            getLibrary());
+    return pDlgPreferences;
+}
+
 void CoreServices::finalize() {
     VERIFY_OR_DEBUG_ASSERT(m_isInitialized) {
         qDebug() << "Skipping CoreServices finalization because it was never initialized.";
@@ -563,6 +807,8 @@ void CoreServices::finalize() {
 
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
+
+    Clipboard::destroy();
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     // The player manager has to be deleted before the library to ensure

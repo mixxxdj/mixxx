@@ -4,10 +4,12 @@
 #include <QtDebug>
 
 #include "library/autodj/autodjprocessor.h"
+#include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "moc_playlistdao.cpp"
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -209,10 +211,10 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     transaction.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
-    for (QMultiHash<TrackId, int>::iterator it = m_playlistsTrackIsIn.begin();
-            it != m_playlistsTrackIsIn.end();) {
+    for (auto it = m_playlistsTrackIsIn.constBegin();
+            it != m_playlistsTrackIsIn.constEnd();) {
         if (it.value() == playlistId) {
-            it = m_playlistsTrackIsIn.erase(it);
+            it = constErase(&m_playlistsTrackIsIn, it);
         } else {
             ++it;
         }
@@ -522,6 +524,9 @@ int PlaylistDAO::getPlaylistId(const int index) const {
 PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     // qDebug() << "PlaylistDAO::getHiddenType"
     //          << QThread::currentThread() << m_database.connectionName();
+    if (playlistId == kInvalidPlaylistId) { // type is known, save a query
+        return PlaylistDAO::PLHT_UNKNOWN;
+    }
 
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
@@ -535,8 +540,8 @@ PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     } else {
         LOG_FAILED_QUERY(query);
     }
-    qDebug() << "PlaylistDAO::getHiddenType returns PLHT_UNKNOWN for playlistId "
-             << playlistId;
+    // qDebug() << "PlaylistDAO::getHiddenType returns PLHT_UNKNOWN for playlist"
+    //          << playlistId << getPlaylistName(playlistId);
     return PLHT_UNKNOWN;
 }
 
@@ -796,7 +801,18 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
         emit trackAdded(playlistId, trackId, insertPositon++);
     }
     emit tracksAdded(QSet<int>{playlistId});
+    emit playlistContentChanged(QSet<int>{playlistId});
     return numTracksAdded;
+}
+
+void PlaylistDAO::clearAutoDJQueue() {
+    const int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the first track is already loaded to the player,
+    // alter the playlist only below the first track
+    const int position =
+            (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) ? 2 : 1;
+
+    removeTracksFromPlaylist(iAutoDJPlaylistId, position);
 }
 
 void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc) {
@@ -956,8 +972,8 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool
                 ++it) {
             if (it.key() == trackId) {
                 const auto playlistId = it.value();
-                // keep tracks in history playlists
-                if (getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+                // keep hidden tracks in history playlists, remove purged tracks
+                if (!purged && getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
                     continue;
                 }
                 removeTracksFromPlaylistByIdInner(playlistId, trackId);
@@ -966,6 +982,9 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool
         }
     }
     transaction.commit();
+
+    // We may now have empty history playlists. Remove them.
+    deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG, 1);
 
     // update the sidebar
     emit playlistContentChanged(playlistIds);
@@ -1095,7 +1114,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
     QList<int> newPositions = positions;
     const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
 
-    qDebug() << "Shuffling Tracks";
+    qDebug() << "Shuffling tracks of playlist" << playlistId << getPlaylistName(playlistId);
     qDebug() << "*** Search Distance: " << searchDistance;
     //for (int z = 0; z < positions.count(); z++) {
     //qDebug() << "*** Position: " << positions[z] << " | ID: " << allIds.value(positions[z]);

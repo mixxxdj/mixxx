@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
@@ -28,7 +29,11 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
-                AudioInput(AudioPathType::VinylControl, 0, 2, i), m_pProcessor);
+                AudioInput(AudioPathType::VinylControl,
+                        0,
+                        mixxx::audio::ChannelCount::stereo(),
+                        i),
+                m_pProcessor);
     }
 }
 
@@ -40,12 +45,12 @@ VinylControlManager::~VinylControlManager() {
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_cueing")))));
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_mode")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("cueing_ch%1").arg(i + 1)),
+                ConfigValue(static_cast<int>(ControlObject::get(
+                        ConfigKey(group, "vinylcontrol_cueing")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("mode_ch%1").arg(i + 1)),
+                ConfigValue(static_cast<int>(ControlObject::get(
+                        ConfigKey(group, "vinylcontrol_mode")))));
     }
 }
 

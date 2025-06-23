@@ -99,7 +99,7 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
 }
 
 void ThreeBandBiquadEQEffectGroupState::setFilters(
-        int sampleRate, double lowFreqCorner, double highFreqCorner) {
+        mixxx::audio::SampleRate sampleRate, double lowFreqCorner, double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);
@@ -351,7 +351,9 @@ void ThreeBandBiquadEQEffect::processChannel(
     }
 
     if (activeFilters == 0) {
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        if (pOutput != pInput) {
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+        }
     }
 
     if (enableState == EffectEnableState::Disabling) {

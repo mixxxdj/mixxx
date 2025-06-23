@@ -16,7 +16,9 @@ class WaveformRenderBeat;
 
 class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
   public:
-    explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void paintGL() override;
@@ -26,6 +28,8 @@ class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
     mixxx::UnicolorShader m_shader;
     QColor m_color;
     VertexData m_vertices;
+
+    bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

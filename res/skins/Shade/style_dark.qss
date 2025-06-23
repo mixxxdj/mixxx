@@ -14,6 +14,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -117,6 +118,7 @@ WEffectSelector::indicator:unchecked:selected,
   #MainMenu::item:disabled,
   #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
+  WLibraryTextBrowser QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
@@ -149,12 +151,16 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #8a8a8a;
 }
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  background-color: #b79d00;
+}
 #CueLabelEdit {
   background-color: #3F3041;
 }
 
 WTrackTableView,
 WLibrarySidebar {
+  selection-color: #000;
   /* background of Color delegate in selected row */
   selection-background-color: #666;
   /*outline: 1px solid yellow;*/
@@ -176,8 +182,14 @@ WSearchLineEdit QToolButton:focus {
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
 WLibrarySidebar::branch:selected,
-#LibraryBPMButton::item:selected {
-  color: #000;
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+  color: #000; */
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
   selection-color: #000;
   background-color: #666;
 }
@@ -188,7 +200,7 @@ WLibrarySidebar::item:focus {
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #ccc;
 }
@@ -196,12 +208,20 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #ccc;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
@@ -215,7 +235,7 @@ WTrackTableView {
   }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:unchecked:selected {
+#LibraryPlayedCheckbox::indicator:unchecked:selected {
   background: none;
   color: #cfcfcf;
   border: 1px solid #000;

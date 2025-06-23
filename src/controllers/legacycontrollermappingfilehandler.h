@@ -7,6 +7,7 @@
 class QFileInfo;
 class QDir;
 class LegacyControllerMapping;
+class LegacyControllerSettingsLayoutContainer;
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
 /// LegacyControllerMapping objects to/from XML files and is also responsible
@@ -41,6 +42,12 @@ class LegacyControllerMappingFileHandler {
     void parseMappingInfo(const QDomElement& root,
             std::shared_ptr<LegacyControllerMapping> mapping) const;
 
+    /// @brief Parse the setting definition block from the root node if any.
+    /// @param root The root node (MixxxControllerPreset)
+    /// @param mapping The mapping object to populate with the gathered data
+    void parseMappingSettings(const QDomElement& root,
+            LegacyControllerMapping* mapping) const;
+
     /// Adds script files from XML to the LegacyControllerMapping.
     ///
     /// This function parses the supplied QDomElement structure, finds the
@@ -61,8 +68,21 @@ class LegacyControllerMappingFileHandler {
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
   private:
+    /// @brief Recursively parse setting definition and layout information
+    /// within a setting node
+    /// @param current The setting node (MixxxControllerPreset.settings) or any
+    /// children nodes
+    /// @param mapping The mapping object to populate with the gathered data
+    /// @param layout The currently active layout, on which new setting item
+    /// (leaf) should be attached
+    void parseMappingSettingsElement(const QDomElement& current,
+            LegacyControllerMapping* pMapping,
+            LegacyControllerSettingsLayoutContainer* pLayout) const;
+
     // Sub-classes implement this.
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingPath) = 0;
+
+    friend class LegacyControllerMappingSettingsTest_parseSettingBlock_Test;
 };

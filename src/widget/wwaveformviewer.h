@@ -26,7 +26,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     }
     void setup(const QDomNode& node, const SkinContext& context);
 
-    bool handleDragAndDropEventFromWindow(QEvent* ev) override;
+    bool handleDragAndDropEventFromWindow(QEvent* pEvent) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;

@@ -36,6 +36,7 @@
         <file>images/heart_icon_dark.svg</file>
         <file>images/heart_icon_rainbow.svg</file>
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
+        <file>images/mixxx-icon-logo-christmas.svg</file> <!-- christmas launch image -->
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
         <file>images/ic_delete.svg</file>
@@ -87,7 +88,9 @@
         <file>images/preferences/light/ic_custom.svg</file>
         <file>images/preferences/light/ic_mixxx_symbolic.svg</file>
         <file>images/preferences/light/ic_none.svg</file>
-        <!-- skin oversize warning -->
+      <!-- magnifier for the Search button in Search related tracks menu -->
+        <file>images/ic_magnifier.svg</file>
+      <!-- skin oversize warning -->
         <file>images/preferences/ic_preferences_warning.svg</file>
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>

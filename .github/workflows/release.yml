@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - "[0-9].[0-9]"
+  workflow_dispatch:
+
+env:
+  # This variable stores the map of Mixxx branches that still being developed. The key is the branch receiving support and the value is the next version in line
+  # NOTE: this must be valid JSON!
+  ACTIVE_VERSIONS: |-
+    {"2.5": "2.6", "2.6": "main"}
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  changelog:
+    uses: ./.github/workflows/changelog.yml
+
+  build:
+    uses: ./.github/workflows/build.yml
+
+  sync:
+    if: ${{ github.ref != 'refs/heads/main' }}
+    uses: ./.github/workflows/sync_branches.yml
+    secrets:
+      pat_token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}

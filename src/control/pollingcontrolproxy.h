@@ -56,6 +56,11 @@ class PollingControlProxy {
         return m_pControl->defaultValue();
     }
 
+    /// Return the key of the underlying control
+    const ConfigKey& getKey() const {
+        return m_pControl->getKey();
+    }
+
     /// Sets the control value to v. Thread safe, non-blocking.
     void set(double v) {
         m_pControl->set(v, nullptr);

@@ -71,6 +71,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     const QString currentSearch() const override;
     bool isColumnInternal(int) override;
     void moveTrack(const QModelIndex&, const QModelIndex&) override;
+    void copyTracks(const QModelIndexList& indices) const override;
     bool isLocked() override { return false; }
     bool isColumnHiddenByDefault(int column) override;
     const QList<int>& searchColumns() const override;

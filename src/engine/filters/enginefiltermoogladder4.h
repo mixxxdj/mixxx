@@ -10,6 +10,7 @@
 // Based on C Source from R. Lindner published at public domain
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
+#include "audio/types.h"
 #include "engine/engineobject.h"
 #include "util/sample.h"
 
@@ -46,12 +47,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   public:
     EngineFilterMoogLadderBase(
-            unsigned int sampleRate, float cutoff, float resonance) {
-        initBuffers();
-        setParameter(sampleRate, cutoff, resonance);
-        m_postGain = m_postGainNew;
-        m_kacr = m_kacrNew;
-        m_k2vg = m_k2vgNew;
+            mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
+         initBuffers();
+         setParameter(sampleRate, cutoff, resonance);
+         m_postGain = m_postGainNew;
+         m_kacr = m_kacrNew;
+         m_k2vg = m_k2vgNew;
     }
 
     virtual ~EngineFilterMoogLadderBase() {
@@ -65,7 +66,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     // cutoff  in Hz
     // resonance  range 0 ... 4 (4 = self resonance)
-    void setParameter(int sampleRate, float cutoff, float resonance) {
+    void setParameter(mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
         constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
 
         float kfc = cutoff / sampleRate;
@@ -264,12 +265,16 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<MoogMode::LowPassOversampling> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4Low(mixxx::audio::SampleRate sampleRate,
+            double freqCorner1,
+            double resonance);
 };
 
 
 class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<MoogMode::HighPassOversampling> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4High(mixxx::audio::SampleRate sampleRate,
+            double freqCorner1,
+            double resonance);
 };

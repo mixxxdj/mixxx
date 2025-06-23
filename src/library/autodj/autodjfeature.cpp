@@ -5,6 +5,7 @@
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
+#include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
@@ -14,6 +15,9 @@
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/clipboard.h"
+#include "util/defs.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -92,17 +96,31 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &AutoDJFeature::slotCrateChanged);
 
-    // Create context-menu items to allow crates to be added to, and removed
-    // from, the auto-DJ queue.
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
-    connect(m_pRemoveCrateFromAutoDj,
+    m_pClearQueueAction = make_parented<QAction>(tr("Clear Auto DJ Queue"), this);
+    const auto removeKeySequence =
+            // TODO(XXX): Qt6 replace enum | with QKeyCombination
+            QKeySequence(static_cast<int>(kHideRemoveShortcutModifier) |
+                    kHideRemoveShortcutKey);
+    m_pClearQueueAction->setShortcut(removeKeySequence);
+    connect(m_pClearQueueAction.get(),
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotClearQueue);
+    // Create context menu item to allow crates to be removed from AutoDJ sources.
+    // onRightClickChild() gets the clicked crate's id form the sidebar model and
+    // assigns it to this action's data.
+    // In slotRemoveCrateFromAutoDj() we retrieve the CrateId data and finally
+    // remove the crate from sources in removeCrateFromAutoDj().
+    m_pRemoveCrateFromAutoDjAction =
+            make_parented<QAction>(tr("Remove Crate as Track Source"), this);
+    m_pRemoveCrateFromAutoDjAction->setShortcut(removeKeySequence);
+    connect(m_pRemoveCrateFromAutoDjAction.get(),
             &QAction::triggered,
             this,
             &AutoDJFeature::slotRemoveCrateFromAutoDj);
 }
 
 AutoDJFeature::~AutoDJFeature() {
-    delete m_pRemoveCrateFromAutoDj;
     delete m_pAutoDJProcessor;
 }
 
@@ -161,6 +179,39 @@ void AutoDJFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
+void AutoDJFeature::clear() {
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirmation Clear"),
+            tr("Do you really want to remove all tracks from the Auto DJ queue?") +
+                    tr("This can not be undone."),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn == QMessageBox::Yes) {
+            m_playlistDao.clearAutoDJQueue();
+    }
+}
+
+void AutoDJFeature::paste() {
+    emit pasteFromSidebar();
+}
+
+// Called by SidebarModel
+void AutoDJFeature::deleteItem(const QModelIndex& index) {
+    TreeItem* pSelectedItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pSelectedItem || pSelectedItem == m_pCratesTreeItem) {
+            return;
+    }
+    CrateId crateId(pSelectedItem->getData());
+    removeCrateFromAutoDj(crateId);
+}
+
+// Called by deleteItem and slotRemoveCrateFromAutoDj()
+void AutoDJFeature::removeCrateFromAutoDj(CrateId crateId) {
+    DEBUG_ASSERT(crateId.isValid());
+    // TODO Confirm dialog?
+    m_pTrackCollection->updateAutoDjCrate(crateId, false);
+}
+
 bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
@@ -182,15 +233,18 @@ bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-// Add a crate to the auto-DJ queue.
+void AutoDJFeature::slotClearQueue() {
+    clear();
+}
+
+// Add a crate to the AutoDJ sources
 void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
     m_pTrackCollection->updateAutoDjCrate(crateId, true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
-    CrateId crateId(m_pRemoveCrateFromAutoDj->data());
-    DEBUG_ASSERT(crateId.isValid());
-    m_pTrackCollection->updateAutoDjCrate(crateId, false);
+    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data());
+    removeCrateFromAutoDj(crateId);
 }
 
 void AutoDJFeature::slotCrateChanged(CrateId crateId) {
@@ -284,6 +338,12 @@ void AutoDJFeature::constructCrateChildModel() {
     }
 }
 
+void AutoDJFeature::onRightClick(const QPoint& globalPos) {
+    QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pClearQueueAction.get());
+    menu.exec(globalPos);
+}
+
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         const QModelIndex& index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
@@ -309,8 +369,8 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     } else {
         // A crate child item was right-clicked.
         // Bring up the context menu.
-        m_pRemoveCrateFromAutoDj->setData(pClickedItem->getData()); // the selected CrateId
-        menu.addAction(m_pRemoveCrateFromAutoDj);
+        m_pRemoveCrateFromAutoDjAction->setData(pClickedItem->getData()); // the selected CrateId
+        menu.addAction(m_pRemoveCrateFromAutoDjAction);
         menu.exec(globalPos);
     }
 }

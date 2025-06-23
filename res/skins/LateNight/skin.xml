@@ -137,7 +137,35 @@
         SliderScheme  ...exactly!
         StyleScheme   icons & backgrounds for library, splitters, spinnies,
                       VU meter, default cover art etc. -->
+      <LaunchImageStyle>
+        LaunchImage {
+          background-color: #0f0f0f;
+        }
+        QLabel {
+          image: url(skins:LateNight/palemoon/style/mixxx_logo.svg);
+          padding: 0;
+          margin: 0px 2px 0px 2px;
+          border: none;
+          min-width: 160px;
+          max-width: 160px;
+          min-height: 40px;
+          max-height: 40px;
+        }
+        QProgressBar {
+          background: url(skins:LateNight/palemoon/style/progressbar_bg.svg);
+          border: none;
+          min-width: 164px;
+          max-width: 164px;
+          min-height: 5px;
+          max-height: 5px;
+        }
+        QProgressBar::chunk {
+          background: url(skins:LateNight/palemoon/style/progressbar.svg);
+        }
+      </LaunchImageStyle>
+
       <Style src="skins:LateNight/style_palemoon.qss"/>
+
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
       <SetVariable name="SliderScheme">palemoon</SetVariable>
@@ -172,6 +200,7 @@
       <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
       <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="SlipBorderOutlineColor">#f08c00</SetVariable>
       <SetVariable name="PassthroughLabelColor">#b24c12</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
@@ -235,7 +264,36 @@
 
     <Scheme>
       <Name>Classic</Name>
+      <!-- Classic theme. Bulky containers, hatched backgrounds, no knob arcs -->
+      <LaunchImageStyle>
+        LaunchImage {
+          background-color: #1e1e1e;
+        }
+        QLabel {
+          image: url(skins:LateNight/classic/style/mixxx_logo.svg);
+          padding: 0;
+          margin: 0px 2px 0px 2px;
+          border: none;
+          min-width: 162px;
+          max-width: 162px;
+          min-height: 42px;
+          max-height: 42px;
+        }
+        QProgressBar {
+          background: url(skins:LateNight/classic/style/progressbar_bg.svg);
+          border: none;
+          min-width: 160px;
+          max-width: 160px;
+          min-height: 5px;
+          max-height: 5px;
+        }
+        QProgressBar::chunk {
+          background: url(skins:LateNight/classic/style/progressbar.svg);
+        }
+      </LaunchImageStyle>
+
       <Style src="skins:LateNight/style_classic.qss"/>
+
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
       <SetVariable name="SliderScheme">classic</SetVariable>
@@ -277,6 +335,7 @@
       <SetVariable name="IntroOutroColor">#0000ff</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="SlipBorderOutlineColor">#1af000</SetVariable>
       <SetVariable name="PassthroughLabelColor">#d09300</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
@@ -295,36 +354,6 @@
   <MinimumSize>1280,668</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
-  <LaunchImageStyle>
-    LaunchImage {
-      background-color: #0f0f0f;
-    }
-    QLabel {
-      <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
-          because the launch screen appears while the skin is parsed.
-      image: url(skins:LateNight/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skins:LateNight/palemoon/style/mixxx_logo.svg);
-      padding: 0;
-      margin: 0px 2px 0px 2px;
-      border: none;
-      min-width: 160px;
-      min-height: 40px;
-      max-width: 160px;
-      max-height: 40px;
-    }
-    QProgressBar {
-      background: url(skins:LateNight/palemoon/style/progressbar_bg.svg);
-      border: none;
-      min-width: 164px;
-      min-height: 5px;
-      max-width: 164px;
-      max-height: 5px;
-    }
-    QProgressBar::chunk {
-      background: url(skins:LateNight/palemoon/style/progressbar.svg);
-    }
-  </LaunchImageStyle>
-
   <Children>
 
     <SetVariable name="Align">center</SetVariable>
@@ -428,7 +457,7 @@
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
-                      <SizePolicy>me,max</SizePolicy>
+                      <SizePolicy>me,me</SizePolicy>
                       <Children>
                         <Template src="skins:LateNight/waveforms_container.xml"/>
                       </Children>

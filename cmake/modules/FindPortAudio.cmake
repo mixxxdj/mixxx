@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindPortAudio
 --------
@@ -42,6 +37,8 @@ The following cache variables may also be set:
   The path to the PortAudio library.
 
 #]=======================================================================]
+
+include(IsStaticLibrary)
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
@@ -89,6 +86,14 @@ if(PortAudio_FOUND)
     )
     is_static_library(PortAudio_IS_STATIC PortAudio::PortAudio)
     if(PortAudio_IS_STATIC)
+      if(PortAudio_ALSA_H)
+        find_package(ALSA)
+        if(ALSA_FOUND)
+          set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            ALSA::ALSA
+          )
+        endif()
+      endif()
       find_package(JACK)
       if(JACK_FOUND)
         set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES

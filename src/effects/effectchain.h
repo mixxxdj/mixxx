@@ -2,12 +2,12 @@
 
 #include <QList>
 #include <QObject>
+#include <memory>
 
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "util/memory.h"
 
 class ControlObject;
 class ControlPushButton;

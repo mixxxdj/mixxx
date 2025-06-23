@@ -1,5 +1,7 @@
 #include "qml/qmlplayerproxy.h"
 
+#include <QBuffer>
+
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlplayerproxy.cpp"
 #include "qml/asyncimageprovider.h"
@@ -26,7 +28,10 @@ namespace mixxx {
 namespace qml {
 
 QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
-        : QObject(parent), m_pTrackPlayer(pTrackPlayer) {
+        : QObject(parent),
+          m_pTrackPlayer(pTrackPlayer),
+          m_pBeatsModel(new QmlBeatsModel(this)),
+          m_pHotcuesModel(new QmlCuesModel(this)) {
     connect(m_pTrackPlayer,
             &BaseTrackPlayer::loadingTrack,
             this,
@@ -40,6 +45,9 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
             this,
             &QmlPlayerProxy::trackUnloaded);
     connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
+    if (m_pTrackPlayer && m_pTrackPlayer->getLoadedTrack()) {
+        slotTrackLoaded(pTrackPlayer->getLoadedTrack());
+    }
 }
 
 void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation, bool play) {
@@ -109,19 +117,44 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 &Track::colorUpdated,
                 this,
                 &QmlPlayerProxy::colorChanged);
+        connect(pTrack.get(),
+                &Track::waveformUpdated,
+                this,
+                &QmlPlayerProxy::slotWaveformChanged);
+        connect(pTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &QmlPlayerProxy::slotBeatsChanged);
+        connect(pTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &QmlPlayerProxy::slotHotcuesChanged);
+        slotBeatsChanged();
+        slotHotcuesChanged();
     }
     emit trackChanged();
     emit trackLoaded();
 }
 
 void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+    VERIFY_OR_DEBUG_ASSERT(pOldTrack == m_pCurrentTrack) {
+        qWarning() << "QML Player proxy was expected to contain "
+                   << pOldTrack.get() << "as active track but got"
+                   << m_pCurrentTrack.get();
+    }
+
+    if (pNewTrack.get() == m_pCurrentTrack.get()) {
+        emit trackLoading();
+        return;
+    }
+
     const TrackPointer pTrack = m_pCurrentTrack;
     if (pTrack != nullptr) {
         disconnect(pTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.reset();
+    m_pCurrentTrack = pNewTrack;
+    m_waveformTexture = QImage();
     emit trackChanged();
     emit trackLoading();
 }
@@ -142,6 +175,122 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit colorChanged();
     emit coverArtUrlChanged();
     emit trackLocationUrlChanged();
+
+    emit waveformLengthChanged();
+    emit waveformTextureChanged();
+    emit waveformTextureSizeChanged();
+    emit waveformTextureStrideChanged();
+}
+
+void QmlPlayerProxy::slotWaveformChanged() {
+    emit waveformLengthChanged();
+    emit waveformTextureSizeChanged();
+    emit waveformTextureStrideChanged();
+
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (!pTrack) {
+        return;
+    }
+    const ConstWaveformPointer pWaveform =
+            pTrack->getWaveform();
+    if (!pWaveform) {
+        return;
+    }
+    const int textureWidth = pWaveform->getTextureStride();
+    const int textureHeight = pWaveform->getTextureSize() / pWaveform->getTextureStride();
+    const uchar* data = reinterpret_cast<const uchar*>(pWaveform->data());
+    m_waveformTexture = QImage(data, textureWidth, textureHeight, QImage::Format_RGBA8888);
+    emit waveformTextureChanged();
+}
+
+void QmlPlayerProxy::slotBeatsChanged() {
+    VERIFY_OR_DEBUG_ASSERT(m_pBeatsModel != nullptr) {
+        return;
+    }
+
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const auto trackEndPosition = mixxx::audio::FramePos{
+                pTrack->getDuration() * pTrack->getSampleRate()};
+        const auto pBeats = pTrack->getBeats();
+        m_pBeatsModel->setBeats(pBeats, trackEndPosition);
+    } else {
+        m_pBeatsModel->setBeats(nullptr, audio::kStartFramePos);
+    }
+}
+
+void QmlPlayerProxy::slotHotcuesChanged() {
+    VERIFY_OR_DEBUG_ASSERT(m_pHotcuesModel != nullptr) {
+        return;
+    }
+
+    QList<CuePointer> hotcues;
+
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const auto& cuePoints = pTrack->getCuePoints();
+        for (const auto& cuePoint : cuePoints) {
+            if (cuePoint->getHotCue() == Cue::kNoHotCue)
+                continue;
+            hotcues.append(cuePoint);
+        }
+    }
+    m_pHotcuesModel->setCues(hotcues);
+    emit cuesChanged();
+}
+
+int QmlPlayerProxy::getWaveformLength() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            return pWaveform->getDataSize();
+        }
+    }
+    return 0;
+}
+
+QString QmlPlayerProxy::getWaveformTexture() const {
+    if (m_waveformTexture.isNull()) {
+        return QString();
+    }
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray);
+    buffer.open(QIODevice::WriteOnly);
+    m_waveformTexture.save(&buffer, "png");
+
+    QString imageData = QString::fromLatin1(byteArray.toBase64().data());
+    if (imageData.isEmpty()) {
+        return QString();
+    }
+
+    return QStringLiteral("data:image/png;base64,") + imageData;
+}
+
+int QmlPlayerProxy::getWaveformTextureSize() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            return pWaveform->getTextureSize();
+        }
+    }
+    return 0;
+}
+
+int QmlPlayerProxy::getWaveformTextureStride() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            return pWaveform->getTextureStride();
+        }
+    }
+    return 0;
+}
+
+bool QmlPlayerProxy::isLoaded() const {
+    return m_pCurrentTrack != nullptr;
 }
 
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)

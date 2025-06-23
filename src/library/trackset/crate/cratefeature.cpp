@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
+#include <QStandardPaths>
 #include <algorithm>
 #include <vector>
 
@@ -128,12 +129,12 @@ void CrateFeature::initActions() {
             this,
             &CrateFeature::slotExportTrackFiles);
 #ifdef __ENGINEPRIME__
-    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportAllCratesAction.get(),
             &QAction::triggered,
             this,
             &CrateFeature::exportAllCrates);
-    m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportCrateAction.get(),
             &QAction::triggered,
             this,
@@ -645,10 +646,9 @@ void CrateFeature::slotImportPlaylist() {
     }
 
     // Update the import/export crate directory
-    QString fileDirectory(playlistFile);
-    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
+    QFileInfo fileDirectory(playlistFile);
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
-            ConfigValue(fileDirectory));
+            ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
     CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
     Crate crate;
@@ -683,8 +683,8 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
     } else {
         // Create a temporary table model since the main one might have another
         // crate selected which is not the crate that received the right-click.
-        QScopedPointer<CrateTableModel> pCrateTableModel(
-                new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+        std::unique_ptr<CrateTableModel> pCrateTableModel =
+                std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
         pCrateTableModel->selectCrate(crateId);
         pCrateTableModel->select();
         pCrateTableModel->addTracks(QModelIndex(), locations);
@@ -693,16 +693,15 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
 
 void CrateFeature::slotCreateImportCrate() {
     // Get file to read
-    QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
+    const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
         return;
     }
 
     // Set last import directory
-    QString fileDirectory(playlistFiles.first());
-    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
+    QFileInfo fileDirectory(playlistFiles.first());
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
-            ConfigValue(fileDirectory));
+            ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
     CrateId lastCrateId;
 
@@ -713,7 +712,7 @@ void CrateFeature::slotCreateImportCrate() {
         Crate crate;
 
         // Get a valid name
-        const QString baseName = fileInfo.baseName();
+        const QString baseName = fileInfo.completeBaseName();
         for (int i = 0;; ++i) {
             auto name = baseName;
             if (i > 0) {
@@ -791,10 +790,9 @@ void CrateFeature::slotExportPlaylist() {
         return;
     }
     // Update the import/export crate directory
-    QString fileDirectory(fileLocation);
-    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
+    QFileInfo fileDirectory(fileLocation);
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
-            ConfigValue(fileDirectory));
+            ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -808,15 +806,15 @@ void CrateFeature::slotExportPlaylist() {
 
     // Create list of files of the crate
     // Create a new table model since the main one might have an active search.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
     pCrateTableModel->selectCrate(crateId);
     pCrateTableModel->select();
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.get(), useRelativePath);
     } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
-        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.data(), false);
+        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.get(), false);
     } else {
         // populate a list of files of the crate
         QList<QString> playlistItems;
@@ -833,17 +831,29 @@ void CrateFeature::slotExportPlaylist() {
 }
 
 void CrateFeature::slotExportTrackFiles() {
+    CrateId crateId(crateIdFromIndex(m_lastRightClickedIndex));
+    if (!crateId.isValid()) {
+        return;
+    }
     // Create a new table model since the main one might have an active search.
-    QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
-    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
+    pCrateTableModel->selectCrate(crateId);
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
     TrackPointerList trackpointers;
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_crateTableModel.index(i, 0);
-        trackpointers.push_back(m_crateTableModel.getTrack(index));
+        QModelIndex index = pCrateTableModel->index(i, 0);
+        auto pTrack = pCrateTableModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+            continue;
+        }
+        trackpointers.push_back(pTrack);
+    }
+
+    if (trackpointers.isEmpty()) {
+        return;
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);

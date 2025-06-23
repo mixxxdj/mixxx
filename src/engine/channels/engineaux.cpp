@@ -76,10 +76,11 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
-            pEngineEffectsManager->processPreFaderInPlace(
-                    m_group.handle(), m_pEffectsManager->getMainHandle(), pOut, iBufferSize,
-                    // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                    static_cast<unsigned int>(m_sampleRate.get()));
+            pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+                    m_pEffectsManager->getMainHandle(),
+                    pOut,
+                    iBufferSize,
+                    mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
         }
         m_sampleBuffer = nullptr;
     } else {

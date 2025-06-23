@@ -15,7 +15,7 @@ class LinkwitzRiley8EQEffectGroupState : public EffectState {
     LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& engineParameters);
     ~LinkwitzRiley8EQEffectGroupState() override;
 
-    void setFilters(int sampleRate, int lowFreq, int highFreq);
+    void setFilters(mixxx::audio::SampleRate sampleRate, int lowFreq, int highFreq);
 
     EngineFilterLinkwitzRiley8Low* m_low1;
     EngineFilterLinkwitzRiley8High* m_high1;

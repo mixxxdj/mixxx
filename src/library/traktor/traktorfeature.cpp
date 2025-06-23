@@ -5,12 +5,13 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QSettings>
+#include <QStandardPaths>
 #include <QXmlStreamReader>
 #include <QtDebug>
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
+#include "library/missing_hidden/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"

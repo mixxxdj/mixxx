@@ -38,6 +38,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     void slotAddToAutoDJTop();
     void slotAddToAutoDJReplace();
     void slotImportAsMixxxPlaylist();
+    void slotImportAsMixxxCrate();
 
   protected:
     QModelIndex lastRightClickedIndex() const {
@@ -60,6 +61,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     parented_ptr<QAction> m_pAddToAutoDJTopAction;
     parented_ptr<QAction> m_pAddToAutoDJReplaceAction;
     parented_ptr<QAction> m_pImportAsMixxxPlaylistAction;
+    parented_ptr<QAction> m_pImportAsMixxxCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

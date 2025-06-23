@@ -2,11 +2,14 @@
 #include <QColor>
 #include <QObject>
 #include <QPointer>
+#include <QQmlEngine>
 #include <QString>
 #include <QUrl>
-#include <QtQml>
 
 #include "mixer/basetrackplayer.h"
+#include "qml/qmlbeatsmodel.h"
+#include "qml/qmlcuesmodel.h"
+#include "track/cueinfo.h"
 #include "track/track.h"
 
 namespace mixxx {
@@ -14,6 +17,7 @@ namespace qml {
 
 class QmlPlayerProxy : public QObject {
     Q_OBJECT
+    Q_PROPERTY(bool isLoaded READ isLoaded NOTIFY trackChanged)
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist NOTIFY artistChanged)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
@@ -34,9 +38,20 @@ class QmlPlayerProxy : public QObject {
     QML_NAMED_ELEMENT(Player)
     QML_UNCREATABLE("Only accessible via Mixxx.PlayerManager.getPlayer(group)")
 
+    Q_PROPERTY(int waveformLength READ getWaveformLength NOTIFY waveformLengthChanged)
+    Q_PROPERTY(QString waveformTexture READ getWaveformTexture NOTIFY waveformTextureChanged)
+    Q_PROPERTY(int waveformTextureSize READ getWaveformTextureSize NOTIFY
+                    waveformTextureSizeChanged)
+    Q_PROPERTY(int waveformTextureStride READ getWaveformTextureStride NOTIFY
+                    waveformTextureStrideChanged)
+
+    Q_PROPERTY(mixxx::qml::QmlBeatsModel* beatsModel MEMBER m_pBeatsModel CONSTANT);
+    Q_PROPERTY(mixxx::qml::QmlCuesModel* hotcuesModel MEMBER m_pHotcuesModel CONSTANT);
+
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
+    bool isLoaded() const;
     QString getTrack() const;
     QString getTitle() const;
     QString getArtist() const;
@@ -54,6 +69,11 @@ class QmlPlayerProxy : public QObject {
     QUrl getCoverArtUrl() const;
     QUrl getTrackLocationUrl() const;
 
+    int getWaveformLength() const;
+    QString getWaveformTexture() const;
+    int getWaveformTextureSize() const;
+    int getWaveformTextureStride() const;
+
     /// Needed for interacting with the raw track player object.
     BaseTrackPlayer* internalTrackPlayer() const {
         return m_pTrackPlayer;
@@ -66,6 +86,9 @@ class QmlPlayerProxy : public QObject {
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotTrackChanged();
+    void slotWaveformChanged();
+    void slotBeatsChanged();
+    void slotHotcuesChanged();
 
     void setArtist(const QString& artist);
     void setTitle(const QString& title);
@@ -102,12 +125,21 @@ class QmlPlayerProxy : public QObject {
     void colorChanged();
     void coverArtUrlChanged();
     void trackLocationUrlChanged();
+    void cuesChanged();
 
     void loadTrackFromLocationRequested(const QString& trackLocation, bool play);
 
+    void waveformLengthChanged();
+    void waveformTextureChanged();
+    void waveformTextureSizeChanged();
+    void waveformTextureStrideChanged();
+
   private:
+    QImage m_waveformTexture;
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
+    QmlBeatsModel* m_pBeatsModel;
+    QmlCuesModel* m_pHotcuesModel;
 };
 
 } // namespace qml
