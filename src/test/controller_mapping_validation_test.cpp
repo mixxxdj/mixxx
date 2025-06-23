@@ -186,6 +186,7 @@ TEST_F(LegacyControllerMappingValidationTest, HidMappingsValid) {
 }
 #endif
 
+#ifdef __BULK__
 TEST_F(LegacyControllerMappingValidationTest, BulkMappingsValid) {
     foreach (const MappingInfo& mapping,
             m_pEnumerator->getMappingsByExtension(BULK_MAPPING_EXTENSION)) {
@@ -196,3 +197,4 @@ TEST_F(LegacyControllerMappingValidationTest, BulkMappingsValid) {
         EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
     }
 }
+#endif
