@@ -1290,8 +1290,12 @@ WheelRing.prototype = new components.Component({
     },
     outputMaybe: function() {
         if (engine.getValue(this.group, "end_of_track")) {
-            engine.getValue("[App]", "indicator_500ms") ? this.send(DDJSR2.wheelLedCircle.blink) : this.send(DDJSR2.wheelLedCircle.maxVal);
-            return;
+            if (engine.getValue("[App]", "indicator_500ms")) {
+                this.send(DDJSR2.wheelLedCircle.blink);
+            } else {
+	        this.send(DDJSR2.wheelLedCircle.maxVal);
+	    }
+            return; // Skip outputting a WheelRing Color when End of Track status.
         }
         this.output(this.outGetValue());
     },
