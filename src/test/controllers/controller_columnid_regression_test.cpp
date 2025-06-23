@@ -54,6 +54,7 @@ QHash<QString, TrackModel::SortColumnId>
                 // controller setting, test case will fail.
 };
 
+#ifdef __HID__
 TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
     QDir systemMappingsPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
     std::shared_ptr<LegacyControllerMapping> pMapping =
@@ -61,7 +62,7 @@ TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
                     QFileInfo(systemMappingsPath.filePath(
                             QStringLiteral("Traktor Kontrol S4 MK3.hid.xml"))),
                     systemMappingsPath);
-    EXPECT_TRUE(pMapping);
+    ASSERT_TRUE(pMapping);
     auto settings = pMapping->getSettings();
     EXPECT_TRUE(!settings.isEmpty());
 
@@ -80,3 +81,4 @@ TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
     }
     EXPECT_EQ(count, expectedSettingCount);
 }
+#endif
