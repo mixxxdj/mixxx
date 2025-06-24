@@ -12,8 +12,9 @@ using namespace rendergraph;
 
 namespace allshader {
 
-WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRendererSignalBase(waveformWidget) {
+WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
