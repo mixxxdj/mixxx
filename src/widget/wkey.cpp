@@ -95,23 +95,26 @@ void WKey::paintEvent(QPaintEvent* event) {
         splitPoint = m_diff_cents;
     }
 
-    int rectWidth = 4;
-    int splitHeight = static_cast<int>(height() * splitPoint);
+    const int padding = 2;
+    const int rectWidth = 4;
+    const int rectPaddedWidth = rectWidth + 2 * padding;
+    const int rectHeight = height() - 2 * padding;
+    const int splitHeight = static_cast<int>(rectHeight * splitPoint);
 
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
 
-    painter.fillRect(0,
-            0,
+    painter.fillRect(padding,
+            padding,
             rectWidth,
             splitHeight,
             colorTop);
 
-    painter.fillRect(0,
-            splitHeight,
+    painter.fillRect(padding,
+            splitHeight + padding,
             rectWidth,
-            height() - splitHeight,
+            rectHeight - splitHeight,
             colorBottom);
 
     painter.setPen(option.palette.text().color());
@@ -119,11 +122,11 @@ void WKey::paintEvent(QPaintEvent* event) {
     QString elidedText = option.fontMetrics.elidedText(
             text(),
             Qt::ElideRight,
-            width() - rectWidth);
+            width() - rectPaddedWidth);
 
-    painter.drawText(rectWidth,
+    painter.drawText(rectPaddedWidth,
             0,
-            width() - rectWidth,
+            width() - rectPaddedWidth,
             height(),
             Qt::AlignCenter,
             elidedText);
