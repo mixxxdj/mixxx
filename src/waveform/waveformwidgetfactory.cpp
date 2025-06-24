@@ -363,6 +363,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool zoomSync = m_config->getValue(ConfigKey("[Waveform]", "ZoomSynchronization"), m_zoomSync);
     setZoomSync(zoomSync);
 
+    bool disableEqGain = m_config->getValue(
+            ConfigKey("[Waveform]", "disable_eq_gain"), m_eqGainDisabled);
+    setEqGainDisabled(disableEqGain);
+
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
 
@@ -662,6 +666,13 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformViewer->setZoom(refZoom);
     }
+}
+
+void WaveformWidgetFactory::setEqGainDisabled(bool disabled) {
+    m_eqGainDisabled = disabled;
+    m_config->setValue(ConfigKey("[Waveform]", "disable_eq_gain"), disabled);
+
+    emit eqGainDisabledChanged(disabled);
 }
 
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {

@@ -45,6 +45,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
         slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
+    void slotSetDisableEq(bool checked);
     void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);

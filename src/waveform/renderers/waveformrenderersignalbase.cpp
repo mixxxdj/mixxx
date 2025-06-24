@@ -160,6 +160,11 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
                 setHighVisualGain(highGain);
             });
 
+    connect(pWaveformFactory,
+            &WaveformWidgetFactory::eqGainDisabledChanged,
+            this,
+            [this](bool disabled) { m_eqGainDisabled = disabled; });
+
     setAllChannelVisualGain(pWaveformFactory->getVisualGain(BandIndex::AllBand));
     setLowVisualGain(pWaveformFactory->getVisualGain(BandIndex::Low));
     setMidVisualGain(pWaveformFactory->getVisualGain(BandIndex::Mid));
@@ -207,6 +212,12 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
             if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
                 highVisualGain = 0;
             }
+        }
+
+        if (m_eqGainDisabled) {
+            lowVisualGain = m_lowVisualGain;
+            midVisualGain = m_midVisualGain;
+            highVisualGain = m_highVisualGain;
         }
 
         if (pLowGain != nullptr) {
