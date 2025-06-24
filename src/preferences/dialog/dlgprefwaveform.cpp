@@ -285,7 +285,7 @@ void DlgPrefWaveform::slotUpdate() {
     updateWaveformGeneralOptionsEnabled();
 
     bool visualizeEqGain = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "visualize_eq_gain"), false);
+            ConfigKey("[Waveform]", "visualize_eq_gain"), true);
     visualizeEqGainCheckBox->setChecked(visualizeEqGain);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
