@@ -95,26 +95,26 @@ void WKey::paintEvent(QPaintEvent* event) {
         splitPoint = m_diff_cents;
     }
 
-    const int padding = 2;
-    const int rectWidth = 4;
-    const int rectPaddedWidth = rectWidth + 2 * padding;
-    const int rectHeight = height() - 2 * padding;
-    const int splitHeight = static_cast<int>(rectHeight * splitPoint);
-
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
 
-    painter.fillRect(padding,
-            padding,
+    const QStyle* pStyle = style();
+    const QRect contRect = pStyle->subElementRect(QStyle::SE_FrameContents, &option, this);
+
+    const int rectWidth = 4;
+    const int splitHeight = static_cast<int>(contRect.height() * splitPoint);
+
+    painter.fillRect(contRect.left(),
+            contRect.top(),
             rectWidth,
             splitHeight,
             colorTop);
 
-    painter.fillRect(padding,
-            splitHeight + padding,
+    painter.fillRect(contRect.left(),
+            splitHeight,
             rectWidth,
-            rectHeight - splitHeight,
+            contRect.height() - splitHeight,
             colorBottom);
 
     painter.setPen(option.palette.text().color());
@@ -122,12 +122,12 @@ void WKey::paintEvent(QPaintEvent* event) {
     QString elidedText = option.fontMetrics.elidedText(
             text(),
             Qt::ElideRight,
-            width() - rectPaddedWidth);
+            width() - rectWidth);
 
-    painter.drawText(rectPaddedWidth,
-            0,
-            width() - rectPaddedWidth,
-            height(),
+    painter.drawText(rectWidth,
+            contRect.top(),
+            contRect.width() - rectWidth,
+            contRect.height(),
             Qt::AlignCenter,
             elidedText);
 }
