@@ -847,19 +847,6 @@ class BeatLoopRollButton extends TriggerButton {
                 throw Error(`BeatLoopRollButton ${options.number}'s size "${BeatLoopRolls[options.number]}" is invalid. Must be a float, or the literal 'half' or 'double'`);
             }
             options.key = `beatlooproll_${size}_activate`;
-            options.onShortPress = function() {
-                if (!this.deck.beatloopSize) {
-                    this.deck.beatloopSize = engine.getValue(this.group, "beatloop_size");
-                }
-                engine.setValue(this.group, this.inKey, true);
-            };
-            options.onShortRelease = function() {
-                engine.setValue(this.group, this.inKey, false);
-                if (this.deck.beatloopSize) {
-                    engine.setValue(this.group, "beatloop_size", this.deck.beatloopSize);
-                    this.deck.beatloopSize = undefined;
-                }
-            };
         }
         super(options);
         if (this.deck === undefined) {
