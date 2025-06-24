@@ -210,6 +210,23 @@ const SamplerCrossfaderAssign = true;
 /********************************************************
                 JOGWHEEL-RELATED CONSTANTS
  *******************************************************/
+
+// The mode available, which the wheel can be used for.
+const WheelModes = {
+    jog: 0,
+    vinyl: 1,
+    motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const MoveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
+};
+
 // motor wind up/down
 const MotorWindUpMilliseconds = 0;
 const MotorWindDownMilliseconds = 0;
@@ -787,7 +804,7 @@ class Deck extends ComponentContainer {
             this.wheelMode = this.secondDeckModes.wheelMode;
             this.moveMode = this.secondDeckModes.moveMode;
 
-            if (this.wheelMode === wheelModes.motor) {
+            if (this.wheelMode === WheelModes.motor) {
                 engine.beginTimer(MotorWindUpMilliseconds, () => {
                     engine.setValue(newGroup, "scratch2_enable", false);
                 }, true);
@@ -986,13 +1003,13 @@ class CueButton extends PushButton {
         this.inKey = "start_stop";
     }
     input(pressed) {
-        if (this.deck.moveMode === moveModes.keyboard && !this.deck.keyboardPlayMode) {
+        if (this.deck.moveMode === MoveModes.keyboard && !this.deck.keyboardPlayMode) {
             this.deck.assignKeyboardPlayMode(this.group, this.inKey);
-        } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.group, "play") && pressed) {
+        } else if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.group, "play") && pressed) {
             engine.setValue(this.group, "cue_goto", pressed);
         } else {
             engine.setValue(this.group, this.inKey, pressed);
-            if (this.deck.wheelMode === wheelModes.motor) {
+            if (this.deck.wheelMode === WheelModes.motor) {
                 engine.setValue(this.group, "scratch2_enable", false);
                 engine.beginTimer(MotorWindDownMilliseconds, () => {
                     engine.setValue(this.group, "scratch2_enable", false);
@@ -1724,22 +1741,6 @@ const wheelLEDmodes = {
     individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
 };
 
-// The mode available, which the wheel can be used for.
-const wheelModes = {
-    jog: 0,
-    vinyl: 1,
-    motor: 2,
-    loopIn: 3,
-    loopOut: 4,
-};
-
-const moveModes = {
-    beat: 0,
-    bpm: 1,
-    grid: 2,
-    keyboard: 3,
-};
-
 // tracks state across input reports
 let wheelTimer = null;
 // This is a global variable so the S4Mk3Deck Components have access
@@ -2078,7 +2079,7 @@ class S4Mk3Deck extends Deck {
                         this.deck.fluxButton.loopModeOff();
                         engine.setValue(this.group, "scratch2_enable", false);
                         this.previousWheelMode = this.deck.wheelMode;
-                        this.deck.wheelMode = wheelModes.loopIn;
+                        this.deck.wheelMode = WheelModes.loopIn;
 
                         if (this.loopModeConnection === null) {
                             this.loopModeConnection = engine.makeConnection(this.group, this.outKey, this.onLoopChange.bind(this));
@@ -2163,7 +2164,7 @@ class S4Mk3Deck extends Deck {
                         this.deck.reverseButton.loopModeOff();
                         engine.setValue(this.group, "scratch2_enable", false);
                         this.previousWheelMode = this.deck.wheelMode;
-                        this.deck.wheelMode = wheelModes.loopOut;
+                        this.deck.wheelMode = WheelModes.loopOut;
                         if (this.loopModeConnection === null) {
                             this.loopModeConnection = engine.makeConnection(this.group, this.outKey, this.onLoopChange.bind(this));
                         }
@@ -2203,9 +2204,9 @@ class S4Mk3Deck extends Deck {
                 this.previousMoveMode = this.deck.moveMode;
 
                 if (this.shifted) {
-                    this.deck.moveMode = moveModes.grid;
+                    this.deck.moveMode = MoveModes.grid;
                 } else {
-                    this.deck.moveMode = moveModes.bpm;
+                    this.deck.moveMode = MoveModes.bpm;
                 }
 
                 this.indicator(true);
@@ -2281,10 +2282,10 @@ class S4Mk3Deck extends Deck {
             onChange: function(right) {
 
                 switch (this.deck.moveMode) {
-                case moveModes.grid:
+                case MoveModes.grid:
                     script.triggerControl(this.group, right ? "beats_adjust_faster" : "beats_adjust_slower");
                     break;
-                case moveModes.keyboard:
+                case MoveModes.keyboard:
                     if (
                         this.deck.keyboard[0].offset === (right ? 16 : 0)
                     ) {
@@ -2295,7 +2296,7 @@ class S4Mk3Deck extends Deck {
                         pad.outTrigger();
                     });
                     break;
-                case moveModes.bpm:
+                case MoveModes.bpm:
                     script.triggerControl(this.group, right ? "beats_translate_later" : "beats_translate_earlier");
                     break;
                 default:
@@ -2338,7 +2339,7 @@ class S4Mk3Deck extends Deck {
         this.rightEncoder = new Encoder({
             deck: this,
             onChange: function(right) {
-                if (this.deck.wheelMode === wheelModes.loopIn || this.deck.wheelMode === wheelModes.loopOut) {
+                if (this.deck.wheelMode === WheelModes.loopIn || this.deck.wheelMode === WheelModes.loopOut) {
                     const moveFactor = this.shifted ? LoopEncoderShiftMoveFactor : LoopEncoderMoveFactor;
                     const valueIn = engine.getValue(this.group, "loop_start_position") + (right ? moveFactor : -moveFactor);
                     const valueOut = engine.getValue(this.group, "loop_end_position") + (right ? moveFactor : -moveFactor);
@@ -2696,7 +2697,7 @@ class S4Mk3Deck extends Deck {
             onShortPress: function() {
                 if (this.previousMoveMode === null) {
                     this.previousMoveMode = this.deck.moveMode;
-                    this.deck.moveMode = moveModes.keyboard;
+                    this.deck.moveMode = MoveModes.keyboard;
                 }
             },
             onShortRelease: function() {
@@ -2725,18 +2726,18 @@ class S4Mk3Deck extends Deck {
             }
         });
 
-        this.wheelMode = wheelModes.vinyl;
+        this.wheelMode = WheelModes.vinyl;
         this.turntableButton = UseMotors ? new Button({
             deck: this,
             input: function(press) {
                 if (press) {
                     this.deck.reverseButton.loopModeOff(true);
                     this.deck.fluxButton.loopModeOff(true);
-                    if (this.deck.wheelMode === wheelModes.motor) {
-                        this.deck.wheelMode = wheelModes.vinyl;
+                    if (this.deck.wheelMode === WheelModes.motor) {
+                        this.deck.wheelMode = WheelModes.vinyl;
                         engine.setValue(this.group, "scratch2_enable", false);
                     } else {
-                        this.deck.wheelMode = wheelModes.motor;
+                        this.deck.wheelMode = WheelModes.motor;
                         engine.setValue(this.group, "scratch2_enable", false);
                         const group = this.group;
                     }
@@ -2744,9 +2745,9 @@ class S4Mk3Deck extends Deck {
                 }
             },
             outTrigger: function() {
-                const motorOn = this.deck.wheelMode === wheelModes.motor;
+                const motorOn = this.deck.wheelMode === WheelModes.motor;
                 this.send(this.color + (motorOn ? this.brightnessOn : this.brightnessOff));
-                const vinylModeOn = this.deck.wheelMode === wheelModes.vinyl;
+                const vinylModeOn = this.deck.wheelMode === WheelModes.vinyl;
                 this.deck.jogButton.send(this.color + (vinylModeOn ? this.brightnessOn : this.brightnessOff));
             },
         }) : undefined;
@@ -2756,20 +2757,20 @@ class S4Mk3Deck extends Deck {
                 if (press) {
                     this.deck.reverseButton.loopModeOff(true);
                     this.deck.fluxButton.loopModeOff(true);
-                    if (this.deck.wheelMode === wheelModes.vinyl) {
-                        this.deck.wheelMode = wheelModes.jog;
+                    if (this.deck.wheelMode === WheelModes.vinyl) {
+                        this.deck.wheelMode = WheelModes.jog;
                     } else {
-                        this.deck.wheelMode = wheelModes.vinyl;
+                        this.deck.wheelMode = WheelModes.vinyl;
                     }
                     engine.setValue(this.group, "scratch2_enable", false);
                     this.outTrigger();
                 }
             },
             outTrigger: function() {
-                const vinylOn = this.deck.wheelMode === wheelModes.vinyl;
+                const vinylOn = this.deck.wheelMode === WheelModes.vinyl;
                 this.send(this.color + (vinylOn ? this.brightnessOn : this.brightnessOff));
                 if (this.deck.turntableButton) {
-                    const motorOn = this.deck.wheelMode === wheelModes.motor;
+                    const motorOn = this.deck.wheelMode === WheelModes.motor;
                     this.deck.turntableButton.send(this.color + (motorOn ? this.brightnessOn : this.brightnessOff));
                 }
             },
@@ -2780,7 +2781,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(touched) {
                 this.touched = touched;
-                if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
+                if (this.deck.wheelMode === WheelModes.vinyl || this.deck.wheelMode === WheelModes.motor) {
                     if (touched) {
                         engine.setValue(this.group, "scratch2_enable", true);
                     } else {
@@ -2883,14 +2884,14 @@ class S4Mk3Deck extends Deck {
                 if (this.velocity === 0 &&
                     engine.getValue(this.group, "scratch2") === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
-                    this.deck.wheelMode !== wheelModes.motor) {
+                    this.deck.wheelMode !== WheelModes.motor) {
                     return;
                 }
 
                 // Otherwise, interpret/report the velocity differently
                 // depending on the wheel mode
                 switch (this.deck.wheelMode) {
-                case wheelModes.motor:
+                case WheelModes.motor:
                     // for motorized platters, we are "always scratching",
                     // so we simply send the normalized velocity up the line
                     // ***NOTE*** this may change as we zero in on how to 
@@ -2905,7 +2906,7 @@ class S4Mk3Deck extends Deck {
                     }
                     engine.setValue(this.group, "scratch2", this.velocity); // why is this still here? I thought we weren't "always scratching" anymore
                     break;
-                case wheelModes.loopIn:
+                case WheelModes.loopIn:
                     {
                         const loopStartPosition = engine.getValue(this.group, "loop_start_position");
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
@@ -2917,7 +2918,7 @@ class S4Mk3Deck extends Deck {
                         );
                     }
                     break;
-                case wheelModes.loopOut:
+                case WheelModes.loopOut:
                     {
                         const loopEndPosition = engine.getValue(this.group, "loop_end_position");
                         const value = loopEndPosition + (this.velocity * LoopWheelMoveFactor);
@@ -2928,7 +2929,7 @@ class S4Mk3Deck extends Deck {
                         );
                     }
                     break;
-                case wheelModes.vinyl:
+                case WheelModes.vinyl:
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
                         engine.setValue(this.group, "scratch2", this.velocity);
                     } else {
@@ -2971,7 +2972,7 @@ class S4Mk3Deck extends Deck {
                 }
             },
             output: function(fractionOfTrack, playstate, trackLoaded) {
-                if (this.deck.wheelMode > wheelModes.motor) {
+                if (this.deck.wheelMode > WheelModes.motor) {
                     return;
                 }
                 // Emit cue haptic feedback if enabled
@@ -3129,9 +3130,9 @@ class S4Mk3MotorManager {
         this.oldValue = [0, 0];
         this.currentMaxWheelForce = MaxWheelForce;
         this.prev_playbackError = 0; // JUNE 20 2025 --- RESUME HERE
-        this.P_term = 0;
-        this.I_accumulator = 0;
-        this.D_term = 0;
+        this.proportionalTerm = 0;
+        this.integralAccumulator = 0;
+        this.derivativeTerm = 0;
         this.outputTorque_prev = 0;
         this.outputTracking_prev = 0; // new attempt at nudge tracking
 
@@ -3181,7 +3182,7 @@ class S4Mk3MotorManager {
 
         // If this deck is currently playing, calculate motor output
         // Determine target (relative) angular velocity based on wheel mode
-        if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
+        if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play")) {
             if (this.isStopped == true){
                 this.isStopped = false;
                 engine.setValue(this.deck.group, "scratch2_enable", false);
@@ -3252,14 +3253,13 @@ class S4Mk3MotorManager {
                 engine.setValue(this.deck.group, "scratch2_enable", true);
             } else if (this.deck.wheelTouch.touched == false && this.deck.isSlipping && Math.abs(playbackError) < SlipmatErrorThresh) {
                 this.deck.isSlipping = false;
-                engine.setValue(this.deck.group, "scratch2_enable", false);
-            } 
-            // Experimental: if we are beyond a certain error threshold (slip for now),
+                engine.setValue(this.deck.group, "scratch2_enable", false); 
+            // If we are beyond a certain error threshold,
             // suppress the error integrator---to help with gracefully restoring rotation
             // speed without overshoot when adjusting with the crown.
-            else if (Math.abs(playbackError) > IntegratorSuppressionErrorThresh){
+            } else if (Math.abs(playbackError) > IntegratorSuppressionErrorThresh){
                 // keep the accumulator suppressed so it doesn't go crazy
-                this.I_accumulator = 0;
+                this.integralAccumulator = 0;
             }
 
             if (this.deck.isSlipping) {
@@ -3269,14 +3269,13 @@ class S4Mk3MotorManager {
                 else {
                     outputTorque = -SlipFrictionForce;
                 }
-            }
             // Otherwise, we aren't slipping. Apply new motor controller
-            else {
+            } else {
                 // New motor controller: a PI followed by a very simple smoothing filter
-                this.P_term = playbackError * ProportionalGain;
-                this.I_accumulator += playbackError * IntegrativeGain;
-                this.D_term = (playbackError - this.prev_playbackError) * DerivativeGain;
-                outputTorque = this.P_term + this.I_accumulator - this.D_term;
+                this.proportionalTerm = playbackError * ProportionalGain;
+                this.integralAccumulator += playbackError * IntegrativeGain;
+                this.derivativeTerm = (playbackError - this.prev_playbackError) * DerivativeGain;
+                outputTorque = this.proportionalTerm + this.integralAccumulator - this.derivativeTerm;
                 // outputTracking = outputTorque;
                 // outputTorque = playbackError * MOTORPID_PROPORTIONAL_GAIN;
 
@@ -3296,7 +3295,7 @@ class S4Mk3MotorManager {
                     engine.setValue(this.deck.group, "jog", -trackingError*TurnTableNudgeSensitivity);
                     // console.warn(outputTorque, outputTracking, trackingError);
                 } else if (trackingError < 0) {
-                    // if we've spun all the way up, only then act like it's jogging time.
+                    // if we've spun all the way up to speed, only then act like it's jogging time.
                     this.isUpToSpeed = true;
                 }
             }
@@ -3306,12 +3305,12 @@ class S4Mk3MotorManager {
             // outputTorque += MOTOR_FRICTION_COMPENSATION;
         // If the deck isn't playing, but we're in motor mode, ensure that scratch mode is ON
         // and reset the "isUpToSpeed" flag
-        } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
+        } else if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
             this.isUpToSpeed = false;
             this.isStopped = true;
             engine.setValue(this.deck.group, "scratch2_enable", true);
         // In any other wheel mode, the motor only provides resistance to scrubbing/scratching
-        } else if (this.deck.wheelMode !== wheelModes.motor) {
+        } else if (this.deck.wheelMode !== WheelModes.motor) {
             if (TightnessFactor > 0.5) {
                 // Super loose
                 const reduceFactor = (Math.min(0.5, TightnessFactor - 0.5) / 0.5) * 0.7;
@@ -3409,63 +3408,11 @@ class S4Mk3MotorManager {
         // to physical dynamics per se, as the first step is to recreate the commercial system
         // before breaking down the control parameters into physical constants.
 
-        // Formatting and writing the output data:
-        // NEW CODE:
-
-
-        // OLD CODE:
-        // Convert signed angular velocity to unsigned angular speed + direction code
-        // if (velocity < 0) {
-        //     motorData[1] = 0xe0; // negative/CCW direction code 1
-        //     motorData[2] = 0xfe; // negative/CCW direction code 2
-        //     velocity = -velocity; // invert the sign to make it positive
-        // } else if (this.deck.wheelMode === wheelModes.motor && engine.getValue(this.deck.group, "play")) {
-        //     velocity += this.zeroSpeedForce; // REMOVE: Don't think this condition is necessary for physical model
-        // }
-
-        // detecting if the user is stopping the disc from rotating
-        // I really don't think this is necessary if we implement a physical model
-        // to detect relative velocity of [virtual] platter rotation versus
-        // [measured] disc rotation during the slip-state
-        // REMOVE for physical model implementation
-        // if (!this.isBlockedByUser() && velocity > MaxWheelForce) {
-        //     this.userHold++;
-        // } else if (velocity < MaxWheelForce / 2 && this.userHold > 0) {
-        //     this.userHold--;
-        // }
-
-        // REMOVE for physical model implementation
-        // if (this.isBlockedByUser()) {
-        //     // if the user is blocking the disc rotation, maintain scratch mode
-        //     engine.setValue(this.deck.group, "scratch2_enable", true);
-        //     this.currentMaxWheelForce = this.zeroSpeedForce + parseInt(this.baseFactor * expectedSpeed);
-        // } else if (expectedSpeed && this.userHold === 0 && !this.deck.wheelTouch.touched) {
-        //     // if the user has let go, turn off scratch mode and drive the motor hard
-        //     // to get back to the base rotation speed
-        //     engine.setValue(this.deck.group, "scratch2_enable", false);
-        //     this.currentMaxWheelForce = MaxWheelForce;
-        // }
-
-        // clip the output to the max output if overdriving
-        // and/or convert velocity to integer for output to motors
-        // Clip the outgoing wheel force to a set maximum, or truncate to int
-        // velocity = Math.min(
-        //     this.currentMaxWheelForce,
-        //     Math.floor(velocity)
-        // );
-
-        // Write to the output buffer. Optimize: should be writing to an instance array
-        // motorData[3] = velocity & 0xff;
-        // motorData[4] = velocity >> 8;
-
         // Write the calculated value to the motor output buffer
         this.motorBuffMgr.setMotorOutput(this.deckMotorID,outputTorque);
 
         return true;
     }
-    // isBlockedByUser() { // REMOVE with physical model implementation
-    //     return this.userHold >= 10;
-    // }
 }
 
 class S4Mk3MixerColumn extends ComponentContainer {
