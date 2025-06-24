@@ -191,10 +191,10 @@ class WaveformWidgetFactory : public QObject,
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
-    bool isEqGainDisabled() const {
-        return m_eqGainDisabled;
+    bool visualizeEqGain() const {
+        return m_visualizeEqGain;
     };
-    void setEqGainDisabled(bool disabled);
+    void setVisualizeEqGain(bool value);
 
     void setDisplayBeatGridAlpha(int alpha);
     int getBeatGridAlpha() const { return m_beatGridAlpha; }
@@ -230,7 +230,7 @@ class WaveformWidgetFactory : public QObject,
 
     void overviewNormalizeChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
-    void eqGainDisabledChanged(bool value);
+    void visualizeEqGainChanged(bool value);
 
     void untilMarkShowBeatsChanged(bool value);
     void untilMarkShowTimeChanged(bool value);
@@ -289,7 +289,7 @@ class WaveformWidgetFactory : public QObject,
     int m_endOfTrackWarningTime;
     double m_defaultZoom;
     bool m_zoomSync;
-    bool m_eqGainDisabled;
+    bool m_visualizeEqGain;
     double m_visualGain[BandCount];
     bool m_overviewNormalized;
 

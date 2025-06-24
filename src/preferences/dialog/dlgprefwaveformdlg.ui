@@ -85,9 +85,9 @@ Select from different types of displays for the waveform, which differ primarily
         </widget>
       </item>
       <item>
-        <widget class="QCheckBox" name="disableEqGainCheckBox">
+        <widget class="QCheckBox" name="visualizeEqGainCheckBox">
           <property name="text">
-            <string>Disable EQ Gain in Waveform</string>
+            <string>Visualize EQ Gain</string>
           </property>
         </widget>
       </item>
