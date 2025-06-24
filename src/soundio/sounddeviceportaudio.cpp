@@ -27,6 +27,12 @@
 #include <sched.h>
 #endif
 
+#ifdef __LIBSAMPLERATE__
+#include <samplerate.h>
+#endif
+
+SRC_DATA sr_data{}; // from libsamplerate
+
 namespace {
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty

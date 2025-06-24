@@ -22,7 +22,7 @@ class EngineBufferScale : public QObject {
     ~EngineBufferScale() override = default;
 
     // Sets the scaling parameters.
-    // * The base rate (ratio of track sample rate to output sample rate).
+    // * The base rate (ratio of track sample rate to output i.e. Mixxx sample rate).
     // * The tempoRatio describes the tempo change in fraction of
     //   original tempo. Put another way, it is the ratio of track seconds to
     //   real second. For example, a tempo of 1.0 is no change. A
@@ -55,7 +55,7 @@ class EngineBufferScale : public QObject {
     virtual void clear() = 0;
     // Scale buffer
     // Returns the number of frames that have bean read from the unscaled
-    // input buffer The number of frames copied to the output buffer is always
+    // input buffer. The number of frames copied to the output buffer is always
     // an integer value, while the number of frames read from the unscaled
     // input buffer might be partial number!
     // The size of the output buffer is given in samples, i.e. twice the number

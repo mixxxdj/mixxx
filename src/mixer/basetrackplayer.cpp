@@ -53,6 +53,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pPrevFailedTrackId(),
           m_replaygainPending(false),
           m_pChannelToCloneFrom(nullptr) {
+    // returns an EngineDeck that has a configured EngineBuffer
     auto channel = std::make_unique<EngineDeck>(handleGroup,
             pConfig,
             pMixingEngine,
