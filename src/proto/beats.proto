@@ -28,4 +28,5 @@ message BeatMap {
 message BeatGrid {
   optional Bpm bpm = 1;
   optional Beat first_beat = 2;
+  optional int32 downbeats_offset = 3;
 }
