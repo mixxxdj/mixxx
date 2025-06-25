@@ -1096,6 +1096,8 @@ void EngineBuffer::processTrackLocked(
         m_tempo_ratio_old = tempoRatio;
         m_reverse_old = is_reverse;
 
+        qDebug() << "pitchRatio: " << pitchRatio;
+
         // Now we need to update the scaler with the main sample rate, the
         // base rate (ratio between sample rate of the source audio and the
         // main samplerate), the deck speed, the pitch shift, and whether
@@ -1109,7 +1111,7 @@ void EngineBuffer::processTrackLocked(
         // consumed relative to playing back the track at its native sample
         // rate and normal speed. pitch_adjust does not change the playback
         // rate.
-        rate = baseSampleRate * speed;
+        rate = baseSampleRate * speed; // same as bufferscaler m_effectiveRate
 
         // Scaler is up to date now.
         m_bScalerChanged = false;
@@ -1164,6 +1166,9 @@ void EngineBuffer::processTrackLocked(
         // will be lost, corresponding to 2 * 92.9/3 ms of lost audio before the
         // next callback. To avoid this, a resample must be performed (here, a downsample)
         // to represent 8192*3 samples of digital audio using 8192 samples only.
+        // ---
+        // downsample -> via a digital decimation filter (reduce #samples)
+        // upsample -> via a digital interpolation filter (increase #samples)
         const double framesRead = m_pScale->scaleBuffer(pOutput, bufferSize);
         // qDebug() << "Buffer not paused, read " << framesRead << " frames";
 
@@ -1248,6 +1253,8 @@ void EngineBuffer::processTrackLocked(
     hintReader(rate);
 }
 
+// process() is called once per latency period, triggered by the DAC callback.
+// Runs in the realtime thread.
 void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     // Bail if we receive a buffer size with incomplete sample frames. Assert in debug builds.
     VERIFY_OR_DEBUG_ASSERT((bufferSize % m_channelCount) == 0) {
@@ -1270,6 +1277,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
     // we check if the samplerate has changed on each DAC request.
+    // setSignal updates the bufferscaler's view of
+    // the input audio signal. (samplerate, channels).
     m_pScaleLinear->setSignal(m_sampleRate, m_channelCount);
     m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__

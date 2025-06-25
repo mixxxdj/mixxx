@@ -27,6 +27,7 @@ class EngineBufferScaleSR : public EngineBufferScale {
             double* pPitchRatio) override;
 
     void setQuality(double engine_quality);
+    long getInputFrames(float** audio);
 
     // Main scaler method
     double scaleBuffer(
@@ -37,10 +38,15 @@ class EngineBufferScaleSR : public EngineBufferScale {
 
   private:
     void onSignalChanged() override;
+    int do_scale(CSAMPLE* output, int out_frames);
 
     ReadAheadManager* m_pReadAheadManager;
     bool m_bBackwards;
     mixxx::audio::ChannelCount m_dChannels;
+    double m_inputFramesRead;
+    int m_outFrames;
+
+    double m_srcRatio;
 
     SRC_STATE* m_pResampler;
     mixxx::SampleBuffer m_bufferBack; // to hold samples from RAMAN
