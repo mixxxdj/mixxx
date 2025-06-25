@@ -104,6 +104,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::apiChanged);
+    apiLabel->setText(apiLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SOUND_API_URL));
 
     sampleRateComboBox->clear();
     const auto sampleRates = m_pSoundManager->getSampleRates();
@@ -321,6 +326,18 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 #endif // __LINUX__
 
     setScrollSafeGuardForAllInputWidgets(this);
+
+    micMonitorModeLabel->setText(micMonitorModeLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
+
+    latencyCompensationLabel->setText(latencyCompensationLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_LATENCY_URL));
 
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
@@ -1065,7 +1082,9 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString lineBreak("<br/>");
+            const QString lineBreak("<br/>");
+            const QString kMicMonitorHintTrString =
+                    tr("Refer to the Mixxx User Manual for details.");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation.get() == 0.0) {
                 latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
@@ -1076,7 +1095,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
@@ -1086,7 +1108,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "for Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else {

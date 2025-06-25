@@ -17,7 +17,5 @@ class BasePlayer : public QObject {
 
   protected:
     PlayerManager* m_pPlayerManager;
-
-  private:
     const QString m_group;
 };

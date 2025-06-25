@@ -4,8 +4,20 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
 
+REM Detect host architecture
+IF /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    SET "HOST_ARCH=x64"
+) else IF /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    SET "HOST_ARCH=arm64"
+) else (
+    echo ^Error: Unknown processor architecture: %PROCESSOR_ARCHITECTURE%
+    PAUSE
+    EXIT /B 1
+)
+
 IF NOT DEFINED PLATFORM (
-    SET PLATFORM=x64
+    ECHO ^Info: The PLATFORM environment variable is not defined. Using host's PROCESSOR_ARCHITECTURE=%PROCESSOR_ARCHITECTURE%.
+    SET "PLATFORM=%HOST_ARCH%"
 )
 
 IF NOT DEFINED BUILDENV_BASEPATH (
@@ -20,17 +32,36 @@ IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
 )
 
-IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.6-rel
-    SET VCPKG_TARGET_TRIPLET=x64-windows-release
-    vcpkg_update_main
-    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-release-98fd50c
-    SET BUILDENV_SHA256=dff7d5a8141ae2a4c13eb85fe45e6f2915b24c11329af52a11b38b430e6b1961
+IF /I "%PLATFORM%"=="arm64" (
+    IF DEFINED BUILDENV_RELEASE (
+        SET BUILDENV_BRANCH=2.6-rel
+        SET VCPKG_TARGET_TRIPLET=arm64-windows-release
+        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-rel-da4c207
+        SET BUILDENV_SHA256=1225f0a71a1dd624b14f6b2148cc01305496f11ba2bcbff8638ecf2e1e995702
+    ) ELSE (
+        SET BUILDENV_BRANCH=2.6
+        SET VCPKG_TARGET_TRIPLET=arm64-windows
+        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-c2def9b
+        SET BUILDENV_SHA256=9918615b607045f5907e051d84f40180ec7392b84e46bed571dc6bf97438303d
+    )
+) ELSE IF /I "%PLATFORM%"=="x64" (
+    IF DEFINED BUILDENV_RELEASE (
+        SET BUILDENV_BRANCH=2.6-rel
+        SET VCPKG_TARGET_TRIPLET=x64-windows-release
+        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-da4c207
+        SET BUILDENV_SHA256=62d4d7249a7e49ef96d4b96b380e23426dd714eaa9ae415e7a66a587a71e9a27
+    ) ELSE (
+        SET BUILDENV_BRANCH=2.6
+        SET VCPKG_TARGET_TRIPLET=x64-windows
+        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-c2def9b
+        SET BUILDENV_SHA256=01df9fdc8154f96184281a934e73eb4202e4f29452ecc888053c747f7a745d4f
+    )
 ) ELSE (
-    SET BUILDENV_BRANCH=2.6
-    SET VCPKG_TARGET_TRIPLET=x64-windows
-    SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-12239ed
-    SET BUILDENV_SHA256=5c60b2c61d6448a99979d7cc997e92f2fd5b4b65f65e2439abfca3fa6fd30f8d
+    ECHO ^ERROR: Unsupported PLATFORM: %PLATFORM%
+    ECHO ^Please refer to the following guide to manually build the vcpkg environment:"
+    ECHO ^https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    PAUSE
+    EXIT /B 1
 )
 
 IF "%~1"=="" (
@@ -108,6 +139,7 @@ EXIT /B 0
     IF DEFINED GITHUB_ENV (
         ECHO MIXXX_VCPKG_ROOT=!MIXXX_VCPKG_ROOT!>>!GITHUB_ENV!
         ECHO CMAKE_GENERATOR=!CMAKE_GENERATOR!>>!GITHUB_ENV!
+        ECHO VCPKG_TARGET_TRIPLET=!VCPKG_TARGET_TRIPLET!>>!GITHUB_ENV!
     ) ELSE (
         ECHO ^Generating "CMakeSettings.json"...
         CALL :GENERATE_CMakeSettings_JSON
@@ -204,9 +236,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "configurationType": "%2",
     >>"%CMakeSettings%" echo       "enableClangTidyCodeAnalysis": true,
     >>"%CMakeSettings%" echo       "generator": "Ninja",
-    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
+    REM <compiler>_<architecture>_<host_arch>
+    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!HOST_ARCH!" ],
     >>"%CMakeSettings%" echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
     >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
+    REM <platform>-<compiler>-<architecture>
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,

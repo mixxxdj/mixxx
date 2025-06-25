@@ -164,7 +164,8 @@ bool WaveformRendererRGB::preprocessInner() {
                 u8maxLow[signalChn] = math_max(u8maxLow[signalChn], waveformData.filtered.low);
                 u8maxMid[signalChn] = math_max(u8maxMid[signalChn], waveformData.filtered.mid);
                 u8maxHigh[signalChn] = math_max(u8maxHigh[signalChn], waveformData.filtered.high);
-                u8maxAllChn[chn] = math_max(u8maxAllChn[chn], waveformData.filtered.all);
+                u8maxAllChn[signalChn] = math_max(
+                        u8maxAllChn[signalChn], waveformData.filtered.all);
             }
         }
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
@@ -228,11 +229,11 @@ bool WaveformRendererRGB::preprocessInner() {
             // Lines are thin rectangles
             if (!splitLeftRight) {
                 vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                                   halfBreadth - heightFactorAbs * maxAllChn[0]},
+                                                   halfBreadth - heightFactorAbs * maxAllChn[chn]},
                         {fpos + halfPixelSize,
                                 m_isSlipRenderer
                                         ? halfBreadth
-                                        : halfBreadth + heightFactorAbs * maxAllChn[1]},
+                                        : halfBreadth + heightFactorAbs * maxAllChn[chn]},
                         {red,
                                 green,
                                 blue});

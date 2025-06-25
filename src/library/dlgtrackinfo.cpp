@@ -780,6 +780,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     if (!m_pLoadedTrack) {
         return;
     }
+
     // Initialize the metadata with the current metadata to avoid
     // losing existing metadata or to lose the beat grid by replacing
     // it with a default grid created from an imprecise BPM.
@@ -789,46 +790,58 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     // model for this dialog.
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
-    QImage coverImage;
-    const auto resetMissingTagMetadata = m_pUserSettings->getValue<bool>(
-            mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey);
+
+    const auto resetMissingTagMetadata =
+            m_pUserSettings->getValue<bool>(
+                    mixxx::library::prefs::
+                            kResetMissingTagMetadataOnImportConfigKey);
+
+    constexpr QImage* pNoCoverImport = nullptr;
+
+    const auto importTrackMetadata = [&](mixxx::TrackMetadata* metadata) {
+        return SoundSourceProxy(m_pLoadedTrack)
+                .importTrackMetadataAndCoverImage(
+                        metadata,
+                        pNoCoverImport,
+                        resetMissingTagMetadata);
+    };
+
     const auto [importResult, sourceSynchronizedAt] =
-            SoundSourceProxy(m_pLoadedTrack)
-                    .importTrackMetadataAndCoverImage(
-                            &trackMetadata, &coverImage, resetMissingTagMetadata);
+            importTrackMetadata(&trackMetadata);
+
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
+
     const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
-    auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileInfo,
-            trackMetadata.getAlbumInfo().getTitle(),
-            coverImage);
+
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
             sourceSynchronizedAt);
-    trackRecord.setCoverInfo(
-            std::move(guessedCoverInfo));
 
-    QString importedKeyText = trackRecord.getMetadata().getTrackInfo().getKeyText();
+    QString importedKeyText =
+            trackRecord.getMetadata().getTrackInfo().getKeyText();
+
     {
         Keys newKeys = KeyFactory::makeBasicKeysKeepText(
-                importedKeyText, mixxx::track::io::key::FILE_METADATA);
+                importedKeyText,
+                mixxx::track::io::key::FILE_METADATA);
+
         if (newKeys.getGlobalKey() != mixxx::track::io::key::INVALID &&
-                trackRecord.getKeys().getGlobalKeyText() != importedKeyText) {
+                trackRecord.getKeys().getGlobalKeyText() !=
+                        importedKeyText) {
             // Only replace the keys with a single new key if valid and different.
             // Otherwise preserve existing array of keys for different positions.
             trackRecord.setKeys(std::move(newKeys));
         }
     }
 
-    replaceTrackRecord(
-            std::move(trackRecord),
-            fileInfo.location());
+    replaceTrackRecord(std::move(trackRecord), fileInfo.location());
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
-    if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
+    if (m_pLoadedTrack &&
+            m_pLoadedTrack->getId() == trackId) {
         updateFromTrack(*m_pLoadedTrack);
     }
 }

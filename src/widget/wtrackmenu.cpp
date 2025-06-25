@@ -1449,7 +1449,7 @@ void WTrackMenu::slotUpdateReplayGainFromPregain() {
     if (gain == 1.0) {
         return;
     }
-    m_pTrack->adjustReplayGainFromPregain(gain);
+    m_pTrack->adjustReplayGainFromPregain(gain, m_deckGroup);
 }
 
 void WTrackMenu::slotTranslateBeatsHalf() {

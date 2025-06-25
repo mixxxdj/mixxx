@@ -3,10 +3,6 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  pull-requests: write
-  contents: write
-
 jobs:
   softfix:
     name: Softfix action
@@ -29,8 +25,22 @@ jobs:
       - name: Checkout repository
         if: steps.check-maintainer.outputs.result == 'true'
         uses: actions/checkout@v4
+      # Using an app is the recommended way to allow recursive operations.
+      # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
+      # and short lifespan, unlike PAT.
+      # As we are trialing this approach tho, it is fine to play with a PAT and not spend the
+      # extra time setting up an app
+      #
+      # - name: Generate App Token
+      #   id: generate-token-key-pair
+      #   if: steps.check-maintainer.outputs.result == 'true'
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
+      #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
       - name: Softfix
         if: steps.check-maintainer.outputs.result == 'true'
         uses: daschuer/softfix@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PAT setup with content:write and pull_request:write
+          GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}

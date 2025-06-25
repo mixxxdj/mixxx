@@ -3,9 +3,7 @@
 name: Build
 
 on:
-  push:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+  workflow_call:
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -89,7 +87,7 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
-          - name: Windows 2022 (MSVC)
+          - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
@@ -113,10 +111,40 @@ jobs:
             cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
-            artifacts_name: Windows Installer
+            artifacts_name: Windows x64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
             qt_qpa_platform: windows
+            arch: x64
+          - name: Windows 11 ARM64
+            os: windows-11-arm
+            # Attention: If you change the cmake_args for the Windows CI build,
+            #            also adjust the for the local Windows build setup in
+            #            ./tools/windows_buildenv.bat
+            cmake_args: >-
+              -DBULK=ON
+              -DHSS1394=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMEDIAFOUNDATION=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=ON
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-windows-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
+            cc: cl
+            cxx: cl
+            # TODO: Fix these broken tests on Windows
+            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            cpack_generator: WIX
+            buildenv_basepath: C:\buildenv
+            buildenv_script: tools/windows_buildenv.bat
+            artifacts_name: Windows ARM64 Installer
+            artifacts_path: build/*.msi
+            artifacts_slug: windows-winarm
+            qt_qpa_platform: windows
+            arch: arm64
 
     env:
       # macOS codesigning
@@ -130,6 +158,7 @@ jobs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
+      artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-winarm }}
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4.2.2
@@ -160,7 +189,8 @@ jobs:
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
         # Ubuntu 24.04 should use the CMake version from the repos.
-        if: runner.os == 'Windows'
+        # On windows-11-arm this action installs the x64 version which has unwanted side effects
+        if: matrix.os == 'windows-2022'
         with:
           # This is a workaround for a SSL false positive in cmake 3.26.4
           # When downloading the manual. 3.21 is required for installing the
@@ -170,6 +200,18 @@ jobs:
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: "[Windows 11 ARM64] Install ARM64 CMake"
+        if: matrix.os == 'windows-11-arm'
+        run: |
+          Invoke-WebRequest -Uri https://github.com/Kitware/CMake/releases/download/v3.30.1/cmake-3.30.1-windows-arm64.zip -OutFile cmake-arm64.zip
+          Expand-Archive cmake-arm64.zip -DestinationPath $env:USERPROFILE\cmake
+          $cmakePath = "$env:USERPROFILE\cmake\cmake-3.30.1-windows-arm64\bin"
+          $cmakePath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $env:Path += ";$cmakePath"
+          cmake --version
 
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
@@ -331,6 +373,14 @@ jobs:
           timestamp-digest: SHA256
           timeout: 600
 
+      - name: "[Windows 11 ARM64] Install WiX Toolset3"
+        if: matrix.os == 'windows-11-arm'
+        run: |
+          choco install wixtoolset
+          Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+          refreshenv
+          echo "WIX=$env:WIX" >> $env:GITHUB_ENV
+
       - name: "Package"
         id: package
         if: matrix.cpack_generator != null
@@ -431,7 +481,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
         if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
         run: |
-          $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+          if (Test-Path "C:\msys64\usr\bin") {
+            $msysPath="C:\msys64"
+          } else {
+            choco install msys2 -y
+            $msysPath="C:\tools\msys64"
+          }
+          $Env:PATH="$msysPath\usr\bin;$Env:PATH"
           pacman -S --noconfirm coreutils bash rsync openssh
           # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
           # Bash) does not work properly and leads to errors like these:
@@ -446,14 +502,14 @@ jobs:
           #
           # Also see related issue:
           # https://github.com/actions/virtual-environments/issues/594
-          Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          Copy-Item -Path "$msysPath\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
           # By default, MSYS2 uses an
           # /etc/profile file that changes
           # the current working directory
           # when bash is started. We don't
           # want this behavior,so we just
           # delete it.
-          Remove-Item -Path "C:\msys64\etc\profile"
+          Remove-Item -Path "$msysPath\etc\profile"
           # Add MSYS2's tools to %PATH%.
           Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
