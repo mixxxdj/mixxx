@@ -2892,13 +2892,10 @@ class S4Mk3Deck extends Deck {
                 // depending on the wheel mode
                 switch (this.deck.wheelMode) {
                 case WheelModes.motor:
-                    // for motorized platters, we are "always scratching",
-                    // so we simply send the normalized velocity up the line
-                    // ***NOTE*** this may change as we zero in on how to 
-                    // switch between scratch and regular modes for pitch stability
-                    // during steady-state and nudging
+                    // Run the motor control code here instead of on its own timer
+                    
 
-                    // Smoothing the output playback (when not slipping)
+                    // Smoothing the output playback (when not slipping/scratching)
                     if (engine.getValue(this.group, "play")) {
                         if (this.deck.isSlipping == false){
                             // apply simple smoothing filter to the velocity input when the disc is not slipping/scratching
@@ -3787,7 +3784,7 @@ class S4MK3 {
             // Requesting a timer interval of 2ms to match sampling rate of wheel sensors
             // max value is capped in controllerscriptinterfacelegacy.cpp
             // normally capped at 20ms but we have removed this cap for motor control
-            engine.beginTimer(2, this.motorCallback.bind(this));
+            // engine.beginTimer(2, this.motorCallback.bind(this));
             // Even if we remove the cap, QT can't guarantee that any given system
             // will maintain a sub-20ms timer period. See:
             // https://doc.qt.io/qt-5/qobject.html#startTimer
@@ -3829,6 +3826,10 @@ class S4MK3 {
             //        the offsets here are the correct ones with reference to the entire HID report
             this.leftDeck.wheelPosition.input(view.getUint32(12, true), view.getUint32(8, true));
             this.rightDeck.wheelPosition.input(view.getUint32(40, true), view.getUint32(36, true));
+            // TEMP: triggering motor output anytime input report #3 is processed.
+            // This should make the motor output timing more reliable across different platforms
+            // rather than relying on QTimer.
+            this.motorCallback();
         } else {
             console.warn(`Unsupported HID repord with ID ${reportId}. Contains: ${data}`);
         }
