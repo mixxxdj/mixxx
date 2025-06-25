@@ -2898,13 +2898,16 @@ class S4Mk3Deck extends Deck {
                     // switch between scratch and regular modes for pitch stability
                     // during steady-state and nudging
 
-                    // ***NEW*** quantizing the output playback (when not slipping)
-                    if (this.deck.isSlipping == false){
-                        // apply simple smoothing filter to the velocity input when the disc is not slipping/scratching
-                        this.velocity = this.prev_pitch + (NONSLIP_PITCH_SMOOTHING*(this.velocity - this.prev_pitch));
-                        this.prev_pitch = this.velocity;
+                    // Smoothing the output playback (when not slipping)
+                    if (engine.getValue(this.group, "play")) {
+                        if (this.deck.isSlipping == false){
+                            // apply simple smoothing filter to the velocity input when the disc is not slipping/scratching
+                            this.velocity = this.prev_pitch + (NONSLIP_PITCH_SMOOTHING*(this.velocity - this.prev_pitch));
+                            this.prev_pitch = this.velocity;
+                        }
+                    } else {
+                        engine.setValue(this.group, "scratch2", this.velocity);
                     }
-                    engine.setValue(this.group, "scratch2", this.velocity); // why is this still here? I thought we weren't "always scratching" anymore
                     break;
                 case WheelModes.loopIn:
                     {
@@ -3263,6 +3266,7 @@ class S4Mk3MotorManager {
             }
 
             if (this.deck.isSlipping) {
+                engine.setValue(this.deck.group, "scratch2", normalizedVelocity);
                 if (playbackError > 0) {
                     outputTorque = SlipFrictionForce;
                 }
