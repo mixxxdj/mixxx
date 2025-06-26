@@ -31,8 +31,9 @@ namespace allshader {
 
 WaveformRendererStem::WaveformRendererStem(
         WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererAbstract::PositionSource type,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_splitStemTracks(false) {
     initForRectangles<RGBAMaterial>(0);

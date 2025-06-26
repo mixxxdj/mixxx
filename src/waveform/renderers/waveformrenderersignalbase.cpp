@@ -12,7 +12,7 @@ const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]")
 } // namespace
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+        WaveformWidgetRenderer* waveformWidgetRenderer, Options)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_pEQEnabled(nullptr),
           m_pLowFilterControlObject(nullptr),

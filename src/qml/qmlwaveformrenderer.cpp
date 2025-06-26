@@ -22,9 +22,9 @@ namespace mixxx {
 namespace qml {
 
 QmlWaveformRendererMark::QmlWaveformRendererMark()
-        : m_defaultMark(nullptr),
-          m_untilMark(std::make_unique<QmlWaveformUntilMark>()),
-          m_playMarkerPosition(0.5) {
+        : m_playMarkerPosition(0.5),
+          m_defaultMark(nullptr),
+          m_untilMark(std::make_unique<QmlWaveformUntilMark>()) {
 }
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererEndOfTrack::create(
@@ -118,7 +118,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB::create(
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererFiltered::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto pRenderer = std::make_unique<allshader::WaveformRendererFiltered>(
-            waveformWidget, m_ignoreStem);
+            waveformWidget, m_ignoreStem, m_options);
 
     setup(pRenderer.get());
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
@@ -127,7 +127,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererFiltered::create(
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererHSV::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto pRenderer = std::make_unique<allshader::WaveformRendererHSV>(
-            waveformWidget);
+            waveformWidget, m_options);
 
     pRenderer->setAxesColor(m_axesColor);
     pRenderer->setColor(m_color);
@@ -170,7 +170,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererHSV::create(
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererSimple::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto pRenderer = std::make_unique<allshader::WaveformRendererSimple>(
-            waveformWidget);
+            waveformWidget, m_options);
 
     pRenderer->setAxesColor(m_axesColor);
     pRenderer->setColor(m_color);

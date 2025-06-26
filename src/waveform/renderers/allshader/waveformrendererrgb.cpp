@@ -20,8 +20,8 @@ inline float math_pow2(float x) {
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
     initForRectangles<RGBMaterial>(0);
@@ -99,7 +99,7 @@ bool WaveformRendererRGB::preprocessInner() {
 
     const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
-    const bool splitLeftRight = m_options & WaveformRendererSignalBase::Option::SplitStereoSignal;
+    const bool splitLeftRight = m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal;
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
     const float mid_r = static_cast<float>(m_rgbMidColor_r);

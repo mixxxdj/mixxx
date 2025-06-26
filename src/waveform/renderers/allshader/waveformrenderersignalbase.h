@@ -15,19 +15,12 @@ class WaveformRendererSignalBase;
 
 class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase {
   public:
-    enum class Option {
-        None = 0b0,
-        SplitStereoSignal = 0b1,
-        HighDetail = 0b10,
-        AllOptionsCombined = SplitStereoSignal | HighDetail,
-    };
-    Q_DECLARE_FLAGS(Options, Option)
-
     void draw(QPainter* painter, QPaintEvent* event) override final;
 
     static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};
 
-    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererSignalBase::Options options);
 
     virtual bool supportsSlip() const {
         return false;

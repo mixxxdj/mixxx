@@ -14,8 +14,16 @@ class WaveformSignalColors;
 class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstract {
     Q_OBJECT
   public:
+    enum class Option {
+        None = 0b0,
+        SplitStereoSignal = 0b1,
+        HighDetail = 0b10,
+        AllOptionsCombined = SplitStereoSignal | HighDetail,
+    };
+    Q_DECLARE_FLAGS(Options, Option)
+
     explicit WaveformRendererSignalBase(
-            WaveformWidgetRenderer* waveformWidgetRenderer);
+            WaveformWidgetRenderer* waveformWidgetRenderer, Options options);
     virtual ~WaveformRendererSignalBase();
 
     virtual bool init();
