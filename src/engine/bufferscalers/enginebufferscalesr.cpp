@@ -14,7 +14,27 @@ constexpr double kMinValidRatio = 1.0 / 256.0; // Minimum valid sample rate rati
 constexpr double kMaxValidRatio = 256.0;       // Maximum valid sample rate ratio
 } // namespace
 
-static long raman_get_input_frames_cb(void* cb_data, float** audio);
+// Callback API requires a callback
+// to retrieve input audio and make it accessible
+// to the resampler. Called by src_callback_read()
+// during playback.
+// ---
+// For mixxx, this function should invoke RAMAN
+// cb_data->buffer must contain the data from RAMAN,
+// and the audio pointer must be updated to point to
+// that data. This makes track samples available to the
+// converter for scaling.
+// data: SRC_CB_DATA
+// ---
+// Needs to be a static function, since it is called by libsamplerate core.
+// definition in namespace == static declaration.
+static long raman_get_input_frames_cb(void* pCb_data, float** ppAudio) {
+    // qDebug() << "callback: get input from RAMAN";
+
+    auto* pThis = static_cast<EngineBufferScaleSR*>(pCb_data);
+
+    return pThis->getInputFrames(ppAudio); // public
+}
 
 EngineBufferScaleSR::EngineBufferScaleSR(ReadAheadManager* pReadAheadManager, double eIndex)
         : m_pReadAheadManager(pReadAheadManager),
@@ -56,14 +76,19 @@ void EngineBufferScaleSR::setQuality(double engine_quality) {
     case EngineBuffer::ScratchingEngine::SampleRateSincFinest:
         src_quality = SRC_SINC_BEST_QUALITY;
         break;
+    case EngineBuffer::ScratchingEngine::NaiveLinear:
+        [[fallthrough]];
+    default:
+        DEBUG_ASSERT(!"Unsupported quality setting");
     }
+
     m_pResampler = src_callback_new(raman_get_input_frames_cb,
             src_quality,
             m_dChannels.value(),
             &error,
             this);
 
-    if (error || !m_pResampler) {
+    if (error) {
         qWarning() << "libsamplerate initialization error:" << src_strerror(error);
         m_pResampler = nullptr;
     }
@@ -105,27 +130,6 @@ void EngineBufferScaleSR::setScaleParameters(double base_rate,
              << "Pitch:" << m_dPitchRatio
              << "Base rate:" << m_dBaseRate
              << "Effective rate:" << m_effectiveRate;
-}
-
-// Callback API requires two callbacks: THis one is
-// to retrieve input audio and store it in the
-// resampler's private data buffer. Called by src_callback_read()
-// during playback.
-// ---
-// For mixxx, this function should invoke RAMAN
-// cb_data->buffer must contain the data from RAMAN,
-// and the audio pointer must be updated to point to
-// that data. This makes track samples available to the
-// converter for scaling.
-// data: SRC_CB_DATA
-// ---
-// Needs to be a static function, since it is called by libsamplerate core.
-static long raman_get_input_frames_cb(void* cb_data, float** audio) {
-    // qDebug() << "callback: get input from RAMAN";
-
-    auto* pThis = static_cast<EngineBufferScaleSR*>(cb_data);
-
-    return pThis->getInputFrames(audio); // public
 }
 
 long EngineBufferScaleSR::getInputFrames(float** audio) {
@@ -203,6 +207,7 @@ double EngineBufferScaleSR::scaleBuffer(
 void EngineBufferScaleSR::clear() {
     if (m_pResampler) {
         src_delete(m_pResampler);
+        m_pResampler = nullptr;
     }
 
     // Clear our input buffer

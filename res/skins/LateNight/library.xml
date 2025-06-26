@@ -16,7 +16,6 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-
           <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
