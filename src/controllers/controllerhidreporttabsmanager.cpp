@@ -502,10 +502,12 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
         columnWidths[colIdx] = pTable->columnWidth(colIdx);
     }
-    // Set the width of the value column (5) to fit 11 digits (int32 minimum in decimal)
+    // Set the width of the "Value" column (5) to fit 11 digits (int32 minimum in decimal)
+    // This is the only column in the table with dynamic content, therefore we need to
+    // set the width with enough reserved space.
     QFontMetrics metrics(pTable->font());
     int width = metrics.horizontalAdvance(QStringLiteral("0").repeated(11));
-    columnWidths[5] = width;
+    columnWidths[5] = width; // The column "Value" is at index 5
     for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
         pTable->horizontalHeader()->setSectionResizeMode(colIdx, QHeaderView::Fixed);
         pTable->setColumnWidth(colIdx, columnWidths[colIdx]);
