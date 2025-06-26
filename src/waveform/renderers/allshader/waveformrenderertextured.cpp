@@ -23,7 +23,7 @@ QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Ty
     default:
         break;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported WaveformWidgetType");
     return QString();
 }
 
