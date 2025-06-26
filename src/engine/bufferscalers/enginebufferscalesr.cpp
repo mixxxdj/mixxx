@@ -9,10 +9,9 @@
 #include "util/sample.h"
 
 namespace {
-constexpr SINT kBackBufferFrameSize = 16384;   // prevent overflow when fast scratching.
+constexpr SINT kBackBufferFrameSize = 512;     // 16384 to prevent overflow when fast scratching.
 constexpr double kMinValidRatio = 1.0 / 256.0; // Minimum valid sample rate ratio
 constexpr double kMaxValidRatio = 256.0;       // Maximum valid sample rate ratio
-} // namespace
 
 // Callback API requires a callback
 // to retrieve input audio and make it accessible
@@ -28,7 +27,7 @@ constexpr double kMaxValidRatio = 256.0;       // Maximum valid sample rate rati
 // ---
 // Needs to be a static function, since it is called by libsamplerate core.
 // definition in namespace == static declaration.
-static long raman_get_input_frames_cb(void* pCb_data, float** ppAudio) {
+long raman_get_input_frames_cb(void* pCb_data, float** ppAudio) {
     // qDebug() << "callback: get input from RAMAN";
 
     auto* pThis = static_cast<EngineBufferScaleSR*>(pCb_data);
@@ -36,15 +35,15 @@ static long raman_get_input_frames_cb(void* pCb_data, float** ppAudio) {
     return pThis->getInputFrames(ppAudio); // public
 }
 
-EngineBufferScaleSR::EngineBufferScaleSR(ReadAheadManager* pReadAheadManager, double eIndex)
+} // namespace
+
+EngineBufferScaleSR::EngineBufferScaleSR(ReadAheadManager* pReadAheadManager, double e_Index)
         : m_pReadAheadManager(pReadAheadManager),
           m_bBackwards(false),
           m_pResampler(nullptr) {
     m_effectiveRate = 1.0;
-    m_srcRatio = 1.0;
-    m_outFrames = 0;
     m_inputFramesRead = 0.0;
-    setQuality(eIndex);
+    setQuality(e_Index);
 }
 
 EngineBufferScaleSR::~EngineBufferScaleSR() {
@@ -132,57 +131,61 @@ void EngineBufferScaleSR::setScaleParameters(double base_rate,
              << "Effective rate:" << m_effectiveRate;
 }
 
-long EngineBufferScaleSR::getInputFrames(float** audio) {
-    SINT required_input_frames = static_cast<SINT>(
-            std::ceil(m_outFrames / m_srcRatio)); // can be larger than backbuffersize.
+// will keep being called by samplerate core until the required
+// # input samples are retrieved.
+long EngineBufferScaleSR::getInputFrames(float** ppAudio) {
+    SINT samplesRequested = static_cast<SINT>(m_bufferBack.size());
 
-    SINT samples_requested = getOutputSignal().frames2samples(required_input_frames);
-
-    // ~ a hack because
-    // - samples_requested should always be < backbuffersize.
-    // - Only possible if we have a very large backbuffer? (fast scratching scenario)
-    // Or is some kind of iterative solution required here?
-    samples_requested = std::min(samples_requested,
-            static_cast<SINT>(m_bufferBack.size()));
-
-    SINT samples_read = m_pReadAheadManager->getNextSamples(
+    SINT samplesRead = m_pReadAheadManager->getNextSamples(
             m_effectiveRate,
             m_bufferBack.data(),
-            samples_requested,
+            samplesRequested,
             m_dChannels);
 
-    if (!samples_read) {
-        *audio = nullptr;
+    if (!samplesRead) {
+        *ppAudio = nullptr;
         return 0;
     }
-    m_inputFramesRead = getOutputSignal().samples2frames(samples_read);
 
-    *audio = m_bufferBack.data();
-    return static_cast<long>(m_inputFramesRead); // return frames
+    SINT framesRead = getOutputSignal().samples2frames(samplesRead);
+
+    *ppAudio = m_bufferBack.data();
+    return static_cast<long>(framesRead); // return frames to samplerate core.
 }
 
 // Generate input data via cb, then scale it and return maximum of
 // `out_frames` frames. clearly, max out_frames is size of backbuffer.
 // samples: ~backbuffer. Where RAMAN samples are cached before scale.
-int EngineBufferScaleSR::do_scale(CSAMPLE* output, int out_frames) {
-    // qDebug() << "Requesting input data and scaling";
+// ---
+// Using a smaller backbuffer:
+// samplerate core will perform a <read-input-from-callback ->src_process ->
+// update pOutput offset> loop until out_frames frames are generated.
+long EngineBufferScaleSR::do_scale(CSAMPLE* pOutput, SINT outFrames) {
     if (!m_pResampler) {
         qWarning() << "Resampler not initialized!";
         return 0;
     }
 
-    double src_ratio = 1.0 / fabs(m_effectiveRate);
-    m_srcRatio = std::clamp(src_ratio, kMinValidRatio, kMaxValidRatio);
-    qDebug() << "src ratio: " << m_srcRatio;
+    double srcRatio = 1.0 / fabs(m_effectiveRate);
+    srcRatio = std::clamp(srcRatio, kMinValidRatio, kMaxValidRatio);
+    qDebug() << "src ratio: " << srcRatio;
 
-    // calls raman for input
+    // not exactly correct. We need to track frames consumed by samplerate core,
+    // every DAC callback, but the samplerate callback API does not allow
+    // access to saved_frames.
+    m_inputFramesRead = outFrames / srcRatio; // theoretical value
+    qDebug() << "Need " << m_inputFramesRead << " frames from RAMAN.";
+
+    // calls RAMAN for input
+    // approx. required_input_frames frames will be consumed
+    // over several read callbacks.
     long framesGenerated = src_callback_read(
             m_pResampler,
-            src_ratio,
-            out_frames,
-            output);
+            srcRatio,
+            outFrames,
+            pOutput);
 
-    return static_cast<int>(framesGenerated);
+    return framesGenerated;
 }
 
 // Performs an upsample or downsample depending on
@@ -197,17 +200,17 @@ double EngineBufferScaleSR::scaleBuffer(
         return 0.0;
     }
 
-    m_outFrames = getOutputSignal().samples2frames(iOutputBufferSize);
-    const int framesProduced = do_scale(pOutputBuffer, m_outFrames);
-    assert(framesProduced == m_outFrames);
+    SINT outFrames = getOutputSignal().samples2frames(iOutputBufferSize);
+
+    const long framesProduced = do_scale(pOutputBuffer, outFrames);
+    qDebug() << "Wrote " << framesProduced << " to DAC";
 
     return m_inputFramesRead;
 }
 
 void EngineBufferScaleSR::clear() {
     if (m_pResampler) {
-        src_delete(m_pResampler);
-        m_pResampler = nullptr;
+        src_reset(m_pResampler);
     }
 
     // Clear our input buffer
