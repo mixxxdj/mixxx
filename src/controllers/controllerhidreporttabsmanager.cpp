@@ -379,88 +379,88 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     pTable->verticalHeader()->setVisible(false);
 
     int row = 0;
-    for (const auto& pControl : controls) {
+    for (const auto& control : controls) {
         // Column 0 - Byte Position
-        QTableWidgetItem* bytePositionItem = createReadOnlyItem(
+        QTableWidgetItem* pBytePositionItem = createReadOnlyItem(
                 QStringLiteral("0x%1").arg(
-                        QString::number(pControl.m_bytePosition, 16)
+                        QString::number(control.m_bytePosition, 16)
                                 .rightJustified(2, '0')
                                 .toUpper()),
                 true);
-        pTable->setItem(row, 0, bytePositionItem);
+        pTable->setItem(row, 0, pBytePositionItem);
         // Store custom data for the row in the first cell
-        bytePositionItem->setData(Qt::UserRole + 1,
-                QVariant::fromValue(&pControl));
+        pBytePositionItem->setData(Qt::UserRole + 1,
+                QVariant::fromValue(&control));
 
         // Column 1 - Bit Position
-        pTable->setItem(row, 1, createReadOnlyItem(QString::number(pControl.m_bitPosition), true));
+        pTable->setItem(row, 1, createReadOnlyItem(QString::number(control.m_bitPosition), true));
         // Column 2 - Bit Size
-        pTable->setItem(row, 2, createReadOnlyItem(QString::number(pControl.m_bitSize), true));
+        pTable->setItem(row, 2, createReadOnlyItem(QString::number(control.m_bitSize), true));
         // Column 3 - Logical Min
         pTable->setItem(row,
                 3,
                 createReadOnlyItem(
-                        QString::number(pControl.m_logicalMinimum), true));
+                        QString::number(control.m_logicalMinimum), true));
         // Column 4 - Logical Max
         pTable->setItem(row,
                 4,
                 createReadOnlyItem(
-                        QString::number(pControl.m_logicalMaximum), true));
+                        QString::number(control.m_logicalMaximum), true));
         // Column 5 - Value
         pTable->setItem(row,
                 5,
-                createValueItem(reportType, pControl.m_logicalMinimum, pControl.m_logicalMaximum));
+                createValueItem(reportType, control.m_logicalMinimum, control.m_logicalMaximum));
         // Column 6 - Physical Min
         pTable->setItem(row,
                 6,
                 createReadOnlyItem(
-                        QString::number(pControl.m_physicalMinimum), true));
+                        QString::number(control.m_physicalMinimum), true));
         // Column 7 - Physical Max
         pTable->setItem(row,
                 7,
                 createReadOnlyItem(
-                        QString::number(pControl.m_physicalMaximum), true));
+                        QString::number(control.m_physicalMaximum), true));
         // Column 8 - Unit Scaling
         pTable->setItem(row,
                 8,
-                createReadOnlyItem(pControl.m_unitExponent != 0
+                createReadOnlyItem(control.m_unitExponent != 0
                                 ? QStringLiteral("10^%1").arg(
-                                          pControl.m_unitExponent)
+                                          control.m_unitExponent)
                                 : QString(),
                         true));
         // Column 9 - Unit
         pTable->setItem(row,
                 9,
                 createReadOnlyItem(hid::reportDescriptor::getScaledUnitString(
-                        pControl.m_unit)));
+                        control.m_unit)));
         // Column 10 - Abs/Rel
         pTable->setItem(row,
                 10,
-                createReadOnlyItem(pControl.m_flags.absolute_relative
+                createReadOnlyItem(control.m_flags.absolute_relative
                                 ? tr("Relative")
                                 : tr("Absolute")));
         // Column 11 - Wrap
         pTable->setItem(row,
                 11,
-                createReadOnlyItem(pControl.m_flags.no_wrap_wrap
+                createReadOnlyItem(control.m_flags.no_wrap_wrap
                                 ? tr("Wrap")
                                 : tr("No Wrap")));
         // Column 12 - Linear
         pTable->setItem(row,
                 12,
-                createReadOnlyItem(pControl.m_flags.linear_non_linear
+                createReadOnlyItem(control.m_flags.linear_non_linear
                                 ? tr("Non Linear")
                                 : tr("Linear")));
         // Column 13 - Preferred
         pTable->setItem(row,
                 13,
-                createReadOnlyItem(pControl.m_flags.preferred_no_preferred
+                createReadOnlyItem(control.m_flags.preferred_no_preferred
                                 ? tr("No Preferred")
                                 : tr("Preferred")));
         // Column 14 - Null
         pTable->setItem(row,
                 14,
-                createReadOnlyItem(pControl.m_flags.no_null_null
+                createReadOnlyItem(control.m_flags.no_null_null
                                 ? tr("Null")
                                 : tr("No Null")));
 
@@ -469,7 +469,7 @@ void ControllerHidReportTabsManager::populateHidReportTable(
         if (volatileIndex != -1) {
             pTable->setItem(row,
                     volatileIndex,
-                    createReadOnlyItem(pControl.m_flags.non_volatile_volatile
+                    createReadOnlyItem(control.m_flags.non_volatile_volatile
                                     ? tr("Volatile")
                                     : tr("Non Volatile")));
         }
@@ -477,8 +477,8 @@ void ControllerHidReportTabsManager::populateHidReportTable(
         // Usage Page / Usage
         int usagePageIdx = showVolatileColumn ? 16 : 15;
         int usageDescIdx = showVolatileColumn ? 17 : 16;
-        uint16_t usagePage = static_cast<uint16_t>((pControl.m_usage & 0xFFFF0000) >> 16);
-        uint16_t usage = static_cast<uint16_t>(pControl.m_usage & 0x0000FFFF);
+        uint16_t usagePage = static_cast<uint16_t>((control.m_usage & 0xFFFF0000) >> 16);
+        uint16_t usage = static_cast<uint16_t>(control.m_usage & 0x0000FFFF);
 
         pTable->setItem(row,
                 usagePageIdx,
