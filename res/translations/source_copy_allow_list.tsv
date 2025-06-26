@@ -333,8 +333,8 @@ fr	Gain 1
 fr	Gain 2
 fr,it,ru,es*	Queen Mary University London
 fr,nl	Distortion
-fr	Ratio (:1)
-fr	Ratio
+fr,de	Ratio (:1)
+fr,de	Ratio
 fr	Variance
 fr	&Options
 fr,nl	Focus
@@ -431,20 +431,20 @@ it	legacy
 nl	Waveform type
 es*,it,nl,zh*	Knee (dBFS)
 es*,it,nl,zh*	Knee
-es*,nl	Release
+es*,nl,de	Release
 it,nl	Auto Makeup Gain
 it,nl	Makeup
 it	controllers
 nl	&Reset
 nl	Compressor
-nl	Release (ms)
+nl,de	Release (ms)
 it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
-es,es_419,es_AR,es_CO,es_ES,es_MX	No
-nl,sq_AL	VID:
+es*	No
+nl,sq_AL,es*	VID:
 nl	Product ID
-nl,sq_AL	PID:
+nl,sq_AL,es*	PID:
 nl	Lossy
 nl	Lossless
 nl	Top
@@ -453,3 +453,7 @@ nl	Stem Label
 nl	Stem Mute
 sq_AL	Artist + Album
 sq_AL	Off
+de	Attack (ms)
+de	Attack
+it	Okay
+vi	Samplerate
