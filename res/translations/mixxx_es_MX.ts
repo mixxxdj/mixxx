@@ -294,12 +294,12 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="58"/>
+        <location filename="../../src/library/columncache.cpp" line="170"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
+        <location filename="../../src/library/columncache.cpp" line="177"/>
         <source>Timestamp</source>
         <translation>Marca de tiempo</translation>
     </message>
@@ -315,137 +315,137 @@
 <context>
     <name>BaseTrackTableModel</name>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="174"/>
+        <location filename="../../src/library/columncache.cpp" line="50"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="178"/>
+        <location filename="../../src/library/columncache.cpp" line="53"/>
         <source>Album Artist</source>
         <translation>Artista del Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="182"/>
+        <location filename="../../src/library/columncache.cpp" line="44"/>
         <source>Artist</source>
         <translation>Artista</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="186"/>
+        <location filename="../../src/library/columncache.cpp" line="80"/>
         <source>Bitrate</source>
         <translation>Tasa de Muestreo</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="190"/>
+        <location filename="../../src/library/columncache.cpp" line="83"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="194"/>
+        <location filename="../../src/library/columncache.cpp" line="101"/>
         <source>Channels</source>
         <translation>Canales</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="198"/>
+        <location filename="../../src/library/columncache.cpp" line="134"/>
         <source>Color</source>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="202"/>
+        <location filename="../../src/library/columncache.cpp" line="74"/>
         <source>Comment</source>
         <translation>Comentario</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="206"/>
+        <location filename="../../src/library/columncache.cpp" line="62"/>
         <source>Composer</source>
         <translation>Compositor</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="210"/>
+        <location filename="../../src/library/columncache.cpp" line="137"/>
         <source>Cover Art</source>
         <translation>Portada</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="214"/>
+        <location filename="../../src/library/columncache.cpp" line="107"/>
         <source>Date Added</source>
         <translation>Fecha de Agregado</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="218"/>
+        <location filename="../../src/library/columncache.cpp" line="158"/>
         <source>Last Played</source>
         <translation>Última reproducción</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="222"/>
+        <location filename="../../src/library/columncache.cpp" line="77"/>
         <source>Duration</source>
         <translation>Duración</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="226"/>
+        <location filename="../../src/library/columncache.cpp" line="71"/>
         <source>Type</source>
         <translation>Tipo</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="230"/>
+        <location filename="../../src/library/columncache.cpp" line="59"/>
         <source>Genre</source>
         <translation>Genero</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="234"/>
+        <location filename="../../src/library/columncache.cpp" line="65"/>
         <source>Grouping</source>
         <translation>Agrupación</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="238"/>
+        <location filename="../../src/library/columncache.cpp" line="122"/>
         <source>Key</source>
         <translation>Tono</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="242"/>
+        <location filename="../../src/library/columncache.cpp" line="161"/>
         <source>Location</source>
         <translation>Ubicación</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="246"/>
+        <location filename="../../src/library/columncache.cpp" line="131"/>
         <source>Preview</source>
         <translation>Vista Previa</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="250"/>
+        <location filename="../../src/library/columncache.cpp" line="119"/>
         <source>Rating</source>
         <translation>Calificación</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="254"/>
+        <location filename="../../src/library/columncache.cpp" line="86"/>
         <source>ReplayGain</source>
         <translation>Reproducir otra vez</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="258"/>
+        <location filename="../../src/library/columncache.cpp" line="95"/>
         <source>Samplerate</source>
         <translation>Tasa de muestreo</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="262"/>
+        <location filename="../../src/library/columncache.cpp" line="113"/>
         <source>Played</source>
         <translation>Reproducido</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="266"/>
+        <location filename="../../src/library/columncache.cpp" line="47"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="270"/>
+        <location filename="../../src/library/columncache.cpp" line="68"/>
         <source>Track #</source>
         <translation>Pista #</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="274"/>
+        <location filename="../../src/library/columncache.cpp" line="56"/>
         <source>Year</source>
         <translation>Año</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="684"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="528"/>
         <source>Fetching image ...</source>
         <extracomment>Tooltip text on the cover art column shown when the cover is read from disk</extracomment>
         <translation>Recuperando imagen...</translation>
@@ -3867,12 +3867,12 @@ trace    - Arriba + Perfilar mensajes</translation>
         <translation>Antiguos colaboradores</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="441"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="442"/>
         <source>Official Website</source>
         <translation>Sitio web oficial</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="451"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="452"/>
         <source>Donate</source>
         <translation>Donar</translation>
     </message>
@@ -3928,7 +3928,7 @@ trace    - Arriba + Perfilar mensajes</translation>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="14"/>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="98"/>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="162"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="161"/>
         <source>Analyze</source>
         <translation>Analizar</translation>
     </message>
@@ -3973,17 +3973,17 @@ trace    - Arriba + Perfilar mensajes</translation>
         <translation>Ejecuta el análisis de cuadrícula de tempo, clave musical y ReplayGain en las pistas seleccionadas. No genera formas de onda para las pistas seleccionadas para ahorrar espacio en disco.</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="157"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="156"/>
         <source>Stop Analysis</source>
         <translation>Detener análisis</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="176"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="175"/>
         <source>Analyzing %1% %2/%3</source>
         <translation>Analizando %1% %2/%3</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="182"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="181"/>
         <source>Analyzing %1/%2</source>
         <translation>Analizando %1/%2</translation>
     </message>
@@ -7291,138 +7291,137 @@ El objetivo de sonoridad es aproximado y asume que la preganancia de la pista y 
 <context>
     <name>DlgPrefSound</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="74"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="79"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="88"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="93"/>
         <source>Default (long delay)</source>
         <translation>Por Defecto (mas retardo)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="89"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="94"/>
         <source>Experimental (no delay)</source>
         <translation>Experimental (sin retardo)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="90"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="95"/>
         <source>Disabled (short delay)</source>
         <translation>Desactivado (poco retardo)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="98"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="103"/>
         <source>Soundcard Clock</source>
         <translation>Reloj de la tarjeta de sonido</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="99"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="104"/>
         <source>Network Clock</source>
         <translation>Reloj de red</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="150"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="155"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation>Monitorización directa (solo grabación y emisión en vivo)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="219"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="224"/>
         <source>Disabled</source>
         <translation>Desactivado</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="220"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="225"/>
         <source>Enabled</source>
         <translation>Habilitado</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="234"/>
         <source>Stereo</source>
         <translation>Estéreo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="230"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="235"/>
         <source>Mono</source>
         <translation>Mono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="249"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="254"/>
         <source>To enable Realtime scheduling (currently disabled), see the %1.</source>
         <translation>Para activar el Planificador en tiempo real (actualmente desactivado), mira %1.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="263"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="280"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation>%1 muestra una lista de tarjetas de sonido y controladores que podrías considerar para utilizar con Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="284"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation>Guía de Hardware DJ de Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="618"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="635"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation>auto (&lt;= 1024 fotogramas/período)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="621"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="638"/>
         <source>2048 frames/period</source>
         <translation>2048 fotogramas/período</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="624"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="641"/>
         <source>4096 frames/period</source>
         <translation>4096 fotogramas/período</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="883"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="902"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>La entrada de micrófono está desincronizada respecto la grabación y emisión comparado con la señal que se oye.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="886"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="905"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Mide la latencia total e introducela en la Compensacion de latencia del micrófono para sincronizar el micrófono.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="890"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="900"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="898"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>Para más detalles, lea el manual de usuario de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="895"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="917"/>
         <source>Configured latency has changed.</source>
         <translation>La latencia configurada ha cambiado.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="896"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="918"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Vuelve a medir la latencia total e introducela en la Compensacion de latencia del micrófono para sincronizar el micrófono.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="246"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="251"/>
         <source>Realtime scheduling is enabled.</source>
         <translation>La planificación en Tiempo Real está activada.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="146"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="151"/>
         <source>Main output only</source>
         <translation>Solo Salida principal</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="148"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="153"/>
         <source>Main and booth outputs</source>
         <translation>Salidas principal y de cabina</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="644"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="661"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="302"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="319"/>
         <source>Configuration error</source>
         <translation>Error de configuración</translation>
     </message>
@@ -7440,126 +7439,126 @@ El objetivo de sonoridad es aproximado y asume que la preganancia de la pista y 
         <translation>API de sonido</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="38"/>
         <source>Sample Rate</source>
         <translation>Frecuencia de muestreo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="51"/>
         <source>Audio Buffer</source>
         <translation>Búfer de audio</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="74"/>
         <source>Engine Clock</source>
         <translation>Relog del motor</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="81"/>
         <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
         <translation>Usa el reloj de la tarjeta de sonido para emitir a un público presente y para la menor latencia. &lt;br&gt;Usa el reloj de red para emitir en vivo sin un público presente.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="101"/>
         <source>Main Mix</source>
         <translation>Mezcla principal</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="114"/>
         <source>Main Output Mode</source>
         <translation>Modo de Salida principal</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="124"/>
         <source>Microphone Monitor Mode</source>
         <translation>Modo de monitorización del micrófono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="128"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="134"/>
         <source>Microphone Latency Compensation</source>
         <translation>Compensación de latencia del micrófono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="158"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="144"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="167"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="190"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="213"/>
         <source> ms</source>
         <extracomment>milliseconds</extracomment>
         <translation> ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="382"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="391"/>
         <source>20 ms</source>
         <translation>20 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="389"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="398"/>
         <source>Buffer Underflow Count</source>
         <translation>Contador de vaciado del búfer</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="399"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="408"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="88"/>
         <source>Keylock/Pitch-Bending Engine</source>
         <translation>Bloqueo tonal/Motor de Pitch-bend</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="61"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="64"/>
         <source>Multi-Soundcard Synchronization</source>
         <translation>Sincronización con Múltiples Tarjetas de Sonido</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="279"/>
         <source>Output</source>
         <translation>Salida</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="293"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="302"/>
         <source>Input</source>
         <translation>Entrada</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="372"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="381"/>
         <source>System Reported Latency</source>
         <translation>Latencia reportada por el sistema</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="325"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="334"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation>Aumente su búfer de audio si el contador de desbordamiento está aumentando o escuchas chasquidos durante la reproducción.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="151"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="160"/>
         <source>Main Output Delay</source>
         <translation>Retardo Salida Principal</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="183"/>
         <source>Headphone Output Delay</source>
         <translation>Retraso/delay de la Salida de auriculares</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="206"/>
         <source>Booth Output Delay</source>
         <translation>Retraso/delay de la salida de cabina</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="328"/>
         <source>Hints and Diagnostics</source>
         <translation>Diagnóstico y sugerencias</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="335"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="344"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation>Disminuya su búfer de audio para mejorar la velocidad de respuesta de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="247"/>
         <source>Query Devices</source>
         <translation>Consultar aparatos</translation>
     </message>
@@ -11746,54 +11745,54 @@ pueden introducir un efecto de &quot;bombeo&quot; y/o distorsión.</translation>
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1351"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1430"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1604"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1355"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1434"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1608"/>
         <source>Rekordbox</source>
         <translation>Rekordbox</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1448"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1452"/>
         <source>Playlists</source>
         <translation>Listas de reproducción</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1447"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1451"/>
         <source>Folders</source>
         <translation>Carpetas</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1431"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1435"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1450"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1454"/>
         <source>Hot cues</source>
         <translation>Accesos Directos</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1452"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1456"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation>Bucles (solo el primer bucle es utilizable en Mixxx)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1455"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1459"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation>Buscar dispositivos de almacenamiento Rekordbox (refrescar)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1449"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1453"/>
         <source>Beatgrids</source>
         <translation>Grillas de pulsos</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1451"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1455"/>
         <source>Memory cues</source>
         <translation>Cues en memoria</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1481"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1485"/>
         <source>(loading) Rekordbox</source>
         <translation>(cargando) Rekordbox</translation>
     </message>
@@ -15945,12 +15944,12 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="453"/>
         <source>Intro</source>
-        <translation>Intro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="456"/>
         <source>Outro</source>
-        <translation>Outro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="462"/>
@@ -16495,52 +16494,52 @@ Carpeta: %2
 <context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="242"/>
+        <location filename="../../src/coreservices.cpp" line="469"/>
         <source>fonts</source>
         <translation>tipos de letra</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="246"/>
+        <location filename="../../src/coreservices.cpp" line="473"/>
         <source>database</source>
         <translation>base de datos</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="261"/>
+        <location filename="../../src/coreservices.cpp" line="488"/>
         <source>effects</source>
         <translation>efectos</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="271"/>
+        <location filename="../../src/coreservices.cpp" line="498"/>
         <source>audio interface</source>
         <translation>interface de sonido</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="291"/>
+        <location filename="../../src/coreservices.cpp" line="518"/>
         <source>decks</source>
         <translation>platos</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="337"/>
+        <location filename="../../src/coreservices.cpp" line="564"/>
         <source>library</source>
         <translation>Biblioteca</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="371"/>
+        <location filename="../../src/coreservices.cpp" line="598"/>
         <source>Choose music library directory</source>
         <translation>Elija el directorio de la biblioteca de la música</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="380"/>
+        <location filename="../../src/coreservices.cpp" line="607"/>
         <source>controllers</source>
         <translation>Controladores</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="520"/>
+        <location filename="../../src/coreservices.cpp" line="747"/>
         <source>Cannot open database</source>
         <translation>No se puede abrir la base de datos</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="521"/>
+        <location filename="../../src/coreservices.cpp" line="748"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
