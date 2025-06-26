@@ -48,19 +48,21 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-if(WIN32 AND NOT IS_DIRECTORY MIXXX_VCPKG_ROOT)
+if(WIN32 AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
-      set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}\\")
+      set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
     else()
-      set(BUILDENV_BASEPATH "${CMAKE_SOURCE_DIR}/buildenv/")
+      set(BUILDENV_BASEPATH "${CMAKE_SOURCE_DIR}/buildenv")
     endif()
   endif()
 
-  if(DEFINED ENV{BUILDENV_URL})
-    set(BUILDENV_URL "$ENV{BUILDENV_URL}")
-  elseif(NOT DEFINED BUILDENV_URL)
-    message(FATAL_ERROR "BUILDENV_URL not specified")
+  if(NOT DEFINED BUILDENV_URL)
+    if(DEFINED ENV{BUILDENV_URL})
+      set(BUILDENV_URL "$ENV{BUILDENV_URL}")
+    elseif(NOT DEFINED BUILDENV_URL)
+      message(FATAL_ERROR "BUILDENV_URL not specified")
+    endif()
   endif()
 
   # Extract the filename from the URL
@@ -78,33 +80,38 @@ if(WIN32 AND NOT IS_DIRECTORY MIXXX_VCPKG_ROOT)
   message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}")
 
   if(
-    NOT EXISTS "${BUILDENV_BASEPATH}${BUILDENV_NAME}"
-    OR NOT IS_DIRECTORY "${BUILDENV_BASEPATH}${BUILDENV_NAME}"
+    NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
+    OR NOT IS_DIRECTORY "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
   )
-    if(DEFINED ENV{BUILDENV_SHA256})
-      set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
-    elseif(NOT DEFINED BUILDENV_SHA256)
-      message(STATUS "BUILDENV_SHA256 not specified")
+    if(NOT DEFINED BUILDENV_SHA256)
+      if(DEFINED ENV{BUILDENV_SHA256})
+        set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
+      elseif(NOT DEFINED BUILDENV_SHA256)
+        message(STATUS "BUILDENV_SHA256 not specified")
+      endif()
     endif()
 
-    if(NOT EXISTS "${BUILDENV_BASEPATH}${BUILDENV_NAME}.zip")
+    if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
       message(
         STATUS
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
       file(
-        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}${BUILDENV_NAME}.zip"
+        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
         SHOW_PROGRESS
         TLS_VERIFY ON
       )
+    else()
+      # Reference to suppress intentionally unused variable warnings
+      set(_dummy "${BUILDENV_URL}")
     endif()
 
     if(NOT ${BUILDENV_SHA256} STREQUAL "")
       message(
         STATUS
-        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}${BUILDENV_NAME}.zip ..."
+        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
       )
-      file(SHA256 "${BUILDENV_BASEPATH}${BUILDENV_NAME}.zip" actual_sha256)
+      file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
 
       if(NOT actual_sha256 STREQUAL ${BUILDENV_SHA256})
         message(
@@ -118,13 +125,19 @@ if(WIN32 AND NOT IS_DIRECTORY MIXXX_VCPKG_ROOT)
 
     message(
       STATUS
-      "Unpacking file ${BUILDENV_BASEPATH}${BUILDENV_NAME}.zip ..."
+      "Unpacking file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
     )
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xzf "${BUILDENV_NAME}.zip"
       WORKING_DIRECTORY ${BUILDENV_BASEPATH}
     )
+  else()
+    # Reference to suppress intentionally unused variable warnings
+    set(_dummy "${BUILDENV_SHA256}")
   endif()
+else()
+  # Reference to suppress intentionally unused variable warnings
+  set(_dummy "${BUILDENV_URL} ${BUILDENV_BASEPATH} ${BUILDENV_SHA256}")
 endif()
 
 # Use this function to throw an error because the build environment is not set
