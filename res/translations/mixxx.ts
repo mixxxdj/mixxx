@@ -380,7 +380,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="143"/>
+        <location filename="../../src/library/columncache.cpp" line="71"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -425,7 +425,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="116"/>
+        <location filename="../../src/library/columncache.cpp" line="113"/>
         <source>Played</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7238,137 +7238,137 @@ The loudness target is approximate and assumes track pregain and main output lev
 <context>
     <name>DlgPrefSound</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="74"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="79"/>
         <source>%1 Hz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="88"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="93"/>
         <source>Default (long delay)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="89"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="94"/>
         <source>Experimental (no delay)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="90"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="95"/>
         <source>Disabled (short delay)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="98"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="103"/>
         <source>Soundcard Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="99"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="104"/>
         <source>Network Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="150"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="155"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="219"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="224"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="220"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="225"/>
         <source>Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="234"/>
         <source>Stereo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="230"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="235"/>
         <source>Mono</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="249"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="254"/>
         <source>To enable Realtime scheduling (currently disabled), see the %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="263"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="280"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="284"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="618"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="635"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="621"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="638"/>
         <source>2048 frames/period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="624"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="641"/>
         <source>4096 frames/period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="885"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="902"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="888"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="905"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="881"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="898"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="900"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="917"/>
         <source>Configured latency has changed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="901"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="918"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="246"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="251"/>
         <source>Realtime scheduling is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="146"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="151"/>
         <source>Main output only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="148"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="153"/>
         <source>Main and booth outputs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="644"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="661"/>
         <source>%1 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="302"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="319"/>
         <source>Configuration error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7386,126 +7386,126 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="38"/>
         <source>Sample Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="51"/>
         <source>Audio Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="74"/>
         <source>Engine Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="81"/>
         <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="101"/>
         <source>Main Mix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="114"/>
         <source>Main Output Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="124"/>
         <source>Microphone Monitor Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="128"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="134"/>
         <source>Microphone Latency Compensation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="158"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="144"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="167"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="190"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="213"/>
         <source> ms</source>
         <extracomment>milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="382"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="391"/>
         <source>20 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="389"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="398"/>
         <source>Buffer Underflow Count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="399"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="408"/>
         <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="88"/>
         <source>Keylock/Pitch-Bending Engine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="61"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="64"/>
         <source>Multi-Soundcard Synchronization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="279"/>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="293"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="302"/>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="372"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="381"/>
         <source>System Reported Latency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="325"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="334"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="151"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="160"/>
         <source>Main Output Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="183"/>
         <source>Headphone Output Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="206"/>
         <source>Booth Output Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="328"/>
         <source>Hints and Diagnostics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="335"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="344"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="247"/>
         <source>Query Devices</source>
         <translation type="unfinished"></translation>
     </message>
