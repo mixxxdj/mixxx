@@ -498,9 +498,10 @@ void ControllerHidReportTabsManager::populateHidReportTable(
     for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
         pTable->horizontalHeader()->setSectionResizeMode(colIdx, QHeaderView::ResizeToContents);
     }
-    QVector<int> columnWidths(pTable->columnCount());
+    QVector<int> columnWidths;
+    columnWidths.reserve(pTable->columnCount());
     for (int colIdx = 0; colIdx < pTable->columnCount(); ++colIdx) {
-        columnWidths[colIdx] = pTable->columnWidth(colIdx);
+        columnWidths.push_back(pTable->columnWidth(colIdx));
     }
     // Set the width of the "Value" column (5) to fit 11 digits (int32 minimum in decimal)
     // This is the only column in the table with dynamic content, therefore we need to
