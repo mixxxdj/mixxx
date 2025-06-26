@@ -126,7 +126,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             &DlgPrefRecord::slotSliderCompression);
 
     connect(CheckBoxRecordCueFile,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefRecord::slotToggleCueEnabled);
 }
