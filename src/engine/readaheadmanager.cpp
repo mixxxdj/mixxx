@@ -43,7 +43,7 @@ SINT ReadAheadManager::getNextSamples(double dRate,
         qDebug() << "ERROR: Non-aligned requested_samples to ReadAheadManager::getNextSamples";
         requested_samples -= modSamples;
     }
-    bool in_reverse = dRate < 0;
+    bool in_reverse = dRate < 0; // drate only used to check playback direction
 
     mixxx::audio::FramePos targetPosition;
     // A loop (beat loop or track on repeat) will only limit the amount we
@@ -212,7 +212,7 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
     m_pRateControl = pRateControl;
 }
 
-// Not thread-save, call from engine thread only
+// Not thread-safe, call from engine thread only
 void ReadAheadManager::notifySeek(double seekPosition) {
     m_currentPosition = seekPosition;
     m_cacheMissHappened = false;
@@ -275,7 +275,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
     m_readAheadLog.push_back(newEntry);
 }
 
-// Not thread-save, call from engine thread only
+// Not thread-safe, call from engine thread only
 double ReadAheadManager::getFilePlaypositionFromLog(
         double currentFilePlayposition,
         double numConsumedSamples) {

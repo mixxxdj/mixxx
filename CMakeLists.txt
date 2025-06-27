@@ -449,6 +449,7 @@ cmake_dependent_option(
   "GNU_GCC"
   OFF
 )
+# set via -DCOVERAGE=ON
 if(COVERAGE)
   add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
   add_link_options(--coverage -fprofile-arcs -ftest-coverage)
@@ -1145,6 +1146,7 @@ add_library(
   src/engine/bufferscalers/enginebufferscale.cpp
   src/engine/bufferscalers/enginebufferscalelinear.cpp
   src/engine/bufferscalers/enginebufferscalest.cpp
+  src/engine/bufferscalers/enginebufferscalesr.cpp
   src/engine/cachingreader/cachingreader.cpp
   src/engine/cachingreader/cachingreaderchunk.cpp
   src/engine/cachingreader/cachingreaderworker.cpp
@@ -4150,6 +4152,14 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
     mixxx-lib
     PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL
   )
+endif()
+
+# Libsamplerate
+option(LIBSAMPLERATE "Enable libsamplerate for sample-rate conversion" ON)
+if(LIBSAMPLERATE)
+  find_package(libsamplerate REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE libsamplerate::libsamplerate)
+  target_compile_definitions(mixxx-lib PUBLIC __LIBSAMPLERATE__) # ifdef (__LIBSAMPLERATE__)
 endif()
 
 # SoundTouch

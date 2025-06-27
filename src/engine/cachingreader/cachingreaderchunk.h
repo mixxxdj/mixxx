@@ -87,7 +87,7 @@ public:
 
     // The worker thread will fill the sample buffer and
     // set the corresponding frame index range.
-    mixxx::SampleBuffer::WritableSlice m_sampleBuffer;
+    mixxx::SampleBuffer::WritableSlice m_sampleBuffer; // buffer containing samples in this chunk
     mixxx::ReadableSampleFrames m_bufferedSampleFrames;
 };
 
