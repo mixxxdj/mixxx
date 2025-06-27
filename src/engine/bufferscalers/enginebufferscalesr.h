@@ -6,7 +6,9 @@
 
 #pragma once
 
+extern "C" {
 #include <samplerate.h>
+}
 
 #include <memory>
 
@@ -44,7 +46,10 @@ class EngineBufferScaleSR : public EngineBufferScale {
     bool m_bBackwards;
     mixxx::audio::ChannelCount m_dChannels;
     double m_inputFramesRead;
+    double m_lastPositionOld;
+    double m_savedFramesOld;
 
     SRC_STATE* m_pResampler;
+    int m_dQuality;                   // resampler quality for the this enginebuffer(scaler)
     mixxx::SampleBuffer m_bufferBack; // to hold samples from RAMAN
 };
