@@ -4,6 +4,31 @@ name: Build
 
 on:
   workflow_call:
+    inputs:
+      publish:
+        type: boolean
+        default: false
+    secrets:
+      azure_client_id:
+        required: false
+      azure_client_secret:
+        required: false
+      azure_tenant_id:
+        required: false
+      downloads_hostgator_dot_mixxx_dot_org_key:
+        required: false
+      downloads_hostgator_dot_mixxx_dot_org_key_password:
+        required: false
+      macos_codesign_certificate_p12_base64:
+        required: false
+      macos_codesign_certificate_password:
+        required: false
+      macos_notarization_app_specific_password:
+        required: false
+      netlify_build_hook:
+        required: false
+      rryan_at_mixxx_dot_org_gpg_private_key:
+        required: false
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -148,8 +173,8 @@ jobs:
 
     env:
       # macOS codesigning
-      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
-      MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.macos_codesign_certificate_p12_base64 }}
+      MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.macos_codesign_certificate_password }}
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
@@ -356,13 +381,13 @@ jobs:
 
       - name: "[Windows] Sign executables"
         env:
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+          azure_tenant_id: ${{ secrets.azure_tenant_id }}
+        if: runner.os == 'Windows' && env.azure_tenant_id
         uses: azure/trusted-signing-action@v0.5.1
         with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          azure-tenant-id: ${{ secrets.azure_tenant_id }}
+          azure-client-id: ${{ secrets.azure_client_id }}
+          azure-client-secret: ${{ secrets.azure_client_secret }}
           endpoint: https://weu.codesigning.azure.net/
           trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
@@ -405,9 +430,9 @@ jobs:
 
       - name: "[Ubuntu] Import PPA GPG key"
         if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
-        run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+        run: gpg --import <(echo "${{ secrets.rryan_at_mixxx_dot_org_gpg_private_key }}")
         env:
-          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.rryan_at_mixxx_dot_org_gpg_private_key }}
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
@@ -431,18 +456,18 @@ jobs:
         run: packaging/macos/sign_notarize_staple.sh build/*.dmg
         env:
           APPLE_ID_USERNAME: daschuer@mixxx.org
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.macos_notarization_app_specific_password }}
           APPLE_TEAM_ID: JBLRSP95FC
 
       - name: "[Windows] Sign installer"
         env:
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+          azure_tenant_id: ${{ secrets.azure_tenant_id }}
+        if: runner.os == 'Windows' && env.azure_tenant_id
         uses: azure/trusted-signing-action@v0.5.1
         with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          azure-tenant-id: ${{ secrets.azure_tenant_id }}
+          azure-client-id: ${{ secrets.azure_client_id }}
+          azure-client-secret: ${{ secrets.azure_client_secret }}
           endpoint: https://weu.codesigning.azure.net/
           trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
@@ -458,7 +483,7 @@ jobs:
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
         id: prepare_deploy
-        if: github.event_name == 'push' && matrix.artifacts_path != null
+        if: inputs.publish && matrix.artifacts_path != null
         shell: bash
         run: >
           if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -478,8 +503,8 @@ jobs:
       # https://github.com/actions/cache/issues/531
       - name: "[Windows] Install rsync and openssh"
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
-        if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+          SSH_PRIVATE_KEY: ${{ secrets.downloads_hostgator_dot_mixxx_dot_org_key }}
+        if: runner.os == 'Windows' && inputs.publish && env.SSH_PRIVATE_KEY != null
         run: |
           if (Test-Path "C:\msys64\usr\bin") {
             $msysPath="C:\msys64"
@@ -514,11 +539,11 @@ jobs:
           Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
       - name: "Set up SSH Agent"
-        if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+        if: inputs.publish && env.SSH_PRIVATE_KEY != null
         shell: bash
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.downloads_hostgator_dot_mixxx_dot_org_key }}
           SSH_HOST: downloads-hostgator.mixxx.org
         run: |
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
@@ -529,7 +554,7 @@ jobs:
 
       - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
         # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_AUTH_SOCK != null
+        if: runner.os != 'Linux' && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -575,7 +600,7 @@ jobs:
       - name: "Collect Artifacts Metadata & Write Manifest"
         # Retrieve the metadata from the matrix job's outputs, merge them into a
         # single JSON document and then deploy to the server.
-        if: github.event_name == 'push' && env.SSH_PASSWORD != null
+        if: inputs.publish && env.SSH_PASSWORD != null
         run: >
           if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
           then
@@ -590,14 +615,14 @@ jobs:
           --dest-url 'https://downloads.mixxx.org'
         env:
           JOB_DATA: ${{ toJSON(needs.build) }}
-          SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+          SSH_PASSWORD: ${{ secrets.downloads_hostgator_dot_mixxx_dot_org_key_password }}
 
       - name: "Set up SSH Agent"
-        if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null  && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+        if: inputs.publish && env.SSH_PRIVATE_KEY != null  && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
         shell: bash
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.downloads_hostgator_dot_mixxx_dot_org_key }}
           SSH_HOST: downloads-hostgator.mixxx.org
         run: |
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
@@ -607,7 +632,7 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: "Deploy Manifest"
-        if: github.event_name == 'push' && env.SSH_AUTH_SOCK != null
+        if: inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -619,4 +644,4 @@ jobs:
         if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
         run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
         env:
-          NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+          NETLIFY_BUILD_HOOK: ${{ secrets.netlify_build_hook }}
