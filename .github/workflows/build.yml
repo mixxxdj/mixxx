@@ -73,7 +73,6 @@ jobs:
               -DQT6=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -97,7 +96,6 @@ jobs:
               -DQT6=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             crosscompile: true
             cpack_generator: DragNDrop
@@ -127,7 +125,6 @@ jobs:
               -DQT6=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-windows-release
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
