@@ -665,6 +665,20 @@
                 </option>
 
                 <option
+                    variable="turnTableNudgeSensitivity"
+                    type="real"
+                    precision="2"
+                    min="0.01"
+                    max="1.00"
+                    step="0.01"
+                    default="0.1"
+                    label="Motorized Nudge Sensitivity">
+                    <description>
+                        Adjust the degree to which pushing/dragging the crown affects playrate.
+                    </description>
+                </option>
+
+                <option
                     variable="maxWheelForce"
                     type="integer"
                     min="8000"

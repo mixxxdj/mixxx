@@ -160,9 +160,8 @@ const DerivativeGain = engine.getSetting("derivativeGain") || 50000;
 // Force that simulates the pull of a slipmat when scratching
 const SlipFrictionForce = engine.getSetting("slipFrictionForce") || 12000;
 
-// friction is inherently compensated in the PID controller
-// const MOTOR_FRICTION_COMPENSATION = engine.getSetting("MOTOR_FRICTION_COMPENSATION") || 0;
-//TODO: move motorized nudge sensitivity here
+// Adjust the degree to which pushing/dragging the crown affects playrate
+const TurnTableNudgeSensitivity = engine.getSetting("turnTableNudgeSensitivity") || 0.1;
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
@@ -231,8 +230,11 @@ const MoveModes = {
 const MotorWindUpMilliseconds = 0;
 const MotorWindDownMilliseconds = 0;
 
-// input filtering. Coefficients generated in scipy
-// for a 5-tap filter given a sampling rate of 500Hz
+//----------------
+// Input filtering of wheel velocity signal
+//----------------
+// Coefficients generated in scipy
+// eg., for a 5-tap filter given a sampling rate of 500Hz
 // and applying a hamming window
 // const VelFilterTaps = 5;
 // 50Hz filter
@@ -240,26 +242,25 @@ const MotorWindDownMilliseconds = 0;
 // 10Hz filter
 // const VelFilterCoeffs = [0.03541093, 0.24092353, 0.44733108, 0.24092353, 0.03541093];
 
-// 9-tap filters:
+// Using a 9-tap filter for better smoothness, even though it introduces slightly more delay:
 const VelFilterTaps = 9;
-
-// simple sliding average. If we need a target tick per measure of 3.2, but we can only get
-// whole numbers as inputs, then we need at least 5 samples to get a steady velocity of 3.2
-// const VelFilterCoeffs = [1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9];
 
 // 10Hz weighted average lowpass FIR filter.
 const VelFilterCoeffs = [0.01755602, 0.04801081, 0.12234688, 0.19760069, 0.2289712, 0.19760069, 0.12234688, 0.04801081, 0.01755602]
 
-// Maximum position value for 32-bit unsigned integer
-const wheelPositionMax = 2 ** 32 - 1;
-//const wheelAbsoluteMax = 2879; //FIXME: nomenclature
-// I think it's safe to make this 2880 as it should be.
-// AFAICT the fractional revolution that gets multiplied
-// with this value cannot in practice reach 2880
-const wheelAbsoluteMax = 2880; //FIXME: nomenclature
+// Can use a simple sliding average. If we need a target tick per measure of 3.2, but we can only get
+// whole numbers as inputs, then we need at least 5 samples to get a steady velocity of 3.2 (equiv. to 33.3rpm)
+// const VelFilterCoeffs = [1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9];
 
-const wheelTimerMax = 2 ** 32 - 1;
-const wheelClockFreq = 100000000; // One tick every 10ns (100MHz)
+// Maximum position value for 32-bit unsigned integer
+const WheelPositionMax = 2 ** 32 - 1;
+
+// The fractional revolution that gets multiplied
+// with this value cannot in practice reach 2880
+const WheelAbsoluteMax = 2880; //FIXME: nomenclature
+
+const WheelTimerMax = 2 ** 32 - 1;
+const WheelClockFreq = 100000000; // One tick every 10ns (100MHz)
 
 // Establish rotational constants for wheel math
 
@@ -281,11 +282,16 @@ if (BaseRevolutionsPerMinute == 33) {
     TargetMotorOutput = TargetMotorOutput45RPM;
 }
 const BaseRevolutionsPerSecond = rps;
-const baseDegreesPerSecond = BaseRevolutionsPerSecond * 360;
-const baseEncoderTicksPerDegree = baseDegreesPerSecond * 8;
+const BaseDegreesPerSecond = BaseRevolutionsPerSecond * 360;
+const BaseEncoderTicksPerDegree = BaseDegreesPerSecond * 8;
 
-
+// Motor output smoothing damps some of the jitter.
+// Incremental change from previous to current sample is reduced by this factor.
 const MotorOutSmoothingFactor = 1/5; // 0.5; // smaller is smoother but slower
+
+// When not scratching, the input velocity goes through an extra smoothing filter
+// to help with determining the nudge/jog factor of crown adjustments
+const NonSlipPitchSmoothing = 0.5;
 
 // Slipmat starts slipping when this error level is surpassed
 const SlipmatErrorThresh = 0.05; // 5% velocity tolerance for slipping
@@ -301,14 +307,9 @@ const SlipmatErrorThresh = 0.05; // 5% velocity tolerance for slipping
 // and the turntable won't be able to reach the target angular velocity.
 const IntegratorSuppressionErrorThresh = 0.3;
 
-// Even with a "perfectly" tuned PID controller, there will always be some steady-state
-// oscillation (flutter). So when we're within a certain threshold of the target rate,
-// we will disable scratch mode
-// const PLAYBACK_QUANTIZE_ERROR_THRESH = 0.05;
-const PlaybackQuantizeErrorStep = 0.4
-
-// TEMPORARY. These are configuration values for a motor test routine that I used to collect
+// TESTING ONLY. These are configuration values for a motor test routine that I used to collect
 // data for output-to-input mapping. -ZT
+// Leaving them in because this might prove useful in future development work.
 // const S4MK3DEBUG = true;
 const S4MK3MOTORTEST_ENABLE = false;
 const S4MK3MOTORTEST_UPTIME = 10000; //milliseconds
@@ -316,11 +317,6 @@ const S4MK3MOTORTEST_DOWNTIME = 0; //milliseconds
 const S4MK3MOTORTEST_STARTLVL= 4500;
 const S4MK3MOTORTEST_STEPSIZE = 0;
 const S4MK3MOTORTEST_ENDLVL = 6000;
-const NONSLIP_PITCH_SMOOTHING = 0.5;
-// const NONSLIP_OUTPUT_TRACKING_SMOOTHING = 1/20;
-
-// TODO: make nudge sensitivity a user-defineable value
-const TurnTableNudgeSensitivity = 0.1;
 
 /********************************************************
                 HID REPORT IDs
@@ -2830,15 +2826,15 @@ class S4Mk3Deck extends Deck {
 
                 // Unwrap the previous counter value if the new one rolls over to zero
                 if (inTimestamp < prevTimestamp) {
-                    prevTimestamp -= wheelTimerMax;
+                    prevTimestamp -= WheelTimerMax;
                 }
                 
                 // Unwrap over/under-runs in the position signal
                 let diff = inPosition - prevPosition;
-                if (diff > wheelPositionMax / 2) {
-                    prevPosition += wheelPositionMax;
-                } else if (diff < -wheelPositionMax / 2) {
-                    prevPosition -= wheelPositionMax;
+                if (diff > WheelPositionMax / 2) {
+                    prevPosition += WheelPositionMax;
+                } else if (diff < -WheelPositionMax / 2) {
+                    prevPosition -= WheelPositionMax;
                 }
                 
                 // Using the unwrapped position reference, calculate 1st derivative
@@ -2850,7 +2846,7 @@ class S4Mk3Deck extends Deck {
                 // example: position difference of 3 and timestamp difference of 2ms = 200000ns
                 //          results in 1.5e-05 or 0.000015
                 //          multiply by 100MHz or 100000000 produces 1500 ticks per second
-                const currentVelocityTicksPerSecond = wheelClockFreq * (inPosition - prevPosition)/(inTimestamp - prevTimestamp);
+                const currentVelocityTicksPerSecond = WheelClockFreq * (inPosition - prevPosition)/(inTimestamp - prevTimestamp);
                 
                 // then, normalize it with reference to the target rotation speed of the platter
                 // regardless of how the pitch is being adjusted. In other words, the "rate_ratio"
@@ -2858,7 +2854,7 @@ class S4Mk3Deck extends Deck {
                 // platter is spinning relative to the playback rate of 1.0
                 //     Therefore we simply divide the ticks per second by the ticks per degree
                 // which eliminates the units of measure and leaves us with a ratio.
-                const currentVelocityNormalized = currentVelocityTicksPerSecond / baseEncoderTicksPerDegree;
+                const currentVelocityNormalized = currentVelocityTicksPerSecond / BaseEncoderTicksPerDegree;
                 
                 // Input filtering:
                 // Using a weighted average convolution filter ie., an FIR filter,
@@ -2893,7 +2889,7 @@ class S4Mk3Deck extends Deck {
                     if (engine.getValue(this.group, "play")) {
                         if (this.deck.isSlipping == false){
                             // apply simple smoothing filter to the velocity input when the disc is not slipping/scratching
-                            this.velocity = this.prev_pitch + (NONSLIP_PITCH_SMOOTHING*(this.velocity - this.prev_pitch));
+                            this.velocity = this.prev_pitch + (NonSlipPitchSmoothing*(this.velocity - this.prev_pitch));
                             this.prev_pitch = this.velocity;
                         }
                     } else {
@@ -3014,7 +3010,7 @@ class S4Mk3Deck extends Deck {
                 const positionSeconds = fractionOfTrack * durationSeconds;
                 const revolutions = positionSeconds * BaseRevolutionsPerSecond;
                 const fractionalRevolution = revolutions - Math.floor(revolutions);
-                const LEDposition = fractionalRevolution * wheelAbsoluteMax;
+                const LEDposition = fractionalRevolution * WheelAbsoluteMax;
 
                 // send commands to the wheel ring LEDs
                 const wheelOutput = new Uint8Array(40).fill(0);
