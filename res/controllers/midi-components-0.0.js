@@ -26,6 +26,15 @@
  * the lodash.mixxx.js file in this directory for details.
  */
 
+/**
+ * @param global
+ * @typedef {object} ControlDefinition
+ * @property {number} status MIDI status
+ * @property {number} midino MIDI number
+ * eslint-disable-next-line jsdoc/no-undefined-types
+ * @property {MidiInputHandler?} control MIDI input handler
+ */
+
 (function(global) {
     const NO_TIMER = 0;
     const Component = function(options) {
@@ -46,6 +55,9 @@
             this.inKey = options.key;
             this.outKey = options.key;
         }
+
+        /** @type {MidiInputHandlerController[]} */
+        this.inputHandlers = [];
 
         if (this.outConnect && this.group !== undefined && this.outKey !== undefined) {
             this.connect();
@@ -126,12 +138,16 @@
                 typeof this.output === "function") {
                 this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
+            this.makeInputHandlers();
         },
         disconnect: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
                     conn.disconnect();
                 });
+            }
+            for (const inputHandler of this.inputHandlers) {
+                inputHandler.disconnect();
             }
         },
         trigger: function() {
@@ -158,6 +174,18 @@
                 }
             }
         },
+
+        /** @type {ControlDefinition[]} */
+        controls: [],
+        get defaultInputHandler() {
+            return this.input;
+        },
+        makeInputHandlers() {
+            for (const control of this.controls) {
+                const cb = control.control || this.defaultInputHandler.bind(this);
+                this.inputHandlers.push(midi.makeInputHandler(control.status, control.midino, cb));
+            }
+        }
     };
 
     const Button = function(options) {
@@ -844,6 +872,10 @@
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
         reset() {},
+
+        get defaultInputHandler() {
+            return this.inputTouch;
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
