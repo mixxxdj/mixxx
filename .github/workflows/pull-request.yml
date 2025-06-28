@@ -1,6 +1,12 @@
 name: Pull request
 
 on:
+  push:
+    # ignore release branches, as those are built
+    # using the release.yml workflow
+    branches-ignore:
+      - main
+      - "[0-9].[0-9]"
   pull_request:
     types:
       - opened
@@ -16,6 +22,7 @@ jobs:
     uses: ./.github/workflows/checks.yml
 
   git:
+    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/git.yml
 
   build:
