@@ -9,8 +9,9 @@
 
 QtVSyncTestRenderer::QtVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer),
-      m_drawcount(0) {
+        : WaveformRendererSignalBase(waveformWidgetRenderer,
+                  ::WaveformRendererSignalBase::Option::None),
+          m_drawcount(0) {
 }
 
 QtVSyncTestRenderer::~QtVSyncTestRenderer() {

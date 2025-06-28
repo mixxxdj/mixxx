@@ -170,6 +170,32 @@
                 </description>
             </option>
         </group>
+
+        <group label="Tempo Fader">
+            <option
+                variable="tempoCenterRangeMm"
+                type="real"
+                min="0.3"
+                max="5.0"
+                default="1.0"
+                label="Center Snap Region in Millimeter">
+                <description>
+                    Defines the center range in mm where the rate snaps to 0.
+                </description>
+            </option>
+            <option
+                variable="tempoCenterOffsetMm"
+                type="real"
+                min="-3.0"
+                max="3.0"
+                default="0.0"
+                label="Center Snap Offset in Millimeter">
+                <description>
+                    Shifts the center range in case it doesn't match the center marker.
+                </description>
+            </option>
+        </group>
+
         <group label="Alternative Mapping">
             <option
                 variable="useKeylockOnMaster"
@@ -384,6 +410,7 @@
                 </option>
             </row>
         </group>
+
         <group label="Library">
             <row orientation="vertical">
                 <option
@@ -549,6 +576,7 @@
                 </option>
             </row>
         </group>
+
         <group label="Jog wheel">
             <option
                 variable="loopWheelMoveFactor"
@@ -597,6 +625,7 @@
                 <description>Define how fast the jogwheel rotates at the default play rate. This will impact scratch sensitivity, motor speed and ring LED pace.</description>
             </option>
         </group>
+
         <group label="Haptic drive feature (BETA)">
             <option
                 variable="useMotors"

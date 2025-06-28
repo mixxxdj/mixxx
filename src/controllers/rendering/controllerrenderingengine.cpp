@@ -359,7 +359,11 @@ void ControllerRenderingEngine::renderFrame() {
         kLogger.debug() << "Couldn't release the FBO.";
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    fboImage.flip(Qt::Vertical);
+#else
     fboImage.mirror(false, true);
+#endif
 
     emit frameRendered(m_screenInfo, fboImage.copy(), timestamp);
 

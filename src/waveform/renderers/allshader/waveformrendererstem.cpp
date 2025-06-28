@@ -31,8 +31,9 @@ namespace allshader {
 
 WaveformRendererStem::WaveformRendererStem(
         WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererAbstract::PositionSource type,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_splitStemTracks(false) {
     initForRectangles<RGBAMaterial>(0);
@@ -43,6 +44,11 @@ void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 bool WaveformRendererStem::init() {
+    m_pStemGain.clear();
+    m_pStemMute.clear();
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        return true;
+    }
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
@@ -187,11 +193,15 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Apply the gains
                 if (layerIdx) {
-                    max *= m_pStemMute[stemIdx]->toBool() ||
+                    bool isMuted = m_pStemMute.empty() ? false : m_pStemMute[stemIdx]->toBool();
+                    float volume = m_pStemGain.empty()
+                            ? 1.f
+                            : static_cast<float>(m_pStemGain[stemIdx]->get());
+                    max *= isMuted ||
                                     (selectedStems &&
                                             !(selectedStems & 1 << stemIdx))
                             ? 0.f
-                            : static_cast<float>(m_pStemGain[stemIdx]->get());
+                            : volume;
                 }
 
                 // Lines are thin rectangles

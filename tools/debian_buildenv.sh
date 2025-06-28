@@ -12,7 +12,7 @@ case "$1" in
     setup)
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
-            focal|jammy|bullseye) # <= Ubuntu 22.04.5 LTS
+            focal|jammy|bullseye|victoria|vera|vanessa|virginia) # <= Ubuntu 22.04.5 LTS
                 PACKAGES_EXTRA=(
                     libqt6shadertools6-dev
                 )
