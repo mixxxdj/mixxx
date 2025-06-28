@@ -3127,15 +3127,17 @@ class S4Mk3MotorManager {
         this.proportionalTerm = 0;
         this.integralAccumulator = 0;
         this.derivativeTerm = 0;
-        this.outputTorque_prev = 0;
-        this.outputTracking_prev = 0;
+        this.outputTorquePrev = 0;
+        this.outputTrackingPrev = 0;
 
+        // Motor testing variables. For development only. -ZT
         this.motortesting_onOff = false;
         this.motortesting_complete = false;
         this.motortesting_timer = Date.now();
         this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
         this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
-        this.nominal_rate_prenudge = 1.0;
+
+        this.nominalRatePrenudge = 1.0;
         this.isUpToSpeed = false;
         this.isStopped = false;
     }
@@ -3148,39 +3150,20 @@ class S4Mk3MotorManager {
         let outputTracking = 0;
         let trackingError = 0;
 
-        // TESTING
-        // console.warn(engine.getValue(this.deck.group, "scratch2_enable"));
-
-        //REMOVE: Can be optimized --- point to a single premade instance variable
-        // const motorData = new Uint8Array([
-        //     1, 0x20, 1, 0, 0,
-        // ]);
-
-        // Declaring local constant
+        // Declaring local constant used in jog mode
         const maxVelocity = 10; //FIXME: hardcoded
 
-        // currentSpeed is normalized to a reference value of baseRPS (100/3/60 for 33.3rpm)
-        // Declaring local variables
-        // let playbackRate = 0;
-        // let current_velocity = 0;
-        
-        // let expectedSpeed = 0; //FIXME: nomenclature
-
-        // normalize the velocity relative to the target sensor ticks per second
-        // which for 33.3rpm will be 1600
-        // ie., when this.deck.wheelPosition.velocity = 1600, normalizedVelocity = 1.0
-        // const normalizedVelocity = this.deck.wheelPosition.velocity / baseEncoderTicksPerSecond;
-        // const normalizedVelocity = this.deck.wheelPosition.velocity;
+        // get latest velocity calculation from the input lowpass filter
         const normalizedVelocity = this.deck.velFilter.getCurrentVel()
 
-        // If this deck is currently playing, calculate motor output
+        // If this deck is currently playing, calculate motor output:
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play")) {
             if (this.isStopped == true){
                 this.isStopped = false;
                 engine.setValue(this.deck.group, "scratch2_enable", false);
             }
-            // Motor calibration testing for determining real output torque
+            // Motor calibration testing for determining real output torque. Development only.
             if (S4MK3MOTORTEST_ENABLE && this.motortesting_complete == false) {
                 if (Date.now() - this.motortesting_timer > this.motortesting_next_interval) {    
                     console.warn(this.deckMotorID, "Motor test level: ",this.motorTesting_currentLevel);
@@ -3215,29 +3198,9 @@ class S4Mk3MotorManager {
 
             // targetRate is 1.0 +/- pitch adjustment. So +8% pitch means targetRate == 1.08
             targetRate = engine.getValue(this.deck.group, "rate_ratio");
-            
-            // normalisationFactor doesn't appear to be in use
-            // const normalisationFactor = 1/expectedSpeed/5;
-            //???: what is going on in this velocity calculation?
-            // it looks like it might be a smoothing filter of some sort
-            
-            // Original motor controller:
-            // Apply a simple smoothing function to pull the current velocity
-            // towards the expected velocity. Not clear if this filter is tuned to a specific
-            // cutoff or lag.
-            // FIXME: nomenclature.
-            // velocity = targetRate + Math.pow(-5 * (targetRate / 1) * (currentSpeed - targetRate), 3);
 
             // First, determine the error between target vs measured
             playbackError = targetRate - normalizedVelocity;
-
-            // close enough to perfect? disable scratch2 mode
-            // if (Math.abs(playbackError) < PLAYBACK_QUANTIZE_ERROR_THRESH){
-            //     engine.setValue(this.deck.group, "scratch2_enable", false);
-            // }
-            // else {
-            //     engine.setValue(this.deck.group, "scratch2_enable", true);
-            // }
 
             // If we are touching the disc AND the playbackError goes beyond
             // the slipping threshold, apply the slip force only
@@ -3247,6 +3210,7 @@ class S4Mk3MotorManager {
             } else if (this.deck.wheelTouch.touched == false && this.deck.isSlipping && Math.abs(playbackError) < SlipmatErrorThresh) {
                 this.deck.isSlipping = false;
                 engine.setValue(this.deck.group, "scratch2_enable", false); 
+
             // If we are beyond a certain error threshold,
             // suppress the error integrator---to help with gracefully restoring rotation
             // speed without overshoot when adjusting with the crown.
@@ -3255,6 +3219,7 @@ class S4Mk3MotorManager {
                 this.integralAccumulator = 0;
             }
 
+            // apply slipmat friction force if slipping
             if (this.deck.isSlipping) {
                 engine.setValue(this.deck.group, "scratch2", normalizedVelocity);
                 if (playbackError > 0) {
@@ -3263,40 +3228,38 @@ class S4Mk3MotorManager {
                 else {
                     outputTorque = -SlipFrictionForce;
                 }
-            // Otherwise, we aren't slipping. Apply new motor controller
+            // If we aren't slipping, apply new motor controller
             } else {
-                // New motor controller: a PI followed by a very simple smoothing filter
+                // PID motor controller
                 this.proportionalTerm = playbackError * ProportionalGain;
                 this.integralAccumulator += playbackError * IntegrativeGain;
                 this.derivativeTerm = (playbackError - this.prev_playbackError) * DerivativeGain;
                 outputTorque = this.proportionalTerm + this.integralAccumulator - this.derivativeTerm;
-                // outputTracking = outputTorque;
-                // outputTorque = playbackError * MOTORPID_PROPORTIONAL_GAIN;
 
-                // Apply a smoothing filter
-                torqueDiff = outputTorque - this.outputTorque_prev;
-                // Another smoothing filter, only for pitch analysis
-                trackingDiff = outputTorque - this.outputTracking_prev;
+                // Difference calculation for a smoothing filter
+                torqueDiff = outputTorque - this.outputTorquePrev;
+                // and another smoothing filter, only for pitch analysis
+                trackingDiff = outputTorque - this.outputTrackingPrev;
 
-                outputTorque = this.outputTorque_prev + (torqueDiff * MotorOutSmoothingFactor);
-                outputTracking = this.outputTracking_prev + (trackingDiff * MotorOutSmoothingFactor);
+                // Apply the smoothing filters
+                outputTorque = this.outputTorquePrev + (torqueDiff * MotorOutSmoothingFactor);
+                outputTracking = this.outputTrackingPrev + (trackingDiff * MotorOutSmoothingFactor);
                 // Compare the smoothed output to a target expected torque to determine effective output pitch in 
                 // non-slip mode (scratch2 disabled):
                 trackingError = (outputTorque - (TargetMotorOutput*engine.getValue(this.deck.group, "rate_ratio")))/TargetMotorOutput;
-                // trackingError = Math.round(trackingError/PLAYBACK_QUANTIZE_ERROR_STEP);
-                // trackingError = (trackingError * PLAYBACK_QUANTIZE_ERROR_STEP);
+
+                // Only apply nudge/jog if the disc has spun up to the target velocity
                 if (this.isUpToSpeed == true){
                     engine.setValue(this.deck.group, "jog", -trackingError*TurnTableNudgeSensitivity);
                     // console.warn(outputTorque, outputTracking, trackingError);
-                } else if (trackingError < 0) {
+                } else if (trackingError < 0) { //FIXME: use absolute error as threshold
                     // if we've spun all the way up to speed, only then act like it's jogging time.
                     this.isUpToSpeed = true;
                 }
             }
             // New torque becomes old torque
-            this.outputTorque_prev = outputTorque;
-            // Apply additional forward force to compensate for friction --- NO LONGER NECESSARY
-            // outputTorque += MOTOR_FRICTION_COMPENSATION;
+            this.outputTorquePrev = outputTorque;
+
         // If the deck isn't playing, but we're in motor mode, ensure that scratch mode is ON
         // and reset the "isUpToSpeed" flag
         } else if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
@@ -3321,6 +3284,9 @@ class S4Mk3MotorManager {
                 );
             }
         }
+
+        // NOTES ON PHYSICAL MODELING
+        // Leaving this here as it may be useful to someone down the line. -ZT
 
         // ==========================
         // SLIPMAT PHYSICAL MODELING:
@@ -3624,11 +3590,11 @@ class S4MK3 {
         // There is no consistent offset between the left and right deck,
         // so every single components' IO needs to be specified individually
         // for both decks.
-        // TODO: FIX ALL BYTE OFFSETS AND PUT IN HEADER. THIS IS VERY BAD
-        // SOME OF THEM ARE OFFSET BY 1 BYTE, SOME ARE NOT, DEPENDING ON THE
-        // INPUT REPORT. ALL BECAUSE OF A SLICE OPERATION ON THE INPUT. BAD!
-        // THIS CAUSED LARGE AMOUNTS OF CONFUSION AND WASTED TIME TRYING TO
-        // UNDERSTAND THE REAL HARDWARE SPEC FOR ANALYZING TRAFFIC
+        // FIXME: byte offsets should be declared as constants at the head of the file
+        // for easy reference. Additionally, many of these offsets (for HID input reports 1 and 2)
+        // are incorrectly offset by 1 byte due to a preceding slice operation on the raw data.
+        // The slice throws away the report ID once it's no longer needed, but it makes these byte offsets
+        // confusing as a reference to the real spec of the comms protocol.
         this.leftDeck = new S4Mk3Deck(
             [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
             this.inReports, this.outReports[128], this.motorBuffMgr,
@@ -3674,7 +3640,8 @@ class S4MK3 {
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
                 tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputPotsReportID]},
-                // the relative wheel value here is one byte offset from its position in the raw data, and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
+                // FIXME: the wheel position here is one byte offset from its position in the raw data,
+                // and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
                 wheelPosition: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputWheelsReportID]},
                 wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputWheelsReportID]},
                 wheelTouch: {inByte: 16, inBit: 4},
@@ -3726,7 +3693,8 @@ class S4MK3 {
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
                 tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputPotsReportID]},
-                // the relative wheel value here is one byte offset from its position in the raw data, and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
+                // FIXME: the relative wheel value here is one byte offset from its position in the raw data,
+                // and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
                 wheelPosition: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputWheelsReportID]},
                 wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputWheelsReportID]},
                 wheelTouch: {inByte: 16, inBit: 5},
@@ -3774,11 +3742,16 @@ class S4MK3 {
         if (UseMotors) {
             this.leftMotor = new S4Mk3MotorManager(this.leftDeck);
             this.rightMotor = new S4Mk3MotorManager(this.rightDeck);
-            // Requesting a timer interval of 2ms to match sampling rate of wheel sensors
-            // max value is capped in controllerscriptinterfacelegacy.cpp
-            // normally capped at 20ms but we have removed this cap for motor control
+            // Previously, we were requesting a timer
+            // interval of 2ms to match sampling rate of wheel sensors, but
+            // max value was capped in controllerscriptinterfacelegacy.cpp
+            // normally capped at 20ms but can remove this cap and get 2ms.
+            // However, this is not consistent across all systems; some can
+            // only manage 15ms which is not a proper solution.
+            // Therefore this has been moved to the input handler so that it
+            // operates as fast as the inputs are received (ideally)
             // engine.beginTimer(2, this.motorCallback.bind(this));
-            // Even if we remove the cap, QT can't guarantee that any given system
+            // QT can't guarantee that any given system
             // will maintain a sub-20ms timer period. See:
             // https://doc.qt.io/qt-5/qobject.html#startTimer
         }
@@ -3793,33 +3766,26 @@ class S4MK3 {
         const reportId = data[0];
         if (reportId in this.inReports && reportId !== HIDInputWheelsReportID) {
             // Slicing out the first data point is actively harmful to code legibility later on.
-            // FIXME: PASS FULL DATA BUFFER TO INPUT HANDLER
+            // FIXME: Should pass the full data buffer to the input handler. This is the slice
+            // operation that causes byte offsets to appear incorrect in the code
             this.inReports[reportId].handleInput(data.buffer.slice(1));
         } else if (reportId === HIDInputWheelsReportID) {
             // FIXME: input report # 3 comes the most frequently, so it should
             //        be at the start of the conditional block for optimization:
             //        saves a multi-condition check every time an input comes in.
+
             // The 32 bit unsigned ints at bytes 8 and 36 always have exactly the same value,
             // so only process one of them. This must be processed before the wheel positions.
             const oldWheelTimer = wheelTimer;
             const view = new DataView(data.buffer);
             wheelTimer = view.getUint32(8, true);
 
-            // WheelTimerDelta code appears unused. Commenting out.
-            // Processing first value; no previous value to compare with.
-            // if (oldWheelTimer === null) {
-            //     return;
-            // }
-            // wheelTimerDelta = wheelTimer - oldWheelTimer;
-            // if (wheelTimerDelta < 0) {
-            //     wheelTimerDelta += wheelTimerMax;
-            // }
-
             // FIXME: the byte offsets below don't match with the ones in the deck definitions
             //        the offsets here are the correct ones with reference to the entire HID report
             this.leftDeck.wheelPosition.input(view.getUint32(12, true), view.getUint32(8, true));
             this.rightDeck.wheelPosition.input(view.getUint32(40, true), view.getUint32(36, true));
-            // TEMP: triggering motor output anytime input report #3 is processed.
+
+            // Finally, triggering motor output anytime input report #3 is processed.
             // This should make the motor output timing more reliable across different platforms
             // rather than relying on QTimer.
             this.motorCallback();
