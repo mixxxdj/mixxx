@@ -148,8 +148,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      // Encryption mode combobox
      encryptionModeComboBox->addItem(tr("Required"),
              static_cast<int>(BroadcastProfile::EncryptionMode::Required));
-     encryptionModeComboBox->addItem(tr("Preferred"),
-             static_cast<int>(BroadcastProfile::EncryptionMode::Preferred));
      encryptionModeComboBox->addItem(tr("Disabled"),
              static_cast<int>(BroadcastProfile::EncryptionMode::Disabled));
 

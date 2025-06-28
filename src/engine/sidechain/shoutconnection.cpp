@@ -236,11 +236,6 @@ void ShoutConnection::updateFromPreferences() {
 
     int result;
     switch (encryptionMode) {
-    case BroadcastProfile::EncryptionMode::Preferred:
-        // Autodetection was failing in 2.4.1, resulting into no metadata send
-        // https://github.com/mixxxdj/mixxx/issues/9599
-        result = shout_set_tls(m_pShout, SHOUT_TLS_AUTO);
-        break;
     case BroadcastProfile::EncryptionMode::Disabled:
         result = shout_set_tls(m_pShout, SHOUT_TLS_DISABLED);
         break;

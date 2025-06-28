@@ -228,7 +228,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
 
 void BroadcastProfile::adoptDefaultValues() {
     m_secureCredentials = false;
-    m_encryptionMode = EncryptionMode::Preferred;
+    m_encryptionMode = EncryptionMode::Required;
     m_enabled = false;
 
     m_host = QString();
@@ -298,14 +298,11 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_port = XmlParse::selectNodeInt(doc, kPort);
     m_serverType = XmlParse::selectNodeQString(doc, kServertype);
     switch (static_cast<EncryptionMode>(XmlParse::selectNodeInt(doc, kEncryptionMode))) {
-    case EncryptionMode::Preferred:
-        m_encryptionMode = EncryptionMode::Preferred;
-        break;
-    case EncryptionMode::Disabled:
-        m_encryptionMode = EncryptionMode::Disabled;
+    case EncryptionMode::Required:
+        m_encryptionMode = EncryptionMode::Required;
         break;
     default:
-        m_encryptionMode = EncryptionMode::Required;
+        m_encryptionMode = EncryptionMode::Disabled;
     }
 
     m_login = XmlParse::selectNodeQString(doc, kLogin);

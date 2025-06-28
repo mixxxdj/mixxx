@@ -20,7 +20,6 @@ class BroadcastProfile : public QObject {
     };
     enum class EncryptionMode {
         Required,
-        Preferred,
         Disabled
     };
     Q_ENUM(EncryptionMode);

@@ -103,7 +103,7 @@ TEST(BroadcastProfileTest, SetGetValues) {
     profile.setHost(hostname);
     ASSERT_TRUE(profile.getHost() == hostname);
 
-    BroadcastProfile::EncryptionMode mode = BroadcastProfile::EncryptionMode::Preferred;
+    BroadcastProfile::EncryptionMode mode = BroadcastProfile::EncryptionMode::Required;
     profile.setEncryptionMode(mode);
     ASSERT_TRUE(profile.getEncryptionMode() == mode);
 
