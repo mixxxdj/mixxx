@@ -27,13 +27,62 @@
  */
 
 (function(global) {
+    /**
+     * @typedef {[number, number] | [number, [number, number]] | [[number, number], number] | [[number, number], [number, number]]} MidiBytesVariations
+     */
+
+    /**
+     * @typedef {object} MidiBytesAsObject
+     * @property {MidiBytesVariations} [in] MIDI signals from device to listen
+     * @property {MidiBytesVariations} [out] MIDI signals to transmit to the device
+     */
+
+    /**
+     * @typedef {object} ComponentOptions
+     * @property {MidiBytesAsObject | [number, number]} [midi] MIDI events
+     */
+
     const NO_TIMER = 0;
+    /**
+     * @param {ComponentOptions | [number, number]} options Component configuration
+     * @class
+     */
     const Component = function(options) {
-        if (Array.isArray(options) && typeof options[0] === "number") {
-            this.midi = options;
+        if (Array.isArray(options)) {
+            const [midiStatus, midiNo] = options;
+            options = {midi: {out: [midiStatus, midiNo]}};
+        } else if (Array.isArray(options.midi)) {
+            options.midi = {out: options.midi};
         } else {
-            Object.assign(this, options);
+            options.midi = {out: undefined, in: undefined};
         }
+
+        const normalizeMidi = (midiBytesVar) => {
+            if (!Array.isArray(midiBytesVar)) {
+                return [];
+            }
+
+            const [first, second] = midiBytesVar;
+            const firstIsArray = Array.isArray(first);
+            const secondIsArray = Array.isArray(second);
+
+            if (firstIsArray && secondIsArray) { // long form
+                return midiBytesVar;
+            } else if (!firstIsArray && !secondIsArray) {
+                return [midiBytesVar];
+            } else if (Array.isArray(first)) { // [[number, number], number] form
+                const [status1, status2] = first;
+                return [[status1, second], [status2, second]];
+            } else { // [number, [number, number]] form
+                const [midino1, midino2] = second;
+                return [[first, midino1], [first, midino2]];
+            }
+        };
+
+        options.midi.in = normalizeMidi(options.midi.in);
+        options.midi.out = normalizeMidi(options.midi.out);
+
+        Object.assign(this, options);
 
         if (typeof this.unshift === "function") {
             this.unshift();
@@ -46,6 +95,9 @@
             this.inKey = options.key;
             this.outKey = options.key;
         }
+
+        /** @type {MidiInputHandlerController[]} */
+        this.inputHandlers = [];
 
         if (this.outConnect && this.group !== undefined && this.outKey !== undefined) {
             this.connect();
@@ -126,12 +178,16 @@
                 typeof this.output === "function") {
                 this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
+            this.makeInputHandlers();
         },
         disconnect: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
                     conn.disconnect();
                 });
+            }
+            for (const inputHandler of this.inputHandlers) {
+                inputHandler.disconnect();
             }
         },
         trigger: function() {
@@ -146,18 +202,30 @@
         shiftChannel: false,
         shiftControl: false,
         send: function(value) {
-            if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
+            if (this.midi.out.length <= 0) {
                 return;
             }
-            midi.sendShortMsg(this.midi[0], this.midi[1], value);
+            for (const [midiStatus, midino] in this.midi.out) {
+                midi.sendShortMsg(midiStatus, midino, value);
+            }
+
             if (this.sendShifted) {
                 if (this.shiftChannel) {
-                    midi.sendShortMsg(this.midi[0] + this.shiftOffset, this.midi[1], value);
+                    midi.sendShortMsg(this.midi.out[0][0] + this.shiftOffset, this.midi.out[0][1], value);
                 } else if (this.shiftControl) {
-                    midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, value);
+                    midi.sendShortMsg(this.midi.out[0][0], this.midi.out[0][1] + this.shiftOffset, value);
                 }
             }
         },
+
+        get defaultInputHandler() {
+            return this.input;
+        },
+        makeInputHandlers() {
+            for (const [midiStatus, midino] of this.midi.in) {
+                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.defaultInputHandler.bind(this)));
+            }
+        }
     };
 
     const Button = function(options) {
@@ -844,6 +912,10 @@
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
         reset() {},
+
+        get defaultInputHandler() {
+            return this.inputTouch;
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
