@@ -170,36 +170,6 @@
                 </description>
             </option>
         </group>
-
-        <group label="Pitch Fader Zero Point Offset">
-            <option
-                variable="TempoFaderOffset_L"
-                type="real"
-                precision="3"
-                min="-0.100"
-                max="0.100"
-                step="0.001"
-                default="0.000"
-                label="Left Deck Zero Point Offset">
-                <description>
-                    Adjust the centre (zero) position of the tempo fader so that it lines up with the hardware centre.
-                </description>
-            </option>
-            <option
-                variable="TempoFaderOffset_R"
-                type="real"
-                precision="3"
-                min="-0.100"
-                max="0.100"
-                step="0.001"
-                default="0.000"
-                label="Right Deck Zero Point Offset">
-                <description>
-                    Adjust the centre (zero) position of the tempo fader so that it lines up with the hardware centre.
-                </description>
-            </option>
-        </group>
-
         <group label="Alternative Mapping">
             <option
                 variable="useKeylockOnMaster"
