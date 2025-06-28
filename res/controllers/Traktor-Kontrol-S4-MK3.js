@@ -264,7 +264,7 @@ const wheelClockFreq = 100000000; // One tick every 10ns (100MHz)
 // Establish rotational constants for wheel math
 
 // Target motor outputs will ideally be calibrated based on real hardware data specific to the device
-// so that variations of construction and wear can be accomodated. For now, these outputs are based on
+// so that variations of construction and wear can be accommodated. For now, these outputs are based on
 // a data collection experiment I performed during testing --ZT
 const TargetMotorOutput33RPM = 4600; //measured in a rough calibration test, not exact. TODO: refine this value
 const TargetMotorOutput45RPM = 5600; //measured in a rough calibration test, not exact. TODO: refine this value
@@ -463,6 +463,7 @@ class MotorOutputBuffMgr {
             1, MotorBuffFwdCode01, MotorBuffFwdCode02, 0, 0,
             1, MotorBuffFwdCode01, MotorBuffFwdCode02, 0, 0,
         ]);
+        // direction flags for each deck
         this.dir = new Uint8Array([MotorDirFwd,MotorDirFwd]);
         this.maxOutput = MaxWheelForce;
     }
@@ -470,16 +471,12 @@ class MotorOutputBuffMgr {
         return this.outputBuffer.buffer;
     }
     setMaxTorque(newMaxOutput) {
-        // Set a different maximum output torque.
-        // This is used during slip mode to simulate
-        // slipmat friction force 
-        // instead of direct drive motor force
+        // Set a different maximum output torque
         if (newMaxOutput > 0 && newMaxOutput < MaxWheelForce) {
             this.maxOutput = newMaxOutput;
-        }
         // if it's not within a valid range,
         // set it to default.
-        else {
+        } else {
             this.maxOutput = MaxWheelForce;
         }
     }
@@ -490,13 +487,11 @@ class MotorOutputBuffMgr {
         let outputInt = Math.round(outputLvl);
 
         // Set the correct offset for this motor's data in the output buffer
-        if (motorID == MotorBuffIDLeft) {
+        if (motorID === MotorBuffIDLeft) {
             offset = MotorBuffOffsetLeft;
-        }
-        else if (motorID == MotorBuffIDRight) {
+        } else if (motorID === MotorBuffIDRight) {
             offset = MotorBuffOffsetRight;
-        }
-        else {
+        } else {
             // invalid motor ID
             return -1; // error
         }
@@ -513,9 +508,8 @@ class MotorOutputBuffMgr {
                 this.outputBuffer[offset + 1] = MotorBuffRevCode01;
                 this.outputBuffer[offset + 2] = MotorBuffRevCode02;
             }
-        }
         // Otherwise, the output is zero or positive
-        else {
+        } else {
             // if the direction was previously reverse, set forward
             // and update the direction code
             if (this.dir[motorID] == MotorDirRev) {
@@ -2793,7 +2787,7 @@ class S4Mk3Deck extends Deck {
                 if (this.touched) {
                     return;
                 }
-                // FIXME: something wierd up in here
+                // FIXME: something weird up in here
                 if (engine.getValue(this.group, "play") &&
                     engine.getValue(this.group, "scratch2") < 1.5 * BaseRevolutionsPerSecond &&
                     engine.getValue(this.group, "scratch2") > 0) {
@@ -2868,7 +2862,7 @@ class S4Mk3Deck extends Deck {
                 
                 // Input filtering:
                 // Using a weighted average convolution filter ie., an FIR filter,
-                // applly a lowpass to the velocity which is otherwise quite noisy.
+                // apply a lowpass to the velocity which is otherwise quite noisy.
                 this.vFilter.insert(currentVelocityNormalized); // push/pop to the circular buffer
                 this.velocity = this.vFilter.runFilter(); // sum of products with filter coeffs
 
