@@ -349,7 +349,14 @@ const HIDOutputVUMeterReportID = 129;
 /********************************************************
                 HARDWARE ADDRESSES
  *******************************************************/
-//TODO
+//TODO: would be a good idea to put all the byte/bit offsets
+// for the HID reports here. For anyone who hasn't studied
+// the message protocols for this device, it's a pain
+// to get them from further down in the class definitions.
+// Additionally, a lot of them are 1 byte off from their
+// actual positions in the data stream (because of slicing
+// the first byte off the message before passing it to
+// the method in question).
 
 /*
  ========================================================
@@ -358,7 +365,6 @@ const HIDOutputVUMeterReportID = 129;
 
  ========================================================
 */
-
 
  /*
  * Circular buffer for running FIR filter.
@@ -600,8 +606,6 @@ class HIDInputReport {
     }
 }
 
-// Q: Is HIDOutputReport ever used?
-// A: only once, in this script, and nowhere else in Mixxx's codebase
 class HIDOutputReport {
     constructor(reportId, length) {
         this.reportId = reportId;
@@ -2799,7 +2803,7 @@ class S4Mk3Deck extends Deck {
         // There are two position inputs reported in the USB data, with identical
         // resolution. The first one is a cleaned up (unwrapped and sometimes corrected)
         // version of the second one, which appears to be the raw sensor data and wraps
-        // every 2880 ticks (one full rotation).
+        // every 2880 ticks (representing one full rotation).
         // Therefore we only care about the first position input.
         this.wheelPosition = new Component({
             prevData: null,
@@ -2840,12 +2844,13 @@ class S4Mk3Deck extends Deck {
                 // Using the unwrapped position reference, calculate 1st derivative
                 // (angular velocity)
                 // first, calculate the velocity in ticks (1/8th degree) per second
-                // in_position and prev_position are both in 1/8th degrees
-                // in_timestamp and prev_timestamp are both in clock ticks (10ns per)
-                // WHEEL_CLOCK_FREQ converts clock ticks to seconds
+                // inPosition and prevPosition are both in 1/8th degrees
+                // inTimestamp and prevTimestamp are both in clock ticks (10ns per)
+                // WheelClockFreq converts clock ticks to seconds
                 // example: position difference of 3 and timestamp difference of 2ms = 200000ns
                 //          results in 1.5e-05 or 0.000015
                 //          multiply by 100MHz or 100000000 produces 1500 ticks per second
+                //          (for reference, 33.3rpm is 1600 ticks per second)
                 const currentVelocityTicksPerSecond = WheelClockFreq * (inPosition - prevPosition)/(inTimestamp - prevTimestamp);
                 
                 // then, normalize it with reference to the target rotation speed of the platter
@@ -2882,9 +2887,6 @@ class S4Mk3Deck extends Deck {
                 // depending on the wheel mode
                 switch (this.deck.wheelMode) {
                 case WheelModes.motor:
-                    // Run the motor control code here instead of on its own timer
-                    
-
                     // Smoothing the output playback (when not slipping/scratching)
                     if (engine.getValue(this.group, "play")) {
                         if (this.deck.isSlipping == false){
@@ -2975,6 +2977,7 @@ class S4Mk3Deck extends Deck {
                     const forward = this.lastPos <= samplePos;
                     let fired = false;
                     // Stage a motor instruction with forward direction and max wheel force
+                    // FIXME: this should be migrated to use the new motor manager. Not a big deal though.
                     const motorDeckData = new Uint8Array([
                         1, 0x20, 1, MaxWheelForce & 0xff, MaxWheelForce >> 8,
                     ]);
@@ -2990,6 +2993,7 @@ class S4Mk3Deck extends Deck {
                         fired = true;
                     }
                     if (fired) {
+                        // FIXME: this should be migrated to use the new motor manager. Not a big deal though.
                         const motorData = new Uint8Array([
                             1, 0x20, 1, 0, 0,
                             1, 0x20, 1, 0, 0,
@@ -3119,19 +3123,18 @@ class S4Mk3MotorManager {
 
         this.oldValue = [0, 0];
         this.currentMaxWheelForce = MaxWheelForce;
-        this.prev_playbackError = 0; // JUNE 20 2025 --- RESUME HERE
+        this.prev_playbackError = 0;
         this.proportionalTerm = 0;
         this.integralAccumulator = 0;
         this.derivativeTerm = 0;
         this.outputTorque_prev = 0;
-        this.outputTracking_prev = 0; // new attempt at nudge tracking
+        this.outputTracking_prev = 0;
 
         this.motortesting_onOff = false;
         this.motortesting_complete = false;
         this.motortesting_timer = Date.now();
         this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
         this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
-        // this.isSlipping = false;
         this.nominal_rate_prenudge = 1.0;
         this.isUpToSpeed = false;
         this.isStopped = false;
