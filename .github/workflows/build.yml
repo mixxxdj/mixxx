@@ -196,7 +196,7 @@ jobs:
           # This is a workaround for a SSL false positive in cmake 3.26.4
           # When downloading the manual. 3.21 is required for installing the
           # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
-          cmake-version: "3.21.x"
+          cmake-version: "3.30.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
@@ -374,13 +374,12 @@ jobs:
           timestamp-digest: SHA256
           timeout: 600
 
-      - name: "[Windows 11 ARM64] Install WiX Toolset3"
-        if: matrix.os == 'windows-11-arm'
+      - name: "[Windows] Install WiX Toolset"
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          choco install wixtoolset
-          Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-          refreshenv
-          echo "WIX=$env:WIX" >> $env:GITHUB_ENV
+          dotnet.exe tool install --global wix --version 6.0.1
+          wix extension add --global WixToolset.UI.wixext/6.0.1
 
       - name: "Package"
         id: package
