@@ -75,21 +75,6 @@ const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor
 const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
 
-// Tempo fader center snap range
-// Transform user value (mm) into upper/lower values
-const TempoCenterRangeMm = engine.getSetting("tempoCenterRangeMm") || 1.0;
-// In theory we have an 80 mm fader. Though, the usable range appears to be only ~77 mm.
-// Value range is 0..4096, but we only get 510 steps with 8/9 ticks resolution
-// and therefore need to make sure the center zone can actually be reached.
-// A diff of 15 should be safe, this corresponds to .3 mm.
-const TempoFaderTicksPerMm = 4096 / 77; // 53.1948..
-const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
-// Value center may be off the labeled center.
-// Use this setting to compensate per device.
-const TempoCenterValueOffset = engine.getSetting("tempoCenterOffsetMm") || 0.0;
-const TempoCenterUpper = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
-const TempoCenterLower = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
-
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const InactiveLightsAlwaysBacklit = !!engine.getSetting("inactiveLightsAlwaysBacklit");
@@ -286,7 +271,7 @@ const TargetMotorOutput45RPM = 5600; //measured in a rough calibration test, not
 // And set the target motor output for nudging
 let rps = 0;
 let TargetMotorOutput = 0;
-if (BaseRevolutionsPerMinute == 33) {
+if (BaseRevolutionsPerMinute === 33) {
     rps = (100/3) / 60;
     TargetMotorOutput = TargetMotorOutput33RPM;
 } else { // 45RPM
@@ -355,6 +340,7 @@ const HIDInputWheelsReportID = 3
 // =======
 // OUTPUTS:
 // =======
+// TODO: incomplete list of output IDs. Many are still hard-coded
 const HIDOutputMotorsReportID = 49
 const HIDOutputVUMeterReportID = 129;
 
@@ -517,7 +503,7 @@ class MotorOutputBuffMgr {
             outputInt = -outputInt;
             // if the direction was previously forward, set reverse
             // and update the direction code
-            if (this.dir[motorID] == MotorDirFwd) {
+            if (this.dir[motorID] === MotorDirFwd) {
                 this.dir[motorID] = MotorDirRev;
                 this.outputBuffer[offset + 1] = MotorBuffRevCode01;
                 this.outputBuffer[offset + 2] = MotorBuffRevCode02;
@@ -526,7 +512,7 @@ class MotorOutputBuffMgr {
         } else {
             // if the direction was previously reverse, set forward
             // and update the direction code
-            if (this.dir[motorID] == MotorDirRev) {
+            if (this.dir[motorID] === MotorDirRev) {
                 this.dir[motorID] = MotorDirFwd;
                 this.outputBuffer[offset + 1] = MotorBuffFwdCode01;
                 this.outputBuffer[offset + 2] = MotorBuffFwdCode02;
@@ -1826,37 +1812,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                     }
                 },
                 onShortRelease: function() {
-                   const wheelLEDmodes = {
-    off: 0,
-    dimFlash: 1,
-    spot: 2,
-    ringFlash: 3,
-    dimSpot: 4,
-    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
-};
-
-// The mode available, which the wheel can be used for.
-const wheelModes = {
-    jog: 0,
-    vinyl: 1,
-    motor: 2,
-    loopIn: 3,
-    loopOut: 4,
-};
-
-const moveModes = {
-    beat: 0,
-    bpm: 1,
-    grid: 2,
-    keyboard: 3,
-};
-
-// tracks state across input reports
-let wheelTimer = null;
-// This is a global variable so the S4Mk3Deck Components have access
-// to it and it is guaranteed to be calculated before processing
-// input for the Components.
-let wheelTimerDelta = 0; if (this.shifted && this.unit.focusedEffect === null) {
+                    if (this.shifted && this.unit.focusedEffect === null) {
                         script.triggerControl(this.group, "next_effect");
                     }
                 },
@@ -1987,50 +1943,32 @@ class S4Mk3Deck extends Deck {
 
         this.tempoFader = new Pot({
             inKey: "rate",
+        });
+        this.tempoFaderLED = new Component({
             outKey: "rate",
-            appliedValue: null,
-
-            input: function(value) {
-                const receivingFirstValue = this.appliedValue === null;
-
-                if (value < TempoCenterLower) {
-                    // scale input for lower range
-                    this.appliedValue = script.absoluteLin(value, -1, 0, 0, TempoCenterLower);
-                } else if (value > TempoCenterUpper) {
-                    // scale input for upper range
-                    this.appliedValue = script.absoluteLin(value, 0, 1, TempoCenterUpper, 4096);
-                } else {
-                    // reset rate in center region
-                    this.appliedValue = 0;
-                }
-                engine.setValue(this.group, this.inKey, this.appliedValue);
-
-                if (receivingFirstValue) {
-                    engine.softTakeover(this.group, this.inKey, true);
-                    // Forec-update LED.
-                    // Output connection is made and updated before input() can set this.appliedValue
-                    // (doesn't happen until getInputReport())
-                    this.outTrigger();
-                }
-            },
+            centered: false,
+            toeranceWindow: 0.001,
+            tempoFader: this.tempoFader,
             output: function(value) {
-                if (this.appliedValue === null) {
+                if (this.tempoFader.hardwarePosition === null) {
                     return;
                 }
 
-                const hardwareOffset = this.appliedValue - value;
-                // Use LED to indicate softTakeover pickup position
-                if (hardwareOffset > 0) { // engine is faster
-                    this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
-                    return;
-                } else if (hardwareOffset < 0) { // engine is slower
+                const parameterValue = engine.getParameter(this.group, this.outKey);
+                const diffFromHardware = parameterValue - this.tempoFader.hardwarePosition;
+                if (diffFromHardware > this.toleranceWindow) {
                     this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
                     return;
+                } else if (diffFromHardware < (-1 * this.toleranceWindow)) {
+                    this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
+                    return;
                 }
 
-                // Fader is in sync with engine, set center LED on/off
-                if (value === 0) {
+                const oldCentered = this.centered;
+                if (Math.abs(value) < 0.001) {
                     this.send(this.color + Button.prototype.brightnessOn);
+                    // round to precisely 0
+                    engine.setValue(this.group, "rate", 0);
                 } else {
                     this.send(0);
                 }
@@ -2905,10 +2843,10 @@ class S4Mk3Deck extends Deck {
                 case WheelModes.motor:
                     // Smoothing the output playback (when not slipping/scratching)
                     if (engine.getValue(this.group, "play")) {
-                        if (this.deck.isSlipping == false){
+                        if (this.deck.isSlipping === false) {
                             // apply simple smoothing filter to the velocity input when the disc is not slipping/scratching
-                            this.velocity = this.prev_pitch + (NonSlipPitchSmoothing*(this.velocity - this.prev_pitch));
-                            this.prev_pitch = this.velocity;
+                            this.velocity = this.prevPitch + (NonSlipPitchSmoothing*(this.velocity - this.prevPitch));
+                            this.prevPitch = this.velocity;
                         }
                     } else {
                         engine.setValue(this.group, "scratch2", this.velocity);
@@ -3021,7 +2959,7 @@ class S4Mk3Deck extends Deck {
                         } else {
                             motorData.set(motorDeckData, 5);
                         }
-                        controller.sendOutputReport(49, motorData.buffer, true);
+                        controller.sendOutputReport(HIDOutputMotorsReportID, motorData.buffer, true);
                     }
                 }
                 this.lastPos = samplePos;
@@ -3126,15 +3064,16 @@ class S4Mk3MotorManager {
         // Set the Left/Right motor identifier
         // NOTE: CURRENTLY THIS ASSUMES THAT THE FIRST DECK ON THE LEFT IS 1
         //       AND THE FIRST DECK ON THE RIGHT IS 2
-        if (this.deck.decks[0] == 1) {
+        if (this.deck.decks[0] === 1) {
             this.deckMotorID = MotorBuffIDLeft;
         }
-        else if (this.deck.decks[0] == 2) {
+        else if (this.deck.decks[0] === 2) {
             this.deckMotorID = MotorBuffIDRight;
         }
         else {
-            this_is_an_error = true; // TODO: proper handling
+            console.warn(`First deck assignment ${this.deck.decks[0]} does not match expected mapping of 1 (left deck) or 2 (right deck)`);
         }
+
         this.motorBuffMgr = this.deck.motorBuffMgr;
 
         this.oldValue = [0, 0];
@@ -3147,11 +3086,11 @@ class S4Mk3MotorManager {
         this.outputTrackingPrev = 0;
 
         // Motor testing variables. For development only. -ZT
-        this.motortesting_onOff = false;
-        this.motortesting_complete = false;
-        this.motortesting_timer = Date.now();
-        this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
-        this.motorTesting_currentLevel = S4MK3MOTORTEST_STARTLVL;
+        this.motorTestingOnOff = false;
+        this.motorTestingComplete = false;
+        this.motorTestingTimer = Date.now();
+        this.motorTestingNextInterval = S4MK3MOTORTEST_UPTIME;
+        this.motorTestingCurrentLevel = S4MK3MOTORTEST_STARTLVL;
 
         this.nominalRatePrenudge = 1.0;
         this.isUpToSpeed = false;
@@ -3175,35 +3114,35 @@ class S4Mk3MotorManager {
         // If this deck is currently playing, calculate motor output:
         // Determine target (relative) angular velocity based on wheel mode
         if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play")) {
-            if (this.isStopped == true){
+            if (this.isStopped === true) {
                 this.isStopped = false;
                 engine.setValue(this.deck.group, "scratch2_enable", false);
             }
             // Motor calibration testing for determining real output torque. Development only.
-            if (S4MK3MOTORTEST_ENABLE && this.motortesting_complete == false) {
-                if (Date.now() - this.motortesting_timer > this.motortesting_next_interval) {    
-                    console.warn(this.deckMotorID, "Motor test level: ",this.motorTesting_currentLevel);
-                    this.motortesting_timer = Date.now();
+            if (S4MK3MOTORTEST_ENABLE && this.motorTestingComplete === false) {
+                if (Date.now() - this.motorTestingTimer > this.motorTestingNextInterval) {
+                    console.warn(this.deckMotorID, "Motor test level: ", this.motorTestingCurrentLevel);
+                    this.motorTestingTimer = Date.now();
                     // If the output was previously OFF, turn it on
-                    if (this.motortesting_onOff == false) {
-                        this.motortesting_onOff = true;
-                        this.motortesting_next_interval = S4MK3MOTORTEST_UPTIME;
+                    if (this.motorTestingOnOff === false) {
+                        this.motorTestingOnOff = true;
+                        this.motorTestingNextInterval = S4MK3MOTORTEST_UPTIME;
                     // If the output was previously ON, turn it off and increment
                     // for next time
                     } else {
-                        this.motortesting_onOff = false;
-                        this.motortesting_next_interval = S4MK3MOTORTEST_DOWNTIME;
-                        if (this.motorTesting_currentLevel > S4MK3MOTORTEST_ENDLVL) {
-                            this.motorTesting_currentLevel = 0;
-                            this.motortesting_complete = true;
+                        this.motorTestingOnOff = false;
+                        this.motorTestingNextInterval = S4MK3MOTORTEST_DOWNTIME;
+                        if (this.motorTestingCurrentLevel > S4MK3MOTORTEST_ENDLVL) {
+                            this.motorTestingCurrentLevel = 0;
+                            this.motorTestingComplete = true;
                         } else {
-                            this.motorTesting_currentLevel += S4MK3MOTORTEST_STEPSIZE;
+                            this.motorTestingCurrentLevel += S4MK3MOTORTEST_STEPSIZE;
                         }
                     }
                 }
 
-                if (this.motortesting_onOff == true) {
-                    outputTorque = this.motorTesting_currentLevel;
+                if (this.motorTestingOnOff === true) {
+                    outputTorque = this.motorTestingCurrentLevel;
                 } else {
                     outputTorque = 0;
                 }
@@ -3223,7 +3162,7 @@ class S4Mk3MotorManager {
             if (this.deck.wheelTouch.touched && Math.abs(playbackError) > SlipmatErrorThresh){
                 this.deck.isSlipping = true;
                 engine.setValue(this.deck.group, "scratch2_enable", true);
-            } else if (this.deck.wheelTouch.touched == false && this.deck.isSlipping && Math.abs(playbackError) < SlipmatErrorThresh) {
+            } else if (this.deck.wheelTouch.touched === false && this.deck.isSlipping && Math.abs(playbackError) < SlipmatErrorThresh) {
                 this.deck.isSlipping = false;
                 engine.setValue(this.deck.group, "scratch2_enable", false); 
 
@@ -3265,7 +3204,7 @@ class S4Mk3MotorManager {
                 trackingError = (outputTorque - (TargetMotorOutput*engine.getValue(this.deck.group, "rate_ratio")))/TargetMotorOutput;
 
                 // Only apply nudge/jog if the disc has spun up to the target velocity
-                if (this.isUpToSpeed == true){
+                if (this.isUpToSpeed === true) {
                     engine.setValue(this.deck.group, "jog", -trackingError*TurnTableNudgeSensitivity);
                     // console.warn(outputTorque, outputTracking, trackingError);
                 } else if (trackingError < 0) { //FIXME: use absolute error as threshold
@@ -3278,7 +3217,7 @@ class S4Mk3MotorManager {
 
         // If the deck isn't playing, but we're in motor mode, ensure that scratch mode is ON
         // and reset the "isUpToSpeed" flag
-        } else if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play") == false) {
+        } else if (this.deck.wheelMode === WheelModes.motor && engine.getValue(this.deck.group, "play") === false) {
             this.isUpToSpeed = false;
             this.isStopped = true;
             engine.setValue(this.deck.group, "scratch2_enable", true);
@@ -3627,6 +3566,7 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 5, inBit: 2},
                 deckButtonRight: {inByte: 5, inBit: 3},
                 deckButtonOutputByteOffset: 12,
+                tempoFaderLED: {outByte: 11},
                 shiftButton: {inByte: 5, inBit: 1, outByte: 59},
                 leftEncoder: {inByte: 19, inBit: 0},
                 leftEncoderPress: {inByte: 6, inBit: 2},
@@ -3654,7 +3594,7 @@ class S4MK3 {
                     {inByte: 3, inBit: 1, outByte: 6},
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputPotsReportID], outByte: 11},
+                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
                 // FIXME: the wheel position here is one byte offset from its position in the raw data,
                 // and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
                 wheelPosition: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputWheelsReportID]},
@@ -3679,6 +3619,7 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 14, inBit: 2},
                 deckButtonRight: {inByte: 14, inBit: 3},
                 deckButtonOutputByteOffset: 35,
+                tempoFaderLED: {outByte: 34},
                 shiftButton: {inByte: 14, inBit: 1, outByte: 70},
                 leftEncoder: {inByte: 20, inBit: 4},
                 leftEncoderPress: {inByte: 15, inBit: 5},
@@ -3706,7 +3647,7 @@ class S4MK3 {
                     {inByte: 13, inBit: 1, outByte: 29},
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputPotsReportID], outByte: 34},
+                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
                 // FIXME: the relative wheel value here is one byte offset from its position in the raw data,
                 // and is hardcoded as such later on. these entries really must be harmonized for readability and robustness. ZT
                 wheelPosition: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[HIDInputWheelsReportID]},
@@ -3773,7 +3714,7 @@ class S4MK3 {
     motorCallback() {
         this.leftMotor.tick();
         this.rightMotor.tick();
-        controller.sendOutputReport(49, this.motorBuffMgr.getBuff(), true);
+        controller.sendOutputReport(HIDOutputMotorsReportID, this.motorBuffMgr.getBuff(), true);
     }
     incomingData(data) {
         // The first byte of the HID report is the reportID
@@ -3790,7 +3731,6 @@ class S4MK3 {
 
             // The 32 bit unsigned ints at bytes 8 and 36 always have exactly the same value,
             // so only process one of them. This must be processed before the wheel positions.
-            const oldWheelTimer = wheelTimer;
             const view = new DataView(data.buffer);
             wheelTimer = view.getUint32(8, true);
 
