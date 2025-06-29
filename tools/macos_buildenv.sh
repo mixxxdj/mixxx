@@ -24,38 +24,26 @@ HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
 if [ "$HOST_ARCH" == "x86_64" ]; then
 	if [ -n "${BUILDENV_ARM64_CROSS}" ]; then
 	    if [ -n "${BUILDENV_RELEASE}" ]; then
-	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-	        BUILDENV_BRANCH="2.6-rel"
 	        BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-cross-rel-da4c207"
 	        BUILDENV_SHA256="4a6e7a2d83ae2056a89298a0fd6d110d44a4344e3968219dd0c3d34648599233"
 	    else
-	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
-	        BUILDENV_BRANCH="2.6"
 	        BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-cross-c2def9b"
 	        BUILDENV_SHA256="fa38900a64dec28c43888ec6f36421e9a8dc31e37115831fc779beca071014d7"
 	    fi
 	else
 	    if [ -n "${BUILDENV_RELEASE}" ]; then
-	        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
-	        BUILDENV_BRANCH="2.6-rel"
 	        BUILDENV_NAME="mixxx-deps-2.6-x64-osx-rel-da4c207"
 	        BUILDENV_SHA256="5e7f9a4d5d58a3b720a64d179f9cf72dab109460e74e9e31e9c2ada0885bb4a0"
 	    else
-	        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
-	        BUILDENV_BRANCH="2.6"
 	        BUILDENV_NAME="mixxx-deps-2.6-x64-osx-c2def9b"
 	        BUILDENV_SHA256="0c75b39d6c03e34e794ab95cc460b1d11a0b976d572e31451b7c0798d9035d73"
 	    fi
 	fi
 elif [ "$HOST_ARCH" == "arm64" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-        BUILDENV_BRANCH="2.6-rel"
         BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-rel-da4c207"
         BUILDENV_SHA256="5e47b9f3dcca509be324779ce83aa342c29680a8924f83b2ecac3021b7ad3e87"
     else
-        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
-        BUILDENV_BRANCH="2.6"
         BUILDENV_NAME="mixxx-deps-2.6-arm64-osx-c2def9b"
         BUILDENV_SHA256="c6a00220d9b938dedec4864dbcb4c2db2d1ca9e6f8f60c20883c0008a163db6f"
     fi
@@ -64,6 +52,14 @@ else
     echo "Please refer to the following guide to manually build the vcpkg environment:"
     echo "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
     exit 1
+fi
+
+VCPKG_COMMIT_SHA=$(echo $BUILDENV_NAME | rev | cut -d- -f 1 | rev)
+BUILDENV_BRANCH=$(echo $BUILDENV_NAME | cut -d- -f 3)
+VCPKG_TARGET_TRIPLET=$(echo $BUILDENV_NAME | cut -d- -f 4- | rev | cut -d- -f 2- | rev)
+
+if [[ $VCPKG_TARGET_TRIPLET == "*-rel" ]]; then
+    VCPKG_TARGET_TRIPLET=$(echo "$VCPKG_TARGET_TRIPLET" | rev | cut -d- -f 1 | rev)-release
 fi
 
 BUILDENV_URL="https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip"
@@ -87,15 +83,21 @@ case "$1" in
         export BUILDENV_BASEPATH
         export BUILDENV_URL
         export BUILDENV_SHA256
+
+        # Specific to GH release
+        export BUILDENV_BRANCH
+        export VCPKG_COMMIT_SHA
         export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export CMAKE_GENERATOR=Ninja
-        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
+        export VCPKG_TARGET_TRIPLET
 
         echo_exported_variables() {
             echo "BUILDENV_NAME=${BUILDENV_NAME}"
             echo "BUILDENV_BASEPATH=${BUILDENV_BASEPATH}"
             echo "BUILDENV_URL=${BUILDENV_URL}"
             echo "BUILDENV_SHA256=${BUILDENV_SHA256}"
+            echo "BUILDENV_BRANCH=${BUILDENV_BRANCH}"
+            echo "VCPKG_COMMIT_SHA=${VCPKG_COMMIT_SHA}"
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
             echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
