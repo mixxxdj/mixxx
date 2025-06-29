@@ -20,6 +20,7 @@ env:
 
 jobs:
   sync-branches:
+    if: ${{ inputs.pat_token != '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
