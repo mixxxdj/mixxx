@@ -304,6 +304,7 @@ jobs:
           -DQTKEYCHAIN=ON
           -DVINYLCONTROL=ON
           -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DBUILDENV_FROM_GH=ON
           -L
           ..
         working-directory: build
