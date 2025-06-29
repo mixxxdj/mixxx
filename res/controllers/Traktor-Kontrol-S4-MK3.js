@@ -3210,11 +3210,15 @@ class S4Mk3MotorManager {
             // apply slipmat friction force if slipping
             if (this.deck.isSlipping) {
                 engine.setValue(this.deck.group, "scratch2", normalizedVelocity);
-                if (playbackError > 0) {
+                // use the slipmat error threshold as a 'dead zone' to avoid chattering when
+                // hand-spinning close to the nominal rotation velocity
+                if (playbackError > SlipmatErrorThresh) {
                     outputTorque = SlipFrictionForce;
                 }
-                else {
+                else if (playbackError < -SlipmatErrorThresh) {
                     outputTorque = -SlipFrictionForce;
+                } else {
+                    outputTorque = 0;
                 }
             // If we aren't slipping, apply new motor controller
             } else {
