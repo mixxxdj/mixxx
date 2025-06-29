@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (unreleased)
+
+### Controller Mappings
+
+* Traktor Kontrol S4 Mk3: tempo offset per deck [#14882](https://github.com/mixxxdj/mixxx/pull/14882)
+* Traktor Kontrol S4 Mk3: don`t duplicate beatloop_activate behaviour [#14992](https://github.com/mixxxdj/mixxx/pull/14992)
+* Traktor Kontrol S3: allow full library navigation [#14980](https://github.com/mixxxdj/mixxx/pull/14980)
+
+### Misc
+
+* Broadcast preferences: make setting string translatable [#15023](https://github.com/mixxxdj/mixxx/pull/15023)
+* Sound Hardware preference: add (?) linking to Sound APIs in the manual [#14935](https://github.com/mixxxdj/mixxx/pull/14935)
+* xwax: do not try to "correct" for drift in absolute mode. [#14960](https://github.com/mixxxdj/mixxx/pull/14960)
+* Fix column header text assignment [#14944](https://github.com/mixxxdj/mixxx/pull/14944)
+* Remove runtime assert to not risk crashes [#15000](https://github.com/mixxxdj/mixxx/pull/15000)
+* Windows: Update build environment to Visual Studio 2022 [#15006](https://github.com/mixxxdj/mixxx/pull/15006)
+
 ## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (2025-06-13)
 
 ### Library
