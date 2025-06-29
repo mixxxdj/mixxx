@@ -87,8 +87,8 @@ const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
 // Value center may be off the labeled center.
 // Use this setting to compensate per device.
 const TempoCenterValueOffset = engine.getSetting("tempoCenterOffsetMm") || 0.0;
-const TempoCenterUpper = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
-const TempoCenterLower = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffset;
+const TempoCenterUpper = (4096 / 2) + (TempoCenterRangeTicks / 2) + (TempoCenterValueOffset * TempoFaderTicksPerMm);
+const TempoCenterLower = (4096 / 2) - (TempoCenterRangeTicks / 2) + (TempoCenterValueOffset * TempoFaderTicksPerMm);
 
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
@@ -3104,7 +3104,7 @@ class S4Mk3MotorManager {
             this.deckMotorID = MotorBuffIDRight;
         }
         else {
-            console.warn("Deck assignment does not match expectation");
+            console.warn(`First deck assignment ${this.deck.decks[0]} does not match expected mapping of 1 (left deck) or 2 (right deck)`);
         }
 
         this.motorBuffMgr = this.deck.motorBuffMgr;
