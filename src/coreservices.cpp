@@ -865,8 +865,8 @@ void CoreServices::finalize() {
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
-    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 #endif
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
