@@ -23,6 +23,19 @@ jobs:
 
   build:
     uses: ./.github/workflows/build.yml
+    with:
+      publish: true
+    secrets:
+      azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+      azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+      azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      downloads_hostgator_dot_mixxx_dot_org_key: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+      downloads_hostgator_dot_mixxx_dot_org_key_password: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+      macos_codesign_certificate_p12_base64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
+      macos_codesign_certificate_password: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      macos_notarization_app_specific_password: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+      netlify_build_hook: ${{ secrets.NETLIFY_BUILD_HOOK }}
+      rryan_at_mixxx_dot_org_gpg_private_key: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
   sync:
     if: ${{ github.ref != 'refs/heads/main' }}

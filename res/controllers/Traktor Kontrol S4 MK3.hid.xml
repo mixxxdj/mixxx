@@ -183,17 +183,30 @@
                     Defines the center range in mm where the rate snaps to 0.
                 </description>
             </option>
-            <option
-                variable="tempoCenterOffsetMm"
-                type="real"
-                min="-3.0"
-                max="3.0"
-                default="0.0"
-                label="Center Snap Offset in Millimeter">
-                <description>
-                    Shifts the center range in case it doesn't match the center marker.
-                </description>
-            </option>
+            <row orientation="vertical">
+                <option
+                    variable="tempoCenterOffsetMmLeft"
+                    type="real"
+                    min="-3.0"
+                    max="3.0"
+                    default="0.0"
+                    label="Center Snap Offset in Millimeter (Left Deck)">
+                    <description>
+                        Shifts the center range in case it doesn't match the center marker.
+                    </description>
+                </option>
+                <option
+                    variable="tempoCenterOffsetMmRight"
+                    type="real"
+                    min="-3.0"
+                    max="3.0"
+                    default="0.0"
+                    label="Center Snap Offset in Millimeter (Right Deck)">
+                    <description>
+                        Shifts the center range in case it doesn't match the center marker.
+                    </description>
+                </option>
+            </row>
         </group>
 
         <group label="Alternative Mapping">
