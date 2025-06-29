@@ -14,6 +14,12 @@ env:
   ACTIVE_VERSIONS: |-
     {"2.5": "2.6", "2.6": "main"}
 
+# Global allowed scopes for all actions
+permissions:
+  contents: write # to sync branches
+  pull-requests: write # to sync branches
+  checks: write #  to create new checks (coverallsapp/github-action)
+
 jobs:
   checks:
     uses: ./.github/workflows/checks.yml
