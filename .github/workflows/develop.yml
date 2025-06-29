@@ -25,6 +25,9 @@ jobs:
     outputs:
       result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
     steps:
+      - name: Wait for 2 minutes
+        run: sleep 120
+
       - name: Check if there is an open PR for this branch
         id: stop-build
         if: ${{ github.event_name == 'push' }}
