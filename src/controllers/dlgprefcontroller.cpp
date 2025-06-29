@@ -324,13 +324,6 @@ DlgPrefController::DlgPrefController(
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
     m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
     m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
-
-#ifndef MIXXX_USE_QML
-    // Remove the screens tab
-    m_ui.controllerTabs->removeTab(m_screensTabIndex);
-    // Just to be save
-    m_screensTabIndex = -1;
-#endif
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -1150,9 +1143,9 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
         m_pMapping = pMapping;
     }
 
-#ifdef MIXXX_USE_QML
     // Add the screens tab if there are screens
     if (pMapping && CmdlineArgs::Instance().getControllerPreviewScreens()) {
+#ifdef MIXXX_USE_QML
         auto screens = pMapping->getInfoScreens();
         bool hasScreens = !screens.isEmpty();
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, hasScreens);
@@ -1160,11 +1153,11 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
         if (hasScreens) {
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
         }
+#endif
     } else {
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
         m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, false);
     }
-#endif
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
