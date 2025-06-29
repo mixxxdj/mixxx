@@ -6,6 +6,7 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "track/track.h"
 #include "effects/effectsmanager.h"
