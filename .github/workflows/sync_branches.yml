@@ -2,14 +2,6 @@
 name: Sync Branches
 on:
   workflow_call:
-    inputs:
-      enabled:
-        type: boolean
-        default: true
-        description: >-
-          Whether or not to run this workflow. This is a workaround on the 'secrets' context not being
-          available in 'jobs.<job_id>.if'
-          (https://docs.github.com/en/actions/reference/accessing-contextual-information-about-workflow-runs#context-availability)
     secrets:
       # PAT setup with content:write and pull_request:write
       MIXXX_BRANCH_SYNC_PAT:
@@ -28,8 +20,21 @@ env:
     {"2.5": "2.6", "2.6": "main"}
 
 jobs:
+  # This is a workaround to the fact that GH contexts are basically useless
+  # (https://docs.github.com/en/actions/reference/accessing-contextual-information-about-workflow-runs#context-availability)
+  # Microsoft, if you read this, stop spending incredible amount of effort on freaking Copilot
+  # and start delivering a CI solution that isn't as useless as the current one
+  predicate:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ secrets.MIXXX_BRANCH_SYNC_PAT != '' }}
+    steps:
+      - run: exit 1
+        if: false
+
   sync-branches:
-    if: ${{ inputs.enabled }}
+    needs: [predicate]
+    if: ${{ needs.predicate.outputs.result == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
