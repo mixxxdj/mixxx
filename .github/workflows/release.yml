@@ -41,4 +41,4 @@ jobs:
     if: ${{ github.ref != 'refs/heads/main' }}
     uses: ./.github/workflows/sync_branches.yml
     secrets:
-      pat_token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
+      MIXXX_BRANCH_SYNC_PAT: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
