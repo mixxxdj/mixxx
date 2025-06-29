@@ -2719,7 +2719,7 @@ class S4Mk3Deck extends Deck {
                         engine.setValue(this.group, "scratch2_enable", false);
                     } else {
                         this.deck.wheelMode = WheelModes.motor;
-                        engine.setValue(this.group, "scratch2_enable", false);
+                        engine.setValue(this.group, "scratch2_enable", true);
                         const group = this.group;
                     }
                     this.outTrigger();
