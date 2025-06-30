@@ -8,6 +8,7 @@
 #include "util/math.h"
 #include "util/types.h"
 
+class CueControl;
 class LoopingControl;
 class RateControl;
 
@@ -38,7 +39,7 @@ class ReadAheadManager {
 
     /// Used to add a new EngineControls that ReadAheadManager will use to decide
     /// which samples to return.
-    void addLoopingControl();
+    void addCueControl(CueControl* pCueControl);
     void addRateControl(RateControl* pRateControl);
 
     /// Get the current read-ahead position in samples.
@@ -121,6 +122,7 @@ class ReadAheadManager {
     void addReadLogEntry(double virtualPlaypositionStart,
                          double virtualPlaypositionEndNonInclusive);
 
+    CueControl* m_pCueControl;
     LoopingControl* m_pLoopingControl;
     RateControl* m_pRateControl;
     std::list<ReadLogEntry> m_readAheadLog;
