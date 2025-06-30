@@ -10,6 +10,7 @@ class WaveformRenderMark : public WaveformRenderMarkBase {
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
+    void updateEndMarkImage(WaveformMarkPointer pMark) override;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
