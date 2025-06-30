@@ -25,12 +25,6 @@ DbId GenreDAO::addGenre(const QString& name) {
         return DbId();
     }
 
-    // First Check if genre exists
-    Genre existingGenre = getGenreByName(trimmedName);
-    if (existingGenre.isValid()) {
-        return existingGenre.id;
-    }
-
     // Insert new genre
     QSqlQuery query(database());
     query.prepare(QString("INSERT INTO %1 (%2) VALUES (:name)")
