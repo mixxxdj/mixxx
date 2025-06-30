@@ -620,8 +620,8 @@
                 variable="baseRevolutionsPerMinute"
                 type="enum"
                 label="Turntable speed">
-                <value label="33.3 RPM" default="true">33.33</value>
-                <value label="45 RPM">45</value>
+                <value label="33.3 RPM" default="true">33</value>
+                <value label="45 RPM">45.0</value>
                 <description>Define how fast the jogwheel rotates at the default play rate. This will impact scratch sensitivity, motor speed and ring LED pace.</description>
             </option>
         </group>
@@ -664,15 +664,81 @@
                 </option>
 
                 <option
+                    variable="turnTableNudgeSensitivity"
+                    type="real"
+                    precision="2"
+                    min="0.01"
+                    max="1.00"
+                    step="0.01"
+                    default="0.1"
+                    label="Motorized Nudge Sensitivity">
+                    <description>
+                        Adjust the degree to which pushing/dragging the crown affects playrate.
+                    </description>
+                </option>
+
+                <option
                     variable="maxWheelForce"
                     type="integer"
                     min="8000"
-                    max="32000"
+                    max="60000"
                     step="500"
                     default="25000"
                     label="Jogwheel torque">
                     <description>
                         This setting defines how much torque can Mixxx use on the motor.
+                    </description>
+                </option>
+
+                <option
+                    variable="proportionalGain"
+                    type="integer"
+                    min="1"
+                    max="100000"
+                    step="500"
+                    default="80000"
+                    label="(testing) P-CONTROLLER GAIN">
+                    <description>
+                        How strongly the velocity error translates into motor output
+                    </description>
+                </option>
+
+                <option
+                    variable="integrativeGain"
+                    type="integer"
+                    min="0"
+                    max="10000"
+                    step="10"
+                    default="1000"
+                    label="(testing) I-CONTROLLER GAIN">
+                    <description>
+                        How strongly the integrative error affects motor output
+                    </description>
+                </option>
+
+                <option
+                    variable="derivativeGain"
+                    type="integer"
+                    min="0"
+                    max="100000"
+                    step="10"
+                    default="50000"
+                    label="(testing) D-CONTROLLER GAIN">
+                    <description>
+                        How strongly the error delta affects motor output
+                    </description>
+                </option>
+
+                <option
+                    variable="slipFrictionForce"
+                    type="integer"
+                    min="0"
+                    max="20000"
+                    step="100"
+                    default="6000"
+                    label="(testing) SLIP FRICTION FORCE">
+                    <description>
+                        How strongly the TT resists scratching
                     </description>
                 </option>
             </row>
