@@ -2,14 +2,6 @@
 name: Sync Branches
 on:
   workflow_call:
-    inputs:
-      enabled:
-        type: boolean
-        default: true
-        description: >-
-          Whether or not to run this workflow. This is a workaround on the 'secrets' context not being
-          available in 'jobs.<job_id>.if'
-          (https://docs.github.com/en/actions/reference/accessing-contextual-information-about-workflow-runs#context-availability)
     secrets:
       # PAT setup with content:write and pull_request:write
       MIXXX_BRANCH_SYNC_PAT:
@@ -29,7 +21,6 @@ env:
 
 jobs:
   sync-branches:
-    if: ${{ inputs.enabled }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
