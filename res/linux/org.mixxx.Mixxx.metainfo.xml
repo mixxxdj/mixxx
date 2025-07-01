@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-06-13" timestamp="1749767603">
+    <release version="2.6.0" type="development" date="2025-06-29" timestamp="1751222636">
       <description>
  <p>
   STEM file support
@@ -1074,6 +1074,56 @@
   <li>
    qmlwaveform: Fix moc in Qt 6.9.0
    #14649
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.5.3" type="development" date="2025-06-29" timestamp="1751222636">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Traktor Kontrol S4 Mk3: tempo offset per deck
+   #14882
+  </li>
+  <li>
+   Traktor Kontrol S4 Mk3: don`t duplicate beatloop_activate behaviour
+   #14992
+  </li>
+  <li>
+   Traktor Kontrol S3: allow full library navigation
+   #14980
+  </li>
+ </ul>
+ <p>
+  Misc
+ </p>
+ <ul>
+  <li>
+   Broadcast preferences: make setting string translatable
+   #15023
+  </li>
+  <li>
+   Sound Hardware preference: add (?) linking to Sound APIs in the manual
+   #14935
+  </li>
+  <li>
+   xwax: do not try to "correct" for drift in absolute mode.
+   #14960
+  </li>
+  <li>
+   Fix column header text assignment
+   #14944
+  </li>
+  <li>
+   Remove runtime assert to not risk crashes
+   #15000
+  </li>
+  <li>
+   Windows: Update build environment to Visual Studio 2022
+   #15006
   </li>
  </ul>
 </description>
