@@ -106,19 +106,19 @@ var P1Nano;
     };
 
     const fmtSeconds = function(value, ext=false) {
-        const minutes = Math.floor(value / 60);
-        const seconds = Math.floor(value - minutes * 60);
-        const ms = Math.floor(((value - (minutes * 60) - seconds) % 1) * 60);
+        const minutes = Math.floor(value / 60).toString().padStart(2, 0);
+        const seconds = Math.floor(value - minutes * 60).toString().padStart(2, 0);
+        const ms = Math.floor(((value - (minutes * 60) - seconds) % 1) * 60).toString().padStart(2, 0);
 
         // Don't list hours, chances are most DJ songs aren't that long.
-        let out = `${minutes.toString().padStart(2, 0)  }.${  seconds.toString().padStart(2, 0)}`;
+        let out = `${minutes}.${seconds}`;
         if (ext) {
             // Note that this is *different* from what Mixxx displays (the
             // fractional part) because we use '.' as a separator to save space
             // on the display so if we did "00.00.01" (as opposed to "00:00.01")
             // you can't tell that the last part is a fractional part (and not
             // milliseconds).
-            out += `.${  ms.toString().padStart(2, 0)}`;
+            out += `.${ms}`;
         }
         return out;
     };
