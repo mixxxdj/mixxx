@@ -162,7 +162,7 @@ var P1Nano;
                 break;
             case 2:
                 // Showing both
-                time = `${fmtSeconds(playPos * dur)  } -${  fmtSeconds(dur - (playPos * dur))}`;
+                time = `${fmtSeconds(playPos * dur)} -${fmtSeconds(dur - (playPos * dur))}`;
                 break;
             }
             printSevenSeg(time);
