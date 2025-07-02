@@ -162,7 +162,22 @@ int HidController::open(const QString& resourcePath) {
         return -1;
     }
 
-    m_pHidIoThread = std::make_unique<HidIoThread>(pHidDevice, m_deviceInfo);
+    // When fetching the report descriptor, from m_deviceInfo or if not read yet from the device
+    const std::vector<uint8_t>& rawReportDescriptor =
+            m_deviceInfo.fetchRawReportDescriptor(pHidDevice);
+
+    if (!rawReportDescriptor.empty()) {
+        m_reportDescriptor =
+                std::make_shared<hid::reportDescriptor::HidReportDescriptor>(
+                        rawReportDescriptor);
+        m_reportDescriptor->parse();
+        m_deviceUsesReportIds = m_reportDescriptor->isDeviceWithReportIds();
+    } else {
+        m_reportDescriptor.reset();
+        m_deviceUsesReportIds = std::nullopt;
+    }
+
+    m_pHidIoThread = std::make_unique<HidIoThread>(pHidDevice, m_deviceInfo, m_deviceUsesReportIds);
     m_pHidIoThread->setObjectName(QStringLiteral("HidIoThread ") + getName());
 
     connect(m_pHidIoThread.get(),
