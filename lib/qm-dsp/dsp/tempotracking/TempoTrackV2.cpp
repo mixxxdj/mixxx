@@ -141,23 +141,25 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // Beat tracking window length (roughly 6 seconds) and hop size (1.5 seconds)
     int winlen = 512;
     int hopsize = 128;
-
+    
+    int df_len = int(df.size());
+    
     // Matrix to store output of comb filter bank
     d_mat_t rcfmat;
-    int df_len = int(df.size());
+    rcfmat.reserve(df_len / hopsize + 1);
+    d_vec_t dfframe(winlen);
+    d_vec_t rcf(wv_len);
 
     // Loop over the onset detection function in overlapping windows.
     for (int i = 0; i + winlen < df_len; i += hopsize) {
         
         // Extact a window from df
-        d_vec_t dfframe(winlen);
         for (int k = 0; k < winlen; k++) {
             dfframe[k] = df[i + k];
         }
 
         // Apply the resonator comb filter (RCF) bank to the window
         // The result is a vector of filter responses for different periods.
-        d_vec_t rcf(wv_len);
         get_rcf(dfframe, wv, rcf);
 
         // Append the result to rcfmat as a new column 
