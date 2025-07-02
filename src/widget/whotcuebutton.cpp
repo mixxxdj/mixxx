@@ -9,6 +9,7 @@
 #include <QMimeData>
 #include <QMouseEvent>
 
+#include "engine/controls/cuecontrol.h"
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
 #include "skin/legacy/skincontext.h"
@@ -94,6 +95,23 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoType->connectValueChanged(this, &WHotcueButton::slotTypeChanged);
     slotTypeChanged(m_pCoType->get());
 
+    m_pCoPosition = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("position")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pCoPosition->connectValueChanged(this, &WHotcueButton::slotUpdateDirection);
+    m_pCoEndPosition = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("endposition")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pCoEndPosition->connectValueChanged(this, &WHotcueButton::slotUpdateDirection);
+    slotUpdateDirection();
+
+    m_pCoActive = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("status")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+
     addConnection(std::make_unique<ControlParameterWidgetConnection>(
                           this,
                           getLeftClickConfigKey(), // "activate"
@@ -114,6 +132,12 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     if (!con.isNull()) {
         SKIN_WARNING(node, context, QStringLiteral("Additional Connections are not allowed"));
     }
+}
+
+bool WHotcueButton::isActive() const {
+    return m_pCoActive &&
+            m_pCoActive->get() ==
+            static_cast<double>(HotcueControl::Status::Active);
 }
 
 void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
@@ -271,6 +295,13 @@ void WHotcueButton::slotColorChanged(double color) {
     }
 
     setStyleSheet(style);
+    restyleAndRepaint();
+}
+
+void WHotcueButton::slotUpdateDirection(double) {
+    m_direction = m_pCoPosition->get() >= m_pCoEndPosition->get()
+            ? QStringLiteral("forward")
+            : QStringLiteral("backward");
     restyleAndRepaint();
 }
 

@@ -62,6 +62,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
+    void updateEndMarkImage(WaveformMarkPointer pMark) override;
 
     void updatePlayPosMarkTexture(rendergraph::Context* pContext);
 
