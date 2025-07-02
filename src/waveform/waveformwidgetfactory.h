@@ -157,6 +157,10 @@ class WaveformWidgetFactory : public QObject,
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
 
+    void setStemReorderOnChange(bool value);
+    void setStemOutlineOpacity(float value);
+    void setStemOpacity(float value);
+
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
     }
@@ -171,6 +175,15 @@ class WaveformWidgetFactory : public QObject,
     }
     float getUntilMarkTextHeightLimit() const {
         return m_untilMarkTextHeightLimit;
+    }
+    bool isStemReorderOnChange() const {
+        return m_stemReorderOnChange;
+    }
+    float getStemOutlineOpacity() const {
+        return m_stemOutlineOpacity;
+    }
+    float getStemOpacity() const {
+        return m_stemOpacity;
     }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
@@ -233,6 +246,10 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
 
+    void stemReorderOnChangeChanged(bool value);
+    void stemOutlineOpacityChanged(float value);
+    void stemOpacityChanged(float value);
+
   public slots:
     void slotSkinLoaded();
 
@@ -294,6 +311,10 @@ class WaveformWidgetFactory : public QObject,
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;
+
+    bool m_stemReorderOnChange;
+    float m_stemOutlineOpacity;
+    float m_stemOpacity;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
