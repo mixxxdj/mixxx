@@ -106,9 +106,12 @@ var P1Nano;
     };
 
     const fmtSeconds = function(value, ext=false) {
-        const minutes = Math.floor(value / 60).toString().padStart(2, 0);
-        const seconds = Math.floor(value - minutes * 60).toString().padStart(2, 0);
-        const ms = Math.floor(((value - (minutes * 60) - seconds) % 1) * 60).toString().padStart(2, 0);
+        const minutes = Math.floor(value / 60).toString()
+            .padStart(2, 0);
+        const seconds = Math.floor(value - minutes * 60).toString()
+            .padStart(2, 0);
+        const ms = Math.floor(((value - (minutes * 60) - seconds) % 1) * 60).toString()
+            .padStart(2, 0);
 
         // Don't list hours, chances are most DJ songs aren't that long.
         let out = `${minutes}.${seconds}`;
