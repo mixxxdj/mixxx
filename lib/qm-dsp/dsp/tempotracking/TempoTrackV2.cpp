@@ -138,31 +138,32 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
         }
     }
 
-    // beat tracking frame size (roughly 6 seconds) and hop (1.5 seconds)
+    // Beat tracking window length (roughly 6 seconds) and hop size (1.5 seconds)
     int winlen = 512;
-    int step = 128;
+    int hopsize = 128;
 
-    // matrix to store output of comb filter bank, increment column of matrix at each frame
+    // Matrix to store output of comb filter bank
     d_mat_t rcfmat;
-    int col_counter = -1;
     int df_len = int(df.size());
 
-    // main loop for beat period calculation
-    for (int i = 0; i+winlen < df_len; i+=step) {
+    // Loop over the onset detection function in overlapping windows.
+    for (int i = 0; i + winlen < df_len; i += hopsize) {
         
-        // get dfframe
+        // Extact a window from df
         d_vec_t dfframe(winlen);
-        for (int k=0; k < winlen; k++) {
-            dfframe[k] = df[i+k];
+        for (int k = 0; k < winlen; k++) {
+            dfframe[k] = df[i + k];
         }
-        // get rcf vector for current frame
-        d_vec_t rcf(wv_len);
-        get_rcf(dfframe,wv,rcf);
 
-        rcfmat.push_back( d_vec_t() ); // adds a new column
-        col_counter++;
+        // Apply the resonator comb filter (RCF) bank to the window
+        // The result is a vector of filter responses for different periods.
+        d_vec_t rcf(wv_len);
+        get_rcf(dfframe, wv, rcf);
+
+        // Append the result to rcfmat as a new column 
+        rcfmat.push_back(d_vec_t());
         for (int j = 0; j < wv_len; j++) {
-            rcfmat[col_counter].push_back( rcf[j] );
+            rcfmat.back().push_back(rcf[j]);
         }
     }
 
