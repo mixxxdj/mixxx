@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "library/dao/genredao.h"
 #include "library/externaltrackcollection.h"
 #include "library/library_decl.h"
 #include "library/library_prefs.h"
@@ -35,14 +36,16 @@ parented_ptr<TrackCollection> createInternalTrackCollection(
 
 } // anonymous namespace
 
-TrackCollectionManager::TrackCollectionManager(
-        QObject* parent,
+TrackCollectionManager::TrackCollectionManager(QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
+        : QObject(parent),
+          m_pConfig(pConfig),
+          m_pInternalCollection(createInternalTrackCollection(
+                  this, pConfig, deleteTrackForTestingFn)) m_pGenreDAO =
+                  std::make_unique<GenreDAO>(dbConnection.get());
+{
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
@@ -619,8 +622,42 @@ bool TrackCollectionManager::updateTrackGenre(
 bool TrackCollectionManager::updateTrackMood(
         Track* pTrack,
         const QString& mood) const {
-    return pTrack->updateMood(
+    s return pTrack->updateMood(
             // TODO: Pass tagging config
             mood);
 }
 #endif // __EXTRA_METADATA__
+
+// Replaces all genres for a given track by providing a list of names.
+bool TrackCollectionManager::updateTrackGenres(Track* pTrack, const QStringList& genreNames) const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return false;
+    }
+
+    QList<DbId> genreIds;
+    genreIds.reserve(genreNames.size());
+
+    // For each name, get its ID. If the genre doesn't exist, DAO will create it.
+    for (const QString& name : genreNames) {
+        const DbId genreId = m_pGenreDAO->addGenre(name);
+        if (genreId.isValid()) {
+            genreIds.append(genreId);
+        }
+    }
+
+    // Update the track's associations in the database.
+    return m_pGenreDAO->setGenresForTrack(pTrack->getId(), genreIds);
+}
+
+// Retrieves all genres from the database.
+QList<Genre> TrackCollectionManager::getAllGenres() const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    return m_pGenreDAO->getAllGenres();
+}
+
+// Cleans unused genres from the database.
+int TrackCollectionManager::cleanupUnusedGenres() const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    return m_pGenreDAO->deleteUnusedGenres();
+}

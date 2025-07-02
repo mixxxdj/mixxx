@@ -25,7 +25,6 @@ class TrackInfo final {
     MIXXX_DECL_PROPERTY(QString, encoder, Encoder)
     MIXXX_DECL_PROPERTY(QString, encoderSettings, EncoderSettings)
 #endif // __EXTRA_METADATA__
-    MIXXX_DECL_PROPERTY(QString, genre, Genre)
     MIXXX_DECL_PROPERTY(QString, grouping, Grouping)
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, isrc, ISRC)
@@ -54,6 +53,23 @@ class TrackInfo final {
     MIXXX_DECL_PROPERTY(QString, work, Work)
 #endif // __EXTRA_METADATA__
     MIXXX_DECL_PROPERTY(QString, year, Year) // = release date
+
+  private:
+    // Holds a list of genres associated with the track.
+    QList<Genre> m_genres;
+
+  public:
+    // Returns the list of genres for this track.
+    const QList<Genre>& getGenres() const;
+
+    // Returns a comma-separated string of genre names for simple display.
+    QString getGenresString() const;
+
+    // Sets the list of genres for this track.
+    void setGenres(const QList<Genre>& genres);
+
+    // Debug helper to print genre info.
+    void dbgGenres(QDebug& dbg) const;
 
   public:
     TrackInfo() = default;
