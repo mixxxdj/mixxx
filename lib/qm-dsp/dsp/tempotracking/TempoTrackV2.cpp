@@ -315,13 +315,8 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     }
 
     i_vec_t bestpath(T);
-    d_vec_t tmp_vec(Q);
-    for (int i = 0; i < Q; i++) {
-        tmp_vec[i] = delta[T-1][i];
-    }
-
     // find starting point - best beat period for "last" frame
-    bestpath[T-1] = get_max_ind(tmp_vec);
+    bestpath[T-1] = get_max_ind(delta[T-1]);
 
     // backtrace through index of maximum values in psi
     for (int t=T-2; t>0 ;t--) {
