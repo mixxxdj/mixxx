@@ -150,12 +150,11 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     d_vec_t dfframe(winlen);
     d_vec_t rcf(wv_len);
 
-    // Loop over the onset detection function in overlapping windows.
-    for (int i = 0; i + winlen < df_len; i += hopsize) {
-        
-        // Extact a window from df
+    // Loop over the onset detection function half a window padding on both ends
+    for (int i = -winlen / 2; i < df_len - winlen / 2; i += hopsize) {
         for (int k = 0; k < winlen; k++) {
-            dfframe[k] = df[i + k];
+            int j = i + k;
+            dfframe[k] = (j >= 0 && j < df_len) ? df[j] : 0.0;
         }
 
         // Apply the resonator comb filter (RCF) bank to the window
@@ -329,19 +328,9 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     // weird but necessary hack -- couldn't get above loop to terminate at t >= 0
     bestpath[0] = psi[1][bestpath[1]];
 
-    int lastind = 0;
-    for (int i = 0; i < T; i++) {
-        int step = 128;
-        for (int j = 0; j < step; j++) {
-            lastind = i*step+j;
-            beat_period[lastind] = bestpath[i];
-        }
-//        std::cerr << "bestpath[" << i << "] = " << bestpath[i] << " (used for beat_periods " << i*step << " to " << i*step+step-1 << ")" << std::endl;
-    }
-
-    // fill in the last values...
-    for (int i = lastind; i < int(beat_period.size()); i++) {
-        beat_period[i] = beat_period[lastind];
+    for (std::size_t i = 0; i < beat_period.size(); i++) {
+        beat_period[i] = bestpath[i/128];
+        //        std::cerr << "bestpath[" << i << "] = " << bestpath[i] << " (used for beat_periods " << i*step << " to " << i*step+step-1 << ")" << std::endl;
     }
 }
 
