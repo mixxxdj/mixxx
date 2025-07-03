@@ -498,6 +498,7 @@ double RateControl::calculateSpeed(double baserate,
             if (m_pReverseButton->toBool() && !m_pScratch2Enable->toBool() &&
                     (!bVinylControlEnabled ||
                             vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+                qDebug() << "calculatespeed(): reversing. New rate: " << -rate;
                 rate = -rate;
                 *pReportReverse = true;
             }
@@ -506,6 +507,7 @@ double RateControl::calculateSpeed(double baserate,
     return rate;
 }
 
+// https://mixxx.discourse.group/t/pitch-bend-vs-ramping-pitch-bend/28158
 void RateControl::processTempRate(const std::size_t bufferSamples) {
     // Code to handle temporary rate change buttons.
     // We support two behaviors, the standard ramped pitch bending

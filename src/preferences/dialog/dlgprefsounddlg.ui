@@ -93,29 +93,42 @@
       </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QLabel" name="masteMixLabel">
+      <widget class="QLabel" name="ScratchingLabel">
+        <property name = "text">
+          <string>Scratching Engine</string>
+        </property>
+       <property name="buddy">
+        <cstring>scratchingComboBox</cstring>
+       </property>
+      </widget>
+    </item>
+    <item row="6" column="1">
+      <widget class="QComboBox" name="scratchingComboBox"/>
+    </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="mainMixLabel">
        <property name="text">
         <string>Main Mix</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QComboBox" name="mainMixComboBox"/>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QComboBox" name="mainOutputModeComboBox"/>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="mainMonoLabel">
        <property name="text">
         <string>Main Output Mode</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QComboBox" name="micMonitorModeComboBox"/>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="micMonitorModeLabel">
        <property name="text">
         <string>Microphone Monitor Mode</string>
@@ -125,7 +138,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="latencyCompensationLabel">
        <property name="text">
         <string>Microphone Latency Compensation</string>
@@ -135,7 +148,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="1">
       <widget class="QDoubleSpinBox" name="latencyCompensationSpinBox">
        <property name="suffix">
         <string> ms</string>
@@ -438,6 +451,8 @@
   <tabstop>audioBufferComboBox</tabstop>
   <tabstop>deviceSyncComboBox</tabstop>
   <tabstop>engineClockComboBox</tabstop>
+  <tabstop>keylockComboBox</tabstop>
+  <tabstop>scratchingComboBox</tabstop>
   <tabstop>mainMixComboBox</tabstop>
   <tabstop>mainOutputModeComboBox</tabstop>
   <tabstop>micMonitorModeComboBox</tabstop>
