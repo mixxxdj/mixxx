@@ -98,6 +98,8 @@ DlgPreferences::DlgPreferences(
     }
 
     // Construct page widgets and associated sidebar items
+
+    // sound hardware page
     m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pSoundManager, m_pConfig);
     m_soundPage = PreferencesPage(
             m_pSoundDlg.get(),

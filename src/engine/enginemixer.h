@@ -319,6 +319,7 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<ControlPushButton> m_pXFaderReverse;
     std::unique_ptr<ControlPushButton> m_pHeadSplitEnabled;
     std::unique_ptr<ControlObject> m_pKeylockEngine;
+    std::unique_ptr<ControlObject> m_pScratchingEngine;
 
     PflGainCalculator m_headphoneGain;
     TalkoverGainCalculator m_talkoverGain;

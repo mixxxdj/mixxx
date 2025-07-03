@@ -7,6 +7,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/bufferscalers/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalesr.h"
 #include "engine/bufferscalers/enginebufferscalest.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/channels/enginechannel.h"
@@ -35,6 +36,9 @@
 
 #ifdef __RUBBERBAND__
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
+#endif
+#ifdef __LIBSAMPLERATE__
+#include "engine/bufferscalers/enginebufferscalesr.h"
 #endif
 
 #ifdef __VINYLCONTROL__
@@ -259,16 +263,32 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeylockEngine->connectValueChanged(this,
             &EngineBuffer::slotKeylockEngineChanged,
             Qt::DirectConnection);
+
+    m_pScratchingEngine = new ControlProxy(kAppGroup, QStringLiteral("scratching_engine"), this);
+    m_pScratchingEngine->connectValueChanged(this,
+            &EngineBuffer::slotScratchingEngineChanged,
+            Qt::DirectConnection);
+
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
 #ifdef __RUBBERBAND__
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
 #endif
+
+#ifdef __LIBSAMPLERATE__
+    m_pScaleSR = new EngineBufferScaleSR(m_pReadAheadManager);
+#endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
-    m_pScaleVinyl = m_pScaleLinear;
-    m_pScale = m_pScaleVinyl;
-    m_pScale->clear();
+    qDebug() << "setting keylock engine to " << m_pScaleKeylock;
+
+    slotScratchingEngineChanged(m_pScratchingEngine->get());
+    qDebug() << "setting scratch engine to " << m_pScaleVinyl;
+
+    m_pScale = m_pScaleKeylock; // m_pScale = m_pScaleVinyl originally.
+    qDebug() << "current scaler " << m_pScale;
+
+    m_pScale->clear(); // delete scaler state stored previously
     m_bScalerChanged = true;
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
@@ -322,6 +342,10 @@ EngineBuffer::~EngineBuffer() {
     delete m_pScaleRB;
 #endif
 
+#ifdef __LIBSAMPLERATE__
+    delete m_pScaleSR;
+#endif
+
     delete m_pKeylock;
     delete m_pReplayGain;
 
@@ -344,7 +368,7 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     // so cache it.
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
     EngineBufferScale* vinyl_scale = m_pScaleVinyl;
-
+    // @temp: testing non-keylock playback first (with differting samplerates)
     if (bEnable && m_pScale != keylock_scale) {
         if (m_speed_old != 0.0) {
             // Crossfade if we are not paused.
@@ -870,6 +894,37 @@ void EngineBuffer::slipQuitAndAdopt() {
     m_pSlipButton->set(0);
 }
 
+void EngineBuffer::slotScratchingEngineChanged(double dIndex) {
+    if (m_bScalerOverride) {
+        return;
+    }
+    const ScratchingEngine engine = static_cast<ScratchingEngine>(dIndex);
+    switch (engine) {
+    case ScratchingEngine::NaiveLinear:
+        m_pScaleVinyl = m_pScaleLinear;
+        break;
+#ifdef __LIBSAMPLERATE__
+    case ScratchingEngine::SampleRateLinear:
+        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleVinyl = m_pScaleSR;
+        break;
+    case ScratchingEngine::SampleRateSincFastest:
+        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleVinyl = m_pScaleSR;
+        break;
+    case ScratchingEngine::SampleRateSincFinest:
+        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleVinyl = m_pScaleSR;
+        break;
+#endif
+    default:
+        slotScratchingEngineChanged(static_cast<double>(defaultScratchingEngine()));
+        break;
+    }
+}
+
+// samplerate: Mixxx sample rate
+// m_pTrackSampleRate: track sample rate
 void EngineBuffer::processTrackLocked(
         CSAMPLE* pOutput, const std::size_t bufferSize, mixxx::audio::SampleRate sampleRate) {
     ScopedTimer t(QStringLiteral("EngineBuffer::process_pauselock"));
@@ -879,7 +934,7 @@ void EngineBuffer::processTrackLocked(
 
     double baseSampleRate = 0.0;
     if (sampleRate.isValid()) {
-        baseSampleRate = m_trackSampleRateOld / sampleRate;
+        baseSampleRate = m_trackSampleRateOld / sampleRate; // basesamplerate is some ratio
     }
 
     // Sync requests can affect rate, so process those first.
@@ -908,7 +963,7 @@ void EngineBuffer::processTrackLocked(
     // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
-    std::size_t outputBufferSize = bufferSize;
+    std::size_t outputBufferSize = bufferSize; // samples per buffer
     int stereoPairCount = m_channelCount / mixxx::audio::ChannelCount::stereo();
     // The speed is calculated out of the buffer size for the stereo channel
     // output, after mixing multi channel (stem) together
@@ -1210,6 +1265,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
+#endif
+
+#ifdef __LIBSAMPLERATE__
+    m_pScaleSR->setSignal(m_sampleRate, m_channelCount);
 #endif
 
     bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
