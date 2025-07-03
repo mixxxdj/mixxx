@@ -22,7 +22,7 @@ class EngineBufferScale : public QObject {
     ~EngineBufferScale() override = default;
 
     // Sets the scaling parameters.
-    // * The base rate (ratio of track sample rate to output sample rate).
+    // * The base rate (ratio of track sample rate to output i.e. Mixxx sample rate).
     // * The tempoRatio describes the tempo change in fraction of
     //   original tempo. Put another way, it is the ratio of track seconds to
     //   real second. For example, a tempo of 1.0 is no change. A

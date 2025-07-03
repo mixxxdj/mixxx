@@ -277,7 +277,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 #endif
 
 #ifdef __LIBSAMPLERATE__
-    m_pScaleSR = new EngineBufferScaleSR(m_pReadAheadManager);
+    m_pScaleSR = new EngineBufferScaleSR(m_pReadAheadManager, m_pScratchingEngine->get());
 #endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
     qDebug() << "setting keylock engine to " << m_pScaleKeylock;
@@ -285,7 +285,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     slotScratchingEngineChanged(m_pScratchingEngine->get());
     qDebug() << "setting scratch engine to " << m_pScaleVinyl;
 
-    m_pScale = m_pScaleKeylock; // m_pScale = m_pScaleVinyl originally.
+    m_pScale = m_pScaleVinyl;
     qDebug() << "current scaler " << m_pScale;
 
     m_pScale->clear(); // delete scaler state stored previously
@@ -894,26 +894,20 @@ void EngineBuffer::slipQuitAndAdopt() {
     m_pSlipButton->set(0);
 }
 
-void EngineBuffer::slotScratchingEngineChanged(double dIndex) {
+void EngineBuffer::slotScratchingEngineChanged(double eIndex) {
     if (m_bScalerOverride) {
         return;
     }
-    const ScratchingEngine engine = static_cast<ScratchingEngine>(dIndex);
+    const ScratchingEngine engine = static_cast<ScratchingEngine>(eIndex);
     switch (engine) {
     case ScratchingEngine::NaiveLinear:
         m_pScaleVinyl = m_pScaleLinear;
         break;
 #ifdef __LIBSAMPLERATE__
     case ScratchingEngine::SampleRateLinear:
-        m_pScaleSR->setQuality(static_cast<double>(engine));
-        m_pScaleVinyl = m_pScaleSR;
-        break;
     case ScratchingEngine::SampleRateSincFastest:
-        m_pScaleSR->setQuality(static_cast<double>(engine));
-        m_pScaleVinyl = m_pScaleSR;
-        break;
     case ScratchingEngine::SampleRateSincFinest:
-        m_pScaleSR->setQuality(static_cast<double>(engine));
+        m_pScaleSR->setQuality(eIndex);
         m_pScaleVinyl = m_pScaleSR;
         break;
 #endif
@@ -932,9 +926,10 @@ void EngineBuffer::processTrackLocked(
     m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackEndPositionOld = getTrackEndPosition();
 
+    // this is the scaling ratio for resampling
     double baseSampleRate = 0.0;
     if (sampleRate.isValid()) {
-        baseSampleRate = m_trackSampleRateOld / sampleRate; // basesamplerate is some ratio
+        baseSampleRate = m_trackSampleRateOld / sampleRate; // base_rate
     }
 
     // Sync requests can affect rate, so process those first.
@@ -1101,17 +1096,19 @@ void EngineBuffer::processTrackLocked(
             m_pScale->clear();
         }
 
+        qDebug() << "[processtrackloaded] Current Scaler: " << m_pScale;
         m_baserate_old = baseSampleRate;
         m_speed_old = speed;
         m_pitch_old = pitchRatio;
         m_tempo_ratio_old = tempoRatio;
         m_reverse_old = is_reverse;
 
+        qDebug() << "pitchRatio: " << pitchRatio;
+
         // Now we need to update the scaler with the main sample rate, the
         // base rate (ratio between sample rate of the source audio and the
         // main samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
-
         m_pScale->setScaleParameters(baseSampleRate,
                 &speed,
                 &pitchRatio);
@@ -1121,7 +1118,7 @@ void EngineBuffer::processTrackLocked(
         // consumed relative to playing back the track at its native sample
         // rate and normal speed. pitch_adjust does not change the playback
         // rate.
-        rate = baseSampleRate * speed;
+        rate = baseSampleRate * speed; // same as bufferscaler m_effectiveRate
 
         // Scaler is up to date now.
         m_bScalerChanged = false;
@@ -1157,7 +1154,30 @@ void EngineBuffer::processTrackLocked(
     // If the buffer is not paused, then scale the audio.
     if (!bCurBufferPaused) {
         // Perform scaling of Reader buffer into buffer.
+        // ---
+        // For a given output sample rate (ex. 44.1KHz), setting [audio buffer (ms)]
+        // in mixxx preferences corresponds to setting `bufferSize` such that
+        // `bufferSize` = num_channels * num_frames_per_[audio buffer (ms)].
+        // `bufferSize` interleaved samples must be written to the DAC on each callback
+        // (this function is part of the callback chain).
+        // Ex. @44.1KHz, 92.9ms buffer -> bufferSize = 8192 (approx)
+        // ---
+        // When slowing down/speeding up track tempo, resample is required to
+        // ensure that exactly `bufferSize` samples are being written to the
+        // DAC, even though the duration of track playback
+        // (and therefore num_frames_per_[audio buffer (ms)]) would have changed.
+        // Ex. Scaling tempo by a factor of 3 would create a situation where
+        // 8192 * 3 samples represent a single 92.9ms buffer. Without resample,
+        // only the first 8192 (=`bufferSize`) samples would be returned to the DAC
+        // in the current callback, representing only 92.9/3 ms of audio. The rest
+        // will be lost, corresponding to 2 * 92.9/3 ms of lost audio before the
+        // next callback. To avoid this, a resample must be performed (here, a downsample)
+        // to represent 8192*3 samples of digital audio using 8192 samples only.
+        // ---
+        // downsample -> via a digital decimation filter (reduce #samples)
+        // upsample -> via a digital interpolation filter (increase #samples)
         const double framesRead = m_pScale->scaleBuffer(pOutput, bufferSize);
+        // qDebug() << "Buffer not paused, read " << framesRead << " frames";
 
         // TODO(XXX): The result framesRead might not be an integer value.
         // Converting to samples here does not make sense. All positional
@@ -1208,7 +1228,7 @@ void EngineBuffer::processTrackLocked(
     for (const auto& pControl : std::as_const(m_engineControls)) {
         // m_playPos is already updated here and points to the end of the played buffer
         pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
-        pControl->process(rate, m_playPos, bufferSize);
+        pControl->process(rate, m_playPos, bufferSize); // no-op
     }
 
     m_scratching_old = is_scratching;
@@ -1240,6 +1260,8 @@ void EngineBuffer::processTrackLocked(
     hintReader(rate);
 }
 
+// process() is called once per latency period, triggered by the DAC callback.
+// Runs in the realtime thread.
 void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     // Bail if we receive a buffer size with incomplete sample frames. Assert in debug builds.
     VERIFY_OR_DEBUG_ASSERT((bufferSize % m_channelCount) == 0) {
@@ -1261,6 +1283,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
+    // we check if the samplerate has changed on each DAC request.
+    // setSignal updates the bufferscaler's view of
+    // the input audio signal. (samplerate, channels).
     m_pScaleLinear->setSignal(m_sampleRate, m_channelCount);
     m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__
