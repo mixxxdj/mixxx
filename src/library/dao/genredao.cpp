@@ -189,3 +189,17 @@ int GenreDAO::deleteUnusedGenres() {
 
     return query.numRowsAffected();
 }
+
+// QDebug stream operator for a list of Genre objects.
+QDebug operator<<(QDebug dbg, const QList<Genre>& genres) {
+    // This helper allows for clean debug output like: genres:("House", "Techno")
+    dbg.nospace() << "genres:(";
+    for (int i = 0; i < genres.size(); ++i) {
+        if (i > 0) {
+            dbg.nospace() << ", ";
+        }
+        dbg.nospace() << "\"" << genres.at(i).name << "\"";
+    }
+    dbg.nospace() << ")";
+    return dbg;
+}

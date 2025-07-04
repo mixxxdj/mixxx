@@ -29,3 +29,6 @@ struct Genre {
 };
 
 Q_DECLARE_METATYPE(Genre)
+
+// Allows printing a list of Genres directly to a QDebug stream.
+QDebug operator<<(QDebug dbg, const QList<Genre>& genres);
