@@ -68,8 +68,6 @@ class TrackInfo final {
     // Sets the list of genres for this track.
     void setGenres(const QList<Genre>& genres);
 
-    // Debug helper to print genre info.
-    void dbgGenres(QDebug& dbg) const;
 
   public:
     TrackInfo() = default;

@@ -101,7 +101,8 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgEncoder(dbg);
     arg.dbgEncoderSettings(dbg);
 #endif // __EXTRA_METADATA__
-    arg.dbgGenres(dbg);
+    dbg.nospace() << "," << Qt::endl
+                  << "  " << arg.getGenres();
     arg.dbgGrouping(dbg);
 #if defined(__EXTRA_METADATA__)
     arg.dbgISRC(dbg);
@@ -156,12 +157,6 @@ void TrackInfo::setGenres(const QList<Genre>& genres) {
     if (m_genres != genres) {
         m_genres = genres;
     }
-}
-
-// Debug helper to print genre info, replacing the auto-generated dbgGenre.
-void TrackInfo::dbgGenres(QDebug& dbg) const {
-    dbg.nospace() << "," << Qt::endl
-                  << "  genres: " << getGenresString();
 }
 
 } // namespace mixxx
