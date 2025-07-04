@@ -43,8 +43,8 @@ TrackCollectionManager::TrackCollectionManager(QObject* parent,
         : QObject(parent),
           m_pConfig(pConfig),
           m_pInternalCollection(createInternalTrackCollection(
-                  this, pConfig, deleteTrackForTestingFn)) m_pGenreDAO =
-                  std::make_unique<GenreDAO>(dbConnection.get());
+                  this, pConfig, deleteTrackForTestingFn)),
+          m_pGenreDAO = std::make_unique<GenreDAO>(dbConnection.get());
 {
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
@@ -622,7 +622,7 @@ bool TrackCollectionManager::updateTrackGenre(
 bool TrackCollectionManager::updateTrackMood(
         Track* pTrack,
         const QString& mood) const {
-    s return pTrack->updateMood(
+    return pTrack->updateMood(
             // TODO: Pass tagging config
             mood);
 }
@@ -638,9 +638,8 @@ bool TrackCollectionManager::updateTrackGenres(Track* pTrack, const QStringList&
     QList<DbId> genreIds;
     genreIds.reserve(genreNames.size());
 
-    // For each name, get its ID. If the genre doesn't exist, DAO will create it.
     for (const QString& name : genreNames) {
-        const DbId genreId = m_pGenreDAO->addGenre(name);
+        const DbId genreId = m_pGenreDAO->getOrCreateGenre(name);
         if (genreId.isValid()) {
             genreIds.append(genreId);
         }
