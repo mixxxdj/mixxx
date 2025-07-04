@@ -139,7 +139,7 @@ const QList<Genre>& TrackInfo::getGenres() const {
     return m_genres;
 }
 
-// Returns a comma-separated string of genre names for simple display.
+// Returns a string of genre names for simple display.
 QString TrackInfo::getGenresString() const {
     QStringList genreNames;
     // Reserve memory to optimize performance for tracks with many genres.
@@ -147,8 +147,8 @@ QString TrackInfo::getGenresString() const {
     for (const Genre& genre : m_genres) {
         genreNames.append(genre.name);
     }
-    // Joins the names with ", " for a readable format, e.g. "House, Techno".
-    return genreNames.join(", ");
+    // Joins the names with " / " for a readable format, e.g. "House, Techno".
+    return genreNames.join(" / ");
 }
 
 // Sets the list of genres for this track.
