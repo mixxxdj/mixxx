@@ -19,7 +19,7 @@ GenreDAO::GenreDAO()
         : DAO() {
 }
 
-DbId GenreDAO::addGenre(const QString& name) {
+DbId GenreDAO::getOrCreateGenre(const QString& name) {
     const QString trimmedName = name.trimmed();
     if (trimmedName.isEmpty()) {
         return DbId();
