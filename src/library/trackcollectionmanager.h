@@ -68,7 +68,7 @@ class TrackCollectionManager: public QObject,
     QList<Genre> getAllGenres() const;
 
     // Cleans unused genres from the database.
-    int cleanupUnusedGenres() const;
+    int deleteUnusedGenres() const;
 
     bool updateTrackMood(
             Track* pTrack,
