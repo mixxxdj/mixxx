@@ -15,7 +15,7 @@ class GenreDAO : public DAO {
     ~GenreDAO() override = default;
 
     /// Adds a new genre or returns the ID if it already exists
-    DbId addGenre(const QString& name);
+    DbId getOrCreateGenre(const QString& name);
 
     /// Search for a genre by name (case-insensitive)
     Genre getGenreByName(const QString& name);
