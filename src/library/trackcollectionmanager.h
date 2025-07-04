@@ -60,8 +60,7 @@ class TrackCollectionManager: public QObject,
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations) const;
 
-    // Replaces all genres for a given track.
-    bool updateTrackGenres(
+    bool replaceAllTrackGenres(
             Track* pTrack,
             const QStringList& genreNames) const;
 

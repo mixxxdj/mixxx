@@ -629,7 +629,8 @@ bool TrackCollectionManager::updateTrackMood(
 #endif // __EXTRA_METADATA__
 
 // Replaces all genres for a given track by providing a list of names.
-bool TrackCollectionManager::updateTrackGenres(Track* pTrack, const QStringList& genreNames) const {
+bool TrackCollectionManager::replaceAllTrackGenres(
+        Track* pTrack, const QStringList& genreNames) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
