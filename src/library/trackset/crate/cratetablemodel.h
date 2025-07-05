@@ -3,11 +3,16 @@
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/tracksettablemodel.h"
 
+constexpr int kInvalidCrateId = -1;
+
 class CrateTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:
-    CrateTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
+    CrateTableModel(
+            QObject* parent,
+            TrackCollectionManager* pTrackCollectionManager,
+            UserSettingsPointer pConfig);
     ~CrateTableModel() final = default;
 
     void selectCrate(CrateId crateId = CrateId());
@@ -15,6 +20,8 @@ class CrateTableModel final : public TrackSetTableModel {
         return m_selectedCrate;
     }
 
+    void selectCrateGroup(const QString& groupName);
+    QList<QVariantMap> getGroupedCrates();
     bool addTrack(const QModelIndex& index, const QString& location);
 
     void removeTracks(const QModelIndexList& indices) final;
@@ -30,4 +37,5 @@ class CrateTableModel final : public TrackSetTableModel {
   private:
     CrateId m_selectedCrate;
     QHash<CrateId, QString> m_searchTexts;
+    UserSettingsPointer m_pConfig;
 };
