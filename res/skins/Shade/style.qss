@@ -440,6 +440,20 @@ WCueMenuPopup QLabel {
   qproperty-iconSize: 20px;
   outline: none;
 }
+#CueStandardButton {
+  /* set any border to allow styles for other properties as well */
+  border: 1px solid #060613;
+/* To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 43px;
+  padding: 0px;
+  background-color: #aab2b7;
+  qproperty-icon: url(skin:/btn/btn_vinylcontrol.png);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  outline: none;
+}
 #CueSavedLoopButton {
   /* set any border to allow styles for other properties as well */
   border: 1px solid #060613;
@@ -449,12 +463,28 @@ WCueMenuPopup QLabel {
   height: 43px;
   padding: 0px;
   background-color: #aab2b7;
-  qproperty-icon: url(skin:/btn/btn_hotcue_loop.png);
+  qproperty-icon: url(skin:/btn/btn_repeat.png);
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
   outline: none;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueSavedJumpButton {
+  /* set any border to allow styles for other properties as well */
+  border: 1px solid #060613;
+/* To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 43px;
+  padding: 0px;
+  background-color: #aab2b7;
+  qproperty-icon: url(skin:/btn/btn_slip.png);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  outline: none;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #F90562;
 }
 #CueLabelEdit {
