@@ -86,7 +86,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
 
     std::vector<double> df;
     df.reserve(required_size);
-    auto beatPeriod = std::vector<double>(required_size);
+    auto beatPeriod = std::vector<int>(required_size / 128 + 1);
 
     // skip first 2 results as it might have detect noise as onset
     // that's how vamp does and seems works best this way
