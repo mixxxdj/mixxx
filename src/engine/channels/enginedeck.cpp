@@ -9,7 +9,6 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
-#include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -153,7 +152,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
-    for (std::size_t stemIdx = 0; stemIdx < stemCount;
+    for (unsigned int stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()

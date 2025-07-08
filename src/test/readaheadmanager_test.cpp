@@ -91,9 +91,6 @@ class ReadAheadManagerTest : public MixxxTest {
                                                        m_pLoopControl.data()));
     }
 
-    QScopedPointer<StubReader> m_pReader;
-    QScopedPointer<StubLoopControl> m_pLoopControl;
-    QScopedPointer<ReadAheadManager> m_pReadAheadManager;
     ControlObject m_beatClosestCO;
     ControlObject m_beatNextCO;
     ControlObject m_beatPrevCO;
@@ -103,6 +100,9 @@ class ReadAheadManagerTest : public MixxxTest {
     ControlObject m_slipEnabledCO;
     ControlObject m_trackSamplesCO;
     CSAMPLE* m_pBuffer;
+    QScopedPointer<StubReader> m_pReader;
+    QScopedPointer<StubLoopControl> m_pLoopControl;
+    QScopedPointer<ReadAheadManager> m_pReadAheadManager;
 };
 
 TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {

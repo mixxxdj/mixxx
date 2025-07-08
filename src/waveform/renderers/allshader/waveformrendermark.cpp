@@ -146,7 +146,12 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_pTimeRemainingControl(nullptr),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_playPosHeight(0.f),
-          m_playPosDevicePixelRatio(0.f) {
+          m_playPosDevicePixelRatio(0.f),
+          m_untilMarkShowBeats{false},
+          m_untilMarkShowTime(false),
+          m_untilMarkAlign(Qt::AlignVCenter),
+          m_untilMarkTextSize(0),
+          m_untilMarkTextHeightLimit(0.0) {
     {
         auto pNode = std::make_unique<Node>();
         m_pRangeNodesParent = pNode.get();
@@ -171,14 +176,7 @@ allshader::WaveformRenderMark::WaveformRenderMark(
         m_pPlayPosNode->initForRectangles<TextureMaterial>(1);
         appendChildNode(std::move(pNode));
     }
-}
-
-void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
-    DEBUG_ASSERT(false);
-}
-
-void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    ::WaveformRenderMarkBase::setup(node, context);
+#ifndef __SCENEGRAPH__
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::untilMarkShowBeatsChanged,
@@ -200,14 +198,39 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
             &WaveformWidgetFactory::untilMarkTextHeightLimitChanged,
             this,
             &WaveformRenderMark::setUntilMarkTextHeightLimit);
+#endif
+}
+
+void allshader::WaveformRenderMark::draw(QPainter*, QPaintEvent*) {
+    DEBUG_ASSERT(false);
+}
+
+void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    ::WaveformRenderMarkBase::setup(node, context);
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+
+    m_untilMarkShowBeats = pWaveformWidgetFactory->getUntilMarkShowBeats();
+    m_untilMarkShowTime = pWaveformWidgetFactory->getUntilMarkShowTime();
+    m_untilMarkAlign = pWaveformWidgetFactory->getUntilMarkAlign();
+
+    m_untilMarkTextSize =
+            pWaveformWidgetFactory->getUntilMarkTextPointSize();
+    m_untilMarkTextHeightLimit =
+            pWaveformWidgetFactory
+                    ->getUntilMarkTextHeightLimit(); // proportion of waveform
+                                                     // height
 
     m_playMarkerForegroundColor = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
     m_playMarkerBackgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
 }
 
 bool allshader::WaveformRenderMark::init() {
-    m_pTimeRemainingControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), "time_remaining");
+    if (!m_waveformRenderer->getGroup().isEmpty()) {
+        m_pTimeRemainingControl = std::make_unique<ControlProxy>(
+                m_waveformRenderer->getGroup(), "time_remaining");
+    } else {
+        m_pTimeRemainingControl.reset();
+    }
     ::WaveformRenderMarkBase::init();
     return true;
 }
@@ -375,8 +398,9 @@ void allshader::WaveformRenderMark::update() {
 
     // Remove unused nodes
     while (pRangeChild) {
+        auto* pNextChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
         auto pNode = m_pRangeNodesParent->detachChildNode(pRangeChild);
-        pRangeChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
+        pRangeChild = pNextChild;
     }
 
     m_waveformRenderer->setMarkPositions(marksOnScreen);
@@ -397,6 +421,8 @@ void allshader::WaveformRenderMark::update() {
     if (m_untilMarkShowBeats || m_untilMarkShowTime) {
         updateUntilMark(playPosition, nextMarkPosition);
         updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
+    } else {
+        m_pDigitsRenderNode->clear();
     }
 }
 
@@ -564,7 +590,7 @@ void allshader::WaveformRenderMark::updateUntilMark(
     }
 
     const double endPosition = m_waveformRenderer->getTrackSamples();
-    const double remainingTime = m_pTimeRemainingControl->get();
+    const double remainingTime = m_pTimeRemainingControl ? m_pTimeRemainingControl->get() : 0;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {

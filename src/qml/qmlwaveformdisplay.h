@@ -75,6 +75,13 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     void componentComplete() override;
 
     QQmlListProperty<QmlWaveformRendererFactory> renderers();
+    static void renderers_append(
+            QQmlListProperty<QmlWaveformRendererFactory>* property,
+            QmlWaveformRendererFactory* value);
+    static qsizetype renderers_count(QQmlListProperty<QmlWaveformRendererFactory>* property);
+    static QmlWaveformRendererFactory* renderers_at(
+            QQmlListProperty<QmlWaveformRendererFactory>* property, qsizetype index);
+    static void renderers_clear(QQmlListProperty<QmlWaveformRendererFactory>* property);
 
   protected:
     QSGNode* updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNodeData*) override;

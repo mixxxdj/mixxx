@@ -2,286 +2,439 @@
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
   <info>
     <name>DJ TechTools MIDI Fighter Twister</name>
-    <author>tock203</author>
-    <description>for 2 deck use</description>
-    <manual>dj_techtools_midi_figher_twister</manual>
+    <author>tock203, Sam Whited</author>
+    <description>Control 4 decks with the MIDI Fighter Twister.</description>
+    <manual>dj_techtools_midi_fighter_twister</manual>
+    <forums>https://mixxx.discourse.group/t/mapping-the-midifighter-twister/16253</forums>
+    <devices>
+      <product protocol="midi" vendor_id="0x2580" product_id="0x0007"/>
+    </devices>
   </info>
+  <settings>
+    <option variable="vuMeter" type="boolean" label="Use gain knob as vu meter" default="false">
+      <description>
+        Show instantaneous volume on the 11 segment LEDs around the gain knob instead of the position of the knob.
+      </description>
+    </option>
+    <option variable="beatColor" type="enum" label="Beat Indicator Color">
+      <description>
+        Use the tempo knob LED as a beat indicator when set.
+      </description>
+      <value label="Off" default="true">off</value>
+      <value label="Firmware Default">127</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="peakColor" type="enum" label="Peak Indicator Color">
+      <description>
+        Use the gain knob LED as a peak indicator when set.
+      </description>
+      <value label="Off">off</value>
+      <value label="Firmware Default">127</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red" default="true">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="defColor" type="enum" label="Default Value/Pushed Color">
+      <value label="Firmware Default" default="true">127</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="relColor" type="enum" label="Released Color">
+      <value label="Firmware Default" default="true">0</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="superOffColor" type="enum" label="Quick Effect Switch On Color">
+      <description>The color of the activated quick effect kill switch.</description>
+      <value label="Firmware Default" default="true">0</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="superOnColor" type="enum" label="Quick Effect Switch Off Color">
+      <description>The color of the inactive quick effect kill switch.</description>
+      <value label="Firmware Default">127</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green" default="true">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="eqOffColor" type="enum" label="EQ Kill Switch On Color">
+      <description>The color of the activated EQ kill switch.</description>
+      <value label="Firmware Default" default="true">0</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="eqOnColor" type="enum" label="EQ Kill Switch Off Color">
+      <description>The color of the inactive EQ kill switch.</description>
+      <value label="Firmware Default">127</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red" default="true">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+  </settings>
   <controller id="DJ TechTools MIDI Fighter Twister">
     <scriptfiles>
+      <file filename="midi-components-0.0.js" functionprefix=""/>
       <file functionprefix="MidiFighterTwister" filename="DJ TechTools-MIDI Fighter Twister-scripts.js"/>
     </scriptfiles>
     <controls>
+      <!-- Layer 1: EQ & Mixing -->
+
       <control>
         <group>[Channel1]</group>
-        <key>pregain</key>
-        <description>MIDI Learned from 245 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.gainKnob.input</key>
+        <description>Sets the decks pregain.</description>
         <status>0xB0</status>
         <midino>0x00</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pregain_set_default</key>
-        <description>MIDI Learned from 6 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.gainButton.input</key>
+        <description>Resets the decks pregain.</description>
         <status>0xB1</status>
         <midino>0x00</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>parameter3</key>
-        <description>MIDI Learned from 1088 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.highKnob.input</key>
+        <description>Sets the decks high EQ.</description>
         <status>0xB0</status>
         <midino>0x01</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>parameter3_set_default</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.highButton.input</key>
+        <description>Resets the decks high EQ.</description>
         <status>0xB1</status>
         <midino>0x01</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>parameter3</key>
-        <description>MIDI Learned from 1687 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.highKnob.input</key>
+        <description>Sets the decks high EQ.</description>
         <status>0xB0</status>
         <midino>0x02</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>parameter3_set_default</key>
-        <description>MIDI Learned from 8 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.highButton.input</key>
+        <description>Resets the decks high EQ.</description>
         <status>0xB1</status>
         <midino>0x02</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>pregain</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.gainKnob.input</key>
+        <description>Sets the decks pregain.</description>
         <status>0xB0</status>
         <midino>0x03</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>pregain_set_default</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.gainButton.input</key>
+        <description>Resets the decks pregain.</description>
         <status>0xB1</status>
         <midino>0x03</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>MidiFighterTwister.controller.leftDeck.rateKnob.input</key>
+        <description>Sets the decks tempo.</description>
         <status>0xB0</status>
         <midino>0x04</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate_set_default</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.rateButton.input</key>
+        <description>Resets the decks tempo.</description>
         <status>0xB1</status>
         <midino>0x04</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>parameter2</key>
-        <description>MIDI Learned from 1490 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.midKnob.input</key>
+        <description>Sets the decks mid EQ.</description>
         <status>0xB0</status>
         <midino>0x05</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>parameter2_set_default</key>
-        <description>MIDI Learned from 4 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.midButton.input</key>
+        <description>Resets the decks mid EQ.</description>
         <status>0xB1</status>
         <midino>0x05</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>parameter2</key>
-        <description>MIDI Learned from 2096 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.midKnob.input</key>
+        <description>Sets the decks mid EQ.</description>
         <status>0xB0</status>
         <midino>0x06</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>parameter2_set_default</key>
-        <description>MIDI Learned from 10 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.midButton.input</key>
+        <description>Resets the decks mid EQ.</description>
         <status>0xB1</status>
         <midino>0x06</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
+        <key>MidiFighterTwister.controller.rightDeck.rateKnob.input</key>
+        <description>Sets the decks tempo.</description>
         <status>0xB0</status>
         <midino>0x07</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate_set_default</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.rateButton.input</key>
+        <description>Resets the decks tempo.</description>
         <status>0xB1</status>
         <midino>0x07</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>volume</key>
-        <description>MIDI Learned from 380 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.volumeKnob.input</key>
+        <description>Sets the decks volume.</description>
         <status>0xB0</status>
         <midino>0x08</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pfl</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.pflButton.input</key>
+        <description>Toggles headphone output.</description>
         <status>0xB1</status>
         <midino>0x08</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>parameter1</key>
-        <description>MIDI Learned from 1662 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.lowKnob.input</key>
+        <description>Sets the decks low EQ.</description>
         <status>0xB0</status>
         <midino>0x09</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>parameter1_set_default</key>
-        <description>MIDI Learned from 6 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.lowButton.input</key>
+        <description>Resets the decks low EQ.</description>
         <status>0xB1</status>
         <midino>0x09</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>parameter1</key>
-        <description>MIDI Learned from 339 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.lowKnob.input</key>
+        <description>Sets the decks low EQ.</description>
         <status>0xB0</status>
         <midino>0x0A</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>parameter1_set_default</key>
-        <description>MIDI Learned from 12 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.lowButton.input</key>
+        <description>Resets the decks low EQ.</description>
         <status>0xB1</status>
         <midino>0x0A</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>volume</key>
-        <description>MIDI Learned from 498 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.volumeKnob.input</key>
+        <description>Sets the decks volume.</description>
         <status>0xB0</status>
         <midino>0x0B</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>pfl</key>
-        <description>MIDI Learned from 4 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.pflButton.input</key>
+        <description>Toggles headphone output.</description>
         <status>0xB1</status>
         <midino>0x0B</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Master]</group>
-        <key>crossfader</key>
-        <description>MIDI Learned from 252 messages.</description>
+        <key>MidiFighterTwister.controller.crossfaderKnob.input</key>
+        <description>Adjust the crossfade between the decks.</description>
         <status>0xB0</status>
         <midino>0x0C</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Master]</group>
-        <key>crossfader_set_default</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>MidiFighterTwister.controller.crossfaderButton.input</key>
+        <description>Reset the crossfader to center.</description>
         <status>0xB1</status>
         <midino>0x0C</midino>
         <options>
-          <normal/>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>MidiFighterTwister.controller.mainGainKnob.input</key>
+        <description>Adjust the main gain.</description>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>MidiFighterTwister.controller.mainGainButton.input</key>
+        <description>Reset the main gain.</description>
+        <status>0xB1</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel1]]</group>
-        <key>super1</key>
-        <description>MIDI Learned from 256 messages.</description>
+        <key>MidiFighterTwister.controller.leftDeck.superKnob.input</key>
+        <description>Set the decks effect super knob.</description>
         <status>0xB0</status>
         <midino>0x0D</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel1]]</group>
-        <key>MidiFighterTwister.resetSuperKnob</key>
+        <key>MidiFighterTwister.controller.leftDeck.superButton.input</key>
+        <description>Reset the decks effect super knob.</description>
         <status>0xB1</status>
         <midino>0x0D</midino>
         <options>
@@ -290,19 +443,319 @@
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel2]]</group>
-        <key>super1</key>
-        <description>MIDI Learned from 3 messages.</description>
+        <key>MidiFighterTwister.controller.rightDeck.superKnob.input</key>
+        <description>Set the decks effect super knob.</description>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel2]]</group>
-        <key>MidiFighterTwister.resetSuperKnob</key>
+        <key>MidiFighterTwister.controller.rightDeck.superButton.input</key>
+        <description>Reset the decks effect super knob.</description>
         <status>0xB1</status>
         <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleDeck</key>
+        <description>Toggle the left side of the controller between decks 1 and 3.</description>
+        <status>0xB3</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleDeck</key>
+        <description>Toggle the right side of the controller between decks 2 and 4.</description>
+        <status>0xB3</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Layer 2: Effects -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleEffects</key>
+        <status>0xB3</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableOnChannelButtons["Channel1"].input</key>
+        <status>0xB1</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableOnChannelButtons["Channel2"].input</key>
+        <status>0xB1</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableOnChannelButtons["Headphone"].input</key>
+        <status>0xB1</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].mixModeButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableButtons[1].input</key>
+        <status>0xB1</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableButtons[2].input</key>
+        <status>0xB1</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].enableButtons[3].input</key>
+        <status>0xB1</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].knobs[1].input</key>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].knobs[2].input</key>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].knobs[3].input</key>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].dryWetKnob.input</key>
+        <status>0xB0</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.fx[0].effectFocusButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleEffects</key>
+        <status>0xB3</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableOnChannelButtons["Channel1"].input</key>
+        <status>0xB1</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableOnChannelButtons["Channel2"].input</key>
+        <status>0xB1</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableOnChannelButtons["Headphone"].input</key>
+        <status>0xB1</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].mixModeButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableButtons[1].input</key>
+        <status>0xB1</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableButtons[2].input</key>
+        <status>0xB1</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].enableButtons[3].input</key>
+        <status>0xB1</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].knobs[1].input</key>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].knobs[2].input</key>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].knobs[3].input</key>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].dryWetKnob.input</key>
+        <status>0xB0</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.fx[1].effectFocusButton.input</key>
+        <status>0xB1</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Shift buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 1.</description>
+        <status>0xB3</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 1.</description>
+        <status>0xB3</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 2.</description>
+        <status>0xB3</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 2.</description>
+        <status>0xB3</status>
+        <midino>0x13</midino>
         <options>
           <script-binding/>
         </options>

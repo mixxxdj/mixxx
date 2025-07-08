@@ -37,6 +37,20 @@ void populateCrates(
         pListWidget->addItem(pItem.release());
     }
 }
+
+void populatePlaylists(
+        QListWidget* pListWidget,
+        TrackCollection& trackCollection) {
+    const auto playlistIdAndNamePairs =
+            trackCollection.getPlaylistDAO().getPlaylists(
+                    PlaylistDAO::PLHT_NOT_HIDDEN);
+    pListWidget->clear();
+    for (const auto& [playlistId, playlistName] : playlistIdAndNamePairs) {
+        auto pItem = std::make_unique<QListWidgetItem>(playlistName);
+        pItem->setData(Qt::UserRole, playlistId);
+        pListWidget->addItem(pItem.release());
+    }
+}
 } // namespace
 
 DlgLibraryExport::DlgLibraryExport(
@@ -47,8 +61,14 @@ DlgLibraryExport::DlgLibraryExport(
           m_pConfig{pConfig},
           m_pTrackCollectionManager{pTrackCollectionManager} {
     // Selectable list of crates from the Mixxx library.
+    auto pCratesLabel = make_parented<QLabel>(tr("Crates"), this);
     m_pCratesList = make_parented<QListWidget>(this);
     m_pCratesList->setSelectionMode(QListWidget::ExtendedSelection);
+
+    // Selectable list of playlists from the Mixxx library.
+    auto pPlaylistsLabel = make_parented<QLabel>(tr("Playlists"), this);
+    m_pPlaylistsList = make_parented<QListWidget>(this);
+    m_pPlaylistsList->setSelectionMode(QListWidget::ExtendedSelection);
 
     // Read-only text fields showing key directories for export.
     m_pExportDirectoryTextField = make_parented<QLineEdit>(this);
@@ -80,12 +100,12 @@ DlgLibraryExport::DlgLibraryExport(
     connect(m_pWholeLibraryRadio,
             &QRadioButton::clicked,
             this,
-            [this]() { m_pCratesList->setEnabled(false); });
-    m_pCratesRadio = make_parented<QRadioButton>(tr("Selected crates"), this);
-    connect(m_pCratesRadio,
+            [this]() { m_pCratesList->setEnabled(false); m_pPlaylistsList->setEnabled(false); });
+    m_pCratesAndPlaylistsRadio = make_parented<QRadioButton>(tr("Selected crates/playlists"), this);
+    connect(m_pCratesAndPlaylistsRadio,
             &QRadioButton::clicked,
             this,
-            [this]() { m_pCratesList->setEnabled(true); });
+            [this]() { m_pCratesList->setEnabled(true); m_pPlaylistsList->setEnabled(true); });
 
     // Button to allow ability to browse for the export directory.
     auto pExportDirBrowseButton = make_parented<QPushButton>(tr("Browse"), this);
@@ -93,12 +113,12 @@ DlgLibraryExport::DlgLibraryExport(
             &QPushButton::clicked,
             this,
             &DlgLibraryExport::browseExportDirectory);
-    auto pExportDirLayout = make_parented<QHBoxLayout>(this);
+    auto pExportDirLayout = std::make_unique<QHBoxLayout>();
     pExportDirLayout->addWidget(m_pExportDirectoryTextField);
     pExportDirLayout->addWidget(pExportDirBrowseButton);
 
-    auto pFormLayout = make_parented<QFormLayout>(this);
-    pFormLayout->addRow(tr("Export directory"), pExportDirLayout);
+    auto pFormLayout = std::make_unique<QFormLayout>();
+    pFormLayout->addRow(tr("Export directory"), pExportDirLayout.release());
     pFormLayout->addRow(tr("Database version"), m_pVersionCombo);
     pFormLayout->addRow(m_pExistingDatabaseLabel);
 
@@ -110,19 +130,38 @@ DlgLibraryExport::DlgLibraryExport(
     connect(pCancelButton, &QPushButton::clicked, this, &QDialog::reject);
 
     // Arrange action buttons at bottom of dialog.
-    auto pButtonBarLayout = make_parented<QHBoxLayout>(this);
+    auto pButtonBarLayout = std::make_unique<QHBoxLayout>();
     pButtonBarLayout->addStretch(1);
     pButtonBarLayout->addWidget(pExportButton);
     pButtonBarLayout->addWidget(pCancelButton);
 
+    // Visual representation of grid layout:
+    //            0                    1                     2
+    //   +---------------------------------------+----------------------+
+    // 0 | <Whole library radio> (colspan=2)     | <Dir/version fields> |
+    //   +-------------------+-------------------+      (rowspan=4)     |
+    // 1 | <Crates/playlists radio> (colspan=2)  |                      |
+    //   +-------------------+-------------------+                      |
+    // 2 | <Crates label>    | <Playlists label> |                      |
+    //   +-------------------+-------------------+                      |
+    //   | <Crates list>     | <Playlists list>  |                      |
+    // 3 |                   |                   |                      |
+    //   |                   |                   |                      |
+    //   +-------------------+-------------------+----------------------+
+    // 4 |                                 <Action buttons> (colspan=3) |
+    //   +--------------------------------------------------------------+
     auto pLayout = make_parented<QGridLayout>(this);
     pLayout->setColumnStretch(0, 1);
-    pLayout->setColumnStretch(1, 2);
-    pLayout->addWidget(m_pWholeLibraryRadio, 0, 0);
-    pLayout->addWidget(m_pCratesRadio, 1, 0);
-    pLayout->addWidget(m_pCratesList, 2, 0);
-    pLayout->addLayout(pFormLayout, 0, 1, 3, 1);
-    pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
+    pLayout->setColumnStretch(1, 1);
+    pLayout->setColumnStretch(2, 2);
+    pLayout->addWidget(m_pWholeLibraryRadio, 0, 0, 1, 2);
+    pLayout->addWidget(m_pCratesAndPlaylistsRadio, 1, 0, 1, 2);
+    pLayout->addWidget(pCratesLabel, 2, 0);
+    pLayout->addWidget(pPlaylistsLabel, 2, 1);
+    pLayout->addWidget(m_pCratesList, 3, 0);
+    pLayout->addWidget(m_pPlaylistsList, 3, 1);
+    pLayout->addLayout(pFormLayout.release(), 0, 2, 4, 1);
+    pLayout->addLayout(pButtonBarLayout.release(), 4, 0, 1, 3);
 
     setLayout(pLayout);
     //: "Engine DJ" must not be translated
@@ -134,28 +173,46 @@ DlgLibraryExport::DlgLibraryExport(
 }
 
 void DlgLibraryExport::refresh() {
-    // Refresh the list of crates.
+    // Refresh the list of crates and playlists.
     populateCrates(m_pCratesList, *m_pTrackCollectionManager->internalCollection());
+    populatePlaylists(m_pPlaylistsList, *m_pTrackCollectionManager->internalCollection());
 
     // Check whether a database already exists in the specified directory.
     checkExistingDatabase();
 }
 
-void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
-    if (!crateId) {
+void DlgLibraryExport::setInitialSelection(
+        std::optional<CrateId> crateId, std::optional<int> playlistId) {
+    if (!crateId && !playlistId) {
         m_pWholeLibraryRadio->setChecked(true);
         m_pCratesList->setEnabled(false);
+        m_pPlaylistsList->setEnabled(false);
         return;
     }
 
-    m_pCratesRadio->setChecked(true);
+    m_pCratesAndPlaylistsRadio->setChecked(true);
     m_pCratesList->setEnabled(true);
-    for (auto i = 0; i < m_pCratesList->count(); ++i) {
-        auto* pItem = m_pCratesList->item(i);
-        const auto currCrateId = CrateId(pItem->data(Qt::UserRole));
-        if (currCrateId == crateId) {
-            m_pCratesList->setCurrentItem(pItem);
-            return;
+    m_pPlaylistsList->setEnabled(true);
+
+    if (crateId) {
+        for (auto i = 0; i < m_pCratesList->count(); ++i) {
+            auto* pItem = m_pCratesList->item(i);
+            const auto currCrateId = CrateId(pItem->data(Qt::UserRole));
+            if (currCrateId == crateId) {
+                m_pCratesList->setCurrentItem(pItem);
+                return;
+            }
+        }
+    }
+
+    if (playlistId) {
+        for (auto i = 0; i < m_pPlaylistsList->count(); ++i) {
+            auto* pItem = m_pPlaylistsList->item(i);
+            const auto currPlaylistId = pItem->data(Qt::UserRole).toInt();
+            if (currPlaylistId == playlistId) {
+                m_pPlaylistsList->setCurrentItem(pItem);
+                return;
+            }
         }
     }
 }
@@ -201,7 +258,7 @@ void DlgLibraryExport::exportRequested() {
     e::engine_schema exportSchemaVersion =
             versionIndex == -1 ? e::latest_schema : e::supported_schemas[versionIndex];
 
-    // Construct a request to export the library/crates.
+    // Construct a request to export the library/crates/playlists.
     auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
     pRequest->engineLibraryDbDir.setPath(databaseDirectory);
     pRequest->musicFilesDir.setPath(musicDirectory);
@@ -211,6 +268,13 @@ void DlgLibraryExport::exportRequested() {
         for (auto* pItem : selectedItems) {
             CrateId id{pItem->data(Qt::UserRole)};
             pRequest->crateIdsToExport.insert(id);
+        }
+    }
+    if (m_pPlaylistsList->isEnabled()) {
+        const auto selectedItems = m_pPlaylistsList->selectedItems();
+        for (auto* pItem : selectedItems) {
+            int id = pItem->data(Qt::UserRole).toInt();
+            pRequest->playlistIdsToExport.insert(id);
         }
     }
 

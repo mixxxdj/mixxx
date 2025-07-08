@@ -10,8 +10,8 @@
 /// It is basically a PIMPL version of a ControlDoublePrivate Shared pointer
 class PollingControlProxy {
   public:
-    PollingControlProxy(ControlFlags flags = ControlFlag::None)
-            : PollingControlProxy(ConfigKey(), flags) {
+    PollingControlProxy()
+            : m_pControl(ControlDoublePrivate::getDefaultControl()) {
     }
 
     PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)

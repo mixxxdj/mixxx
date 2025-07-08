@@ -119,6 +119,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         int delay = fid_calc_delay(filt);
         qDebug() << QString().fromLatin1(desc);
         qDebug() << spec_d << "delay:" << delay;
+        free(desc);
         double resp0, phase0;
         resp0 = fid_response_pha(filt, freq0 / sampleRate, &phase0);
         qDebug() << "freq0:" << freq0 << resp0 << phase0;
@@ -196,6 +197,9 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         qDebug() << QString().fromLatin1(desc1) << "X"
                  << QString().fromLatin1(desc2);
         qDebug() << spec1 << "X" << spec2 << "delay:" << delay;
+        free(desc1);
+        free(desc2);
+
         double resp0, phase0;
         resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
         qDebug() << "freq01:" << freq01 << resp0 << phase0;
