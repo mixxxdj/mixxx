@@ -385,6 +385,10 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 //    std::cerr << "alpha" << alpha << std::endl;
 //    std::cerr << "tightness" << tightness << std::endl;
 
+    int old_period = 0;
+    int txwt_len = 0;
+    d_vec_t txwt;
+
     // main loop
     for (int i = 0; i < df_len; i++) {
         // df contains the magnitude of the onsets
@@ -399,17 +403,21 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 
         int period = beat_period[i/128];
         int prange_min = period * -2;
-        int prange_max = period / -2;
+        if (period != old_period)  {
+            old_period = period;
+            int prange_max = period / -2;
 
-        // transition range
-        int txwt_len = prange_max - prange_min + 1;
-        d_vec_t txwt (txwt_len);
+            // transition range
+            txwt_len = prange_max - prange_min + 1;
 
-        for (int j = 0; j < txwt_len; j++) {
-            double mu = double(period);
-            txwt[j] = exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2));
-        }
-
+	        txwt.clear();
+	        txwt.reserve(txwt_len);
+	        for (int j = 0; j < txwt_len; j++) {
+	            double mu = double(period);
+                txwt.push_back(exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2)));
+	        }
+	    }
+	    
         // loop over the region in cumscore of one period in the past
         // to check for resonance using the txwt pattern.
         double vv = 0; // the maximum value, high if there is likely beat
