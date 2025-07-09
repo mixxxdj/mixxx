@@ -387,6 +387,16 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 
     // main loop
     for (int i = 0; i < df_len; i++) {
+        // df contains the magnitude of the onsets
+        //
+        // beat_period is the viterbi path following the most likely bpm in a
+        // 128 steps window of ~1,5 s. This is optimized to follow gentle tempo
+        // changes that may happen in live recordings.
+        //
+        // This method is tricked by beat less bridges, changes in instrumentation
+        // or grove or intended abrupt tempo changes. It may follow a previous
+        // dominant even if we are in a new tempo window with lower onsets.
+
         int period = beat_period[i/128];
         int prange_min = period * -2;
         int prange_max = period / -2;
