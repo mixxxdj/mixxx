@@ -404,27 +404,29 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
         // transition range
         int txwt_len = prange_max - prange_min + 1;
         d_vec_t txwt (txwt_len);
-        d_vec_t scorecands (txwt_len);
 
         for (int j = 0; j < txwt_len; j++) {
             double mu = double(period);
             txwt[j] = exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2));
+        }
 
-            // IF IN THE ALLOWED RANGE, THEN LOOK AT CUMSCORE[I+PRANGE_MIN+J
-            // ELSE LEAVE AT DEFAULT VALUE FROM INITIALISATION:  D_VEC_T SCORECANDS (TXWT.SIZE());
-
+        // loop over the region in cumscore of one period in the past
+        // to check for resonance using the txwt pattern.
+        double vv = 0; // the maximum value, high if there is likely beat
+        int xx = 0; // index of the maximum
+        for (int j = 0; j < txwt_len; j++) {
             int cscore_ind = i + prange_min + j;
             if (cscore_ind >= 0) {
-                scorecands[j] = txwt[j] * cumscore[cscore_ind];
+                double scorecands = txwt[j] * cumscore[cscore_ind];
+                if (scorecands > vv) {
+                    vv = scorecands;
+                    xx = cscore_ind;
+                }
             }
         }
 
-        // find max value and index of maximum value
-        double vv = get_max_val(scorecands);
-        int xx = get_max_ind(scorecands);
-
-        cumscore[i] = alpha*vv + (1.-alpha)*localscore[i];
-        backlink[i] = i+prange_min+xx;
+        cumscore[i] = alpha * vv + (1. - alpha) * localscore[i];
+        backlink[i] = xx;
 
 //        std::cerr << "backlink[" << i << "] <= " << backlink[i] << std::endl;
     }
