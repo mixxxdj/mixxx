@@ -98,7 +98,16 @@ DlgPreferences::DlgPreferences(
     }
 
     // Construct page widgets and associated sidebar items
-    m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pSoundManager, m_pConfig);
+
+    // dlgrecord needs to be constructed before sound hardware to
+    // ensure the initial sampleratechange signal is not lost.
+    DlgPrefRecord* pRecordingDlg = new DlgPrefRecord(this, m_pConfig);
+
+    // sound hardware page
+    // more importantly, connect needs to occur before the emit().
+    m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pRecordingDlg, pSoundManager, m_pConfig);
+
+    // loads settings, including samplerate.
     m_soundPage = PreferencesPage(
             m_pSoundDlg.get(),
             new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type));
@@ -206,8 +215,9 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
 
+    // create the recording tab UI
     addPageWidget(PreferencesPage(
-                          new DlgPrefRecord(this, m_pConfig),
+                          pRecordingDlg,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Recording"),
             "ic_preferences_recording.svg");

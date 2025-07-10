@@ -17,7 +17,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
       m_dOldRate(1.0),
       m_dCurrentFrame(0.0),
       m_dNextFrame(0.0) {
-    onSignalChanged();
+    onSignalChanged(); // store state of playback when the EngineBuffer() is being created.
     SampleUtil::clear(m_bufferInt, kiLinearScaleReadAheadLength);
 }
 
@@ -25,6 +25,8 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear() {
     SampleUtil::free(m_bufferInt);
 }
 
+// storage for a single sample (replicated #channels times).
+// floor, ceil sample presumably used for interpolation.
 void EngineBufferScaleLinear::onSignalChanged() {
     m_floorSampleOld = mixxx::SampleBuffer(getOutputSignal().getChannelCount());
     m_floorSample = mixxx::SampleBuffer(getOutputSignal().getChannelCount());
@@ -60,7 +62,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 }
 
 // Determine if we're changing directions (scratching) and then perform
-// a stretch
+// a stretch. Returns frames read.
 double EngineBufferScaleLinear::scaleBuffer(
         CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
@@ -72,8 +74,9 @@ double EngineBufferScaleLinear::scaleBuffer(
         m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
         m_bClear = false;
     }
+
     double rate_add_old = m_dOldRate; // Smoothly interpolate to new playback rate
-    double rate_add_new = m_dRate;
+    double rate_add_new = m_dRate;    // base_rate * tempo ratio
     double frames_read = 0;
 
     if (rate_add_new * rate_add_old < 0) {
@@ -186,7 +189,7 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
 // Stretch a specified buffer worth of audio using linear interpolation
 double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     double rate_old = m_dOldRate;
-    const double rate_new = m_dRate;
+    const double rate_new = m_dRate; // 0 if reverse direction. (i.e. scratch). else effective_rate
     const double rate_diff = rate_new - rate_old;
 
     // Update the old base rate because we only need to
@@ -205,6 +208,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     }
 
     // Special case -- no scaling needed!
+    // temporatio * base_rate == 1, new rate = old rate.
     if (rate_diff == 0 && (rate_new == 1.0 || rate_new == -1.0)) {
         return do_copy(buf, buf_size);
     }
@@ -212,11 +216,11 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
     const SINT bufferSizeFrames = getOutputSignal().samples2frames(buf_size);
-    const double rate_delta = rate_diff / bufferSizeFrames;
+    const double rate_delta = rate_diff / bufferSizeFrames; // "diff per frame"
     // use Gaussian sum formula (n(n+1))/2 for
-    //for (int j = 0; j < bufferSizeFrames; ++j) {
+    // for (int j = 0; j < bufferSizeFrames; ++j) {
     //    frames += (j * rate_delta) + rate_old;
-    //}
+    // }
     frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
     frames *= rate_delta;
     frames += rate_old * bufferSizeFrames;
@@ -241,7 +245,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     // Hot frame loop
     while (i < buf_size) {
         // shift indices
-        m_dCurrentFrame = m_dNextFrame;
+        m_dCurrentFrame = m_dNextFrame; // likely a float
 
         // Because our index is a float value, we're going to be interpolating
         // between two samples, a lower (prev) and upper (cur) sample.
@@ -249,7 +253,6 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
         // -.999 and 0), load it from the saved globals.
 
         // The first bounds check (< m_bufferIntSize) is probably not needed.
-
         SINT currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
 
         int sampleCount = getOutputSignal().frames2samples(currentFrameFloor);

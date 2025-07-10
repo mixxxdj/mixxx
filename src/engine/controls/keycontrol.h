@@ -19,7 +19,7 @@ class KeyControl : public EngineControl {
         // This is the value of the speed slider and speed slider
         // affecting controls at the moment of calculation
         double tempoRatio;
-        // the offeset factor to the natural pitch set by the rate slider
+        // the offset factor to the natural pitch set by the rate slider
         double pitchTweakRatio;
         bool keylock;
     };

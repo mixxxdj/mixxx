@@ -27,6 +27,8 @@ const ConfigKey kKeylockEngingeCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_engine"));
 const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
+const ConfigKey kScratchingEngineCfgkey =
+        ConfigKey(kAppGroup, QStringLiteral("scratching_engine")); // 3, 4, 5
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -68,11 +70,12 @@ const QString kKeylockMultiThreadedUnavailableRubberband =
 /// Construct a new sound preferences pane. Initializes and populates
 /// all the controls to the values obtained from SoundManager.
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
+        DlgPrefRecord* pRecordingDlg,
         std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
-          m_pSettings(pSettings),
+          m_pSettings(pSettings), // m_pConfig
           m_config(pSoundManager.get()),
           m_pLatencyCompensation(kMasterGroup, QStringLiteral("microphoneLatencyCompensation")),
           m_pMainDelay(kMasterGroup, QStringLiteral("delay")),
@@ -80,6 +83,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pBoothDelay(kMasterGroup, QStringLiteral("boothDelay")),
           m_pMicMonitorMode(kMasterGroup, QStringLiteral("talkover_mix")),
           m_pKeylockEngine(kKeylockEngingeCfgkey),
+          m_pScratchingEngine(kScratchingEngineCfgkey),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
@@ -108,7 +112,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     MIXXX_MANUAL_SOUND_API_URL));
 
     sampleRateComboBox->clear();
-    const auto sampleRates = m_pSoundManager->getSampleRates();
+    const auto sampleRates = m_pSoundManager->getSampleRates(); // mixxx-supported sample rates
     for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {
             // no ridiculous sample rate values. prohibiting zero means
@@ -145,11 +149,21 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             this,
             &DlgPrefSound::engineClockChanged);
 
+    // pitch shift/keylock engines
     keylockComboBox->clear();
-    for (const auto engine : EngineBuffer::kKeylockEngines) {
-        if (EngineBuffer::isKeylockEngineAvailable(engine)) {
+    for (const auto kl_engine : EngineBuffer::kKeylockEngines) {
+        if (EngineBuffer::isKeylockEngineAvailable(kl_engine)) {
             keylockComboBox->addItem(
-                    EngineBuffer::getKeylockEngineName(engine), QVariant::fromValue(engine));
+                    EngineBuffer::getKeylockEngineName(kl_engine), QVariant::fromValue(kl_engine));
+        }
+    }
+
+    // scratching engines
+    scratchingComboBox->clear();
+    for (const auto s_engine : EngineBuffer::kScratchingEngines) {
+        if (EngineBuffer::isScratchingEngineAvailable(s_engine)) {
+            scratchingComboBox->addItem(
+                    EngineBuffer::getScratchingEngineName(s_engine), QVariant::fromValue(s_engine));
         }
     }
 
@@ -195,6 +209,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::micMonitorModeComboBoxChanged);
 
     initializePaths();
+
+    connect(this,
+            &DlgPrefSound::updateDefaultRecordingSampleRate,
+            pRecordingDlg,
+            &DlgPrefRecord::onDefaultSampleRateUpdated);
     loadSettings();
 
     connect(apiComboBox,
@@ -233,6 +252,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 #else
     keylockDualthreadedCheckBox->hide();
 #endif
+
+    // when the current index of the ComboBox is
+    // modified, infer that a new selection has been made
+    connect(scratchingComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSound::settingChanged);
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
 
@@ -361,7 +387,9 @@ void DlgPrefSound::slotApply() {
 
         m_pKeylockEngine.set(static_cast<double>(keylockEngine));
         m_pSettings->set(kKeylockEngingeCfgkey,
-                ConfigValue(static_cast<int>(keylockEngine)));
+                ConfigValue(static_cast<int>(
+                        keylockEngine))); // local copy of settings, persistent
+                                          // through a single mixxx run
 
 #ifdef __RUBBERBAND__
         bool keylockMultithreading = m_pSettings->getValue(
@@ -378,6 +406,15 @@ void DlgPrefSound::slotApply() {
                        "RubberBand setting change will take effect."));
         }
 #endif
+        // apply scratching engine selection
+        const auto scratchingEngine =
+                scratchingComboBox->currentData().value<EngineBuffer::ScratchingEngine>();
+
+        m_pScratchingEngine.set(static_cast<double>(scratchingEngine));
+        qDebug() << "changed scratching engine to: " << static_cast<double>(scratchingEngine);
+        m_pSettings->set(kScratchingEngineCfgkey,
+                ConfigValue(static_cast<int>(scratchingEngine))); // updates the m_config
+
         status = m_pSoundManager->setConfig(m_config);
     }
     if (status != SoundDeviceStatus::Ok) {
@@ -535,6 +572,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     int sampleRateIndex = sampleRateComboBox->findData(
             QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
+        qDebug() << "load settings initial engine samplerate idx:" << sampleRateIndex;
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
             updateAudioBufferSizes(sampleRateIndex); // so the latency combo box is
@@ -576,9 +614,9 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
             m_pSettings->getValue(kKeylockEngingeCfgkey,
                     static_cast<int>(EngineBuffer::defaultKeylockEngine())));
     const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
-    const int index = keylockComboBox->findData(keylockEngineVariant);
-    if (index >= 0) {
-        keylockComboBox->setCurrentIndex(index);
+    const int kl_index = keylockComboBox->findData(keylockEngineVariant);
+    if (kl_index >= 0) {
+        keylockComboBox->setCurrentIndex(kl_index);
     } else {
         keylockComboBox->addItem(
                 EngineBuffer::getKeylockEngineName(keylockEngine), keylockEngineVariant);
@@ -591,6 +629,20 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
             kKeylockMultiThreadingCfgkey,
             false));
 #endif
+
+    // set scratching engine
+    const auto scratchingEngine = static_cast<EngineBuffer::ScratchingEngine>(
+            m_pSettings->getValue(kScratchingEngineCfgkey,
+                    static_cast<int>(EngineBuffer::defaultScratchingEngine())));
+    const auto scratchingEngineVariant = QVariant::fromValue(scratchingEngine);
+    const int s_index = scratchingComboBox->findData(scratchingEngineVariant);
+    if (s_index >= 0) {
+        scratchingComboBox->setCurrentIndex(s_index);
+    } else {
+        scratchingComboBox->addItem(
+                EngineBuffer::getScratchingEngineName(scratchingEngine), scratchingEngineVariant);
+        scratchingComboBox->setCurrentIndex(scratchingComboBox->count() - 1);
+    }
 
     // Collect selected I/O channel indices for all non-empty device comboboxes
     // in order to allow auto-selecting free channels when different devices are
@@ -667,10 +719,20 @@ void DlgPrefSound::updateAPIs() {
 /// Slot called when the sample rate combo box changes to update the
 /// sample rate in the config.
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
+    qDebug() << "engine samplerate change triggered, index: " << index;
+    qDebug() << "engine samplerate: " << sampleRateComboBox->itemData(index) << "Hz";
+    qDebug() << "engine samplerate value: "
+             << sampleRateComboBox->itemData(index)
+                        .value<mixxx::audio::SampleRate>()
+             << "Hz";
+
+    auto sampleRateNew = sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>();
+    m_config.setSampleRate(sampleRateNew);
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
+
+    emit updateDefaultRecordingSampleRate(sampleRateNew);
 }
 
 /// Slot called when the latency combo box is changed to update the
@@ -915,13 +977,23 @@ void DlgPrefSound::slotResetToDefaults() {
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
 
+    // keylock engine
     const auto keylockEngine = EngineBuffer::defaultKeylockEngine();
-    const int index = keylockComboBox->findData(QVariant::fromValue(keylockEngine));
-    DEBUG_ASSERT(index >= 0);
-    if (index >= 0) {
-        keylockComboBox->setCurrentIndex(index);
+    const int kl_index = keylockComboBox->findData(QVariant::fromValue(keylockEngine));
+    DEBUG_ASSERT(kl_index >= 0);
+    if (kl_index >= 0) {
+        keylockComboBox->setCurrentIndex(kl_index);
     }
     m_pKeylockEngine.set(static_cast<double>(keylockEngine));
+
+    // scratch engine
+    const auto scratchingEngine = EngineBuffer::defaultScratchingEngine();
+    const int s_index = scratchingComboBox->findData(QVariant::fromValue(scratchingEngine));
+    DEBUG_ASSERT(s_index >= 0);
+    if (s_index >= 0) {
+        scratchingComboBox->setCurrentIndex(s_index);
+    }
+    m_pScratchingEngine.set(static_cast<double>(scratchingEngine));
 
     mainMixComboBox->setCurrentIndex(1);
     m_pMainEnabled->set(1.0);

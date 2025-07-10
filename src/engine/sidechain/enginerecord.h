@@ -73,6 +73,8 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     QDataStream m_dataStream;
 
     PollingControlProxy m_sampleRateControl;
+    PollingControlProxy m_recSampleRateControl;
+    PollingControlProxy m_useEngineSampleRate;
     ControlProxy* m_pRecReady;
     quint64 m_frames;
     mixxx::audio::SampleRate m_sampleRate;
