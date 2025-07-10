@@ -61,6 +61,11 @@ class RecordingManager : public QObject {
     std::unique_ptr<ControlObject> m_pCoRecStatus;
     std::unique_ptr<ControlPushButton> m_pToggleRecording;
 
+    // the pointer to the object that stores the
+    // rec sample rate.
+    std::unique_ptr<ControlObject> m_pRecSampleRate;
+    std::unique_ptr<ControlObject> m_pUseEngineSampleRate;
+
     quint64 getFileSplitSize();
     unsigned int getFileSplitSeconds();
     qint64 getFreeSpace();

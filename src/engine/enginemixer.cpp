@@ -71,7 +71,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pSampleRate(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("samplerate")),
                   true,
-                  true)),
+                  true)), // the object that is later accessed by a controlproxy
+                          // in the enginerecord class.
           m_pOutputLatencyMs(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
                   true,
@@ -126,9 +127,9 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                   false,
                   false,
-                  static_cast<double>(pConfig->getValue(
-                          ConfigKey(group, "keylock_engine"),
-                          EngineBuffer::defaultKeylockEngine())))),
+                  static_cast<double>(
+                          pConfig->getValue(ConfigKey(group, "keylock_engine"),
+                                  EngineBuffer::defaultKeylockEngine())))),
 
           m_pScratchingEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("scratching_engine")),
@@ -380,6 +381,7 @@ void EngineMixer::process(const std::size_t bufferSize) {
     bool boothEnabled = m_pBoothEnabled->toBool();
     bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
+    // this is the engine samplerate, set in the sound hardware preferences.
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
     // TODO: remove assumption of stereo buffer
     constexpr unsigned int kChannels = 2;
@@ -390,6 +392,7 @@ void EngineMixer::process(const std::size_t bufferSize) {
     }
 
     // Prepare all channels for output
+    // reduces to enginebuffer::process()
     processChannels(bufferSize);
 
     // Compute headphone mix

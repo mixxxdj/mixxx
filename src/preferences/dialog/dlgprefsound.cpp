@@ -70,6 +70,7 @@ const QString kKeylockMultiThreadedUnavailableRubberband =
 /// Construct a new sound preferences pane. Initializes and populates
 /// all the controls to the values obtained from SoundManager.
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
+        DlgPrefRecord* pRecordingDlg,
         std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
@@ -111,7 +112,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     MIXXX_MANUAL_SOUND_API_URL));
 
     sampleRateComboBox->clear();
-    const auto sampleRates = m_pSoundManager->getSampleRates();
+    const auto sampleRates = m_pSoundManager->getSampleRates(); // mixxx-supported sample rates
     for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {
             // no ridiculous sample rate values. prohibiting zero means
@@ -208,6 +209,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::micMonitorModeComboBoxChanged);
 
     initializePaths();
+
+    connect(this,
+            &DlgPrefSound::updateDefaultRecordingSampleRate,
+            pRecordingDlg,
+            &DlgPrefRecord::onDefaultSampleRateUpdated);
     loadSettings();
 
     connect(apiComboBox,
@@ -407,7 +413,7 @@ void DlgPrefSound::slotApply() {
         m_pScratchingEngine.set(static_cast<double>(scratchingEngine));
         qDebug() << "changed scratching engine to: " << static_cast<double>(scratchingEngine);
         m_pSettings->set(kScratchingEngineCfgkey,
-                ConfigValue(static_cast<int>(scratchingEngine)));
+                ConfigValue(static_cast<int>(scratchingEngine))); // updates the m_config
 
         status = m_pSoundManager->setConfig(m_config);
     }
@@ -566,6 +572,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     int sampleRateIndex = sampleRateComboBox->findData(
             QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
+        qDebug() << "load settings initial engine samplerate idx:" << sampleRateIndex;
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
             updateAudioBufferSizes(sampleRateIndex); // so the latency combo box is
@@ -712,10 +719,20 @@ void DlgPrefSound::updateAPIs() {
 /// Slot called when the sample rate combo box changes to update the
 /// sample rate in the config.
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
+    qDebug() << "engine samplerate change triggered, index: " << index;
+    qDebug() << "engine samplerate: " << sampleRateComboBox->itemData(index) << "Hz";
+    qDebug() << "engine samplerate value: "
+             << sampleRateComboBox->itemData(index)
+                        .value<mixxx::audio::SampleRate>()
+             << "Hz";
+
+    auto sampleRateNew = sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>();
+    m_config.setSampleRate(sampleRateNew);
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
+
+    emit updateDefaultRecordingSampleRate(sampleRateNew);
 }
 
 /// Slot called when the latency combo box is changed to update the

@@ -143,7 +143,53 @@ information from filepaths (i.e. username)</string>
       <string>Output File Format</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-
+    <item row="0" column="0">
+      <widget class="QLabel" name="LabelRecSampleRate">
+        <property name="text">
+          <string>Sample Rate</string>
+        </property>
+        <property name="buddy">
+          <cstring>RadioButtonUseDefaultSampleRate</cstring>
+        </property>
+        <property name="buddy">
+          <cstring>RadioButtonUseCustomSampleRate</cstring>
+        </property>
+        <property name="buddy">
+          <cstring>recSampleRateComboBox</cstring>
+        </property>
+      </widget>
+    </item>
+    <item row="0" column="1">
+      <widget class="QRadioButton" name="RadioButtonUseDefaultSampleRate">
+        <property name="checked">
+          <bool>true</bool>
+        </property>
+    <property name="toolTip">
+      <string>Use the engine sample rate for better recording quality</string>
+    </property>
+      </widget>
+    </item>
+    <item row="0" column="2" colspan="1">
+      <layout class="QHBoxLayout" name="horizontalLayoutCustomSampleRate">
+        <item>
+          <widget class="QRadioButton" name="RadioButtonUseCustomSampleRate">
+            <property name="text">
+              <string>Custom:</string>
+            </property>
+          </widget>
+        </item>
+        <item>
+          <widget class="QComboBox" name="recSampleRateComboBox"/>
+        </item>
+      <item>
+        <spacer name="horizontalSpacer">
+          <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+          </property>
+        </spacer>
+      </item>
+      </layout>
+    </item>
       <item row="1" column="0">
        <widget class="QLabel" name="LabelLossless">
         <property name="text">
@@ -158,7 +204,6 @@ information from filepaths (i.e. username)</string>
         </property>
        </layout>
       </item>
-
       <item row="2" column="0">
        <widget class="QLabel" name="LabelLossy">
         <property name="text">
@@ -401,6 +446,7 @@ information from filepaths (i.e. username)</string>
   <tabstop>comboBoxSplitting</tabstop>
   <tabstop>CheckBoxRecordCueFile</tabstop>
   <tabstop>CheckBoxUseCueFileAnnotation</tabstop>
+  <tabstop>recSampleRateComboBox</tabstop>
   <tabstop>SliderCompression</tabstop>
   <tabstop>SliderQuality</tabstop>
   <tabstop>LineEditTitle</tabstop>

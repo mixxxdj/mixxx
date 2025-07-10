@@ -173,6 +173,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
     m_pRepeat->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
+    // this creates a pointer to the object stored at key '"samplerate"' in the '"[App]"' group
     m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
@@ -1278,6 +1279,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
+    // m_pSampleRate is a ControlProxy object that points to a
+    // globally unique samplerate object.
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
 
     // If the sample rate has changed, force Rubberband to reset so that

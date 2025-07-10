@@ -95,7 +95,7 @@ void EngineBufferScaleSR::setQuality(double engine_quality) {
 
 // these parameters describe the "request" that
 // needs to be handled by libsamplerate.
-// use the default implementation for now
+// use the default implementation for now.
 void EngineBufferScaleSR::setScaleParameters(double base_rate,
         double* pTempoRatio,
         double* pPitchRatio) {
@@ -168,13 +168,13 @@ long EngineBufferScaleSR::do_scale(CSAMPLE* pOutput, SINT outFrames) {
 
     double srcRatio = 1.0 / fabs(m_effectiveRate);
     srcRatio = std::clamp(srcRatio, kMinValidRatio, kMaxValidRatio);
-    qDebug() << "src ratio: " << srcRatio;
+    // qDebug() << "src ratio: " << srcRatio;
 
     // not exactly correct. We need to track frames consumed by samplerate core,
     // every DAC callback, but the samplerate callback API does not allow
     // access to saved_frames.
     m_inputFramesRead = outFrames / srcRatio; // theoretical value
-    qDebug() << "Need " << m_inputFramesRead << " frames from RAMAN.";
+    // qDebug() << "Need " << m_inputFramesRead << " frames from RAMAN.";
 
     // calls RAMAN for input
     // approx. required_input_frames frames will be consumed
