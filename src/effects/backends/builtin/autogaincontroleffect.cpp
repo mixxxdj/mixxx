@@ -3,12 +3,13 @@
 #include "util/math.h"
 
 namespace {
-constexpr double defaultAttackMs = 1;
-constexpr double defaultReleaseMs = 500;
-constexpr double defaultThresholdDB = -40;
-constexpr double defaultTargetDB = -5;
-constexpr double defaultGainDB = 20;
-constexpr double defaultKneeDB = 10;
+using namespace std::chrono_literals;
+constexpr std::chrono::milliseconds kDefaultAttack = 1ms;
+constexpr std::chrono::milliseconds kDefaultRelease = 500ms;
+constexpr double kDefaultThresholdDB = -40;
+constexpr double kDefaultTargetDB = -5;
+constexpr double kDefaultGainDB = 20;
+constexpr double kDefaultKneeDB = 10;
 
 double calculateBallistics(double paramMs, const mixxx::EngineParameters& engineParameters) {
     return exp(-1000.0 / (paramMs * engineParameters.sampleRate()));
@@ -44,7 +45,7 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     threshold->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     threshold->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     threshold->setNeutralPointOnScale(0);
-    threshold->setRange(-70, defaultThresholdDB, 0);
+    threshold->setRange(-70, kDefaultThresholdDB, 0);
 
     EffectManifestParameterPointer target = pManifest->addParameter();
     target->setId("target");
@@ -55,7 +56,7 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     target->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     target->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     target->setNeutralPointOnScale(0);
-    target->setRange(-20, defaultTargetDB, 10);
+    target->setRange(-20, kDefaultTargetDB, 10);
 
     EffectManifestParameterPointer gain = pManifest->addParameter();
     gain->setId("gain");
@@ -66,7 +67,7 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
                         "the effect will apply"));
     gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
-    gain->setRange(1, defaultGainDB, 40);
+    gain->setRange(1, kDefaultGainDB, 40);
 
     EffectManifestParameterPointer knee = pManifest->addParameter();
     knee->setId("knee");
@@ -79,7 +80,7 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     knee->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     knee->setNeutralPointOnScale(0);
-    knee->setRange(0.0, defaultKneeDB, 24);
+    knee->setRange(0.0, kDefaultKneeDB, 24);
 
     EffectManifestParameterPointer attack = pManifest->addParameter();
     attack->setId("attack");
@@ -90,7 +91,7 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
             "auto gain \nwill set in once the signal exceeds the threshold"));
     attack->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    attack->setRange(0, defaultAttackMs, 250);
+    attack->setRange(0, kDefaultAttack.count(), 250);
 
     EffectManifestParameterPointer release = pManifest->addParameter();
     release->setId("release");
@@ -104,18 +105,18 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
                         "may introduce a 'pumping' effect and/or distortion."));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    release->setRange(0, defaultReleaseMs, 1500);
+    release->setRange(0, kDefaultRelease.count(), 1500);
 
     return pManifest;
 }
 
 void AutoGainControlGroupState::clear(const mixxx::EngineParameters& engineParameters) {
     state = CSAMPLE_ONE;
-    attackCoeff = calculateBallistics(defaultAttackMs, engineParameters);
-    releaseCoeff = calculateBallistics(defaultReleaseMs, engineParameters);
+    attackCoeff = calculateBallistics(kDefaultAttack.count(), engineParameters);
+    releaseCoeff = calculateBallistics(kDefaultRelease.count(), engineParameters);
 
-    previousAttackParamMs = defaultAttackMs;
-    previousReleaseParamMs = defaultReleaseMs;
+    previousAttackParamMs = kDefaultAttack.count();
+    previousReleaseParamMs = kDefaultRelease.count();
     previousSampleRate = engineParameters.sampleRate();
 }
 
