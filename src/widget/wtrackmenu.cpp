@@ -2701,11 +2701,25 @@ void WTrackMenu::slotRemoveFromDisk() {
     emit restoreCurrentViewStateOrIndex();
 }
 
+// EVE
+void WTrackMenu::loadGenreData2QVL() {
+    qDebug() << "[WTRACKMENU] -> loadGenreData2QVL() -> started";
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
+    m_genreData.clear();
+    playlistDao.loadGenres2QVL(m_genreData);
+    // qDebug() << "[WTRACKMENU] load genresData into QVariantList:"
+    //          << m_genreData;
+    qDebug() << "[WTRACKMENU] -> loadGenreData2QVL() -> finished";
+}
+// EVE
+
 void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {
         return;
     }
-
+    loadGenreData2QVL();
     if (m_pTrackModel && getTrackCount() > 1) {
         // Use the batch editor.
         // Create a fresh dialog on invocation.
@@ -2726,6 +2740,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         for (int i = 0; i < m_trackIndexList.size(); i++) {
             tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
         }
+        //        m_pDlgTrackInfoMulti->setGenreData(m_genreData);
         m_pDlgTrackInfoMulti->loadTracks(tracks);
         m_pDlgTrackInfoMulti->show();
         m_pDlgTrackInfoMulti->focusField(m_trackProperty);
@@ -2750,6 +2765,7 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // for example show/hide the Next/Prev buttons.
         // It can be loaded with either an index (must have a model),
         // or a TrackPointer (must NOT have a model then).
+        m_pDlgTrackInfo->setGenreData(m_genreData);
         if (m_pTrackModel) {
             m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
         } else {

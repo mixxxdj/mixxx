@@ -1,5 +1,6 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QCompleter>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -56,6 +57,156 @@ DlgTrackInfo::DlgTrackInfo(
                   this)) {
     init();
 }
+
+// EVE
+void DlgTrackInfo::setGenreData(const QVariantList& genreData) {
+    m_genreData = genreData;
+    // qDebug() << "[DlgTrackInfo] -> setGenreData passing genreData contains:" << m_genreData;
+    setupGenreCompleter();
+}
+
+QString DlgTrackInfo::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
+    qDebug() << "[DlgTrackInfo] -> getDisplayGenreNameForGenreID called";
+    const QStringList parts = rawGenre.split(';', Qt::SkipEmptyParts);
+    QStringList resolved;
+
+    static QRegularExpression kGenreIdPattern(QStringLiteral(R"(##(\d+)##)"));
+    for (const QString& part : parts) {
+        const QString trimmed = part.trimmed();
+        const auto match = kGenreIdPattern.match(trimmed);
+
+        if (match.hasMatch()) {
+            bool ok = false;
+            const qint64 genreId = match.captured(1).toLongLong(&ok);
+            qDebug() << "[DlgTrackInfo] -> getDisplayGenreNameForGenreID "
+                        "searching for -> genreId:"
+                     << genreId;
+            if (ok) {
+                QString name;
+                for (const QVariant& entryVar : m_genreData) {
+                    const QVariantMap entry = entryVar.toMap();
+                    // qDebug() << "------" << entry["id"].typeName();
+                    // qDebug() << "------" << entry["id"].toString();
+                    if (entry["id"].toLongLong() == genreId) {
+                        name = entry["name_level_1"].toString();
+                        break;
+                    }
+                }
+                qDebug() << "[DlgTrackInfo] -> getDisplayGenreNameForGenreID "
+                            "called -> genreId -> name:"
+                         << name;
+                if (!name.isEmpty()) {
+                    resolved << name;
+                    continue;
+                }
+            }
+        }
+        resolved << trimmed; // fallback
+    }
+    return resolved.join(QStringLiteral("; "));
+}
+
+QString DlgTrackInfo::getIdsForGenreNames(const QString& genreText) const {
+    const QStringList parts = genreText.split(';', Qt::SkipEmptyParts);
+    QStringList resolved;
+
+    for (const QString& part : parts) {
+        const QString trimmed = part.trimmed();
+        bool matched = false;
+
+        for (const QVariant& entryVar : m_genreData) {
+            const QVariantMap entry = entryVar.toMap();
+            QString name = entry["name_level_1"].toString();
+
+            if (QString::compare(name, trimmed, Qt::CaseInsensitive) == 0) {
+                qint64 id = entry["id"].toLongLong();
+                resolved << QString("##%1##").arg(id);
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            resolved << trimmed;
+        }
+    }
+
+    return resolved.join("; ");
+}
+
+QStringList DlgTrackInfo::getGenreNameList() const {
+    QStringList genreNames;
+    for (const QVariant& entryVar : m_genreData) {
+        const QVariantMap entry = entryVar.toMap();
+        genreNames << entry["name_level_1"].toString();
+    }
+    genreNames.removeDuplicates();
+    genreNames.sort(Qt::CaseInsensitive);
+    return genreNames;
+}
+
+void DlgTrackInfo::setupGenreCompleter() {
+    QStringList genreNames = getGenreNameList();
+    qDebug() << "Genre names:" << genreNames;
+
+    QCompleter* genreCompleter = new QCompleter(genreNames, this);
+    genreCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    genreCompleter->setFilterMode(Qt::MatchContains);
+    genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    txtGenre->setCompleter(genreCompleter);
+
+    connect(txtGenre, &QLineEdit::textEdited, this, [this, genreCompleter](const QString& text) {
+        qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> full text:" << text;
+
+        QStringList parts = text.split(';', Qt::KeepEmptyParts);
+        qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> parts:" << parts;
+
+        QString current = parts.isEmpty() ? QString() : parts.last().trimmed();
+        qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> "
+                    "current (last part trimmed):"
+                 << current;
+
+        genreCompleter->setCompletionPrefix(current);
+        genreCompleter->setWidget(txtGenre); // Necessary if reassigned
+
+        if (!current.isEmpty()) {
+            qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> completion?";
+            QTimer::singleShot(0, this, [genreCompleter]() {
+                genreCompleter->complete();
+            });
+        } else {
+            qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> hiding popup";
+            genreCompleter->popup()->hide();
+        }
+    });
+
+    connect(genreCompleter,
+            QOverload<const QString&>::of(&QCompleter::activated),
+            this,
+            [this](const QString& selected) {
+                QString currentText = txtGenre->text();
+                QStringList parts = currentText.split(';');
+                if (!parts.isEmpty()) {
+                    parts.last() = selected.trimmed();
+                } else {
+                    parts << selected.trimmed();
+                }
+
+                QString newText = parts.join("; ").trimmed();
+                if (!newText.endsWith(";")) {
+                    newText += "; ";
+                }
+
+                QSignalBlocker blocker(txtGenre);
+                txtGenre->setText(newText);
+                txtGenre->setCursorPosition(txtGenre->text().length());
+
+                qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> "
+                            "TextEdited -> genreCompleter -> new text:"
+                         << newText;
+            });
+}
+
+// EVE
 
 void DlgTrackInfo::init() {
     setupUi(this);
@@ -205,14 +356,25 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
+    // EVE
+    // OLD:
+    // connect(txtGenre,
+    //        &QLineEdit::editingFinished,
+    //        this,
+    //        [this]() {
+    //            txtGenre->setText(txtGenre->text().trimmed());
+    //            m_trackRecord.refMetadata().refTrackInfo().setGenre(
+    //                    txtGenre->text());
+    //        });
     connect(txtGenre,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                txtGenre->setText(txtGenre->text().trimmed());
-                m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text());
+                const QString editedText = txtGenre->text().trimmed();
+                const QString genreWithIds = getIdsForGenreNames(editedText);
+                m_trackRecord.refMetadata().refTrackInfo().setGenre(genreWithIds);
             });
+    // EVE
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -407,8 +569,15 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
+    // EVE
+    // txtGenre->setText(
+    //        m_trackRecord.getMetadata().getTrackInfo().getGenre());
+    m_rawGenreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
+    txtGenre->setText(getDisplayGenreNameForGenreID(
+            m_trackRecord.getMetadata().getTrackInfo().getGenre()));
+
+    // EVE
+
     txtComposer->setText(
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
     txtGrouping->setText(

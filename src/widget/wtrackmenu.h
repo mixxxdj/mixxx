@@ -114,6 +114,8 @@ class WTrackMenu : public QMenu {
     void slotRemoveFromDisk();
     const QString getDeckGroup() const;
 
+    void loadGenreData2QVL();
+
   signals:
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
@@ -402,6 +404,7 @@ class WTrackMenu : public QMenu {
     QString m_trackProperty;
 
     static bool s_showPurgeSuccessPopup;
+    QVariantList m_genreData;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

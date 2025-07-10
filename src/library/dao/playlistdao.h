@@ -121,6 +121,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 
+    void loadGenres2QVL(QVariantList& genresData);
+
   signals:
     void added(int playlistId);
     void deleted(int playlistId);

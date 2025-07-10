@@ -21,6 +21,38 @@ void PlaylistDAO::initialize(const QSqlDatabase& database) {
     populatePlaylistMembershipCache();
 }
 
+// EVE
+void PlaylistDAO::loadGenres2QVL(QVariantList& genresData) {
+    qDebug() << "[PlaylistDAO] -> loadGenres2QVL -> Start";
+    genresData.clear();
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT id, name_level_1, name_level_2, name_level_3, "
+            "name_level_4, name_level_5, display_order, is_visible, "
+            "is_user_defined FROM genres ORDER BY id ASC");
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap genresEntry;
+            genresEntry["id"] = query.value("id");
+            genresEntry["name_level_1"] = query.value("name_level_1");
+            genresEntry["name_level_2"] = query.value("name_level_2");
+            genresEntry["name_level_3"] = query.value("name_level_3");
+            genresEntry["name_level_4"] = query.value("name_level_4");
+            genresEntry["name_level_5"] = query.value("name_level_5");
+            genresEntry["display_order"] = query.value("display_order");
+            genresEntry["is_visible"] = query.value("is_visible");
+            genresEntry["is_user_defined"] = query.value("is_user_defined");
+            genresData.append(genresEntry);
+        }
+    } else {
+        qWarning() << "[PlaylistDAO] -> loadGenres2QVL -> Failed:"
+                   << query.lastError();
+    }
+    qDebug() << "[PlaylistDAO] -> loadGenres2QVL -> Finished";
+}
+// EVE
+
 void PlaylistDAO::populatePlaylistMembershipCache() {
     // Minor optimization: reserve space in m_playlistsTrackIsIn.
     QSqlQuery query(m_database);
