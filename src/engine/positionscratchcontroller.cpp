@@ -329,3 +329,10 @@ void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
     // distance traveled in m_samplePosDeltaSum
     m_seekSamplePos = newPos;
 }
+
+void PositionScratchController::reset() {
+    m_pScratchEnable->set(0.0);
+    m_isScratching = false;
+    m_inertiaEnabled = false;
+    m_rate = 0;
+}
