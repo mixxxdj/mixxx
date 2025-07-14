@@ -53,7 +53,9 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
-
+    bool isReadyForDisable() override {
+        return m_isReadyForDisable;
+    };
     void processChannel(
             EchoGroupState* pState,
             const CSAMPLE* pInput,
@@ -73,6 +75,6 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
     EngineEffectParameterPointer m_pPingPongParameter;
     EngineEffectParameterPointer m_pQuantizeParameter;
     EngineEffectParameterPointer m_pTripletParameter;
-
+    bool m_isReadyForDisable = false;
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);
 };
