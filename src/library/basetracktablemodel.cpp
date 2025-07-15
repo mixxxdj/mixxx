@@ -14,6 +14,7 @@
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
 #include "library/tabledelegates/defaultdelegate.h"
+#include "library/tabledelegates/genredelegate.h"
 #include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
@@ -387,6 +388,10 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 pOverviewDelegate,
                 &OverviewDelegate::slotInhibitLazyLoading);
         return pOverviewDelegate;
+        //} else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
+        //    return new GenreDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
+        return new GenreDelegate(this);
     }
     return new DefaultDelegate(pTableView);
 }

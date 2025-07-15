@@ -78,6 +78,10 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     QString modelKey(bool noSearch) const override;
 
+    void loadGenres2QVL(QVariantList& genresData);
+    QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
+    QMap<QString, QString> getAllGenres();
+
   protected:
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from BaseTrackTableModel
@@ -176,6 +180,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
+    QVariantList m_genreData;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

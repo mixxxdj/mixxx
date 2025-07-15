@@ -22,6 +22,48 @@ void PlaylistDAO::initialize(const QSqlDatabase& database) {
 }
 
 // EVE
+
+QString PlaylistDAO::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
+    qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID called";
+    const QStringList parts = rawGenre.split(';', Qt::SkipEmptyParts);
+    QStringList resolved;
+
+    static QRegularExpression kGenreIdPattern(QStringLiteral(R"(##(\d+)##)"));
+    for (const QString& part : parts) {
+        const QString trimmed = part.trimmed();
+        const auto match = kGenreIdPattern.match(trimmed);
+
+        if (match.hasMatch()) {
+            bool ok = false;
+            const qint64 genreId = match.captured(1).toLongLong(&ok);
+            qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID "
+                        "searching for -> genreId:"
+                     << genreId;
+            if (ok) {
+                QString name;
+                for (const QVariant& entryVar : m_genreData) {
+                    const QVariantMap entry = entryVar.toMap();
+                    // qDebug() << "------" << entry["id"].typeName();
+                    // qDebug() << "------" << entry["id"].toString();
+                    if (entry["id"].toLongLong() == genreId) {
+                        name = entry["name_level_1"].toString();
+                        break;
+                    }
+                }
+                qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID "
+                            "called -> genreId -> name:"
+                         << name;
+                if (!name.isEmpty()) {
+                    resolved << name;
+                    continue;
+                }
+            }
+        }
+        resolved << trimmed; // fallback
+    }
+    return resolved.join(QStringLiteral("; "));
+}
+
 void PlaylistDAO::loadGenres2QVL(QVariantList& genresData) {
     qDebug() << "[PlaylistDAO] -> loadGenres2QVL -> Start";
     genresData.clear();
@@ -50,6 +92,7 @@ void PlaylistDAO::loadGenres2QVL(QVariantList& genresData) {
                    << query.lastError();
     }
     qDebug() << "[PlaylistDAO] -> loadGenres2QVL -> Finished";
+    m_genreData = genresData;
 }
 // EVE
 

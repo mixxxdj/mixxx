@@ -34,25 +34,18 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
 
+    void setGenreData(const QVariantList& genreData);
+    QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
+    QString getIdsForGenreNames(const QString& genreText) const;
+    QStringList getGenreNameList() const;
+    void setupGenreCompleter();
+
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack);
     void loadTrack(const QModelIndex& index);
     void focusField(const QString& property);
-
-    // QString genreDisplayString(const QString& rawGenre) const;
-    // static QString genreDisplayString(const QString& rawGenre);
-    void setGenreData(const QVariantList& genreData);
-    QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
-    QString getIdsForGenreNames(const QString& genreText) const;
-    QStringList getGenreNameList() const;
-    void setupGenreCompleter();
-    //    bool eventFilter(QObject* obj, QEvent* event);
-    //    void setGenreIds(const QString& genreIdText);
-    //    QString getGenreIds() const;
-    //    void updateGenreComboDisplay();
-    //    void setupGenreCombo();
 
   signals:
     void next();
