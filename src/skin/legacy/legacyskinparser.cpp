@@ -8,8 +8,10 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QtGlobal>
+#include <memory>
 
 #include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -23,6 +25,7 @@
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
@@ -35,6 +38,7 @@
 #include "widget/wbeatspinbox.h"
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
+#include "widget/wcuebutton.h"
 #include "widget/wdisplay.h"
 #include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
@@ -60,6 +64,7 @@
 #include "widget/wnumberrate.h"
 #include "widget/woverview.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wplaybutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/wraterange.h"
 #include "widget/wrecordingduration.h"
@@ -230,6 +235,13 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
 
     QDomDocument skin("skin");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = skin.setContent(&skinXmlFile);
+    if (!parseResult) {
+        qDebug() << "LegacySkinParser::openSkin - setContent failed see"
+                 << "line:" << parseResult.errorLine << "column:" << parseResult.errorColumn;
+        qDebug() << "LegacySkinParser::openSkin - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -238,6 +250,7 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
         qDebug() << "LegacySkinParser::openSkin - setContent failed see"
                  << "line:" << errorLine << "column:" << errorColumn;
         qDebug() << "LegacySkinParser::openSkin - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -525,6 +538,10 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
+    } else if (nodeName == "PlayButton") {
+        result = wrapWidget(parsePlayButton(node));
+    } else if (nodeName == "CueButton") {
+        result = wrapWidget(parseCueButton(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
@@ -1038,6 +1055,13 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    // This signal stems from AnalysisFeature, and the overview can now
+    // render the analysis progress like when listening to Playermanager's
+    // analysis progress signal when loading a track.
+    connect(m_pLibrary,
+            &Library::onTrackAnalyzerProgress,
+            overviewWidget,
+            &WOverview::onTrackAnalyzerProgress);
 
     commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
@@ -1087,6 +1111,17 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &BaseTrackPlayer::loadingTrack,
             viewer,
             &WWaveformViewer::slotLoadingTrack);
+#ifdef __STEM__
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::selectedStems,
+            viewer,
+            &WWaveformViewer::slotSelectStem);
+#endif
+
+    QObject::connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            viewer,
+            &WWaveformViewer::slotTrackUnloaded);
 
     connect(viewer,
             &WWaveformViewer::trackDropped,
@@ -1503,6 +1538,19 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
 
+    // Translate shortcuts to native text
+    QString searchInCurrentViewShortcut =
+            localizeShortcutKeys(m_pKeyboard->getKeyboardConfig()->getValue(
+                    ConfigKey("[KeyboardShortcuts]",
+                            "LibraryMenu_SearchInCurrentView"),
+                    "Ctrl+f"));
+    QString searchInAllTracksShortcut =
+            localizeShortcutKeys(m_pKeyboard->getKeyboardConfig()->getValue(
+                    ConfigKey("[KeyboardShortcuts]",
+                            "LibraryMenu_SearchInAllTracks"),
+                    "Ctrl+Shift+F"));
+    pLineEditSearch->setupToolTip(searchInCurrentViewShortcut, searchInAllTracksShortcut);
+
     m_pLibrary->bindSearchboxWidget(pLineEditSearch);
 
     return pLineEditSearch;
@@ -1789,6 +1837,15 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     }
 
     QDomDocument tmpl("template");
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto parseResult = tmpl.setContent(&templateFile);
+    if (!parseResult) {
+        qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
+                   << absolutePath << "line:" << parseResult.errorLine
+                   << "column:" << parseResult.errorColumn;
+        qWarning() << "LegacySkinParser::loadTemplate - message:" << parseResult.errorMessage;
+#else
     QString errorMessage;
     int errorLine;
     int errorColumn;
@@ -1798,6 +1855,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
         qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
                    << absolutePath << "line:" << errorLine << "column:" << errorColumn;
         qWarning() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+#endif
         return QDomElement();
     }
 
@@ -1885,7 +1943,7 @@ QString LegacySkinParser::getSharedGroupString(const QString& channelStr) {
 
 QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     QString group = lookupNodeGroup(element);
-    WHotcueButton* pWidget = new WHotcueButton(group, m_pParent);
+    WHotcueButton* pWidget = new WHotcueButton(m_pParent, group);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
@@ -1906,6 +1964,30 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
             controlFromConfigKey(pWidget->getClearConfigKey(), false),
             ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
 
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parsePlayButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WPlayButton* pWidget = new WPlayButton(m_pParent, group);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parseCueButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WCueButton* pWidget = new WCueButton(m_pParent, group);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
     return pWidget;
 }
@@ -2340,8 +2422,6 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
 }
 
 void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidget) {
-    ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = nullptr;
-
     for (QDomNode con = m_pContext->selectNode(node, "Connection");
             !con.isNull();
             con = con.nextSibling()) {
@@ -2352,20 +2432,22 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             continue;
         }
 
-        ValueTransformer* pTransformer = nullptr;
+        std::unique_ptr<ValueTransformer> pTransformer = nullptr;
         QDomElement transform = m_pContext->selectElement(con, "Transform");
         if (!transform.isNull()) {
-            pTransformer = ValueTransformer::parseFromXml(transform, *m_pContext);
+            pTransformer =
+                    ValueTransformer::parseFromXml(transform, *m_pContext);
         }
 
         QString property;
         if (m_pContext->hasNodeSelectString(con, "BindProperty", &property)) {
             //qDebug() << "Making property connection for" << property;
 
-            ControlWidgetPropertyConnection* pConnection =
-                    new ControlWidgetPropertyConnection(pWidget, control->getKey(),
-                                                        pTransformer, property);
-            pWidget->addPropertyConnection(pConnection);
+            pWidget->addPropertyConnection(
+                    std::make_unique<ControlWidgetPropertyConnection>(pWidget,
+                            control->getKey(),
+                            std::move(pTransformer),
+                            property));
         } else {
             bool nodeValue;
             Qt::MouseButton state = parseButtonState(con, *m_pContext);
@@ -2426,26 +2508,36 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
-            ControlParameterWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                    pWidget, control->getKey(), pTransformer,
-                    static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
-                    static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
+            auto pConnection =
+                    std::make_unique<ControlParameterWidgetConnection>(pWidget,
+                            control->getKey(),
+                            std::move(pTransformer),
+                            static_cast<ControlParameterWidgetConnection::
+                                            DirectionOption>(directionOption),
+                            static_cast<ControlParameterWidgetConnection::
+                                            EmitOption>(emitOption));
 
             switch (state) {
             case Qt::NoButton:
-                pWidget->addConnection(pConnection);
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
-                    pLastLeftOrNoButtonConnection = pConnection;
+                    pWidget->addAndSetDisplayConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::None);
+                } else {
+                    pWidget->addConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::None);
                 }
                 break;
             case Qt::LeftButton:
-                pWidget->addLeftConnection(pConnection);
                 if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
-                    pLastLeftOrNoButtonConnection = pConnection;
+                    pWidget->addAndSetDisplayConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::Left);
+                } else {
+                    pWidget->addConnection(std::move(pConnection),
+                            WBaseWidget::ConnectionSide::Left);
                 }
                 break;
             case Qt::RightButton:
-                pWidget->addRightConnection(pConnection);
+                pWidget->addConnection(std::move(pConnection), WBaseWidget::ConnectionSide::Right);
                 break;
             default:
                 // can't happen. Nothing else is returned by parseButtonState();
@@ -2535,14 +2627,6 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             }
         }
     }
-
-    // Legacy behavior: The last left-button or no-button connection with
-    // connectValueToWidget is the display connection. If no left-button or
-    // no-button connection exists, use the last right-button connection as the
-    // display connection.
-    if (pLastLeftOrNoButtonConnection != nullptr) {
-        pWidget->setDisplayConnection(pLastLeftOrNoButtonConnection);
-    }
 }
 
 void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
@@ -2553,9 +2637,6 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
 
     QString tooltip;
 
-    // translate shortcut to native text
-    QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText).toString(QKeySequence::NativeText);
-
     tooltip += "\n";
     tooltip += tr("Shortcut");
     if (!cmd.isEmpty()) {
@@ -2563,12 +2644,33 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
         tooltip += cmd;
     }
     tooltip += ": ";
-    tooltip += nativeShortcut;
+    tooltip += localizeShortcutKeys(shortcut);
     pWidget->appendBaseTooltip(tooltip);
 }
 
-QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
-    return m_pContext->selectString(node, "LaunchImageStyle");
+QString LegacySkinParser::localizeShortcutKeys(const QString& shortcut) {
+    // Translate shortcut to native text
+    return QKeySequence(shortcut, QKeySequence::PortableText)
+            .toString(QKeySequence::NativeText);
+}
+
+QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& skinDoc) {
+    QString schemeLaunchImageStyle;
+    // Check if the skins has color schemes
+    const QDomNode colorSchemeNode =
+            ColorSchemeParser::findConfiguredColorSchemeNode(
+                    skinDoc.toElement(),
+                    m_pConfig);
+    if (!colorSchemeNode.isNull()) {
+        // Check if the selected scheme has a <LaunchImageStyle> node with a string
+        schemeLaunchImageStyle = m_pContext->selectString(colorSchemeNode, "LaunchImageStyle");
+    }
+    if (!schemeLaunchImageStyle.isEmpty()) {
+        return schemeLaunchImageStyle;
+    } else {
+        // Look for the skin's general LaunchImage style
+        return m_pContext->selectString(skinDoc, "LaunchImageStyle");
+    }
 }
 
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {

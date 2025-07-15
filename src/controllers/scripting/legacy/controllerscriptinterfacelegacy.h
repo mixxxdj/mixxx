@@ -17,12 +17,46 @@ class ConfigKey;
 class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
+    // NOTE: these enumerator names are exposed to the JS engine! Removal/Changing of
+    // any name is likely breaking. Only add more and only remove enumerators if
+    // they're broken to begin with.
+    enum class Charset {
+        ASCII,
+        UTF_8,
+        UTF_16LE,
+        UTF_16BE,
+        UTF_32LE,
+        UTF_32BE,
+        CentralEurope,
+        Cyrillic,
+        WesternEurope,
+        Greek,
+        Turkish,
+        Hebrew,
+        Arabic,
+        Baltic,
+        Vietnamese,
+        Latin9,
+        Shift_JIS,
+        EUC_JP,
+        EUC_KR,
+        Big5_HKSCS,
+        KOI8_U,
+        UCS2,
+        SCSU,
+        BOCU_1,
+        CESU_8,
+        Latin1
+    };
+    Q_ENUM(Charset)
+
     ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine,
             const RuntimeLoggingCategory& logger);
 
     virtual ~ControllerScriptInterfaceLegacy();
 
     Q_INVOKABLE QJSValue getSetting(const QString& name);
+    Q_INVOKABLE QObject* getPlayer(const QString& group);
     Q_INVOKABLE double getValue(const QString& group, const QString& name);
     Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
     Q_INVOKABLE double getParameter(const QString& group, const QString& name);
@@ -71,6 +105,14 @@ class ControllerScriptInterfaceLegacy : public QObject {
             double factor = 1.8,
             const double rate = -10.0);
     Q_INVOKABLE void softStart(const int deck, bool activate, double factor = 1.0);
+    Q_INVOKABLE bool isBrakeActive(int deck);
+    Q_INVOKABLE bool isSpinbackActive(int deck);
+    Q_INVOKABLE bool isSoftStartActive(int deck);
+
+    Q_INVOKABLE QByteArray convertCharset(
+            const ControllerScriptInterfaceLegacy::Charset
+                    targetCharset,
+            const QString& value);
 
     bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback
@@ -84,6 +126,9 @@ class ControllerScriptInterfaceLegacy : public QObject {
             const QString& name,
             const QJSValue& callback,
             bool skipSuperseded = false);
+
+    QByteArray convertCharsetInternal(QLatin1String targetCharset, const QString& value);
+
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 

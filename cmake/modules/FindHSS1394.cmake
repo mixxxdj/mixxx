@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindHSS1394
 -----------
@@ -41,15 +36,14 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_path(HSS1394_INCLUDE_DIR
+find_path(
+  HSS1394_INCLUDE_DIR
   NAMES HSS1394/HSS1394.h
-  DOC "HSS1394 include directory")
+  DOC "HSS1394 include directory"
+)
 mark_as_advanced(HSS1394_INCLUDE_DIR)
 
-find_library(HSS1394_LIBRARY
-  NAMES hss1394
-  DOC "HSS1394 library"
-)
+find_library(HSS1394_LIBRARY NAMES hss1394 DOC "HSS1394 library")
 mark_as_advanced(HSS1394_LIBRARY)
 
 include(FindPackageHandleStandardArgs)
@@ -66,7 +60,8 @@ if(HSS1394_FOUND)
 
   if(NOT TARGET HSS1394::HSS1394)
     add_library(HSS1394::HSS1394 UNKNOWN IMPORTED)
-    set_target_properties(HSS1394::HSS1394
+    set_target_properties(
+      HSS1394::HSS1394
       PROPERTIES
         IMPORTED_LOCATION "${HSS1394_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${HSS1394_INCLUDE_DIR}"

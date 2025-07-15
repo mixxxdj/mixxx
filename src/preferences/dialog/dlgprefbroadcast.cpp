@@ -18,7 +18,6 @@
 #include "util/logger.h"
 
 namespace {
-const char* kSettingsGroupHeader = "Settings for %1";
 constexpr int kColumnEnabled = 0;
 constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
@@ -146,15 +145,27 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
      connect(checkBoxEnableReconnect,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
      connect(checkBoxLimitReconnects,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
      connect(enableCustomMetadata,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
 
@@ -280,15 +291,30 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnDisconnectAll->setEnabled(enabled);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxEnableReconnectChanged(Qt::CheckState state) {
+    widgetReconnectControls->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {
     widgetReconnectControls->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(Qt::CheckState state) {
+    spinBoxMaximumRetries->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(int value) {
     spinBoxMaximumRetries->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::enableCustomMetadataChanged(Qt::CheckState state) {
+    const bool value = (state == Qt::Checked);
+#else
 void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
+#endif
     custom_artist->setEnabled(value);
     custom_title->setEnabled(value);
 }
@@ -390,9 +416,8 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     }
 
     // Set groupbox header
-    QString headerText =
-            QString(tr(kSettingsGroupHeader))
-            .arg(profile->getProfileName());
+    //: Settings for broadcast profile, %1 is the profile name placeholder
+    const QString headerText = tr("Settings for %1").arg(profile->getProfileName());
     groupBoxProfileSettings->setTitle(headerText);
 
     rbPasswordCleartext->setChecked(!profile->secureCredentialStorage());

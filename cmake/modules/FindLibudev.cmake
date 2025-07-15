@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindLibudev
 --------
@@ -24,15 +19,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Libudev QUIET libudev)
 endif()
 
-find_path(Libudev_INCLUDE_DIR
+find_path(
+  Libudev_INCLUDE_DIR
   NAMES libudev.h
   PATHS ${PC_Libudev_INCLUDE_DIRS}
-  DOC "The libudev include directory")
+  DOC "The libudev include directory"
+)
 mark_as_advanced(Libudev_INCLUDE_DIR)
 
-find_library(Libudev_LIBRARY
-  NAMES udev
-  PATH ${PC_Libudev_LIBRARY_DIRS}
+find_library(
+  Libudev_LIBRARY
+  NAMES udev PATH ${PC_Libudev_LIBRARY_DIRS}
   DOC "The libudev library"
 )
 mark_as_advanced(Libudev_LIBRARY)
@@ -51,7 +48,8 @@ if(Libudev_FOUND)
 
   if(NOT TARGET Libudev::Libudev)
     add_library(Libudev::Libudev UNKNOWN IMPORTED)
-    set_target_properties(Libudev::Libudev
+    set_target_properties(
+      Libudev::Libudev
       PROPERTIES
         IMPORTED_LOCATION "${Libudev_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Libudev_CFLAGS_OTHER}"

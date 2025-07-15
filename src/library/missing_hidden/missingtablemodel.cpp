@@ -51,7 +51,7 @@ void MissingTableModel::setTableModel(int id) {
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
     setSearch("");
 
 }
@@ -88,7 +88,9 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 }
 
 TrackModel::Capabilities MissingTableModel::getCapabilities() const {
-    return Capability::Purge | Capability::Properties;
+    return Capability::Purge |
+            Capability::Properties |
+            Capability::Sorting;
 }
 
 QString MissingTableModel::modelKey(bool noSearch) const {

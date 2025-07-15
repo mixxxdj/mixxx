@@ -16,33 +16,33 @@ function midi_for_light() {}
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
-var midi_channel = 1; // set midi_channel. Valid range: 1 to 16.
-var enable_beat = true; // set to false if you not need beat
-var enable_bpm = true; // set to false if you not need BPM
-var enable_mtc_timecode = false; // set to false if you not need midi time code
-var enable_vu_mono_current = false; // set to false if you not need VU mono current
-var enable_vu_mono_average_min = false; // set to false if you not need VU mono average min
-var enable_vu_mono_average_mid = false; // set to false if you not need VU mono average mid
-var enable_vu_mono_average_max = false; // set to false if you not need VU mono average max
-var enable_vu_mono_average_fit = true; // set to false if you not need VU mono average fit
-var enable_vu_mono_current_meter = false; // set to false if you not need VU mono current meter
-var enable_vu_mono_average_meter = true; // set to false if you not need VU mono average meter
-var enable_vu_left_current = false; // set to false if you not need VU left current
-var enable_vu_left_average_min = false; // set to false if you not need VU left average min
-var enable_vu_left_average_mid = false; // set to false if you not need VU left average mid
-var enable_vu_left_average_max = false; // set to false if you not need VU left average max
-var enable_vu_left_average_fit = true; // set to false if you not need VU left average fit
-var enable_vu_left_current_meter = false; // set to false if you not need VU left current meter
-var enable_vu_left_average_meter = false; // set to false if you not need VU left average meter
-var enable_vu_right_current = false; // set to false if you not need VU right current
-var enable_vu_right_average_min = false; // set to false if you not need VU right average min
-var enable_vu_right_average_mid = false; // set to false if you not need VU right average mid
-var enable_vu_right_average_max = false; // set to false if you not need VU right average max
-var enable_vu_right_average_fit = true; // set to false if you not need VU right average fit
-var enable_vu_right_current_meter = false; // set to false if you not need VU right current meter
-var enable_vu_right_average_meter = false; // set to false if you not need VU right average meter
-var deck_ending_time = 15; // set a time (in seconds) in which the playing track is considered to be ending
-var deck_ending_priority_factor = 0.9; // decrease the priority of the ending track by this factor
+var midi_channel = engine.getSetting("midi_channel"); // set midi_channel. Valid range: 1 to 16.
+var enable_beat = engine.getSetting("enable_beat"); // set to false if you not need beat
+var enable_bpm = engine.getSetting("enable_bpm"); // set to false if you not need BPM
+var enable_mtc_timecode = engine.getSetting("enable_mtc_timecode"); // set to false if you not need midi time code
+var deck_ending_time = engine.getSetting("deck_ending_time"); // set a time (in seconds) in which the playing track is considered to be ending
+var deck_ending_priority_factor = engine.getSetting("deck_ending_priority_factor"); // decrease the priority of the ending track by this factor
+var enable_vu_mono_current = engine.getSetting("enable_vu_mono_current"); // set to false if you not need VU mono current
+var enable_vu_mono_average_min = engine.getSetting("enable_vu_mono_average_min"); // set to false if you not need VU mono average min
+var enable_vu_mono_average_mid = engine.getSetting("enable_vu_mono_average_mid"); // set to false if you not need VU mono average mid
+var enable_vu_mono_average_max = engine.getSetting("enable_vu_mono_average_max"); // set to false if you not need VU mono average max
+var enable_vu_mono_average_fit = engine.getSetting("enable_vu_mono_average_fit"); // set to false if you not need VU mono average fit
+var enable_vu_mono_current_meter = engine.getSetting("enable_vu_mono_current_meter"); // set to false if you not need VU mono current meter
+var enable_vu_mono_average_meter = engine.getSetting("enable_vu_mono_average_meter"); // set to false if you not need VU mono average meter
+var enable_vu_left_current = engine.getSetting("enable_vu_left_current"); // set to false if you not need VU left current
+var enable_vu_left_average_min = engine.getSetting("enable_vu_left_average_min"); // set to false if you not need VU left average min
+var enable_vu_left_average_mid = engine.getSetting("enable_vu_left_average_mid"); // set to false if you not need VU left average mid
+var enable_vu_left_average_max = engine.getSetting("enable_vu_left_average_max"); // set to false if you not need VU left average max
+var enable_vu_left_average_fit = engine.getSetting("enable_vu_left_average_fit"); // set to false if you not need VU left average fit
+var enable_vu_left_current_meter = engine.getSetting("enable_vu_left_current_meter"); // set to false if you not need VU left current meter
+var enable_vu_left_average_meter = engine.getSetting("enable_vu_left_average_meter"); // set to false if you not need VU left average meter
+var enable_vu_right_current = engine.getSetting("enable_vu_right_current"); // set to false if you not need VU right current
+var enable_vu_right_average_min = engine.getSetting("enable_vu_right_average_min"); // set to false if you not need VU right average min
+var enable_vu_right_average_mid = engine.getSetting("enable_vu_right_average_mid"); // set to false if you not need VU right average mid
+var enable_vu_right_average_max = engine.getSetting("enable_vu_right_average_max"); // set to false if you not need VU right average max
+var enable_vu_right_average_fit = engine.getSetting("enable_vu_right_average_fit"); // set to false if you not need VU right average fit
+var enable_vu_right_current_meter = engine.getSetting("enable_vu_right_current_meter"); // set to false if you not need VU right current meter
+var enable_vu_right_average_meter = engine.getSetting("enable_vu_right_average_meter"); // set to false if you not need VU right average meter
 
 ///////////////////////////////////////////////////////////////
 //              GLOBAL FOR SCRIPT, DON'T TOUCH               //
@@ -85,7 +85,7 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
     ];
     midi_for_light.vu_meter_timer = undefined;
 
-    engine.connectControl("[Master]", "crossfader", "midi_for_light.calculateDeckPriority");
+    engine.makeConnection("[Master]", "crossfader", midi_for_light.calculateDeckPriority);
 
     if (enable_vu_meter_global === true) midi_for_light.vu_meter_timer = engine.beginTimer(40, midi_for_light.vuMeter);
 
@@ -95,10 +95,10 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
 
     for (var i = 0; i <= 3; i++) {
         deck_beat_watchdog_timer[i] = engine.beginTimer(beat_watchdog_time, () => { midi_for_light.deckBeatWatchdog(i); });
-        engine.connectControl(`[Channel${ i + 1 }]`, "beat_active", "midi_for_light.deckBeatOutputToMidi");
-        engine.connectControl(`[Channel${ i + 1 }]`, "volume", "midi_for_light.calculateDeckPriority");
-        engine.connectControl(`[Channel${ i + 1 }]`, "play", "midi_for_light.deckButtonPlay");
-        if (enable_mtc_timecode === true) { engine.connectControl(`[Channel${ i + 1 }]`, "playposition", "midi_for_light.sendMidiMtcFullFrame"); }
+        engine.makeConnection(`[Channel${ i + 1 }]`, "beat_active", midi_for_light.deckBeatOutputToMidi);
+        engine.makeConnection(`[Channel${ i + 1 }]`, "volume", midi_for_light.calculateDeckPriority);
+        engine.makeConnection(`[Channel${ i + 1 }]`, "play", midi_for_light.deckButtonPlay);
+        if (enable_mtc_timecode === true) { engine.makeConnection(`[Channel${ i + 1 }]`, "playposition", midi_for_light.sendMidiMtcFullFrame); }
     }
 
     midi_for_light.calculateDeckPriority();

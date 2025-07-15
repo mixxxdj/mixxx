@@ -29,12 +29,15 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #elif defined(_WIN32)
 #  include <windows.h>
 #elif defined(__LINUX__)
-#  include <QtDBus>
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusReply>
 #elif defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND
 #  include <X11/extensions/scrnsaver.h>
 #endif
 
-#if defined(__LINUX__) || (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
+#if (defined(__LINUX__) && defined(__X11__)) || \
+        (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
 #  define None XNone
 #  define Window XWindow
 #  include <X11/Xlib.h>
@@ -144,7 +147,7 @@ void ScreenSaverHelper::uninhibitInternal()
     s_enabled = false;
 }
 
-#elif defined(Q_OS_LINUX)
+#elif (defined(Q_OS_LINUX) && defined(__X11__))
 const char *SCREENSAVERS[][4] = {
     // org.freedesktop.ScreenSaver is the standard. should work for gnome and kde too, 
     // but I add their specific names too

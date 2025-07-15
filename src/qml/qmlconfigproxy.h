@@ -1,8 +1,8 @@
 #pragma once
 #include <QColor>
 #include <QObject>
+#include <QQmlEngine>
 #include <QVariantList>
-#include <QtQml>
 
 #include "preferences/usersettings.h"
 
@@ -23,6 +23,11 @@ class QmlConfigProxy : public QObject {
     Q_INVOKABLE QVariantList getHotcueColorPalette();
     Q_INVOKABLE QVariantList getTrackColorPalette();
     Q_INVOKABLE int getMultiSamplingLevel();
+    Q_INVOKABLE bool useAcceleration();
+
+    // Waveform settings
+    Q_INVOKABLE bool waveformZoomSynchronization();
+    Q_INVOKABLE double waveformDefaultZoom();
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {

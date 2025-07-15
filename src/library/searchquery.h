@@ -205,6 +205,7 @@ class BpmFilterNode : public QueryNode {
         HalveDouble,       // bpm:120
         HalveDoubleStrict, // bpm:120.0
         Operator,          // bpm:<=120
+        Locked,            // bpm:locked
     };
 
     // Allows WSearchRelatedTracksMenu to construct the QAction title

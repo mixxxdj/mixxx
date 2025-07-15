@@ -6,8 +6,9 @@
 #include "util/painterscope.h"
 
 WaveformRendererRGB::WaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererRGB::~WaveformRendererRGB() {
@@ -91,7 +92,7 @@ void WaveformRendererRGB::draw(
     const float heightFactor = allGain * halfBreadth / sqrtf(255 * 255 * 3);
 
     // Draw reference line
-    painter->setPen(m_pColors->getAxesColor());
+    painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
     painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
 
     for (int x = 0; x < static_cast<int>(length); ++x) {

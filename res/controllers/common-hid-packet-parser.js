@@ -1,4 +1,6 @@
-/* global controller */
+// fixing names to to be camelcase would break the API
+// so disable it for the entire file for now.
+/* eslint-disable camelcase */
 
 /**
  * Common HID script debugging function. Just to get logging with 'HID' prefix.

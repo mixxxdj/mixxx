@@ -11,6 +11,9 @@
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -23,13 +26,16 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(
-            QWidget* parent,
+            QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
+#ifdef __LINUX__
+    void currentChanged(const QModelIndex& current, const QModelIndex& previous) override;
+#endif
     void contextMenuEvent(QContextMenuEvent * event) override;
+    QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
@@ -37,8 +43,16 @@ class WTrackTableView : public WLibraryTableView {
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void editSelectedItem();
     void activateSelectedTrack();
-    void loadSelectedTrackToGroup(const QString& group, bool play);
+#ifdef __STEM__
+    void loadSelectedTrackToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
+    void loadSelectedTrackToGroup(const QString& group,
+            bool play);
+#endif
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
@@ -131,6 +145,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:
@@ -160,6 +175,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
 
     void initTrackMenu();
+    void showTrackMenu(const QPoint pos, const QModelIndex& index);
 
     void hideOrRemoveSelectedTracks();
 

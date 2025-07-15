@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QString>
 #include <QtDebug>
-#include <QtSql>
 
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"

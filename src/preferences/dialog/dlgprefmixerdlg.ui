@@ -20,8 +20,9 @@
    <string>Crossfader Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBox_xfader">
      <property name="title">
       <string>Crossfader Curve</string>
      </property>
@@ -162,7 +163,7 @@
           <property name="horizontalScrollBarPolicy">
            <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
-          <property name="fixedSize" stdset="0">
+          <property name="fixedSize">
            <size>
             <width>123</width>
             <height>83</height>
@@ -188,6 +189,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="DeckEqualizerOptions">
      <property name="title">
@@ -237,7 +239,7 @@
            <property name="text">
             <string>Equalizer Plugin</string>
            </property>
-           <property name="leftMargin" stdset="0">
+           <property name="leftMargin">
             <number>3</number>
            </property>
           </widget>
@@ -274,6 +276,7 @@
         </layout>
        </widget>
       </item>
+
       <item>
        <widget class="QCheckBox" name="CheckBoxBypass">
         <property name="toolTip">
@@ -284,6 +287,7 @@
         </property>
        </widget>
       </item>
+
       <item>
        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
         <property name="toolTip">
@@ -294,6 +298,7 @@
         </property>
        </widget>
       </item>
+
       <item>
        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
         <property name="toolTip">
@@ -304,6 +309,7 @@
         </property>
        </widget>
       </item>
+
       <item>
        <widget class="QCheckBox" name="CheckBoxStemAutoReset">
         <property name="text">
@@ -314,15 +320,18 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="GroupEQSliders">
      <property name="title">
       <string>Equalizer frequency Shelves</string>
      </property>
      <layout class="QVBoxLayout" name="vBoxLayout_1">
+
       <item>
        <widget class="QWidget" name="GroupHiEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_2">
+
          <item>
           <widget class="QLabel" name="label_highshelf">
            <property name="font">
@@ -339,6 +348,7 @@
            </property>
           </widget>
          </item>
+
          <item>
           <widget class="QSlider" name="SliderHiEQ">
            <property name="minimum">
@@ -361,6 +371,7 @@
            </property>
           </widget>
          </item>
+
          <item>
           <layout class="QHBoxLayout" name="sliderHiEQ_labels">
            <item>
@@ -424,12 +435,15 @@
            </item>
           </layout>
          </item>
+
         </layout>
        </widget>
       </item>
+
       <item>
        <widget class="QWidget" name="GroupLoEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_3">
+
          <item>
           <widget class="QLabel" name="label_lowshelf">
            <property name="font">
@@ -446,6 +460,7 @@
            </property>
           </widget>
          </item>
+
          <item>
           <widget class="QSlider" name="SliderLoEQ">
            <property name="minimum">
@@ -468,6 +483,7 @@
            </property>
           </widget>
          </item>
+
          <item>
           <layout class="QHBoxLayout" name="sliderLoEQ_labels">
            <item>
@@ -531,18 +547,22 @@
            </item>
           </layout>
          </item>
+
         </layout>
        </widget>
       </item>
+
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="MainMainEQ">
      <property name="title">
       <string>Main EQ</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
+
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -593,6 +613,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <spacer>
      <property name="orientation">
@@ -606,6 +627,7 @@
      </property>
     </spacer>
    </item>
+
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

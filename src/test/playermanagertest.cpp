@@ -149,7 +149,11 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
@@ -162,7 +166,11 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     // Load another track.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Ejecting in an empty deck loads the last-ejected track.
     auto deck2 = m_pPlayerManager->getDeck(2);
@@ -183,7 +191,11 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
@@ -192,7 +204,11 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     // Load another track, replacing the first, causing it to be unloaded.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
     waitForTrackToBeLoaded(deck1);
 
@@ -228,7 +244,11 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
     waitForTrackToBeLoaded(deck1);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
@@ -236,7 +256,11 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     // Load another track.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
     waitForTrackToBeLoaded(deck1);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());

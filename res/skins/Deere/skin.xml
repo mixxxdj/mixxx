@@ -135,6 +135,9 @@
     <SetVariable name="VerticalStretchButtonMaximumSize">22,-1</SetVariable>
     <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
 
+    <!-- Signal color for waveform overview in preview deck, samplers and library -->
+    <SetVariable name="SignalColor">#FF8000</SetVariable>
+
     <!-- The waveforms (zoomed and overview) use a lot of memory. They appear in multiple places in
     main_decks.xml, left_deck.xml, and right_deck.xml, so define them in singletons. This makes
     toggling between 2/4 decks and stacked/split waveforms slower, but it makes Mixxx startup

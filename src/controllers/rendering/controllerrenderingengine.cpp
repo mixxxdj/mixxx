@@ -78,7 +78,7 @@ ControllerRenderingEngine::ControllerRenderingEngine(
 #ifdef __EMSCRIPTEN__
             m_isValid = false;
             kLogger.critical() << "Reversed RGBA format is not supported in Emscripten/WebAssembly";
-#else
+#elif !defined(QT_OPENGL_ES_2)
             m_GLDataFormat = GL_BGRA;
 #endif
         } else {
@@ -359,7 +359,11 @@ void ControllerRenderingEngine::renderFrame() {
         kLogger.debug() << "Couldn't release the FBO.";
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    fboImage.flip(Qt::Vertical);
+#else
     fboImage.mirror(false, true);
+#endif
 
     emit frameRendered(m_screenInfo, fboImage.copy(), timestamp);
 

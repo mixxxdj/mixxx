@@ -5,9 +5,10 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QStyleFactory>
 
-#include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
 #include "moc_dlgreplacecuecolor.cpp"
@@ -15,6 +16,7 @@
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/defs.h"
 
 namespace {
 
@@ -58,7 +60,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     setupUi(this);
     setWindowModality(Qt::ApplicationModal);
 
-    spinBoxHotcueIndex->setMaximum(NUM_HOT_CUES);
+    spinBoxHotcueIndex->setMaximum(kMaxNumberOfHotcues);
 
     QIcon icon = QIcon::fromTheme("dialog-warning");
     if (!icon.isNull()) {
@@ -151,11 +153,19 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     // Update dialog widgets when conditions checkboxes are (un)checked
     connect(checkBoxCurrentColorCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
     connect(checkBoxHotcueIndexCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
 

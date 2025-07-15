@@ -1,0 +1,19 @@
+#version 120
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+struct buf
+{
+    mat4 matrix;
+};
+
+uniform buf ubuf;
+
+varying vec2 vTexcoord;
+attribute vec2 texcoord;
+attribute vec4 position;
+
+void main()
+{
+    vTexcoord = texcoord;
+    gl_Position = ubuf.matrix * position;
+}

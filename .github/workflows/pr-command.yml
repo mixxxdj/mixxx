@@ -1,0 +1,46 @@
+name: Softfix workflow
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  softfix:
+    name: Softfix action
+    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if commenter is maintainer
+        id: check-maintainer
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.payload.comment.user.login
+            });
+
+            const isMaintainer = ['admin', 'write'].includes(response.data.permission);
+            return isMaintainer;
+      - name: Checkout repository
+        if: steps.check-maintainer.outputs.result == 'true'
+        uses: actions/checkout@v4
+      # Using an app is the recommended way to allow recursive operations.
+      # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
+      # and short lifespan, unlike PAT.
+      # As we are trialing this approach tho, it is fine to play with a PAT and not spend the
+      # extra time setting up an app
+      #
+      # - name: Generate App Token
+      #   id: generate-token-key-pair
+      #   if: steps.check-maintainer.outputs.result == 'true'
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
+      #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
+      - name: Softfix
+        if: steps.check-maintainer.outputs.result == 'true'
+        uses: daschuer/softfix@v4
+        env:
+          # PAT setup with content:write and pull_request:write
+          GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}

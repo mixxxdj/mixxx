@@ -30,8 +30,8 @@ Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
 
-First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
-[VS 2019][visualstudio2019]"), download the mixxx
+First, open a terminal (on Windows, use "**x64 Native Tools Command Prompt for
+[VS 2022][visualstudio2022]**"), download the mixxx
 source code and navigate to it:
 
     $ git clone https://github.com/mixxxdj/mixxx.git
@@ -58,6 +58,8 @@ To build Mixxx, run
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
 
+Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
+
 ## Documentation
 
 For help using Mixxx, there are a variety of options:
@@ -82,7 +84,7 @@ Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
 - Chat with us on [Zulip][zulip].
-- Follow us on [Mastodon], [Twitter] and [Facebook].
+- Follow us on [Mastodon], [Bluesky] and [Facebook].
 - Subscribe to the [Mixxx Blog][blog].
 - Post on the [Mixxx forums][discourse].
 
@@ -97,12 +99,12 @@ license.
 [issues]: https://github.com/mixxxdj/mixxx/issues
 [fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
 [mastodon]: https://floss.social/@mixxx
-[twitter]: https://twitter.com/mixxxdj
+[Bluesky]: https://bsky.app/profile/mixxx.bsky.social
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxx.org/news/
 [manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
-[visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
+[visualstudio2022]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2022
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj

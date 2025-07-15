@@ -2,11 +2,8 @@
 
 #ifndef QT_OPENGL_ES_2
 
-#include "shaders/rgbshader.h"
+#include "rendergraph/openglnode.h"
 #include "track/track_decl.h"
-#include "util/class.h"
-#include "waveform/renderers/allshader/rgbdata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/waveform.h"
 #include "waveform/widgets/waveformwidgettype.h"
@@ -16,19 +13,19 @@ class QOpenGLShaderProgram;
 
 namespace allshader {
 class WaveformRendererTextured;
-}
+} // namespace allshader
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured : public QObject,
-                                            public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererTextured final : public allshader::WaveformRendererSignalBase,
+                                                  public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
     explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
             WaveformWidgetType::Type t,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
-            WaveformRendererSignalBase::Options options =
-                    WaveformRendererSignalBase::Option::None);
+            ::WaveformRendererSignalBase::Options options =
+                    ::WaveformRendererSignalBase::Option::None);
     ~WaveformRendererTextured() override;
 
     // override ::WaveformRendererSignalBase
@@ -37,6 +34,10 @@ class allshader::WaveformRendererTextured : public QObject,
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
+
+    bool supportsSlip() const override {
+        return true;
+    }
 
     void onSetTrack() override;
 
@@ -71,7 +72,7 @@ class allshader::WaveformRendererTextured : public QObject,
 
     // shaders
     bool m_isSlipRenderer;
-    WaveformRendererSignalBase::Options m_options;
+    ::WaveformRendererSignalBase::Options m_options;
     bool m_shadersValid;
     WaveformWidgetType::Type m_type;
     const QString m_pFragShader;

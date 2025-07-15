@@ -143,7 +143,7 @@ void BrowseThread::populateModel() {
 
     int row = 0;
     // Iterate over the files
-    while (fileIt.hasNext()) {
+    while (!m_bStopThread && fileIt.hasNext()) {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
         m_path_mutex.lock();

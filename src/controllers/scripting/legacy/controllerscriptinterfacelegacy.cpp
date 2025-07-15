@@ -1,5 +1,6 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <QStringEncoder>
 #include <gsl/pointers>
 
 #include "control/controlobject.h"
@@ -133,6 +134,10 @@ QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
                         .arg(name));
         return QJSValue::UndefinedValue;
     }
+}
+
+QObject* ControllerScriptInterfaceLegacy::getPlayer(const QString& group) {
+    return m_pScriptEngineLegacy->getPlayer(group);
 }
 
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
@@ -1051,4 +1056,115 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
     // activate the ramping in scratchProcess()
     m_ramp[deck] = true;
+}
+
+bool ControllerScriptInterfaceLegacy::isBrakeActive(int deck) {
+    if (deck >= m_brakeActive.size()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("isBrakeActive called with invalid deck index %1, "
+                               "returning false")
+                        .arg(QString::number(deck)));
+        return false;
+    }
+    return m_brakeActive[deck];
+}
+
+bool ControllerScriptInterfaceLegacy::isSpinbackActive(int deck) {
+    if (deck >= m_spinbackActive.size()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("isSpinbackActive called with invalid deck index %1, "
+                               "returning false")
+                        .arg(QString::number(deck)));
+        return false;
+    }
+    return m_softStartActive[deck];
+}
+
+bool ControllerScriptInterfaceLegacy::isSoftStartActive(int deck) {
+    if (deck >= m_softStartActive.size()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("isSoftStartActive called with invalid deck index %1, "
+                               "returning false")
+                        .arg(QString::number(deck)));
+        return false;
+    }
+    return m_softStartActive[deck];
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharset(
+        const ControllerScriptInterfaceLegacy::Charset targetCharset,
+        const QString& value) {
+    using enum Charset;
+    switch (targetCharset) {
+    case ASCII:
+        return convertCharsetInternal(QLatin1String("US-ASCII"), value);
+    case UTF_8:
+        return convertCharsetInternal(QLatin1String("UTF-8"), value);
+    case UTF_16LE:
+        return convertCharsetInternal(QLatin1String("UTF-16LE"), value);
+    case UTF_16BE:
+        return convertCharsetInternal(QLatin1String("UTF-16BE"), value);
+    case UTF_32LE:
+        return convertCharsetInternal(QLatin1String("UTF-32LE"), value);
+    case UTF_32BE:
+        return convertCharsetInternal(QLatin1String("UTF-32BE"), value);
+    case CentralEurope:
+        return convertCharsetInternal(QLatin1String("windows-1250"), value);
+    case Cyrillic:
+        return convertCharsetInternal(QLatin1String("windows-1251"), value);
+    case WesternEurope:
+        return convertCharsetInternal(QLatin1String("windows-1252"), value);
+    case Greek:
+        return convertCharsetInternal(QLatin1String("windows-1253"), value);
+    case Turkish:
+        return convertCharsetInternal(QLatin1String("windows-1254"), value);
+    case Hebrew:
+        return convertCharsetInternal(QLatin1String("windows-1255"), value);
+    case Arabic:
+        return convertCharsetInternal(QLatin1String("windows-1256"), value);
+    case Baltic:
+        return convertCharsetInternal(QLatin1String("windows-1257"), value);
+    case Vietnamese:
+        return convertCharsetInternal(QLatin1String("windows-1258"), value);
+    case Latin9:
+        return convertCharsetInternal(QLatin1String("ISO-8859-15"), value);
+    case Shift_JIS:
+        return convertCharsetInternal(QLatin1String("Shift_JIS"), value);
+    case EUC_JP:
+        return convertCharsetInternal(QLatin1String("EUC-JP"), value);
+    case EUC_KR:
+        return convertCharsetInternal(QLatin1String("EUC-KR"), value);
+    case Big5_HKSCS:
+        return convertCharsetInternal(QLatin1String("Big5-HKSCS"), value);
+    case KOI8_U:
+        return convertCharsetInternal(QLatin1String("KOI8-U"), value);
+    case UCS2:
+        return convertCharsetInternal(QLatin1String("ISO-10646-UCS-2"), value);
+    case SCSU:
+        return convertCharsetInternal(QLatin1String("SCSU"), value);
+    case BOCU_1:
+        return convertCharsetInternal(QLatin1String("BOCU-1"), value);
+    case CESU_8:
+        return convertCharsetInternal(QLatin1String("CESU-8"), value);
+    case Latin1:
+        return convertCharsetInternal(QLatin1String("ISO-8859-1"), value);
+    }
+
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unknown charset specified"));
+    return QByteArray();
+}
+
+QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
+        QLatin1String targetCharset, const QString& value) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QAnyStringView encoderName = QAnyStringView(targetCharset);
+#else
+    const char* encoderName = targetCharset.data();
+#endif
+    QStringEncoder fromUtf16 = QStringEncoder(encoderName);
+    if (!fromUtf16.isValid()) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Unable to open encoder"));
+        return QByteArray();
+    }
+    return fromUtf16(value);
 }

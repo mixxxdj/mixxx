@@ -1,0 +1,19 @@
+#version 120
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+struct buf
+{
+    mat4 matrix;
+};
+
+uniform buf ubuf;
+
+varying vec4 vColor;
+attribute vec4 color;
+attribute vec4 position;
+
+void main()
+{
+    vColor = color;
+    gl_Position = ubuf.matrix * position;
+}

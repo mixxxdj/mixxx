@@ -2,7 +2,7 @@
 
 #include <QDialog>
 #include <QObject>
-#include <QtQml>
+#include <QQmlEngine>
 #include <memory>
 
 namespace mixxx {
@@ -20,7 +20,7 @@ class QmlDlgPreferencesProxy : public QObject {
     Q_INVOKABLE void show();
 
     static QmlDlgPreferencesProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
-    static inline QmlDlgPreferencesProxy* s_pInstance = nullptr;
+    static inline std::unique_ptr<QmlDlgPreferencesProxy> s_pInstance;
 
   private:
     static inline QJSEngine* s_pJsEngine = nullptr;

@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindOgg
 -------
@@ -39,14 +34,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Ogg QUIET ogg)
 endif()
 
-find_path(Ogg_INCLUDE_DIR
+find_path(
+  Ogg_INCLUDE_DIR
   NAMES ogg/ogg.h
   HINTS ${PC_Ogg_INCLUDE_DIRS}
   DOC "Ogg include directory"
 )
 mark_as_advanced(Ogg_INCLUDE_DIR)
 
-find_library(Ogg_LIBRARY
+find_library(
+  Ogg_LIBRARY
   NAMES ogg
   HINTS ${PC_Ogg_LIBRARY_DIRS}
   DOC "Ogg library"
@@ -71,7 +68,8 @@ if(Ogg_FOUND)
 
   if(NOT TARGET Ogg::ogg)
     add_library(Ogg::ogg UNKNOWN IMPORTED)
-    set_target_properties(Ogg::ogg
+    set_target_properties(
+      Ogg::ogg
       PROPERTIES
         IMPORTED_LOCATION "${Ogg_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Ogg_CFLAGS_OTHER}"

@@ -120,7 +120,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pXFaderReverse(std::make_unique<ControlPushButton>(
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
           m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
-                  ConfigKey(group, "headSplit"))),
+                  ConfigKey(group, "headSplit"), true, 0.0)),
 
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
@@ -133,6 +133,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_boothGainOld(0.0),
           m_headphoneMainGainOld(0.0),
           m_headphoneGainOld(1.0),
+          m_duckingGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
           m_numMicsConfigured(0),
@@ -229,9 +230,9 @@ std::span<const CSAMPLE> EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.span();
 }
 
-void EngineMixer::processChannels(int iBufferSize) {
+void EngineMixer::processChannels(std::size_t bufferSize) {
     // Update internal sync lock rate.
-    m_pEngineSync->onCallbackStart(m_sampleRate, iBufferSize);
+    m_pEngineSync->onCallbackStart(m_sampleRate, bufferSize);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -321,8 +322,8 @@ void EngineMixer::processChannels(int iBufferSize) {
     for (int i = activeChannelsStartIndex; i < m_activeChannels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_activeChannels[i];
         auto& pChannel = pChannelInfo->m_pChannel;
-        DEBUG_ASSERT(pChannelInfo->m_pBuffer.size() >= iBufferSize);
-        pChannel->process(pChannelInfo->m_pBuffer.data(), iBufferSize);
+        DEBUG_ASSERT(pChannelInfo->m_pBuffer.size() >= static_cast<SINT>(bufferSize));
+        pChannel->process(pChannelInfo->m_pBuffer.data(), bufferSize);
 
         // Collect metadata for effects
         if (m_pEngineEffectsManager) {
@@ -336,7 +337,7 @@ void EngineMixer::processChannels(int iBufferSize) {
     // Note, because we call this on the internal clock first,
     // it will have an up-to-date beatDistance, whereas the other
     // Syncables will not.
-    m_pEngineSync->onCallbackEnd(m_sampleRate, iBufferSize);
+    m_pEngineSync->onCallbackEnd(m_sampleRate, bufferSize);
 
     // After all engines have been processed, trigger updates of local bpm values
     // which may have changed based on track position
@@ -352,13 +353,13 @@ void EngineMixer::processChannels(int iBufferSize) {
     // if the sync target was processed before or after the sync origin.
     std::for_each(m_activeChannels.cbegin() + activeChannelsStartIndex,
             m_activeChannels.cend(),
-            [iBufferSize](const auto& pChannelInfo) {
-                pChannelInfo->m_pChannel->postProcess(iBufferSize);
+            [bufferSize](const auto& pChannelInfo) {
+                pChannelInfo->m_pChannel->postProcess(bufferSize);
             });
 }
 
-void EngineMixer::process(const int iBufferSize) {
-    DEBUG_ASSERT(iBufferSize <= static_cast<int>(kMaxEngineSamples));
+void EngineMixer::process(const std::size_t bufferSize) {
+    DEBUG_ASSERT(bufferSize <= static_cast<int>(kMaxEngineSamples));
 
     static bool haveSetName = false;
     if (!haveSetName) {
@@ -374,14 +375,14 @@ void EngineMixer::process(const int iBufferSize) {
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
     // TODO: remove assumption of stereo buffer
     constexpr unsigned int kChannels = 2;
-    const unsigned int iFrames = iBufferSize / kChannels;
+    const unsigned int iFrames = static_cast<unsigned int>(bufferSize) / kChannels;
 
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
 
     // Prepare all channels for output
-    processChannels(iBufferSize);
+    processChannels(bufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix
@@ -408,7 +409,7 @@ void EngineMixer::process(const int iBufferSize) {
                 &m_channelHeadphoneGainCache,
                 m_head.data(),
                 m_headphoneHandle.handle(),
-                iBufferSize,
+                bufferSize,
                 m_sampleRate,
                 m_pEngineEffectsManager);
 
@@ -428,7 +429,7 @@ void EngineMixer::process(const int iBufferSize) {
                     m_headphoneHandle.handle(),
                     m_headphoneHandle.handle(),
                     m_head.data(),
-                    iBufferSize,
+                    bufferSize,
                     m_sampleRate,
                     headphoneFeatures);
         }
@@ -442,7 +443,7 @@ void EngineMixer::process(const int iBufferSize) {
             &m_channelTalkoverGainCache,
             m_talkover.data(),
             m_mainHandle.handle(),
-            iBufferSize,
+            bufferSize,
             m_sampleRate,
             m_pEngineEffectsManager);
 
@@ -454,7 +455,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_busTalkoverHandle.handle(),
                 m_mainHandle.handle(),
                 m_talkover.data(),
-                iBufferSize,
+                bufferSize,
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
@@ -467,7 +468,7 @@ void EngineMixer::process(const int iBufferSize) {
         m_pTalkoverDucking->setAboveThreshold(false);
         break;
     case EngineTalkoverDucking::AUTO:
-        m_pTalkoverDucking->processKey(m_talkover.data(), iBufferSize);
+        m_pTalkoverDucking->processKey(m_talkover.data(), bufferSize);
         break;
     case EngineTalkoverDucking::MANUAL:
         m_pTalkoverDucking->setAboveThreshold(!m_activeTalkoverChannels.isEmpty());
@@ -488,12 +489,8 @@ void EngineMixer::process(const int iBufferSize) {
 
     // Make the mix for each crossfader orientation output bus.
     // m_mainGain takes care of applying the attenuation from
-    // channel volume faders, crossfader, and talkover ducking.
-    // Talkover is mixed in later according to the configured MicMonitorMode
-    m_mainGain.setGains(crossfaderLeftGain,
-            1.0f,
-            crossfaderRightGain,
-            m_pTalkoverDucking->getGain(iFrames));
+    // channel volume faders and crossfader.
+    m_mainGain.setGains(crossfaderLeftGain, 1.0f, crossfaderRightGain);
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(m_mainGain,
@@ -502,7 +499,7 @@ void EngineMixer::process(const int iBufferSize) {
                                          // follows an orientation switch
                 m_outputBusBuffers[o].data(),
                 m_mainHandle.handle(),
-                iBufferSize,
+                bufferSize,
                 m_sampleRate,
                 m_pEngineEffectsManager);
     }
@@ -513,7 +510,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_busCrossfaderLeftHandle.handle(),
                 m_mainHandle.handle(),
                 m_outputBusBuffers[EngineChannel::LEFT].data(),
-                iBufferSize,
+                bufferSize,
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
@@ -523,7 +520,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_busCrossfaderCenterHandle.handle(),
                 m_mainHandle.handle(),
                 m_outputBusBuffers[EngineChannel::CENTER].data(),
-                iBufferSize,
+                bufferSize,
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
@@ -533,7 +530,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_busCrossfaderRightHandle.handle(),
                 m_mainHandle.handle(),
                 m_outputBusBuffers[EngineChannel::RIGHT].data(),
-                iBufferSize,
+                bufferSize,
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
@@ -550,7 +547,7 @@ void EngineMixer::process(const int iBufferSize) {
                 1.0,
                 m_outputBusBuffers[EngineChannel::RIGHT].data(),
                 1.0,
-                iBufferSize);
+                static_cast<int>(bufferSize));
 
         MicMonitorMode configuredMicMonitorMode = static_cast<MicMonitorMode>(
             static_cast<int>(m_pMicMonitorMode->get()));
@@ -564,10 +561,17 @@ void EngineMixer::process(const int iBufferSize) {
             // to both the main and booth in that case will require refactoring
             // the effects system to be able to process the same effects on multiple
             // buffers within the same callback.
-            applyMainEffects(iBufferSize);
+            applyMainEffects(bufferSize);
+
+            // Apply talkover ducking gain after applying effects in order to
+            // avoid ducking neutralization by some effects (e.g. compressor or
+            // AGC)
+            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
+            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
+            m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
-                processHeadphones(mainMixGainInHeadphones, iBufferSize);
+                processHeadphones(mainMixGainInHeadphones, bufferSize);
             }
 
             // Copy main mix to booth output with booth gain before mixing
@@ -579,23 +583,23 @@ void EngineMixer::process(const int iBufferSize) {
                         m_main.data(),
                         m_boothGainOld,
                         boothGain,
-                        iBufferSize);
+                        bufferSize);
                 m_boothGainOld = boothGain;
             }
 
             // Mix talkover into main mix
             if (m_numMicsConfigured > 0) {
-                SampleUtil::add(m_main.data(), m_talkover.data(), iBufferSize);
+                SampleUtil::add(m_main.data(), m_talkover.data(), bufferSize);
             }
 
             // Apply main gain
             CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
-            SampleUtil::applyRampingGain(m_main.data(), m_mainGainOld, mainGain, iBufferSize);
+            SampleUtil::applyRampingGain(m_main.data(), m_mainGainOld, mainGain, bufferSize);
             m_mainGainOld = mainGain;
 
             // Record/broadcast signal is the same as the main output
             if (sidechainMixRequired()) {
-                m_sidechainMix.copy(m_main, iBufferSize);
+                m_sidechainMix.copy(m_main, bufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
             // Process main channel effects
@@ -604,15 +608,22 @@ void EngineMixer::process(const int iBufferSize) {
             // to be able to process the same effects on different buffers
             // within the same callback. For consistency between the MicMonitorModes,
             // process main effects here before mixing in talkover.
-            applyMainEffects(iBufferSize);
+            applyMainEffects(bufferSize);
+
+            // Apply talkover ducking gain after applying effects in order to
+            // avoid ducking neutralization by some effects (e.g. compressor or
+            // AGC)
+            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
+            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
+            m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
-                processHeadphones(mainMixGainInHeadphones, iBufferSize);
+                processHeadphones(mainMixGainInHeadphones, bufferSize);
             }
 
             // Mix talkover with main
             if (m_numMicsConfigured > 0) {
-                SampleUtil::add(m_main.data(), m_talkover.data(), iBufferSize);
+                SampleUtil::add(m_main.data(), m_talkover.data(), bufferSize);
             }
 
             // Copy main mix (with talkover mixed in) to booth output with booth gain
@@ -623,7 +634,7 @@ void EngineMixer::process(const int iBufferSize) {
                         m_main.data(),
                         m_boothGainOld,
                         boothGain,
-                        iBufferSize);
+                        bufferSize);
                 m_boothGainOld = boothGain;
             }
 
@@ -633,12 +644,12 @@ void EngineMixer::process(const int iBufferSize) {
                     m_main.data(),
                     m_mainGainOld,
                     mainGain,
-                    iBufferSize);
+                    bufferSize);
             m_mainGainOld = mainGain;
 
             // Record/broadcast signal is the same as the main output
             if (sidechainMixRequired()) {
-                m_sidechainMix.copy(m_main, iBufferSize);
+                m_sidechainMix.copy(m_main, bufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DirectMonitor) {
             // Skip mixing talkover with the main and booth outputs
@@ -654,7 +665,7 @@ void EngineMixer::process(const int iBufferSize) {
                         m_main.data(),
                         m_boothGainOld,
                         boothGain,
-                        iBufferSize);
+                        bufferSize);
                 m_boothGainOld = boothGain;
             }
 
@@ -662,10 +673,17 @@ void EngineMixer::process(const int iBufferSize) {
             // NOTE(Be): This should occur before mixing in talkover for the
             // record/broadcast signal so the record/broadcast signal is the same
             // as what is heard on the main & booth outputs.
-            applyMainEffects(iBufferSize);
+            applyMainEffects(bufferSize);
+
+            // Apply talkover ducking gain after applying effects in order to
+            // avoid ducking neutralization by some effects (e.g. compressor or
+            // AGC)
+            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
+            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
+            m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
-                processHeadphones(mainMixGainInHeadphones, iBufferSize);
+                processHeadphones(mainMixGainInHeadphones, bufferSize);
             }
 
             // Apply main gain
@@ -674,10 +692,10 @@ void EngineMixer::process(const int iBufferSize) {
                     m_main.data(),
                     m_mainGainOld,
                     mainGain,
-                    iBufferSize);
+                    bufferSize);
             m_mainGainOld = mainGain;
             if (sidechainMixRequired()) {
-                m_sidechainMix.copy(m_main, iBufferSize);
+                m_sidechainMix.copy(m_main, bufferSize);
 
                 if (m_numMicsConfigured > 0) {
                     // The talkover signal Mixxx receives is delayed by the round trip latency.
@@ -698,8 +716,8 @@ void EngineMixer::process(const int iBufferSize) {
 
                     // Copy the main mix to a separate buffer before delaying it
                     // to avoid delaying the main output.
-                    m_pLatencyCompensationDelay->process(m_sidechainMix.data(), iBufferSize);
-                    SampleUtil::add(m_sidechainMix.data(), m_talkover.data(), iBufferSize);
+                    m_pLatencyCompensationDelay->process(m_sidechainMix.data(), bufferSize);
+                    SampleUtil::add(m_sidechainMix.data(), m_talkover.data(), bufferSize);
                 }
             }
         }
@@ -724,7 +742,7 @@ void EngineMixer::process(const int iBufferSize) {
                     m_mainOutputHandle.handle(),
                     m_mainHandle.handle(),
                     m_main.data(),
-                    iBufferSize,
+                    bufferSize,
                     m_sampleRate,
                     mainFeatures);
         }
@@ -745,7 +763,7 @@ void EngineMixer::process(const int iBufferSize) {
                 balright,
                 m_balleftOld,
                 m_balrightOld,
-                iBufferSize);
+                bufferSize);
 
         m_balleftOld = balleft;
         m_balrightOld = balright;
@@ -753,24 +771,24 @@ void EngineMixer::process(const int iBufferSize) {
         // Update VU meter (it does not return anything). Needs to be here so that
         // main balance and talkover is reflected in the VU meter.
         if (m_pVumeter != nullptr) {
-            m_pVumeter->process(m_main.data(), iBufferSize);
+            m_pVumeter->process(m_main.data(), bufferSize);
         }
     }
 
     if (m_pMainMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_main.data(), iBufferSize);
+        SampleUtil::mixStereoToMono(m_main.data(), bufferSize);
     }
 
     if (mainEnabled) {
-        m_pMainDelay->process(m_main.data(), iBufferSize);
+        m_pMainDelay->process(m_main.data(), bufferSize);
     } else {
-        m_main.clear(iBufferSize);
+        m_main.clear(bufferSize);
     }
     if (headphoneEnabled) {
-        m_pHeadDelay->process(m_head.data(), iBufferSize);
+        m_pHeadDelay->process(m_head.data(), bufferSize);
     }
     if (boothEnabled) {
-        m_pBoothDelay->process(m_booth.data(), iBufferSize);
+        m_pBoothDelay->process(m_booth.data(), bufferSize);
     }
 
     // We're close to the end of the callback. Wake up the engine worker
@@ -778,7 +796,7 @@ void EngineMixer::process(const int iBufferSize) {
     m_pWorkerScheduler->runWorkers();
 }
 
-void EngineMixer::applyMainEffects(int bufferSize) {
+void EngineMixer::applyMainEffects(std::size_t bufferSize) {
     // Apply main effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState mainFeatures;
@@ -797,14 +815,14 @@ void EngineMixer::applyMainEffects(int bufferSize) {
 
 void EngineMixer::processHeadphones(
         const CSAMPLE_GAIN mainMixGainInHeadphones,
-        int iBufferSize) {
+        std::size_t bufferSize) {
     // Add main mix to headphones
     SampleUtil::addWithRampingGain(
             m_head.data(),
             m_main.data(),
             m_headphoneMainGainOld,
             mainMixGainInHeadphones,
-            iBufferSize);
+            bufferSize);
     m_headphoneMainGainOld = mainMixGainInHeadphones;
 
     // If Head Split is enabled, replace the left channel of the pfl buffer
@@ -815,7 +833,7 @@ void EngineMixer::processHeadphones(
         // with all compilers, except clang >= 14.
         auto* const ph = m_head.data();
         auto* const pm = m_main.data();
-        for (SINT i = 0; i + 1 < iBufferSize; i += 2) {
+        for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
             ph[i] = (ph[i] + ph[i + 1]) / 2;
             ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
         }
@@ -827,7 +845,7 @@ void EngineMixer::processHeadphones(
             m_head.data(),
             m_headphoneGainOld,
             headphoneGain,
-            iBufferSize);
+            bufferSize);
     m_headphoneGainOld = headphoneGain;
 }
 

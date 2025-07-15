@@ -81,7 +81,11 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
             &DlgAnalysis::loadTrackToPlayer,
             this,
             [=, this](TrackPointer track, const QString& group) {
-                emit loadTrackToPlayer(track, group, false);
+                emit loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        mixxx::StemChannelSelection(),
+#endif
+                        false);
             });
     connect(m_pAnalysisView,
             &DlgAnalysis::analyzeTracks,
@@ -156,6 +160,14 @@ void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks)
                 &TrackAnalysisScheduler::finished,
                 this,
                 &AnalysisFeature::onTrackAnalysisSchedulerFinished);
+        // Forward the signal to be picked up by Library.
+        // Used by WOverview to render the re-analysis progress of loaded tracks.
+        // This is the equivalent to PlayerManager's progress signal fired for
+        // analysis triggered by loading a track.
+        connect(m_pTrackAnalysisScheduler.get(),
+                &TrackAnalysisScheduler::trackProgress,
+                this,
+                &AnalysisFeature::trackProgress);
 
         emit analysisActive(true);
     }

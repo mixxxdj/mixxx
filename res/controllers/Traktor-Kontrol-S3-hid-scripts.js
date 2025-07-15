@@ -5,7 +5,7 @@
 // Traktor Kontrol S3 HID controller script v2.00
 // Last modification: January 2023
 // Authors: Owen Williams, Robbert van der Helm
-// https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3
+// https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 //
 ///////////////////////////////////////////////////////////////////////////////////
 //
@@ -42,14 +42,14 @@ var TraktorS3 = {};
 // Disable this option to use the second, Mixxx-specific mode. See the readme at
 // https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 // for more information on how to use these modes.
-TraktorS3.QuickEffectMode = true;
+TraktorS3.QuickEffectMode = engine.getSetting("fxMode") === "QUICK_EFFECT";
 // When enabled, set all channels to the first FX chain on startup. Otherwise
 // the quick FX chain assignments from the last Mixxx run are preserved.
-TraktorS3.QuickEffectModeDefaultToFilter = true;
+TraktorS3.QuickEffectModeDefaultToFilter = engine.getSetting("fxResetOnStart");
 // When enabled, the FX Enable buttons will use the colors set in
 // `TraktorS3.ChannelColors` when the filter effect is selected. Disabling this
 // will use the Filter button's orange color instead.
-TraktorS3.QuickEffectModeChannelColors = false;
+TraktorS3.QuickEffectModeChannelColors = engine.getSetting("fxUseChannelColors");
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
@@ -64,32 +64,32 @@ TraktorS3.QuickEffectModeChannelColors = false;
 // * Hold shift to move the pitch slider without adjusting the rate
 // * Hold keylock and move the pitch slider to adjust musical pitch
 // * keylock will still toggle on, but on release, not press.
-TraktorS3.PitchSliderRelativeMode = true;
+TraktorS3.PitchSliderRelativeMode = engine.getSetting("pitchMode") === "PITCH_RELATIVE";
 
 // The Samplers can operate two ways.
 // With SamplerModePressAndHold = false, tapping a Sampler button will start the
 // sample playing.  Pressing the button again will stop playback.
 // With SamplerModePressAndHold = true, a Sample will play while you hold the
 // button down.  Letting go will stop playback.
-TraktorS3.SamplerModePressAndHold = false;
+TraktorS3.SamplerModePressAndHold = engine.getSetting("samplerModePressAndHold");
 
 // When this option is true, start up with the jog button lit, which means touching the job wheel
 // enables scratch mode.
-TraktorS3.JogDefaultOn = true;
+TraktorS3.JogDefaultOn = engine.getSetting("jogDefaultOn");
 
 // If true, the sampler buttons on Deck 1 are samplers 1-8 and the sampler buttons on Deck 2 are
 // 9-16.  If false, both decks are samplers 1-8.
-TraktorS3.SixteenSamplers = false;
+TraktorS3.SixteenSamplers = engine.getSetting("sixteenSamplers");
 
 // You can choose the colors you want for each channel. The list of colors is:
 // RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
 // PURPLE, FUCHSIA, MAGENTA, AZALEA, SALMON, WHITE
 // Some colors may look odd because of how they are encoded inside the controller.
 TraktorS3.ChannelColors = {
-    "[Channel1]": "CARROT",
-    "[Channel2]": "CARROT",
-    "[Channel3]": "BLUE",
-    "[Channel4]": "BLUE"
+    "[Channel1]": engine.getSetting("chan1Color"),
+    "[Channel2]": engine.getSetting("chan2Color"),
+    "[Channel3]": engine.getSetting("chan3Color"),
+    "[Channel4]": engine.getSetting("chan4Color")
 };
 
 // Each color has four brightnesses, so these values can be between 0 and 3.
@@ -295,6 +295,11 @@ TraktorS3.Controller = class {
 
             TraktorS3.incomingData([inputReportIdx, ...reportData.map(x => ~x)]);
             TraktorS3.incomingData([inputReportIdx, ...reportData]);
+        }
+
+        // The controller state may have overridden our preferred default values, so set them now.
+        for (const ch in this.Channels) {
+            TraktorS3.Channel.prototype.setDefaults(ch);
         }
 
         // NOTE: Soft takeovers must only be enabled after setting the initial
@@ -1112,10 +1117,17 @@ TraktorS3.Deck = class {
     }
 
     loadTrackHandler(field) {
-        if (this.shiftPressed) {
-            engine.setValue(this.activeChannel, "eject", field.value);
+        // If the library is selected, load the track based on which encoder was
+        // pressed. Otherwise just do whatever the default action is for the
+        // focused menu or widget.
+        if (engine.getValue("[Library]", "focused_widget") === 3) {
+            if (this.shiftPressed) {
+                engine.setValue(this.activeChannel, "eject", field.value);
+            } else {
+                engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            }
         } else {
-            engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            engine.setValue("[Library]", "GoToItem", field.value);
         }
     }
 
@@ -1610,6 +1622,17 @@ TraktorS3.Channel = class {
         this.clipConnection = {};
         this.hotcueCallbacks = [];
 
+        // The visual order of the channels in Mixxx is 3, 1, 2, 4, but we want
+        // the crossfader assignments array to match the visual layout
+        const visualChannelIndex = {3: 0, 1: 1, 2: 2, 4: 3}[this.groupNumber];
+        if (TraktorS3.DefaultCrossfaderAssignments[visualChannelIndex] !== null) {
+            // This goes 0-2 for left, right, and center, but having the values
+            // in this script's config be -1, 0, and 1 makes much more sense
+            engine.setValue(group, "orientation", TraktorS3.DefaultCrossfaderAssignments[visualChannelIndex] + 1);
+        }
+    }
+
+    setDefaults(group) {
         // The script by default doesn't change any of the deck's settings, but it's
         // useful to be able to initialize these settings to your preferences when
         // you turn on the controller
@@ -1627,14 +1650,6 @@ TraktorS3.Channel = class {
         }
         if (TraktorS3.DefaultKeylockEnabled !== null) {
             engine.setValue(group, "keylock", TraktorS3.DefaultKeylockEnabled);
-        }
-        // The visual order of the channels in Mixxx is 4, 2, 1, 3, but we want
-        // the crossfader assignments array to match the visual layout
-        const visualChannelIndex = {3: 0, 1: 1, 2: 2, 4: 3}[this.groupNumber];
-        if (TraktorS3.DefaultCrossfaderAssignments[visualChannelIndex] !== null) {
-            // This goes 0-2 for left, right, and center, but having the values
-            // in this script's config be -1, 0, and 1 makes much more sense
-            engine.setValue(group, "orientation", TraktorS3.DefaultCrossfaderAssignments[visualChannelIndex] + 1);
         }
     }
 
@@ -2283,7 +2298,7 @@ TraktorS3.debugLights = function() {
         "00"
     ];
 
-    const data = [Array(), Array(), Array()];
+    const data = [[], [], []];
 
 
     for (let i = 0; i < data.length; i++) {

@@ -17,10 +17,24 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
+    bool init() override;
+
     // Called when a new track is loaded.
     void onSetTrack() override;
 
     void onResize() override;
+
+    void clearMarks() {
+        m_marks.clear();
+    }
+
+    void setDefaultMark(const QString& group, const WaveformMarkSet::DefaultMarkerStyle& model) {
+        m_marks.setDefault(group, model);
+    }
+
+    void addMark(WaveformMarkPointer pMark) {
+        m_marks.addMark(pMark);
+    }
 
   public slots:
     // Called when the loaded track's cues are added, deleted or modified and

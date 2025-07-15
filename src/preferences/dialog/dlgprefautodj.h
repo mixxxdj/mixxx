@@ -17,8 +17,16 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotResetToDefaults() override;
 
   private slots:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotToggleRequeueIgnore(Qt::CheckState state);
+#else
     void slotToggleRequeueIgnore(int buttonState);
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotToggleRandomQueue(Qt::CheckState state);
+#else
     void slotToggleRandomQueue(int buttonState);
+#endif
 
   private:
     void considerRepeatPlaylistState(bool);

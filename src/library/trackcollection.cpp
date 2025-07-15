@@ -24,11 +24,6 @@ TrackCollection::TrackCollection(
                      m_analysisDao, m_libraryHashDao, pConfig) {
     // Forward signals from TrackDAO
     connect(&m_trackDao,
-            &TrackDAO::trackClean,
-            this,
-            &TrackCollection::trackClean,
-            /*signal-to-signal*/ Qt::DirectConnection);
-    connect(&m_trackDao,
             &TrackDAO::trackDirty,
             this,
             &TrackCollection::trackDirty,
@@ -221,6 +216,18 @@ DirectoryDAO::RelocateResult TrackCollection::relocateDirectory(
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<QUrl>& urls,
+        TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
+            urls,
+            flags);
+    if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
+        unhideTracks(trackIds);
+    }
+    return trackIds;
+}
+
+QList<TrackId> TrackCollection::resolveTrackIds(
         const QList<mixxx::FileInfo>& trackFiles,
         TrackDAO::ResolveTrackIdFlags flags) {
     QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
@@ -235,8 +242,7 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls,
         bool addMissing) {
-    QList<mixxx::FileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    if (files.isEmpty()) {
+    if (urls.isEmpty()) {
         return QList<TrackId>();
     }
 
@@ -245,7 +251,7 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
     if (addMissing) {
         flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
     }
-    return resolveTrackIds(files, flags);
+    return resolveTrackIds(urls, flags);
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
@@ -560,11 +566,6 @@ TrackPointer TrackCollection::getTrackByRef(
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_trackDao.getTrackByRef(trackRef);
-}
-
-TrackId TrackCollection::getTrackIdByRef(
-        const TrackRef& trackRef) const {
-    return m_trackDao.getTrackIdByRef(trackRef);
 }
 
 TrackPointer TrackCollection::getOrAddTrack(

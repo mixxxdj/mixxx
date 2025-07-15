@@ -3,11 +3,27 @@
 #include <QElapsedTimer>
 
 #include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
+
+enum class PhysicalTransportProtocol {
+    UNKNOWN,
+    USB,
+    BlueTooth,
+    I2C,
+    SPI,
+    FireWire // IEEE 1394
+};
+
+enum class DataRepresentationProtocol {
+    MIDI,
+    HID,
+    USB_BULK_TRANSFER // Bulk is only one of the 4 USB transfer modes
+};
 
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
@@ -28,10 +44,19 @@ class Controller : public QObject {
     /// the controller (type.)
     virtual QString mappingExtension() = 0;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() = 0;
-    /// WARNING: LegacyControllerMapping is not thread safe!
-    /// Clone the mapping before passing to setMapping for use in the controller polling thread.
     virtual void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) = 0;
+    std::shared_ptr<LegacyControllerMapping> getMapping() {
+        // return the unused mutable copy of the mapping, that can be edited in the GUI thread
+        // and than adopted again via setMapping()
+        return m_pMutableMapping;
+    }
+
+    virtual QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() = 0;
+    virtual QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() = 0;
+#ifdef MIXXX_USE_QML
+    virtual QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() = 0;
+    virtual QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() = 0;
+#endif
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -45,9 +70,17 @@ class Controller : public QObject {
     inline const QString& getName() const {
         return m_sDeviceName;
     }
-    inline const QString& getCategory() const {
-        return m_sDeviceCategory;
-    }
+    virtual PhysicalTransportProtocol getPhysicalTransportProtocol() const = 0;
+    static QString physicalTransport2String(PhysicalTransportProtocol protocol);
+    virtual DataRepresentationProtocol getDataRepresentationProtocol() const = 0;
+
+    virtual QString getVendorString() const = 0;
+    virtual QString getProductString() const = 0;
+    virtual std::optional<uint16_t> getVendorId() const = 0;
+    virtual std::optional<uint16_t> getProductId() const = 0;
+    virtual QString getSerialNumber() const = 0;
+    virtual std::optional<uint8_t> getUsbInterfaceNumber() const = 0;
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
@@ -79,8 +112,6 @@ class Controller : public QObject {
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
-
-    virtual bool applyMapping(const QString& resourcePath);
     virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
@@ -88,21 +119,23 @@ class Controller : public QObject {
     void stopLearning();
 
   protected:
+    virtual bool applyMapping(const QString& resourcePath);
+
     template<typename SpecificMappingType>
-    std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
-            std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        requires(std::is_final_v<SpecificMappingType> == true)
+    std::unique_ptr<SpecificMappingType> downcastAndClone(const LegacyControllerMapping* pMapping) {
+        // When unsetting a mapping (select 'No mapping') we receive a nullptr
+        if (!pMapping) {
+            return nullptr;
+        }
+        auto* pSpecifiedMapping = dynamic_cast<const SpecificMappingType*>(pMapping);
+        VERIFY_OR_DEBUG_ASSERT(pSpecifiedMapping) {
+            return nullptr;
+        }
         // Controller cannot take ownership if pMapping is referenced elsewhere because
         // the controller polling thread needs exclusive accesses to the non-thread safe
-        // LegacyControllerMapping.
-        // Trying to cast a std::shared_ptr to a std::unique_ptr is not worth the trouble.
-        VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
-            return nullptr;
-        }
-        auto pDowncastedMapping = std::dynamic_pointer_cast<SpecificMappingType>(pMapping);
-        VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
-            return nullptr;
-        }
-        return pDowncastedMapping;
+        // LegacyControllerMapping. So we do a deep copy here.
+        return std::make_unique<SpecificMappingType>(*pSpecifiedMapping);
     }
 
     // The length parameter is here for backwards compatibility for when scripts
@@ -120,9 +153,6 @@ class Controller : public QObject {
     // To be called when receiving events
     void triggerActivity();
 
-    inline void setDeviceCategory(const QString& deviceCategory) {
-        m_sDeviceCategory = deviceCategory;
-    }
     inline void setOutputDevice(bool outputDevice) {
         m_bIsOutputDevice = outputDevice;
     }
@@ -138,6 +168,7 @@ class Controller : public QObject {
     const RuntimeLoggingCategory m_logBase;
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
+    std::shared_ptr<LegacyControllerMapping> m_pMutableMapping;
 
   public:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
@@ -146,8 +177,7 @@ class Controller : public QObject {
     virtual bool sendBytes(const QByteArray& data) = 0;
 
   private: // but used by ControllerManager
-
-    virtual int open() = 0;
+    virtual int open(const QString& resourcePath) = 0;
     virtual int close() = 0;
     // Requests that the device poll if it is a polling device. Returns true
     // if events were handled.

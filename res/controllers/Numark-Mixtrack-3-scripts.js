@@ -288,7 +288,7 @@ LED.prototype.onOff = function(value) {
 //           if not set, it considers it as a switch off (default=false)
 // valueoff : like "value". That permits for instance with two colors (once red(on), once blue(off), once red(on), etc...)
 
-LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
+LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
     // stop pending timers
     this.flashOff();
 
@@ -298,8 +298,6 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
     this.valueon = value;
     this.num_ms_off = num_ms_off;
     this.flashCount = flashCount;
-    this.relight = relight;
-    this.valueoff = valueoff;
 
     // 1st flash
     // This is because the permanent timer below takes
@@ -320,7 +318,9 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(relight), true);
+        if (flashCount > 0) {
+            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(this.relight), true);
+        }
     }
 };
 
@@ -752,7 +752,7 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
     this.LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
     this.LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
-    this.LEDs.cue = new LED(0x90 + j, leds.Cue);
+    this.LEDs.cue = new LED(0x90 + j, leds.cue);
     this.LEDs.sync = new LED(0x90 + j, leds.sync);
     this.LEDs.play = new LED(0x90 + j, leds.play);
     this.LEDs.fx1 = new LED(0x90 + j, leds.fx1);
@@ -971,7 +971,6 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         "hotcue_2_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "track_samples": "NumarkMixtrack3.OnTrackLoaded",
         "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
         "playposition": "NumarkMixtrack3.OnPlaypositionChange",
         "volume": "NumarkMixtrack3.OnVolumeChange",
@@ -1161,7 +1160,6 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
     if (value === DOWN) {
-        deck.LEDs["headphones"].onOff(ON);
         deck.faderstart = false;
 
         if (smartPFL) {
@@ -1174,7 +1172,6 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
         if (deck.shiftKey) {
             // SHIFT + Load = fader start activated
             deck.faderstart = true;
-            deck.LEDs["headphones"].flashOn(250, ON, 250);
 
             if (!deck.trackLoaded()) {
                 engine.setValue(deck.group, "LoadSelectedTrack", true);
@@ -1983,23 +1980,6 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
         }
     } else {
         deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
-    }
-};
-
-NumarkMixtrack3.OnTrackLoaded = function(value, group, control) {
-    var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value !== 0) {
-        if (!deck.faderstart) {
-            // Light up the PFL light indicating that a track is loaded
-            deck.LEDs["headphones"].onOff(ON);
-        } else {
-            // Flash up the PFL light button indicating that a track is loaded with fader start
-            deck.LEDs["headphones"].flashOn(300, ON, 300);
-        }
-    } else {
-        // Switch off the PFL light indicating that a track is ejected
-        deck.LEDs["headphones"].onOff(OFF);
     }
 };
 

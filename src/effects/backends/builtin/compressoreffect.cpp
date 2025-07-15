@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/compressoreffect.h"
 
+#include "util/math.h"
+
 namespace {
 // Auto make up time is empirically selected parameter, which is good enough for most cases
 constexpr double defaultMakeUpAttackMs = 150;

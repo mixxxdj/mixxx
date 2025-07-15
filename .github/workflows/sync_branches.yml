@@ -1,0 +1,106 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+name: Sync Branches
+on:
+  workflow_call:
+    secrets:
+      # PAT setup with content:write and pull_request:write
+      MIXXX_BRANCH_SYNC_PAT:
+        required: true
+
+permissions: {}
+
+env:
+  SYNC_COMMITTER_EMAIL: bot@mixxx.org
+  SYNC_COMMITTER_NAME: Mixxx Bot
+
+  # This variable stores the map of Mixxx branches that still being developed.
+  # The key is the branch receiving support and the value is the next version in line
+  # NOTE: this must be valid JSON!
+  ACTIVE_VERSIONS: |-
+    {"2.5": "2.6", "2.6": "main"}
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # Using an app is the recommended way to allow recursive operations.
+      # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
+      # and short lifespan, unlike PAT.
+      # As we are trialing this approach tho, it is fine to play with a PAT and not spend the
+      # extra time setting up an app
+      #
+      # - name: Generate App Token
+      #   id: generate-token-key-pair
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
+      #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
+
+      - name: "Check out repository"
+        uses: actions/checkout@v4.1.7
+        with:
+          token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: "Configure Git"
+        run: |
+          git config --global merge.ours.driver true
+          git config --global pull.rebase false
+
+      - name: "Check if merge branch already exists"
+        id: check_sync
+        run: |
+          if git fetch origin "${SYNC_BRANCH}"; then
+            echo "Branch ${SYNC_BRANCH} already exists, checking if the branch was modified..."
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            COMMITTER_EMAIL="$(git show --pretty=format:"%ce" --no-patch "origin/${SYNC_BRANCH}")"
+            if [ "${COMMITTER_EMAIL}" = "${SYNC_COMMITTER_EMAIL}" ]; then
+              echo "Branch ${SYNC_BRANCH} was NOT modified."
+            else
+              echo "Branch ${SYNC_BRANCH} was modified."
+            fi
+          else
+            echo "Branch ${SYNC_BRANCH} does not exist yet."
+          fi
+        env:
+          SYNC_BRANCH: sync-branch-${{ github.ref_name }}-to-${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
+
+      - name: "Merge Changes"
+        run: |
+          set -x
+          echo "::group::Fetching and merging branches"
+          if [ "${BRANCH_EXISTS}" = true ]; then
+            git checkout "${SYNC_BRANCH}"
+          else
+            git checkout "${TO_BRANCH}"
+            git checkout -b "${SYNC_BRANCH}"
+          fi
+          git config --global user.email "${SYNC_COMMITTER_EMAIL}"
+          git config --global user.name "${SYNC_COMMITTER_NAME}"
+          git merge -m "Merge branch '${FROM_BRANCH}' into '${TO_BRANCH}'" "origin/${FROM_BRANCH}" || true
+          COMMIT_ORIGINAL="$(git show --no-patch --format="%h" "origin/${TO_BRANCH}")"
+          COMMIT_MERGE="$(git show --no-patch --format="%h" "${SYNC_BRANCH}")"
+          git status
+          echo "::endgroup::"
+          if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
+            echo "::warning:: No changes (or merge conflict), skipping push and PR creation."
+          else
+            git push origin "${SYNC_BRANCH}"
+            if [ ! "${BRANCH_EXISTS}" = true ]; then
+              gh pr create -B "${TO_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}"
+              gh pr edit --add-label "sync-branches"
+            fi
+          fi
+        env:
+          BRANCH_EXISTS: ${{ steps.check_sync.outputs.branch_exists }}
+          FROM_BRANCH: ${{ github.ref_name }}
+          TO_BRANCH: ${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
+          SYNC_BRANCH: sync-branch-${{ github.ref_name }}-to-${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
+          GITHUB_TOKEN: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
+          PULL_REQUEST_TITLE: Merge changes from `${{ github.ref_name  }}` into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`
+          PULL_REQUEST_BODY: |
+            New content has landed in the `${{ github.ref_name  }}` branch, so let's merge the changes into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`

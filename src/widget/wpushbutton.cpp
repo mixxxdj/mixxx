@@ -11,6 +11,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "moc_wpushbutton.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
@@ -131,13 +132,13 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     ControlParameterWidgetConnection* leftConnection = nullptr;
-    if (m_leftConnections.isEmpty()) {
-        if (!m_connections.isEmpty()) {
+    if (m_leftConnections.empty()) {
+        if (!m_connections.empty()) {
             // If no left connection is set, the this is the left connection
-            leftConnection = m_connections.at(0);
+            leftConnection = m_connections[0].get();
         }
     } else {
-        leftConnection = m_leftConnections.at(0);
+        leftConnection = m_leftConnections[0].get();
     }
 
     if (leftConnection) {
@@ -186,8 +187,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    if (!m_rightConnections.isEmpty()) {
-        ControlParameterWidgetConnection* rightConnection = m_rightConnections.at(0);
+    if (!m_rightConnections.empty()) {
+        auto& rightConnection = m_rightConnections[0];
         bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton", false);
         m_rightButtonMode = mixxx::control::ButtonMode::Push;
         if (!rightClickForcePush) {
@@ -238,6 +239,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
 void WPushButton::setStates(int iStates) {
     m_bHovered = false;
     m_bPressed = false;
+    m_dragging = false;
     m_iNoStates = iStates;
     m_elideMode = Qt::ElideNone;
     m_activeTouchButton = Qt::NoButton;
@@ -264,7 +266,9 @@ void WPushButton::setPixmap(int iState,
     if (!pPixmap || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
         if (!source.isEmpty()) {
-            qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
+            qDebug() << metaObject()->className() << objectName()
+                     << "Error loading pixmap" << source.getPath()
+                     << "for state" << iState;
         }
     } else if (mode == Paintable::DrawMode::Fixed) {
         // Set size of widget equal to pixmap size
@@ -281,7 +285,8 @@ void WPushButton::setPixmapBackground(const PixmapSource& source,
     if (!source.isEmpty() &&
             (!m_pPixmapBack || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WPushButton: Error loading background pixmap:" << source.getPath();
+        qDebug() << metaObject()->className() << objectName()
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 
@@ -439,7 +444,9 @@ bool WPushButton::event(QEvent* e) {
         m_bHovered = true;
         restyleAndRepaint();
     } else if (e->type() == QEvent::Leave) {
-        if (m_bPressed) {
+        // Leave might occur sporadically while dragging (swapping) a WHotcueButton.
+        // Don't release in that case.
+        if (m_bPressed && !m_dragging) {
             // A Leave event is send instead of a mouseReleaseEvent()
             // fake it to get not stuck in pressed state
             QMouseEvent mouseEvent = QMouseEvent(
@@ -459,19 +466,9 @@ bool WPushButton::event(QEvent* e) {
     return WWidget::event(e);
 }
 
-void WPushButton::focusOutEvent(QFocusEvent* e) {
-    qDebug() << "focusOutEvent" << e->reason();
-    if (m_bPressed && e->reason() != Qt::MouseFocusReason) {
-        // Since we support multi touch there is no reason to reset
-        // the pressed flag if the Primary touch point is moved to an
-        // other widget
-        m_bPressed = false;
-        restyleAndRepaint();
-    }
-    QWidget::focusOutEvent(e);
-}
-
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
+    // Note. when changing any of these actions, also take care of
+    // WHotcueButton::release()
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -497,7 +494,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function,
-        // due the leak of visual feedback we do not allow a toggle
+        // due the lack of visual feedback we do not allow a toggle
         // function
         m_bPressed = false;
         if (m_rightButtonMode == mixxx::control::ButtonMode::Push || m_iNoStates == 1) {

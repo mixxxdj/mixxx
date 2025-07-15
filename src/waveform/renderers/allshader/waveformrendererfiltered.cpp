@@ -1,58 +1,72 @@
 #include "waveform/renderers/allshader/waveformrendererfiltered.h"
 
+#include "rendergraph/material/rgbmaterial.h"
+#include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
 #include "util/math.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+
+using namespace rendergraph;
 
 namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
-        WaveformWidgetRenderer* waveformWidget, bool bRgbStacked)
-        : WaveformRendererSignalBase(waveformWidget),
+        WaveformWidgetRenderer* waveformWidget,
+        bool bRgbStacked,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_bRgbStacked(bRgbStacked) {
+    initForRectangles<RGBMaterial>(0);
+    setUsePreprocess(true);
 }
 
-void WaveformRendererFiltered::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererFiltered::onSetup(const QDomNode&) {
 }
 
-void WaveformRendererFiltered::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
-    m_shader.init();
+void WaveformRendererFiltered::preprocess() {
+    if (!preprocessInner()) {
+        if (geometry().vertexCount() != 0) {
+            geometry().allocate(0);
+            markDirtyGeometry();
+        }
+    }
 }
 
-void WaveformRendererFiltered::paintGL() {
+bool WaveformRendererFiltered::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+
     if (!pTrack) {
-        return;
+        return false;
     }
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
-        return;
+        return false;
     }
 
     const int dataSize = waveform->getDataSize();
     if (dataSize <= 1) {
-        return;
+        return false;
     }
 
     const WaveformData* data = waveform->data();
     if (data == nullptr) {
-        return;
+        return false;
     }
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
-        return;
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
+        return false;
     }
 #endif
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const int length = static_cast<int>(m_waveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const float invDevicePixelRatio = 1.f / devicePixelRatio;
+    const float halfPixelSize = 0.5f / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -63,14 +77,14 @@ void WaveformRendererFiltered::paintGL() {
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
     // Per-band gain from the EQ knobs.
-    float allGain{1.0};
+    float allGain(1.0);
     float bandGain[3] = {1.0, 1.0, 1.0};
     getGains(&allGain, true, &bandGain[0], &bandGain[1], &bandGain[2]);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
+    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
@@ -81,28 +95,55 @@ void WaveformRendererFiltered::paintGL() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    int reserved[4];
-    // low, mid, high
-    for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-        m_vertices[bandIndex].clear();
-        reserved[bandIndex] = numVerticesPerLine * length;
-        m_vertices[bandIndex].reserve(reserved[bandIndex]);
+    // low, mid, high + horizontal axis
+    int reserved = numVerticesPerLine * (pixelLength * 3 + 1);
+
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+    geometry().allocate(reserved);
+    markDirtyGeometry();
+
+    QVector3D rgb[3];
+    if (m_bRgbStacked) {
+        rgb[0] = QVector3D(static_cast<float>(m_rgbLowColor_r),
+                static_cast<float>(m_rgbLowColor_g),
+                static_cast<float>(m_rgbLowColor_b));
+        rgb[1] = QVector3D(static_cast<float>(m_rgbMidColor_r),
+                static_cast<float>(m_rgbMidColor_g),
+                static_cast<float>(m_rgbMidColor_b));
+        rgb[2] = QVector3D(static_cast<float>(m_rgbHighColor_r),
+                static_cast<float>(m_rgbHighColor_g),
+                static_cast<float>(m_rgbHighColor_b));
+    } else {
+        rgb[0] = QVector3D(static_cast<float>(m_lowColor_r),
+                static_cast<float>(m_lowColor_g),
+                static_cast<float>(m_lowColor_b));
+        rgb[1] = QVector3D(static_cast<float>(m_midColor_r),
+                static_cast<float>(m_midColor_g),
+                static_cast<float>(m_midColor_b));
+        rgb[2] = QVector3D(static_cast<float>(m_highColor_r),
+                static_cast<float>(m_highColor_g),
+                static_cast<float>(m_highColor_b));
     }
 
-    // the horizontal line
-    reserved[3] = numVerticesPerLine;
-    m_vertices[3].clear();
-    m_vertices[3].reserve(reserved[3]);
+    RGBVertexUpdater axisVertexUpdater{geometry().vertexDataAs<Geometry::RGBColoredPoint2D>()};
+    axisVertexUpdater.addRectangle({0.f,
+                                           halfBreadth - 0.5f},
+            {static_cast<float>(length),
+                    halfBreadth + 0.5f},
+            {static_cast<float>(m_axesColor_r),
+                    static_cast<float>(m_axesColor_g),
+                    static_cast<float>(m_axesColor_b)});
 
-    m_vertices[3].addRectangle(
-            0.f,
-            halfBreadth - 0.5f * devicePixelRatio,
-            static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio);
-
+    RGBVertexUpdater vertexUpdater[3]{
+            {geometry().vertexDataAs<Geometry::RGBColoredPoint2D>() +
+                    numVerticesPerLine},
+            {geometry().vertexDataAs<Geometry::RGBColoredPoint2D>() +
+                    numVerticesPerLine * (1 + pixelLength)},
+            {geometry().vertexDataAs<Geometry::RGBColoredPoint2D>() +
+                    numVerticesPerLine * (1 + pixelLength * 2)}};
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
-    for (int pos = 0; pos < length; ++pos) {
+    for (int pos = 0; pos < pixelLength; ++pos) {
         const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
         const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
@@ -110,90 +151,53 @@ void WaveformRendererFiltered::paintGL() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos);
+        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
         // 3 bands, 2 channels
         float max[3][2]{};
+        uchar u8max[3][2]{};
+        for (int chn = 0; chn < 2; chn++) {
+            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                const WaveformData& waveformData = data[i];
 
-        for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
-            for (int chn = 0; chn < 2; chn++) {
-                const WaveformData& waveformData = data[i + chn];
-                const float filteredLow = static_cast<float>(waveformData.filtered.low);
-                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
-                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
-
-                max[0][chn] = math_max(max[0][chn], filteredLow);
-                max[1][chn] = math_max(max[1][chn], filteredMid);
-                max[2][chn] = math_max(max[2][chn], filteredHigh);
+                u8max[0][chn] = math_max(u8max[0][chn], waveformData.filtered.low);
+                u8max[1][chn] = math_max(u8max[1][chn], waveformData.filtered.mid);
+                u8max[2][chn] = math_max(u8max[2][chn], waveformData.filtered.high);
             }
+            // Cast to float
+            max[0][chn] = static_cast<float>(u8max[0][chn]);
+            max[1][chn] = static_cast<float>(u8max[1][chn]);
+            max[2][chn] = static_cast<float>(u8max[2][chn]);
         }
+
+        // TODO: this can be optimized by using one geometrynode per band
+        // + one for the horizontal axis, and uniform color materials,
+        // instead of passing constant color as vertex.
 
         for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
             max[bandIndex][0] *= bandGain[bandIndex];
             max[bandIndex][1] *= bandGain[bandIndex];
 
-            // lines are thin rectangles
-            m_vertices[bandIndex].addRectangle(
-                    fpos - 0.5f,
-                    halfBreadth - heightFactor * max[bandIndex][0],
-                    fpos + 0.5f,
-                    halfBreadth + heightFactor * max[bandIndex][1]);
+            vertexUpdater[bandIndex].addRectangle(
+                    {fpos - halfPixelSize,
+                            halfBreadth - heightFactor * max[bandIndex][0]},
+                    {fpos + halfPixelSize,
+                            halfBreadth + heightFactor * max[bandIndex][1]},
+                    {rgb[bandIndex]});
         }
 
         xVisualFrame += visualIncrementPerPixel;
     }
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
+    DEBUG_ASSERT(reserved ==
+            vertexUpdater[0].index() + vertexUpdater[1].index() +
+                    vertexUpdater[2].index() +
+                    numVerticesPerLine); // all lines on the three channels and
+                                         // the axis
 
-    const int matrixLocation = m_shader.matrixLocation();
-    const int colorLocation = m_shader.colorLocation();
-    const int positionLocation = m_shader.positionLocation();
+    markDirtyMaterial();
 
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-
-    QColor colors[4];
-    if (m_bRgbStacked) {
-        colors[0].setRgbF(static_cast<float>(m_rgbLowColor_r),
-                static_cast<float>(m_rgbLowColor_g),
-                static_cast<float>(m_rgbLowColor_b));
-        colors[1].setRgbF(static_cast<float>(m_rgbMidColor_r),
-                static_cast<float>(m_rgbMidColor_g),
-                static_cast<float>(m_rgbMidColor_b));
-        colors[2].setRgbF(static_cast<float>(m_rgbHighColor_r),
-                static_cast<float>(m_rgbHighColor_g),
-                static_cast<float>(m_rgbHighColor_b));
-    } else {
-        colors[0].setRgbF(static_cast<float>(m_lowColor_r),
-                static_cast<float>(m_lowColor_g),
-                static_cast<float>(m_lowColor_b));
-        colors[1].setRgbF(static_cast<float>(m_midColor_r),
-                static_cast<float>(m_midColor_g),
-                static_cast<float>(m_midColor_b));
-        colors[2].setRgbF(static_cast<float>(m_highColor_r),
-                static_cast<float>(m_highColor_g),
-                static_cast<float>(m_highColor_b));
-    }
-    colors[3].setRgbF(static_cast<float>(m_axesColor_r),
-            static_cast<float>(m_axesColor_g),
-            static_cast<float>(m_axesColor_b),
-            static_cast<float>(m_axesColor_a));
-
-    // 3 bands + 1 extra for the horizontal line
-
-    for (int i = 0; i < 4; i++) {
-        DEBUG_ASSERT(reserved[i] == m_vertices[i].size());
-        m_shader.setUniformValue(colorLocation, colors[i]);
-        m_shader.setAttributeArray(
-                positionLocation, GL_FLOAT, m_vertices[i].constData(), 2);
-
-        glDrawArrays(GL_TRIANGLES, 0, m_vertices[i].size());
-    }
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.release();
+    return true;
 }
 
 } // namespace allshader

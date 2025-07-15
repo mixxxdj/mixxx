@@ -32,7 +32,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
-            unsigned int numSamples,
+            std::size_t numSamples,
             mixxx::audio::SampleRate sampleRate);
 
     /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
@@ -41,7 +41,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
-            unsigned int numSamples,
+            std::size_t numSamples,
             mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
@@ -58,7 +58,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            unsigned int numSamples,
+            std::size_t numSamples,
             mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
@@ -89,7 +89,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
-            unsigned int numSamples,
+            std::size_t numSamples,
             mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,

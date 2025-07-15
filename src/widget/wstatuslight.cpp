@@ -68,7 +68,8 @@ void WStatusLight::setPixmap(int iState,
             setFixedSize(pPixmap->size());
         }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
+        qDebug() << "WStatusLight" << objectName() << "Error loading pixmap"
+                 << source.getPath() << "for state" << iState;
         m_pixmaps[iState].reset();
     }
 }

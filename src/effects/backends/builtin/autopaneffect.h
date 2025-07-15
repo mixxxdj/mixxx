@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMap>
+#include <cmath>
 
 #include "effects/backends/effectprocessor.h"
 #include "engine/filters/enginefilterpansingle.h"
@@ -13,27 +14,25 @@
 // somewhere else (I hear clicks when I change the period of flanger for example).
 class RampedSample {
   public:
-    inline RampedSample()
+    constexpr RampedSample()
             : ramped(false),
               maxDifference(1.0f),
               currentValue(0),
               initialized(false) {
     }
 
-    virtual ~RampedSample(){};
-
-    inline void setRampingThreshold(const float newMaxDifference) {
+    constexpr void setRampingThreshold(float newMaxDifference) {
         maxDifference = newMaxDifference;
     }
 
-    inline void setWithRampingApplied(const float newValue) {
+    constexpr void setWithRampingApplied(float newValue) {
         if (!initialized) {
             currentValue = newValue;
             initialized = true;
         } else {
             float difference = newValue - currentValue;
-            if (fabs(difference) > maxDifference) {
-                currentValue += difference / fabs(difference) * maxDifference;
+            if (abs(difference) > maxDifference) {
+                currentValue += difference / abs(difference) * maxDifference;
                 ramped = true;
             } else {
                 currentValue = newValue;
@@ -42,7 +41,7 @@ class RampedSample {
         }
     }
 
-    inline operator float() {
+    constexpr operator float() {
         return currentValue;
     }
 

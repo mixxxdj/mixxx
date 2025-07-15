@@ -31,18 +31,18 @@ class EngineChannelMock : public EngineChannel {
                       /*isPrimarydeck*/ true) {
     }
 
-    void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
+    void applyVolume(CSAMPLE* pBuff, const std::size_t bufferSize) {
         Q_UNUSED(pBuff);
-        Q_UNUSED(iBufferSize);
+        Q_UNUSED(bufferSize);
     }
 
     MOCK_METHOD(ActiveState, updateActiveState, (), (override));
     MOCK_METHOD(bool, isActive, (), (override));
     MOCK_METHOD(bool, isMainMixEnabled, (), (override, const));
     MOCK_METHOD(bool, isPflEnabled, (), (override, const));
-    MOCK_METHOD(void, process, (CSAMPLE * pInOut, const int iBufferSize), (override));
+    MOCK_METHOD(void, process, (CSAMPLE * pInOut, const std::size_t bufferSize), (override));
     MOCK_METHOD(void, collectFeatures, (GroupFeatureState * pGroupFeatures), (override, const));
-    MOCK_METHOD(void, postProcess, (const int iBufferSize), (override));
+    MOCK_METHOD(void, postProcess, (const std::size_t bufferSize), (override));
 };
 
 class EngineMixerTest

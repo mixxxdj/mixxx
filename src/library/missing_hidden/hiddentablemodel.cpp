@@ -49,7 +49,7 @@ void HiddenTableModel::setTableModel() {
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
     setSearch("");
 }
 
@@ -99,7 +99,14 @@ TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
             Capability::Unhide |
             Capability::RemoveFromDisk |
             Capability::EditMetadata |
-            Capability::Properties;
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed |
+            Capability::Analyze |
+            Capability::Properties |
+            Capability::Sorting;
 }
 
 QString HiddenTableModel::modelKey(bool noSearch) const {

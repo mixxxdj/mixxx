@@ -42,8 +42,32 @@ class Hss1394Controller : public MidiController {
             int deviceIndex);
     ~Hss1394Controller() override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::FireWire;
+    }
+
+    QString getVendorString() const override {
+        return QString();
+    }
+    QString getProductString() const override {
+        return m_deviceInfo.sName.c_str();
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+    QString getSerialNumber() const override {
+        return QString();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
+
   private slots:
-    int open() override;
+    int open(const QString& resourcePath) override;
     int close() override;
 
   protected:

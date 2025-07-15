@@ -175,7 +175,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        const unsigned int numSamples,
+        const std::size_t numSamples,
         const mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         bool fadeout) {
@@ -287,7 +287,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                         pIntermediateInput,
                         lastCallbackMixKnob,
                         currentMixKnob,
-                        numSamples);
+                        static_cast<int>(numSamples));
             } else {
                 // Dry+Wet mode: output = input + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
@@ -298,7 +298,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                         pIntermediateInput,
                         lastCallbackMixKnob,
                         currentMixKnob,
-                        numSamples);
+                        static_cast<int>(numSamples));
             }
         }
     }

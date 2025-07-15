@@ -6,10 +6,9 @@
 #include "controllers/bulk/bulksupported.h"
 #include "moc_bulkenumerator.cpp"
 
-BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
+BulkEnumerator::BulkEnumerator()
         : ControllerEnumerator(),
-          m_context(nullptr),
-          m_pConfig(pConfig) {
+          m_context(nullptr) {
     libusb_init(&m_context);
 }
 

@@ -1,0 +1,11 @@
+#version 120
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+uniform sampler2D texture1;
+
+varying vec2 vTexcoord;
+
+void main()
+{
+    gl_FragData[0] = texture2D(texture1, vTexcoord);
+}
