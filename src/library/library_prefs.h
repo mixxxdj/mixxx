@@ -14,6 +14,8 @@ extern const QString kConfigGroup;
 
 extern const ConfigKey kRescanOnStartupConfigKey;
 
+extern const ConfigKey kShowScanSummaryConfigKey;
+
 extern const ConfigKey kKeyNotationConfigKey;
 
 extern const ConfigKey kTrackDoubleClickActionConfigKey;
