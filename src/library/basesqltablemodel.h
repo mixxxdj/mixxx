@@ -78,10 +78,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     QString modelKey(bool noSearch) const override;
 
-    void loadGenres2QVL(QVariantList& genresData);
-    QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
-    QMap<QString, QString> getAllGenres();
-
   protected:
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from BaseTrackTableModel

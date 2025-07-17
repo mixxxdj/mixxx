@@ -188,97 +188,6 @@ void BaseSqlTableModel::replaceRows(
     }
 }
 
-// EVE
-void BaseSqlTableModel::loadGenres2QVL(QVariantList& m_genreData) {
-    m_genreData.clear();
-    QSqlQuery queryGenre(m_database);
-    queryGenre.prepare(
-            "SELECT id, name_level_1, name_level_2, name_level_3, "
-            "name_level_4, name_level_5, display_order, is_visible, "
-            "is_user_defined FROM genres ORDER BY id ASC");
-    if (queryGenre.exec()) {
-        while (queryGenre.next()) {
-            QVariantMap genresEntry;
-            genresEntry["id"] = queryGenre.value("id");
-            genresEntry["name_level_1"] = queryGenre.value("name_level_1");
-            genresEntry["name_level_2"] = queryGenre.value("name_level_2");
-            genresEntry["name_level_3"] = queryGenre.value("name_level_3");
-            genresEntry["name_level_4"] = queryGenre.value("name_level_4");
-            genresEntry["name_level_5"] = queryGenre.value("name_level_5");
-            genresEntry["display_order"] = queryGenre.value("display_order");
-            genresEntry["is_visible"] = queryGenre.value("is_visible");
-            genresEntry["is_user_defined"] = queryGenre.value("is_user_defined");
-            m_genreData.append(genresEntry);
-        }
-    } else {
-        qWarning() << "[PlaylistDAO] -> loadGenres2QVL -> Failed:"
-                   << queryGenre.lastError();
-    }
-    qDebug() << "[BaseSqlTableModel] -> loadGenres2QVL -> Finished";
-    // qDebug() << "[BaseSqlTableModel] -> loadGenres2QVL contains" << m_genreData;
-}
-
-// QMap<QString, QString> BaseSqlTableModel::getAllGenres() {
-//     QMap<QString, QString> genreMap;
-//
-//     QSqlQuery query(m_database);
-//     query.prepare("SELECT id, name FROM genres"); // or whatever your genre table is
-//     if (query.exec()) {
-//         while (query.next()) {
-//             int id = query.value(0).toInt();
-//             QString name = query.value(1).toString();
-//             genreMap.insert(QString("##%1##").arg(id), name);
-//         }
-//     } else {
-//         qWarning() << "Failed to fetch genres:" << query.lastError();
-//     }
-//
-//     return genreMap;
-// }
-
-QString BaseSqlTableModel::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
-    qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID called";
-    const QStringList parts = rawGenre.split(';', Qt::SkipEmptyParts);
-    QStringList resolved;
-
-    static QRegularExpression kGenreIdPattern(QStringLiteral(R"(##(\d+)##)"));
-    for (const QString& part : parts) {
-        const QString trimmed = part.trimmed();
-        const auto match = kGenreIdPattern.match(trimmed);
-
-        if (match.hasMatch()) {
-            bool ok = false;
-            const qint64 genreId = match.captured(1).toLongLong(&ok);
-            qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID "
-                        "searching for -> genreId:"
-                     << genreId;
-            if (ok) {
-                QString name;
-                for (const QVariant& entryVar : m_genreData) {
-                    const QVariantMap entry = entryVar.toMap();
-                    // qDebug() << "------" << entry["id"].typeName();
-                    // qDebug() << "------" << entry["id"].toString();
-                    if (entry["id"].toLongLong() == genreId) {
-                        name = entry["name_level_1"].toString();
-                        break;
-                    }
-                }
-                qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID "
-                            "called -> genreId -> name:"
-                         << name;
-                if (!name.isEmpty()) {
-                    resolved << name;
-                    continue;
-                }
-            }
-        }
-        resolved << trimmed; // fallback
-    }
-    return resolved.join(QStringLiteral("; "));
-}
-
-// EVE
-
 void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
@@ -297,39 +206,6 @@ void BaseSqlTableModel::select() {
     if (sDebug) {
         qDebug() << this << "select()";
     }
-
-    // m_genreData.clear();
-
-    // QSqlQuery queryGenre(m_database);
-    // queryGenre.prepare(
-    //         "SELECT id, name_level_1, name_level_2, name_level_3,
-    //         name_level_4, name_level_5, display_order, is_visible,
-    //         is_user_defined FROM genres ORDER BY id ASC");
-    // if (queryGenre.exec()) {
-    //     while (queryGenre.next()) {
-    //         QVariantMap genresEntry;
-    //         genresEntry["id"] = queryGenre.value("id");
-    //         genresEntry["name_level_1"] = queryGenre.value("name_level_1");
-    //         genresEntry["name_level_2"] = queryGenre.value("name_level_2");
-    //         genresEntry["name_level_3"] = queryGenre.value("name_level_3");
-    //         genresEntry["name_level_4"] = queryGenre.value("name_level_4");
-    //         genresEntry["name_level_5"] = queryGenre.value("name_level_5");
-    //         genresEntry["display_order"] = queryGenre.value("display_order");
-    //         genresEntry["is_visible"] = queryGenre.value("is_visible");
-    //         genresEntry["is_user_defined"] =
-    //         queryGenre.value("is_user_defined");
-    //         m_genreData.append(genresEntry);
-    //     }
-    // } else {
-    //     qWarning() << "[PlaylistDAO] -> loadGenres2QVL -> Failed:"
-    //                << queryGenre.lastError();
-    // }
-    // qDebug() << "[BaseSqlTableModel] -> loadGenres2QVL -> Finished";
-    //// qDebug() << "[BaseSqlTableModel] -> loadGenres2QVL contains" <<
-    /// m_genreData;
-
-    m_genreData.clear();
-    loadGenres2QVL(m_genreData);
 
     PerformanceTimer time;
     time.start();
@@ -367,9 +243,6 @@ void BaseSqlTableModel::select() {
     QSet<TrackId> trackIds;
     int idColumn = -1;
     int posColumn = -1;
-    // QString trackGenre;
-    // int trackGenreIndex;
-
     while (query.next()) {
         QSqlRecord sqlRecord = query.record();
 
@@ -399,48 +272,11 @@ void BaseSqlTableModel::select() {
         rowInfo.trackId = trackId;
         rowInfo.row = rowInfos.size();
 
-        rowInfo.columnValues.reserve(m_tableColumns.size());
-
+        rowInfo.columnValues.reserve(sqlRecord.count());
         for (int i = 0; i < m_tableColumns.size(); ++i) {
             rowInfo.columnValues.push_back(sqlRecord.value(i));
         }
         rowInfos.push_back(rowInfo);
-
-        //        //if ( (m_tableName.contains("crate")) ||
-        //        (m_tableName.contains("playlist"))) {
-        //            // EVE
-        //            //trackGenreIndex =
-        //            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-        //            trackGenreIndex = fieldIndex("genre_display");
-        //            if (trackGenreIndex != -1) {
-        //                trackGenre =
-        //                sqlRecord.value(trackGenreIndex).toString(); qDebug()
-        //                << "[BaseSqlTableModel::select()] -> trackGenre: " <<
-        //                trackGenre;
-        //            } else {
-        //                // qDebug() << "[BaseSqlTableModel::select()] ->
-        //                Invalid column indices!";
-        //            }
-        //            if (trackGenre.contains("##")) {
-        //                RowInfo genreRowInfo = rowInfo;
-        //                //int trackGenreIndex =
-        //                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-        //                int trackGenreIndex = fieldIndex("genre_display");
-        //
-        //                // QString newTrackGenre =
-        //                getDisplayGenreNameForGenreID(trackGenre);
-        //                // genreRowInfo.columnValues[trackGenreIndex] =
-        //                QVariant(newTrackGenre); QString newTrackGenre =
-        //                getDisplayGenreNameForGenreID(trackGenre);
-        //                genreRowInfo.columnValues[trackGenreIndex] =
-        //                QVariant(newTrackGenre);
-        //                rowInfos.push_back(genreRowInfo);
-        //            } else {
-        //                rowInfos.push_back(rowInfo);
-        //            }
-        ////        } else {
-        ////            rowInfos.push_back(rowInfo);
-        ////        }
     }
 
     if (sDebug) {
@@ -499,19 +335,6 @@ void BaseSqlTableModel::select() {
         // We expect as many positions as we have rows
         trackPosToRows.reserve(rowInfos.size());
         for (int i = 0; i < rowInfos.size(); ++i) {
-            RowInfo genreRowInfo = rowInfos[i];
-            // qDebug() << "---------------- genreRowInfo: " << genreRowInfo.columnValues;
-            // int trackGenreIndex = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-            // qDebug() << "---------------- trackGenreIndex: " << trackGenreIndex;
-
-            // genreRowInfo.columnValues[trackGenreIndex] = QVariant(newTrackGenre);
-            // trackGenre = sqlRecord.value(trackGenreIndex).toString();
-            // QString newTrackGenre = getDisplayGenreNameForGenreID(trackGenre);
-            // qDebug() << "---------------- newTrackGenre: " << newTrackGenre;
-            // QString newTrackGenre = getDisplayGenreNameForGenreID(trackGenre);
-            // QString temp = rowInfos[i].toVariant().toString();
-            // qDebug() << "----------------" << temp;
-
             const RowInfo& rowInfo = rowInfos[i];
             trackPosToRows.insert(rowInfo.getPosition(posColumn), i);
         }

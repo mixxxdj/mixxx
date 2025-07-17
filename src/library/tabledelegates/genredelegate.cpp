@@ -4,12 +4,14 @@
 #include <QStyle>
 #include <QTableView>
 
-// #include "library/basesqltablemodel.h"
+#include "library/dao/genredao.h"
 #include "library/trackset/tracksettablemodel.h"
 #include "moc_genredelegate.cpp"
 
-GenreDelegate::GenreDelegate(QObject* parent)
-        : QStyledItemDelegate(parent) {
+GenreDelegate::GenreDelegate(GenreDao* pGenreDao, QObject* parent)
+        : QStyledItemDelegate(parent),
+          m_pGenreDao(pGenreDao) {
+    Q_ASSERT(m_pGenreDao);
 }
 
 QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const {
@@ -18,7 +20,7 @@ QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const 
         return QString();
     }
 
-    QStringList ids = raw.split(",", Qt::SkipEmptyParts);
+    QStringList ids = raw.split(";", Qt::SkipEmptyParts);
     QStringList names;
 
     const BaseSqlTableModel* pModel =
@@ -30,7 +32,13 @@ QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const 
     }
 
     for (const QString& id : ids) {
-        names << pModel->getDisplayGenreNameForGenreID(id);
+        QString name = m_pGenreDao->getDisplayGenreNameForGenreID(id);
+        qDebug() << "[GenreDelegate] -> name: " << name;
+        if (!name.isEmpty()) {
+            names << name;
+            continue;
+        }
     }
-    return names.join(", ");
+
+    return names.join("; ");
 }

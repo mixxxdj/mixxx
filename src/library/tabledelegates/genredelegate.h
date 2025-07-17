@@ -1,15 +1,17 @@
 #pragma once
 
 #include <QStyledItemDelegate>
-// #include "library/dao/playlistdao.h"
-// #include "library/basesqltablemodel.h"
 
 class BaseSqlTableModel;
+class GenreDao;
 
 class GenreDelegate : public QStyledItemDelegate {
     Q_OBJECT
   public:
-    explicit GenreDelegate(QObject* parent = nullptr);
+    explicit GenreDelegate(GenreDao* pGenreDao, QObject* parent = nullptr);
 
     QString displayText(const QVariant& value, const QLocale& locale) const override;
+
+  private:
+    GenreDao* m_pGenreDao;
 };

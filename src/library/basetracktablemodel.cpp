@@ -7,6 +7,7 @@
 #include <QtGlobal>
 
 #include "library/coverartcache.h"
+#include "library/dao/genredao.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
@@ -390,8 +391,16 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return pOverviewDelegate;
         //} else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
         //    return new GenreDelegate(pTableView);
+        //} else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
+        //    return new GenreDelegate(this);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
-        return new GenreDelegate(this);
+        // 1) Retrieve the DAO from your collection manager:
+        GenreDao& genreDao = m_pTrackCollectionManager
+                                     ->internalCollection()
+                                     ->getGenreDao();
+
+        // 2) Pass its pointer + 'this' (the model) as the parent:
+        return new GenreDelegate(&genreDao, this);
     }
     return new DefaultDelegate(pTableView);
 }

@@ -1,6 +1,7 @@
 #include "library/dao/genredao.h"
 
 #include <QDebug>
+#include <QRegularExpression>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -19,12 +20,12 @@
 GenreDao::GenreDao(
         QObject* parent)
         : QObject(parent) {
-    m_genreData.clear();
-    loadGenres2QVL(m_genreData);
 }
 
 void GenreDao::initialize(const QSqlDatabase& database) {
     DAO::initialize(database);
+    m_genreData.clear();
+    loadGenres2QVL(m_genreData);
 }
 
 void GenreDao::loadGenres2QVL(QVariantList& m_genreData) {
