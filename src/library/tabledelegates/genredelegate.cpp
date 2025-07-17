@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
+#include <utility>
 
 #include "library/dao/genredao.h"
 #include "library/trackset/tracksettablemodel.h"
@@ -31,7 +32,7 @@ QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const 
         return raw; // fallback
     }
 
-    for (const QString& id : ids) {
+    for (const QString& id : std::as_const(ids)) {
         QString name = m_pGenreDao->getDisplayGenreNameForGenreID(id);
         qDebug() << "[GenreDelegate] -> name: " << name;
         if (!name.isEmpty()) {

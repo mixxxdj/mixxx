@@ -8,6 +8,7 @@
 #include <QSqlRecord>
 #include <QVariant>
 #include <QtDebug>
+#include <utility>
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
@@ -63,7 +64,7 @@ QString GenreDao::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
     QStringList resolved;
 
     static QRegularExpression kGenreIdPattern(QStringLiteral(R"(##(\d+)##)"));
-    for (const QString& part : parts) {
+    for (const QString& part : std::as_const(parts)) {
         const QString trimmed = part.trimmed();
         const auto match = kGenreIdPattern.match(trimmed);
 
@@ -75,7 +76,7 @@ QString GenreDao::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
                      << genreId;
             if (ok) {
                 QString name;
-                for (const QVariant& entryVar : m_genreData) {
+                for (const QVariant& entryVar : std::as_const(m_genreData)) {
                     const QVariantMap entry = entryVar.toMap();
                     // qDebug() << "------" << entry["id"].typeName();
                     // qDebug() << "------" << entry["id"].toString();
@@ -98,11 +99,41 @@ QString GenreDao::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
     return resolved.join(QStringLiteral("; "));
 }
 
+qint64 GenreDao::getGenreId(const QString& genreName) const {
+    for (const QVariant& var : std::as_const(m_genreData)) {
+        const QVariantMap entry = var.toMap();
+        if (QString::compare(entry["name_level_1"].toString(),
+                    genreName,
+                    Qt::CaseInsensitive) == 0) {
+            return entry["id"].toLongLong();
+        }
+    }
+    return -1;
+}
+
+QHash<QString, qint64> GenreDao::getNameToIdMap() const {
+    QHash<QString, qint64> map;
+    for (const QVariant& var : std::as_const(m_genreData)) {
+        const QVariantMap entry = var.toMap();
+        map.insert(entry["name_level_1"].toString(), entry["id"].toLongLong());
+    }
+    return map;
+}
+
+QHash<qint64, QString> GenreDao::getIdToNameMap() const {
+    QHash<qint64, QString> map;
+    for (const QVariant& var : std::as_const(m_genreData)) {
+        const QVariantMap entry = var.toMap();
+        map.insert(entry["id"].toLongLong(), entry["name_level_1"].toString());
+    }
+    return map;
+}
+
 QMap<QString, QString> GenreDao::getAllGenres() {
     QMap<QString, QString> genreMap;
 
     QSqlQuery query(m_database);
-    query.prepare("SELECT id, name FROM genres"); // or whatever your genre table is
+    query.prepare("SELECT id, name FROM genres");
     if (query.exec()) {
         while (query.next()) {
             int id = query.value(0).toInt();
