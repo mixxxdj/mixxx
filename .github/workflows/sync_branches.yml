@@ -26,19 +26,6 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      # Using an app is the recommended way to allow recursive operations.
-      # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
-      # and short lifespan, unlike PAT.
-      # As we are trialing this approach tho, it is fine to play with a PAT and not spend the
-      # extra time setting up an app
-      #
-      # - name: Generate App Token
-      #   id: generate-token-key-pair
-      #   uses: actions/create-github-app-token@v1
-      #   with:
-      #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
-      #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
-
       - name: "Check out repository"
         uses: actions/checkout@v4.1.7
         with:
@@ -51,7 +38,21 @@ jobs:
           git config --global merge.ours.driver true
           git config --global pull.rebase false
 
+      # This step checks if the branch that triggered the workflow is a valid
+      # source branch defined in the ACTIVE_VERSIONS map.
+      - name: "Check if current branch is an active source branch"
+        id: check_active
+        run: |
+          if jq -e 'has("${{ github.ref_name }}")' <<< '${{ env.ACTIVE_VERSIONS }}'; then
+            echo "is_active=true" >> $GITHUB_OUTPUT
+            echo "Current branch '${{ github.ref_name }}' is a valid source. Proceeding with sync."
+          else
+            echo "is_active=false" >> $GITHUB_OUTPUT
+            echo "Skipping sync: Branch '${{ github.ref_name }}' is not an active source branch."
+          fi
+          
       - name: "Check if merge branch already exists"
+        if: steps.check_active.outputs.is_active == 'true'
         id: check_sync
         run: |
           if git fetch origin "${SYNC_BRANCH}"; then
@@ -70,6 +71,7 @@ jobs:
           SYNC_BRANCH: sync-branch-${{ github.ref_name }}-to-${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}
 
       - name: "Merge Changes"
+        if: steps.check_active.outputs.is_active == 'true'
         run: |
           set -x
           echo "::group::Fetching and merging branches"
