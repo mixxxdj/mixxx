@@ -3,9 +3,9 @@
 #include <QHash>
 
 #include "library/basetrackcache.h"
-#include "library/dao/trackdao.h"
 #include "library/basetracktablemodel.h"
 #include "library/columncache.h"
+#include "library/dao/trackdao.h"
 #include "util/class.h"
 
 class TrackCollectionManager;

@@ -122,7 +122,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 
     // void loadGenres2QVL(QVariantList& genresData);
-    QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
+    // QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
 
   signals:
     void added(int playlistId);
@@ -154,6 +154,6 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     AutoDJProcessor* m_pAutoDJProcessor;
-    QVariantList m_genreData;
+    //    QVariantList m_genreData;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };

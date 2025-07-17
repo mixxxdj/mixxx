@@ -742,7 +742,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_trackSourceOrderBy.append(first ? "ORDER BY " : ", ");
             m_trackSourceOrderBy.append(sort_field);
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ? " ASC" : " DESC");
-            //qDebug() << m_trackSourceOrderBy;
+            // qDebug() << m_trackSourceOrderBy;
             first = false;
         }
     }
@@ -758,7 +758,7 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
     int count = parent.isValid() ? 0 : m_rowInfo.size();
-    //qDebug() << "rowCount()" << parent << count;
+    // qDebug() << "rowCount()" << parent << count;
     return count;
 }
 
@@ -868,8 +868,8 @@ QVariant BaseSqlTableModel::rawValue(
         // on the fly. This will be a steep penalty to pay if there are tons
         // of these tracks in the table that are not cached.
         qDebug() << __FILE__ << __LINE__
-                    << "Track" << trackId
-                    << "was not present in cache and had to be manually fetched.";
+                 << "Track" << trackId
+                 << "was not present in cache and had to be manually fetched.";
         m_trackSource->ensureCached(trackId);
     }
     return m_trackSource->data(trackId, trackSourceColumn);
@@ -1007,7 +1007,8 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
-            //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
+            // qDebug() << "Row in this result set was updated. Signalling
+            // update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);
             emit dataChanged(topLeft, bottomRight);
@@ -1026,7 +1027,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+    select(); // Repopulate the data model.
 }
 
 QList<TrackRef> BaseSqlTableModel::getTrackRefs(
