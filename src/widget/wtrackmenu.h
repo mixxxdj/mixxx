@@ -8,6 +8,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/pollingcontrolproxy.h"
 #include "library/coverart.h"
+#include "library/dao/genredao.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"

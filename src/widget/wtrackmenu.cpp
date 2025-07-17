@@ -2704,11 +2704,12 @@ void WTrackMenu::slotRemoveFromDisk() {
 // EVE
 void WTrackMenu::loadGenreData2QVL() {
     qDebug() << "[WTRACKMENU] -> loadGenreData2QVL() -> started";
-    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
-                                       ->internalCollection()
-                                       ->getPlaylistDAO();
+    GenreDao& genreDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getGenreDao();
+
     m_genreData.clear();
-    playlistDao.loadGenres2QVL(m_genreData);
+    genreDao.loadGenres2QVL(m_genreData);
     // qDebug() << "[WTRACKMENU] load genresData into QVariantList:"
     //          << m_genreData;
     qDebug() << "[WTRACKMENU] -> loadGenreData2QVL() -> finished";

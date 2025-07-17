@@ -4,7 +4,7 @@
 #include <QStyle>
 #include <QTableView>
 
-#include "library/basesqltablemodel.h"
+// #include "library/basesqltablemodel.h"
 #include "library/trackset/tracksettablemodel.h"
 #include "moc_genredelegate.cpp"
 
@@ -23,6 +23,7 @@ QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const 
 
     const BaseSqlTableModel* pModel =
             qobject_cast<const BaseSqlTableModel*>(parent());
+
     if (!pModel) {
         qWarning() << "GenreDelegate: parent is not a BaseSqlTableModel!";
         return raw; // fallback

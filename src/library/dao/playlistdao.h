@@ -121,7 +121,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 
-    void loadGenres2QVL(QVariantList& genresData);
+    // void loadGenres2QVL(QVariantList& genresData);
     QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
 
   signals:
