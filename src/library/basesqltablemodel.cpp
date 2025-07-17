@@ -367,8 +367,8 @@ void BaseSqlTableModel::select() {
     QSet<TrackId> trackIds;
     int idColumn = -1;
     int posColumn = -1;
-    QString trackGenre;
-    int trackGenreIndex;
+    // QString trackGenre;
+    // int trackGenreIndex;
 
     while (query.next()) {
         QSqlRecord sqlRecord = query.record();
