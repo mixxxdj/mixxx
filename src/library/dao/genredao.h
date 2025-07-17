@@ -14,9 +14,10 @@ class GenreDao : public QObject, public virtual DAO {
     explicit GenreDao(QObject* parent = nullptr);
     ~GenreDao() override = default;
 
-    void initialize(const QSqlDatabase& database);
+    void initialize(const QSqlDatabase& database) override;
     void loadGenres2QVL(QVariantList& m_genreData);
     QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
+    QMap<QString, QString> getAllGenres();
 
   private:
     QVariantList m_genreData;

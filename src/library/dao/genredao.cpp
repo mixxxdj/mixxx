@@ -19,6 +19,8 @@
 GenreDao::GenreDao(
         QObject* parent)
         : QObject(parent) {
+    m_genreData.clear();
+    loadGenres2QVL(m_genreData);
 }
 
 void GenreDao::initialize(const QSqlDatabase& database) {
@@ -93,4 +95,22 @@ QString GenreDao::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
         resolved << trimmed; // fallback
     }
     return resolved.join(QStringLiteral("; "));
+}
+
+QMap<QString, QString> GenreDao::getAllGenres() {
+    QMap<QString, QString> genreMap;
+
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id, name FROM genres"); // or whatever your genre table is
+    if (query.exec()) {
+        while (query.next()) {
+            int id = query.value(0).toInt();
+            QString name = query.value(1).toString();
+            genreMap.insert(QString("##%1##").arg(id), name);
+        }
+    } else {
+        qWarning() << "Failed to fetch genres:" << query.lastError();
+    }
+
+    return genreMap;
 }

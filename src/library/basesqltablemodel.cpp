@@ -218,23 +218,23 @@ void BaseSqlTableModel::loadGenres2QVL(QVariantList& m_genreData) {
     // qDebug() << "[BaseSqlTableModel] -> loadGenres2QVL contains" << m_genreData;
 }
 
-QMap<QString, QString> BaseSqlTableModel::getAllGenres() {
-    QMap<QString, QString> genreMap;
-
-    QSqlQuery query(m_database);
-    query.prepare("SELECT id, name FROM genres"); // or whatever your genre table is
-    if (query.exec()) {
-        while (query.next()) {
-            int id = query.value(0).toInt();
-            QString name = query.value(1).toString();
-            genreMap.insert(QString("##%1##").arg(id), name);
-        }
-    } else {
-        qWarning() << "Failed to fetch genres:" << query.lastError();
-    }
-
-    return genreMap;
-}
+// QMap<QString, QString> BaseSqlTableModel::getAllGenres() {
+//     QMap<QString, QString> genreMap;
+//
+//     QSqlQuery query(m_database);
+//     query.prepare("SELECT id, name FROM genres"); // or whatever your genre table is
+//     if (query.exec()) {
+//         while (query.next()) {
+//             int id = query.value(0).toInt();
+//             QString name = query.value(1).toString();
+//             genreMap.insert(QString("##%1##").arg(id), name);
+//         }
+//     } else {
+//         qWarning() << "Failed to fetch genres:" << query.lastError();
+//     }
+//
+//     return genreMap;
+// }
 
 QString BaseSqlTableModel::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
     qDebug() << "[BaseSqlTableModel] -> getDisplayGenreNameForGenreID called";
