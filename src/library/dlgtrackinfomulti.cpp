@@ -147,7 +147,7 @@ void DlgTrackInfoMulti::setupGenreCompleter() {
     connect(txtGenre,
             &QComboBox::editTextChanged,
             this,
-            [genreCompleter, this](const QString& text) {
+            [genreCompleter](const QString& text) {
                 QStringList parts = text.split(';', Qt::SkipEmptyParts);
                 const QString prefix =
                         parts.isEmpty() ? QString() : parts.last().trimmed();

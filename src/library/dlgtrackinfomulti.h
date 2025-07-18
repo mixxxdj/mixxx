@@ -110,7 +110,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     }
 
     const UserSettingsPointer m_pUserSettings;
-
+    GenreDao& m_genreDao;
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
     QList<mixxx::TrackRecord> m_trackRecords;
 
@@ -126,5 +126,4 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     parented_ptr<WColorPickerAction> m_pColorPicker;
     QVariantList m_genreData;
     QString m_rawGenreString;
-    GenreDao& m_genreDao;
 };
