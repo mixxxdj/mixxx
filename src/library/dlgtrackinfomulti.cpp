@@ -134,6 +134,54 @@ void DlgTrackInfoMulti::setGenreData(const QVariantList& genreData) {
     setupGenreCompleter();
 }
 
+// void DlgTrackInfoMulti::setupGenreCompleter() {
+//     QStringList genreNames = m_genreDao.getGenreNameList();
+//
+//     auto* genreCompleter = new QCompleter(genreNames, this);
+//     genreCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+//     genreCompleter->setFilterMode(Qt::MatchContains);
+//     genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
+//
+//     txtGenre->setCompleter(genreCompleter);
+//
+//     connect(txtGenre,
+//             &QComboBox::editTextChanged,
+//             this,
+//             [genreCompleter](const QString& text) {
+//                 QStringList parts = text.split(';', Qt::SkipEmptyParts);
+//                 const QString prefix =
+//                         parts.isEmpty() ? QString() : parts.last().trimmed();
+//                 genreCompleter->setCompletionPrefix(prefix);
+//                 if (!prefix.isEmpty()) {
+//                     genreCompleter->complete();
+//                 } else {
+//                     genreCompleter->popup()->hide();
+//                 }
+//             });
+//
+//     connect(genreCompleter,
+//             QOverload<const QString&>::of(&QCompleter::activated),
+//             this,
+//             [this](const QString& selected) {
+//                 QString full = txtGenre->lineEdit()->text();
+//                 QStringList parts = full.split(';', Qt::SkipEmptyParts);
+//                 if (!parts.isEmpty()) {
+//                     parts.last() = selected.trimmed();
+//                 } else {
+//                     parts = {selected.trimmed()};
+//                 }
+//
+//                 QString newText = parts.join("; ");
+//                 if (!newText.endsWith(";")) {
+//                     newText += "; ";
+//                 }
+//
+//                 QSignalBlocker blocker(txtGenre->lineEdit());
+//                 txtGenre->lineEdit()->setText(newText);
+//                 txtGenre->lineEdit()->setCursorPosition(newText.length());
+//             });
+// }
+
 void DlgTrackInfoMulti::setupGenreCompleter() {
     QStringList genreNames = m_genreDao.getGenreNameList();
 
@@ -142,43 +190,24 @@ void DlgTrackInfoMulti::setupGenreCompleter() {
     genreCompleter->setFilterMode(Qt::MatchContains);
     genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
 
-    txtGenre->setCompleter(genreCompleter);
+    genreSelectorEdit->setCompleter(genreCompleter);
 
-    connect(txtGenre,
-            &QComboBox::editTextChanged,
-            this,
-            [genreCompleter](const QString& text) {
-                QStringList parts = text.split(';', Qt::SkipEmptyParts);
-                const QString prefix =
-                        parts.isEmpty() ? QString() : parts.last().trimmed();
-                genreCompleter->setCompletionPrefix(prefix);
-                if (!prefix.isEmpty()) {
-                    genreCompleter->complete();
-                } else {
-                    genreCompleter->popup()->hide();
-                }
-            });
+    connect(genreSelectorEdit, &QLineEdit::textEdited, this, [genreCompleter](const QString& text) {
+        QStringList parts = text.split(';', Qt::SkipEmptyParts);
+        const QString prefix = parts.isEmpty() ? QString() : parts.last().trimmed();
+        genreCompleter->setCompletionPrefix(prefix);
+        if (!prefix.isEmpty()) {
+            genreCompleter->complete();
+        } else {
+            genreCompleter->popup()->hide();
+        }
+    });
 
     connect(genreCompleter,
             QOverload<const QString&>::of(&QCompleter::activated),
             this,
             [this](const QString& selected) {
-                QString full = txtGenre->lineEdit()->text();
-                QStringList parts = full.split(';', Qt::SkipEmptyParts);
-                if (!parts.isEmpty()) {
-                    parts.last() = selected.trimmed();
-                } else {
-                    parts = {selected.trimmed()};
-                }
-
-                QString newText = parts.join("; ");
-                if (!newText.endsWith(";")) {
-                    newText += "; ";
-                }
-
-                QSignalBlocker blocker(txtGenre->lineEdit());
-                txtGenre->lineEdit()->setText(newText);
-                txtGenre->lineEdit()->setCursorPosition(newText.length());
+                genreSelectorEdit->setText(selected.trimmed());
             });
 }
 
@@ -203,6 +232,30 @@ void DlgTrackInfoMulti::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+
+    // genre add-button
+    connect(genreAddButton, &QPushButton::clicked, this, [this]() {
+        const QString typed = genreSelectorEdit->text().trimmed();
+        if (typed.isEmpty()) {
+            return;
+        }
+
+        QString current = txtGenre->lineEdit()->text().trimmed();
+        QStringList parts = current.split(';', Qt::SkipEmptyParts);
+
+        if (!parts.contains(typed, Qt::CaseInsensitive)) {
+            parts << typed;
+            QString updated = parts.join("; ");
+            if (!updated.endsWith(";")) {
+                updated += "; ";
+            }
+
+            QSignalBlocker blocker(txtGenre->lineEdit());
+            txtGenre->lineEdit()->setText(updated);
+        }
+
+        genreSelectorEdit->clear();
+    });
 
     // QDialog buttons
     connect(btnApply,
