@@ -1,8 +1,12 @@
 #pragma once
 
+#include <hidapi.h>
+
 #include <QObject>
 #include <QString>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "controllers/controller.h"
 #include "controllers/hid/hidusagetables.h"
@@ -101,6 +105,11 @@ class DeviceInfo final {
         return mixxx::hid::HidUsageTables::getUsageDescription(usage_page, usage);
     }
 
+    // We need an opened hid_device here,
+    // but the lifetime of the data is as long as DeviceInfo exists,
+    // means the reportDescriptor data remains valid after closing the hid_device
+    const std::vector<uint8_t>& fetchRawReportDescriptor(hid_device* pHidDevice);
+
     bool isValid() const {
         return !getProductString().isNull() && !getSerialNumber().isNull();
     }
@@ -131,6 +140,8 @@ class DeviceInfo final {
     QString m_manufacturerString;
     QString m_productString;
     QString m_serialNumber;
+
+    std::vector<uint8_t> m_reportDescriptor;
 };
 
 } // namespace hid
