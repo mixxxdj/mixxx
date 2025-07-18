@@ -14,13 +14,13 @@
 #include "util/tapfilter.h"
 #include "widget/wcolorpickeraction.h"
 
+class GenreDao;
 class TrackModel;
 class WColorPickerAction;
 class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
 class DlgTagFetcher;
-class GenreDao;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -117,7 +117,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateSpinBpmFromBeats();
 
     const UserSettingsPointer m_pUserSettings;
-
+    GenreDao& m_genreDao;
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
@@ -142,5 +142,4 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
     QVariantList m_genreData;
     QString m_rawGenreString;
-    GenreDao& m_genreDao;
 };

@@ -744,13 +744,13 @@ void DlgTrackInfoMulti::saveTracks() {
         } else {
             QStringList chosen = genreDisplay.split(';', Qt::SkipEmptyParts);
             QStringList placeholders;
-            for (QString name : chosen) {
-                name = name.trimmed();
-                qint64 id = m_genreDao.getGenreId(name);
+            for (const QString& name : std::as_const(chosen)) {
+                const QString trimmed = name.trimmed();
+                qint64 id = m_genreDao.getGenreId(trimmed);
                 if (id != -1) {
                     placeholders << QStringLiteral("##%1##").arg(id);
                 } else {
-                    placeholders << name;
+                    placeholders << trimmed;
                 }
             }
             rawToSave = placeholders.join(';');
