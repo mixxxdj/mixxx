@@ -6533,47 +6533,47 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="399"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="401"/>
         <source>Choose a music directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="415"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="417"/>
         <source>Confirm Directory Removal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="417"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="419"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="430"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="436"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="438"/>
         <source>Hide Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="438"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="440"/>
         <source>Delete Track Metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="440"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="442"/>
         <source>Leave Tracks Unchanged</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="482"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="484"/>
         <source>Relink music directory to new location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="628"/>
         <source>Select Library Font</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6622,262 +6622,267 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="99"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="110"/>
         <source>Audio File Formats</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="161"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="172"/>
         <source>Track Table View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="176"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="187"/>
         <source>Track Double-Click Action:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="271"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="282"/>
         <source>BPM display precision:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="369"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="380"/>
         <source>Session History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="376"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="387"/>
         <source>Track duplicate distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="389"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="400"/>
         <source>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="417"/>
         <source>History playlist with less than N tracks will be deleted&lt;br/&gt;&lt;br/&gt;Note: the cleanup will be performed during startup and shutdown of Mixxx.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="409"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="420"/>
         <source>Delete history playlist with less than N tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="246"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="257"/>
         <source>Library Font:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="285"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="95"/>
+        <source>Show scan summary dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="296"/>
         <source>Grey out played tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="308"/>
         <source>Track Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="322"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="333"/>
         <source>Enable search completions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="330"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="341"/>
         <source>Enable search history keyboard shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="338"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="349"/>
         <source>Percentage of pitch slider range for &apos;fuzzy&apos; BPM search:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="354"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="365"/>
         <source>This range will be used for the &apos;fuzzy&apos; BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu &gt; Search related Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="530"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="541"/>
         <source>Preferred Cover Art Fetcher Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="536"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="547"/>
         <source>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="546"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="557"/>
         <source>Note: &quot;&gt;1200 px&quot; can fetch up to very large cover arts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="556"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="567"/>
         <source>&gt;1200 px (if available)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="566"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="577"/>
         <source>1200 px (if available)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="576"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="587"/>
         <source>500 px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="586"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="597"/>
         <source>250 px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="600"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="611"/>
         <source>Settings Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="606"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="617"/>
         <source>The Mixxx settings directory contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="629"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="640"/>
         <source>Edit those files only if you know what you are doing and only while Mixxx is not running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="645"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="656"/>
         <source>Open Mixxx Settings Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="219"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="230"/>
         <source>Library Row Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="150"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="161"/>
         <source>Use relative paths for playlist export if possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="263"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="274"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="240"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="142"/>
         <source>Synchronize library track metadata from/to file tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="128"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="139"/>
         <source>Automatically write modified track metadata from the library into file tags and reimport metadata from updated file tags into the library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="142"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="153"/>
         <source>Synchronize Serato track metadata from/to file tags (experimental)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="139"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="150"/>
         <source>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="168"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="179"/>
         <source>Edit metadata after clicking selected track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="304"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="315"/>
         <source>Search-as-you-type timeout:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="314"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="325"/>
         <source> ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="198"/>
         <source>Load track to next available deck</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="437"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="448"/>
         <source>External Libraries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="516"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="527"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="443"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="454"/>
         <source>Show Rhythmbox Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="122"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="133"/>
         <source>Track Metadata Synchronization / Playlists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="197"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="208"/>
         <source>Add track to Auto DJ queue (bottom)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="204"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="215"/>
         <source>Add track to Auto DJ queue (top)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="211"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="222"/>
         <source>Ignore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="453"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="464"/>
         <source>Show Banshee Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="463"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="474"/>
         <source>Show iTunes Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="473"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="484"/>
         <source>Show Traktor Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="483"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="494"/>
         <source>Show Rekordbox Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="493"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="504"/>
         <source>Show Serato Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="503"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="514"/>
         <source>All external libraries shown are write protected.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7926,17 +7931,17 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="257"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="269"/>
         <source>OpenGL not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="629"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="645"/>
         <source>dropped frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="688"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="715"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7954,22 +7959,22 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="702"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="792"/>
         <source>OpenGL Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="714"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="804"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="625"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="715"/>
         <source>Normalize waveform overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="733"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="823"/>
         <source>Average frame rate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7985,7 +7990,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="743"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="833"/>
         <source>Displays the actual frame rate.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8020,7 +8025,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="633"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="723"/>
         <source>Show minute markers on waveform overview</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8065,7 +8070,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="616"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="706"/>
         <source>The waveform overview shows the waveform envelope of the entire track.
 Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
         <translation type="unfinished"></translation>
@@ -8132,22 +8137,22 @@ Select from different types of displays for the waveform, which differ primarily
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="645"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="735"/>
         <source>Caching</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="665"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="755"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="651"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="741"/>
         <source>Enable waveform caching</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="658"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="748"/>
         <source>Generate waveforms when analyzing library</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8163,7 +8168,7 @@ Select from different types of displays for the waveform, which differ primarily
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="45"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="609"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="699"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8193,12 +8198,42 @@ Select from different types of displays for the waveform, which differ primarily
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="599"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="595"/>
+        <source>Stem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="610"/>
+        <source>Channel opacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="623"/>
+        <source>Channel opacity (outline)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="637"/>
+        <source>Main stem opacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="656"/>
+        <source>Outline stem opacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="675"/>
+        <source>Move channel to foreground when volume is adjusted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="689"/>
         <source>Overview Waveforms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="691"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="781"/>
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9855,249 +9890,249 @@ Do you really want to overwrite it?</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="680"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="681"/>
         <source>Sound Device Busy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="689"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="690"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="693"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="720"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="744"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="694"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="721"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="745"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="696"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="723"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="697"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="724"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="699"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="726"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="747"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="700"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="727"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="748"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="640"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="641"/>
         <source>Retry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="228"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="229"/>
         <source>skin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="593"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="594"/>
         <source>Allow Mixxx to hide the menu bar?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="595"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="596"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="596"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="597"/>
         <source>Always show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="599"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="600"/>
         <source>The Mixxx menu bar is hidden and can be toggled with a single press of the &lt;b&gt;Alt&lt;/b&gt; key.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; to agree.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; to disable that, for example if you don&apos;t use Mixxx with a keyboard.&lt;br&gt;&lt;br&gt;You can change this setting any time in Preferences -&gt; Interface.&lt;br&gt;</source>
         <extracomment>Keep formatting tags &lt;b&gt; (bold text) and &lt;br&gt; (linebreak). %1 is the placeholder for the &apos;Always show&apos; button label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="614"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="615"/>
         <source>Ask me again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="642"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="755"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="643"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="756"/>
         <source>Reconfigure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="644"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="645"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="646"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="757"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="647"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="758"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="683"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="709"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="684"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="710"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="707"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="708"/>
         <source>Sound Device Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="717"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="718"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="735"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="736"/>
         <source>No Output Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="737"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="738"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="741"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="742"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="753"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="754"/>
         <source>Continue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1017"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1018"/>
         <source>Load track to Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1018"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1019"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1020"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1021"/>
         <source>Are you sure you want to load a new track?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1118"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1119"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1145"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1146"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1172"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1173"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1199"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1200"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1230"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1236"/>
         <source>Scan took %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1232"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1238"/>
         <source>No changes detected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1234"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1256"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1240"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1262"/>
         <source>%1 tracks in total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1238"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1244"/>
         <source>%1 new tracks found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1242"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1248"/>
         <source>%1 moved tracks detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1246"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1252"/>
         <source>%1 tracks are missing (%2 total)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1252"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1258"/>
         <source>%1 tracks have been rediscovered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1261"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1267"/>
         <source>Library scan finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1325"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1331"/>
         <source>Error in skin file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1326"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1332"/>
         <source>The selected skin cannot be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1500"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1506"/>
         <source>OpenGL Direct Rendering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1501"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1507"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1536"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1544"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1553"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1542"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1550"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1559"/>
         <source>Confirm Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1537"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1543"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1545"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1551"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1554"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1560"/>
         <source>The preferences window is still open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1555"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1561"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12008,42 +12043,42 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1262"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1268"/>
         <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1264"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1270"/>
         <source>Simple</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1266"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1272"/>
         <source>Filtered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1268"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1274"/>
         <source>HSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1270"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1276"/>
         <source>VSyncTest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1272"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1278"/>
         <source>RGB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1274"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1280"/>
         <source>Stacked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1276"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1282"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
