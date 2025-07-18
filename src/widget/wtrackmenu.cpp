@@ -46,6 +46,7 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
+#include "widget/wgenretaginput.h"
 #include "widget/wmenucheckbox.h"
 #include "widget/wsearchrelatedtracksmenu.h"
 // WStarRating is required for DlgTrackInfo
@@ -499,7 +500,7 @@ void WTrackMenu::createActions() {
         connect(m_pBpmLockAction, &QAction::triggered, this, &WTrackMenu::slotLockBpm);
         connect(m_pBpmUnlockAction, &QAction::triggered, this, &WTrackMenu::slotUnlockBpm);
 
-        //BPM edit actions
+        // BPM edit actions
         m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
         m_pBpmHalveAction = make_parented<QAction>(tr("Halve BPM"), m_pBPMMenu);
@@ -2015,7 +2016,7 @@ class ResetPlayCounterTrackPointerOperation : public mixxx::TrackPointerOperatio
 
 } // anonymous namespace
 
-//slot for reset played count, sets count to 0 of one or more tracks
+// slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
     const auto progressLabelText =
             tr("Resetting play count of %n track(s)", "", getTrackCount());
@@ -2064,7 +2065,7 @@ class ResetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-//slot for reset played count, sets count to 0 of one or more tracks
+// slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearRating() {
     const auto progressLabelText =
             tr("Clearing rating of %n track(s)", "", getTrackCount());
@@ -2087,7 +2088,7 @@ class ClearCommentTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-//slot for clearing the comment field of one or more tracks
+// slot for clearing the comment field of one or more tracks
 void WTrackMenu::slotClearComment() {
     const auto progressLabelText =
             tr("Clearing comment of %n track(s)", "", getTrackCount());
@@ -2735,6 +2736,13 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
                 m_pConfig,
                 m_pTrackModel);
+
+        if (m_pLibrary && m_pLibrary->trackCollectionManager()) {
+            TrackCollection* pTrackCollection =
+                    m_pLibrary->trackCollectionManager()->internalCollection();
+            m_pDlgTrackInfo->setTrackCollection(pTrackCollection);
+        }
+
         connect(m_pDlgTrackInfo.get(),
                 &QDialog::finished,
                 this,
