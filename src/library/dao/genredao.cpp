@@ -146,3 +146,41 @@ QMap<QString, QString> GenreDao::getAllGenres() {
 
     return genreMap;
 }
+
+QString GenreDao::getIdsForGenreNames(const QString& genreText) const {
+    const QStringList parts = genreText.split(';', Qt::SkipEmptyParts);
+    QStringList resolved;
+
+    for (const QString& part : parts) {
+        const QString trimmed = part.trimmed();
+        bool matched = false;
+
+        for (const QVariant& entryVar : m_genreData) {
+            const QVariantMap entry = entryVar.toMap();
+            QString name = entry["name_level_1"].toString();
+
+            if (QString::compare(name, trimmed, Qt::CaseInsensitive) == 0) {
+                qint64 id = entry["id"].toLongLong();
+                resolved << QString("##%1##").arg(id);
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            resolved << trimmed;
+        }
+    }
+
+    return resolved.join("; ");
+}
+
+QStringList GenreDao::getGenreNameList() const {
+    QStringList genreNames;
+    for (const QVariant& entryVar : m_genreData) {
+        const QVariantMap entry = entryVar.toMap();
+        genreNames << entry["name_level_1"].toString();
+    }
+    genreNames.removeDuplicates();
+    genreNames.sort(Qt::CaseInsensitive);
+    return genreNames;
+}

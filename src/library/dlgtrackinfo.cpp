@@ -8,6 +8,7 @@
 #include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dao/genredao.h"
 #include "library/dlgtagfetcher.h"
 #include "library/library_prefs.h"
 #include "library/trackmodel.h"
@@ -39,11 +40,13 @@ const QString kBpmPropertyName = QStringLiteral("bpm");
 
 DlgTrackInfo::DlgTrackInfo(
         UserSettingsPointer pUserSettings,
+        GenreDao& genreDao,
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
           m_pUserSettings(std::move(pUserSettings)),
+          m_genreDao(genreDao),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
@@ -65,87 +68,8 @@ void DlgTrackInfo::setGenreData(const QVariantList& genreData) {
     setupGenreCompleter();
 }
 
-QString DlgTrackInfo::getDisplayGenreNameForGenreID(const QString& rawGenre) const {
-    qDebug() << "[DlgTrackInfo] -> getDisplayGenreNameForGenreID called";
-    const QStringList parts = rawGenre.split(';', Qt::SkipEmptyParts);
-    QStringList resolved;
-
-    static QRegularExpression kGenreIdPattern(QStringLiteral(R"(##(\d+)##)"));
-    for (const QString& part : parts) {
-        const QString trimmed = part.trimmed();
-        const auto match = kGenreIdPattern.match(trimmed);
-
-        if (match.hasMatch()) {
-            bool ok = false;
-            const qint64 genreId = match.captured(1).toLongLong(&ok);
-            qDebug() << "[DlgTrackInfo] -> getDisplayGenreNameForGenreID "
-                        "searching for -> genreId:"
-                     << genreId;
-            if (ok) {
-                QString name;
-                for (const QVariant& entryVar : m_genreData) {
-                    const QVariantMap entry = entryVar.toMap();
-                    // qDebug() << "------" << entry["id"].typeName();
-                    // qDebug() << "------" << entry["id"].toString();
-                    if (entry["id"].toLongLong() == genreId) {
-                        name = entry["name_level_1"].toString();
-                        break;
-                    }
-                }
-                qDebug() << "[DlgTrackInfo] -> getDisplayGenreNameForGenreID "
-                            "called -> genreId -> name:"
-                         << name;
-                if (!name.isEmpty()) {
-                    resolved << name;
-                    continue;
-                }
-            }
-        }
-        resolved << trimmed; // fallback
-    }
-    return resolved.join(QStringLiteral("; "));
-}
-
-QString DlgTrackInfo::getIdsForGenreNames(const QString& genreText) const {
-    const QStringList parts = genreText.split(';', Qt::SkipEmptyParts);
-    QStringList resolved;
-
-    for (const QString& part : parts) {
-        const QString trimmed = part.trimmed();
-        bool matched = false;
-
-        for (const QVariant& entryVar : m_genreData) {
-            const QVariantMap entry = entryVar.toMap();
-            QString name = entry["name_level_1"].toString();
-
-            if (QString::compare(name, trimmed, Qt::CaseInsensitive) == 0) {
-                qint64 id = entry["id"].toLongLong();
-                resolved << QString("##%1##").arg(id);
-                matched = true;
-                break;
-            }
-        }
-        if (!matched) {
-            resolved << trimmed;
-        }
-    }
-
-    return resolved.join("; ");
-}
-
-QStringList DlgTrackInfo::getGenreNameList() const {
-    QStringList genreNames;
-    for (const QVariant& entryVar : m_genreData) {
-        const QVariantMap entry = entryVar.toMap();
-        genreNames << entry["name_level_1"].toString();
-    }
-    genreNames.removeDuplicates();
-    genreNames.sort(Qt::CaseInsensitive);
-    return genreNames;
-}
-
 void DlgTrackInfo::setupGenreCompleter() {
-    QStringList genreNames = getGenreNameList();
+    QStringList genreNames = m_genreDao.getGenreNameList();
     qDebug() << "Genre names:" << genreNames;
 
     QCompleter* genreCompleter = new QCompleter(genreNames, this);
@@ -371,7 +295,7 @@ void DlgTrackInfo::init() {
             this,
             [this]() {
                 const QString editedText = txtGenre->text().trimmed();
-                const QString genreWithIds = getIdsForGenreNames(editedText);
+                const QString genreWithIds = m_genreDao.getIdsForGenreNames(editedText);
                 m_trackRecord.refMetadata().refTrackInfo().setGenre(genreWithIds);
             });
     // EVE
@@ -573,9 +497,10 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     // txtGenre->setText(
     //        m_trackRecord.getMetadata().getTrackInfo().getGenre());
     m_rawGenreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
-    txtGenre->setText(getDisplayGenreNameForGenreID(
+    //    txtGenre->setText(getDisplayGenreNameForGenreID(
+    //            m_trackRecord.getMetadata().getTrackInfo().getGenre()));
+    txtGenre->setText(m_genreDao.getDisplayGenreNameForGenreID(
             m_trackRecord.getMetadata().getTrackInfo().getGenre()));
-
     // EVE
 
     txtComposer->setText(

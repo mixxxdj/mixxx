@@ -20,6 +20,7 @@ class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
 class DlgTagFetcher;
+class GenreDao;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -31,13 +32,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
             UserSettingsPointer pUserSettings,
+            GenreDao& genreDao,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
 
     void setGenreData(const QVariantList& genreData);
-    QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
-    QString getIdsForGenreNames(const QString& genreText) const;
-    QStringList getGenreNameList() const;
     void setupGenreCompleter();
 
   public slots:
@@ -143,4 +142,5 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
     QVariantList m_genreData;
     QString m_rawGenreString;
+    GenreDao& m_genreDao;
 };

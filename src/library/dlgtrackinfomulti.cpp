@@ -1,13 +1,16 @@
 #include "library/dlgtrackinfomulti.h"
 
+#include <QCompleter>
 #include <QLineEdit>
 #include <QListView>
+#include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dao/genredao.h"
 #include "library/library_prefs.h"
 #include "moc_dlgtrackinfomulti.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -100,11 +103,14 @@ void setCommonValueOrVariousStringAndFormatFont(QLabel* pLabel,
 
 } // namespace
 
-DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
+DlgTrackInfoMulti::DlgTrackInfoMulti(
+        UserSettingsPointer pUserSettings,
+        GenreDao& genreDao)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
           m_pUserSettings(std::move(pUserSettings)),
+          m_genreDao(genreDao),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
           m_pWStarRating(make_parented<WStarRating>(this)),
@@ -120,6 +126,63 @@ DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
                   this)) {
     init();
 }
+
+// EVE
+void DlgTrackInfoMulti::setGenreData(const QVariantList& genreData) {
+    m_genreData = genreData;
+    // qDebug() << "[DlgTrackInfoMulti] -> setGenreData passing genreData contains:" << m_genreData;
+    setupGenreCompleter();
+}
+
+void DlgTrackInfoMulti::setupGenreCompleter() {
+    QStringList genreNames = m_genreDao.getGenreNameList();
+
+    auto* genreCompleter = new QCompleter(genreNames, this);
+    genreCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    genreCompleter->setFilterMode(Qt::MatchContains);
+    genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
+
+    txtGenre->setCompleter(genreCompleter);
+
+    connect(txtGenre,
+            &QComboBox::editTextChanged,
+            this,
+            [genreCompleter, this](const QString& text) {
+                QStringList parts = text.split(';', Qt::SkipEmptyParts);
+                const QString prefix =
+                        parts.isEmpty() ? QString() : parts.last().trimmed();
+                genreCompleter->setCompletionPrefix(prefix);
+                if (!prefix.isEmpty()) {
+                    genreCompleter->complete();
+                } else {
+                    genreCompleter->popup()->hide();
+                }
+            });
+
+    connect(genreCompleter,
+            QOverload<const QString&>::of(&QCompleter::activated),
+            this,
+            [this](const QString& selected) {
+                QString full = txtGenre->lineEdit()->text();
+                QStringList parts = full.split(';', Qt::SkipEmptyParts);
+                if (!parts.isEmpty()) {
+                    parts.last() = selected.trimmed();
+                } else {
+                    parts = {selected.trimmed()};
+                }
+
+                QString newText = parts.join("; ");
+                if (!newText.endsWith(";")) {
+                    newText += "; ";
+                }
+
+                QSignalBlocker blocker(txtGenre->lineEdit());
+                txtGenre->lineEdit()->setText(newText);
+                txtGenre->lineEdit()->setCursorPosition(newText.length());
+            });
+}
+
+// EVE
 
 void DlgTrackInfoMulti::init() {
     setupUi(this);
@@ -425,7 +488,12 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         artists.insert(rec.getMetadata().getTrackInfo().getArtist());
         aTitles.insert(rec.getMetadata().getAlbumInfo().getTitle());
         aArtists.insert(rec.getMetadata().getAlbumInfo().getArtist());
-        genres.insert(rec.getMetadata().getTrackInfo().getGenre());
+        // EVE
+        // genres.insert(rec.getMetadata().getTrackInfo().getGenre());
+        QString rawGenre = rec.getMetadata().getTrackInfo().getGenre();
+        QString displayGenres = m_genreDao.getDisplayGenreNameForGenreID(rawGenre);
+        genres.insert(displayGenres);
+        // EVE
         composers.insert(rec.getMetadata().getTrackInfo().getComposer());
         grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
         years.insert(rec.getMetadata().getTrackInfo().getYear());
@@ -666,7 +734,30 @@ void DlgTrackInfoMulti::saveTracks() {
     const QString artist = validEditText(txtArtist);
     const QString album = validEditText(txtAlbum);
     const QString albumArtist = validEditText(txtAlbumArtist);
-    const QString genre = validEditText(txtGenre);
+    // EVE
+    // const QString genre = validEditText(txtGenre);
+    const QString genreDisplay = validEditText(txtGenre);
+    QString rawToSave;
+    if (!genreDisplay.isNull()) {
+        if (genreDisplay.isEmpty()) {
+            rawToSave = QString();
+        } else {
+            QStringList chosen = genreDisplay.split(';', Qt::SkipEmptyParts);
+            QStringList placeholders;
+            for (QString name : chosen) {
+                name = name.trimmed();
+                qint64 id = m_genreDao.getGenreId(name);
+                if (id != -1) {
+                    placeholders << QStringLiteral("##%1##").arg(id);
+                } else {
+                    placeholders << name;
+                }
+            }
+            rawToSave = placeholders.join(';');
+        }
+    }
+    // EVE
+
     const QString composer = validEditText(txtComposer);
     const QString grouping = validEditText(txtGrouping);
     const QString year = validEditText(txtYear);
@@ -696,9 +787,14 @@ void DlgTrackInfoMulti::saveTracks() {
         if (!albumArtist.isNull()) {
             rec.refMetadata().refAlbumInfo().setArtist(albumArtist);
         }
-        if (!genre.isNull()) {
-            rec.refMetadata().refTrackInfo().setGenre(genre);
+        // EVE
+        // if (!genre.isNull()) {
+        //    rec.refMetadata().refTrackInfo().setGenre(genre);
+        //}
+        if (!genreDisplay.isNull()) {
+            rec.refMetadata().refTrackInfo().setGenre(rawToSave);
         }
+        // EVE
         if (!composer.isNull()) {
             rec.refMetadata().refTrackInfo().setComposer(composer);
         }

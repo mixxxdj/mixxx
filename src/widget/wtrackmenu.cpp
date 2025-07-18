@@ -2724,8 +2724,12 @@ void WTrackMenu::slotShowDlgTrackInfo() {
     if (m_pTrackModel && getTrackCount() > 1) {
         // Use the batch editor.
         // Create a fresh dialog on invocation.
+        auto& genreDao = m_pLibrary->trackCollectionManager()->internalCollection()->getGenreDao();
         m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
-                m_pConfig);
+                m_pConfig,
+                genreDao);
+        // m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
+        //         m_pConfig);
         connect(m_pDlgTrackInfoMulti.get(),
                 &QDialog::finished,
                 this,
@@ -2742,14 +2746,17 @@ void WTrackMenu::slotShowDlgTrackInfo() {
             tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
         }
         //        m_pDlgTrackInfoMulti->setGenreData(m_genreData);
+        m_pDlgTrackInfoMulti->setGenreData(m_genreData);
         m_pDlgTrackInfoMulti->loadTracks(tracks);
         m_pDlgTrackInfoMulti->show();
         m_pDlgTrackInfoMulti->focusField(m_trackProperty);
     } else {
         // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
         // Create a fresh dialog on invocation.
+        auto& genreDao = m_pLibrary->trackCollectionManager()->internalCollection()->getGenreDao();
         m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
                 m_pConfig,
+                genreDao,
                 m_pTrackModel);
         connect(m_pDlgTrackInfo.get(),
                 &QDialog::finished,

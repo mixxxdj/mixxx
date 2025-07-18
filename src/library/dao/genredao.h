@@ -17,6 +17,8 @@ class GenreDao : public QObject, public virtual DAO {
     void initialize(const QSqlDatabase& database) override;
     void loadGenres2QVL(QVariantList& m_genreData);
     QString getDisplayGenreNameForGenreID(const QString& rawGenre) const;
+    QString getIdsForGenreNames(const QString& genreText) const;
+    QStringList getGenreNameList() const;
     QMap<QString, QString> getAllGenres();
     qint64 getGenreId(const QString& genreName) const;
     QHash<QString, qint64> getNameToIdMap() const;
