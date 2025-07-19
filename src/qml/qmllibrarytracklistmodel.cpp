@@ -97,5 +97,17 @@ QVariant QmlLibraryTrackListModel::get(int row) const {
     return dataMap;
 }
 
+QmlTrackProxy* QmlLibraryTrackListModel::getTrack(int row) const {
+    auto* const pTrackTableModel = qobject_cast<BaseTrackTableModel*>(sourceModel());
+
+    if (pTrackTableModel == nullptr) {
+        // TODO search for column with role
+        return {};
+    }
+    auto* pTrack = new QmlTrackProxy(pTrackTableModel->getTrack(pTrackTableModel->index(row, 0)));
+    QQmlEngine::setObjectOwnership(pTrack, QQmlEngine::JavaScriptOwnership);
+    return pTrack;
+}
+
 } // namespace qml
 } // namespace mixxx
