@@ -1,5 +1,6 @@
 #include "waveform/waveformwidgetfactory.h"
 
+#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/waveform.h"
 
 #ifdef MIXXX_USE_QOPENGL
@@ -427,6 +428,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setUntilMarkTextHeightLimit(toUntilMarkTextHeightLimit(
             m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
                     toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
+    setStemReorderOnChange(m_config->getValue(
+            ConfigKey("[Waveform]", "stem_reorder_on_change"), true));
+    setStemOpacity(static_cast<float>(
+            m_config->getValue(ConfigKey("[Waveform]", "stem_opacity"), 0.75)));
+    setStemOutlineOpacity(static_cast<float>(m_config->getValue(
+            ConfigKey("[Waveform]", "stem_outline_opacity"), 0.15)));
 
     return true;
 }
@@ -931,7 +938,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
     QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend>> collectedHandles;
     QHash<WaveformWidgetType::Type,
-            allshader::WaveformRendererSignalBase::Options>
+            WaveformRendererSignalBase::Options>
             supportedOptions;
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
@@ -995,22 +1002,21 @@ void WaveformWidgetFactory::evaluateWidgets() {
         m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(type, backends
 #ifdef MIXXX_USE_QOPENGL
                 ,
-                supportedOptions.value(type, allshader::WaveformRendererSignalBase::Option::None)
+                supportedOptions.value(type, WaveformRendererSignalBase::Option::None)
 #endif
                         ));
     }
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
-        WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    allshader::WaveformRendererSignalBase::Options options =
-            m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                    allshader::WaveformRendererSignalBase::Option::None);
+        WaveformWidgetType::Type type,
+        WWaveformViewer* viewer,
+        WaveformRendererSignalBase::Options options) {
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
-        WWaveformViewer* viewer) {
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
     // in case of issue when we release, we can communicate workaround on
@@ -1023,15 +1029,16 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader: {
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer, options);
     }
 #endif
     default:
-        return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+        return new SoftwareWaveformWidget(viewer->getGroup(), viewer, options);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
     // in case of issue when we release, we can communicate workaround on
@@ -1044,14 +1051,15 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveform
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
-        return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer, options);
 #endif
     default:
-        return new HSVWaveformWidget(viewer->getGroup(), viewer);
+        return new HSVWaveformWidget(viewer->getGroup(), viewer, options);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
     // in case of issue when we release, we can communicate workaround on
@@ -1064,15 +1072,15 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer, options);
 #endif
     default:
-        return new RGBWaveformWidget(viewer->getGroup(), viewer);
+        return new RGBWaveformWidget(viewer->getGroup(), viewer, options);
     }
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
-        WWaveformViewer* viewer) {
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
 #ifdef MIXXX_USE_QOPENGL
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
@@ -1084,14 +1092,15 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
             preferredBackend());
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer, options);
 #endif
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
     // in case of issue when we release, we can communicate workaround on
@@ -1104,7 +1113,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
 #endif
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
@@ -1128,24 +1137,28 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             type = WaveformWidgetType::Empty;
         }
 
+        WaveformRendererSignalBase::Options options =
+                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
+                        WaveformRendererSignalBase::Option::None);
+
         switch (type) {
         case WaveformWidgetType::Simple:
-            widget = createSimpleWaveformWidget(viewer);
+            widget = createSimpleWaveformWidget(viewer, options);
             break;
         case WaveformWidgetType::Filtered:
-            widget = createFilteredWaveformWidget(viewer);
+            widget = createFilteredWaveformWidget(viewer, options);
             break;
         case WaveformWidgetType::HSV:
-            widget = createHSVWaveformWidget(viewer);
+            widget = createHSVWaveformWidget(viewer, options);
             break;
         case WaveformWidgetType::VSyncTest:
             widget = createVSyncTestWaveformWidget(viewer);
             break;
         case WaveformWidgetType::RGB:
-            widget = createRGBWaveformWidget(viewer);
+            widget = createRGBWaveformWidget(viewer, options);
             break;
         case WaveformWidgetType::Stacked:
-            widget = createStackedWaveformWidget(viewer);
+            widget = createStackedWaveformWidget(viewer, options);
             break;
         default:
             widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
@@ -1362,6 +1375,33 @@ void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
     emit untilMarkTextHeightLimitChanged(value);
 }
 
+void WaveformWidgetFactory::setStemReorderOnChange(bool value) {
+    m_stemReorderOnChange = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "stem_reorder_on_change"),
+                value);
+    }
+    emit stemReorderOnChangeChanged(value);
+}
+
+void WaveformWidgetFactory::setStemOutlineOpacity(float value) {
+    m_stemOutlineOpacity = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "stem_outline_opacity"),
+                static_cast<double>(value));
+    }
+    emit stemOutlineOpacityChanged(value);
+}
+
+void WaveformWidgetFactory::setStemOpacity(float value) {
+    m_stemOpacity = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "stem_opacity"),
+                static_cast<double>(value));
+    }
+    emit stemOpacityChanged(value);
+}
+
 // static
 Qt::Alignment WaveformWidgetFactory::toUntilMarkAlign(int index) {
     switch (index) {
@@ -1372,7 +1412,7 @@ Qt::Alignment WaveformWidgetFactory::toUntilMarkAlign(int index) {
     case 2:
         return Qt::AlignBottom;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported align");
     return Qt::AlignVCenter;
 }
 // static
@@ -1387,7 +1427,7 @@ int WaveformWidgetFactory::toUntilMarkAlignIndex(Qt::Alignment align) {
     default:
         break;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported align index");
     return 1;
 }
 // static
@@ -1398,7 +1438,7 @@ float WaveformWidgetFactory::toUntilMarkTextHeightLimit(int index) {
     case 1:
         return 1.f;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported height limit");
     return 0.33f;
 }
 // static
@@ -1409,6 +1449,6 @@ int WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(float value) {
     if (value == 1.f) {
         return 1;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported height limit");
     return 0;
 }

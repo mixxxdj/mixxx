@@ -90,6 +90,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
+          m_slipQuitAndAdopt(0),
           m_bPlayAfterLoading(false),
           m_channelCount(mixxx::kEngineChannelOutputCount),
           m_pCrossfadeBuffer(SampleUtil::alloc(
@@ -864,6 +865,11 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     }
 }
 
+void EngineBuffer::slipQuitAndAdopt() {
+    m_slipQuitAndAdopt.storeRelease(1);
+    m_pSlipButton->set(0);
+}
+
 void EngineBuffer::processTrackLocked(
         CSAMPLE* pOutput, const std::size_t bufferSize, mixxx::audio::SampleRate sampleRate) {
     ScopedTimer t(QStringLiteral("EngineBuffer::process_pauselock"));
@@ -1257,8 +1263,12 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
             m_slipPos = m_playPos;
             m_dSlipRate = m_rate_old;
         } else {
-            // TODO(owen) assuming that looping will get canceled properly
-            seekExact(m_slipPos.toNearestFrameBoundary());
+            // If m_slipQuitAndAdopt is 1 we've already quit slip mode
+            // but we don't seek in that case.
+            if (m_slipQuitAndAdopt.fetchAndStoreAcquire(0) == 0) {
+                // TODO(owen) assuming that looping will get canceled properly
+                seekExact(m_slipPos.toNearestFrameBoundary());
+            }
             m_slipPos = mixxx::audio::kStartFramePos;
         }
     }

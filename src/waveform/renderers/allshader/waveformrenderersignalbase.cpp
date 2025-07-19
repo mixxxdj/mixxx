@@ -5,8 +5,8 @@
 namespace allshader {
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidget)
-        : ::WaveformRendererSignalBase(waveformWidget),
+        WaveformWidgetRenderer* waveformWidget, ::WaveformRendererSignalBase::Options options)
+        : ::WaveformRendererSignalBase(waveformWidget, options),
           m_ignoreStem(false) {
 }
 

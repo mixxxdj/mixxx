@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "control/pollingcontrolproxy.h"
 #include "rendergraph/geometrynode.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 class QOpenGLTexture;
+class ControlProxy;
 
 namespace allshader {
 class WaveformRendererStem;
@@ -19,7 +19,9 @@ class allshader::WaveformRendererStem final
   public:
     explicit WaveformRendererStem(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play);
+                    ::WaveformRendererAbstract::Play,
+            ::WaveformRendererSignalBase::Options options =
+                    ::WaveformRendererSignalBase::Option::None);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
@@ -37,13 +39,32 @@ class allshader::WaveformRendererStem final
     void setSplitStemTracks(bool splitStemTracks) {
         m_splitStemTracks = splitStemTracks;
     }
+    void setReorderOnChange(bool value) {
+        m_reorderOnChange = value;
+        // Reset the stem layer stack to the natural order
+        std::iota(m_stackOrder.begin(), m_stackOrder.end(), 0);
+    }
+    void setOutlineOpacity(float value) {
+        m_outlineOpacity = value;
+        markDirtyMaterial();
+    }
+    void setOpacity(float value) {
+        m_opacity = value;
+        markDirtyMaterial();
+    }
 
   private:
     bool m_isSlipRenderer;
     bool m_splitStemTracks;
 
-    std::vector<std::unique_ptr<PollingControlProxy>> m_pStemGain;
-    std::vector<std::unique_ptr<PollingControlProxy>> m_pStemMute;
+    bool m_reorderOnChange;
+    float m_outlineOpacity;
+    float m_opacity;
+
+    std::vector<std::unique_ptr<ControlProxy>> m_pStemGain;
+    std::vector<std::unique_ptr<ControlProxy>> m_pStemMute;
+
+    QVarLengthArray<int, mixxx::kMaxSupportedStems> m_stackOrder;
 
     bool preprocessInner();
 
