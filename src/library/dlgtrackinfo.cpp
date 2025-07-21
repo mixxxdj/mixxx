@@ -220,13 +220,22 @@ void DlgTrackInfo::init() {
 
         // Get current genres
         QStringList genreParts = txtGenre->text().split(';', Qt::SkipEmptyParts);
-        genreParts = QSet<QString>(genreParts.begin(), genreParts.end())
-                             .values(); // remove duplicates
-        /*genreParts = std::transform(genreParts.begin(), genreParts.end(),
-         * genreParts.begin(), [](const QString& s) { return s.trimmed(); });*/
-        for (int i = 0; i < genreParts.size(); ++i) {
-            genreParts[i] = genreParts[i].trimmed();
+        // genreParts = QSet<QString>(genreParts.begin(), genreParts.end())
+        //                      .values();
+        // for (int i = 0; i < genreParts.size(); ++i) {
+        //     genreParts[i] = genreParts[i].trimmed();
+        // }
+        QStringList cleanedGenres;
+        QSet<QString> seen; // for duplicate tracking, case-insensitive
+        for (const QString& genre : genreParts) {
+            QString trimmed = genre.trimmed();
+            QString lowered = trimmed.toLower();
+            if (!seen.contains(lowered)) {
+                cleanedGenres << trimmed;
+                seen.insert(lowered);
+            }
         }
+        genreParts = cleanedGenres;
 
         // Only add if not already there
         if (!genreParts.contains(genreToAdd, Qt::CaseInsensitive)) {
@@ -358,6 +367,10 @@ void DlgTrackInfo::init() {
                 const QString editedText = txtGenre->text().trimmed();
                 const QString genreWithIds = m_genreDao.getIdsForGenreNames(editedText);
                 m_trackRecord.refMetadata().refTrackInfo().setGenre(genreWithIds);
+
+                const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(genreWithIds);
+                m_genreDao.updateGenreTracksForTrack(m_trackRecord.getId(), genreIds);
+
             });
     // EVE
     connect(txtComposer,

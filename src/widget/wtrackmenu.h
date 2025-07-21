@@ -59,8 +59,9 @@ class WTrackMenu : public QMenu {
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
+        Genre = 1 << 18,
         TrackModelFeatures = Remove | HideUnhidePurge,
-        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
+        All = AutoDJ | LoadTo | Playlist | Crate | Genre | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
                 FindOnWeb
@@ -73,6 +74,7 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::SearchRelated |
             WTrackMenu::Feature::Playlist |
             WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Genre |
             WTrackMenu::Feature::Metadata |
             WTrackMenu::Feature::Reset |
             WTrackMenu::Feature::Analyze |
@@ -186,6 +188,10 @@ class WTrackMenu : public QMenu {
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
 
+    // Genre
+    void slotPopulateGenreMenu();
+    void addSelectionToNewGenre();
+
     // Auto DJ
     void slotAddToAutoDJBottom();
     void slotAddToAutoDJTop();
@@ -246,6 +252,7 @@ class WTrackMenu : public QMenu {
 
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* pWidget);
+    void updateSelectionGenres(QWidget* pWidget);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void addToAnalysis(AnalyzerTrack::Options options = AnalyzerTrack::Options());
@@ -291,6 +298,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QMenu> m_pSamplerMenu;
     parented_ptr<QMenu> m_pPlaylistMenu;
     parented_ptr<QMenu> m_pCrateMenu;
+    parented_ptr<QMenu> m_pGenreMenu;
     parented_ptr<QMenu> m_pMetadataMenu;
     parented_ptr<QMenu> m_pMetadataUpdateExternalCollectionsMenu;
     parented_ptr<QMenu> m_pHotcueMenu;
@@ -324,6 +332,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pRemoveAct;
     parented_ptr<QAction> m_pRemovePlaylistAct;
     parented_ptr<QAction> m_pRemoveCrateAct;
+    parented_ptr<QAction> m_pRemoveGenreAct;
     parented_ptr<QAction> m_pHideAct;
     parented_ptr<QAction> m_pUnhideAct;
     parented_ptr<QAction> m_pPurgeAct;
@@ -398,6 +407,7 @@ class WTrackMenu : public QMenu {
 
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
+    bool m_bGenreMenuLoaded;
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;

@@ -9,6 +9,7 @@
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
+#include "library/trackset/genre/genreid.h"
 #endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -19,6 +20,7 @@ class AnalysisFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
+class GenreFeature;
 class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
@@ -130,6 +132,7 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    void slotCreateGenre();
     void slotSearchInCurrentView();
     void slotSearchInAllTracks();
     void onSkinLoadFinished();
@@ -195,6 +198,7 @@ class Library: public QObject {
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    GenreFeature* m_pGenreFeature;
     AnalysisFeature* m_pAnalysisFeature;
     BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;

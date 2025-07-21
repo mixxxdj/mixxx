@@ -28,6 +28,9 @@
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/trackset/crate/cratesummary.h"
+#include "library/trackset/genre/genre.h"
+#include "library/trackset/genre/genrefeaturehelper.h"
+#include "library/trackset/genre/genresummary.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
@@ -115,6 +118,7 @@ WTrackMenu::WTrackMenu(
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
+          m_bGenreMenuLoaded(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
     // Warn if any of the chosen features depend on a TrackModel
@@ -187,6 +191,13 @@ void WTrackMenu::createMenus() {
         m_pCrateMenu->setTitle(tr("Crates"));
         m_pCrateMenu->setObjectName("CratesMenu");
         connect(m_pCrateMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateCrateMenu);
+    }
+
+    if (featureIsEnabled(Feature::Genre)) {
+        m_pGenreMenu = make_parented<QMenu>(this);
+        m_pGenreMenu->setTitle(tr("Genres"));
+        m_pGenreMenu->setObjectName("GenresMenu");
+        connect(m_pGenreMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateGenreMenu);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
@@ -326,6 +337,10 @@ void WTrackMenu::createActions() {
         m_pRemoveCrateAct = make_parented<QAction>(tr("Remove from Crate"), this);
         m_pRemoveCrateAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemoveCrateAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
+
+        m_pRemoveGenreAct = make_parented<QAction>(tr("Remove from Genre"), this);
+        m_pRemoveGenreAct->setShortcut(hideRemoveKeySequence);
+        connect(m_pRemoveGenreAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
@@ -634,6 +649,10 @@ void WTrackMenu::setupActions() {
         addMenu(m_pCrateMenu);
     }
 
+    if (featureIsEnabled(Feature::Genre)) {
+        addMenu(m_pGenreMenu);
+    }
+
     if (featureIsEnabled(Feature::Remove)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             addAction(m_pRemoveAct);
@@ -643,6 +662,9 @@ void WTrackMenu::setupActions() {
         }
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             addAction(m_pRemoveCrateAct);
+        }
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveGenre)) {
+            addAction(m_pRemoveGenreAct);
         }
     }
 
@@ -1095,6 +1117,12 @@ void WTrackMenu::updateMenus() {
         m_bCrateMenuLoaded = false;
     }
 
+    if (featureIsEnabled(Feature::Genre)) {
+        // Crate menu is lazy loaded on hover by slotPopulateCrateMenu
+        // to avoid unnecessary database queries
+        m_bGenreMenuLoaded = false;
+    }
+
     if (featureIsEnabled(Feature::Remove)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
@@ -1105,6 +1133,9 @@ void WTrackMenu::updateMenus() {
         }
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             m_pRemoveCrateAct->setEnabled(!locked);
+        }
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveGenre)) {
+            m_pRemoveGenreAct->setEnabled(!locked);
         }
     }
 
@@ -1684,6 +1715,89 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_bCrateMenuLoaded = true;
 }
 
+void WTrackMenu::slotPopulateGenreMenu() {
+    // The user may open the Crate submenu, move their cursor away, then
+    // return to the Crate submenu before exiting the track context menu.
+    // Avoid querying the database multiple times in that case.
+    if (m_bGenreMenuLoaded) {
+        return;
+    }
+    m_pGenreMenu->clear();
+    const TrackIdList trackIds = getTrackIds();
+
+    GenreSummarySelectResult allGenres(
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->genres()
+                    .selectGenresWithTrackCount(trackIds));
+
+    GenreSummary genre;
+    while (allGenres.populateNext(&genre)) {
+        auto pAction = make_parented<QWidgetAction>(
+                m_pGenreMenu);
+        // Use a custom QCheckBox with fixed hover behavior.
+        auto pCheckBox = make_parented<WMenuCheckBox>(
+                mixxx::escapeTextPropertyWithoutShortcuts(genre.getName()),
+                m_pCrateMenu);
+        pCheckBox->setProperty("genreId", QVariant::fromValue(genre.getId()));
+        pCheckBox->setEnabled(!genre.isLocked());
+        // Strangely, the normal styling of QActions does not automatically
+        // apply to QWidgetActions. The :selected pseudo-state unfortunately
+        // does not work with QWidgetAction. :hover works for selecting items
+        // with the mouse, but not with the keyboard. :focus works for the
+        // keyboard but with the mouse, the last clicked item keeps the style
+        // after the mouse cursor is moved to hover over another item.
+
+        // ronso0 Disabling this stylesheet allows to override the OS style
+        // of the :hover and :focus state.
+        //        pCheckBox->setStyleSheet(
+        //            QString("QCheckBox {color: %1;}").arg(
+        //                    pCheckBox->palette().text().color().name()) + "\n" +
+        //            QString("QCheckBox:hover {background-color: %1;}").arg(
+        //                    pCheckBox->palette().highlight().color().name()));
+        pAction->setEnabled(!genre.isLocked());
+        pAction->setDefaultWidget(pCheckBox.get());
+
+        if (genre.getTrackCount() == 0) {
+            pCheckBox->setChecked(false);
+        } else if (genre.getTrackCount() == (uint)trackIds.length()) {
+            pCheckBox->setChecked(true);
+        } else {
+            pCheckBox->setTristate(true);
+            pCheckBox->setCheckState(Qt::PartiallyChecked);
+        }
+
+        m_pGenreMenu->addAction(pAction.get());
+        connect(pAction.get(),
+                &QAction::triggered,
+                this,
+                [this, pCheckBox{pCheckBox.get()}] {
+                    updateSelectionGenres(pCheckBox);
+                });
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+        connect(pCheckBox.get(),
+                &QCheckBox::checkStateChanged,
+                this,
+                [this, pCheckBox{pCheckBox.get()}] {
+                    updateSelectionGenres(pCheckBox);
+                });
+#else
+        connect(pCheckBox.get(),
+                &QCheckBox::stateChanged,
+                this,
+                [this, pCheckBox{pCheckBox.get()}] {
+                    updateSelectionGenres(pCheckBox);
+                });
+#endif
+    }
+    m_pGenreMenu->addSeparator();
+    auto newGenreAction = make_parented<QAction>(tr("Add to New Genre"), m_pGenreMenu);
+    m_pGenreMenu->addAction(newGenreAction);
+    connect(newGenreAction, &QAction::triggered, this, &WTrackMenu::addSelectionToNewGenre);
+    m_bGenreMenuLoaded = true;
+}
+
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
@@ -1722,6 +1836,45 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     }
 }
 
+void WTrackMenu::updateSelectionGenres(QWidget* pWidget) {
+    auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
+    VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
+        qWarning() << "genreId is not of GenreId type";
+        return;
+    }
+    GenreId genreId = pCheckBox->property("genreId").value<GenreId>();
+
+    const TrackIdList trackIds = getTrackIds();
+
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for genre";
+        return;
+    }
+
+    // we need to disable tristate again as the mixed state will now be gone and
+    // can't be brought back
+    pCheckBox->setTristate(false);
+    if (!pCheckBox->isChecked()) {
+        if (genreId.isValid()) {
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->removeGenreTracks(genreId, trackIds);
+        }
+    } else {
+        if (!genreId.isValid()) { // i.e. a new genre is suppose to be created
+            genreId = GenreFeatureHelper(
+                    m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
+                              .createEmptyGenre();
+        }
+        if (genreId.isValid()) {
+            m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->addGenreTracks(genreId, trackIds);
+        }
+    }
+}
+
 void WTrackMenu::addSelectionToNewCrate() {
     const TrackIdList trackIds = getTrackIds();
 
@@ -1739,6 +1892,26 @@ void WTrackMenu::addSelectionToNewCrate() {
         m_pLibrary->trackCollectionManager()
                 ->internalCollection()
                 ->addCrateTracks(crateId, trackIds);
+    }
+}
+
+void WTrackMenu::addSelectionToNewGenre() {
+    const TrackIdList trackIds = getTrackIds();
+
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for genre";
+        return;
+    }
+
+    GenreId genreId = GenreFeatureHelper(
+            m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
+                              .createEmptyGenre();
+
+    if (genreId.isValid()) {
+        m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
+        m_pLibrary->trackCollectionManager()
+                ->internalCollection()
+                ->addGenreTracks(genreId, trackIds);
     }
 }
 
@@ -2952,13 +3125,18 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::Crate:
         return m_pTrackModel->hasCapabilities(
                 TrackModel::Capability::AddToTrackSet);
+    case Feature::Genre:
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::Capability::AddToTrackSet);
     case Feature::Remove:
         return m_pTrackModel->hasCapabilities(
                        TrackModel::Capability::Remove) ||
                 m_pTrackModel->hasCapabilities(
                         TrackModel::Capability::RemovePlaylist) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::Capability::RemoveCrate);
+                        TrackModel::Capability::RemoveCrate) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::Capability::RemoveGenre);
     case Feature::Metadata:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Analyze:

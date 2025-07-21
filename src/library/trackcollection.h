@@ -14,6 +14,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/genre/genrestorage.h"
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
 
@@ -53,6 +54,11 @@ class TrackCollection : public QObject,
         return m_crates;
     }
 
+    const GenreStorage& genres() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_genres;
+    }
+
     TrackDAO& getTrackDAO() {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_trackDao;
@@ -89,7 +95,14 @@ class TrackCollection : public QObject,
     bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
     bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
 
+    bool insertGenre(const Genre& genre, GenreId* pGenreId = nullptr);
+    bool updateGenre(const Genre& genre);
+    bool deleteGenre(GenreId genreId);
+    bool addGenreTracks(GenreId genreId, const QList<TrackId>& trackIds);
+    bool removeGenreTracks(GenreId genreId, const QList<TrackId>& trackIds);
+
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
+    // bool updateAutoDjGenre(GenreId genreId, bool isAutoDjSource);
 
   signals:
     // Forwarded signals from LibraryScanner
@@ -106,12 +119,23 @@ class TrackCollection : public QObject,
     void crateUpdated(CrateId id);
     void crateDeleted(CrateId id);
 
+    void genreInserted(GenreId id);
+    void genreUpdated(GenreId id);
+    void genreDeleted(GenreId id);
+
     void crateTracksChanged(
             CrateId crate,
             const QList<TrackId>& tracksAdded,
             const QList<TrackId>& tracksRemoved);
     void crateSummaryChanged(
             const QSet<CrateId>& crates);
+
+    void genreTracksChanged(
+            GenreId genre,
+            const QList<TrackId>& tracksAdded,
+            const QList<TrackId>& tracksRemoved);
+    void genreSummaryChanged(
+            const QSet<GenreId>& genres);
 
   private:
     friend class TrackCollectionManager;
@@ -174,6 +198,7 @@ class TrackCollection : public QObject,
 
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;
+    GenreStorage m_genres;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;

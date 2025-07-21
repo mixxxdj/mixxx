@@ -1405,6 +1405,10 @@ add_library(
   src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/genre/genrefeature.cpp
+  src/library/trackset/genre/genrefeaturehelper.cpp
+  src/library/trackset/genre/genrestorage.cpp
+  src/library/trackset/genre/genretablemodel.cpp
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp

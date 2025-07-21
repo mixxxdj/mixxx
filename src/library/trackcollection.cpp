@@ -2,6 +2,7 @@
 
 #include "library/basetrackcache.h"
 #include "library/trackset/crate/crate.h"
+#include "library/trackset/genre/genre.h"
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
@@ -67,6 +68,7 @@ void TrackCollection::repairDatabase(const QSqlDatabase& database) {
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
+    m_genres.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(const QSqlDatabase& database) {
@@ -83,6 +85,7 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     m_genreDao.initialize(database);
     m_libraryHashDao.initialize(database);
     m_crates.connectDatabase(database);
+    m_genres.connectDatabase(database);
 }
 
 void TrackCollection::disconnectDatabase() {
@@ -92,6 +95,7 @@ void TrackCollection::disconnectDatabase() {
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
+    m_genres.disconnectDatabase();
 }
 
 void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
@@ -329,10 +333,13 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     m_trackDao.afterHidingTracks(trackIds);
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
+    QSet<GenreId> modifiedGenreSummaries(
+            m_genres.collectGenreIdsOfTracks(trackIds));
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
     emit crateSummaryChanged(modifiedCrateSummaries);
+    emit genreSummaryChanged(modifiedGenreSummaries);
 
     return true;
 }
@@ -363,6 +370,9 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
             m_crates.collectCrateIdsOfTracks(trackIds);
     emit crateSummaryChanged(modifiedCrateSummaries);
 
+    QSet<GenreId> modifiedGenreSummaries =
+            m_genres.collectGenreIdsOfTracks(trackIds);
+    emit genreSummaryChanged(modifiedGenreSummaries);
     return true;
 }
 
@@ -383,7 +393,12 @@ bool TrackCollection::purgeTracks(
     // all crates on purging.
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
+    QSet<GenreId> modifiedGenreSummaries(
+            m_genres.collectGenreIdsOfTracks(trackIds));
     VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_genres.onPurgingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -401,6 +416,7 @@ bool TrackCollection::purgeTracks(
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
     emit crateSummaryChanged(modifiedCrateSummaries);
+    emit genreSummaryChanged(modifiedGenreSummaries);
 
     return true;
 }
@@ -447,6 +463,34 @@ bool TrackCollection::insertCrate(
     return true;
 }
 
+bool TrackCollection::insertGenre(
+        const Genre& genre,
+        GenreId* pGenreId) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    GenreId genreId;
+    VERIFY_OR_DEBUG_ASSERT(m_genres.onInsertingGenre(genre, &genreId)) {
+        return false;
+    }
+    DEBUG_ASSERT(genreId.isValid());
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit genreInserted(genreId);
+
+    if (pGenreId != nullptr) {
+        *pGenreId = genreId;
+    }
+    return true;
+}
+
 bool TrackCollection::updateCrate(
         const Crate& crate) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -469,6 +513,28 @@ bool TrackCollection::updateCrate(
     return true;
 }
 
+bool TrackCollection::updateGenre(
+        const Genre& genre) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_genres.onUpdatingGenre(genre)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit genreUpdated(genre.getId());
+
+    return true;
+}
+
 bool TrackCollection::deleteCrate(
         CrateId crateId) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -487,6 +553,28 @@ bool TrackCollection::deleteCrate(
 
     // Emit signals
     emit crateDeleted(crateId);
+
+    return true;
+}
+
+bool TrackCollection::deleteGenre(
+        GenreId genreId) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_genres.onDeletingGenre(genreId)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit genreDeleted(genreId);
 
     return true;
 }
@@ -514,6 +602,38 @@ bool TrackCollection::addCrateTracks(
     return true;
 }
 
+bool TrackCollection::addGenreTracks(
+        GenreId genreId,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_genres.onAddingGenreTracks(genreId, trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit genreTracksChanged(genreId, trackIds, QList<TrackId>());
+    // if (trackIds.size() == 1) {
+    //     emit m_trackDao.forceModelUpdate();
+    // } else {
+    for (const TrackId& trackId : trackIds) {
+        TrackPointer pTrack = getTrackById(trackId);
+        if (pTrack) {
+            emit pTrack->genreChanged(pTrack->getGenre());
+        }
+    }
+    //}
+    return true;
+}
+
 bool TrackCollection::removeCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
@@ -537,6 +657,38 @@ bool TrackCollection::removeCrateTracks(
     return true;
 }
 
+bool TrackCollection::removeGenreTracks(
+        GenreId genreId,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_genres.onRemovingGenreTracks(genreId, trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit genreTracksChanged(genreId, QList<TrackId>(), trackIds);
+    // if (trackIds.size() == 1) {
+    //     emit m_trackDao.forceModelUpdate();
+    // } else {
+    for (const TrackId& trackId : trackIds) {
+        TrackPointer pTrack = getTrackById(trackId);
+        if (pTrack) {
+            emit pTrack->genreChanged(pTrack->getGenre());
+        }
+    }
+    //}
+    return true;
+}
+
 bool TrackCollection::updateAutoDjCrate(
         CrateId crateId,
         bool isAutoDjSource) {
@@ -552,6 +704,22 @@ bool TrackCollection::updateAutoDjCrate(
     crate.setAutoDjSource(isAutoDjSource);
     return updateCrate(crate);
 }
+
+// bool TrackCollection::updateAutoDjGenre(
+//         GenreId genreId,
+//         bool isAutoDjSource) {
+//     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+//
+//     Crate crate;
+//     VERIFY_OR_DEBUG_ASSERT(genres().readGenreById(genreId, &genre)) {
+//         return false; // inexistent or failure
+//     }
+//     if (crate.isAutoDjSource() == isAutoDjSource) {
+//         return false; // nothing to do
+//     }
+//     crate.setAutoDjSource(isAutoDjSource);
+//     return updateGenre(genre);
+// }
 
 bool TrackCollection::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);

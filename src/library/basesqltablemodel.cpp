@@ -9,6 +9,7 @@
 #include "library/starrating.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/genre/genreschema.h"
 #include "mixer/playermanager.h"
 #include "moc_basesqltablemodel.cpp"
 #include "track/keyutils.h"
@@ -209,6 +210,41 @@ void BaseSqlTableModel::select() {
 
     PerformanceTimer time;
     time.start();
+
+    if (m_tableName.startsWith("genre")) {
+        QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
+        FwdSqlQuery(m_database, queryStringDropView).execPrepared();
+        QStringList columns;
+        QString genreId = m_tableName;
+        genreId = genreId.replace("genre_", "");
+        columns << LIBRARYTABLE_ID
+                << "'' AS " + LIBRARYTABLE_PREVIEW
+                << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+        QString queryStringTempView =
+                QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                        "SELECT %2 FROM %3 "
+                        "WHERE %4 IN (SELECT %5 FROM %6 WHERE %7 = %8) "
+                        "AND %9=0")
+                        .arg(m_tableName,                   // 1
+                                columns.join(","),          // 2
+                                LIBRARY_TABLE,              // 3
+                                LIBRARYTABLE_ID,            // 4
+                                GENRETRACKSTABLE_TRACKID,   // 5
+                                GENRE_TRACKS_TABLE,         // 6
+                                GENRETRACKSTABLE_GENREID,   // 7
+                                genreId,                    // 8
+                                LIBRARYTABLE_MIXXXDELETED); // 9
+                                                            // qDebug() <<
+                                                            // "[BASESQLTABLEMODEL]
+                                                            // [SELECT] ->
+                                                            // [GENRES] Rebuild
+                                                            // temp view ->
+                                                            // queryStringTempView
+                                                            // " <<
+                                                            // queryStringTempView;
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    }
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")

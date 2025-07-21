@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
+#include <QToolTip>
 #include <utility>
 
 #include "library/dao/genredao.h"
@@ -34,7 +35,7 @@ QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const 
 
     for (const QString& id : std::as_const(ids)) {
         QString name = m_pGenreDao->getDisplayGenreNameForGenreID(id);
-        qDebug() << "[GenreDelegate] -> name: " << name;
+        // qDebug() << "[GenreDelegate] -> name: " << name;
         if (!name.isEmpty()) {
             names << name;
             continue;
@@ -42,4 +43,41 @@ QString GenreDelegate::displayText(const QVariant& value, const QLocale&) const 
     }
 
     return names.join("; ");
+}
+
+bool GenreDelegate::helpEvent(QHelpEvent* event,
+        QAbstractItemView* view,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) {
+    if (!event || !view) {
+        return false;
+    }
+
+    const QVariant rawValue = index.data(Qt::DisplayRole);
+    const QString raw = rawValue.toString();
+    if (raw.isEmpty()) {
+        return false;
+    }
+
+    QStringList ids = raw.split(";", Qt::SkipEmptyParts);
+    QStringList names;
+
+    for (const QString& id : std::as_const(ids)) {
+        QString name = m_pGenreDao->getDisplayGenreNameForGenreID(id);
+        if (!name.isEmpty()) {
+            names << name;
+        }
+    }
+
+    QString tooltip = names.join("\n");
+    if (!tooltip.isEmpty()) {
+        QFont tooltipFont = QToolTip::font();
+        tooltipFont.setPointSize(20);
+        QToolTip::setFont(tooltipFont);
+
+        QToolTip::showText(event->globalPos(), tooltip, view);
+        return true;
+    }
+
+    return QStyledItemDelegate::helpEvent(event, view, option, index);
 }

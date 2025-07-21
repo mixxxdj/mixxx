@@ -593,48 +593,72 @@ reapplying those migrations.
     </description>
     <sql>
       CREATE TABLE IF NOT EXISTS genres (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name_level_1 TEXT NOT NULL COLLATE NOCASE,
-        name_level_2 TEXT DEFAULT NULL COLLATE NOCASE,
-        name_level_3 TEXT DEFAULT NULL COLLATE NOCASE,
-        name_level_4 TEXT DEFAULT NULL COLLATE NOCASE,
-        name_level_5 TEXT DEFAULT NULL COLLATE NOCASE,
-        custom_name TEXT DEFAULT NULL,
-        display_order INTEGER DEFAULT 0,
-        is_visible INTEGER DEFAULT 1,
-        is_user_defined INTEGER DEFAULT 0
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name_level_1 TEXT NOT NULL COLLATE NOCASE,
+      name_level_2 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_3 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_4 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_5 TEXT DEFAULT NULL COLLATE NOCASE,
+      custom_name TEXT DEFAULT NULL,
+      display_order INTEGER DEFAULT 0,
+      is_visible INTEGER DEFAULT 1,
+      is_user_defined INTEGER DEFAULT 0,
+      count integer DEFAULT 0,
+      show integer DEFAULT 1,
+      locked integer DEFAULT 0,
+      autodj_source integer DEFAULT 0
       );
 
-      <!-- CREATE TABLE IF NOT EXISTS genre_tracks (
+      <!--CREATE TABLE IF NOT EXISTS genre_tracks (
       track_id INTEGER NOT NULL,
       genre_id INTEGER NOT NULL,
       PRIMARY KEY (track_id, genre_id),
       FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE,
       FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
-      ); -->
+      );-->
+
+      CREATE TABLE IF NOT EXISTS genre_tracks (
+      track_id INTEGER NOT NULL,
+      genre_id INTEGER NOT NULL,
+      PRIMARY KEY (track_id, genre_id),
+      FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE,
+      FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
+      );
+
+      <!--CREATE TABLE genre_tracks (
+      genre_id integer NOT NULL REFERENCES genres(id),
+      track_id integer NOT NULL REFERENCES library(id),
+      UNIQUE (genre_id, track_id))-->
 
       <!-- Indexes on track_id and genre_id -->
-      <!-- CREATE INDEX IF NOT EXISTS idx_genre_tracks_track_id ON genre_tracks(track_id);
-      CREATE INDEX IF NOT EXISTS idx_genre_tracks_genre_id ON genre_tracks(genre_id); -->
+      <!-- CREATE INDEX IF NOT EXISTS idx_genre_tracks_track_id ON genre_tracks(track_id); -->
+      CREATE INDEX IF NOT EXISTS idx_genre_tracks_genre_id ON genre_tracks(genre_id);
 
       <!-- Migrate existing single genre from library.genre to genres table -->
       INSERT INTO genres (name_level_1, is_visible, display_order, is_user_defined)
-        SELECT DISTINCT TRIM(library.genre), 1, 0, 1
-          FROM library
-            WHERE library.genre IS NOT NULL AND TRIM(library.genre) != '';
+      SELECT DISTINCT TRIM(library.genre), 1, 0, 1
+      FROM library
+      WHERE library.genre IS NOT NULL AND TRIM(library.genre) != '';
+
+      INSERT INTO genre_tracks (track_id, genre_id)
+      SELECT T.id, G.id
+      FROM library T
+      JOIN genres G
+      ON TRIM(T.genre) = G.name_level_1 COLLATE NOCASE
+      WHERE T.genre IS NOT NULL AND TRIM(T.genre) != '';
 
       UPDATE library
-        SET genre = '##' || (
-          SELECT g.id
-            FROM genres AS g
-              WHERE TRIM(library.genre) = g.name_level_1 COLLATE NOCASE
-          LIMIT 1
-          ) || '##'
-        WHERE library.genre IS NOT NULL
-          AND LENGTH(TRIM(library.genre)) > 0
-          AND library.genre NOT LIKE '##%##';
+      SET genre = '##' || (
+      SELECT g.id
+      FROM genres AS g
+      WHERE TRIM(library.genre) = g.name_level_1 COLLATE NOCASE
+      LIMIT 1
+      ) || '##'
+      WHERE library.genre IS NOT NULL
+      AND LENGTH(TRIM(library.genre)) > 0
+      AND library.genre NOT LIKE '##%##';
 
-<!-- Links library tracks to their corresponding genre IDs in track_genres -->
+      <!-- Links library tracks to their corresponding genre IDs in track_genres -->
       <!-- INSERT INTO genre_tracks (track_id, genre_id)
       SELECT T.id, G.id
       FROM library T

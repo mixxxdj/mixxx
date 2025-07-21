@@ -394,16 +394,28 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         //} else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
         //    return new GenreDelegate(this);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
-        // 1) Retrieve the DAO from your collection manager:
+        // reloadGenreData();
         GenreDao& genreDao = m_pTrackCollectionManager
                                      ->internalCollection()
                                      ->getGenreDao();
-
-        // 2) Pass its pointer + 'this' (the model) as the parent:
         return new GenreDelegate(&genreDao, this);
     }
     return new DefaultDelegate(pTableView);
 }
+
+// void BaseTrackTableModel::reloadGenreData() {
+//     m_genreData.clear();
+//     GenreDao& genreDao = m_pTrackCollectionManager
+//                                  ->internalCollection()
+//                                  ->getGenreDao();
+//
+//     QStringList genreNames = genreDao.getGenreNameList();
+//     for (const QString& name : genreNames) {
+//         QVariantMap genreEntry;
+//         genreEntry["name"] = name;
+//         m_genreData.append(genreEntry);
+//     }
+// }
 
 QVariant BaseTrackTableModel::data(
         const QModelIndex& index,
