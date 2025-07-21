@@ -34,3 +34,14 @@
 #define SIZE_1GB Q_UINT64_C(1070000000)
 #define SIZE_2GB Q_UINT64_C(2140000000)
 #define SIZE_4GB Q_UINT64_C(4280000000)
+
+// Available samplerates
+#include "audio/types.h"
+inline const QList<mixxx::audio::SampleRate> kRecSampleRates = {
+        mixxx::audio::SampleRate(8000),
+        mixxx::audio::SampleRate(11025),
+        mixxx::audio::SampleRate(22050),
+        mixxx::audio::SampleRate(32000),
+        mixxx::audio::SampleRate(44100),
+        mixxx::audio::SampleRate(48000),
+        mixxx::audio::SampleRate(96000)};

@@ -137,6 +137,7 @@ void EncoderWave::flush() {
 }
 
 void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
+    qDebug() << "wave encoding buffer";
     sf_write_float(m_pSndfile, pBuffer, bufferSize);
 }
 

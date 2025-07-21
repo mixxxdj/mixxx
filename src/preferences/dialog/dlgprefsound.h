@@ -6,6 +6,7 @@
 #include "defs_urls.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
@@ -29,6 +30,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
     DlgPrefSound(QWidget* parent,
+            DlgPrefRecord* pRecordingDlg,
             std::shared_ptr<SoundManager> soundManager,
             UserSettingsPointer pSettings);
 
@@ -43,6 +45,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
     void updatingAPI();
     void updatedAPI();
+    void updateDefaultRecordingSampleRate(mixxx::audio::SampleRate newRate);
 
   public slots:
     void slotUpdate() override; // called on show

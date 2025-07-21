@@ -2,6 +2,7 @@
 
 #include <QButtonGroup>
 
+#include "control/pollingcontrolproxy.h"
 #include "encoder/encoder.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefrecorddlg.h"
@@ -32,8 +33,16 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void slotSliderCompression();
     void slotGroupChanged();
 
+    void slotDefaultSampleRateUpdated(mixxx::audio::SampleRate newRate);
+
   private slots:
     void slotToggleCueEnabled();
+    void sampleRateChanged(int newRateIdx);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotToggleCustomSampleRateIgnore(Qt::CheckState buttonState);
+#else
+    void slotToggleCustomSampleRateIgnore(int buttonState);
+#endif
 
   signals:
     void apply(const QString &);
@@ -49,6 +58,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void saveUseCueFile();
     void saveUseCueFileAnnotation();
     void saveSplitSize();
+    void saveRecSampleRate();
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
@@ -57,4 +67,8 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     QButtonGroup optionsgroup;
     QList<QRadioButton*> m_formatButtons;
     QList<QAbstractButton*> m_optionWidgets;
+
+    // to access the recsamplerate object.
+    PollingControlProxy m_recSampleRate;
+    PollingControlProxy m_useEngineSampleRate;
 };

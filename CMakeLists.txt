@@ -1237,6 +1237,7 @@ add_library(
   src/engine/bufferscalers/enginebufferscale.cpp
   src/engine/bufferscalers/enginebufferscalelinear.cpp
   src/engine/bufferscalers/enginebufferscalest.cpp
+  src/engine/bufferscalers/enginebufferscalesr.cpp
   src/engine/cachingreader/cachingreader.cpp
   src/engine/cachingreader/cachingreaderchunk.cpp
   src/engine/cachingreader/cachingreaderworker.cpp
