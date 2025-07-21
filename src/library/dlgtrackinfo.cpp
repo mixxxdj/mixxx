@@ -371,7 +371,6 @@ void DlgTrackInfo::init() {
 
                 const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(genreWithIds);
                 m_genreDao.updateGenreTracksForTrack(m_trackRecord.getId(), genreIds);
-
             });
     // EVE
     connect(txtComposer,
