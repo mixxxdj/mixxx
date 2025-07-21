@@ -1,5 +1,6 @@
 #include "library/tabledelegates/genredelegate.h"
 
+#include <QHelpEvent>
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
