@@ -66,3 +66,5 @@ src/mixxx.rc.include
 src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
+
+res/translations/source_copy_allow_list_proposed.tsv
