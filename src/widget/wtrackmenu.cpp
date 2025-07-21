@@ -2723,8 +2723,12 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 });
         QList<TrackPointer> tracks;
         tracks.reserve(getTrackCount());
-        for (int i = 0; i < m_trackIndexList.size(); i++) {
-            tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
+        for (const auto& index : m_trackIndexList) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                tracks.append(pTrack);
+            }
+            // Skip unavailable tracks
         }
         m_pDlgTrackInfoMulti->loadTracks(tracks);
         m_pDlgTrackInfoMulti->show();

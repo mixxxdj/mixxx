@@ -44,7 +44,7 @@ jobs:
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
   sync:
-    if: ${{ github.ref != 'refs/heads/main' }} && ${{ github.repository == 'mixxxdj/mixxx' }}
+    if: ${{ github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
     uses: ./.github/workflows/sync_branches.yml
     secrets:
       MIXXX_BRANCH_SYNC_PAT: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
