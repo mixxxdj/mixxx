@@ -4244,6 +4244,14 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   )
 endif()
 
+# Libsamplerate
+option(LIBSAMPLERATE "Enable libsamplerate for sample-rate conversion" ON)
+if(LIBSAMPLERATE)
+  find_package(libsamplerate REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE libsamplerate::libsamplerate)
+  target_compile_definitions(mixxx-lib PUBLIC __LIBSAMPLERATE__) # ifdef (__LIBSAMPLERATE__)
+endif()
+
 # SoundTouch
 find_package(SoundTouch 2.1.2 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
