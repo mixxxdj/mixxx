@@ -5,6 +5,7 @@
 #include "library/trackset/genre/genre.h"
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"
 #include "util/dnd.h"
