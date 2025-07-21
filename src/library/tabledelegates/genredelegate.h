@@ -14,7 +14,7 @@ class GenreDelegate : public QStyledItemDelegate {
     bool helpEvent(QHelpEvent* event,
             QAbstractItemView* view,
             const QStyleOptionViewItem& option,
-            const QModelIndex& index);
+            const QModelIndex& index) override;
 
   private:
     GenreDao* m_pGenreDao;
