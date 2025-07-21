@@ -172,7 +172,8 @@ QString GenreDao::getIdsForGenreNames(const QString& genreText) {
         const QString trimmed = part.trimmed();
         bool matched = false;
 
-        for (const QVariant& entryVar : m_genreData) {
+        // for (const QVariant& entryVar : m_genreData) {
+        for (const QVariant& entryVar : std::as_const(m_genreData)) {
             const QVariantMap entry = entryVar.toMap();
             // QString name = entry["name_level_1"].toString();
             QString name = entry[GENRETABLE_NAME].toString();
@@ -206,7 +207,8 @@ QStringList GenreDao::getGenreNameList() const {
 
 QList<GenreId> GenreDao::getGenreIdsFromIdString(const QString& genreIdString) {
     QList<GenreId> genreIds;
-    const QRegularExpression regex(R"(##(\d+)##)");
+    // const QRegularExpression regex(R"(##(\d+)##)");
+    static const QRegularExpression regex(R"(##(\d+)##)");
     auto matches = regex.globalMatch(genreIdString);
     while (matches.hasNext()) {
         const auto match = matches.next();

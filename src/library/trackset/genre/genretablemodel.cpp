@@ -390,6 +390,7 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         return 0;
     }
 
+    QStringList nonEmptyLevels;
     while (!in.atEnd()) {
         const QString line = in.readLine();
         lineNumber++;
@@ -410,7 +411,6 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
             levels << fields[i].trimmed();
         }
 
-        QStringList nonEmptyLevels;
         nonEmptyLevels.reserve(5);
         for (const QString& level : std::as_const(levels)) {
             if (!level.isEmpty()) {
@@ -492,6 +492,7 @@ void GenreTableModel::rebuildCustomNames() {
     m_database.transaction();
     int updatedCount = 0;
 
+    QStringList parts;
     while (selectQuery.next()) {
         int id = selectQuery.value(0).toInt();
         QString lvl1 = selectQuery.value(1).toString().trimmed();
@@ -505,7 +506,6 @@ void GenreTableModel::rebuildCustomNames() {
             lvl1 = existingCustomName;
         }
 
-        QStringList parts;
         for (const QString& part : {lvl1, lvl2, lvl3, lvl4, lvl5}) {
             if (!part.isEmpty()) {
                 parts << part;

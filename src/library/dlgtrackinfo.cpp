@@ -227,7 +227,8 @@ void DlgTrackInfo::init() {
         // }
         QStringList cleanedGenres;
         QSet<QString> seen; // for duplicate tracking, case-insensitive
-        for (const QString& genre : genreParts) {
+        // for (const QString& genre : genreParts) {
+        for (const QString& genre : std::as_const(genreParts)) {
             QString trimmed = genre.trimmed();
             QString lowered = trimmed.toLower();
             if (!seen.contains(lowered)) {
