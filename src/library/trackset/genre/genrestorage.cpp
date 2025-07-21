@@ -930,14 +930,6 @@ bool GenreStorage::onRemovingGenreTracks(
     QStringList trackIdStrings;
     for (const TrackId& trackId : trackIds) {
         QVariant var = trackId.toVariant();
-        // if (var.isValid() &&
-        //         (var.canConvert(QMetaType::Int) ||
-        //                 var.canConvert(QMetaType::LongLong))) {
-        //    trackIdStrings << var.toString();
-
-        /*if (var.isValid() &&
-                   (QMetaType(var.metaType()).canConvert(QMetaType::Int) ||
-                           QMetaType(var.metaType()).canConvert(QMetaType::LongLong))) {*/
 
         if (var.isValid() &&
                 (QMetaType::canConvert(var.metaType(), QMetaType::fromType<int>()) ||

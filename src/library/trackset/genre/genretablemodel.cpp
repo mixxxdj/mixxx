@@ -239,6 +239,118 @@ QString GenreTableModel::modelKey(bool noSearch) const {
     }
 }
 
+// int GenreTableModel::importFromCsv(const QString& csvFileName) {
+//     QFile file(csvFileName);
+//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+//         qWarning() << "[GenreTableModel] Failed to open CSV file:" << csvFileName;
+//         return 0;
+//     }
+//
+//     QTextStream in(&file);
+//     QString header = in.readLine();
+//     QStringList headerFields = header.split(',');
+//     if (headerFields.isEmpty() || headerFields[0].trimmed().toLower() != "name_level_1") {
+//         qWarning() << "[GenreTableModel] Invalid CSV header";
+//         return 0;
+//     }
+//
+//     QSqlQuery selectQuery(m_database);
+//     selectQuery.prepare(
+//             "SELECT id FROM genres WHERE "
+//             "name_level_1 = :lvl1 AND "
+//             "COALESCE(name_level_2, '') = :lvl2 AND "
+//             "COALESCE(name_level_3, '') = :lvl3 AND "
+//             "COALESCE(name_level_4, '') = :lvl4 AND "
+//             "COALESCE(name_level_5, '') = :lvl5");
+//
+//     QSqlQuery insertQuery(m_database);
+//     insertQuery.prepare(
+//             "INSERT INTO genres (name_level_1, name_level_2, name_level_3, "
+//             "name_level_4, name_level_5, custom_name, is_visible, is_user_defined) "
+//             "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :custom_name, 1, 0)");
+//
+//     int insertedCount = 0;
+//     int lineNumber = 1;
+//     m_database.transaction();
+//
+//     while (!in.atEnd()) {
+//         QString line = in.readLine();
+//         lineNumber++;
+//
+//         if (line.trimmed().isEmpty()) {
+//             continue;
+//         }
+//
+//         QStringList fields = line.split(',');
+//         while (fields.size() < 5) {
+//             fields.append("");
+//         }
+//
+//         QStringList levels;
+//         for (int i = 0; i < 5; ++i) {
+//             levels << fields[i].trimmed();
+//         }
+//
+//         QStringList nonEmptyLevels;
+//         for (const QString& part : levels) {
+//             if (!part.isEmpty()) {
+//                 nonEmptyLevels << part;
+//             }
+//         }
+//         if (nonEmptyLevels.isEmpty()) {
+//             qWarning() << "[GenreTableModel] Line" << lineNumber
+//                        << "has no non-empty levels, skipping";
+//             continue;
+//         }
+//
+//         const QString customName = nonEmptyLevels.join("//");
+//         const QString lvl1 = customName;
+//         const QString& lvl2 = levels[1];
+//         const QString& lvl3 = levels[2];
+//         const QString& lvl4 = levels[3];
+//         const QString& lvl5 = levels[4];
+//
+//         selectQuery.bindValue(":lvl1", lvl1);
+//         selectQuery.bindValue(":lvl2", lvl2);
+//         selectQuery.bindValue(":lvl3", lvl3);
+//         selectQuery.bindValue(":lvl4", lvl4);
+//         selectQuery.bindValue(":lvl5", lvl5);
+//
+//         if (!selectQuery.exec()) {
+//             qWarning() << "[GenreTableModel] Select failed at line"
+//                        << lineNumber << ":" << selectQuery.lastError().text();
+//             continue;
+//         }
+//
+//         if (selectQuery.next()) {
+//             continue; // Already exists
+//         }
+//
+//         insertQuery.bindValue(":lvl1", lvl1);
+//         insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant(QString()) : lvl2);
+//         insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant(QString()) : lvl3);
+//         insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant(QString()) : lvl4);
+//         insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant(QString()) : lvl5);
+//
+//         insertQuery.bindValue(":custom_name", customName);
+//
+//         if (!insertQuery.exec()) {
+//             qWarning() << "[GenreTableModel] Insert failed at line"
+//                        << lineNumber << ":" << insertQuery.lastError().text();
+//             continue;
+//         }
+//
+//         insertedCount++;
+//     }
+//
+//     if (!m_database.commit()) {
+//         qWarning() << "[GenreTableModel] Commit failed:" << m_database.lastError().text();
+//         return insertedCount;
+//     }
+//
+//     return insertedCount;
+// }
+
 int GenreTableModel::importFromCsv(const QString& csvFileName) {
     QFile file(csvFileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -247,8 +359,8 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
     }
 
     QTextStream in(&file);
-    QString header = in.readLine();
-    QStringList headerFields = header.split(',');
+    const QString headerLine = in.readLine();
+    const QStringList headerFields = headerLine.split(',');
     if (headerFields.isEmpty() || headerFields[0].trimmed().toLower() != "name_level_1") {
         qWarning() << "[GenreTableModel] Invalid CSV header";
         return 0;
@@ -271,10 +383,15 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
 
     int insertedCount = 0;
     int lineNumber = 1;
-    m_database.transaction();
+
+    if (!m_database.transaction()) {
+        qWarning() << "[GenreTableModel] Failed to start transaction:"
+                   << m_database.lastError().text();
+        return 0;
+    }
 
     while (!in.atEnd()) {
-        QString line = in.readLine();
+        const QString line = in.readLine();
         lineNumber++;
 
         if (line.trimmed().isEmpty()) {
@@ -282,21 +399,25 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         }
 
         QStringList fields = line.split(',');
+        fields.reserve(5);
         while (fields.size() < 5) {
             fields.append("");
         }
 
         QStringList levels;
+        levels.reserve(5);
         for (int i = 0; i < 5; ++i) {
             levels << fields[i].trimmed();
         }
 
         QStringList nonEmptyLevels;
-        for (const QString& part : levels) {
-            if (!part.isEmpty()) {
-                nonEmptyLevels << part;
+        nonEmptyLevels.reserve(5);
+        for (const QString& level : std::as_const(levels)) {
+            if (!level.isEmpty()) {
+                nonEmptyLevels << level;
             }
         }
+
         if (nonEmptyLevels.isEmpty()) {
             qWarning() << "[GenreTableModel] Line" << lineNumber
                        << "has no non-empty levels, skipping";
@@ -304,7 +425,7 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         }
 
         const QString customName = nonEmptyLevels.join("//");
-        const QString lvl1 = customName;
+        const QString& lvl1 = customName;
         const QString& lvl2 = levels[1];
         const QString& lvl3 = levels[2];
         const QString& lvl4 = levels[3];
@@ -317,8 +438,8 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         selectQuery.bindValue(":lvl5", lvl5);
 
         if (!selectQuery.exec()) {
-            qWarning() << "[GenreTableModel] Select failed at line"
-                       << lineNumber << ":" << selectQuery.lastError().text();
+            qWarning() << "[GenreTableModel] Select failed at line" << lineNumber
+                       << ":" << selectQuery.lastError().text();
             continue;
         }
 
@@ -327,16 +448,15 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         }
 
         insertQuery.bindValue(":lvl1", lvl1);
-        insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant(QString()) : lvl2);
-        insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant(QString()) : lvl3);
-        insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant(QString()) : lvl4);
-        insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant(QString()) : lvl5);
-
+        insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant() : QVariant(lvl2));
+        insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant() : QVariant(lvl3));
+        insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant() : QVariant(lvl4));
+        insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant() : QVariant(lvl5));
         insertQuery.bindValue(":custom_name", customName);
 
         if (!insertQuery.exec()) {
-            qWarning() << "[GenreTableModel] Insert failed at line"
-                       << lineNumber << ":" << insertQuery.lastError().text();
+            qWarning() << "[GenreTableModel] Insert failed at line" << lineNumber
+                       << ":" << insertQuery.lastError().text();
             continue;
         }
 
