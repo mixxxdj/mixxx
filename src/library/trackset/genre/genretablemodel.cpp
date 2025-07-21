@@ -327,10 +327,11 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         }
 
         insertQuery.bindValue(":lvl1", lvl1);
-        insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant(QVariant::String) : lvl2);
-        insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant(QVariant::String) : lvl3);
-        insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant(QVariant::String) : lvl4);
-        insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant(QVariant::String) : lvl5);
+        insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant(QString()) : lvl2);
+        insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant(QString()) : lvl3);
+        insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant(QString()) : lvl4);
+        insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant(QString()) : lvl5);
+
         insertQuery.bindValue(":custom_name", customName);
 
         if (!insertQuery.exec()) {
