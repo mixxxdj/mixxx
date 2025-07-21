@@ -930,10 +930,20 @@ bool GenreStorage::onRemovingGenreTracks(
     QStringList trackIdStrings;
     for (const TrackId& trackId : trackIds) {
         QVariant var = trackId.toVariant();
+        // if (var.isValid() &&
+        //         (var.canConvert(QMetaType::Int) ||
+        //                 var.canConvert(QMetaType::LongLong))) {
+        //    trackIdStrings << var.toString();
+
+        /*if (var.isValid() &&
+                   (QMetaType(var.metaType()).canConvert(QMetaType::Int) ||
+                           QMetaType(var.metaType()).canConvert(QMetaType::LongLong))) {*/
+
         if (var.isValid() &&
-                (var.canConvert(QMetaType::Int) ||
-                        var.canConvert(QMetaType::LongLong))) {
+                (QMetaType::canConvert(var.metaType(), QMetaType::fromType<int>()) ||
+                        QMetaType::canConvert(var.metaType(), QMetaType::fromType<qint64>()))) {
             trackIdStrings << var.toString();
+
         } else {
             kLogger.warning() << "Invalid TrackId while removing from genre:" << var;
         }
