@@ -2,6 +2,7 @@
 
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
+#include "engine/sidechain/enginesidechain.h"
 #include "mixer/playerinfo.h"
 #include "moc_enginerecord.cpp"
 #include "preferences/usersettings.h"
@@ -9,7 +10,10 @@
 #include "track/track.h"
 #include "util/event.h"
 
+namespace {
 constexpr int kMetaDataLifeTimeout = 16;
+constexpr int kMaxInterpolationFactor = 12; // 96khz/8khz
+} // namespace
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -17,8 +21,6 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
                   QStringLiteral("samplerate")), // pointer to engine samplerate
           m_recSampleRateControl(QStringLiteral(RECORDING_PREF_KEY),
                   QStringLiteral("rec_samplerate")),
-          m_useEngineSampleRate(QStringLiteral(RECORDING_PREF_KEY),
-                  QStringLiteral("use_engine_samplerate")),
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),
@@ -26,16 +28,19 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_bCueIsEnabled(false),
           m_bCueUsesFileAnnotation(false) {
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
-    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+    m_pRecResampleOutBuffer = SampleUtil::alloc(
+            kMaxInterpolationFactor * EngineSideChain::SIDECHAIN_BUFFER_SIZE);
+    m_recSampleRate = mixxx::audio::SampleRate::fromDouble(m_recSampleRateControl.get());
 
-    m_useEngineSampleRate.set(true); // default
-    qDebug() << "recording samplerate: " << m_sampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(
+            m_sampleRateControl.get()); // engine samplerate
 }
 
 EngineRecord::~EngineRecord() {
     closeCueFile();
     closeFile();
     delete m_pRecReady;
+    SampleUtil::free(m_pRecResampleOutBuffer);
 }
 
 // called in EngineRecord::process() when recording is started
@@ -52,19 +57,15 @@ int EngineRecord::updateFromPreferences() {
             ConfigKey(RECORDING_PREF_KEY, QStringLiteral("cue_file_annotation_enabled")));
 
     // encoders use the rec samplerate.
-    if (!m_useEngineSampleRate.toBool()) {
-        m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_recSampleRateControl.get());
-        qDebug() << "[enginerecord::updateprefs()] using custom samplerate " << m_sampleRate;
-    } else {
-        m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
-        qDebug() << "[enginerecord::updateprefs()] using engine samplerate " << m_sampleRate;
-    }
+    m_recSampleRate = mixxx::audio::SampleRate::fromDouble(m_recSampleRateControl.get());
+    qDebug() << "[enginerecord::updateprefs()] using custom samplerate " << m_recSampleRate;
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
         m_pEncoder.reset();
     }
-    Encoder::Format format = EncoderFactory::getFactory().getSelectedFormat(m_pConfig);
+    Encoder::Format format = EncoderFactory::getFactory().getSelectedFormat(
+            m_pConfig); // encoder family
     m_encoding = format.internalName;
     m_pEncoder = EncoderFactory::getFactory().createRecordingEncoder(
             format, m_pConfig, this); // create an empty encoder object.
@@ -73,7 +74,7 @@ int EngineRecord::updateFromPreferences() {
     int ret = -1;
     if (m_pEncoder) {
         m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
-        ret = m_pEncoder->initEncoder(m_sampleRate, &userErrorMsg); // ret = 0 on success
+        ret = m_pEncoder->initEncoder(m_recSampleRate, &userErrorMsg); // ret = 0 on success
     }
 
     if (ret < 0) {
@@ -167,11 +168,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            if (!m_useEngineSampleRate.toBool()) {
-                m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_recSampleRateControl.get());
-            } else {
-                m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
-            }
+            m_recSampleRate = mixxx::audio::SampleRate::fromDouble(
+                    m_recSampleRateControl.get());
+
             m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
@@ -204,12 +203,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            if (!m_useEngineSampleRate.toBool()) {
-                m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_recSampleRateControl.get());
-
-            } else {
-                m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
-            }
+            m_recSampleRate = mixxx::audio::SampleRate::fromDouble(
+                    m_recSampleRateControl.get());
             m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
@@ -231,7 +226,20 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
     if (m_pRecReady->get() == RECORD_ON) {
         // Compress audio. Encoder will call method 'write()' below to
         // write a file stream and emit bytesRecorded.
-        m_pEncoder->encodeBuffer(pBuffer, bufferSize);
+        // calculate base_rate, resample
+        m_sampleRate = mixxx::audio::SampleRate::fromDouble(
+                m_sampleRateControl.get());
+        double resampleRatio = m_recSampleRate / m_sampleRate; // output/input
+        qDebug() << "Rec resample base rate: " << resampleRatio;
+        CSAMPLE* pOutBuffer = m_pRecResampleOutBuffer;
+        double framesGenerated = m_pEncoder->recResampleBuffer(
+                pBuffer, pOutBuffer, bufferSize, resampleRatio);
+        qDebug() << "Rec resample: " << bufferSize << " samples give "
+                 << framesGenerated * 2 << " samples";
+
+        m_pEncoder->encodeBuffer(pOutBuffer,
+                static_cast<std::size_t>(
+                        framesGenerated * 2)); // assuming stereo
 
         //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.

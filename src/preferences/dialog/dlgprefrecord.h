@@ -37,7 +37,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
 
   private slots:
     void slotToggleCueEnabled();
-    void sampleRateChanged(int newRateIdx);
+    void slotSampleRateChanged(int newRateIdx);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     void slotToggleCustomSampleRateIgnore(Qt::CheckState buttonState);
 #else
@@ -59,6 +59,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void saveUseCueFileAnnotation();
     void saveSplitSize();
     void saveRecSampleRate();
+    void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
@@ -71,4 +72,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     // to access the recsamplerate object.
     PollingControlProxy m_recSampleRate;
     PollingControlProxy m_useEngineSampleRate;
+
+    double m_defaultSampleRate; // tracks the engine sample rate
+    double m_oldRecSampleRate;
 };
