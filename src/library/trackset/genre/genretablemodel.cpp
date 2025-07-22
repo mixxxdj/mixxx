@@ -392,6 +392,7 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
 
     QStringList nonEmptyLevels;
     while (!in.atEnd()) {
+        nonEmptyLevels.clear();
         const QString line = in.readLine();
         lineNumber++;
 
@@ -494,6 +495,7 @@ void GenreTableModel::rebuildCustomNames() {
 
     QStringList parts;
     while (selectQuery.next()) {
+        parts.clear();
         int id = selectQuery.value(0).toInt();
         QString lvl1 = selectQuery.value(1).toString().trimmed();
         QString lvl2 = selectQuery.value(2).toString().trimmed();

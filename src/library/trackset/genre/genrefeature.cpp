@@ -62,7 +62,7 @@ GenreFeature::GenreFeature(Library* pLibrary,
 }
 
 void GenreFeature::initActions() {
-    m_genreTableModel.rebuildCustomNames();
+    // m_genreTableModel.rebuildCustomNames();
     m_pImportGenreModelFromCsvAction =
             make_parented<QAction>(tr("Import Genre-model from CSV"), this);
     // m_pImportGenreModelFromCsvAction = std::make_unique<QAction>(tr("Import
