@@ -183,11 +183,11 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
                 0},
         DI(ColumnCache::COLUMN_RELATIONTABLE_COMMENT){
                 &RELATIONTABLE_COMMENT,
-                nullptr,
+                QT_TRANSLATE_NOOP("BaseSqlTableModel", "Relation Comment"),
                 kDefaultColumnWidth * 4},
         DI(ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED){
                 &RELATIONTABLE_DATETIMEADDED,
-                nullptr,
+                QT_TRANSLATE_NOOP("BaseSqlTableModel", "Relation Added"),
                 kDefaultColumnWidth}};
 static_assert(std::size(kColumnPropertiesByEnum) == ColumnCache::NUM_COLUMNS);
 
