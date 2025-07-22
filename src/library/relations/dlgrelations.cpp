@@ -47,6 +47,14 @@ DlgRelations::DlgRelations(
     connect(pushButtonLoad, &QPushButton::clicked, this, &DlgRelations::slotLoadRelationToDecks);
     connect(pushButtonInfo, &QPushButton::clicked, this, &DlgRelations::slotShowDlgRelationInfo);
     connect(pushButtonDelete, &QPushButton::clicked, this, &DlgRelations::slotDeleteRelation);
+    connect(m_pRelationTableView->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+            &DlgRelations::selectionChanged);
+    connect(m_pRelationTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &DlgRelations::trackSelected);
 
     connect(m_pRelationTableView,
             &WRelationTableView::trackSelected,
@@ -81,8 +89,11 @@ DlgRelations::~DlgRelations() {
 }
 
 void DlgRelations::slotShowDlgRelationInfo() {
-    Relation* relation;
-    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation, m_pLibrary);
+    Relation* relation = m_pRelationTableView->getSelectedRelation();
+    if (!relation) {
+        return;
+    }
+    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation);
     connect(m_pDlgRelationInfo.get(),
             &QDialog::finished,
             this,
@@ -102,10 +113,11 @@ void DlgRelations::slotDeleteRelation() {
 
 void DlgRelations::onShow() {
     m_pRelationTableModel->select();
+    activateButtons(false);
 }
 
 void DlgRelations::onSearch(const QString& text) {
-    // TODO: override search in RelationTableModel
+    // TODO(jstolberg) Override search in RelationTableModel
     m_pRelationTableModel->search(text);
 }
 
@@ -119,6 +131,18 @@ void DlgRelations::showAllRelations() {
 
 void DlgRelations::showRelatedTracks(TrackPointer pTrack) {
     m_pRelationTableModel->showRelatedTracks(pTrack);
+}
+
+void DlgRelations::activateButtons(bool enable) {
+    pushButtonLoad->setEnabled(enable);
+    pushButtonInfo->setEnabled(enable);
+    pushButtonDelete->setEnabled(enable);
+}
+
+void DlgRelations::selectionChanged(const QItemSelection& selected,
+        const QItemSelection& deselected) {
+    Q_UNUSED(deselected);
+    activateButtons(!selected.indexes().isEmpty());
 }
 
 bool DlgRelations::hasFocus() const {

@@ -12,8 +12,7 @@ class DlgRelationInfo : public QDialog, public Ui::DlgRelationInfo {
     Q_OBJECT
   public:
     explicit DlgRelationInfo(
-            Relation* relation = nullptr,
-            Library* pLibrary = nullptr);
+            Relation* relation = nullptr);
     ~DlgRelationInfo() override = default;
 
   private slots:

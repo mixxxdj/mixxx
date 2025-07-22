@@ -122,11 +122,11 @@ void RelationsTableModel::showAllRelations() {
     QSqlQuery query(m_database);
     QString queryString = QStringLiteral(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-            "SELECT %2, r.rowid * 2 AS sort_order "
+            "SELECT %2, r.rl_id * 2 AS sort_order "
             "FROM relations r "
             "JOIN library l ON l.id = r.track_a "
             "UNION ALL "
-            "SELECT %2, r.rowid * 2 + 1 AS sort_order "
+            "SELECT %2, r.rl_id * 2 + 1 AS sort_order "
             "FROM relations r "
             "JOIN library l ON l.id = r.track_b "
             "ORDER BY sort_order")

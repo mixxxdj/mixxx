@@ -3,6 +3,9 @@
 #include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
 
+class Library;
+class Relation;
+
 class WRelationTableView : public WTrackTableView {
     Q_OBJECT
   public:
@@ -14,10 +17,12 @@ class WRelationTableView : public WTrackTableView {
             bool relationPairView);
 
     QList<DbId> getSelectedRelationIds() const;
+    Relation* getSelectedRelation();
 
   protected:
     void paintEvent(QPaintEvent* event) override;
 
   private:
+    Library* m_pLibrary;
     bool m_bRelationPairView;
 };

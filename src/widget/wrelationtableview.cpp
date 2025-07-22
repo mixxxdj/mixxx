@@ -2,7 +2,10 @@
 
 #include <QPainter>
 
+#include "library/library.h"
 #include "library/relations/relationstablemodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_wrelationtableview.cpp"
 
 const int SEPERATOR_SIZE = 1;
@@ -17,17 +20,17 @@ WRelationTableView::WRelationTableView(
                   pConfig,
                   pLibrary,
                   trackTableBackgroundColorOpacity),
+          m_pLibrary(pLibrary),
           m_bRelationPairView(relationPairView) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true);
 }
 
-// Need getSelectedRows and getTrackModel to be public.
 QList<DbId> WRelationTableView::getSelectedRelationIds() const {
-    TrackModel* pTrackModel = getTrackModel();
-    RelationsTableModel* pRelationTableModel = dynamic_cast<RelationsTableModel*>(pTrackModel);
-    VERIFY_OR_DEBUG_ASSERT(!pRelationTableModel) {
-        qWarning() << "No track model available";
+    // TODO(jstolberg) Access the RelationsTableModel
+    RelationsTableModel* pRelationTableModel = dynamic_cast<RelationsTableModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(pRelationTableModel != nullptr) {
+        qWarning() << "No relation model";
         return {};
     }
 
@@ -44,6 +47,19 @@ QList<DbId> WRelationTableView::getSelectedRelationIds() const {
     }
 
     return relationIds;
+}
+
+Relation* WRelationTableView::getSelectedRelation() {
+    QList<DbId> relationIds = getSelectedRelationIds();
+    if (relationIds.isEmpty()) {
+        return nullptr;
+    }
+    Relation* relation = m_pLibrary
+                                 ->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getRelationDAO()
+                                 .getRelationById(relationIds[0]);
+    return relation;
 }
 
 bool isSeperatorRow(int row) {

@@ -6,10 +6,9 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgrelationinfo.cpp"
 
-DlgRelationInfo::DlgRelationInfo(Relation* relation, Library* pLibrary)
+DlgRelationInfo::DlgRelationInfo(Relation* relation)
         : QDialog(nullptr),
-          m_pRelation(relation),
-          m_pLibrary(pLibrary) {
+          m_pRelation(relation) {
     init();
 }
 
@@ -57,9 +56,9 @@ void DlgRelationInfo::saveRelation() {
 
     m_pRelation->setComment(txtComment->toPlainText());
 
-    m_pLibrary
-            ->trackCollectionManager()
-            ->internalCollection()
-            ->getRelationDAO()
-            .saveRelation(m_pRelation);
+    // m_pLibrary
+    //         ->trackCollectionManager()
+    //         ->internalCollection()
+    //         ->getRelationDAO()
+    //         .saveRelation(m_pRelation);
 }
