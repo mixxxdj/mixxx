@@ -95,7 +95,6 @@ class TrackCollection : public QObject,
     void scanTrackAdded(TrackPointer pTrack);
 
     // Forwarded signals from TrackDAO
-    void trackClean(TrackId trackId);
     void trackDirty(TrackId trackId);
     void tracksAdded(const QSet<TrackId>& trackIds);
     void tracksChanged(const QSet<TrackId>& trackIds);

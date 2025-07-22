@@ -3,12 +3,7 @@
 name: Changelog
 
 on:
-  push:
-    branches:
-      - "main"
-      - "[0-9].[0-9]"
-    paths:
-      - "CHANGELOG.md"
+  workflow_call:
 
 permissions: {}
 jobs:

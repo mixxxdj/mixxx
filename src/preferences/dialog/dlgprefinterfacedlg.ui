@@ -287,15 +287,25 @@
       <item row="5" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="multiSamplingLabel">
         <property name="text">
          <string>Multi-Sampling</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1" colspan="2">
+      <item row="6" column="1" colspan="2">
        <widget class="QComboBox" name="multiSamplingComboBox"/>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBoxForceHardwareAcceleration">
+        <property name="text">
+         <string>Force 3D acceleration</string>
+        </property>
+        <property name="toolTip">
+         <string>If checked, Mixxx will always assume 3D acceleration is available. This may lead to pour performance if only CP-backed rendering is available..</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -327,6 +337,7 @@
   <tabstop>radioButtonTooltipsLibrary</tabstop>
   <tabstop>radioButtonTooltipsLibraryAndSkin</tabstop>
   <tabstop>multiSamplingComboBox</tabstop>
+  <tabstop>checkBoxForceHardwareAcceleration</tabstop>
  </tabstops>
  <resources/>
  <connections/>

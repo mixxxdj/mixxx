@@ -24,8 +24,8 @@ class allshader::WaveformRendererTextured final : public allshader::WaveformRend
             WaveformWidgetType::Type t,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play,
-            WaveformRendererSignalBase::Options options =
-                    WaveformRendererSignalBase::Option::None);
+            ::WaveformRendererSignalBase::Options options =
+                    ::WaveformRendererSignalBase::Option::None);
     ~WaveformRendererTextured() override;
 
     // override ::WaveformRendererSignalBase
@@ -72,7 +72,7 @@ class allshader::WaveformRendererTextured final : public allshader::WaveformRend
 
     // shaders
     bool m_isSlipRenderer;
-    WaveformRendererSignalBase::Options m_options;
+    ::WaveformRendererSignalBase::Options m_options;
     bool m_shadersValid;
     WaveformWidgetType::Type m_type;
     const QString m_pFragShader;

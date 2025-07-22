@@ -25,7 +25,7 @@ namespace allshader {
 WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformWidgetType::Type type,
         const QString& group,
-        WaveformRendererSignalBase::Options options)
+        ::WaveformRendererSignalBase::Options options)
         : WGLWidget(parent),
           WaveformWidgetAbstract(group),
           m_pWaveformRendererSignal(nullptr) {
@@ -101,10 +101,10 @@ WaveformWidget::~WaveformWidget() {
 
 std::unique_ptr<WaveformRendererSignalBase>
 WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
-        WaveformRendererSignalBase::Options options,
+        ::WaveformRendererSignalBase::Options options,
         ::WaveformRendererAbstract::PositionSource positionSource) {
 #ifndef QT_OPENGL_ES_2
-    if (options & WaveformRendererSignalBase::Option::HighDetail) {
+    if (options & ::WaveformRendererSignalBase::Option::HighDetail) {
         switch (type) {
         case ::WaveformWidgetType::RGB:
         case ::WaveformWidgetType::Filtered:
@@ -119,16 +119,16 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
 
     switch (type) {
     case ::WaveformWidgetType::Simple:
-        return addWaveformSignalRenderer<WaveformRendererSimple>();
+        return addWaveformSignalRenderer<WaveformRendererSimple>(options);
     case ::WaveformWidgetType::RGB:
         return addWaveformSignalRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
-        return addWaveformSignalRenderer<WaveformRendererHSV>();
+        return addWaveformSignalRenderer<WaveformRendererHSV>(options);
     case ::WaveformWidgetType::Filtered:
-        return addWaveformSignalRenderer<WaveformRendererFiltered>(false);
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(false, options);
     case ::WaveformWidgetType::Stacked:
         return addWaveformSignalRenderer<WaveformRendererFiltered>(
-                true); // true for RGB Stacked
+                true, options); // true for RGB Stacked
     default:
         break;
     }
@@ -174,8 +174,11 @@ void WaveformWidget::resizeGL(int w, int h) {
     w = static_cast<int>(std::lround(static_cast<qreal>(w) / devicePixelRatioF()));
     h = static_cast<int>(std::lround(static_cast<qreal>(h) / devicePixelRatioF()));
 
-    m_pEngine->resize(w, h);
+    // Many allshader components relies on WaveformWidgetRenderer::getWidth and
+    // WaveformWidgetRenderer::getHeight to update their rendering stack, so we
+    // must resize the renderer first, before updating the rendergraph
     WaveformWidgetRenderer::resizeRenderer(w, h, static_cast<float>(devicePixelRatio()));
+    m_pEngine->resize(w, h);
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {
@@ -195,16 +198,16 @@ void WaveformWidget::leaveEvent(QEvent* pEvent) {
 /* static */
 WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
         WaveformWidgetType::Type type) {
-    WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None;
+    ::WaveformRendererSignalBase::Options options = ::WaveformRendererSignalBase::Option::None;
     switch (type) {
     case WaveformWidgetType::Type::RGB:
-        options = WaveformRendererSignalBase::Option::AllOptionsCombined;
+        options = ::WaveformRendererSignalBase::Option::AllOptionsCombined;
         break;
     case WaveformWidgetType::Type::Filtered:
-        options = WaveformRendererSignalBase::Option::HighDetail;
+        options = ::WaveformRendererSignalBase::Option::HighDetail;
         break;
     case WaveformWidgetType::Type::Stacked:
-        options = WaveformRendererSignalBase::Option::HighDetail;
+        options = ::WaveformRendererSignalBase::Option::HighDetail;
         break;
     default:
         break;

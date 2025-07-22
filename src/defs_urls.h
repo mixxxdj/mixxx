@@ -48,7 +48,9 @@
 #define MIXXX_MANUAL_CONTROLS_URL \
     MIXXX_MANUAL_URL "/chapters/advanced_topics.html#mixxx-controls"
 #define MIXXX_MANUAL_SOUND_URL \
-    MIXXX_MANUAL_URL "/chapters/preferences.html#sound-hardware"
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware.html"
+#define MIXXX_MANUAL_SOUND_API_URL \
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware.html#sound-api"
 #define MIXXX_MANUAL_LIBRARY_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#library"
 #define MIXXX_MANUAL_CUE_MODES_URL \
@@ -57,6 +59,10 @@
     MIXXX_MANUAL_URL "/chapters/djing_with_mixxx#sync-lock-with-dynamic-tempo"
 #define MIXXX_MANUAL_TRACK_SEARCH_URL \
     MIXXX_MANUAL_URL "/chapters/library.html#finding-tracks-search"
+#define MIXXX_MANUAL_MIC_MONITOR_MODES_URL \
+    MIXXX_MANUAL_URL "/chapters/microphones"
+#define MIXXX_MANUAL_MIC_LATENCY_URL \
+    MIXXX_MANUAL_URL "/chapters/microphones#latency-compensation"
 #define MIXXX_MANUAL_BEATS_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#beat-detection"
 #define MIXXX_MANUAL_KEY_URL \

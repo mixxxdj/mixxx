@@ -48,6 +48,98 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+  if(NOT DEFINED BUILDENV_BASEPATH)
+    if(DEFINED ENV{BUILDENV_BASEPATH})
+      set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
+    else()
+      set(BUILDENV_BASEPATH "${CMAKE_SOURCE_DIR}/buildenv")
+    endif()
+  endif()
+
+  if(NOT DEFINED BUILDENV_URL)
+    if(DEFINED ENV{BUILDENV_URL})
+      set(BUILDENV_URL "$ENV{BUILDENV_URL}")
+    elseif(NOT DEFINED BUILDENV_URL)
+      message(FATAL_ERROR "BUILDENV_URL not specified")
+    endif()
+  endif()
+
+  # Extract the filename from the URL
+  get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
+
+  # Remove the extension from the filename (note that our buildenv names contain two dots)
+  string(
+    REGEX REPLACE
+    "\\.[^.]*$"
+    ""
+    BUILDENV_NAME
+    "${FILENAME_WITH_EXTENSION}"
+  )
+
+  message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}")
+
+  if(
+    NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
+    OR NOT IS_DIRECTORY "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
+  )
+    if(NOT DEFINED BUILDENV_SHA256)
+      if(DEFINED ENV{BUILDENV_SHA256})
+        set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
+      elseif(NOT DEFINED BUILDENV_SHA256)
+        message(STATUS "BUILDENV_SHA256 not specified")
+      endif()
+    endif()
+
+    if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      message(
+        STATUS
+        "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
+      )
+      file(
+        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+        SHOW_PROGRESS
+        TLS_VERIFY ON
+      )
+    else()
+      # Reference to suppress intentionally unused variable warnings
+      set(_dummy "${BUILDENV_URL}")
+    endif()
+
+    if(NOT ${BUILDENV_SHA256} STREQUAL "")
+      message(
+        STATUS
+        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+      )
+      file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
+
+      if(NOT actual_sha256 STREQUAL ${BUILDENV_SHA256})
+        message(
+          FATAL_ERROR
+          "SHA256 checksum mismatch:\nexpected: ${BUILDENV_SHA256}\n     got: ${actual_sha256}"
+        )
+      else()
+        message(STATUS "SHA256 ${BUILDENV_SHA256} is correct!")
+      endif()
+    endif()
+
+    message(
+      STATUS
+      "Unpacking file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+    )
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf "${BUILDENV_NAME}.zip"
+      WORKING_DIRECTORY ${BUILDENV_BASEPATH}
+    )
+  else()
+    # Reference to suppress intentionally unused variable warnings
+    set(_dummy "${BUILDENV_SHA256}")
+  endif()
+else()
+  # Reference to suppress intentionally unused variable warnings
+  set(_dummy "${BUILDENV_URL} ${BUILDENV_BASEPATH} ${BUILDENV_SHA256}")
+endif()
+
 # Use this function to throw an error because the build environment is not set
 # up correctly.
 function(fatal_error_missing_env)
@@ -227,13 +319,14 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-cmake_dependent_option(
-  QML
-  "Build with QML"
-  ON
-  "QT6"
-  OFF
-)
+
+# Because of multiple concurrent definition of symbols caused by the rendergraph
+# compile definition we need to disable QML by default. This avoids the risk of
+# undefined behaviour in a stable build.
+# See: https://github.com/mixxxdj/mixxx/issues/14766
+# Once this is fixed we can revert the commit introducing this.
+option(QML "Build with QML" OFF)
+
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
 if(QOPENGL)
@@ -338,10 +431,9 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.6.0)
-enable_language(C CXX)
+project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
-set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
+set(MIXXX_VERSION_PRERELEASE "beta") # set to "alpha" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(
@@ -411,6 +503,16 @@ if(MSVC)
   # Remove unreferenced code and data
   # Since c++11 they can safely be removed to speed up linking.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
+
+  if(NOT DEFINED MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION VERSION_LESS 143)
+    message(
+      FATAL_ERROR
+      "MSVC_TOOLSET_VERSION is ${MSVC_TOOLSET_VERSION}.\n"
+      "Mixxx requires the Microsoft Visual C++ Redistributable toolset of version 143 (VS2022) or greater, "
+      "as the VCPKG buildenv is built with this version.\n"
+      "Please use the Visual Studio 2022 toolset therefore!"
+    )
+  endif()
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
@@ -476,6 +578,7 @@ set_property(
 )
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
 # We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) to save
@@ -494,7 +597,7 @@ message(STATUS "Optimization level: ${OPTIMIZE}")
 if(MSVC)
   # Microsoft Visual Studio Compiler
   add_compile_options(/UTF8)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
     message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -547,7 +650,7 @@ if(MSVC)
     # unless link time code generation (like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
+      # Optimize Debug Builds as well, to have "normal" behavior of Mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
       string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -617,7 +720,7 @@ if(MSVC)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -627,7 +730,7 @@ if(MSVC)
       endif()
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling optimizations for native system, specified by user")
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
@@ -642,9 +745,9 @@ if(MSVC)
       )
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
         message("Enabling pure x64 instruction set (without AVX etc.)")
-      else()
+      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
         message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
       endif()
     else()
@@ -656,7 +759,7 @@ if(MSVC)
   else()
     # OPTIMIZE=off
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-      #Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -676,7 +779,7 @@ if(MSVC)
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-      #Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -1220,6 +1323,7 @@ add_library(
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
   src/library/dao/relationdao.cpp
+  src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
   src/library/dlgtagfetcher.cpp
@@ -1253,6 +1357,7 @@ add_library(
   src/library/missing_hidden/hiddentablemodel.cpp
   src/library/missing_hidden/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/overviewcache.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
@@ -1282,6 +1387,7 @@ add_library(
   src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
+  src/library/tabledelegates/overviewdelegate.cpp
   src/library/tabledelegates/previewbuttondelegate.cpp
   src/library/tabledelegates/stardelegate.cpp
   src/library/tabledelegates/stareditor.cpp
@@ -1511,11 +1617,13 @@ add_library(
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
   src/waveform/guitick.cpp
+  src/waveform/overviewtype.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
   src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
+  src/waveform/renderers/waveformoverviewrenderer.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
@@ -1565,6 +1673,7 @@ add_library(
   src/widget/wcoverartlabel.cpp
   src/widget/wcoverartmenu.cpp
   src/widget/wcuemenupopup.cpp
+  src/widget/wcuebutton.cpp
   src/widget/wdisplay.cpp
   src/widget/weffectbuttonparametername.cpp
   src/widget/weffectchain.cpp
@@ -1590,6 +1699,7 @@ add_library(
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wmenucheckbox.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp
@@ -1628,6 +1738,8 @@ add_library(
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/controllers/scripting/javascriptplayerproxy.cpp
+  src/controllers/scripting/javascriptplayerproxy.h
 )
 set(MIXXX_COMMON_PRECOMPILED_HEADER src/util/assert.h)
 set(
@@ -2246,7 +2358,9 @@ endif()
 if(WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
   if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_UCRT_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
   include(InstallRequiredSystemLibraries)
 endif()
@@ -2781,7 +2895,11 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
+find_package(Chromaprint)
+if(NOT Chromaprint_FOUND)
+  # Fail verbose, because with Qt Creator, the verbose error message for Qt is bypassed.
+  fatal_error_missing_env()
+endif()
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
@@ -2828,7 +2946,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.24.3)
+  set(LIBDJINTEROP_VERSION 0.26.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2891,7 +3009,7 @@ if(ENGINEPRIME)
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
       URL_HASH
-        SHA256=df41fe39bed9d16d27a3649d237b68edd2cdb6fc71a82cae5cd746d4e4ef6578
+        SHA256=f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -3117,6 +3235,9 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
+# With gcc >= 14 and -flto some code is inlined to fast-math code and then
+# optimized away. Disable it explicit for all compiler just in case.
+set_target_properties(FpClassify PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
 
 if(
   CMAKE_CXX_COMPILER_ID MATCHES "Clang"
@@ -3196,8 +3317,8 @@ else()
     set(CMAKE_FIND_FRAMEWORK FIRST)
   endif()
   set(OpenGL_GL_PREFERENCE "GLVND")
-  find_package(OpenGL REQUIRED)
   if(EMSCRIPTEN)
+    find_package(OpenGL REQUIRED)
     # Emscripten's FindOpenGL.cmake does not create OpenGL::GL
     target_link_libraries(mixxx-lib PRIVATE ${OPENGL_gl_LIBRARY})
     target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -3209,7 +3330,12 @@ else()
       PUBLIC -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES2=1
     )
   else()
-    target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+    find_package(WrapOpenGL REQUIRED)
+    if(OPENGL_opengl_LIBRARY)
+      target_link_libraries(mixxx-lib PRIVATE OpenGL::OpenGL)
+    else()
+      target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+    endif()
   endif()
   if(UNIX AND QGLES2)
     target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -3306,8 +3432,17 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+  endif()
+  if(QT_VERSION VERSION_LESS 6.8)
+    # From Qt 6.8 integrated in Qml via QmlMeta
+    list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
+  endif()
 endif()
 find_package(
   Qt${QT_VERSION_MAJOR}
@@ -3411,23 +3546,25 @@ if(QML)
       src/qml/qmlapplication.cpp
       src/qml/qmlautoreload.cpp
       src/qml/qmlbeatsmodel.cpp
-      src/qml/qmlcuesmodel.cpp
-      src/qml/qmlcontrolproxy.cpp
+      src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlconfigproxy.cpp
+      src/qml/qmlcontrolproxy.cpp
+      src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
       src/qml/qmleffectmanifestparametersmodel.cpp
-      src/qml/qmleffectsmanagerproxy.cpp
       src/qml/qmleffectslotproxy.cpp
+      src/qml/qmleffectsmanagerproxy.cpp
       src/qml/qmllibraryproxy.cpp
       src/qml/qmllibrarytracklistmodel.cpp
+      src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
       src/qml/qmlvisibleeffectsmodel.cpp
-      src/qml/qmlchainpresetmodel.cpp
-      src/qml/qmlwaveformoverview.cpp
-      src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlwaveformdisplay.cpp
+      src/qml/qmlwaveformoverview.cpp
       src/qml/qmlwaveformrenderer.cpp
+      src/qml/qmlsettingparameter.cpp
+      src/qml/qmltrackproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
@@ -3648,6 +3785,32 @@ else()
           applocal
       )
 
+      if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2Basic
+            Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
+            Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
+            Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
+
+      if(QT_VERSION VERSION_LESS 6.8)
+        # From Qt 6.8 integrated in Qml via QmlMeta
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
+
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickLayouts
@@ -3666,14 +3829,17 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QmlWorkerScript
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickTemplates2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -3850,6 +4016,7 @@ elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
   if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
     target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
+    target_compile_definitions(mixxx-lib PUBLIC __X11__)
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
@@ -4092,12 +4259,6 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
-if(NOT TagLib_VERSION VERSION_LESS 2.0.0)
-  message(
-    WARNING
-    "Installed Taglib ${TagLib_VERSION} is not supported and might lead to data loss (https://github.com/mixxxdj/mixxx/issues/12708). Use version >= 1.11 and < 2.0 instead."
-  )
-endif()
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if(QML)
   target_link_libraries(mixxx-qml-lib PUBLIC TagLib::TagLib)
@@ -4903,7 +5064,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy noble oracular plucky)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble oracular plucky questing)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
@@ -4935,6 +5096,23 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake")
 if(WIN32)
   # override not working default NSIS
   set(CPACK_GENERATOR WIX)
+
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64")
+    if(${CMAKE_VERSION} VERSION_LESS "3.24")
+      message(FATAL_ERROR "WIX: Need CMake version >= 3.24 for ARM64")
+    endif()
+    set(CPACK_WIX_ARCHITECTURE "ARM64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
+    set(CPACK_WIX_ARCHITECTURE "x64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+    set(CPACK_WIX_ARCHITECTURE "x86")
+  else()
+    message(
+      FATAL_ERROR
+      "WIX: Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}"
+    )
+  endif()
+
   # uses CMAKE_PROJECT_VERSION
   configure_file(packaging/wix/LICENSE.rtf.in packaging/wix/LICENSE.rtf @ONLY)
 endif()
@@ -4959,7 +5137,9 @@ endif()
 
 if(APPLE AND MACOS_BUNDLE)
   set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-  set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
+  foreach(PREFIX ${CMAKE_PREFIX_PATH})
+    list(APPEND BUNDLE_DIRS "${PREFIX}/lib")
+  endforeach()
   set(
     APPLE_CODESIGN_ENTITLEMENTS
     "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Mixxx.entitlements"

@@ -61,6 +61,9 @@ const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
 const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
 
+const QString TRACK_ID = QStringLiteral("track_id");
+const QString LOCATION_ID = QStringLiteral("location_id");
+
 const QString PLAYLISTTABLE_ID = QStringLiteral("id");
 const QString PLAYLISTTABLE_NAME = QStringLiteral("name");
 const QString PLAYLISTTABLE_POSITION = QStringLiteral("position");

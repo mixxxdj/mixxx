@@ -20,7 +20,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     explicit WaveformWidget(QWidget* parent,
             WaveformWidgetType::Type type,
             const QString& group,
-            WaveformRendererSignalBase::Options options);
+            ::WaveformRendererSignalBase::Options options);
     ~WaveformWidget() override;
 
     WaveformWidgetType::Type getType() const override {
@@ -40,7 +40,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
         return this;
     }
     static WaveformWidgetVars vars();
-    static WaveformRendererSignalBase::Options supportedOptions(WaveformWidgetType::Type type);
+    static ::WaveformRendererSignalBase::Options supportedOptions(WaveformWidgetType::Type type);
 
   private:
     void castToQWidget() override;
@@ -61,7 +61,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
 
     std::unique_ptr<allshader::WaveformRendererSignalBase> addWaveformSignalRenderer(
             WaveformWidgetType::Type type,
-            WaveformRendererSignalBase::Options options,
+            ::WaveformRendererSignalBase::Options options,
             ::WaveformRendererAbstract::PositionSource positionSource);
 
     WaveformWidgetType::Type m_type;
