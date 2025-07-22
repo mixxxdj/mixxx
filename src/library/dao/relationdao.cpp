@@ -14,23 +14,12 @@ Relation* relationFromRow(const QSqlRecord& row) {
     TrackPair tracks = {
             TrackId(row.value(row.indexOf("track_a"))),
             TrackId(row.value(row.indexOf("track_b")))};
-    std::array<QVariant, 2> qPositions = {
-            row.value(row.indexOf("position_a")),
-            row.value(row.indexOf("position_b"))};
-    PositionPair positions = {
-            qPositions[0].isNull()
-                    ? std::nullopt
-                    : std::optional<mixxx::audio::FramePos>(qPositions[0].toInt()),
-            qPositions[1].isNull()
-                    ? std::nullopt
-                    : std::optional<mixxx::audio::FramePos>(qPositions[1].toInt())};
     QString comment = row.value(row.indexOf("rl_comment")).toString();
     QDateTime dateAdded = row.value(row.indexOf("rl_datetime_added")).toDateTime();
 
     Relation* relation = new Relation(
             id,
             tracks,
-            positions,
             comment,
             dateAdded);
     return relation;
@@ -77,8 +66,6 @@ void RelationDAO::saveRelation(Relation* relation) {
         query.prepare(QStringLiteral("UPDATE " RELATIONS_TABLE " SET "
                                      "track_a=:track_a,"
                                      "track_b=:track_b,"
-                                     "position_a=:position_a,"
-                                     "position_b=:position_b,"
                                      "rl_comment=:comment,"
                                      "rl_datetime_added=:datetime_added"
                                      " WHERE rl_id=:id"));
@@ -86,10 +73,9 @@ void RelationDAO::saveRelation(Relation* relation) {
     } else {
         // New relation
         query.prepare(QStringLiteral("INSERT INTO " RELATIONS_TABLE
-                                     " (track_a, track_b, position_a, "
-                                     "position_b, rl_comment) VALUES "
+                                     " (track_a, track_b, "
+                                     "rl_comment) VALUES "
                                      "(:track_a, :track_b, "
-                                     ":position_a, :position_b, "
                                      ":comment)"));
     }
 
@@ -97,21 +83,6 @@ void RelationDAO::saveRelation(Relation* relation) {
     TrackPair tracks = relation->getTracks();
     query.bindValue(":track_a", tracks[0].toVariant());
     query.bindValue(":track_b", tracks[1].toVariant());
-
-    PositionPair positions = relation->getPositions();
-    if (positions[0].has_value()) {
-        query.bindValue(":position_a",
-                positions[0]->toEngineSamplePos());
-    } else {
-        query.bindValue(":position_a", QVariant());
-    }
-    if (positions[1].has_value()) {
-        query.bindValue(":position_b",
-                positions[1]->toEngineSamplePos());
-    } else {
-        query.bindValue(":position_b", QVariant());
-    }
-
     query.bindValue(":comment", relation->getComment());
     query.bindValue(":datetime_added", relation->getDateAdded());
 

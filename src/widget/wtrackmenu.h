@@ -185,7 +185,7 @@ class WTrackMenu : public QMenu {
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
-    void slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosition = false);
+    void slotAddRelationToDeck(const QString& deckGroup);
 
     // Auto DJ
     void slotAddToAutoDJBottom();
@@ -246,8 +246,7 @@ class WTrackMenu : public QMenu {
     void generateSetRelationMenu(const QString& group,
             const QString& label,
             QMenu* pParentMenu,
-            bool enabled = true,
-            bool atPlayPosition = false);
+            bool enabled = true);
 
     bool featureIsEnabled(Feature flag) const;
 
@@ -348,13 +347,9 @@ class WTrackMenu : public QMenu {
 
     // Setting relations
     parented_ptr<QAction> m_pSetRelationDeckOne;
-    parented_ptr<QAction> m_pSetRelationAtPlayPositionDeckOne;
     parented_ptr<QAction> m_pSetRelationDeckTwo;
-    parented_ptr<QAction> m_pSetRelationAtPlayPositionDeckTwo;
     parented_ptr<QAction> m_pSetRelationDeckThree;
-    parented_ptr<QAction> m_pSetRelationAtPlayPositionDeckThree;
     parented_ptr<QAction> m_pSetRelationDeckFour;
-    parented_ptr<QAction> m_pSetRelationAtPlayPositionDeckFour;
 
     // BPM feature
     parented_ptr<QAction> m_pBpmLockAction;

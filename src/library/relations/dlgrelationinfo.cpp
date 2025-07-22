@@ -1,5 +1,7 @@
 #include "library/relations/dlgrelationinfo.h"
 
+#include <QIcon>
+
 #include "defs_urls.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
@@ -40,11 +42,9 @@ void DlgRelationInfo::updateRelationMetadataFields() {
     txtTitleA->setText(m_pTrackA->getTitle());
     txtArtistA->setText(m_pTrackA->getArtist());
     txtAlbumA->setText(m_pTrackA->getAlbum());
-    // txtRelationPosA->setText();
     txtTitleB->setText(m_pTrackB->getTitle());
     txtArtistB->setText(m_pTrackB->getArtist());
     txtAlbumB->setText(m_pTrackB->getAlbum());
-    // txtRelationPosA->setText();
     txtComment->setPlainText(m_pRelation->getComment());
     txtDateAdded->setText(m_pRelation->getDateAdded().date().toString());
 }

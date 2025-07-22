@@ -987,15 +987,14 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
 void WTrackMenu::generateSetRelationMenu(const QString& group,
         const QString& label,
         QMenu* pParentMenu,
-        bool enabled,
-        bool atPlayPosition) {
+        bool enabled) {
     QAction* pAction = new QAction(label, this);
     pAction->setEnabled(enabled);
     pParentMenu->addAction(pAction);
     connect(pAction,
             &QAction::triggered,
             this,
-            [this, group, atPlayPosition] { slotAddRelationToDeck(group, atPlayPosition); });
+            [this, group] { slotAddRelationToDeck(group); });
 }
 
 void WTrackMenu::updateMenus() {
@@ -1496,7 +1495,7 @@ void WTrackMenu::slotTranslateBeatsHalf() {
     m_pTrack->trySetBeats(*translatedBeats);
 }
 
-void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosition) {
+void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return;
     }
@@ -1507,19 +1506,8 @@ void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup, bool atPlayPosi
     TrackPair tracks = {
             m_pTrack->getId(),
             pTargetTrack->getId()};
-    PositionPair positions;
-    if (atPlayPosition && !m_deckGroup.isEmpty()) {
-        positions = {
-                mixxx::audio::FramePos(
-                        ControlObject::get(ConfigKey(m_deckGroup, "playposition"))),
-                mixxx::audio::FramePos(
-                        ControlObject::get(ConfigKey(deckGroup, "playposition")))};
-    } else {
-        positions = {std::nullopt, std::nullopt};
-    }
     Relation* relation = new Relation(
-            tracks,
-            positions);
+            tracks);
     m_pLibrary
             ->trackCollectionManager()
             ->internalCollection()
@@ -1602,15 +1590,7 @@ void WTrackMenu::slotPopulateRelationMenu() {
         generateSetRelationMenu(deckGroup,
                 tr("Deck %1 | %2").arg(i).arg(pTargetTrack->getTitle()),
                 m_pSetRelationMenu,
-                deckEnabled,
-                false);
-        if (!m_deckGroup.isEmpty()) {
-            generateSetRelationMenu(deckGroup,
-                    tr("... at playback position"),
-                    m_pSetRelationMenu,
-                    deckEnabled,
-                    true);
-        }
+                deckEnabled);
         m_pSetRelationMenu->addSeparator();
     }
     menuEnabled = menuEnabled && singleTrackSelected;

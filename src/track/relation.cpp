@@ -10,12 +10,10 @@
 Relation::Relation(
         DbId dbId,
         TrackPair tracks,
-        const PositionPair& positions,
         const QString& comment,
         const QDateTime& dateAdded)
         : m_dbId(dbId),
           m_tracks(tracks),
-          m_positions(positions),
           m_comment(comment),
           m_dateAdded(dateAdded) {
 }
@@ -23,10 +21,8 @@ Relation::Relation(
 // Initialize new relation
 Relation::Relation(
         TrackPair tracks,
-        const PositionPair& positions,
         const QString& comment)
         : m_tracks(tracks),
-          m_positions(positions),
           m_comment(comment) {
 }
 
@@ -49,18 +45,6 @@ void Relation::setTracks(TrackPair tracks) {
         return;
     }
     m_tracks = tracks;
-    emit updated();
-}
-
-PositionPair Relation::getPositions() const {
-    return m_positions;
-}
-
-void Relation::setPositions(const PositionPair& positions) {
-    if (m_positions == positions) {
-        return;
-    }
-    m_positions = positions;
     emit updated();
 }
 

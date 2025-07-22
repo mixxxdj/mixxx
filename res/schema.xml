@@ -593,8 +593,6 @@ reapplying those migrations.
         rl_id INTEGER PRIMARY KEY AUTOINCREMENT,
         track_a INTEGER NOT NULL REFERENCES library(id),
         track_b INTEGER NOT NULL REFERENCES library(id),
-        position_a INTEGER DEFAULT NULL,
-        position_b INTEGER DEFAULT NULL,
         rl_comment varchar(256),
         rl_datetime_added DEFAULT CURRENT_TIMESTAMP
       );

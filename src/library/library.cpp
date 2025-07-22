@@ -108,8 +108,6 @@ Library::Library(
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
 
-    m_pRelationsFeature = new RelationsFeature(this, m_pConfig);
-    addFeature(m_pRelationsFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
@@ -122,6 +120,9 @@ Library::Library(
             &Library::exportCrate, // signal-to-signal
             Qt::DirectConnection);
 #endif
+
+    m_pRelationsFeature = new RelationsFeature(this, m_pConfig);
+    addFeature(m_pRelationsFeature);
 
     m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
