@@ -50,8 +50,12 @@ static sf_count_t  sf_f_read (void *ptr, sf_count_t count, void *user_data)
 //  with ptr and return the count of actually processed bytes.
 static sf_count_t sf_f_write (const void *ptr, sf_count_t count, void *user_data)
 {
+    qDebug() << "in sf_f_write";
     EncoderCallback* pCallback = static_cast<EncoderCallback*>(user_data);
-    pCallback->write(nullptr, static_cast<const unsigned char*>(ptr), 0, static_cast<int>(count));
+    pCallback->write(nullptr,
+            static_cast<const unsigned char*>(ptr),
+            0,
+            static_cast<int>(count)); // EngineRecord::write()
     return count;
 }
 
@@ -61,9 +65,6 @@ static sf_count_t  sf_f_tell (void *user_data)
     EncoderCallback* pCallback = static_cast<EncoderCallback*>(user_data);
     return pCallback->tell();
 }
-
-
-
 
 EncoderWave::EncoderWave(EncoderCallback* pCallback)
         : m_pCallback(pCallback),
@@ -138,7 +139,7 @@ void EncoderWave::flush() {
 
 void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     qDebug() << "wave encoding buffer";
-    sf_write_float(m_pSndfile, pBuffer, bufferSize);
+    sf_write_float(m_pSndfile, pBuffer, bufferSize); // sndfile core calls user-defined sf_f_write
 }
 
 /* Originally called from enginebroadcast.cpp to update metadata information

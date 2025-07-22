@@ -436,7 +436,6 @@ void CoreServices::initializeSettings() {
     }
 #endif
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
-    qDebug() << settingsPath;
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
@@ -650,7 +649,6 @@ void CoreServices::initialize(QApplication* pApp) {
     // Initialize controller sub-system,
     // but do not set up controllers until the end of the application startup
     // (long)
-    qDebug() << "Creating ControllerManager";
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
 
     // Scan the library for new files and directories

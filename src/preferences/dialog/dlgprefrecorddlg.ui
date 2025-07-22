@@ -162,7 +162,7 @@ information from filepaths (i.e. username)</string>
     <item row="0" column="1">
       <widget class="QRadioButton" name="RadioButtonUseDefaultSampleRate">
         <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
         </property>
     <property name="toolTip">
       <string>Use the engine sample rate for better recording quality</string>

@@ -147,7 +147,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSi
     int rc = 0;
 
     outsize = (int)((1.25 * bufferSize + 7200) + 1);
-    bufferOutGrow(outsize);
+    bufferOutGrow(outsize); // assuming this is to store the LAME-interpolated samples.
 
     bufferInGrow(bufferSize);
 
@@ -179,7 +179,8 @@ void EncoderMp3::initStream() {
 }
 
 int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
-    unsigned long samplerate_in = sampleRate;
+    unsigned long samplerate_in = sampleRate; // rec samplerate, i.e. samplerate
+                                              // of input stream to encoder
     // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
 

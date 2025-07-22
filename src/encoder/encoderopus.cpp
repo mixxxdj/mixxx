@@ -19,7 +19,10 @@ constexpr int kMaxOpusBufferSize = 1+1275;
 // Opus frame duration in milliseconds. Fixed to 60ms
 constexpr int kOpusFrameMs = 60;
 constexpr int kOpusChannelCount = 2;
+constexpr int kMaxInterpolationFactor = 12; // when we have a 96khz/8khz recording base rate.
+
 // Opus only supports 48 and 96 kHz samplerates
+// XXX Redundant after both record,broadcast resampling are implemented.
 constexpr mixxx::audio::SampleRate kMainSampleRate = mixxx::audio::SampleRate(48000);
 
 const mixxx::Logger kLogger("EncoderOpus");
@@ -71,34 +74,35 @@ int getSerial() {
 }
 } // namespace
 
-//static
+// static
 mixxx::audio::SampleRate EncoderOpus::getMainSampleRate() {
     return kMainSampleRate;
 }
 
-//static
+// static
 QString EncoderOpus::getInvalidSamplerateMessage() {
     return QObject::tr(
             "Using Opus at samplerates other than 48 kHz "
             "is not supported by the Opus encoder. Please use "
             "48000 Hz in \"Sound Hardware\" preferences "
-            "or switch to a different encoding.");
+            ", switch to a different encoding "
+            ", or choose a custom recording samplerate.");
 };
 
 EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
-    : m_bitrate(0),
-      m_bitrateMode(0),
-      m_channels(0),
-      m_readRequired(0),
-      m_pCallback(pCallback),
-      m_fifoBuffer(EngineSideChain::SIDECHAIN_BUFFER_SIZE * kOpusChannelCount),
-      m_pFifoChunkBuffer(),
-      m_pOpus(nullptr),
-      m_opusDataBuffer(kMaxOpusBufferSize),
-      m_header_write(false),
-      m_packetNumber(0),
-      m_granulePos(0)
-{
+        : m_bitrate(0),
+          m_bitrateMode(0),
+          m_channels(0),
+          m_readRequired(0),
+          m_pCallback(pCallback),
+          m_fifoBuffer(EngineSideChain::SIDECHAIN_BUFFER_SIZE *
+                  kOpusChannelCount * kMaxInterpolationFactor),
+          m_pFifoChunkBuffer(),
+          m_pOpus(nullptr),
+          m_opusDataBuffer(kMaxOpusBufferSize),
+          m_header_write(false),
+          m_packetNumber(0),
+          m_granulePos(0) {
     // Regarding m_pFifoBuffer:
     // Size the input FIFO buffer with twice the maximum possible sample count that can be
     // processed at once, to avoid skipping frames or waiting for the required sample count
@@ -139,19 +143,6 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
 int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
 
-    if (sampleRate != kMainSampleRate) {
-            kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
-
-            const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
-
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle(QObject::tr("Encoder"));
-            props->setText(invalidSamplerateMessage);
-            props->setKey(invalidSamplerateMessage);
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
-            return -1;
-    }
     m_sampleRate = sampleRate;
     DEBUG_ASSERT(m_sampleRate == 8000 || m_sampleRate == 12000 ||
             m_sampleRate == 16000 || m_sampleRate == 24000 ||

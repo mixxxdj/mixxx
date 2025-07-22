@@ -200,7 +200,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     connect(this,
             &DlgPrefSound::updateDefaultRecordingSampleRate,
             pRecordingDlg,
-            &DlgPrefRecord::onDefaultSampleRateUpdated);
+            &DlgPrefRecord::slotDefaultSampleRateUpdated);
 
     loadSettings();
 
