@@ -586,10 +586,15 @@ void GenreTableModel::editGenre(GenreId genreId) {
     query.bindValue(":lvl3", updatedGenre.getNameLevel3());
     query.bindValue(":lvl4", updatedGenre.getNameLevel4());
     query.bindValue(":lvl5", updatedGenre.getNameLevel5());
+    // query.bindValue(":display_group",
+    //         updatedGenre.getDisplayGroup().isEmpty()
+    //                 ? QVariant(QVariant::String)
+    //                 : updatedGenre.getDisplayGroup());
     query.bindValue(":display_group",
             updatedGenre.getDisplayGroup().isEmpty()
-                    ? QVariant(QVariant::String)
-                    : updatedGenre.getDisplayGroup());
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : QVariant(updatedGenre.getDisplayGroup()));
+
     query.bindValue(":is_visible", updatedGenre.isVisible());
     query.bindValue(":id", genreId.toString());
 
