@@ -453,19 +453,20 @@ void GenreTableModel::editGenre(GenreId genreId) {
         return;
     }
 
-    /*qDebug() << "[GenreTableModel] -> editGenre -> genre id" << genre.getId();
-    qDebug() << "[GenreTableModel] -> editGenre -> genre name" <<
-    genre.getName(); qDebug() << "[GenreTableModel] -> editGenre -> genre
-    name_level_1" << genre.getNameLevel1(); qDebug() << "[GenreTableModel] ->
-    editGenre -> genre name_level_2" << genre.getNameLevel2(); qDebug() <<
-    "[GenreTableModel] -> editGenre -> genre name_level_3" <<
-    genre.getNameLevel3(); qDebug() << "[GenreTableModel] -> editGenre -> genre
-    name_level_4" << genre.getNameLevel4(); qDebug() << "[GenreTableModel] ->
-    editGenre -> genre name_level_5" << genre.getNameLevel5(); qDebug() <<
-    "[GenreTableModel] -> editGenre -> genre display_group" <<
-    genre.getDisplayGroup(); qDebug() << "[GenreTableModel] -> editGenre ->
-    genre is_visible" << genre.isVisible(); qDebug() << "[GenreTableModel] ->
-    editGenre -> genre is_user_defined" << genre.isUserDefined();*/
+    // qDebug() << "[GenreTableModel] -> editGenre -> genre id" <<
+    // genre.getId(); qDebug() << "[GenreTableModel] -> editGenre -> genre name"
+    // << genre.getName(); qDebug() << "[GenreTableModel] -> editGenre -> genre
+    // name_level_1" << genre.getNameLevel1(); qDebug() << "[GenreTableModel] ->
+    // editGenre -> genre name_level_2" << genre.getNameLevel2(); qDebug() <<
+    // "[GenreTableModel] -> editGenre -> genre name_level_3" <<
+    // genre.getNameLevel3(); qDebug() << "[GenreTableModel] -> editGenre ->
+    // genre name_level_4" << genre.getNameLevel4(); qDebug() <<
+    // "[GenreTableModel] -> editGenre -> genre name_level_5" <<
+    // genre.getNameLevel5(); qDebug() << "[GenreTableModel] -> editGenre ->
+    // genre display_group" << genre.getDisplayGroup(); qDebug() <<
+    // "[GenreTableModel] -> editGenre -> genre is_visible" <<
+    // genre.isVisible(); qDebug() << "[GenreTableModel] -> editGenre -> genre
+    // is_user_defined" << genre.isUserDefined();
 
     QDialog dialog;
     dialog.setWindowTitle(QObject::tr("Edit Genre"));
@@ -490,7 +491,7 @@ void GenreTableModel::editGenre(GenreId genreId) {
 
     // convert to list of QVariantMaps for sorting
     QList<QVariantMap> genresList;
-    for (const QVariant& entry : genreData) {
+    for (const QVariant& entry : std::as_const(genreData)) {
         genresList.append(entry.toMap());
     }
 
@@ -726,7 +727,7 @@ void GenreTableModel::EditGenresMulti() {
     genreDao.loadGenres2QVL(genreData);
 
     QList<QVariantMap> genres;
-    for (const QVariant& v : genreData) {
+    for (const QVariant& v : std::as_const(genreData)) {
         genres << v.toMap();
     }
 
@@ -787,7 +788,7 @@ void GenreTableModel::EditGenresMulti() {
 
     // pre-sort visible genres for combo box
     QList<QPair<QString, QString>> visibleGenreList;
-    for (const QVariantMap& map : genres) {
+    for (const QVariantMap& map : std::as_const(genres)) {
         if (map.value("is_visible").toBool()) {
             visibleGenreList << qMakePair(map.value("name").toString(), map.value("id").toString());
         }
@@ -801,7 +802,7 @@ void GenreTableModel::EditGenresMulti() {
         // Clear previous rows
         table->setRowCount(0);
 
-        for (const QVariantMap& genre : genres) {
+        for (const QVariantMap& genre : std::as_const(genres)) {
             bool isVisible = genre.value("is_visible").toBool();
             bool isUserDefined = genre.value("is_user_defined").toBool();
 
@@ -886,7 +887,7 @@ void GenreTableModel::EditGenresMulti() {
             QComboBox* combo = new QComboBox();
             combo->addItem(QObject::tr("(None)"), QString());
 
-            for (const auto& pair : visibleGenreList) {
+            for (const auto& pair : std::as_const(visibleGenreList)) {
                 if (pair.second == genreId)
                     continue;
                 QString tag = QString("##%1##").arg(pair.second);
@@ -1013,14 +1014,14 @@ void GenreTableModel::EditGenresMulti() {
         genreData.clear();
         genreDao.loadGenres2QVL(genreData);
         genres.clear();
-        for (const QVariant& v : genreData) {
+        for (const QVariant& v : std::as_const(genreData)) {
             genres << v.toMap();
         }
         std::sort(genres.begin(), genres.end(), [](const QVariantMap& a, const QVariantMap& b) {
             return a.value("name").toString().toLower() < b.value("name").toString().toLower();
         });
         visibleGenreList.clear();
-        for (const QVariantMap& map : genres) {
+        for (const QVariantMap& map : std::as_const(genres)) {
             if (map.value("is_visible").toBool()) {
                 visibleGenreList << qMakePair(map.value("name").toString(),
                         map.value("id").toString());
