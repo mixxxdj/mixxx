@@ -131,7 +131,7 @@ Library::Library(
 #endif
 
     m_pBrowseFeature = new BrowseFeature(
-            this, m_pConfig, pRecordingManager);
+            this, m_pConfig);
     connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,

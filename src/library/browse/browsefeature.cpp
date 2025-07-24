@@ -41,11 +41,10 @@ const QStringList removableDriveRootPaths() {
 
 BrowseFeature::BrowseFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig,
-        RecordingManager* pRecordingManager)
+        UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig, QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
-          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
+          m_browseModel(this, pLibrary->trackCollectionManager()),
           m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)) {
     connect(&m_browseModel,
