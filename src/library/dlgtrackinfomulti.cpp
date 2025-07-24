@@ -780,7 +780,9 @@ void DlgTrackInfoMulti::saveTracks() {
         // Remove trailing whitespaces.
         comment = mixxx::removeTrailingWhitespaces(currText);
     }
-
+    // EVE
+    QStringList finalGenres;
+    // EVE
     for (auto& rec : m_trackRecords) {
         if (!title.isNull()) {
             rec.refMetadata().refTrackInfo().setTitle(title);
@@ -801,7 +803,6 @@ void DlgTrackInfoMulti::saveTracks() {
                 g = g.trimmed();
             }
 
-            QStringList finalGenres;
             QString mode = genreActionModeBox->currentText().toLower();
 
             if (mode == "add") {
@@ -818,7 +819,7 @@ void DlgTrackInfoMulti::saveTracks() {
 
                 // add new genres, check if not already in the list
                 finalGenres = existingGenres;
-                for (const QString& newG : newGenres) {
+                for (const QString& newG : std::as_const(newGenres)) {
                     if (!finalGenres.contains(newG, Qt::CaseInsensitive)) {
                         finalGenres.append(newG);
                     }
@@ -833,7 +834,7 @@ void DlgTrackInfoMulti::saveTracks() {
 
             // -> raw tag string
             QStringList placeholders;
-            for (const QString& name : finalGenres) {
+            for (const QString& name : std::as_const(finalGenres)) {
                 qint64 id = m_genreDao.getGenreId(name);
                 if (id != -1) {
                     placeholders << QStringLiteral("##%1##").arg(id);
