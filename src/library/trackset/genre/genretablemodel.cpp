@@ -1,7 +1,24 @@
 #include "library/trackset/genre/genretablemodel.h"
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStandardItemModel>
+#include <QStyledItemDelegate>
+#include <QTableWidgetItem>
+#include <QVariantList>
+#include <QVariantMap>
 #include <QtDebug>
 
+#include "library/dao/genredao.h"
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -239,118 +256,6 @@ QString GenreTableModel::modelKey(bool noSearch) const {
     }
 }
 
-// int GenreTableModel::importFromCsv(const QString& csvFileName) {
-//     QFile file(csvFileName);
-//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-//         qWarning() << "[GenreTableModel] Failed to open CSV file:" << csvFileName;
-//         return 0;
-//     }
-//
-//     QTextStream in(&file);
-//     QString header = in.readLine();
-//     QStringList headerFields = header.split(',');
-//     if (headerFields.isEmpty() || headerFields[0].trimmed().toLower() != "name_level_1") {
-//         qWarning() << "[GenreTableModel] Invalid CSV header";
-//         return 0;
-//     }
-//
-//     QSqlQuery selectQuery(m_database);
-//     selectQuery.prepare(
-//             "SELECT id FROM genres WHERE "
-//             "name_level_1 = :lvl1 AND "
-//             "COALESCE(name_level_2, '') = :lvl2 AND "
-//             "COALESCE(name_level_3, '') = :lvl3 AND "
-//             "COALESCE(name_level_4, '') = :lvl4 AND "
-//             "COALESCE(name_level_5, '') = :lvl5");
-//
-//     QSqlQuery insertQuery(m_database);
-//     insertQuery.prepare(
-//             "INSERT INTO genres (name_level_1, name_level_2, name_level_3, "
-//             "name_level_4, name_level_5, custom_name, is_visible, is_user_defined) "
-//             "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :custom_name, 1, 0)");
-//
-//     int insertedCount = 0;
-//     int lineNumber = 1;
-//     m_database.transaction();
-//
-//     while (!in.atEnd()) {
-//         QString line = in.readLine();
-//         lineNumber++;
-//
-//         if (line.trimmed().isEmpty()) {
-//             continue;
-//         }
-//
-//         QStringList fields = line.split(',');
-//         while (fields.size() < 5) {
-//             fields.append("");
-//         }
-//
-//         QStringList levels;
-//         for (int i = 0; i < 5; ++i) {
-//             levels << fields[i].trimmed();
-//         }
-//
-//         QStringList nonEmptyLevels;
-//         for (const QString& part : levels) {
-//             if (!part.isEmpty()) {
-//                 nonEmptyLevels << part;
-//             }
-//         }
-//         if (nonEmptyLevels.isEmpty()) {
-//             qWarning() << "[GenreTableModel] Line" << lineNumber
-//                        << "has no non-empty levels, skipping";
-//             continue;
-//         }
-//
-//         const QString customName = nonEmptyLevels.join("//");
-//         const QString lvl1 = customName;
-//         const QString& lvl2 = levels[1];
-//         const QString& lvl3 = levels[2];
-//         const QString& lvl4 = levels[3];
-//         const QString& lvl5 = levels[4];
-//
-//         selectQuery.bindValue(":lvl1", lvl1);
-//         selectQuery.bindValue(":lvl2", lvl2);
-//         selectQuery.bindValue(":lvl3", lvl3);
-//         selectQuery.bindValue(":lvl4", lvl4);
-//         selectQuery.bindValue(":lvl5", lvl5);
-//
-//         if (!selectQuery.exec()) {
-//             qWarning() << "[GenreTableModel] Select failed at line"
-//                        << lineNumber << ":" << selectQuery.lastError().text();
-//             continue;
-//         }
-//
-//         if (selectQuery.next()) {
-//             continue; // Already exists
-//         }
-//
-//         insertQuery.bindValue(":lvl1", lvl1);
-//         insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant(QString()) : lvl2);
-//         insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant(QString()) : lvl3);
-//         insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant(QString()) : lvl4);
-//         insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant(QString()) : lvl5);
-//
-//         insertQuery.bindValue(":custom_name", customName);
-//
-//         if (!insertQuery.exec()) {
-//             qWarning() << "[GenreTableModel] Insert failed at line"
-//                        << lineNumber << ":" << insertQuery.lastError().text();
-//             continue;
-//         }
-//
-//         insertedCount++;
-//     }
-//
-//     if (!m_database.commit()) {
-//         qWarning() << "[GenreTableModel] Commit failed:" << m_database.lastError().text();
-//         return insertedCount;
-//     }
-//
-//     return insertedCount;
-// }
-
 int GenreTableModel::importFromCsv(const QString& csvFileName) {
     QFile file(csvFileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -378,8 +283,8 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
     QSqlQuery insertQuery(m_database);
     insertQuery.prepare(
             "INSERT INTO genres (name_level_1, name_level_2, name_level_3, "
-            "name_level_4, name_level_5, custom_name, is_visible, is_user_defined) "
-            "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :custom_name, 1, 0)");
+            "name_level_4, name_level_5, name, is_visible, is_user_defined) "
+            "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :name, 1, 0)");
 
     int insertedCount = 0;
     int lineNumber = 1;
@@ -425,8 +330,8 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
             continue;
         }
 
-        const QString customName = nonEmptyLevels.join("//");
-        const QString& lvl1 = customName;
+        const QString Name = nonEmptyLevels.join("//");
+        const QString& lvl1 = levels[0];
         const QString& lvl2 = levels[1];
         const QString& lvl3 = levels[2];
         const QString& lvl4 = levels[3];
@@ -453,7 +358,7 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant() : QVariant(lvl3));
         insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant() : QVariant(lvl4));
         insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant() : QVariant(lvl5));
-        insertQuery.bindValue(":custom_name", customName);
+        insertQuery.bindValue(":name", Name);
 
         if (!insertQuery.exec()) {
             qWarning() << "[GenreTableModel] Insert failed at line" << lineNumber
@@ -472,17 +377,17 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
     return insertedCount;
 }
 
-void GenreTableModel::rebuildCustomNames() {
+void GenreTableModel::rebuildGenreNames() {
     QSqlQuery selectQuery(m_database);
     QSqlQuery updateQuery(m_database);
 
     selectQuery.prepare(
             "SELECT id, name_level_1, name_level_2, name_level_3, "
-            "name_level_4, name_level_5, custom_name "
+            "name_level_4, name_level_5, name "
             "FROM genres");
 
     updateQuery.prepare(
-            "UPDATE genres SET name_level_1 = :lvl1, custom_name = :custom_name WHERE id = :id");
+            "UPDATE genres SET name_level_1 = :lvl1, name = :name WHERE id = :id");
 
     if (!selectQuery.exec()) {
         qWarning() << "[GenreTableModel] Failed to SELECT genres:"
@@ -502,10 +407,11 @@ void GenreTableModel::rebuildCustomNames() {
         QString lvl3 = selectQuery.value(3).toString().trimmed();
         QString lvl4 = selectQuery.value(4).toString().trimmed();
         QString lvl5 = selectQuery.value(5).toString().trimmed();
-        QString existingCustomName = selectQuery.value(6).toString().trimmed();
+        QString existingName = selectQuery.value(6).toString().trimmed();
 
-        if (lvl1.isEmpty() && !existingCustomName.isEmpty()) {
-            lvl1 = existingCustomName;
+        // If lvl1 is missing but name exists -> possibly flat genre? -> use that as lvl1
+        if (lvl1.isEmpty() && !existingName.isEmpty()) {
+            lvl1 = existingName;
         }
 
         for (const QString& part : {lvl1, lvl2, lvl3, lvl4, lvl5}) {
@@ -513,10 +419,11 @@ void GenreTableModel::rebuildCustomNames() {
                 parts << part;
             }
         }
-        const QString newCustomName = parts.join("//");
+
+        const QString concatenatedName = parts.join("//");
 
         updateQuery.bindValue(":lvl1", lvl1);
-        updateQuery.bindValue(":custom_name", newCustomName);
+        updateQuery.bindValue(":name", concatenatedName);
         updateQuery.bindValue(":id", id);
 
         if (!updateQuery.exec()) {
@@ -529,11 +436,610 @@ void GenreTableModel::rebuildCustomNames() {
     }
 
     if (!m_database.commit()) {
-        qWarning() << "[GenreTableModel] Failed to COMMIT updated custom_name "
-                      "values:"
+        qWarning() << "[GenreTableModel] Failed to COMMIT updated genre name values:"
                    << m_database.lastError().text();
         return;
     }
 
-    qDebug() << "[GenreTableModel] Updated custom_name for" << updatedCount << "rows.";
+    qDebug() << "[GenreTableModel] Updated name for" << updatedCount << "rows.";
+}
+
+void GenreTableModel::editGenre(GenreId genreId) {
+    qDebug() << "[GenreTableModel] -> editGenre -> genreId:" << genreId;
+
+    Genre genre;
+    if (!m_pTrackCollectionManager->internalCollection()->genres().readGenreById(genreId, &genre)) {
+        qDebug() << "[GenreTableModel] -> editGenre -> error getting genre";
+        return;
+    }
+
+    /*qDebug() << "[GenreTableModel] -> editGenre -> genre id" << genre.getId();
+    qDebug() << "[GenreTableModel] -> editGenre -> genre name" <<
+    genre.getName(); qDebug() << "[GenreTableModel] -> editGenre -> genre
+    name_level_1" << genre.getNameLevel1(); qDebug() << "[GenreTableModel] ->
+    editGenre -> genre name_level_2" << genre.getNameLevel2(); qDebug() <<
+    "[GenreTableModel] -> editGenre -> genre name_level_3" <<
+    genre.getNameLevel3(); qDebug() << "[GenreTableModel] -> editGenre -> genre
+    name_level_4" << genre.getNameLevel4(); qDebug() << "[GenreTableModel] ->
+    editGenre -> genre name_level_5" << genre.getNameLevel5(); qDebug() <<
+    "[GenreTableModel] -> editGenre -> genre display_group" <<
+    genre.getDisplayGroup(); qDebug() << "[GenreTableModel] -> editGenre ->
+    genre is_visible" << genre.isVisible(); qDebug() << "[GenreTableModel] ->
+    editGenre -> genre is_user_defined" << genre.isUserDefined();*/
+
+    QDialog dialog;
+    dialog.setWindowTitle(QObject::tr("Edit Genre"));
+    QFormLayout* formLayout = new QFormLayout(&dialog);
+
+    QLineEdit* lvl1Edit = new QLineEdit(genre.getNameLevel1());
+    QLineEdit* lvl2Edit = new QLineEdit(genre.getNameLevel2());
+    QLineEdit* lvl3Edit = new QLineEdit(genre.getNameLevel3());
+    QLineEdit* lvl4Edit = new QLineEdit(genre.getNameLevel4());
+    QLineEdit* lvl5Edit = new QLineEdit(genre.getNameLevel5());
+
+    formLayout->addRow(QObject::tr("Level 1:"), lvl1Edit);
+    formLayout->addRow(QObject::tr("Level 2:"), lvl2Edit);
+    formLayout->addRow(QObject::tr("Level 3:"), lvl3Edit);
+    formLayout->addRow(QObject::tr("Level 4:"), lvl4Edit);
+    formLayout->addRow(QObject::tr("Level 5:"), lvl5Edit);
+
+    // genres -> display_group combobox
+    QVariantList genreData;
+    GenreDao& genreDao = m_pTrackCollectionManager->internalCollection()->getGenreDao();
+    genreDao.loadGenres2QVL(genreData);
+
+    // convert to list of QVariantMaps for sorting
+    QList<QVariantMap> genresList;
+    for (const QVariant& entry : genreData) {
+        genresList.append(entry.toMap());
+    }
+
+    // sort genre name alphabetically
+    std::sort(genresList.begin(), genresList.end(), [](const QVariantMap& a, const QVariantMap& b) {
+        return a.value("name").toString().toLower() < b.value("name").toString().toLower();
+    });
+
+    QComboBox* displayGroupCombo = new QComboBox();
+    displayGroupCombo->addItem(QObject::tr("(None)"), QVariant());
+
+    // add sorted genres, skipping current genre itself and is_visible = 0
+    for (const QVariantMap& map : genresList) {
+        const QString name = map.value("name").toString();
+        const QString id = map.value("id").toString();
+        const bool isVisible = map.value("is_visible").toBool();
+
+        // skip self and invisible genres
+        if (id == genreId.toString() || !isVisible) {
+            continue;
+        }
+        const QString displayValue = QStringLiteral("##%1##").arg(id);
+        displayGroupCombo->addItem(name, displayValue);
+    }
+
+    // set current display group selection
+    int currentIndex = displayGroupCombo->findData(genre.getDisplayGroup());
+    if (currentIndex >= 0) {
+        displayGroupCombo->setCurrentIndex(currentIndex);
+    }
+
+    formLayout->addRow(QObject::tr("Display Group:"), displayGroupCombo);
+
+    QCheckBox* concatNameCheckbox = new QCheckBox(
+            QObject::tr("Concatenate levelnames into genre name"));
+    concatNameCheckbox->setChecked(false);
+    formLayout->addRow(QString(), concatNameCheckbox);
+
+    QCheckBox* visibleCheckbox = new QCheckBox(QObject::tr("Don't show genre, show grouped genre"));
+    visibleCheckbox->setChecked(!genre.isVisible());
+    formLayout->addRow(QString(), visibleCheckbox);
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(
+            QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    formLayout->addWidget(buttonBox);
+
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    QObject::connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    if (dialog.exec() != QDialog::Accepted) {
+        return;
+    }
+
+    Genre updatedGenre = genre;
+    updatedGenre.setNameLevel1(lvl1Edit->text().trimmed());
+    updatedGenre.setNameLevel2(lvl2Edit->text().trimmed());
+    updatedGenre.setNameLevel3(lvl3Edit->text().trimmed());
+    updatedGenre.setNameLevel4(lvl4Edit->text().trimmed());
+    updatedGenre.setNameLevel5(lvl5Edit->text().trimmed());
+
+    const QString groupId = displayGroupCombo->currentData().toString().trimmed();
+    updatedGenre.setDisplayGroup(groupId.isEmpty() ? QString() : groupId);
+
+    updatedGenre.setVisible(!visibleCheckbox->isChecked());
+
+    QStringList parts;
+    for (const QString& part : {
+                 updatedGenre.getNameLevel1(),
+                 updatedGenre.getNameLevel2(),
+                 updatedGenre.getNameLevel3(),
+                 updatedGenre.getNameLevel4(),
+                 updatedGenre.getNameLevel5()}) {
+        if (!part.isEmpty()) {
+            parts << part;
+        }
+    }
+
+    if (concatNameCheckbox->isChecked()) {
+        updatedGenre.setName(parts.join("//"));
+    } else {
+        updatedGenre.setName(genre.getName());
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "UPDATE genres SET name = :name, name_level_1 = :lvl1, name_level_2 = :lvl2, "
+            "name_level_3 = :lvl3, name_level_4 = :lvl4, name_level_5 = :lvl5, "
+            "display_group = :display_group, is_visible = :is_visible WHERE id = :id"));
+
+    query.bindValue(":name", updatedGenre.getName());
+    query.bindValue(":lvl1", updatedGenre.getNameLevel1());
+    query.bindValue(":lvl2", updatedGenre.getNameLevel2());
+    query.bindValue(":lvl3", updatedGenre.getNameLevel3());
+    query.bindValue(":lvl4", updatedGenre.getNameLevel4());
+    query.bindValue(":lvl5", updatedGenre.getNameLevel5());
+    query.bindValue(":display_group",
+            updatedGenre.getDisplayGroup().isEmpty()
+                    ? QVariant(QVariant::String)
+                    : updatedGenre.getDisplayGroup());
+    query.bindValue(":is_visible", updatedGenre.isVisible());
+    query.bindValue(":id", genreId.toString());
+
+    if (!query.exec()) {
+        qWarning() << "[GenreTableModel] -> Failed to update genre:" << query.lastError().text();
+    } else {
+        qDebug() << "[GenreTableModel] -> Updated genre ID:" << genreId.toString();
+
+        // successful genre update -> extract the target genre ID from displayGroup (format: ##id##)
+        QString targetGenreId = updatedGenre.getDisplayGroup();
+        targetGenreId.remove("##");
+
+        // update genre_tracks table: replace old genreId with targetGenreId
+        QSqlQuery updateQuery(m_database);
+        updateQuery.prepare(QStringLiteral(
+                "UPDATE genre_tracks SET genre_id = :newGenreId WHERE genre_id = :oldGenreId"));
+        updateQuery.bindValue(":newGenreId", targetGenreId);
+        updateQuery.bindValue(":oldGenreId", genreId.toString());
+
+        if (!updateQuery.exec()) {
+            qWarning() << "[GenreTableModel] -> Failed to update genre_tracks:"
+                       << updateQuery.lastError().text();
+        } else {
+            qDebug() << "[GenreTableModel] -> Updated genre_tracks from"
+                     << genreId.toString() << "to" << targetGenreId;
+            if (!updatedGenre.getDisplayGroup().isEmpty()) {
+                QString targetGenreId = updatedGenre.getDisplayGroup();
+                targetGenreId.remove("##");
+                QString oldGenreId = genreId.toString();
+
+                // update genre_tracks table
+                QSqlQuery updateGenreTracksQuery(m_database);
+                updateGenreTracksQuery.prepare(QStringLiteral(
+                        "UPDATE genre_tracks SET genre_id = :newGenreId WHERE "
+                        "genre_id = :oldGenreId"));
+                updateGenreTracksQuery.bindValue(":newGenreId", targetGenreId);
+                updateGenreTracksQuery.bindValue(":oldGenreId", oldGenreId);
+
+                if (!updateGenreTracksQuery.exec()) {
+                    qWarning() << "[GenreTableModel] -> Failed to update "
+                                  "genre_tracks:"
+                               << updateGenreTracksQuery.lastError().text();
+                } else {
+                    qDebug() << "[GenreTableModel] -> Updated genre_tracks from"
+                             << oldGenreId << "to" << targetGenreId;
+                }
+
+                // update library.genre string
+                const QString oldTag = QStringLiteral("##%1##").arg(oldGenreId);
+                const QString newTag = QStringLiteral("##%1##").arg(targetGenreId);
+
+                QSqlQuery updateLibraryQuery(m_database);
+                updateLibraryQuery.prepare(QStringLiteral(
+                        "UPDATE library SET genre = REPLACE(genre, :oldTag, :newTag) "
+                        "WHERE genre LIKE '%' || :oldTag || '%'"));
+                updateLibraryQuery.bindValue(":oldTag", oldTag);
+                updateLibraryQuery.bindValue(":newTag", newTag);
+
+                if (!updateLibraryQuery.exec()) {
+                    qWarning() << "[GenreTableModel] -> Failed to update "
+                                  "library.genre:"
+                               << updateLibraryQuery.lastError().text();
+                } else {
+                    qDebug()
+                            << "[GenreTableModel] -> Replaced genre tag"
+                            << oldTag << "with" << newTag << "in library table";
+                }
+            }
+        }
+    }
+}
+
+void GenreTableModel::setAllGenresVisible() {
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
+            QObject::tr("Confirm Visibility Change"),
+            QObject::tr("This will make all genres visible again. Are you sure "
+                        "you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+
+    if (reply != QMessageBox::Yes) {
+        qDebug() << "[GenreTableModel] -> allGenresVisible -> Action cancelled by user.";
+        return;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("UPDATE genres SET is_visible = 1"));
+
+    if (!query.exec()) {
+        qWarning() << "[GenreTableModel] -> Failed to set all genres visible:"
+                   << query.lastError().text();
+    } else {
+        qDebug() << "[GenreTableModel] -> Set is_visible = 1 for all genres.";
+    }
+}
+
+void GenreTableModel::setGenreInvisible(const GenreId& genreId) {
+    qDebug() << "[GenreTableModel] -> setGenreInvisible -> genreId:" << genreId;
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("UPDATE genres SET is_visible = 0 WHERE id = :id"));
+    query.bindValue(":id", genreId.toString());
+
+    if (!query.exec()) {
+        qWarning() << "[GenreTableModel] -> Failed to set genre invisible:"
+                   << query.lastError().text();
+    } else {
+        qDebug() << "[GenreTableModel] -> Set is_visible = 0 for genreId:" << genreId.toString();
+    }
+}
+
+void GenreTableModel::EditGenresMulti() {
+    qDebug() << "[GenreTableModel] -> EditGenresMulti";
+
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
+            QObject::tr("Multiple Genres Edit"),
+            QObject::tr("Building the table can take some time (minutes) if "
+                        "you have defined many genres."
+                        "eg if you imported a huge external model) \n"
+                        "Are you sure you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+
+    if (reply != QMessageBox::Yes) {
+        qDebug() << "[GenreTableModel] -> EditGenresMulti -> Action cancelled by user.";
+        return;
+    }
+
+    QVariantList genreData;
+    GenreDao& genreDao = m_pTrackCollectionManager->internalCollection()->getGenreDao();
+    genreDao.loadGenres2QVL(genreData);
+
+    QList<QVariantMap> genres;
+    for (const QVariant& v : genreData) {
+        genres << v.toMap();
+    }
+
+    // sort alphabetically genres
+    std::sort(genres.begin(), genres.end(), [](const QVariantMap& a, const QVariantMap& b) {
+        return a.value("name").toString().toLower() < b.value("name").toString().toLower();
+    });
+
+    QDialog dialog;
+    dialog.setWindowTitle(QObject::tr("Edit Multiple Genres"));
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+
+    // filter combo box on visibility
+    QHBoxLayout* filterLayout = new QHBoxLayout();
+    QLabel* filterLabel = new QLabel(QObject::tr("Filter by visibility:"));
+    QComboBox* filterCombo = new QComboBox();
+    filterCombo->addItem(QObject::tr("Visible genres only"), 1);
+    filterCombo->addItem(QObject::tr("Invisible genres only"), 0);
+    filterCombo->addItem(QObject::tr("All genres"), 2);
+    filterLayout->addWidget(filterLabel);
+    filterLayout->addWidget(filterCombo);
+    layout->addLayout(filterLayout);
+
+    QHBoxLayout* userDefinedLayout = new QHBoxLayout();
+    QLabel* userDefinedLabel = new QLabel(QObject::tr("Filter by User-Defined / Model Imported:"));
+    QComboBox* userDefinedCombo = new QComboBox();
+    userDefinedCombo->addItem("All genres", QVariant(-1));
+    userDefinedCombo->addItem("Only User-Defined genres", QVariant(1));
+    userDefinedCombo->addItem("Only Model Imported genres", QVariant(0));
+    userDefinedLayout->addWidget(userDefinedLabel);
+    userDefinedLayout->addWidget(userDefinedCombo);
+    layout->addLayout(userDefinedLayout);
+
+    // table  with max possible rows
+    QTableWidget* table = new QTableWidget();
+    table->setColumnCount(9);
+    table->setHorizontalHeaderLabels(QStringList()
+            << "Genre" << "Name_Level_1"
+            << "Name_Level_2" << "Name_Level_3" << "Name_Level_4"
+            << "Name_Level_5"
+            << "User Def" << "Visible" << "Display Group");
+    table->setColumnWidth(0, 150);
+    table->setColumnWidth(1, 100);
+    table->setColumnWidth(2, 100);
+    table->setColumnWidth(3, 100);
+    table->setColumnWidth(4, 100);
+    table->setColumnWidth(5, 100);
+    table->setColumnWidth(6, 60);
+    table->setColumnWidth(7, 60);
+    table->horizontalHeader()->setSectionResizeMode(8, QHeaderView::Stretch);
+    for (int col = 0; col < table->columnCount(); ++col) {
+        QTableWidgetItem* headerItem = table->horizontalHeaderItem(col);
+        if (headerItem) {
+            headerItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        }
+    }
+    layout->addWidget(table);
+
+    // pre-sort visible genres for combo box
+    QList<QPair<QString, QString>> visibleGenreList;
+    for (const QVariantMap& map : genres) {
+        if (map.value("is_visible").toBool()) {
+            visibleGenreList << qMakePair(map.value("name").toString(), map.value("id").toString());
+        }
+    }
+    std::sort(visibleGenreList.begin(), visibleGenreList.end(), [](const auto& a, const auto& b) {
+        return a.first.toLower() < b.first.toLower();
+    });
+
+    // populate table based on filter
+    auto populateTable = [&](int visibilityFilter, int userDefinedFilter) {
+        // Clear previous rows
+        table->setRowCount(0);
+
+        for (const QVariantMap& genre : genres) {
+            bool isVisible = genre.value("is_visible").toBool();
+            bool isUserDefined = genre.value("is_user_defined").toBool();
+
+            // apply visibility filter
+            if ((visibilityFilter == 1 && !isVisible) ||
+                    (visibilityFilter == 0 && isVisible)) {
+                continue;
+            }
+
+            // apply user-defined filter
+            if ((userDefinedFilter == 1 && !isUserDefined) ||
+                    (userDefinedFilter == 0 && isUserDefined)) {
+                continue;
+            }
+
+            int row = table->rowCount();
+            table->insertRow(row);
+
+            const QString genreId = genre.value("id").toString();
+            const QString name = genre.value("name").toString();
+            const QString name_level_1 = genre.value("name_level_1").toString();
+            const QString name_level_2 = genre.value("name_level_2").toString();
+            const QString name_level_3 = genre.value("name_level_3").toString();
+            const QString name_level_4 = genre.value("name_level_4").toString();
+            const QString name_level_5 = genre.value("name_level_5").toString();
+            const QString displayGroup = genre.value("display_group").toString();
+
+            // name (non-editable)
+            QTableWidgetItem* nameItem = new QTableWidgetItem(name);
+            nameItem->setFlags(nameItem->flags() & ~Qt::ItemIsEditable);
+            table->setItem(row, 0, nameItem);
+
+            // name_level_1_Item (non-editable)
+            QTableWidgetItem* name_level_1_Item = new QTableWidgetItem(name_level_1);
+            name_level_1_Item->setFlags(name_level_1_Item->flags() & ~Qt::ItemIsEditable);
+            table->setItem(row, 1, name_level_1_Item);
+
+            // name_level_2_Item (non-editable)
+            QTableWidgetItem* name_level_2_Item = new QTableWidgetItem(name_level_2);
+            name_level_2_Item->setFlags(name_level_2_Item->flags() & ~Qt::ItemIsEditable);
+            table->setItem(row, 2, name_level_2_Item);
+
+            // name_level_3_Item (non-editable)
+            QTableWidgetItem* name_level_3_Item = new QTableWidgetItem(name_level_3);
+            name_level_3_Item->setFlags(name_level_3_Item->flags() & ~Qt::ItemIsEditable);
+            table->setItem(row, 3, name_level_3_Item);
+
+            // name_level_4_Item (non-editable)
+            QTableWidgetItem* name_level_4_Item = new QTableWidgetItem(name_level_4);
+            name_level_4_Item->setFlags(name_level_4_Item->flags() & ~Qt::ItemIsEditable);
+            table->setItem(row, 4, name_level_4_Item);
+
+            // name_level_5_Item (non-editable)
+            QTableWidgetItem* name_level_5_Item = new QTableWidgetItem(name_level_5);
+            name_level_5_Item->setFlags(name_level_5_Item->flags() & ~Qt::ItemIsEditable);
+            table->setItem(row, 5, name_level_5_Item);
+
+            // is_user_defined checkbox (non-editable)
+            QCheckBox* userDefinedCheckbox = new QCheckBox();
+            userDefinedCheckbox->setChecked(isUserDefined);
+            userDefinedCheckbox->setEnabled(false); // read-only
+
+            QWidget* checkboxContainer = new QWidget();
+            QHBoxLayout* layout = new QHBoxLayout(checkboxContainer);
+            layout->addWidget(userDefinedCheckbox);
+            layout->setAlignment(Qt::AlignCenter);
+            layout->setContentsMargins(0, 0, 0, 0);
+            table->setCellWidget(row, 6, checkboxContainer);
+
+            // is_visible checkbox (editable)
+            QCheckBox* visibleCheckbox = new QCheckBox();
+            visibleCheckbox->setChecked(isVisible);
+
+            QWidget* visibleContainer = new QWidget();
+            QHBoxLayout* visibleLayout = new QHBoxLayout(visibleContainer);
+            visibleLayout->addWidget(visibleCheckbox);
+            visibleLayout->setAlignment(Qt::AlignCenter);
+            visibleLayout->setContentsMargins(0, 0, 0, 0);
+            table->setCellWidget(row, 7, visibleContainer);
+
+            // display_group combo box (editable)
+            QComboBox* combo = new QComboBox();
+            combo->addItem(QObject::tr("(None)"), QString());
+
+            for (const auto& pair : visibleGenreList) {
+                if (pair.second == genreId)
+                    continue;
+                QString tag = QString("##%1##").arg(pair.second);
+                combo->addItem(pair.first, tag);
+            }
+
+            int currentIndex = combo->findData(displayGroup);
+            if (currentIndex >= 0) {
+                combo->setCurrentIndex(currentIndex);
+            }
+            table->setCellWidget(row, 8, combo);
+        }
+    };
+
+    // populate genres
+    populateTable(1, -1);
+
+    QObject::connect(filterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=]() {
+        int visibilityFilter = filterCombo->currentData().toInt();
+        int userDefinedFilter = userDefinedCombo->currentData().toInt();
+        populateTable(visibilityFilter, userDefinedFilter);
+    });
+
+    QObject::connect(userDefinedCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [=]() {
+                int visibilityFilter = filterCombo->currentData().toInt();
+                int userDefinedFilter = userDefinedCombo->currentData().toInt();
+                populateTable(visibilityFilter, userDefinedFilter);
+            });
+
+    // dialog buttons
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(
+            QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QPushButton* applyButton = new QPushButton(QObject::tr("Apply"));
+    buttonBox->addButton(applyButton, QDialogButtonBox::ApplyRole);
+    layout->addWidget(buttonBox);
+
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    QObject::connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    // apply routine
+    auto applyChanges = [&]() {
+        for (int row = 0; row < table->rowCount(); ++row) {
+            QTableWidgetItem* nameItem = table->item(row, 0);
+            QString genreName = nameItem->text();
+
+            auto it = std::find_if(genres.begin(), genres.end(), [&](const QVariantMap& g) {
+                return g.value("name").toString() == genreName;
+            });
+            if (it == genres.end()) {
+                continue;
+            }
+            QVariantMap genre = *it;
+            QString genreId = genre.value("id").toString();
+            QString oldDisplayGroup = genre.value("display_group").toString();
+            bool oldVisible = genre.value("is_visible").toBool();
+
+            QCheckBox* visibleCheckbox = table->cellWidget(row, 7)->findChild<QCheckBox*>();
+            bool newVisible = visibleCheckbox && visibleCheckbox->isChecked();
+
+            QComboBox* combo = qobject_cast<QComboBox*>(table->cellWidget(row, 8));
+            QString newDisplayGroup = combo ? combo->currentData().toString() : QString();
+
+            if (oldVisible == newVisible && oldDisplayGroup == newDisplayGroup) {
+                continue;
+            }
+
+            QSqlQuery updateQuery(m_database);
+            updateQuery.prepare(QStringLiteral(
+                    "UPDATE genres SET is_visible = :visible, display_group = "
+                    ":displayGroup WHERE id = :id"));
+            updateQuery.bindValue(":visible", newVisible);
+            updateQuery.bindValue(":displayGroup",
+                    newDisplayGroup.isEmpty() ? QVariant() : newDisplayGroup);
+            updateQuery.bindValue(":id", genreId);
+
+            if (!updateQuery.exec()) {
+                qWarning() << "[GenreTableModel] -> EditGenresMulti -> Failed "
+                              "to update genre"
+                           << genreId << ":" << updateQuery.lastError().text();
+                continue;
+            }
+
+            if (oldDisplayGroup != newDisplayGroup) {
+                QString oldTag = QString("##%1##").arg(genreId);
+                QString newTag = newDisplayGroup;
+
+                if (!newTag.isEmpty()) {
+                    QString newGenreId = newTag;
+                    newGenreId.remove("##");
+
+                    QSqlQuery updateGT(m_database);
+                    updateGT.prepare(QStringLiteral(
+                            "UPDATE genre_tracks SET genre_id = :newGenreId "
+                            "WHERE genre_id = :oldGenreId"));
+                    updateGT.bindValue(":newGenreId", newGenreId);
+                    updateGT.bindValue(":oldGenreId", genreId);
+                    if (!updateGT.exec()) {
+                        qWarning() << "[GenreTableModel] -> Failed to update "
+                                      "genre_tracks for genre"
+                                   << genreId;
+                    }
+
+                    QSqlQuery updateLib(m_database);
+                    updateLib.prepare(QStringLiteral(
+                            "UPDATE library SET genre = REPLACE(genre, :oldTag, :newTag) "
+                            "WHERE genre LIKE '%' || :oldTag || '%'"));
+                    updateLib.bindValue(":oldTag", oldTag);
+                    updateLib.bindValue(":newTag", newTag);
+                    if (!updateLib.exec()) {
+                        qWarning() << "[GenreTableModel] -> Failed to update "
+                                      "library.genre for genre"
+                                   << genreId;
+                    }
+                }
+            }
+
+            qDebug() << "[GenreTableModel] -> EditGenresMulti -> Updated genre" << genreId;
+        }
+
+        // refresh table
+        genreData.clear();
+        genreDao.loadGenres2QVL(genreData);
+        genres.clear();
+        for (const QVariant& v : genreData) {
+            genres << v.toMap();
+        }
+        std::sort(genres.begin(), genres.end(), [](const QVariantMap& a, const QVariantMap& b) {
+            return a.value("name").toString().toLower() < b.value("name").toString().toLower();
+        });
+        visibleGenreList.clear();
+        for (const QVariantMap& map : genres) {
+            if (map.value("is_visible").toBool()) {
+                visibleGenreList << qMakePair(map.value("name").toString(),
+                        map.value("id").toString());
+            }
+        }
+        std::sort(visibleGenreList.begin(),
+                visibleGenreList.end(),
+                [](const auto& a, const auto& b) {
+                    return a.first.toLower() < b.first.toLower();
+                });
+
+        int visibilityFilter = filterCombo->currentData().toInt();
+        int userDefinedFilter = userDefinedCombo->currentData().toInt();
+        populateTable(visibilityFilter, userDefinedFilter);
+    };
+
+    QObject::connect(applyButton, &QPushButton::clicked, applyChanges);
+    dialog.resize(1000, 600);
+    table->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+
+    if (dialog.exec() != QDialog::Accepted) {
+        return;
+    }
+
+    qDebug() << "[GenreTableModel] -> EditGenresMulti -> Done";
+    applyChanges();
 }

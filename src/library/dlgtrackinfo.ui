@@ -427,7 +427,7 @@
            </widget>
           </item>
 
-          <item row="10" column="0">
+           <item row="10" column="0">
            <widget class="QLabel" name="lblTrackColor">
             <property name="text">
              <string>Color</string>

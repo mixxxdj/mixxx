@@ -71,7 +71,30 @@ void GenreFeature::initActions() {
             &QAction::triggered,
             this,
             &GenreFeature::slotImportGenreModelFromCsv);
-
+    m_pEditGenreAction =
+            make_parented<QAction>(tr("Edit Genre"), this);
+    connect(m_pEditGenreAction.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotEditGenre);
+    m_pEditGenreMultiAction =
+            make_parented<QAction>(tr("Edit Multiple Genres"), this);
+    connect(m_pEditGenreMultiAction.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotEditGenreMulti);
+    m_pSetAllGenresVisibleAction =
+            make_parented<QAction>(tr("Make all Genres Visible"), this);
+    connect(m_pSetAllGenresVisibleAction.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotSetAllGenresVisible);
+    m_pMakeGenreInVisible =
+            make_parented<QAction>(tr("Make Genre InVisible"), this);
+    connect(m_pMakeGenreInVisible.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotMakeGenreInVisible);
     m_pCreateGenreAction = make_parented<QAction>(tr("Create New Genre"), this);
     connect(m_pCreateGenreAction.get(),
             &QAction::triggered,
@@ -390,6 +413,9 @@ void GenreFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateGenreAction.get());
     menu.addSeparator();
+    menu.addAction(m_pEditGenreMultiAction.get());
+    menu.addAction(m_pSetAllGenresVisibleAction.get());
+    menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
     menu.addSeparator();
     menu.addAction(m_pImportGenreModelFromCsvAction.get());
@@ -424,6 +450,10 @@ void GenreFeature::onRightClickChild(
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateGenreAction.get());
     menu.addSeparator();
+    menu.addAction(m_pEditGenreAction.get());
+    menu.addSeparator();
+    menu.addAction(m_pMakeGenreInVisible.get());
+    menu.addSeparator();
     menu.addAction(m_pRenameGenreAction.get());
     menu.addAction(m_pDuplicateGenreAction.get());
     menu.addAction(m_pDeleteGenreAction.get());
@@ -452,6 +482,38 @@ void GenreFeature::slotCreateGenre() {
         // expand Genres and scroll to new genre
         m_pSidebarWidget->selectChildIndex(indexFromGenreId(genreId), false);
     }
+}
+
+void GenreFeature::slotEditGenre() {
+    Genre genre;
+    if (readLastRightClickedGenre(&genre)) {
+        qDebug() << "[GenreFeature] -> slotEditGenre() -> genre" << genre;
+        qDebug() << "[GenreFeature] -> slotEditGenre() -> genre.getId() " << genre.getId();
+        m_genreTableModel.editGenre(genre.getId());
+        rebuildChildModel();
+    }
+}
+
+void GenreFeature::slotMakeGenreInVisible() {
+    Genre genre;
+    if (readLastRightClickedGenre(&genre)) {
+        qDebug() << "[GenreFeature] -> slotMakeGenreInVisible() -> genre" << genre;
+        qDebug() << "[GenreFeature] -> slotMakeGenreInVisible() -> genre.getId() " << genre.getId();
+        m_genreTableModel.setGenreInvisible(genre.getId());
+        rebuildChildModel();
+    }
+}
+
+void GenreFeature::slotEditGenreMulti() {
+    qDebug() << "[GenreFeature] -> slotEditGenreMulti()";
+    m_genreTableModel.EditGenresMulti();
+    rebuildChildModel();
+}
+
+void GenreFeature::slotSetAllGenresVisible() {
+    qDebug() << "[GenreFeature] -> slotAllGenresVisible()";
+    m_genreTableModel.setAllGenresVisible();
+    rebuildChildModel();
 }
 
 void GenreFeature::deleteItem(const QModelIndex& index) {

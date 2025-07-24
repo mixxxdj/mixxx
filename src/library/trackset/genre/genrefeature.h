@@ -77,6 +77,10 @@ class GenreFeature : public BaseTrackSetFeature {
     void slotUpdateGenreLabels(const QSet<GenreId>& updatedGenreIds);
 
     void slotImportGenreModelFromCsv();
+    void slotEditGenre();
+    void slotEditGenreMulti();
+    void slotMakeGenreInVisible();
+    void slotSetAllGenresVisible();
 
   private:
     void initActions();
@@ -118,6 +122,10 @@ class GenreFeature : public BaseTrackSetFeature {
     TrackId m_selectedTrackId;
 
     parented_ptr<QAction> m_pImportGenreModelFromCsvAction;
+    parented_ptr<QAction> m_pEditGenreAction;
+    parented_ptr<QAction> m_pEditGenreMultiAction;
+    parented_ptr<QAction> m_pSetAllGenresVisibleAction;
+    parented_ptr<QAction> m_pMakeGenreInVisible;
     parented_ptr<QAction> m_pCreateGenreAction;
     parented_ptr<QAction> m_pDeleteGenreAction;
     parented_ptr<QAction> m_pRenameGenreAction;

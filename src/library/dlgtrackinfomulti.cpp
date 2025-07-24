@@ -134,54 +134,6 @@ void DlgTrackInfoMulti::setGenreData(const QVariantList& genreData) {
     setupGenreCompleter();
 }
 
-// void DlgTrackInfoMulti::setupGenreCompleter() {
-//     QStringList genreNames = m_genreDao.getGenreNameList();
-//
-//     auto* genreCompleter = new QCompleter(genreNames, this);
-//     genreCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-//     genreCompleter->setFilterMode(Qt::MatchContains);
-//     genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
-//
-//     txtGenre->setCompleter(genreCompleter);
-//
-//     connect(txtGenre,
-//             &QComboBox::editTextChanged,
-//             this,
-//             [genreCompleter](const QString& text) {
-//                 QStringList parts = text.split(';', Qt::SkipEmptyParts);
-//                 const QString prefix =
-//                         parts.isEmpty() ? QString() : parts.last().trimmed();
-//                 genreCompleter->setCompletionPrefix(prefix);
-//                 if (!prefix.isEmpty()) {
-//                     genreCompleter->complete();
-//                 } else {
-//                     genreCompleter->popup()->hide();
-//                 }
-//             });
-//
-//     connect(genreCompleter,
-//             QOverload<const QString&>::of(&QCompleter::activated),
-//             this,
-//             [this](const QString& selected) {
-//                 QString full = txtGenre->lineEdit()->text();
-//                 QStringList parts = full.split(';', Qt::SkipEmptyParts);
-//                 if (!parts.isEmpty()) {
-//                     parts.last() = selected.trimmed();
-//                 } else {
-//                     parts = {selected.trimmed()};
-//                 }
-//
-//                 QString newText = parts.join("; ");
-//                 if (!newText.endsWith(";")) {
-//                     newText += "; ";
-//                 }
-//
-//                 QSignalBlocker blocker(txtGenre->lineEdit());
-//                 txtGenre->lineEdit()->setText(newText);
-//                 txtGenre->lineEdit()->setCursorPosition(newText.length());
-//             });
-// }
-
 void DlgTrackInfoMulti::setupGenreCompleter() {
     QStringList genreNames = m_genreDao.getGenreNameList();
 
@@ -789,7 +741,9 @@ void DlgTrackInfoMulti::saveTracks() {
     const QString albumArtist = validEditText(txtAlbumArtist);
     // EVE
     // const QString genre = validEditText(txtGenre);
-    const QString genreDisplay = validEditText(txtGenre);
+    // const QString genreDisplay = validEditText(txtGenre);
+    const QString genreDisplay = txtGenre->lineEdit()->text().trimmed();
+
     QString rawToSave;
     if (!genreDisplay.isNull()) {
         if (genreDisplay.isEmpty()) {
@@ -841,12 +795,56 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refAlbumInfo().setArtist(albumArtist);
         }
         // EVE
-        // if (!genre.isNull()) {
-        //    rec.refMetadata().refTrackInfo().setGenre(genre);
-        //}
-        if (!genreDisplay.isNull()) {
-            rec.refMetadata().refTrackInfo().setGenre(rawToSave);
-            const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(rawToSave);
+        if (!genreDisplay.isNull() && !genreDisplay.isEmpty()) {
+            QStringList newGenres = genreDisplay.split(';', Qt::SkipEmptyParts);
+            for (QString& g : newGenres) {
+                g = g.trimmed();
+            }
+
+            QStringList finalGenres;
+            QString mode = genreActionModeBox->currentText().toLower();
+
+            if (mode == "add") {
+                // track -> get existing displayed genre names
+                QString rawGenre = rec.getMetadata().getTrackInfo().getGenre();
+                QStringList existingGenres;
+                if (!rawGenre.isEmpty()) {
+                    QString displayGenres = m_genreDao.getDisplayGenreNameForGenreID(rawGenre);
+                    existingGenres = displayGenres.split(';', Qt::SkipEmptyParts);
+                    for (QString& g : existingGenres) {
+                        g = g.trimmed();
+                    }
+                }
+
+                // add new genres, check if not already in the list
+                finalGenres = existingGenres;
+                for (const QString& newG : newGenres) {
+                    if (!finalGenres.contains(newG, Qt::CaseInsensitive)) {
+                        finalGenres.append(newG);
+                    }
+                }
+            } else if (mode == "replace") {
+                // replace all genres with new selected genres
+                finalGenres = newGenres;
+            } else {
+                qWarning() << "[DlgTrackInfoMulti] Unknown genre action mode:" << mode;
+                finalGenres = newGenres;
+            }
+
+            // -> raw tag string
+            QStringList placeholders;
+            for (const QString& name : finalGenres) {
+                qint64 id = m_genreDao.getGenreId(name);
+                if (id != -1) {
+                    placeholders << QStringLiteral("##%1##").arg(id);
+                } else {
+                    placeholders << name;
+                }
+            }
+            QString updatedRawGenre = placeholders.join(';');
+
+            rec.refMetadata().refTrackInfo().setGenre(updatedRawGenre);
+            const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(updatedRawGenre);
             m_genreDao.updateGenreTracksForTrack(rec.getId(), genreIds);
         }
         // EVE

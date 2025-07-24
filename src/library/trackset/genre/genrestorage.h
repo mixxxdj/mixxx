@@ -31,6 +31,39 @@ class GenreQueryFields {
     bool isAutoDjSource(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iAutoDjSource);
     }
+    QString getNameLevel1(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iNameLevel1).toString();
+    }
+    QString getNameLevel2(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iNameLevel2).toString();
+    }
+    QString getNameLevel3(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iNameLevel3).toString();
+    }
+    QString getNameLevel4(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iNameLevel4).toString();
+    }
+    QString getNameLevel5(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iNameLevel5).toString();
+    }
+    QString getDisplayGroup(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iDisplayGroup).toString();
+    }
+    bool isUserDefined(const FwdSqlQuery& query) const {
+        return query.fieldValueBoolean(m_iIsUserDefined);
+    }
+    bool isVisible(const FwdSqlQuery& query) const {
+        return query.fieldValueBoolean(m_iIsVisible);
+    }
+    int getCount(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iCount).toInt();
+    }
+    int getShow(const FwdSqlQuery& query) const {
+        return query.fieldValueBoolean(m_iShow);
+    }
+    int getDisplayOrder(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iDisplayOrder).toInt();
+    }
 
     void populateFromQuery(
             const FwdSqlQuery& query,
@@ -41,6 +74,17 @@ class GenreQueryFields {
     DbFieldIndex m_iName;
     DbFieldIndex m_iLocked;
     DbFieldIndex m_iAutoDjSource;
+    DbFieldIndex m_iNameLevel1;
+    DbFieldIndex m_iNameLevel2;
+    DbFieldIndex m_iNameLevel3;
+    DbFieldIndex m_iNameLevel4;
+    DbFieldIndex m_iNameLevel5;
+    DbFieldIndex m_iDisplayGroup;
+    DbFieldIndex m_iIsUserDefined;
+    DbFieldIndex m_iIsVisible;
+    DbFieldIndex m_iCount;
+    DbFieldIndex m_iShow;
+    DbFieldIndex m_iDisplayOrder;
 };
 
 class GenreSelectResult : public FwdSqlQuerySelectResult {

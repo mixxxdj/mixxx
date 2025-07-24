@@ -12,6 +12,7 @@
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
+#include "library/trackset/genre/genre.h"
 #include "library/trackset/genre/genreschema.h"
 #include "moc_genredao.cpp"
 #include "util/db/dbconnection.h"
@@ -30,24 +31,100 @@ void GenreDao::initialize(const QSqlDatabase& database) {
     loadGenres2QVL(m_genreData);
 }
 
+bool GenreDao::readGenreById(GenreId id, Genre* pGenre) const {
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT id, name, name_level_1, name_level_2, name_level_3, "
+            "name_level_4, name_level_5, display_group, display_order, "
+            "is_visible, is_user_defined, count, show, locked, autodj_source "
+            "FROM genres WHERE id = :id");
+
+    query.bindValue(":id", id.toVariant());
+
+    if (!query.exec()) {
+        qWarning() << "[GenreDao] Failed to query genre by ID:" << query.lastError().text();
+        return false;
+    }
+
+    if (!query.next()) {
+        return false;
+    }
+
+    if (pGenre) {
+        pGenre->setId(GenreId(query.value(0)));
+        pGenre->setName(query.value(1).toString());
+        pGenre->setNameLevel1(query.value(2).toString());
+        pGenre->setNameLevel2(query.value(3).toString());
+        pGenre->setNameLevel3(query.value(4).toString());
+        pGenre->setNameLevel4(query.value(5).toString());
+        pGenre->setNameLevel5(query.value(6).toString());
+        pGenre->setDisplayGroup(query.value(7).toString());
+        pGenre->setDisplayOrder(query.value(8).toInt());
+        pGenre->setVisible(query.value(9).toBool());
+        pGenre->setUserDefined(query.value(10).toBool());
+        pGenre->setCount(query.value(11).toInt());
+        pGenre->setShow(query.value(12).toInt());
+        pGenre->setLocked(query.value(13).toBool());
+        pGenre->setAutoDjSource(query.value(14).toBool());
+    }
+    return true;
+}
+
+bool GenreDao::insertGenre(const Genre& genre, GenreId* pInsertedId) {
+    QSqlQuery query(m_database);
+    query.prepare(
+            "INSERT INTO genres (name, name_level_1, name_level_2, name_level_3, "
+            "name_level_4, name_level_5, display_group, display_order, "
+            "is_visible, is_user_defined, count, show, locked, autodj_source) "
+            "VALUES (:name, :lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :display_group, "
+            ":display_order, :is_visible, :is_user_defined, :count, :show, :locked, :autodj)");
+
+    query.bindValue(":name", genre.getName());
+    query.bindValue(":lvl1", genre.getNameLevel1());
+    query.bindValue(":lvl2", genre.getNameLevel2());
+    query.bindValue(":lvl3", genre.getNameLevel3());
+    query.bindValue(":lvl4", genre.getNameLevel4());
+    query.bindValue(":lvl5", genre.getNameLevel5());
+    query.bindValue(":display_group", genre.getDisplayGroup());
+    query.bindValue(":display_order", genre.getDisplayOrder());
+    query.bindValue(":is_visible", genre.isVisible());
+    query.bindValue(":is_user_defined", genre.isUserDefined());
+    query.bindValue(":count", genre.getCount());
+    query.bindValue(":show", genre.getShow());
+    query.bindValue(":locked", genre.isLocked());
+    query.bindValue(":autodj", genre.isAutoDjSource());
+
+    if (!query.exec()) {
+        qWarning() << "[GenreDao] Failed to insert genre:" << query.lastError().text();
+        return false;
+    }
+
+    if (pInsertedId) {
+        *pInsertedId = GenreId(query.lastInsertId());
+    }
+
+    return true;
+}
+
 void GenreDao::loadGenres2QVL(QVariantList& m_genreData) {
     m_genreData.clear();
     QSqlQuery queryGenre(m_database);
     queryGenre.prepare(
-            "SELECT id, custom_name, name_level_1, name_level_2, name_level_3, "
-            "name_level_4, name_level_5, display_order, is_visible, "
+            "SELECT id, name, name_level_1, name_level_2, name_level_3, "
+            "name_level_4, name_level_5, display_order, display_group, is_visible, "
             "is_user_defined FROM genres ORDER BY id ASC");
     if (queryGenre.exec()) {
         while (queryGenre.next()) {
             QVariantMap genresEntry;
             genresEntry["id"] = queryGenre.value("id");
-            genresEntry["custom_name"] = queryGenre.value("custom_name");
+            genresEntry["name"] = queryGenre.value("name");
             genresEntry["name_level_1"] = queryGenre.value("name_level_1");
             genresEntry["name_level_2"] = queryGenre.value("name_level_2");
             genresEntry["name_level_3"] = queryGenre.value("name_level_3");
             genresEntry["name_level_4"] = queryGenre.value("name_level_4");
             genresEntry["name_level_5"] = queryGenre.value("name_level_5");
             genresEntry["display_order"] = queryGenre.value("display_order");
+            genresEntry["display_group"] = queryGenre.value("display_group");
             genresEntry["is_visible"] = queryGenre.value("is_visible");
             genresEntry["is_user_defined"] = queryGenre.value("is_user_defined");
             m_genreData.append(genresEntry);
@@ -113,10 +190,7 @@ qint64 GenreDao::getGenreId(const QString& genreName) {
     loadGenres2QVL(m_genreData);
     for (const QVariant& var : std::as_const(m_genreData)) {
         const QVariantMap entry = var.toMap();
-        // if (QString::compare(entry["name_level_1"].toString(),
         if (QString::compare(entry[GENRETABLE_NAME].toString(),
-
-                    // if (QString::compare(entry["custom_name"].toString(),
                     genreName,
                     Qt::CaseInsensitive) == 0) {
             return entry["id"].toLongLong();
@@ -129,7 +203,6 @@ QHash<QString, qint64> GenreDao::getNameToIdMap() const {
     QHash<QString, qint64> map;
     for (const QVariant& var : std::as_const(m_genreData)) {
         const QVariantMap entry = var.toMap();
-        // map.insert(entry["name_level_1"].toString(), entry["id"].toLongLong());
         map.insert(entry[GENRETABLE_NAME].toString(), entry["id"].toLongLong());
     }
     return map;
@@ -139,7 +212,6 @@ QHash<qint64, QString> GenreDao::getIdToNameMap() const {
     QHash<qint64, QString> map;
     for (const QVariant& var : std::as_const(m_genreData)) {
         const QVariantMap entry = var.toMap();
-        // map.insert(entry["id"].toLongLong(), entry["name_level_1"].toString());
         map.insert(entry["id"].toLongLong(), entry[GENRETABLE_NAME].toString());
     }
     return map;
@@ -163,7 +235,6 @@ QMap<QString, QString> GenreDao::getAllGenres() {
     return genreMap;
 }
 
-// QString GenreDao::getIdsForGenreNames(const QString& genreText) const {
 QString GenreDao::getIdsForGenreNames(const QString& genreText) {
     const QStringList parts = genreText.split(';', Qt::SkipEmptyParts);
     QStringList resolved;
@@ -172,10 +243,8 @@ QString GenreDao::getIdsForGenreNames(const QString& genreText) {
         const QString trimmed = part.trimmed();
         bool matched = false;
 
-        // for (const QVariant& entryVar : m_genreData) {
         for (const QVariant& entryVar : std::as_const(m_genreData)) {
             const QVariantMap entry = entryVar.toMap();
-            // QString name = entry["name_level_1"].toString();
             QString name = entry[GENRETABLE_NAME].toString();
 
             if (QString::compare(name, trimmed, Qt::CaseInsensitive) == 0) {
@@ -197,7 +266,10 @@ QStringList GenreDao::getGenreNameList() const {
     QStringList genreNames;
     for (const QVariant& entryVar : m_genreData) {
         const QVariantMap entry = entryVar.toMap();
-        // genreNames << entry["name_level_1"].toString();
+        // is_visible = 0 -> skip genre
+        if (!entry["is_visible"].toBool()) {
+            continue;
+        }
         genreNames << entry[GENRETABLE_NAME].toString();
     }
     genreNames.removeDuplicates();

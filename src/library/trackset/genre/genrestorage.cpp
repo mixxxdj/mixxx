@@ -46,7 +46,8 @@ const QString kGenreSummaryViewSelect =
 const QString kGenreSummaryViewQuery =
         QStringLiteral(
                 "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS %2 %3 "
-                "GROUP BY %4.%5")
+                "WHERE %4.is_visible != 0 "
+                "GROUP BY %4.%5 ")
                 .arg(
                         GENRE_SUMMARY_VIEW,
                         kGenreSummaryViewSelect,
@@ -103,7 +104,15 @@ GenreQueryFields::GenreQueryFields(const FwdSqlQuery& query)
         : m_iId(query.fieldIndex(GENRETABLE_ID)),
           m_iName(query.fieldIndex(GENRETABLE_NAME)),
           m_iLocked(query.fieldIndex(GENRETABLE_LOCKED)),
-          m_iAutoDjSource(query.fieldIndex(GENRETABLE_AUTODJ_SOURCE)) {
+          m_iAutoDjSource(query.fieldIndex(GENRETABLE_AUTODJ_SOURCE)),
+          m_iNameLevel1(query.fieldIndex(GENRETABLE_NAMELEVEL1)),
+          m_iNameLevel2(query.fieldIndex(GENRETABLE_NAMELEVEL2)),
+          m_iNameLevel3(query.fieldIndex(GENRETABLE_NAMELEVEL3)),
+          m_iNameLevel4(query.fieldIndex(GENRETABLE_NAMELEVEL4)),
+          m_iNameLevel5(query.fieldIndex(GENRETABLE_NAMELEVEL5)),
+          m_iDisplayGroup(query.fieldIndex(GENRETABLE_DISPLAYGROUP)),
+          m_iIsVisible(query.fieldIndex(GENRETABLE_ISVISIBLE)),
+          m_iIsUserDefined(query.fieldIndex(GENRETABLE_ISUSERDEFINED)) {
 }
 
 void GenreQueryFields::populateFromQuery(
@@ -113,6 +122,19 @@ void GenreQueryFields::populateFromQuery(
     pGenre->setName(getName(query));
     pGenre->setLocked(isLocked(query));
     pGenre->setAutoDjSource(isAutoDjSource(query));
+
+    pGenre->setNameLevel1(getNameLevel1(query));
+    pGenre->setNameLevel2(getNameLevel2(query));
+    pGenre->setNameLevel3(getNameLevel3(query));
+    pGenre->setNameLevel4(getNameLevel4(query));
+    pGenre->setNameLevel5(getNameLevel5(query));
+    pGenre->setDisplayGroup(getDisplayGroup(query));
+    // not sure if needed
+    pGenre->setVisible(isVisible(query));
+    pGenre->setUserDefined(isUserDefined(query));
+    // pGenre->setCount(getCount(query));
+    // pGenre->setShow(getShow(query));
+    // pGenre->setDisplayOrder(getDisplayOrder(query));
 }
 
 GenreTrackQueryFields::GenreTrackQueryFields(const FwdSqlQuery& query)
@@ -407,11 +429,15 @@ uint GenreStorage::countGenreTracks(GenreId genreId) const {
 
 // static
 QString GenreStorage::formatSubselectQueryForGenreTrackIds(GenreId genreId) {
-    return QStringLiteral("SELECT %1 FROM %2 WHERE %3=%4")
+    const QString genreIdStr = genreId.toString();
+    const QString displayGroupStr = QString("##%1##").arg(genreIdStr);
+    return QStringLiteral("SELECT %1 FROM %2 WHERE %3=%4 OR %5 = '%6'")
             .arg(GENRETRACKSTABLE_TRACKID,
                     GENRE_TRACKS_TABLE,
                     GENRETRACKSTABLE_GENREID,
-                    genreId.toString());
+                    genreId.toString(),
+                    GENRETABLE_DISPLAYGROUP,
+                    displayGroupStr);
 }
 
 QString GenreStorage::formatQueryForTrackIdsByGenreNameLike(
@@ -480,7 +506,7 @@ GenreSummarySelectResult GenreStorage::selectGenresWithTrackCount(
                     QStringLiteral("SELECT *, "
                                    "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
                                    "%1.%5 in (%9)) AS %6, "
-                                   "0 as %7 FROM %2 ORDER BY %8")
+                                   "0 as %7 FROM %2 WHERE %2.is_visible = 1 ORDER BY %8")
                             .arg(
                                     GENRE_TRACKS_TABLE,
                                     GENRE_TABLE,
@@ -854,40 +880,6 @@ bool GenreStorage::onAddingGenreTracks(GenreId genreId, const QList<TrackId>& tr
     return true;
 }
 
-// bool GenreStorage::onAddingGenreTracks(
-//         GenreId genreId,
-//         const QList<TrackId>& trackIds) {
-//     FwdSqlQuery query(m_database,
-//             QStringLiteral(
-//                     "INSERT OR IGNORE INTO %1 (%2, %3) "
-//                     "VALUES (:genreId,:trackId)")
-//                     .arg(
-//                             GENRE_TRACKS_TABLE,
-//                             GENRETRACKSTABLE_GENREID,
-//                             GENRETRACKSTABLE_TRACKID));
-//     if (!query.isPrepared()) {
-//         return false;
-//     }
-//     query.bindValue(":genreId", genreId);
-//     for (const auto& trackId : trackIds) {
-//         query.bindValue(":trackId", trackId);
-//         if (!query.execPrepared()) {
-//             return false;
-//         }
-//         if (query.numRowsAffected() == 0) {
-//             // track is already in genre
-//             if (kLogger.debugEnabled()) {
-//                 kLogger.debug()
-//                         << "Track" << trackId
-//                         << "not added to genre" << genreId;
-//             }
-//         } else {
-//             DEBUG_ASSERT(query.numRowsAffected() == 1);
-//         }
-//     }
-//     return true;
-// }
-
 bool GenreStorage::onRemovingGenreTracks(
         GenreId genreId,
         const QList<TrackId>& trackIds) {
@@ -1001,42 +993,6 @@ bool GenreStorage::onRemovingGenreTracks(
 
     return true;
 }
-
-// bool GenreStorage::onRemovingGenreTracks(
-//         GenreId genreId,
-//         const QList<TrackId>& trackIds) {
-//     // NOTE(uklotzde): We remove tracks in a loop
-//     // analogously to adding tracks (see above).
-//     FwdSqlQuery query(m_database,
-//             QStringLiteral(
-//                     "DELETE FROM %1 "
-//                     "WHERE %2=:genreId AND %3=:trackId")
-//                     .arg(
-//                             GENRE_TRACKS_TABLE,
-//                             GENRETRACKSTABLE_GENREID,
-//                             GENRETRACKSTABLE_TRACKID));
-//     if (!query.isPrepared()) {
-//         return false;
-//     }
-//     query.bindValue(":genreId", genreId);
-//     for (const auto& trackId : trackIds) {
-//         query.bindValue(":trackId", trackId);
-//         if (!query.execPrepared()) {
-//             return false;
-//         }
-//         if (query.numRowsAffected() == 0) {
-//             // track not found in genre
-//             if (kLogger.debugEnabled()) {
-//                 kLogger.debug()
-//                         << "Track" << trackId
-//                         << "not removed from genre" << genreId;
-//             }
-//         } else {
-//             DEBUG_ASSERT(query.numRowsAffected() == 1);
-//         }
-//     }
-//     return true;
-// }
 
 bool GenreStorage::onPurgingTracks(
         const QList<TrackId>& trackIds) {

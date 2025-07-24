@@ -8,12 +8,16 @@
 #include "util/class.h"
 
 class QSqlDatabase;
+class Genre;
 
 class GenreDao : public QObject, public virtual DAO {
     Q_OBJECT
   public:
     explicit GenreDao(QObject* parent = nullptr);
     ~GenreDao() override = default;
+
+    bool readGenreById(GenreId id, Genre* pGenre) const;
+    bool insertGenre(const Genre& genre, GenreId* pInsertedId);
 
     void initialize(const QSqlDatabase& database) override;
     void loadGenres2QVL(QVariantList& m_genreData);
@@ -31,9 +35,6 @@ class GenreDao : public QObject, public virtual DAO {
 
     QHash<QString, qint64> getNameToIdMap() const;
     QHash<qint64, QString> getIdToNameMap() const;
-    // bool updateGenreTracksForTrack(
-    //         TrackId trackId,
-    //         const QStringList& genreNames);
     QList<GenreId> getGenreIdsFromIdString(const QString& genreIdString);
 
     bool updateGenreTracksForTrack(

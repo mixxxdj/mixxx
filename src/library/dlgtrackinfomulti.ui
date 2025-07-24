@@ -340,6 +340,47 @@
          </layout>
        </item>
 
+       <item row="6" column="2">
+         <widget class="QLabel" name="lblGenreAction">
+           <property name="text">
+             <string>Action</string>
+           </property>
+           <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+         </widget>
+       </item>
+       <item row="6" column="3">
+         <widget class="QComboBox" name="genreActionModeBox">
+           <property name="toolTip">
+             <string>Choose whether to add the selected genre(s) to the genre of all selected tracks or to replace the genre(s) of all selected tracks with the current selection. </string>
+           </property>
+           <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+             <size>
+               <width>0</width>
+               <height>0</height>
+             </size>
+           </property>
+           <item>
+             <property name="text">
+               <string>Add</string>
+             </property>
+           </item>
+           <item>
+             <property name="text">
+               <string>Replace</string>
+             </property>
+           </item>
+         </widget>
+       </item>
+
+
        <item row="7" column="0">
        <widget class="QLabel" name="lblGrouping">
         <property name="text">
@@ -433,8 +474,7 @@
         </property>
        </widget>
       </item>
-
-      <item row="10" column="0">
+       <item row="10" column="0">
        <widget class="QLabel" name="lblTrackColor">
         <property name="text">
          <string>Color</string>
