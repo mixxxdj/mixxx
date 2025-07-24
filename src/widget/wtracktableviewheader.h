@@ -77,6 +77,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
   private slots:
     void showOrHideColumn(int);
+    void toggleSyncCustomHeaderState(bool checked);
 
   private:
     int hiddenCount();

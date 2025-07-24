@@ -14,6 +14,7 @@
 
 namespace {
 static const QString kHeaderStateKey = QStringLiteral("header_state_pb");
+static const QString kHeaderSyncKey = QStringLiteral("sync_with_custom_header");
 } // namespace
 
 HeaderViewState::HeaderViewState(const QHeaderView& headers) {
@@ -235,10 +236,19 @@ void WTrackTableViewHeader::updateMenu() {
     }
 
     // Only show this if the track model allows.
+    // TODO Move to "Columns layout (management)"?
     // TODO Ideally this would be a default ON TrackModel::Capability
     // which we remove for incompatible track models.
     if (pTrackModel->canLoadTrackSetColumns()) {
         m_menu.addSeparator();
+
+        auto pStoreAsDefaultHeaderAction =
+                make_parented<QAction>(tr("Save columns layout"), &m_menu);
+        connect(pStoreAsDefaultHeaderAction,
+                &QAction::triggered,
+                this,
+                &WTrackTableViewHeader::storeAsCustomHeaderState);
+        m_menu.addAction(pStoreAsDefaultHeaderAction);
 
         auto pLoadTracksViewHeaderAction =
                 make_parented<QAction>(tr("Load saved columns layout"), &m_menu);
@@ -248,13 +258,33 @@ void WTrackTableViewHeader::updateMenu() {
                 &WTrackTableViewHeader::loadCustomHeaderState);
         m_menu.addAction(pLoadTracksViewHeaderAction);
 
-        auto pStoreAsDefaultHeaderAction =
-                make_parented<QAction>(tr("Save columns layout"), &m_menu);
-        connect(pStoreAsDefaultHeaderAction,
+        // Custom QCheckBox with fixed hover behavior
+        auto pSyncCheckBox = make_parented<WMenuCheckBox>(
+                tr("Sync with saved columns layout"), &m_menu);
+        bool viewIsSyncedToCustomHeaderState =
+                pTrackModel->getModelSetting(kHeaderSyncKey) == QStringLiteral("true");
+        pSyncCheckBox->setChecked(viewIsSyncedToCustomHeaderState);
+
+        connect(pSyncCheckBox.get(),
+                &QCheckBox::toggled,
+                this,
+                [this, pSyncCheckBox{pSyncCheckBox.get()}]() {
+                    m_menu.hide();
+                    toggleSyncCustomHeaderState(pSyncCheckBox->isChecked());
+                });
+
+        auto pSyncAction = make_parented<QWidgetAction>(this);
+        pSyncAction->setDefaultWidget(pSyncCheckBox.get());
+        // Pressing Return triggers the action but that would not toggle the
+        // checkbox, we need to do this ourselves while the menu is being closed.
+        connect(pSyncAction,
                 &QAction::triggered,
                 this,
-                &WTrackTableViewHeader::storeAsCustomHeaderState);
-        m_menu.addAction(pStoreAsDefaultHeaderAction);
+                [this, pSyncCheckBox{pSyncCheckBox.get()}] {
+                    pSyncCheckBox->toggle();
+                    toggleSyncCustomHeaderState(pSyncCheckBox->isChecked());
+                });
+        m_menu.addAction(pSyncAction);
     }
 
     // Only show the shuffle action in models that allow sorting.
@@ -276,6 +306,15 @@ void WTrackTableViewHeader::saveHeaderState() {
     if (!pTrackModel) {
         return;
     }
+
+    bool viewIsSyncedToCustomHeaderState =
+            pTrackModel->getModelSetting(kHeaderSyncKey) == QStringLiteral("true");
+    if (viewIsSyncedToCustomHeaderState) {
+        storeAsCustomHeaderState();
+        return;
+    }
+
+    // Store header for this model
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
     pTrackModel->setModelSetting(kHeaderStateKey, view_state.saveState());
@@ -288,7 +327,15 @@ void WTrackTableViewHeader::restoreHeaderState() {
         return;
     }
 
-    QString headerStateString = pTrackModel->getModelSetting(kHeaderStateKey);
+    QString headerStateString;
+    bool viewIsSyncedToCustomHeaderState =
+            pTrackModel->getModelSetting(kHeaderSyncKey) == QStringLiteral("true");
+    if (viewIsSyncedToCustomHeaderState) {
+        headerStateString = pTrackModel->getCustomHeaderState();
+    } else {
+        headerStateString = pTrackModel->getModelSetting(kHeaderStateKey);
+    }
+
     if (headerStateString.isNull()) {
         loadDefaultHeaderState();
     } else {
@@ -333,6 +380,19 @@ void WTrackTableViewHeader::loadCustomHeaderState() {
     view_state.restoreState(this, false);
 
     updateMenu();
+}
+
+void WTrackTableViewHeader::toggleSyncCustomHeaderState(bool checked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    pTrackModel->setModelSetting(kHeaderSyncKey, checked ? "true" : "false");
+
+    if (checked) {
+        loadCustomHeaderState();
+    }
+    // TODO Else try to reload the model's stored header?
 }
 
 void WTrackTableViewHeader::storeAsCustomHeaderState() {
