@@ -3763,7 +3763,7 @@ trace : ci-dessus + messages de profilage</translation>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="97"/>
         <source>Auto DJ Track Source</source>
-        <translation>Auto DJ Source de piste</translation>
+        <translation>Auto DJ source de piste</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="479"/>
