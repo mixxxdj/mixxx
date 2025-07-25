@@ -4,7 +4,6 @@
 #include "util/logger.h"
 #include "util/assert.h"
 
-
 namespace {
 
 const mixxx::Logger kLogger("FwdSqlQuery");

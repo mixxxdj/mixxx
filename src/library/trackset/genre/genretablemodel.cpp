@@ -263,6 +263,20 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
         return 0;
     }
 
+    int insertedCount = 0;
+
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
+            QObject::tr("Confirm CSV-Import"),
+            QObject::tr("This action will add all genres of the model defined in the csv. \n "
+                        "It's not possible to reverse this action. \n "
+                        "Are you sure you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+
+    if (reply != QMessageBox::Yes) {
+        qDebug() << "[GenreTableModel] -> importCSV -> Action cancelled by user.";
+        return insertedCount;
+    }
+
     QTextStream in(&file);
     const QString headerLine = in.readLine();
     const QStringList headerFields = headerLine.split(',');
@@ -283,10 +297,9 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
     QSqlQuery insertQuery(m_database);
     insertQuery.prepare(
             "INSERT INTO genres (name_level_1, name_level_2, name_level_3, "
-            "name_level_4, name_level_5, name, is_visible, is_user_defined) "
-            "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :name, 1, 0)");
+            "name_level_4, name_level_5, name, is_visible, is_model_defined) "
+            "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :name, 1, 1)");
 
-    int insertedCount = 0;
     int lineNumber = 1;
 
     if (!m_database.transaction()) {
@@ -466,7 +479,7 @@ void GenreTableModel::editGenre(GenreId genreId) {
     // genre display_group" << genre.getDisplayGroup(); qDebug() <<
     // "[GenreTableModel] -> editGenre -> genre is_visible" <<
     // genre.isVisible(); qDebug() << "[GenreTableModel] -> editGenre -> genre
-    // is_user_defined" << genre.isUserDefined();
+    // is_model_defined" << genre.isUserDefined();
 
     QDialog dialog;
     dialog.setWindowTitle(QObject::tr("Edit Genre"));
@@ -755,8 +768,8 @@ void GenreTableModel::EditGenresMulti() {
     QLabel* userDefinedLabel = new QLabel(QObject::tr("Filter by User-Defined / Model Imported:"));
     QComboBox* userDefinedCombo = new QComboBox();
     userDefinedCombo->addItem("All genres", QVariant(-1));
-    userDefinedCombo->addItem("Only User-Defined genres", QVariant(1));
-    userDefinedCombo->addItem("Only Model Imported genres", QVariant(0));
+    userDefinedCombo->addItem("Only User-Defined genres", QVariant(0));
+    userDefinedCombo->addItem("Only Model-Defined genres", QVariant(1));
     userDefinedLayout->addWidget(userDefinedLabel);
     userDefinedLayout->addWidget(userDefinedCombo);
     layout->addLayout(userDefinedLayout);
@@ -768,7 +781,7 @@ void GenreTableModel::EditGenresMulti() {
             << "Genre" << "Name_Level_1"
             << "Name_Level_2" << "Name_Level_3" << "Name_Level_4"
             << "Name_Level_5"
-            << "User Def" << "Visible" << "Display Group");
+            << "Model Def" << "Visible" << "Display Group");
     table->setColumnWidth(0, 150);
     table->setColumnWidth(1, 100);
     table->setColumnWidth(2, 100);
@@ -804,7 +817,7 @@ void GenreTableModel::EditGenresMulti() {
 
         for (const QVariantMap& genre : std::as_const(genres)) {
             bool isVisible = genre.value("is_visible").toBool();
-            bool isUserDefined = genre.value("is_user_defined").toBool();
+            bool isUserDefined = genre.value("is_model_defined").toBool();
 
             // apply visibility filter
             if ((visibilityFilter == 1 && !isVisible) ||
@@ -860,7 +873,7 @@ void GenreTableModel::EditGenresMulti() {
             name_level_5_Item->setFlags(name_level_5_Item->flags() & ~Qt::ItemIsEditable);
             table->setItem(row, 5, name_level_5_Item);
 
-            // is_user_defined checkbox (non-editable)
+            // is_model_defined checkbox (non-editable)
             QCheckBox* userDefinedCheckbox = new QCheckBox();
             userDefinedCheckbox->setChecked(isUserDefined);
             userDefinedCheckbox->setEnabled(false); // read-only

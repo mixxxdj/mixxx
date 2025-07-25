@@ -49,8 +49,8 @@ class GenreQueryFields {
     QString getDisplayGroup(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iDisplayGroup).toString();
     }
-    bool isUserDefined(const FwdSqlQuery& query) const {
-        return query.fieldValueBoolean(m_iIsUserDefined);
+    bool isModelDefined(const FwdSqlQuery& query) const {
+        return query.fieldValueBoolean(m_iIsModelDefined);
     }
     bool isVisible(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iIsVisible);
@@ -80,7 +80,7 @@ class GenreQueryFields {
     DbFieldIndex m_iNameLevel4;
     DbFieldIndex m_iNameLevel5;
     DbFieldIndex m_iDisplayGroup;
-    DbFieldIndex m_iIsUserDefined;
+    DbFieldIndex m_iIsModelDefined;
     DbFieldIndex m_iIsVisible;
     DbFieldIndex m_iCount;
     DbFieldIndex m_iShow;

@@ -28,7 +28,7 @@ const QString GENRETABLE_NAMELEVEL4 = QStringLiteral("name_level_4");
 const QString GENRETABLE_NAMELEVEL5 = QStringLiteral("name_level_5");
 const QString GENRETABLE_DISPLAYGROUP = QStringLiteral("display_group");
 const QString GENRETABLE_ISVISIBLE = QStringLiteral("is_visible");
-const QString GENRETABLE_ISUSERDEFINED = QStringLiteral("is_user_defined");
+const QString GENRETABLE_ISMODELDEFINED = QStringLiteral("is_model_defined");
 
 const QString GENRETRACKSTABLE_GENREID = QStringLiteral("genre_id");
 const QString GENRETRACKSTABLE_TRACKID = QStringLiteral("track_id");

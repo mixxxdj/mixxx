@@ -111,7 +111,7 @@ GenreQueryFields::GenreQueryFields(const FwdSqlQuery& query)
           m_iNameLevel4(query.fieldIndex(GENRETABLE_NAMELEVEL4)),
           m_iNameLevel5(query.fieldIndex(GENRETABLE_NAMELEVEL5)),
           m_iDisplayGroup(query.fieldIndex(GENRETABLE_DISPLAYGROUP)),
-          m_iIsUserDefined(query.fieldIndex(GENRETABLE_ISUSERDEFINED)),
+          m_iIsModelDefined(query.fieldIndex(GENRETABLE_ISMODELDEFINED)),
           m_iIsVisible(query.fieldIndex(GENRETABLE_ISVISIBLE)) {
 }
 
@@ -131,7 +131,7 @@ void GenreQueryFields::populateFromQuery(
     pGenre->setDisplayGroup(getDisplayGroup(query));
     // not sure if needed
     pGenre->setVisible(isVisible(query));
-    pGenre->setUserDefined(isUserDefined(query));
+    pGenre->setModelDefined(isModelDefined(query));
     // pGenre->setCount(getCount(query));
     // pGenre->setShow(getShow(query));
     // pGenre->setDisplayOrder(getDisplayOrder(query));

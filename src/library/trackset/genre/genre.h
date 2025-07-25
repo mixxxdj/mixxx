@@ -47,8 +47,8 @@ class Genre : public DbNamedEntity<GenreId> {
     bool isVisible() const {
         return m_isVisible;
     }
-    bool isUserDefined() const {
-        return m_isUserDefined;
+    bool isModelDefined() const {
+        return m_isModelDefined;
     }
     int displayOrder() const {
         return m_displayOrder;
@@ -80,8 +80,8 @@ class Genre : public DbNamedEntity<GenreId> {
     void setVisible(bool visible) {
         m_isVisible = visible;
     }
-    void setUserDefined(bool userDefined) {
-        m_isUserDefined = userDefined;
+    void setModelDefined(bool userDefined) {
+        m_isModelDefined = userDefined;
     }
     void setDisplayOrder(int order) {
         m_displayOrder = order;
@@ -131,7 +131,7 @@ class Genre : public DbNamedEntity<GenreId> {
     QString m_nameLevel5;
     QString m_displayGroup;
     bool m_isVisible = true;
-    bool m_isUserDefined = false;
+    bool m_isModelDefined = false;
     int m_displayOrder;
     int m_count;
     int m_show;

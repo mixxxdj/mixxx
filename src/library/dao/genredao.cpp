@@ -36,7 +36,7 @@ bool GenreDao::readGenreById(GenreId id, Genre* pGenre) const {
     query.prepare(
             "SELECT id, name, name_level_1, name_level_2, name_level_3, "
             "name_level_4, name_level_5, display_group, display_order, "
-            "is_visible, is_user_defined, count, show, locked, autodj_source "
+            "is_visible, is_model_defined, count, show, locked, autodj_source "
             "FROM genres WHERE id = :id");
 
     query.bindValue(":id", id.toVariant());
@@ -61,7 +61,7 @@ bool GenreDao::readGenreById(GenreId id, Genre* pGenre) const {
         pGenre->setDisplayGroup(query.value(7).toString());
         pGenre->setDisplayOrder(query.value(8).toInt());
         pGenre->setVisible(query.value(9).toBool());
-        pGenre->setUserDefined(query.value(10).toBool());
+        pGenre->setModelDefined(query.value(10).toBool());
         pGenre->setCount(query.value(11).toInt());
         pGenre->setShow(query.value(12).toInt());
         pGenre->setLocked(query.value(13).toBool());
@@ -75,9 +75,9 @@ bool GenreDao::insertGenre(const Genre& genre, GenreId* pInsertedId) {
     query.prepare(
             "INSERT INTO genres (name, name_level_1, name_level_2, name_level_3, "
             "name_level_4, name_level_5, display_group, display_order, "
-            "is_visible, is_user_defined, count, show, locked, autodj_source) "
+            "is_visible, is_model_defined, count, show, locked, autodj_source) "
             "VALUES (:name, :lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :display_group, "
-            ":display_order, :is_visible, :is_user_defined, :count, :show, :locked, :autodj)");
+            ":display_order, :is_visible, :is_model_defined, :count, :show, :locked, :autodj)");
 
     query.bindValue(":name", genre.getName());
     query.bindValue(":lvl1", genre.getNameLevel1());
@@ -88,7 +88,7 @@ bool GenreDao::insertGenre(const Genre& genre, GenreId* pInsertedId) {
     query.bindValue(":display_group", genre.getDisplayGroup());
     query.bindValue(":display_order", genre.getDisplayOrder());
     query.bindValue(":is_visible", genre.isVisible());
-    query.bindValue(":is_user_defined", genre.isUserDefined());
+    query.bindValue(":is_model_defined", genre.isModelDefined());
     query.bindValue(":count", genre.getCount());
     query.bindValue(":show", genre.getShow());
     query.bindValue(":locked", genre.isLocked());
@@ -112,7 +112,7 @@ void GenreDao::loadGenres2QVL(QVariantList& m_genreData) {
     queryGenre.prepare(
             "SELECT id, name, name_level_1, name_level_2, name_level_3, "
             "name_level_4, name_level_5, display_order, display_group, is_visible, "
-            "is_user_defined FROM genres ORDER BY id ASC");
+            "is_model_defined FROM genres ORDER BY id ASC");
     if (queryGenre.exec()) {
         while (queryGenre.next()) {
             QVariantMap genresEntry;
@@ -126,7 +126,7 @@ void GenreDao::loadGenres2QVL(QVariantList& m_genreData) {
             genresEntry["display_order"] = queryGenre.value("display_order");
             genresEntry["display_group"] = queryGenre.value("display_group");
             genresEntry["is_visible"] = queryGenre.value("is_visible");
-            genresEntry["is_user_defined"] = queryGenre.value("is_user_defined");
+            genresEntry["is_model_defined"] = queryGenre.value("is_model_defined");
             m_genreData.append(genresEntry);
         }
     } else {
