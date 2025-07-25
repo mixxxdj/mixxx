@@ -671,8 +671,8 @@ void GenreTableModel::editGenre(GenreId genreId) {
 void GenreTableModel::setAllGenresVisible() {
     QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
             QObject::tr("Confirm Visibility Change"),
-            QObject::tr("This will make all genres visible again. Are you sure "
-                        "you want to continue?"),
+            QObject::tr("This will make all genres visible again. Are you sure? \n "
+                        "Do you want to continue?"),
             QMessageBox::Yes | QMessageBox::No);
 
     if (reply != QMessageBox::Yes) {
