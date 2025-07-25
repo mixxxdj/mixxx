@@ -31,6 +31,8 @@ using namespace rendergraph;
 
 namespace {
 
+const double kDefaultNextMarkPosition = std::numeric_limits<double>::max();
+
 class WaveformMarkNode : public rendergraph::GeometryNode {
   public:
     WaveformMark* m_pOwner{};
@@ -151,7 +153,8 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextSize(0),
-          m_untilMarkTextHeightLimit(0.0) {
+          m_untilMarkTextHeightLimit(0.0),
+          m_defaultNextMarkPosition(kDefaultNextMarkPosition) {
     {
         auto pNode = std::make_unique<Node>();
         m_pRangeNodesParent = pNode.get();
@@ -309,7 +312,7 @@ void allshader::WaveformRenderMark::update() {
     updateMarkImages();
 
     const double playPosition = m_waveformRenderer->getTruePosSample(positionType);
-    double nextMarkPosition = std::numeric_limits<double>::max();
+    double nextMarkPosition = m_defaultNextMarkPosition;
 
     GeometryNode* pRangeChild = static_cast<GeometryNode*>(m_pRangeNodesParent->firstChild());
 
@@ -407,7 +410,7 @@ void allshader::WaveformRenderMark::update() {
 
     const float playMarkerPos = static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
             m_waveformRenderer->getLength());
-    {
+    if (m_lastPlayMarkerPos != playMarkerPos) {
         const float drawOffset = roundToPixel(playMarkerPos + kPlayPosOffset);
         TexturedVertexUpdater vertexUpdater{
                 m_pPlayPosNode->geometry()
@@ -416,6 +419,8 @@ void allshader::WaveformRenderMark::update() {
                 {drawOffset + kPlayPosWidth, static_cast<float>(m_waveformRenderer->getBreadth())},
                 {0.f, 0.f},
                 {1.f, 1.f});
+        m_pPlayPosNode->markDirtyGeometry();
+        m_lastPlayMarkerPos = playMarkerPos;
     }
 
     if (m_untilMarkShowBeats || m_untilMarkShowTime) {
@@ -424,6 +429,10 @@ void allshader::WaveformRenderMark::update() {
     } else {
         m_pDigitsRenderNode->clear();
     }
+}
+
+void allshader::WaveformRenderMark::setDefaultNextMarkPosition(double nextMarkPosition) {
+    m_defaultNextMarkPosition = nextMarkPosition >= 0 ? nextMarkPosition : kDefaultNextMarkPosition;
 }
 
 void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
@@ -579,7 +588,7 @@ void allshader::WaveformRenderMark::updateUntilMark(
         double playPosition, double nextMarkPosition) {
     m_beatsUntilMark = 0;
     m_timeUntilMark = 0.0;
-    if (nextMarkPosition == std::numeric_limits<double>::max()) {
+    if (nextMarkPosition == kDefaultNextMarkPosition) {
         return;
     }
 
@@ -588,9 +597,6 @@ void allshader::WaveformRenderMark::updateUntilMark(
     if (!trackInfo) {
         return;
     }
-
-    const double endPosition = m_waveformRenderer->getTrackSamples();
-    const double remainingTime = m_pTimeRemainingControl ? m_pTimeRemainingControl->get() : 0;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
@@ -625,9 +631,16 @@ void allshader::WaveformRenderMark::updateUntilMark(
     }
     // As endPosition - playPosition corresponds with remainingTime,
     // we calculate the proportional part of nextMarkPosition - playPosition
-    m_timeUntilMark = std::max(0.0,
-            remainingTime * (nextMarkPosition - playPosition) /
-                    (endPosition - playPosition));
+    if (m_pTimeRemainingControl) {
+        const double endPosition = m_waveformRenderer->getTrackSamples();
+        const double remainingTime = m_pTimeRemainingControl->get();
+        m_timeUntilMark = std::max(0.0,
+                remainingTime * (nextMarkPosition - playPosition) /
+                        (endPosition - playPosition));
+    } else {
+        m_timeUntilMark = std::max(0.0,
+                (nextMarkPosition - playPosition) / trackInfo->getSampleRate());
+    }
 }
 
 float allshader::WaveformRenderMark::getMaxHeightForText(float proportion) const {
