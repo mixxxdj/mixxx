@@ -1199,23 +1199,25 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                 clearSelection();
                 setCurrentIndex(QModelIndex());
             }
+
+            if (event->modifiers().testFlag(Qt::AltModifier) &&
+                    (event->key() == Qt::Key_Up ||
+                            event->key() == Qt::Key_Down ||
+                            event->key() == Qt::Key_PageUp ||
+                            event->key() == Qt::Key_PageDown ||
+                            event->key() == Qt::Key_Home ||
+                            event->key() == Qt::Key_End) &&
+                    pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+                moveSelectedTracks(event);
+                return;
+            }
         }
 
         if (event->matches(QKeySequence::Copy)) {
             copySelectedTracks();
             return;
         }
-        if (event->modifiers().testFlag(Qt::AltModifier) &&
-                (event->key() == Qt::Key_Up ||
-                        event->key() == Qt::Key_Down ||
-                        event->key() == Qt::Key_PageUp ||
-                        event->key() == Qt::Key_PageDown ||
-                        event->key() == Qt::Key_Home ||
-                        event->key() == Qt::Key_End) &&
-                pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
-            moveSelectedTracks(event);
-            return;
-        }
+
         if (event->modifiers().testFlag(Qt::ControlModifier) &&
                 event->modifiers().testFlag(Qt::ShiftModifier) &&
                 event->key() == Qt::Key_C) {
