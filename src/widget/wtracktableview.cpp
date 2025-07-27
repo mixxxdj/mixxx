@@ -697,8 +697,9 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 
 // Drag enter event, happens when a dragged item hovers over the track table view
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
+    qWarning() << "dragEnterEvent";
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel || !event->mimeData()->hasUrls()) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
@@ -719,35 +720,34 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 // It changes the drop handle to a "+" when the drag content is acceptable.
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+    qWarning() << "dragMoveEvent";
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel) {
+    if (!pTrackModel || pTrackModel->isLocked() || event->mimeData()->hasUrls()) {
+        event->ignore();
         return;
     }
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-    if (pTrackModel && event->mimeData()->hasUrls()) {
-        if (event->source() == this) {
-            if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
-                event->acceptProposedAction();
-            } else {
-                event->ignore();
-            }
-        } else {
+    if (event->source() == this) {
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             event->acceptProposedAction();
+        } else {
+            event->ignore();
         }
     } else {
-        event->ignore();
+        event->acceptProposedAction();
     }
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event) {
+    qWarning() << "dropEvent";
     TrackModel* pTrackModel = getTrackModel();
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
-    if (!pTrackModel) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
@@ -755,11 +755,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model available";
-        event->ignore();
-        return;
-    }
-
-    if (!event->mimeData()->hasUrls() || pTrackModel->isLocked()) {
         event->ignore();
         return;
     }
@@ -1080,6 +1075,11 @@ void WTrackTableView::moveRows(QList<int> selectedRowsIn, int destRow) {
 }
 
 void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel || pTrackModel->isLocked()) {
+        return;
+    }
+
     QList<int> selectedRows = getSelectedRowNumbers();
     if (selectedRows.isEmpty()) {
         return;
