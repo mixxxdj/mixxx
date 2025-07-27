@@ -200,15 +200,33 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
         acf[lag] = double(sum/ (dfframe_len - lag));
     }
 
-    // now apply comb filtering
-    int numelem = 4;
+    // Peaks in the autocorrelation function (acf) occur at lags corresponding
+    // to the beat period and on every integer multiples of that. In the next
+    // step we sum up four iterations of them.
 
-    for (int i = 2; i < rcf_len; i++) { // max beat period
-        for (int a = 1; a <= numelem; a++) { // number of comb elements
-            for (int b = 1-a; b <= a-1; b++) { // general state using normalisation of comb elements
-                rcf[i-1] += ( acf[(a*i+b)-1]*wv[i-1] ) / (2.*a-1.);     // calculate value for comb filter row
-            }
-        }
+    // Let's assume we have found a peak at 43, this means it is actually in the
+    // range of 42.5 .. 43.5 and can be also found at 85 .. 87, 127,5 .. 130,5 and
+    // 170 .. 174. So we need also consider the neigbours when looking for the harmonics.
+
+    rcf[0] = 0;
+    for (int i = 1; i < rcf_len; i++) { // max beat period
+        rcf[i] = acf[i];
+
+        rcf[i] += acf[i * 2 - 1] / 4;
+        rcf[i] += acf[i * 2] / 2;
+        rcf[i] += acf[i * 2 + 1] / 4;
+
+        rcf[i] += acf[i * 3 - 1] / 3;
+        rcf[i] += acf[i * 3] / 3;
+        rcf[i] += acf[i * 3 + 1] / 3;
+
+        rcf[i] += acf[i * 4 - 2] / 8;
+        rcf[i] += acf[i * 4 - 1] / 4;
+        rcf[i] += acf[i * 4] / 4;
+        rcf[i] += acf[i * 4 + 1] / 4;
+        rcf[i] += acf[i * 4 + 2] / 8;
+
+        rcf[i] *= wv[i];
     }
 
     // apply adaptive threshold to rcf
