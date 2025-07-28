@@ -14,9 +14,9 @@ class RelationDAO : public DAO {
   public:
     ~RelationDAO() override = default;
 
-    Relation* getRelationById(DbId id) const;
-    QList<Relation*> getRelations(TrackId trackId) const;
+    RelationPointer getRelationById(DbId id) const;
+    QList<RelationPointer> getRelations(TrackId trackId) const;
 
-    void saveRelation(Relation* relation);
+    void saveRelation(RelationPointer relation);
     void deleteRelation(DbId relationId);
 };

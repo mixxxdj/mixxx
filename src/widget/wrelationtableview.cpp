@@ -49,16 +49,16 @@ QList<DbId> WRelationTableView::getSelectedRelationIds() const {
     return relationIds;
 }
 
-Relation* WRelationTableView::getSelectedRelation() {
+RelationPointer WRelationTableView::getSelectedRelation() {
     QList<DbId> relationIds = getSelectedRelationIds();
     if (relationIds.isEmpty()) {
         return nullptr;
     }
-    Relation* relation = m_pLibrary
-                                 ->trackCollectionManager()
-                                 ->internalCollection()
-                                 ->getRelationDAO()
-                                 .getRelationById(relationIds[0]);
+    RelationPointer relation = m_pLibrary
+                                       ->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getRelationDAO()
+                                       .getRelationById(relationIds[0]);
     return relation;
 }
 

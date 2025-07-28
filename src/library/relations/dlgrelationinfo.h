@@ -12,7 +12,8 @@ class DlgRelationInfo : public QDialog, public Ui::DlgRelationInfo {
     Q_OBJECT
   public:
     explicit DlgRelationInfo(
-            Relation* relation = nullptr);
+            RelationPointer relation = nullptr,
+            Library* pLibrary = nullptr);
     ~DlgRelationInfo() override = default;
 
   private slots:
@@ -24,9 +25,12 @@ class DlgRelationInfo : public QDialog, public Ui::DlgRelationInfo {
     void saveRelation();
     void updateRelationMetadataFields();
 
-    Relation* m_pRelation;
+    RelationPointer m_pRelation;
     Library* m_pLibrary;
 
     TrackPointer m_pTrackA;
     TrackPointer m_pTrackB;
+
+    mixxx::TrackRecord m_trackRecordA;
+    mixxx::TrackRecord m_trackRecordB;
 };

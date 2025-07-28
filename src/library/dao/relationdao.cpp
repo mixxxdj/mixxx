@@ -9,7 +9,7 @@
 
 namespace {
 
-Relation* relationFromRow(const QSqlRecord& row) {
+RelationPointer relationFromRow(const QSqlRecord& row) {
     const auto id = DbId(row.value(row.indexOf("rl_id")));
     TrackPair tracks = {
             TrackId(row.value(row.indexOf("track_a"))),
@@ -17,17 +17,17 @@ Relation* relationFromRow(const QSqlRecord& row) {
     QString comment = row.value(row.indexOf("rl_comment")).toString();
     QDateTime dateAdded = row.value(row.indexOf("rl_datetime_added")).toDateTime();
 
-    Relation* relation = new Relation(
+    RelationPointer pRelation = make_shared<Relation>(
             id,
             tracks,
             comment,
             dateAdded);
-    return relation;
+    return pRelation;
 }
 
 } // namespace
 
-Relation* RelationDAO::getRelationById(DbId id) const {
+RelationPointer RelationDAO::getRelationById(DbId id) const {
     if (!id.isValid()) {
         return nullptr;
     }
@@ -40,11 +40,15 @@ Relation* RelationDAO::getRelationById(DbId id) const {
         LOG_FAILED_QUERY(query);
         return nullptr;
     }
-    return relationFromRow(query.record());
+    if (query.next()) {
+        return relationFromRow(query.record());
+    } else {
+        return nullptr;
+    }
 }
 
-QList<Relation*> RelationDAO::getRelations(TrackId trackId) const {
-    QList<Relation*> relations;
+QList<RelationPointer> RelationDAO::getRelations(TrackId trackId) const {
+    QList<RelationPointer> relations;
 
     QSqlQuery query(m_database);
     QString queryText = QString("SELECT * FROM " RELATIONS_TABLE
@@ -59,7 +63,7 @@ QList<Relation*> RelationDAO::getRelations(TrackId trackId) const {
     return relations;
 }
 
-void RelationDAO::saveRelation(Relation* relation) {
+void RelationDAO::saveRelation(RelationPointer relation) {
     QSqlQuery query(m_database);
     if (relation->getId().isValid()) {
         // Update relation

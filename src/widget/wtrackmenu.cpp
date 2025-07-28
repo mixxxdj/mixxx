@@ -1507,13 +1507,13 @@ void WTrackMenu::slotAddRelationToDeck(const QString& deckGroup) {
     TrackPair tracks = {
             m_pTrack->getId(),
             pTargetTrack->getId()};
-    Relation* relation = new Relation(
+    RelationPointer pRelation = make_shared<Relation>(
             tracks);
     m_pLibrary
             ->trackCollectionManager()
             ->internalCollection()
             ->getRelationDAO()
-            .saveRelation(relation);
+            .saveRelation(pRelation);
 }
 
 void WTrackMenu::slotImportMetadataFromFileTags() {

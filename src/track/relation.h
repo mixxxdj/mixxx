@@ -51,3 +51,7 @@ class Relation : public QObject {
 
     friend class RelationDAO;
 };
+
+typedef std::shared_ptr<Relation> RelationPointer;
+
+Q_DECLARE_METATYPE(RelationPointer);

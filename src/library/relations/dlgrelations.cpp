@@ -89,11 +89,12 @@ DlgRelations::~DlgRelations() {
 }
 
 void DlgRelations::slotShowDlgRelationInfo() {
-    Relation* relation = m_pRelationTableView->getSelectedRelation();
+    RelationPointer relation = m_pRelationTableView->getSelectedRelation();
     if (!relation) {
         return;
     }
-    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation);
+    m_pDlgRelationInfo = std::make_unique<DlgRelationInfo>(relation,
+            m_pLibrary);
     connect(m_pDlgRelationInfo.get(),
             &QDialog::finished,
             this,

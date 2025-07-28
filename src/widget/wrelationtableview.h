@@ -1,6 +1,7 @@
 #pragma once
 
 #include "preferences/usersettings.h"
+#include "track/relation.h"
 #include "widget/wtracktableview.h"
 
 class Library;
@@ -17,7 +18,7 @@ class WRelationTableView : public WTrackTableView {
             bool relationPairView);
 
     QList<DbId> getSelectedRelationIds() const;
-    Relation* getSelectedRelation();
+    RelationPointer getSelectedRelation();
 
   protected:
     void paintEvent(QPaintEvent* event) override;
