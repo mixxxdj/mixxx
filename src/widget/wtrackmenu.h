@@ -58,11 +58,12 @@ class WTrackMenu : public QMenu {
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
+        SetRelation = 1 << 18,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
-                FindOnWeb
+                FindOnWeb | SetRelation
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -82,7 +83,8 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::Properties |
             WTrackMenu::Feature::UpdateReplayGainFromPregain |
             WTrackMenu::Feature::FindOnWeb |
-            WTrackMenu::Feature::SelectInLibrary};
+            WTrackMenu::Feature::SelectInLibrary |
+            WTrackMenu::Feature::SetRelation};
 
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
@@ -178,10 +180,12 @@ class WTrackMenu : public QMenu {
     void slotExportMetadataIntoFileTags();
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
 
-    // Playlist and crate
+    // Playlist, crate and relations
+    void slotPopulateRelationMenu();
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
+    void slotAddRelationToDeck(const QString& deckGroup);
 
     // Auto DJ
     void slotAddToAutoDJBottom();
@@ -237,6 +241,11 @@ class WTrackMenu : public QMenu {
             TrackPointer pTrack,
             QMenu* pParentMenu,
             bool primaryDeck,
+            bool enabled = true);
+
+    void generateSetRelationMenu(const QString& group,
+            const QString& label,
+            QMenu* pParentMenu,
             bool enabled = true);
 
     bool featureIsEnabled(Feature flag) const;
@@ -295,6 +304,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QMenu> m_pAnalyzeMenu;
     parented_ptr<QMenu> m_pBPMMenu;
     parented_ptr<QMenu> m_pColorMenu;
+    parented_ptr<QMenu> m_pSetRelationMenu;
     parented_ptr<WCoverArtMenu> m_pCoverMenu;
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
@@ -334,6 +344,12 @@ class WTrackMenu : public QMenu {
 
     // Select track in library
     parented_ptr<QAction> m_pSelectInLibraryAct;
+
+    // Setting relations
+    parented_ptr<QAction> m_pSetRelationDeckOne;
+    parented_ptr<QAction> m_pSetRelationDeckTwo;
+    parented_ptr<QAction> m_pSetRelationDeckThree;
+    parented_ptr<QAction> m_pSetRelationDeckFour;
 
     // BPM feature
     parented_ptr<QAction> m_pBpmLockAction;
