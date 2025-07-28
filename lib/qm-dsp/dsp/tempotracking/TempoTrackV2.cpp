@@ -210,22 +210,28 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
 
     rcf[0] = 0;
     for (int i = 1; i < rcf_len; i++) { // max beat period
+        // First interval
         rcf[i] = acf[i];
 
+        // Second interval. We use the two neigbours as half value only because they
+        // are between this and the pervious or next iteration. Summe of all is 1. 
         rcf[i] += acf[i * 2 - 1] / 4;
         rcf[i] += acf[i * 2] / 2;
         rcf[i] += acf[i * 2 + 1] / 4;
 
+        // Third interval. Neighbours fully belong to this interval 
         rcf[i] += acf[i * 3 - 1] / 3;
         rcf[i] += acf[i * 3] / 3;
         rcf[i] += acf[i * 3 + 1] / 3;
 
+        // Third interval. The outer neighbours are again on the border. 
         rcf[i] += acf[i * 4 - 2] / 8;
         rcf[i] += acf[i * 4 - 1] / 4;
         rcf[i] += acf[i * 4] / 4;
         rcf[i] += acf[i * 4 + 1] / 4;
         rcf[i] += acf[i * 4 + 2] / 8;
 
+        // Apply whigtening to prefered values around 120 bpm 
         rcf[i] *= wv[i];
     }
 
