@@ -651,6 +651,7 @@ bool Library::requestAddDir(const QString& dir) {
         return false;
     }
 
+    emit directoryAdded(dir);
     return true;
 }
 
@@ -688,6 +689,7 @@ bool Library::requestRemoveDir(const QString& dir, LibraryRemovalType removalTyp
         DEBUG_ASSERT(!"unreachable");
     }
 
+    emit directoryRemoved(dir);
     return true;
 }
 
