@@ -149,6 +149,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::clicked,
             this,
             &DlgPrefWaveform::slotSetWaveformOptionHighDetail);
+    connect(visualizeEqGainCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetVisualizeEq);
     connect(defaultZoomComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -291,6 +295,10 @@ void DlgPrefWaveform::slotUpdate() {
     waveformTypeComboBox->setEnabled(useWaveform);
     updateEnableUntilMark();
     updateWaveformGeneralOptionsEnabled();
+
+    bool visualizeEqGain = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "visualize_eq_gain"), true);
+    visualizeEqGainCheckBox->setChecked(visualizeEqGain);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -632,6 +640,10 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
     updateWaveformGainEnabled();
+}
+
+void DlgPrefWaveform::slotSetVisualizeEq(bool checked) {
+    WaveformWidgetFactory::instance()->setVisualizeEqGain(checked);
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
