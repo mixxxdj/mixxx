@@ -23,7 +23,7 @@ namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kMasterGroup = QStringLiteral("[Master]");
-const ConfigKey kKeylockEngingeCfgkey =
+const ConfigKey kKeylockEngineCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_engine"));
 const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
@@ -79,7 +79,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pHeadDelay(kMasterGroup, QStringLiteral("headDelay")),
           m_pBoothDelay(kMasterGroup, QStringLiteral("boothDelay")),
           m_pMicMonitorMode(kMasterGroup, QStringLiteral("talkover_mix")),
-          m_pKeylockEngine(kKeylockEngingeCfgkey),
+          m_pKeylockEngine(kKeylockEngineCfgkey),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
@@ -573,7 +573,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
 
     // Default keylock engine is Rubberband Faster (v2)
     const auto keylockEngine = static_cast<EngineBuffer::KeylockEngine>(
-            m_pSettings->getValue(kKeylockEngingeCfgkey,
+            m_pSettings->getValue(kKeylockEngineCfgkey,
                     static_cast<int>(EngineBuffer::defaultKeylockEngine())));
     const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
     const int index = keylockComboBox->findData(keylockEngineVariant);
