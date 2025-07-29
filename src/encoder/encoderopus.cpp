@@ -85,8 +85,7 @@ QString EncoderOpus::getInvalidSamplerateMessage() {
             "Using Opus at samplerates other than 48 kHz "
             "is not supported by the Opus encoder. Please use "
             "48000 Hz in \"Sound Hardware\" preferences "
-            ", switch to a different encoding "
-            ", or choose a custom recording samplerate.");
+            ", switch to a different encoding");
 };
 
 EncoderOpus::EncoderOpus(EncoderCallback* pCallback)

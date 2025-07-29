@@ -99,13 +99,8 @@ DlgPreferences::DlgPreferences(
 
     // Construct page widgets and associated sidebar items
 
-    // dlgrecord needs to be constructed before sound hardware to
-    // ensure the initial sampleratechange signal is not lost.
-    DlgPrefRecord* pRecordingDlg = new DlgPrefRecord(this, m_pConfig);
-
     // sound hardware page
-    // more importantly, connect needs to occur before the emit().
-    m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pRecordingDlg, pSoundManager, m_pConfig);
+    m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pSoundManager, m_pConfig);
 
     // loads settings, including samplerate.
     m_soundPage = PreferencesPage(
@@ -214,6 +209,12 @@ DlgPreferences::DlgPreferences(
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
+
+    DlgPrefRecord* pRecordingDlg = new DlgPrefRecord(this, m_pConfig);
+    connect(m_pSoundDlg.get(),
+            &DlgPrefSound::updateDefaultRecordingSampleRate,
+            pRecordingDlg,
+            &DlgPrefRecord::slotDefaultSampleRateUpdated);
 
     // create the recording tab UI
     addPageWidget(PreferencesPage(

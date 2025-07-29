@@ -68,7 +68,6 @@ const QString kKeylockMultiThreadedUnavailableRubberband =
 /// Construct a new sound preferences pane. Initializes and populates
 /// all the controls to the values obtained from SoundManager.
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
-        DlgPrefRecord* pRecordingDlg,
         std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
@@ -196,11 +195,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::micMonitorModeComboBoxChanged);
 
     initializePaths();
-
-    connect(this,
-            &DlgPrefSound::updateDefaultRecordingSampleRate,
-            pRecordingDlg,
-            &DlgPrefRecord::slotDefaultSampleRateUpdated);
 
     loadSettings();
 

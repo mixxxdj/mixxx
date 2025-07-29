@@ -19,6 +19,9 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     DlgPrefRecord(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefRecord();
 
+  protected:
+    bool eventFilter(QObject* obj, QEvent* event) override;
+
   public slots:
     // Apply changes to widget
     void slotApply() override;
@@ -38,11 +41,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
   private slots:
     void slotToggleCueEnabled();
     void slotSampleRateChanged(int newRateIdx);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-    void slotToggleCustomSampleRateIgnore(Qt::CheckState buttonState);
-#else
     void slotToggleCustomSampleRateIgnore(int buttonState);
-#endif
 
   signals:
     void apply(const QString &);
@@ -60,6 +59,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void saveSplitSize();
     void saveRecSampleRate();
     void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
+    const QList<mixxx::audio::SampleRate>& createSampleRateGUIForFormat(const QString& recFormat);
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;
