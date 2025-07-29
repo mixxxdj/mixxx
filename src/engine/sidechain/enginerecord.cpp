@@ -43,8 +43,8 @@ EngineRecord::~EngineRecord() {
     SampleUtil::free(m_pRecResampleOutBuffer);
 }
 
-// called on every enginerecord::process()
-// only when recording is ongoing.
+// called in EngineRecord::process() when recording is started
+// or recording is split
 int EngineRecord::updateFromPreferences() {
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title"));

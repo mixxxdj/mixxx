@@ -23,7 +23,7 @@ namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kMasterGroup = QStringLiteral("[Master]");
-const ConfigKey kKeylockEngingeCfgkey =
+const ConfigKey kKeylockEngineCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_engine"));
 const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
@@ -68,7 +68,6 @@ const QString kKeylockMultiThreadedUnavailableRubberband =
 /// Construct a new sound preferences pane. Initializes and populates
 /// all the controls to the values obtained from SoundManager.
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
-        DlgPrefRecord* pRecordingDlg,
         std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
@@ -80,7 +79,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pHeadDelay(kMasterGroup, QStringLiteral("headDelay")),
           m_pBoothDelay(kMasterGroup, QStringLiteral("boothDelay")),
           m_pMicMonitorMode(kMasterGroup, QStringLiteral("talkover_mix")),
-          m_pKeylockEngine(kKeylockEngingeCfgkey),
+          m_pKeylockEngine(kKeylockEngineCfgkey),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
@@ -196,11 +195,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::micMonitorModeComboBoxChanged);
 
     initializePaths();
-
-    connect(this,
-            &DlgPrefSound::updateDefaultRecordingSampleRate,
-            pRecordingDlg,
-            &DlgPrefRecord::slotDefaultSampleRateUpdated);
 
     loadSettings();
 
@@ -367,10 +361,8 @@ void DlgPrefSound::slotApply() {
         m_pSoundManager->closeActiveConfig();
 
         m_pKeylockEngine.set(static_cast<double>(keylockEngine));
-        m_pSettings->set(kKeylockEngingeCfgkey,
-                ConfigValue(static_cast<int>(
-                        keylockEngine))); // local copy of settings, persistent
-                                          // through a single mixxx run
+        m_pSettings->setValue(kKeylockEngineCfgkey,
+                static_cast<int>(keylockEngine));
 
 #ifdef __RUBBERBAND__
         bool keylockMultithreading = m_pSettings->getValue(
@@ -582,7 +574,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
 
     // Default keylock engine is Rubberband Faster (v2)
     const auto keylockEngine = static_cast<EngineBuffer::KeylockEngine>(
-            m_pSettings->getValue(kKeylockEngingeCfgkey,
+            m_pSettings->getValue(kKeylockEngineCfgkey,
                     static_cast<int>(EngineBuffer::defaultKeylockEngine())));
     const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
     const int index = keylockComboBox->findData(keylockEngineVariant);
@@ -674,16 +666,10 @@ void DlgPrefSound::updateAPIs() {
 }
 
 /// Slot called when the sample rate combo box changes to update the
-/// sample rate in the config.
+/// sample rate in the config.sampleRateChanged
 void DlgPrefSound::sampleRateChanged(int index) {
-    qDebug() << "engine samplerate change triggered, index: " << index;
-    qDebug() << "engine samplerate: " << sampleRateComboBox->itemData(index) << "Hz";
-    qDebug() << "engine samplerate value: "
-             << sampleRateComboBox->itemData(index)
-                        .value<mixxx::audio::SampleRate>()
-             << "Hz";
-
-    auto sampleRateNew = sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>();
+    const auto sampleRateNew = sampleRateComboBox->itemData(index)
+                                       .value<mixxx::audio::SampleRate>();
     m_config.setSampleRate(sampleRateNew);
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
