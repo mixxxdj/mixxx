@@ -20,6 +20,8 @@
 #include "util/duration.h"
 #include "util/performancetimer.h"
 #include "util/platform.h"
+// EVE
+#include "library/trackset/searchcrate/searchcrateschema.h"
 
 namespace {
 
@@ -209,15 +211,61 @@ void BaseSqlTableModel::select() {
 
     PerformanceTimer time;
     time.start();
+    if (m_tableName.startsWith("searchcrate")) {
+        // EVE drop view and rebuild it for Searchcrate
+        //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] Drop
+        //        temp table " << m_tableName;
+        QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
+        FwdSqlQuery(m_database, queryStringDropView).execPrepared();
+        //        qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [SMARTIES] REBUILD TEMP";
+        QStringList columns;
+        QString searchCrateId = m_tableName;
+        searchCrateId = searchCrateId.replace("searchcrate_", "");
+        columns << LIBRARYTABLE_ID
+                << "'' AS " + LIBRARYTABLE_PREVIEW
+                << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+        QString queryStringTempView =
+                QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                        "SELECT %2 FROM %3 "
+                        "WHERE %4 IN (SELECT %5 FROM %6 WHERE %7 = %8) "
+                        "AND %9=0")
+                        .arg(m_tableName,                             // 1
+                                columns.join(","),                    // 2
+                                LIBRARY_TABLE,                        // 3
+                                LIBRARYTABLE_ID,                      // 4
+                                SEARCHCRATETRACKSTABLE_TRACKID,       // 5
+                                SEARCHCRATETRACKSTABLE,               // 6
+                                SEARCHCRATETRACKSTABLE_SEARCHCRATEID, // 7
+                                searchCrateId,                        // 8
+                                LIBRARYTABLE_MIXXXDELETED);           // 9
+                                                                      //        qDebug()
+                                                                      //        <<
+                                                                      //        "[BASESQLTABLEMODEL]
+                                                                      //        [SELECT]
+                                                                      //        ->
+                                                                      //        [SMARTIES]
+                                                                      //        Rebuild
+                                                                      //        temp view
+                                                                      //        ->
+                                                                      //        queryStringTempView
+                                                                      //        " <<
+                                                                      //        queryStringTempView;
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    }
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
                                   .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
 
-    if (sDebug) {
-        qDebug() << this << "select() executing:" << queryString;
-    }
+    //    qDebug() << "[BASESQLTABLEMODEL] [SELECT]
+    //    -------------BaseSqlTableModel - select() ---- queryString -------- "
+    //    << queryString;
 
+    if (sDebug) {
+        qDebug() << "[BASESQLTABLEMODEL] [SELECT] " << this
+                 << " select() executing : " << queryString;
+    }
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
@@ -412,7 +460,8 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
-
+    //    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> searchText " << searchText;
+    //    qDebug() << "[BASETRACKTABLEMODEL] [SETSEARCH] -> extraFilter " << extraFilter;
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
@@ -430,6 +479,8 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
+    qDebug() << "[BASETRACKTABLEMODEL] [SEARCH] -> searchText " << searchText;
+    qDebug() << "[BASETRACKTABLEMODEL] [SEARCH] -> extraFilter " << extraFilter;
     setSearch(searchText, extraFilter);
     select();
 }
