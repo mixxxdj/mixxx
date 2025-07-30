@@ -12,8 +12,9 @@ using namespace rendergraph;
 
 namespace allshader {
 
-WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRendererSignalBase(waveformWidget) {
+WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
@@ -54,7 +55,7 @@ bool WaveformRendererHSV::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -80,9 +81,7 @@ bool WaveformRendererHSV::preprocessInner() {
     getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
-    float h, s, v;
-    getHsvF(m_waveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
-
+    float h = m_signalColor_h;
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
