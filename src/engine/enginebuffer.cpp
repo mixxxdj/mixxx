@@ -1394,34 +1394,27 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     switch (seekType) {
-        case SEEK_NONE:
-            return;
-        case SEEK_PHASE:
-            // only adjust phase
-            position = m_playPos;
-            break;
-        case SEEK_STANDARD:
-            if (m_quantize.toBool()) {
-                seekType |= SEEK_PHASE;
-            }
-            // new position was already set above
-            break;
-        case SEEK_EXACT:
-        case SEEK_EXACT_PHASE: // artificial state = SEEK_EXACT | SEEK_PHASE
-        case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
-            // new position was already set above
-            break;
-        case SEEK_CLONE: {
-            // Cloning another channels position.
-            EngineChannel* pOtherChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
-            VERIFY_OR_DEBUG_ASSERT(pOtherChannel) {
-                return;
-            }
-            position = pOtherChannel->getEngineBuffer()->getExactPlayPos();
-        } break;
-        default:
-            DEBUG_ASSERT(!"Unhandled seek request type");
-            m_queuedSeek.setValue(kNoQueuedSeek);
+    case SEEK_NONE:
+        return;
+    case SEEK_PHASE:
+        // only adjust phase
+        position = m_playPos;
+        break;
+    case SEEK_STANDARD:
+        if (m_quantize.toBool()) {
+            seekType |= SEEK_PHASE;
+        }
+        // new position was already set above
+        break;
+    case SEEK_EXACT:
+    case SEEK_EXACT_PHASE:    // artificial state = SEEK_EXACT | SEEK_PHASE
+    case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
+        // new position was already set above
+        break;
+    case SEEK_CLONE: {
+        // Cloning another channels position.
+        EngineChannel* pOtherChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
+        VERIFY_OR_DEBUG_ASSERT(pOtherChannel) {
             return;
         }
         position = pOtherChannel->getEngineBuffer()->getExactPlayPos();
