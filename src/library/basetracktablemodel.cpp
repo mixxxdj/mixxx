@@ -862,7 +862,8 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE:
-        case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER: {
+        case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER:
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             // We need to cast to int due to a bug similar to
             // https://bugreports.qt.io/browse/QTBUG-67582
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
