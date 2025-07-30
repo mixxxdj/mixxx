@@ -472,6 +472,7 @@ inline QString buildCondition(const QString& field, const QString& op, const QSt
                     //                             LIBRARYTABLE_ID,
                     //                             CRATE_TRACKS_TABLE,
                     //                             CRATETRACKSTABLE_TRACKID);
+                }
             }
             if (value == "all playlists") {
                 if (op == "is a member of") {

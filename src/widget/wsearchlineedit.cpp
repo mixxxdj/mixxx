@@ -144,17 +144,17 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slot2SearchCrate);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    if (pConfig->getValue<bool>(ConfigKey("[Search]", "PopupSearch"))) {
-        connect(setFocusShortcut,
-                &QShortcut::activated,
-                this,
-                &WSearchLineEdit::slotShowFastSearchDialog);
-    } else {
+    // if (pConfig->getValue<bool>(ConfigKey("[Search]", "PopupSearch"))) {
+    connect(setFocusShortcut,
+            &QShortcut::activated,
+            this,
+            &WSearchLineEdit::slotShowFastSearchDialog);
+    /*} else {
         connect(setFocusShortcut,
                 &QShortcut::activated,
                 this,
                 &WSearchLineEdit::slotSetShortcutFocus);
-    }
+    }*/
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
@@ -280,14 +280,16 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
             tr("Clear the search bar input field"));
-}
 
     m_2SearchCrateButton->setToolTip(tr("Moves the result of the query") + "\n" +
             tr("to a new SearchCrate container") + "\n\n" +
 
             tr("Shortcut") + ": \n" +
             tr("None Yet"));
+}
 
+void WSearchLineEdit::setupToolTip(const QString& searchInCurrentViewShortcut,
+        const QString& searchInAllTracksShortcut) {
     setBaseTooltip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for.") + " " +
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990.") +
