@@ -2712,6 +2712,11 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
                 m_pConfig);
+        if (m_pLibrary && m_pLibrary->trackCollectionManager()) {
+            TrackCollection* pTrackCollection =
+                    m_pLibrary->trackCollectionManager()->internalCollection();
+            m_pDlgTrackInfoMulti->setTrackCollection(pTrackCollection);
+        }
         connect(m_pDlgTrackInfoMulti.get(),
                 &QDialog::finished,
                 this,
