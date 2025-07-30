@@ -138,7 +138,8 @@ LibraryScanner::LibraryScanner(
     connect(m_pProgressDlg.data(),
             &LibraryScannerDlg::scanCancelled,
             this,
-            &LibraryScanner::slotCancel);
+            &LibraryScanner::slotCancel,
+            Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
             m_pProgressDlg.data(),
