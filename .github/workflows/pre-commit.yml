@@ -3,8 +3,11 @@
 name: pre-commit
 
 on:
-  push:
-  pull_request:
+  workflow_call:
+    inputs:
+      pull_request:
+        type: boolean
+        default: false
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -37,26 +40,19 @@ jobs:
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           git config --global --list
 
-      - name: "Detect code style issues (push)"
+      - name: "Detect code style issues"
         uses: pre-commit/action@v3.0.1
-        if: github.event_name == 'push'
-        # There are too many files in the repo that have formatting issues. We'll
-        # disable these checks for now when pushing directly (but still run these
-        # on Pull Requests!).
         env:
-          SKIP: clang-format,eslint,no-commit-to-branch
-
-      - name: "Detect code style issues (pull_request)"
-        uses: pre-commit/action@v3.0.1
-        if: github.event_name == 'pull_request'
-        env:
-          SKIP: no-commit-to-branch
+          # There are too many files in the repo that have formatting issues. We'll
+          # disable these checks for now when pushing directly (but still run these
+          # on Pull Requests!).
+          SKIP: ${{ inputs.pull_request && 'no-commit-to-branch' || 'clang-format,eslint,no-commit-to-branch' }}
           # https://github.com/paleite/eslint-plugin-diff?tab=readme-ov-file#ci-setup
-          ESLINT_PLUGIN_DIFF_COMMIT: ${{ github.event.pull_request.base.ref }}
+          ESLINT_PLUGIN_DIFF_COMMIT: ${{ inputs.pull_request && github.event.pull_request.base.ref || '' }}
         with:
           # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
           # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-          extra_args: --from-ref HEAD^1 --to-ref HEAD
+          extra_args: ${{ inputs.pull_request && '--from-ref HEAD^1 --to-ref HEAD' || '' }}
 
       - name: "Generate patch file"
         if: failure()

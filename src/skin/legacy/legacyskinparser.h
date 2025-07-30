@@ -102,6 +102,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectSelector(const QDomElement& node);
     QWidget* parseHotcueButton(const QDomElement& node);
     QWidget* parsePlayButton(const QDomElement& node);
+    QWidget* parseCueButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
@@ -142,6 +143,7 @@ class LegacySkinParser : public QObject, public SkinParser {
                      bool setupPosition=true);
     void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
     void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
+    QString localizeShortcutKeys(const QString& shortcut);
     QString getLibraryStyle(const QDomNode& node);
 
     QString lookupNodeGroup(const QDomElement& node);

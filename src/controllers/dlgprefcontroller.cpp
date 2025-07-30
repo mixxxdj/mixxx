@@ -34,6 +34,9 @@
 #include "widget/wcollapsiblegroupbox.h"
 
 namespace {
+
+constexpr int kNoMappingIndex = 0; // "No Mapping" is always at the first position;
+
 const QString kMappingExt(".midi.xml");
 
 QString mappingNameToPath(const QString& directory, const QString& mappingName) {
@@ -576,16 +579,18 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     }
 
     // Preselect configured or matching mapping
-    int index = -1;
+    int index = kNoMappingIndex;
     if (!selectedMappingPath.isEmpty()) {
         index = m_ui.comboBoxMapping->findData(selectedMappingPath);
     } else if (match.isValid()) {
         index = m_ui.comboBoxMapping->findText(match.getName());
     }
-    QString newMappingFilePath = mappingFilePathFromIndex(index);
-    if (index == -1) {
+    QString newMappingFilePath;
+    if (index <= kNoMappingIndex) { // findData() returns -1 for not found
+        index = kNoMappingIndex;
         m_ui.chkEnabledDevice->setEnabled(false);
     } else {
+        newMappingFilePath = mappingFilePathFromIndex(index);
         m_ui.comboBoxMapping->setCurrentIndex(index);
     }
     m_ui.comboBoxMapping->blockSignals(false);
@@ -621,8 +626,12 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
-    // Force updating the controller settings
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    // Note: this is called by closeDlg() when MIDI learning starts
+    // "No Mapping" is selected but we have a mapping for learning
+    if (m_ui.comboBoxMapping->currentIndex() > kNoMappingIndex || !m_pMapping) {
+        // Force updating the controller settings
+        slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    }
 
     // enumerateMappings() calls slotMappingSelected() which will tick the 'Enabled'
     // checkbox if there is a valid mapping saved in the mixxx.cfg file.
@@ -729,8 +738,7 @@ void DlgPrefController::enableWizardAndIOTabs(bool enable) {
 }
 
 QString DlgPrefController::mappingFilePathFromIndex(int index) const {
-    if (index == 0) {
-        // "No Mapping" item
+    if (index <= kNoMappingIndex) {
         return QString();
     }
 

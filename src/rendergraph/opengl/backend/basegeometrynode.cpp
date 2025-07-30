@@ -89,7 +89,7 @@ void BaseGeometryNode::render() {
     }
 
     // TODO multiple textures
-    auto pTexture = material.texture(1);
+    auto* pTexture = material.texture(1);
     if (pTexture) {
         pTexture->backendTexture()->bind();
     }
@@ -109,7 +109,9 @@ void BaseGeometryNode::render() {
 }
 
 void BaseGeometryNode::resize(int, int) {
-    assert(engine() != nullptr);
+    VERIFY_OR_DEBUG_ASSERT(engine() != nullptr) {
+        return;
+    }
     GeometryNode* pThis = static_cast<GeometryNode*>(this);
     pThis->material().setUniform(0, engine()->matrix());
 }
