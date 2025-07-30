@@ -12,8 +12,9 @@
 /// QPainter API which Qt translates to OpenGL under the hood.
 class GLWaveformRendererSignal : public WaveformRendererSignalBase, public GLWaveformRenderer {
   public:
-    GLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer)
-            : WaveformRendererSignalBase(waveformWidgetRenderer) {
+    GLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
+            ::WaveformRendererSignalBase::Options options)
+            : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
     }
 };
 
