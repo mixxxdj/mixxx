@@ -33,6 +33,19 @@ class WGenreTagInput : public QWidget {
     QStringList getGenres() const;
     void setGenres(const QStringList& genres);
 
+    // Multi-track mode
+    void setMultiTrackMode(bool multiTrack);
+    bool isMultiTrackMode() const;
+
+    // Auto-save functionality
+    void setAutoSave(bool autoSave);
+    bool isAutoSave() const;
+
+    // Set the genre completer with a list of genres
+    void setGenreCompleter(const QStringList& genres);
+
+    void debugState() const;
+
     // Enable/disable editing
     void setReadOnly(bool readOnly);
     bool isReadOnly() const;
@@ -93,6 +106,10 @@ class WGenreTagInput : public QWidget {
 
     bool m_readOnly;
     bool m_editMode;
+
+    // Multi-track mode
+    bool m_multiTrackMode;
+    bool m_autoSave;
 
     // UI components
     QHBoxLayout* m_pMainLayout;
