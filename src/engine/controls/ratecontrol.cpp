@@ -628,3 +628,10 @@ void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
 void RateControl::notifySeek(mixxx::audio::FramePos position) {
     m_pScratchController->notifySeek(position);
 }
+
+void RateControl::resetPositionScratchController() {
+    // Resets the scratch state to avoid engine freeze due to insanley high rate
+    // reported on track load while scratching.
+    // https://github.com/mixxxdj/mixxx/issues/15082
+    m_pScratchController->reset();
+}

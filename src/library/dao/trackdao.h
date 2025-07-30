@@ -117,6 +117,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void tracksAdded(const QSet<TrackId>& trackIds);
     void tracksChanged(const QSet<TrackId>& trackIds);
     void tracksRemoved(const QSet<TrackId>& trackIds);
+    void waveformSummaryUpdated(const TrackId trackId);
 
     void progressVerifyTracksOutside(const QString& path);
     void progressCoverArt(const QString& file);
