@@ -1460,8 +1460,6 @@ void EngineBuffer::processSeek(bool paused) {
     m_queuedSeek.setValue(kNoQueuedSeek);
 }
 
-// Test
-
 void EngineBuffer::postProcessLocalBpm() {
     m_pBpmControl->updateLocalBpm();
 }
