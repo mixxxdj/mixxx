@@ -1,5 +1,5 @@
-// Just a comment to het something changed in the pr so the mac os 12
-// // compiler would retry compiling after the brownout
+// Just a comment to get something changed in the pr so the CI restarts 20250730
+
 #include "oscreceiver.h"
 
 #include <QThread>
