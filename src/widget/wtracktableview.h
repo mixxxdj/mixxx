@@ -31,6 +31,9 @@ class WTrackTableView : public WLibraryTableView {
             Library* pLibrary,
             double backgroundColorOpacity);
     ~WTrackTableView() override;
+#ifdef __LINUX__
+    void currentChanged(const QModelIndex& current, const QModelIndex& previous) override;
+#endif
     void contextMenuEvent(QContextMenuEvent * event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;

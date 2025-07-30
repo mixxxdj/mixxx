@@ -10,6 +10,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
 
@@ -61,11 +62,11 @@ class WaveformWidgetAbstractHandle {
     }
 
 #ifdef MIXXX_USE_QOPENGL
-    allshader::WaveformRendererSignalBase::Options supportedOptions(
+    WaveformRendererSignalBase::Options supportedOptions(
             WaveformWidgetBackend backend) const {
         return backend == WaveformWidgetBackend::AllShader
                 ? m_supportedOption
-                : allshader::WaveformRendererSignalBase::Option::None;
+                : WaveformRendererSignalBase::Option::None;
     }
 #endif
 
@@ -76,7 +77,7 @@ class WaveformWidgetAbstractHandle {
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
-    allshader::WaveformRendererSignalBase::Options m_supportedOption;
+    WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 
     friend class WaveformWidgetFactory;
@@ -156,6 +157,10 @@ class WaveformWidgetFactory : public QObject,
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
 
+    void setStemReorderOnChange(bool value);
+    void setStemOutlineOpacity(float value);
+    void setStemOpacity(float value);
+
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
     }
@@ -170,6 +175,15 @@ class WaveformWidgetFactory : public QObject,
     }
     float getUntilMarkTextHeightLimit() const {
         return m_untilMarkTextHeightLimit;
+    }
+    bool isStemReorderOnChange() const {
+        return m_stemReorderOnChange;
+    }
+    float getStemOutlineOpacity() const {
+        return m_stemOutlineOpacity;
+    }
+    float getStemOpacity() const {
+        return m_stemOpacity;
     }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
@@ -232,6 +246,10 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
 
+    void stemReorderOnChangeChanged(bool value);
+    void stemOutlineOpacityChanged(float value);
+    void stemOpacityChanged(float value);
+
   public slots:
     void slotSkinLoaded();
 
@@ -260,7 +278,9 @@ class WaveformWidgetFactory : public QObject,
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
-            WaveformWidgetType::Type type, WWaveformViewer* viewer);
+            WaveformWidgetType::Type type,
+            WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
@@ -292,6 +312,10 @@ class WaveformWidgetFactory : public QObject,
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;
 
+    bool m_stemReorderOnChange;
+    float m_stemOutlineOpacity;
+    float m_stemOpacity;
+
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
     QString m_openGLVersion;
@@ -303,11 +327,17 @@ class WaveformWidgetFactory : public QObject,
     VisualsManager* m_pVisualsManager;  // not owned
 
     // TODO(#13245): Migrate the following methods to smart pointer.
-    WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createFilteredWaveformWidget(
+            WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug

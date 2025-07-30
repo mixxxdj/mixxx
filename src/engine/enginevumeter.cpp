@@ -26,14 +26,14 @@ EngineVuMeter::EngineVuMeter(const QString& group, const QString& legacyGroup)
           m_peakIndicatorRight(ConfigKey(group, QStringLiteral("peak_indicator_right"))),
           m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
     const QString& aliasGroup = legacyGroup.isEmpty() ? group : legacyGroup;
-    m_vuMeter.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeter"))),
-            m_vuMeterLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterL"))),
-            m_vuMeterRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterR"))),
-            m_peakIndicator.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicator"))),
-            m_peakIndicatorLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorL"))),
-            m_peakIndicatorRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorR"))),
-            // Initialize the calculation:
-            reset();
+    m_vuMeter.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeter")));
+    m_vuMeterLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterL")));
+    m_vuMeterRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterR")));
+    m_peakIndicator.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicator")));
+    m_peakIndicatorLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorL")));
+    m_peakIndicatorRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorR")));
+    // Initialize the calculation:
+    reset();
 }
 
 void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {

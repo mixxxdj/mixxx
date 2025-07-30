@@ -1044,7 +1044,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     }
 
     QList<TrackRef> trackRefs;
-    const int idColumn = query.record().indexOf(LIBRARYTABLE_MIXXXDELETED);
+    const int idColumn = query.record().indexOf(LIBRARYTABLE_ID);
     const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
     while (query.next()) {
         const auto trackId = TrackId(query.value(idColumn));
@@ -1633,6 +1633,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             [this](TrackId trackId) {
                 // Adapt and forward signal
                 emit mixxx::thisAsNonConst(this)->tracksChanged(QSet<TrackId>{trackId});
+            });
+    connect(pTrack.get(),
+            &Track::waveformSummaryUpdated,
+            this,
+            [this, trackId]() {
+                emit mixxx::thisAsNonConst(this)->waveformSummaryUpdated(trackId);
             });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications

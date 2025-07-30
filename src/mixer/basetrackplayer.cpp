@@ -191,6 +191,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotLoadTrackFromSampler);
+    m_pLoadTrackFromPreviewDeck = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "LoadTrackFromPreviewDeck"),
+            false);
+    connect(m_pLoadTrackFromPreviewDeck.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotLoadTrackFromPreviewDeck);
 
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
@@ -809,6 +816,11 @@ void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
     loadTrackFromGroup(PlayerManager::groupForDeck(deck - 1));
 }
 
+void BaseTrackPlayerImpl::slotLoadTrackFromPreviewDeck(double d) {
+    int deck = static_cast<int>(d);
+    loadTrackFromGroup(PlayerManager::groupForPreviewDeck(deck - 1));
+}
+
 void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
     int sampler = static_cast<int>(d);
     loadTrackFromGroup(PlayerManager::groupForSampler(sampler - 1));
@@ -873,19 +885,26 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     }
 }
 
-void BaseTrackPlayerImpl::slotAdjustReplayGain(mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotAdjustReplayGain(
+        mixxx::ReplayGain replayGain, const QString& requestingPlayerGroup) {
     const double factor = m_pReplayGain->get() / replayGain.getRatio();
     const double newPregain = m_pPreGain->get() * factor;
 
     // There is a very slight chance that there will be a buffer call in between these sets.
     // Therefore, we first adjust the control that is being lowered before the control
     // that is being raised.  Worst case, the volume goes down briefly before rectifying.
+    // Only reset Gain if this player requested the change, ie. avoid Gain change
+    // in other players this track is loaded to.
     if (factor < 1.0) {
-        m_pPreGain->set(newPregain);
+        if (requestingPlayerGroup == m_group) {
+            m_pPreGain->set(newPregain);
+        }
         setReplayGain(replayGain.getRatio());
     } else {
         setReplayGain(replayGain.getRatio());
-        m_pPreGain->set(newPregain);
+        if (requestingPlayerGroup == m_group) {
+            m_pPreGain->set(newPregain);
+        }
     }
 }
 
@@ -1047,7 +1066,7 @@ void BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain(double pressed) {
     if (gain == 1.0) {
         return;
     }
-    m_pLoadedTrack->adjustReplayGainFromPregain(gain);
+    m_pLoadedTrack->adjustReplayGainFromPregain(gain, m_group);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {
