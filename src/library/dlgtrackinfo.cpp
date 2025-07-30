@@ -9,6 +9,7 @@
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
 #include "library/library_prefs.h"
+#include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -53,13 +54,17 @@ DlgTrackInfo::DlgTrackInfo(
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
                   ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
-                  this)) {
+                  this)),
+          m_pGenreWidget(nullptr),
+          m_pTrackCollection(nullptr) {
     init();
 }
 
 void DlgTrackInfo::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
+
+    setupGenreWidget();
 
     // Store tag edit widget pointers to allow focusing a specific widgets when
     // this is opened by double-clicking a WTrackProperty label.
@@ -205,14 +210,14 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
-    connect(txtGenre,
+    /*connect(txtGenre,
             &QLineEdit::editingFinished,
             this,
             [this]() {
                 txtGenre->setText(txtGenre->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setGenre(
                         txtGenre->text());
-            });
+            });*/
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -407,41 +412,61 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
+    /*txtGenre->setText(
             m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(
+    txtComposer->setText(*/
+    if (m_pGenreWidget) {
+        QString genreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
+        QStringList genres;
+        if (!genreString.isEmpty()) {
+             genres = genreString.split(QRegularExpression("[;,]"), 
+            for (QString& genre : genres) {
+                genre = genre.trimmed();
+             }
+        }
+        qDebug() << "DlgTrackInfo::updateTrackMetadataFields - loading genres:" << genres;
+        m_pGenreWidget->setGenres(genres);
+    }
+
+    if (txtGenre) {
+        txtGenre->setText(m_trackRecord.getMetadata().getTrackInfo().getGenre());
+        txtGenre->setVisible(false);
+    }
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
-    txtGrouping->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
-    txtYear->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getYear());
-    txtTrackNumber->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
-    txtComment->setPlainText(
-            m_trackRecord.getMetadata().getTrackInfo().getComment());
-    txtBpm->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
-    displayKeyText();
+            txtGrouping->setText(
+                    m_trackRecord.getMetadata().getTrackInfo().getGrouping());
+            txtYear->setText(
+                    m_trackRecord.getMetadata().getTrackInfo().getYear());
+            txtTrackNumber->setText(
+                    m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
+            txtComment->setPlainText(
+                    m_trackRecord.getMetadata().getTrackInfo().getComment());
+            txtBpm->setText(
+                    m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+            displayKeyText();
 
-    // Non-editable fields
-    txtDuration->setText(
-            m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
-    if (bitrate.isEmpty()) {
-        txtBitrate->clear();
-    } else {
-        txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
-    }
-    txtReplayGain->setText(
-            mixxx::ReplayGain::ratioToString(
-                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+            // Non-editable fields
+            txtDuration->setText(m_trackRecord.getMetadata().getDurationText(
+                    mixxx::Duration::Precision::SECONDS));
+            QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+            if (bitrate.isEmpty()) {
+                txtBitrate->clear();
+            } else {
+                txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
+            }
+            txtReplayGain->setText(
+                    mixxx::ReplayGain::ratioToString(
+                            m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
 
-    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
-    if (samplerate.isValid()) {
-        txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
-    } else {
-        txtSamplerate->clear();
-    }
+            auto samplerate = m_trackRecord.getMetadata()
+                                      .getStreamInfo()
+                                      .getSignalInfo()
+                                      .getSampleRate();
+            if (samplerate.isValid()) {
+                txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
+            } else {
+                txtSamplerate->clear();
+            }
 }
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
@@ -484,6 +509,10 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
 
     updateFromTrack(*m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
+
+    if (m_pGenreWidget && m_pTrackCollection) {
+        m_pGenreWidget->setTrack(m_pLoadedTrack);
+    }
 
     // Listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
@@ -630,6 +659,11 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
+    if (m_pTrackCollection) {
+        QStringList dbGenresBefore = m_pTrackCollection->getGenreDao().getGenresForTrack(
+                m_pLoadedTrack->getId());
+    }
+
     // Update the cached track
     //
     // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
@@ -638,6 +672,11 @@ void DlgTrackInfo::saveTrack() {
     // both members must remain valid. Do not use std::move() for passing arguments!
     // Else triggering apply twice in quick succession might clear the metadata.
     m_pLoadedTrack->replaceRecord(m_trackRecord, m_pBeatsClone);
+
+    if (m_pTrackCollection) {
+        QStringList dbGenresAfter = m_pTrackCollection->getGenreDao().getGenresForTrack(
+                m_pLoadedTrack->getId());
+    }
 }
 
 void DlgTrackInfo::clear() {
@@ -907,4 +946,84 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+}
+
+id DlgTrackInfo::setupGenreWidget() {
+    // Create the genre widget and replace the txtGenre QLineEdit with it.
+    // This allows to use a custom widget for genre input while keeping the
+    // existing layout intact.
+    m_pGenreWidget = make_parented<WGenreTagInput>(this);
+
+    // Check if txtGenre exists and is part of a layout
+    // If it is, replace it with m_pGenreWidget.
+    // If not, just add m_pGenreWidget to the parent layout.
+    if (txtGenre && txtGenre->parentWidget()) {
+        QWidget* parentWidget = txtGenre->parentWidget();
+        QGridLayout* gridLayout = qobject_cast<QGridLayout*>(parentWidget->layout());
+
+        if (gridLayout) {
+            // Find the position of txtGenre in the grid layout
+            // and replace it with m_pGenreWidget.
+            // This ensures that the new widget occupies the same space.
+            int row = -1, col = -1, rowSpan = 1, colSpan = 1;
+            int index = gridLayout->indexOf(txtGenre);
+            if (index >= 0) {
+                gridLayout->getItemPosition(index, &row, &col, &rowSpan, &colSpan);
+
+                gridLayout->removeWidget(txtGenre);
+                txtGenre->setVisible(false);
+
+                // Add the new genre widget at the same position
+                // and with the same span as txtGenre.
+                gridLayout->addWidget(m_pGenreWidget.get(), row, col, rowSpan, colSpan);
+            }
+        } else {
+            // If txtGenre is not part of a grid layout,
+            // just add m_pGenreWidget to the parent layout.
+            // This is a fallback to ensure the widget is still added.
+            txtGenre->setVisible(false);
+            QVBoxLayout* parentLayout = qobject_cast<QVBoxLayout*>(parentWidget->layout());
+            if (parentLayout) {
+                parentLayout->addWidget(m_pGenreWidget.get());
+            }
+        }
+    }
+
+    connect(m_pGenreWidget.get(),
+            &WGenreTagInput::genresChanged,
+            this,
+            &DlgTrackInfo::slotGenresChanged);
+
+    if (m_pTrackCollection) {
+        m_pGenreWidget->setTrackCollection(m_pTrackCollection);
+    }
+}
+
+void DlgTrackInfo::setTrackCollection(TrackCollection* pTrackCollection) {
+    m_pTrackCollection = pTrackCollection;
+
+    if (m_pGenreWidget) {
+        m_pGenreWidget->setTrackCollection(pTrackCollection);
+    }
+}
+
+void DlgTrackInfo::slotGenresChanged() {
+    if (!m_pGenreWidget || !m_pLoadedTrack) {
+        return;
+    }
+    QStringList genres = m_pGenreWidget->getGenres();
+    qDebug() << "DlgTrackInfo::slotGenresChanged - genres from widget:" << genres;
+
+    QString genreString = genres.join("; ");
+    m_trackRecord.refMetadata().refTrackInfo().setGenre(genreString);
+    qDebug() << "DlgTrackInfo::slotGenresChanged - updated trackRecord with:" << genreString;
+
+    // Update the txtGenre QLineEdit if it exists
+    // to keep it synchronized with the genre widget.
+    // This is necessary to maintain the existing layout and functionality.
+    // If txtGenre is not used, it will be hidden.
+    // If it is used, it will be updated with the genre string.
+    if (txtGenre) {
+        txtGenre->setText(genreString);
+    }
 }

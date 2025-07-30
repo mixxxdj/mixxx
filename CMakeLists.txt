@@ -1589,6 +1589,7 @@ add_library(
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
   src/widget/wfindonwebmenu.cpp
+  src/widget/wgenretaginput.cpp
   src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
