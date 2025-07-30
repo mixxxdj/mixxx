@@ -32,6 +32,8 @@ WGenreTagInput::WGenreTagInput(QWidget* parent)
           m_pTrackCollection(nullptr),
           m_readOnly(false),
           m_editMode(false),
+          m_multiTrackMode(false),
+          m_autoSave(true),
           m_pMainLayout(nullptr),
           m_pScrollArea(nullptr),
           m_pTagContainer(nullptr),
@@ -130,12 +132,17 @@ void WGenreTagInput::setTrack(TrackPointer pTrack) {
 void WGenreTagInput::setTrackCollection(TrackCollection* pTrackCollection) {
     qDebug() << "=== setTrackCollection() DEBUG ===";
     qDebug() << "pTrackCollection:" << (pTrackCollection ? "OK" : "NULL");
+    qDebug() << "multiTrackMode:" << m_multiTrackMode;
 
     m_pTrackCollection = pTrackCollection;
 
-    if (m_pTrackCollection) {
+    // In multi-track mode, don't setup the completer automatically
+    // It will be set manually via setGenreCompleter()
+    if (m_pTrackCollection && !m_multiTrackMode) {
         setupGenreCompleter();
-        qDebug() << "TrackCollection set successfully!";
+        qDebug() << "TrackCollection set successfully for single track!";
+    } else if (m_multiTrackMode) {
+        qDebug() << "Multi-track mode: TrackCollection set but completer not auto-configured";
     }
 }
 
@@ -279,10 +286,11 @@ void WGenreTagInput::setCompleterModel(QStringListModel* model) {
 
 void WGenreTagInput::addGenre(const QString& genre) {
     qDebug() << "=== addGenre() Start with:" << genre;
+    qDebug() << "autoSave:" << m_autoSave << "multiTrackMode:" << m_multiTrackMode;
 
     const QString trimmed = genre.trimmed();
     if (trimmed.isEmpty() || m_genres.contains(trimmed, Qt::CaseInsensitive)) {
-        qDebug() << "Genere empty or duplicated, exit..";
+        qDebug() << "Genre empty or duplicated, exit..";
         return;
     }
 
@@ -293,18 +301,31 @@ void WGenreTagInput::addGenre(const QString& genre) {
     qDebug() << "New List:" << newGenres;
     setGenres(newGenres);
 
+    if (m_autoSave && !m_multiTrackMode) {
+        qDebug() << "Auto-saving after genre addition";
+        saveGenresToTrack();
+    } else {
+        qDebug() << "Auto-save disabled - not saving to track";
+    }
+
     qDebug() << "=== addGenre() End ===";
 }
 
 void WGenreTagInput::removeGenre(const QString& genre) {
     qDebug() << "WGenreTagInput::removeGenre called with:" << genre;
+    qDebug() << "autoSave:" << m_autoSave << "multiTrackMode:" << m_multiTrackMode;
 
     QStringList newGenres = m_genres;
     if (newGenres.removeOne(genre)) {
         qDebug() << "Genre removed successfully. New list:" << newGenres;
         setGenres(newGenres);
 
-        saveGenresToTrack();
+        if (m_autoSave && !m_multiTrackMode) {
+            qDebug() << "Auto-saving after genre removal";
+            saveGenresToTrack();
+        } else {
+            qDebug() << "Auto-save disabled - not saving to track";
+        }
     } else {
         qDebug() << "Warning: Genre not found in list:" << genre;
     }
@@ -434,11 +455,25 @@ void WGenreTagInput::dropEvent(QDropEvent* event) {
         }
         setGenres(newGenres);
 
-        saveGenresToTrack();
+        if (m_autoSave && !m_multiTrackMode) {
+            saveGenresToTrack();
+        }
 
         emit genresChanged();
     }
     event->acceptProposedAction();
+}
+
+void WGenreTagInput::debugState() const {
+    qDebug() << "=== WGenreTagInput Debug State ===";
+    qDebug() << "Current genres:" << m_genres;
+    qDebug() << "Multi-track mode:" << m_multiTrackMode;
+    qDebug() << "Auto-save enabled:" << m_autoSave;
+    qDebug() << "Read-only:" << m_readOnly;
+    qDebug() << "Edit mode:" << m_editMode;
+    qDebug() << "Has TrackCollection:" << (m_pTrackCollection ? "YES" : "NO");
+    qDebug() << "Has Track:" << (m_pTrack ? "YES" : "NO");
+    qDebug() << "=== End Debug State ===";
 }
 
 void WGenreTagInput::enterEditMode() {
@@ -595,7 +630,7 @@ void WGenreTagInput::slotAddGenre() {
     }
 
     QString text = m_pLineEdit->text().trimmed();
-    qDebug() << "Text form LineEdit:" << text;
+    qDebug() << "Text from LineEdit:" << text;
 
     if (!text.isEmpty()) {
         qDebug() << "Calling addGenre()...";
@@ -604,7 +639,10 @@ void WGenreTagInput::slotAddGenre() {
         m_pLineEdit->clear();
         qDebug() << "LineEdit cleared";
 
-        saveGenresToTrack();
+        if (m_autoSave && !m_multiTrackMode) {
+            qDebug() << "Auto-saving after slot addition";
+            saveGenresToTrack();
+        }
     }
 
     qDebug() << "=== slotAddGenre() End ===";
@@ -627,7 +665,11 @@ void WGenreTagInput::slotLineEditFinished() {
         addGenre(text);
         m_pLineEdit->clear();
 
-        saveGenresToTrack();
+        // Only auto-save if enabled and not in multi-track mode
+        // addGenre() already handles this, but let's be explicit
+        if (m_autoSave && !m_multiTrackMode) {
+            saveGenresToTrack();
+        }
     }
 }
 
@@ -635,5 +677,56 @@ void WGenreTagInput::slotCompleterActivated(const QString& text) {
     addGenre(text);
     m_pLineEdit->clear();
 
-    saveGenresToTrack();
+    // Only auto-save if enabled and not in multi-track mode
+    // addGenre() already handles this, but let's be explicit
+    if (m_autoSave && !m_multiTrackMode) {
+        saveGenresToTrack();
+    }
+}
+
+void WGenreTagInput::setMultiTrackMode(bool multiTrack) {
+    qDebug() << "WGenreTagInput::setMultiTrackMode:" << multiTrack;
+    m_multiTrackMode = multiTrack;
+
+    if (m_multiTrackMode) {
+        setAutoSave(false);
+    }
+}
+
+bool WGenreTagInput::isMultiTrackMode() const {
+    return m_multiTrackMode;
+}
+
+void WGenreTagInput::setAutoSave(bool autoSave) {
+    qDebug() << "WGenreTagInput::setAutoSave:" << autoSave;
+    m_autoSave = autoSave;
+}
+
+bool WGenreTagInput::isAutoSave() const {
+    return m_autoSave;
+}
+
+void WGenreTagInput::setGenreCompleter(const QStringList& genres) {
+    qDebug() << "WGenreTagInput::setGenreCompleter with" << genres.size() << "genres";
+
+    if (m_pCompleter) {
+        m_pCompleter->deleteLater();
+    }
+
+    m_pCompleter = new QCompleter(genres, this);
+    m_pCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    m_pCompleter->setFilterMode(Qt::MatchContains);
+    m_pCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    m_pCompleter->setMaxVisibleItems(8);
+
+    if (m_pLineEdit) {
+        m_pLineEdit->setCompleter(m_pCompleter);
+    }
+
+    connect(m_pCompleter,
+            QOverload<const QString&>::of(&QCompleter::activated),
+            this,
+            &WGenreTagInput::slotCompleterActivated);
+
+    qDebug() << "Genre completer configured successfully";
 }
