@@ -138,9 +138,8 @@ void DlgAnalysis::analyze() {
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
         foreach(QModelIndex selectedIndex, selectedIndexes) {
-            TrackId trackId(selectedIndex.sibling(
-                selectedIndex.row(),
-                m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
+            TrackId trackId(m_pAnalysisLibraryTableModel->getFieldVariant(
+                    selectedIndex, ColumnCache::COLUMN_LIBRARYTABLE_ID));
             if (trackId.isValid()) {
                 tracks.append(trackId);
             }

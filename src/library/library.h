@@ -105,6 +105,10 @@ class Library: public QObject {
     void setRowHeight(int rowHeight);
     void setEditMetadataSelectedClick(bool enable);
 
+    /// Switches to the internal track collection view
+    /// and focuses the search box.
+    void searchTracksInCollection();
+
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
@@ -138,6 +142,8 @@ class Library: public QObject {
     //    void slotCreateSearchCrateFromSearch();
     void slotCreateSearchCrateFromSearch(const QString& text);
     // EVE
+    void slotSearchInCurrentView();
+    void slotSearchInAllTracks();
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;
@@ -174,6 +180,7 @@ class Library: public QObject {
     // EVE
     void exportSearchCrate(SearchCrateId searchCrateId);
     // EVE
+    void exportPlaylist(int playlistId);
 #endif
     void saveModelState();
     void restoreModelState();

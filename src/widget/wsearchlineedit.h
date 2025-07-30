@@ -49,6 +49,10 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     ~WSearchLineEdit();
 
     void setup(const QDomNode& node, const SkinContext& context);
+    void setupToolTip(const QString& searchInCurrentViewShortcut,
+            const QString& searchInAllTracksShortcut);
+
+    void setFocus(Qt::FocusReason focusReason);
 
   protected:
     void resizeEvent(QResizeEvent*) override;
@@ -62,6 +66,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void search(const QString& text);
     FocusWidget setLibraryFocus(FocusWidget newFocusWidget);
     void newSearchCrate(const QString& text);
+    FocusWidget setLibraryFocus(FocusWidget newFocusWidget,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
 
   public slots:
     void slotSetFont(const QFont& font);
@@ -83,7 +89,6 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void slotDeleteCurrentItem();
 
   private slots:
-    void slotSetShortcutFocus();
     void slotTextChanged(const QString& text);
     void slotIndexChanged(int index);
 
@@ -110,6 +115,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void deleteSelectedListItem();
     void triggerSearchDebounced();
     bool hasSelectedText() const;
+    bool hasCompletionAvailable(QString* completionPrefix = nullptr) const;
 
     inline int findCurrentTextIndex() {
         return findData(currentText().trimmed(), Qt::DisplayRole);

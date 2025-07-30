@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - "[0-9].[0-9]"
+  workflow_dispatch:
+
+env:
+  # This variable stores the map of Mixxx branches that still being developed. The key is the branch receiving support and the value is the next version in line
+  # NOTE: this must be valid JSON!
+  ACTIVE_VERSIONS: |-
+    {"2.5": "2.6", "2.6": "main"}
+
+# Global allowed scopes for all actions
+permissions:
+  contents: write # to sync branches
+  pull-requests: write # to sync branches
+  checks: write #  to create new checks (coverallsapp/github-action)
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  changelog:
+    uses: ./.github/workflows/changelog.yml
+
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      publish: true
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
+      MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+      NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
+  sync:
+    if: ${{ github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
+    uses: ./.github/workflows/sync_branches.yml
+    secrets:
+      MIXXX_BRANCH_SYNC_PAT: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}

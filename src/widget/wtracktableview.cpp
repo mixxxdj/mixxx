@@ -83,12 +83,35 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 }
+#ifdef __LINUX__
+void WTrackTableView::currentChanged(
+        const QModelIndex& current,
+        const QModelIndex& previous) {
+    // This override fixes https://github.com/mixxxdj/mixxx/pull/14734
+    // On Ubuntu-based distros it may happen that the InputMethod management
+    // isn't working correctly for some reason. When the focused cell in the
+    // tracks view is changed, QAbstractItemView::currentChanged()
+    // https://github.com/qt/qtbase/blob/82015992c853b50dac167da26b8b858ac4794c66/src/widgets/itemviews/qabstractitemview.cpp#L3823
+    // enables Qt::WA_InputMethodEnabled for editable columns/cells.
+    // Then, special keys are interpreted as QInputMethodEvent instead of
+    // QKeyEvent, which are therefore not filtered by KeyboardEventFilter and
+    // some keys of built-in keyboard mappings don't work.
+    // (de_DE, fr_FR, fr_CH and probably others).
+    // Reset Qt::WA_InputMethodEnabled right away if no editor is open
+    QTableView::currentChanged(current, previous);
+    if (state() != QTableView::EditingState) {
+        // Does not interfere with hovered Star delegate, the only editor that
+        // is opened on hover.
+        setAttribute(Qt::WA_InputMethodEnabled, false);
+    }
+}
+#endif
 
 void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit onlyCachedCoverArt(true);
+        emit onlyCachedCoversAndOverviews(true);
         m_loadCachedOnly = true;
     }
     m_lastUserAction = mixxx::Time::elapsed();
@@ -152,7 +175,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
         // This allows CoverArtDelegate to request that we load covers from disk
         // (as opposed to only serving them from cache).
-        emit onlyCachedCoverArt(false);
+        emit onlyCachedCoversAndOverviews(false);
         m_loadCachedOnly = false;
     }
 }

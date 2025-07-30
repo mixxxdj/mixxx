@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-
 #include "control/controlindicatortimer.h"
 #include "controllers/controller.h"
 #include "controllers/controllermappinginfoenumerator.h"
@@ -222,7 +221,6 @@ class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourcePro
 
   protected:
     void SetUp() override;
-#ifdef MIXXX_USE_QML
     void TearDown() override;
 
     TrackPointer getOrAddTrackByLocation(
@@ -239,7 +237,6 @@ class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourcePro
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
     std::shared_ptr<Library> m_pLibrary;
-#endif
 
     bool testLoadMapping(const MappingInfo& mapping);
 

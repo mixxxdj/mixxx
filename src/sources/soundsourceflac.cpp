@@ -586,6 +586,11 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         error = "STREAM_DECODER_ERROR_STATUS_BAD_METADATA";
         break;
 #endif
+#if FLAC_API_VERSION_CURRENT >= 15
+    case FLAC__STREAM_DECODER_ERROR_STATUS_MISSING_FRAME:
+        error = "STREAM_DECODER_ERROR_STATUS_MISSING_FRAME";
+        break;
+#endif
     }
     kLogger.warning()
             << "FLAC decoding error" << error

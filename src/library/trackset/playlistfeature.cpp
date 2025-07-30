@@ -33,11 +33,25 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
 
-    m_pShufflePlaylistAction = new QAction(tr("Shuffle Playlist"), this);
+    m_pShufflePlaylistAction = make_parented<QAction>(tr("Shuffle Playlist"), this);
     connect(m_pShufflePlaylistAction,
             &QAction::triggered,
             this,
             &PlaylistFeature::slotShufflePlaylist);
+
+    m_pUnlockPlaylistsAction =
+            make_parented<QAction>(tr("Unlock all playlists"), this);
+    connect(m_pUnlockPlaylistsAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotUnlockAllPlaylists);
+
+    m_pDeleteAllUnlockedPlaylistsAction =
+            make_parented<QAction>(tr("Delete all unlocked playlists"), this);
+    connect(m_pDeleteAllUnlockedPlaylistsAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
 }
 
 QVariant PlaylistFeature::title() {
@@ -49,7 +63,14 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pUnlockPlaylistsAction);
+    menu.addAction(m_pDeleteAllUnlockedPlaylistsAction);
+    menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
+#ifdef __ENGINEPRIME__
+    menu.addSeparator();
+    menu.addAction(m_pExportAllPlaylistsToEngineAction);
+#endif
     menu.exec(globalPos);
 }
 
@@ -86,6 +107,9 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.addAction(m_pExportTrackFilesAction);
+#ifdef __ENGINEPRIME__
+    menu.addAction(m_pExportPlaylistToEngineAction);
+#endif
     menu.exec(globalPos);
 }
 
@@ -233,6 +257,46 @@ void PlaylistFeature::slotShufflePlaylist() {
     }
 }
 
+void PlaylistFeature::slotUnlockAllPlaylists() {
+    m_playlistDao.setPlaylistsLockedByType(PlaylistDAO::PLHT_NOT_HIDDEN, false);
+}
+
+void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
+    // Collect playlists to display the count
+    const QList<QPair<int, QString>> playlists =
+            m_playlistDao.getUnlockedPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+    if (playlists.size() <= 0) {
+        return;
+    }
+
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Do you really want to delete all unlocked playlists?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Deleting %1 unlocked playlists.<br>"
+               "This operation can not be undone!")
+                    .arg(playlists.size()),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    QStringList ids;
+    for (const auto& playlist : std::as_const(playlists)) {
+        ids << QString::number(playlist.first);
+    }
+
+    m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
+}
+
 /// Purpose: When inserting or removing playlists,
 /// we require the sidebar model not to reset.
 /// This method queries the database and does dynamic insertion
@@ -345,8 +409,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         // Else (root item was selected or for some reason no index could be created)
         // there's nothing to do: either no child was selected earlier, or the root
         // was selected and will remain selected after the child model was rebuilt.
-        activateChild(newIndex);
-        emit featureSelect(this, newIndex);
+        selectAndActivate(newIndex);
     }
 }
 
