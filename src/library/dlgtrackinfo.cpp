@@ -1,5 +1,6 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QRegularExpression>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -210,14 +211,6 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
-    /*connect(txtGenre,
-            &QLineEdit::editingFinished,
-            this,
-            [this]() {
-                txtGenre->setText(txtGenre->text().trimmed());
-                m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text());
-            }); */
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -412,8 +405,6 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    /* txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre()); */
     if (m_pGenreWidget) {
         QString genreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
         QStringList genres;

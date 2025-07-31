@@ -2,6 +2,7 @@
 
 #include <QLineEdit>
 #include <QListView>
+#include <QRegularExpression>
 #include <QStyleFactory>
 #include <QtDebug>
 
@@ -1308,9 +1309,12 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
     QStringList widgetGenres = m_pGenreWidget->getGenres();
     qDebug() << "Genres currently in widget:" << widgetGenres;
 
+    static const QRegularExpression genreSeparator("[;,]");
+
     // 1. Remove all common genres from the widget
     // 2. Save the remaining genres to each track
     QStringList originalCommonGenres = getOriginalCommonGenres();
+    QSet<QString> originalCommonGenresSet(originalCommonGenres.begin(), originalCommonGenres.end());
     qDebug() << "Original common genres:" << originalCommonGenres;
 
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
@@ -1320,11 +1324,11 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         TrackId trackId = pTrack->getId();
 
         QStringList currentGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+
         if (currentGenres.isEmpty()) {
             QString trackGenreField = pTrack->getGenre();
             if (!trackGenreField.isEmpty()) {
-                currentGenres = trackGenreField.split(
-                        QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+                currentGenres = trackGenreField.split(genreSeparator, Qt::SkipEmptyParts);
                 for (QString& genre : currentGenres) {
                     genre = genre.trimmed();
                 }
@@ -1338,21 +1342,25 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         // 2. Add all non-common genres from the current track
         // 3. Add all genres from the widget (might include new common genres)
         QStringList finalGenres;
+        QSet<QString> finalGenresSet;
 
         // Add non-common genres from the current track
-        for (const QString& currentGenre : currentGenres) {
-            if (!originalCommonGenres.contains(currentGenre, Qt::CaseInsensitive)) {
+        for (const QString& currentGenre : qAsConst(currentGenres)) {
+            if (!originalCommonGenresSet.contains(currentGenre)) {
                 finalGenres.append(currentGenre);
+                finalGenresSet.insert(currentGenre);
                 qDebug() << "Track" << trackId.toVariant()
                          << "keeping non-common genre:" << currentGenre;
             }
         }
 
         // Add all genres from the widget
-        for (const QString& widgetGenre : widgetGenres) {
-            if (!finalGenres.contains(widgetGenre, Qt::CaseInsensitive)) {
+        for (const QString& widgetGenre : qAsConst(widgetGenres)) {
+            if (!finalGenresSet.contains(widgetGenre)) {
                 finalGenres.append(widgetGenre);
-                qDebug() << "Track" << trackId.toVariant() << "adding widget genre:" << widgetGenre;
+                finalGenresSet.insert(widgetGenre);
+                qDebug() << "Track" << trackId.toVariant()
+                         << "adding widget genre:" << widgetGenre;
             }
         }
 
