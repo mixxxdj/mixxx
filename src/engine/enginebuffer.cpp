@@ -649,13 +649,19 @@ void EngineBuffer::ejectTrack() {
 
     if (pOldTrack) {
         notifyTrackLoaded(TrackPointer(), pOldTrack);
+    } else {
+        // When not invoking notifyTrackLoaded() call this separately
+        m_pRateControl->resetPositionScratchController();
     }
+
     m_iTrackLoading = 0;
     m_pChannelToCloneFrom = nullptr;
 }
 
 void EngineBuffer::notifyTrackLoaded(
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    m_pRateControl->resetPositionScratchController();
+
     if (pOldTrack) {
         disconnect(
                 pOldTrack.get(),
