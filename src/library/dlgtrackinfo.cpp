@@ -210,14 +210,6 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
-    /*connect(txtGenre,
-            &QLineEdit::editingFinished,
-            this,
-            [this]() {
-                txtGenre->setText(txtGenre->text().trimmed());
-                m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text());
-            });*/
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -412,17 +404,14 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    /*txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(*/
     if (m_pGenreWidget) {
         QString genreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
         QStringList genres;
         if (!genreString.isEmpty()) {
-             genres = genreString.split(QRegularExpression("[;,]"), 
+            genres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
             for (QString& genre : genres) {
                 genre = genre.trimmed();
-             }
+            }
         }
         qDebug() << "DlgTrackInfo::updateTrackMetadataFields - loading genres:" << genres;
         m_pGenreWidget->setGenres(genres);
@@ -948,7 +937,7 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     coverWidget->setFixedHeight(totalHeight);
 }
 
-id DlgTrackInfo::setupGenreWidget() {
+void DlgTrackInfo::setupGenreWidget() {
     // Create the genre widget and replace the txtGenre QLineEdit with it.
     // This allows to use a custom widget for genre input while keeping the
     // existing layout intact.
