@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "effects/chains/equalizereffectchain.h"
+#include "effects/chains/quickeffectchain.h"
 #include "effects/chains/standardeffectchain.h"
 #include "effects/defs.h"
 #include "effects/effectbuttonparameterslot.h"
@@ -975,11 +976,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Effect Controls
     QMenu* pEffectsMenu = addSubmenu(tr("Effects"));
-
-    // Quick Effect Rack COs
-    QMenu* pQuickEffectMenu = addSubmenu(tr("Quick Effects"), pEffectsMenu);
+    // Deck Quick Effects
     for (int i = 1; i <= iNumDecks; ++i) {
-        addControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i),
+        const QString deckGroup = PlayerManager::groupForDeck(i);
+        const QString quickEffectGroup = QuickEffectChain::formatEffectChainGroup(deckGroup);
+        QMenu* pQuickEffectMenu = addSubmenu(tr("Quick Effects Deck %1").arg(i), pEffectsMenu);
+        addControl(quickEffectGroup,
                 "super1",
                 tr("Deck %1 Quick Effect Super Knob").arg(i),
                 tr("Quick Effect Super Knob (control linked effect "
@@ -987,13 +989,39 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 pQuickEffectMenu,
                 false,
                 tr("Quick Effect"));
-        addControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i),
+        addControl(quickEffectGroup,
                 "enabled",
                 tr("Deck %1 Quick Effect Enable Button").arg(i),
                 tr("Quick Effect Enable Button"),
                 pQuickEffectMenu,
                 false,
                 tr("Quick Effect"));
+#ifdef __STEM__
+        pQuickEffectMenu->addSeparator();
+        // Stem Quick Effects
+        for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
+            const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+            const QString stemQuickEffectGroup =
+                    QuickEffectChain::formatEffectChainGroup(stemGroup);
+            addControl(stemQuickEffectGroup,
+                    "super1",
+                    tr("Deck %1 Stem %2 Quick Effect Super Knob")
+                            .arg(QString::number(i), QString::number(j)),
+                    tr("Quick Effect Super Knob (control linked effect "
+                       "parameters)"),
+                    pQuickEffectMenu,
+                    false,
+                    tr("Quick Effect"));
+            addControl(stemQuickEffectGroup,
+                    "enabled",
+                    tr("Deck %1 Stem %2 Quick Effect Enable Button")
+                            .arg(QString::number(i), QString::number(j)),
+                    tr("Quick Effect Enable Button"),
+                    pQuickEffectMenu,
+                    false,
+                    tr("Quick Effect"));
+        }
+#endif
     }
 
     pEffectsMenu->addSeparator();
