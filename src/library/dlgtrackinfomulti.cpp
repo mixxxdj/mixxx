@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <utility>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -1345,7 +1346,7 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         QSet<QString> finalGenresSet;
 
         // Add non-common genres from the current track
-        for (const QString& currentGenre : qAsConst(currentGenres)) {
+        for (const QString& currentGenre : std::as_const(currentGenres)) {
             if (!originalCommonGenresSet.contains(currentGenre)) {
                 finalGenres.append(currentGenre);
                 finalGenresSet.insert(currentGenre);
@@ -1355,7 +1356,7 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         }
 
         // Add all genres from the widget
-        for (const QString& widgetGenre : qAsConst(widgetGenres)) {
+        for (const QString& widgetGenre : std::as_const(widgetGenres)) {
             if (!finalGenresSet.contains(widgetGenre)) {
                 finalGenres.append(widgetGenre);
                 finalGenresSet.insert(widgetGenre);

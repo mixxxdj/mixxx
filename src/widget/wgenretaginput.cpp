@@ -530,7 +530,7 @@ void WGenreTagInput::updateGenreTags() {
         qDebug() << "Adding new tag for" << m_genres.size() << "genres...";
 
         // Add new tags for each genre
-        for (const QString& genre : m_genres) {
+        for (const QString& genre : std::as_const(m_genres)) {
             qDebug() << "Creating genre tag:" << genre;
             QWidget* tagWidget = createGenreTag(genre);
             if (tagWidget) {
