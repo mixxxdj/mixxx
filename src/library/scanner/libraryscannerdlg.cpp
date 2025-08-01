@@ -64,10 +64,12 @@ void LibraryScannerDlg::slotUpdateCover(const QString& path) {
 }
 
 void LibraryScannerDlg::slotCancel() {
-    qDebug() << "Cancelling library scan...";
+    qWarning() << "     ScannerDlg: Cancelling library scan...";
     m_bCancelled = true;
+    qWarning() << "     -> emit scanCancelled";
     emit scanCancelled();
-    hide();
+    // qWarning() << "     -> hide";
+    // hide();
 }
 
 void LibraryScannerDlg::slotScanStarted() {

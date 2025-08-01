@@ -138,7 +138,8 @@ LibraryScanner::LibraryScanner(
     connect(m_pProgressDlg.data(),
             &LibraryScannerDlg::scanCancelled,
             this,
-            &LibraryScanner::slotCancel);
+            &LibraryScanner::slotCancel,
+            Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
             m_pProgressDlg.data(),
@@ -510,9 +511,16 @@ void LibraryScanner::slotCancel() {
     // Wait until there is no scan starting.
     // All pending scan start request are canceled
     // as well until the scanner is idle again.
+    qWarning() << "     Scanner: slotCancel";
+    qWarning() << "     -> change scanner state CANCELLING";
     changeScannerState(CANCELING);
+    qWarning() << "     -> cancel()";
     cancel();
+    qWarning() << "     -> change scanner state IDLE";
     changeScannerState(IDLE);
+
+    qWarning() << "     -> emit scanFinished";
+    emit scanFinished();
 }
 
 void LibraryScanner::cancelAndQuit() {
@@ -527,6 +535,7 @@ void LibraryScanner::cancelAndQuit() {
 
 // be sure we hold the m_stateSema and we are in CANCELING state
 void LibraryScanner::cancel() {
+    qWarning() << "     Scanner: cancel()";
     DEBUG_ASSERT(m_state == CANCELING);
 
 
@@ -535,13 +544,16 @@ void LibraryScanner::cancel() {
     // in the LibraryScanner thread in the meanwhile
     ScannerGlobalPointer scanner = m_scannerGlobal;
     if (scanner) {
+        qWarning() << "     -> scanner->cancel()";
         scanner->cancel();
     }
 
     // Wait for the thread pool to empty. This is important because ScannerTasks
     // have pointers to the LibraryScanner and can cause a segfault if they run
     // after the LibraryScanner has been destroyed.
+    qWarning() << "     -> waitForDone";
     m_pool.waitForDone();
+    qWarning() << "     -> Done.";
 }
 
 void LibraryScanner::queueTask(ScannerTask* pTask) {

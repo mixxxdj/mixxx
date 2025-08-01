@@ -104,6 +104,7 @@ class ScannerGlobal {
     }
 
     void cancel() {
+        qWarning() << "     ScannerGlobal: cancel()";
         m_shouldCancel = true;
     }
 
