@@ -1,0 +1,70 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Size>22min,-1me</Size>
+        <MaximumSize>-1,91</MaximumSize>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>channel_VuMeter_Group</ObjectName>
+            <Layout>horizontal</Layout>
+            <MaximumSize>22,91</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <Template src="skin:left_2state_button.xml">
+        <SetVariable name="TooltipId">pfl</SetVariable>
+        <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="state_1_text"></SetVariable>
+        <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+      </Template>
+
+      <SliderComposed>
+        <TooltipId>channel_volume</TooltipId>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>40,100</MinimumSize>
+        <MaximumSize>40,-1</MaximumSize>
+        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+        <Horizontal>false</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+      </SliderComposed>
+
+    </Children>
+  </WidgetGroup>
+</Template>
