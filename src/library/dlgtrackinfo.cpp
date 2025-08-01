@@ -409,6 +409,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
         QString genreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
         QStringList genres;
         if (!genreString.isEmpty()) {
+            static const QRegularExpression genreSplitRegex("[;,]");
             genres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
             for (QString& genre : genres) {
                 genre = genre.trimmed();
@@ -651,6 +652,7 @@ void DlgTrackInfo::saveTrack() {
         QStringList dbGenresBefore =
                 m_pTrackCollection->getGenreDao().getGenresForTrack(
                         m_pLoadedTrack->getId());
+        qDebug() << "Genres before save:" << dbGenresBefore;
     }
 
     // Update the cached track
@@ -666,6 +668,7 @@ void DlgTrackInfo::saveTrack() {
         QStringList dbGenresAfter =
                 m_pTrackCollection->getGenreDao().getGenresForTrack(
                         m_pLoadedTrack->getId());
+        qDebug() << "Genres before save:" << dbGenresAfter;
     }
 }
 

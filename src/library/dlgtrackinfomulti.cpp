@@ -1228,7 +1228,8 @@ void DlgTrackInfoMulti::loadGenresFromTracks() {
             qDebug() << "  - Track genre field:" << genreString;
 
             if (!genreString.isEmpty()) {
-                trackGenres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+                static const QRegularExpression genreSeparator("[;,]");
+                trackGenres = genreString.split(genreSeparator, Qt::SkipEmptyParts);
                 for (QString& genre : trackGenres) {
                     genre = genre.trimmed();
                 }
@@ -1403,7 +1404,8 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
         if (trackGenres.isEmpty()) {
             QString genreString = pTrack->getGenre();
             if (!genreString.isEmpty()) {
-                trackGenres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+                static const QRegularExpression genreSeparator("[;,]");
+                trackGenres = genreString.split(genreSeparator, Qt::SkipEmptyParts);
                 for (QString& genre : trackGenres) {
                     genre = genre.trimmed();
                 }
@@ -1416,7 +1418,7 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
             firstTrack = false;
         } else {
             QStringList intersection;
-            for (const QString& genre : commonGenres) {
+            for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
                     intersection.append(genre);
                 }
