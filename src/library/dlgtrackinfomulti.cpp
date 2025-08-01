@@ -1258,7 +1258,7 @@ void DlgTrackInfoMulti::loadGenresFromTracks() {
             qDebug() << "  - First track - common genres:" << commonGenres;
         } else {
             QStringList intersection;
-            for (const QString& genre : commonGenres) {
+            for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
                     intersection.append(genre);
                 }
@@ -1319,6 +1319,9 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
     QSet<QString> originalCommonGenresSet(originalCommonGenres.begin(), originalCommonGenres.end());
     qDebug() << "Original common genres:" << originalCommonGenres;
 
+    QStringList finalGenres;
+    QSet<QString> finalGenresSet;
+
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         if (!pTrack)
             continue;
@@ -1326,6 +1329,9 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         TrackId trackId = pTrack->getId();
 
         QStringList currentGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+
+        finalGenres.clear();
+        finalGenresSet.clear();
 
         if (currentGenres.isEmpty()) {
             QString trackGenreField = pTrack->getGenre();
@@ -1343,8 +1349,6 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         // 1. Retrieve original common genres from the DAO
         // 2. Add all non-common genres from the current track
         // 3. Add all genres from the widget (might include new common genres)
-        QStringList finalGenres;
-        QSet<QString> finalGenresSet;
 
         // Add non-common genres from the current track
         for (const QString& currentGenre : std::as_const(currentGenres)) {
@@ -1386,12 +1390,15 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
     qDebug() << "=== saveGenresToTracks() End ===";
 }
 
+QStringList intersection;
+
 QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
     if (!m_pTrackCollection) {
         return QStringList();
     }
 
     QStringList commonGenres;
+    QStringList intersection;
     bool firstTrack = true;
 
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
@@ -1417,7 +1424,7 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
             commonGenres = trackGenres;
             firstTrack = false;
         } else {
-            QStringList intersection;
+            intersection.clear();
             for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
                     intersection.append(genre);
