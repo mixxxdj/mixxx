@@ -350,8 +350,9 @@ inline QLocale inputLocale() {
 
 namespace mixxx {
 
-CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
-        : m_runtime_timer(QLatin1String("CoreServices::runtime")),
+CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp, QQmlEngine* pQmlEngine)
+        : m_pQmlEngine(pQmlEngine),
+          m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args),
           m_isInitialized(false) {
     m_runtime_timer.start();

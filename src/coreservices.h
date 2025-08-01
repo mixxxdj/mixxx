@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qqmlextensioninterface.h>
+
 #include <memory>
 
 #include "preferences/settingsmanager.h"
@@ -34,7 +36,7 @@ class CoreServices : public QObject {
     Q_OBJECT
 
   public:
-    CoreServices(const CmdlineArgs& args, QApplication* pApp);
+    CoreServices(const CmdlineArgs& args, QApplication* pApp, QQmlEngine* pQmlEngine);
     ~CoreServices();
 
     /// The secondary long run which should be called after displaying the start up screen
@@ -104,6 +106,10 @@ class CoreServices : public QObject {
 
     std::shared_ptr<QDialog> makeDlgPreferences() const;
 
+    QQmlEngine* getQmlEngine() {
+        return m_pQmlEngine;
+    }
+
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
     void libraryScanSummary(const LibraryScanResultSummary& result);
@@ -124,6 +130,7 @@ class CoreServices : public QObject {
     /// Tear down CoreServices that were previously initialized by `initialize()`.
     void finalize();
 
+    QQmlEngine* m_pQmlEngine;
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;

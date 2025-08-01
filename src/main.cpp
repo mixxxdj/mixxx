@@ -60,14 +60,15 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
-#ifdef MIXXX_USE_QML
-    if (args.isQml()) {
-        mixxx::qml::QmlApplication qmlApplication(pApp, args);
-        exitCode = pApp->exec();
-    } else
-#endif
+    // #ifdef MIXXX_USE_QML
+    // if (args.isQml()) {
+    mixxx::qml::QmlApplication qmlApplication(pApp, args);
+    //         exitCode = pApp->exec();
+    //     } else
+    // #endif
     {
-        auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+        auto pCoreServices = std::make_shared<mixxx::CoreServices>(
+                args, pApp, qmlApplication.engine());
 
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about

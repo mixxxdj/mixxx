@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QGridLayout>
 #include <QLabel>
+#include <QQuickWidget>
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QVBoxLayout>
@@ -182,7 +183,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         Library* pLibrary,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
-        RecordingManager* pRecordingManager)
+        RecordingManager* pRecordingManager,
+        QQmlEngine* pQmlEngine)
         : m_pConfig(pConfig),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
@@ -192,6 +194,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
+          m_pQmlEngine(pQmlEngine),
           m_pParent(nullptr) {
     DEBUG_ASSERT(m_pSkinCreatedControls);
 }
@@ -649,6 +652,15 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         parseSingletonDefinition(node);
     } else if (nodeName == "SingletonContainer") {
         result = wrapWidget(parseStandardWidget<WSingletonContainer>(node));
+    } else if (nodeName == "QML") {
+        auto* pWidget = new QQuickWidget(m_pQmlEngine, m_pParent);
+        pWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+        QString scene = m_pContext->selectString(node, "Scene");
+        pWidget->setSource(QUrl::fromLocalFile("../res/qml/legacy/" + scene));
+        setupWidget(node, pWidget);
+        // auto *pWWidget = new WBaseWidget(pWidget);
+        // setupConnections(node, pWWidget);
+        result = wrapWidget(pWidget);
     } else {
         SKIN_WARNING(node,
                 *m_pContext,

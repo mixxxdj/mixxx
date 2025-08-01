@@ -140,7 +140,8 @@ QWidget* LegacySkin::loadSkin(QWidget* pParent,
             pCoreServices->getLibrary().get(),
             pCoreServices->getVinylControlManager().get(),
             pCoreServices->getEffectsManager().get(),
-            pCoreServices->getRecordingManager().get());
+            pCoreServices->getRecordingManager().get(),
+            pCoreServices->getQmlEngine());
     return legacy.parseSkin(m_path.absoluteFilePath(), pParent);
 }
 

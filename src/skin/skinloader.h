@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qqmlengine.h>
+
 #include <QDir>
 #include <QList>
 #include <QObject>
@@ -42,6 +44,7 @@ class SkinLoader : public QObject {
     SkinPointer skinFromDirectory(const QDir& dir) const;
 
     UserSettingsPointer m_pConfig;
+    QQmlEngine* m_pQmlEngine;
 
     bool m_spinnyCoverControlsCreated;
     void setupSpinnyCoverControls();

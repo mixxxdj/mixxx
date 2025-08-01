@@ -1,5 +1,7 @@
 #include "mixxxmainwindow.h"
 
+#include <qquickwidget.h>
+
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
@@ -141,7 +143,8 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     // Show launch image immediately so the user knows Mixxx is starting
     m_pSkinLoader = std::make_unique<mixxx::skin::SkinLoader>(m_pCoreServices->getSettings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
-    m_pCentralWidget = (QWidget*)m_pLaunchImage;
+    m_pCentralWidget = new QQuickWidget(m_pCoreServices->getQmlEngine(), this);
+    ;
     setCentralWidget(m_pCentralWidget);
 
     show();

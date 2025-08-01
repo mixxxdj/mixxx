@@ -1,5 +1,8 @@
 #include "qmlapplication.h"
 
+#include <qresource.h>
+#include <qscreen.h>
+
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 
@@ -26,6 +29,55 @@ auto lambda_to_singleton_type_factory_ptr(F&& f) {
         return fn(pEngine, pScriptEngine);
     };
 }
+
+// image provider that allows to search/replace colors in the svg file before rendering it
+class SvgModifierImageProvider : public QQuickImageProvider {
+  public:
+    SvgModifierImageProvider()
+            : QQuickImageProvider(QQuickImageProvider::Pixmap) {
+    }
+
+    QPixmap requestPixmap(const QString& rid, QSize* size, const QSize& requestedSize) override {
+        const QStringList list = rid.split("?");
+        const QString resourceId(list.length() > 0 ? list[0] : QString());
+        const QStringList mods(list.length() > 1 ? list[1].split("+") : QStringList());
+        QFile resource("../res/qml/legacy/assets/" + resourceId);
+        resource.open(QIODevice::ReadOnly);
+        QByteArray data = resource.readAll();
+
+        for (const auto mod : mods) {
+            QStringList ab = mod.split("/");
+            if (ab.length() == 2) {
+                data.replace(ab[0].toLatin1(), ab[1].toLatin1());
+            }
+        }
+
+        QSvgRenderer renderer(data);
+
+        // TODO is this the right way?
+        const auto devicePixelRatio = QGuiApplication::primaryScreen()->devicePixelRatio();
+
+        int width = renderer.defaultSize().width() * devicePixelRatio;
+        int height = renderer.defaultSize().height() * devicePixelRatio;
+
+        if (size)
+            *size = QSize(width, height);
+        QPixmap pixmap(requestedSize.width() * devicePixelRatio > 0
+                        ? requestedSize.width() * devicePixelRatio
+                        : width,
+                requestedSize.height() * devicePixelRatio > 0
+                        ? requestedSize.height() * devicePixelRatio
+                        : height);
+
+        pixmap.fill(QColor("transparent"));
+        QPainter painter(&pixmap);
+        renderer.render(&painter, pixmap.rect());
+
+        pixmap.setDevicePixelRatio(devicePixelRatio);
+
+        return pixmap;
+    }
+};
 } // namespace
 
 namespace mixxx {
@@ -34,60 +86,60 @@ namespace qml {
 QmlApplication::QmlApplication(
         QApplication* app,
         const CmdlineArgs& args)
-        : m_pCoreServices(std::make_unique<mixxx::CoreServices>(args, app)),
+        : m_pCoreServices(std::make_unique<mixxx::CoreServices>(args, app, engine())),
           m_visualsManager(std::make_unique<VisualsManager>()),
           m_mainFilePath(m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
           m_autoReload() {
     QQuickStyle::setStyle("Basic");
 
-    m_pCoreServices->initialize(app);
-    SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
-    if (result != SoundDeviceStatus::Ok) {
-        const int reInt = static_cast<int>(result);
-        qCritical() << "Error setting up sound devices:" << reInt;
-        exit(reInt);
-    }
+    // m_pCoreServices->initialize(app);
+    // SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
+    // if (result != SoundDeviceStatus::Ok) {
+    //     const int reInt = static_cast<int>(result);
+    //     qCritical() << "Error setting up sound devices:" << reInt;
+    //     exit(reInt);
+    // }
 
-    // FIXME: DlgPreferences has some initialization logic that must be executed
-    // before the GUI is shown, at least for the effects system.
-    std::shared_ptr<QDialog> pDlgPreferences = m_pCoreServices->makeDlgPreferences();
-    // Without this, QApplication will quit when the last QWidget QWindow is
-    // closed because it does not take into account the window created by
-    // the QQmlApplicationEngine.
-    pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
+    // // FIXME: DlgPreferences has some initialization logic that must be executed
+    // // before the GUI is shown, at least for the effects system.
+    // std::shared_ptr<QDialog> pDlgPreferences = m_pCoreServices->makeDlgPreferences();
+    // // Without this, QApplication will quit when the last QWidget QWindow is
+    // // closed because it does not take into account the window created by
+    // // the QQmlApplicationEngine.
+    // pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
 
-    // Since DlgPreferences is only meant to be used in the main QML engine, it
-    // follows a strict singleton pattern design
-    QmlDlgPreferencesProxy::s_pInstance =
-            std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
+    // // Since DlgPreferences is only meant to be used in the main QML engine, it
+    // // follows a strict singleton pattern design
+    // QmlDlgPreferencesProxy::s_pInstance =
+    //         std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
     loadQml(m_mainFilePath);
 
-    m_pCoreServices->getControllerManager()->setUpDevices();
+    // m_pCoreServices->getControllerManager()->setUpDevices();
 
-    connect(&m_autoReload,
-            &QmlAutoReload::triggered,
-            this,
-            [this]() {
-                loadQml(m_mainFilePath);
-            });
+    // connect(&m_autoReload,
+    //         &QmlAutoReload::triggered,
+    //         this,
+    //         [this]() {
+    //             loadQml(m_mainFilePath);
+    //         });
 
-    const QStringList visualGroups =
-            m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
-    for (const QString& group : visualGroups) {
-        m_visualsManager->addDeck(group);
-    }
+    // const QStringList visualGroups =
+    //         m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
+    // for (const QString& group : visualGroups) {
+    //     m_visualsManager->addDeck(group);
+    // }
 
-    m_pCoreServices->getPlayerManager()->connect(
-            m_pCoreServices->getPlayerManager().get(),
-            &PlayerManager::numberOfDecksChanged,
-            this,
-            [this](int decks) {
-                for (int i = 0; i < decks; ++i) {
-                    QString group = PlayerManager::groupForDeck(i);
-                    m_visualsManager->addDeckIfNotExist(group);
-                }
-            });
+    // m_pCoreServices->getPlayerManager()->connect(
+    //         m_pCoreServices->getPlayerManager().get(),
+    //         &PlayerManager::numberOfDecksChanged,
+    //         this,
+    //         [this](int decks) {
+    //             for (int i = 0; i < decks; ++i) {
+    //                 QString group = PlayerManager::groupForDeck(i);
+    //                 m_visualsManager->addDeckIfNotExist(group);
+    //             }
+    //         });
 }
 
 QmlApplication::~QmlApplication() {
@@ -111,11 +163,12 @@ void QmlApplication::loadQml(const QString& path) {
     QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
             m_pCoreServices->getTrackCollectionManager());
     m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+    m_pAppEngine->addImageProvider(QString("svgmodifier"), new SvgModifierImageProvider);
 
-    m_pAppEngine->load(path);
-    if (m_pAppEngine->rootObjects().isEmpty()) {
-        qCritical() << "Failed to load QML file" << path;
-    }
+    // m_pAppEngine->load(path);
+    // if (m_pAppEngine->rootObjects().isEmpty()) {
+    //     qCritical() << "Failed to load QML file" << path;
+    // }
 }
 
 } // namespace qml

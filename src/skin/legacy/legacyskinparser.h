@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qqmlengine.h>
+
 #include <QDomElement>
 #include <QList>
 #include <QObject>
@@ -39,7 +41,8 @@ class LegacySkinParser : public QObject, public SkinParser {
             Library* pLibrary,
             VinylControlManager* pVCMan,
             EffectsManager* pEffectsManager,
-            RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager,
+            QQmlEngine* pQmlEngine);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -169,6 +172,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
     RecordingManager* m_pRecordingManager;
+    QQmlEngine* m_pQmlEngine;
     QWidget* m_pParent;
     std::unique_ptr<SkinContext> m_pContext;
     QString m_style;

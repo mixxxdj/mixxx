@@ -20,6 +20,9 @@ class QmlApplication : public QObject {
             const CmdlineArgs& args);
     ~QmlApplication() override;
 
+    QQmlEngine* engine() {
+        return m_pAppEngine.get();
+    }
   public slots:
     void loadQml(const QString& path);
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qqmlengine.h>
+
 #include <QMainWindow>
 #include <QString>
 #include <memory>
