@@ -1278,7 +1278,7 @@ void GenreTableModel::EditOrphanTrackGenres() {
             table->setCellWidget(newRow, 3, combo);
 
             // connect checkbox -> enable/disable combobox
-            QObject::connect(linkCheckbox, &QCheckBox::stateChanged, [combo, linkCheckbox]() {
+            QObject::connect(linkCheckbox, &QCheckBox::checkStateChanged, [combo, linkCheckbox]() {
                 combo->setEnabled(linkCheckbox->isChecked());
             });
         }
