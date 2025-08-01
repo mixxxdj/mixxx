@@ -95,12 +95,17 @@ void GenreFeature::initActions() {
             &QAction::triggered,
             this,
             &GenreFeature::slotMakeGenreInVisible);
+    m_pEditOrphanGenresAction =
+            make_parented<QAction>(tr("Edit orphan track-genres"), this);
+    connect(m_pEditOrphanGenresAction.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotEditOrphanTrackGenres);
     m_pCreateGenreAction = make_parented<QAction>(tr("Create New Genre"), this);
     connect(m_pCreateGenreAction.get(),
             &QAction::triggered,
             this,
             &GenreFeature::slotCreateGenre);
-
     m_pRenameGenreAction = make_parented<QAction>(tr("Rename"), this);
     connect(m_pRenameGenreAction.get(),
             &QAction::triggered,
@@ -415,6 +420,7 @@ void GenreFeature::onRightClick(const QPoint& globalPos) {
     menu.addSeparator();
     menu.addAction(m_pEditGenreMultiAction.get());
     menu.addAction(m_pSetAllGenresVisibleAction.get());
+    menu.addAction(m_pEditOrphanGenresAction.get());
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
     menu.addSeparator();
@@ -502,6 +508,12 @@ void GenreFeature::slotMakeGenreInVisible() {
         m_genreTableModel.setGenreInvisible(genre.getId());
         rebuildChildModel();
     }
+}
+
+void GenreFeature::slotEditOrphanTrackGenres() {
+    qDebug() << "[GenreFeature] -> slotEditOrphanTrackGenres()";
+    m_genreTableModel.EditOrphanTrackGenres();
+    rebuildChildModel();
 }
 
 void GenreFeature::slotEditGenreMulti() {

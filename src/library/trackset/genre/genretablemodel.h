@@ -33,8 +33,11 @@ class GenreTableModel final : public TrackSetTableModel {
     void setAllGenresVisible();
     void setGenreInvisible(const GenreId& genreId);
     void EditGenresMulti();
+    void EditOrphanTrackGenres();
 
   private:
     GenreId m_selectedGenre;
     QHash<GenreId, QString> m_searchTexts;
+    // QMap<QString, QVariantList> m_orphanToTrackIds;
+    QMap<QString, QList<int>> m_orphanToTrackIds;
 };

@@ -11,7 +11,7 @@
 #include <QPushButton>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QStandardItemModel>
+// #include <QStandardItemModel>
 #include <QStyledItemDelegate>
 #include <QTableWidgetItem>
 #include <QVariantList>
@@ -1061,4 +1061,403 @@ void GenreTableModel::EditGenresMulti() {
 
     qDebug() << "[GenreTableModel] -> EditGenresMulti -> Done";
     applyChanges();
+}
+
+void GenreTableModel::EditOrphanTrackGenres() {
+    qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres";
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
+            QObject::tr("EditOrphanTrackGenres"),
+            QObject::tr("Building the table can take some time (minutes) if "
+                        "you have a lot of orphaned genres in your tracks. "
+                        "This usually happens the first time you run this function.\n\n"
+                        "Do you want to continue?"),
+            QMessageBox::Ok | QMessageBox::Cancel);
+
+    if (reply != QMessageBox::Ok) {
+        qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> Action cancelled by user.";
+        return;
+    }
+
+    QVariantList genreData;
+    QList<QVariantMap> genres;
+    QVariantMap newEntry;
+    QDialog dialog;
+    dialog.setWindowTitle(QObject::tr("Edit Orphan Genres"));
+    dialog.resize(800, 500);
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    QTableWidget* table = new QTableWidget(&dialog);
+
+    table->setColumnCount(4);
+    table->setHorizontalHeaderLabels({QObject::tr("Found Orphan Genre"),
+            QObject::tr("Create new Genre"),
+            QObject::tr("Link other Genre"),
+            QObject::tr("Linked Genre")});
+    table->setColumnWidth(0, 250);
+    table->setColumnWidth(1, 125);
+    table->setColumnWidth(2, 125);
+    table->setColumnWidth(3, 250);
+    table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    for (int col = 0; col < table->columnCount(); ++col) {
+        QTableWidgetItem* headerItem = table->horizontalHeaderItem(col);
+        if (headerItem) {
+            headerItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        }
+    }
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
+    layout->addWidget(table);
+
+    auto populateTable = [&]() {
+        m_orphanToTrackIds.clear();
+        table->clearContents();
+        table->setRowCount(0);
+
+        // find orphans drom genre fields
+        QRegularExpression tagRegex("##\\d+##");
+        QSqlQuery query(m_database);
+        QSet<QString> orphanGenreStrings;
+
+        if (!query.prepare("SELECT id, genre FROM library WHERE genre IS NOT "
+                           "NULL AND genre != ''") ||
+                !query.exec()) {
+            qWarning() << "[GenreTableModel] Genre query error:" << query.lastError();
+            return;
+        }
+
+        while (query.next()) {
+            TrackId trackId(query.value(0));
+            QString genreField = query.value(1).toString();
+
+            QSet<QString> tags;
+            auto it = tagRegex.globalMatch(genreField);
+            while (it.hasNext())
+                tags.insert(it.next().captured(0));
+            for (const QString& tag : tags)
+                genreField.replace(tag, " ");
+
+            // old but longer strings should be displayed too
+            // like 'classica - opera', this was only 'classica' and 'opera'
+            // const QStringList candidates =
+            // genreField.split(QRegularExpression("[;\\s]"),
+            // Qt::SkipEmptyParts); for (QString orphan : candidates) {
+            //    orphan = orphan.trimmed();
+            //    if (!orphan.isEmpty()) {
+            //        orphanGenreStrings.insert(orphan);
+            //        m_orphanToTrackIds[orphan].append(trackId.toVariant().toInt());
+            //    }
+            //}
+
+            // adapted to add the long strings in the orphan editor too
+            QStringList semicolonParts = genreField.split(';', Qt::SkipEmptyParts);
+            for (QString part : semicolonParts) {
+                part = part.trimmed();
+                if (part.isEmpty())
+                    continue;
+
+                // 1st:  full part like "classica - opera"
+                orphanGenreStrings.insert(part);
+                m_orphanToTrackIds[part].append(trackId.toVariant().toInt());
+
+                // 2nd: if the part contains spaces (no semicolon), also add
+                // individual words as orphans 1st version still adding symbols
+                // and characters as orphans if (part.contains(' ') &&
+                // !part.contains(';')) {
+                //    QStringList spaceParts = part.split(' ',
+                //    Qt::SkipEmptyParts); for (QString word : spaceParts) {
+                //        word = word.trimmed();
+                //        if (!word.isEmpty()) {
+                //            orphanGenreStrings.insert(word);
+                //            m_orphanToTrackIds[word].append(trackId.toVariant().toInt());
+                //        }
+                //    }
+                //}
+
+                // now we don't see short strings or meaningful words as possible orphans
+                if (part.contains(' ') && !part.contains(';')) {
+                    QStringList spaceParts = part.split(' ', Qt::SkipEmptyParts);
+                    for (QString word : spaceParts) {
+                        word = word.trimmed();
+
+                        // short meaningless words or symbols like "'n" in "rock 'n roll"
+                        if (word.isEmpty() || word.length() <= 2) {
+                            continue;
+                        }
+
+                        // list of words in genres that have no meaning and
+                        // don't need to be shown as orphans
+                        static const QSet<QString> ignoredWords = {
+                                "n", "'n", "and", "&", "feat", "ft", "vs", "vs.", "with"};
+                        QString cleaned = word.toLower().remove(QRegularExpression("[^a-z0-9]"));
+                        if (ignoredWords.contains(cleaned)) {
+                            continue;
+                        }
+
+                        orphanGenreStrings.insert(word);
+                        m_orphanToTrackIds[word].append(trackId.toVariant().toInt());
+                    }
+                }
+            }
+        }
+        qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> Populate: "
+                    "orphanToTrackIds: "
+                 << m_orphanToTrackIds;
+
+        // load is_visible genres for link-combobox
+        genres.clear();
+        QVariantList genreData;
+        GenreDao& genreDao = m_pTrackCollectionManager->internalCollection()->getGenreDao();
+        genreDao.loadGenres2QVL(genreData);
+        for (const QVariant& v : genreData) {
+            QVariantMap map = v.toMap();
+            if (map["is_visible"].toBool()) {
+                genres << map;
+            }
+        }
+
+        std::sort(genres.begin(), genres.end(), [](const QVariantMap& a, const QVariantMap& b) {
+            return a["name"].toString().compare(b["name"].toString(), Qt::CaseInsensitive) < 0;
+        });
+
+        // construction of the table
+        QStringList sortedOrphans = orphanGenreStrings.values();
+        std::sort(sortedOrphans.begin(),
+                sortedOrphans.end(),
+                [](const QString& a, const QString& b) {
+                    return a.compare(b, Qt::CaseInsensitive) < 0;
+                });
+
+        for (const QString& orphan : sortedOrphans) {
+            int newRow = table->rowCount();
+            table->insertRow(newRow);
+
+            QTableWidgetItem* orphanItem = new QTableWidgetItem(orphan);
+            orphanItem->setFlags(Qt::ItemIsEnabled);
+            table->setItem(newRow, 0, orphanItem);
+
+            // column 1 checkbox 'create new genre'
+            QWidget* createCheckboxContainer = new QWidget(table);
+            QCheckBox* createCheckbox = new QCheckBox(createCheckboxContainer);
+            createCheckbox->setChecked(false);
+
+            // disable if genre already exists
+            bool alreadyExists = std::any_of(genres.begin(),
+                    genres.end(),
+                    [&](const QVariantMap& genre) {
+                        return genre["name"].toString().compare(
+                                       orphan, Qt::CaseInsensitive) == 0;
+                    });
+            createCheckbox->setEnabled(!alreadyExists);
+
+            QHBoxLayout* createLayout = new QHBoxLayout(createCheckboxContainer);
+            createLayout->addWidget(createCheckbox);
+            createLayout->setAlignment(Qt::AlignCenter);
+            createLayout->setContentsMargins(0, 0, 0, 0);
+            createCheckboxContainer->setLayout(createLayout);
+            table->setCellWidget(newRow, 1, createCheckboxContainer);
+
+            // column 2 checkbox 'link to existing genre'
+            QWidget* linkCheckboxContainer = new QWidget(table);
+            QCheckBox* linkCheckbox = new QCheckBox(linkCheckboxContainer);
+            linkCheckbox->setChecked(false);
+            QHBoxLayout* linkLayout = new QHBoxLayout(linkCheckboxContainer);
+            linkLayout->addWidget(linkCheckbox);
+            linkLayout->setAlignment(Qt::AlignCenter);
+            linkLayout->setContentsMargins(0, 0, 0, 0);
+            linkCheckboxContainer->setLayout(linkLayout);
+            table->setCellWidget(newRow, 2, linkCheckboxContainer);
+
+            // column 3 combox 'linked genre'
+            QComboBox* combo = new QComboBox(table);
+            combo->setEnabled(false);
+            combo->setMinimumWidth(200);
+            combo->addItem("", -1);
+            for (const QVariantMap& genre : genres) {
+                combo->addItem(genre["name"].toString(), genre["id"]);
+            }
+            table->setCellWidget(newRow, 3, combo);
+
+            // connect checkbox -> enable/disable combobox
+            QObject::connect(linkCheckbox, &QCheckBox::stateChanged, [combo, linkCheckbox]() {
+                combo->setEnabled(linkCheckbox->isChecked());
+            });
+        }
+    };
+
+    auto applyChanges = [&]() {
+        GenreDao& genreDao = m_pTrackCollectionManager->internalCollection()->getGenreDao();
+        qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> Apply: "
+                    "orphanToTrackIds:"
+                 << m_orphanToTrackIds;
+
+        for (int row = 0; row < table->rowCount(); ++row) {
+            const QString orphanStr = table->item(row, 0)->text().trimmed();
+
+            QWidget* createWidget = table->cellWidget(row, 1);
+            QCheckBox* createCheckbox = createWidget
+                    ? createWidget->findChild<QCheckBox*>()
+                    : nullptr;
+
+            QWidget* linkWidget = table->cellWidget(row, 2);
+            QCheckBox* linkCheckbox = linkWidget ? linkWidget->findChild<QCheckBox*>() : nullptr;
+
+            bool createNewGenre = createCheckbox && createCheckbox->isChecked();
+            bool linkOtherGenre = linkCheckbox && linkCheckbox->isChecked();
+
+            if (!createNewGenre && !linkOtherGenre) {
+                continue;
+            }
+
+            GenreId genreIdToUse;
+
+            if (createNewGenre) {
+                Genre newGenre;
+                newGenre.setName(orphanStr);
+                newGenre.setVisible(true);
+                newGenre.setModelDefined(false);
+                newGenre.setDisplayOrder(0);
+
+                GenreId newId;
+                if (genreDao.insertGenre(newGenre, &newId)) {
+                    genreIdToUse = newId;
+                    qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> "
+                                "Apply: Created new genre:"
+                             << newId << "for string:" << orphanStr;
+                } else {
+                    qWarning() << "[GenreTableModel] -> EditOrphanTrackGenres "
+                                  "-> Apply: Failed to insert new genre for:"
+                               << orphanStr;
+                    continue;
+                }
+            } else if (linkOtherGenre) {
+                QWidget* widget = table->cellWidget(row, 3);
+                QComboBox* combo = qobject_cast<QComboBox*>(widget);
+                if (!combo) {
+                    qWarning() << "[GenreTableModel] -> EditOrphanTrackGenres "
+                                  "-> Apply: Missing combo box for linked "
+                                  "genre at row"
+                               << row;
+                    continue;
+                }
+                QVariant data = combo->currentData();
+                if (!data.isValid() || data.toInt() < 0) {
+                    continue;
+                }
+                genreIdToUse = GenreId(data);
+            }
+
+            if (!genreIdToUse.isValid()) {
+                continue;
+            }
+
+            const QString tag = QString("##%1##").arg(genreIdToUse.toVariant().toLongLong());
+            const QList<int> trackIdList = m_orphanToTrackIds.value(orphanStr);
+            qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> Apply:  "
+                        "Updating"
+                     << trackIdList.size() << "tracks with orphan:" << orphanStr
+                     << "-> tag:" << tag << "trackIdList" << trackIdList;
+
+            for (int id : m_orphanToTrackIds.value(orphanStr)) {
+                qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> Apply: trackId" << id;
+
+                QString selectQueryString =
+                        QStringLiteral("SELECT genre FROM %1 WHERE id = %2")
+                                .arg(LIBRARY_TABLE)
+                                .arg(id);
+                qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> "
+                            "Apply: selectQueryString"
+                         << selectQueryString;
+                FwdSqlQuery selectQuery(m_database, selectQueryString);
+                QString genreString;
+                if (selectQuery.execPrepared() && selectQuery.next()) {
+                    genreString = selectQuery.fieldValue(0).toString();
+                } else {
+                    qWarning() << "[GenreTableModel] -> EditOrphanTrackGenres "
+                                  "-> Apply: Failed to load genre for track"
+                               << id;
+                    continue;
+                }
+
+                QStringList parts = genreString.split(';', Qt::SkipEmptyParts);
+                bool changed = false;
+
+                for (int i = 0; i < parts.size(); ++i) {
+                    QString trimmed = parts[i].trimmed();
+                    qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> "
+                                "Apply: Matching part:"
+                             << trimmed << "against orphanStr:" << orphanStr;
+                    if (trimmed == orphanStr) {
+                        parts[i] = tag;
+                        changed = true;
+                    }
+                }
+
+                if (changed) {
+                    QString newGenre = parts.join("; ");
+                    qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> "
+                                "Apply: Updating track"
+                             << id << ":"
+                             << "Old genre:" << genreString
+                             << "New genre:" << newGenre;
+                    QString updateQueryString =
+                            QStringLiteral("UPDATE %1 SET genre = '%2' WHERE id = %3")
+                                    .arg(LIBRARY_TABLE)
+                                    .arg(newGenre.replace("'", "''"))
+                                    .arg(id);
+                    qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> "
+                                "Apply: updateQueryString"
+                             << updateQueryString;
+                    FwdSqlQuery updateQuery(m_database, updateQueryString);
+
+                    if (!updateQuery.execPrepared()) {
+                        qWarning() << "[GenreTableModel] -> "
+                                      "EditOrphanTrackGenres -> Apply: Failed "
+                                      "to update genre field for track"
+                                   << id << ":" << updateQuery.lastError();
+                    }
+
+                    // QSqlQuery updateQuery(m_database);
+                    // updateQuery.prepare(QStringLiteral("UPDATE %1 SET genre =
+                    // :newGenre WHERE id = :trackId").arg(LIBRARY_TABLE));
+                    // updateQuery.bindValue(":newGenre", newGenre);
+                    // updateQuery.bindValue(":trackId", id);
+                    // if (!updateQuery.exec()) {
+                    //     qWarning() << "[GenreTableModel] Failed to update
+                    //     genre for track" << id << ":" <<
+                    //     updateQuery.lastError();
+                    // }
+                }
+
+                // insert into genre_tracks
+                QSqlQuery insertQuery(m_database);
+                insertQuery.prepare(
+                        "INSERT OR IGNORE INTO genre_tracks (genre_id, "
+                        "track_id) VALUES (:genreId, :trackId)");
+                insertQuery.bindValue(":genreId", genreIdToUse.toVariant());
+                insertQuery.bindValue(":trackId", id);
+
+                if (!insertQuery.exec()) {
+                    qWarning() << "[GenreTableModel] -> EditOrphanTrackGenres "
+                                  "-> Apply: Failed to insert genre_tracks "
+                                  "entry for track"
+                               << id << ":" << insertQuery.lastError();
+                }
+            }
+        }
+        populateTable();
+    };
+
+    populateTable();
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(
+            QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QPushButton* applyButton = new QPushButton(QObject::tr("Apply"));
+    buttonBox->addButton(applyButton, QDialogButtonBox::ApplyRole);
+    layout->addWidget(buttonBox);
+
+    QObject::connect(applyButton, &QPushButton::clicked, applyChanges);
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    QObject::connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    dialog.exec();
+
+    emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 }

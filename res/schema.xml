@@ -629,7 +629,7 @@ reapplying those migrations.
       FROM library
       WHERE library.genre IS NOT NULL AND TRIM(library.genre) != '';-->
 
-      INSERT INTO genres (name, name_level_1, is_visible, display_order, is_model_defined)
+      <!--INSERT INTO genres (name, name_level_1, is_visible, display_order, is_model_defined)
       SELECT DISTINCT
       trimmed_genre, trimmed_genre, 1, 0, 0
       FROM (
@@ -660,7 +660,7 @@ reapplying those migrations.
       ) || '##'
       WHERE library.genre IS NOT NULL
       AND LENGTH(TRIM(library.genre)) > 0
-      AND library.genre NOT LIKE '##%##';
+      AND library.genre NOT LIKE '##%##';-->
     </sql>
   </revision>
 </schema>
