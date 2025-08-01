@@ -11,7 +11,6 @@
 #include <QPushButton>
 #include <QSqlError>
 #include <QSqlQuery>
-// #include <QStandardItemModel>
 #include <QStyledItemDelegate>
 #include <QTableWidgetItem>
 #include <QVariantList>
@@ -1078,9 +1077,12 @@ void GenreTableModel::EditOrphanTrackGenres() {
         return;
     }
 
-    QVariantList genreData;
+    //    QVariantList genreData;
     QList<QVariantMap> genres;
-    QVariantMap newEntry;
+    //    QVariantMap newEntry;
+    static const QRegularExpression tagRegex("##(\\d+)##");
+    static const QRegularExpression nonAlphaNum("[^a-z0-9]");
+
     QDialog dialog;
     dialog.setWindowTitle(QObject::tr("Edit Orphan Genres"));
     dialog.resize(800, 500);
@@ -1114,7 +1116,6 @@ void GenreTableModel::EditOrphanTrackGenres() {
         table->setRowCount(0);
 
         // find orphans drom genre fields
-        QRegularExpression tagRegex("##\\d+##");
         QSqlQuery query(m_database);
         QSet<QString> orphanGenreStrings;
 
@@ -1150,7 +1151,7 @@ void GenreTableModel::EditOrphanTrackGenres() {
 
             // adapted to add the long strings in the orphan editor too
             QStringList semicolonParts = genreField.split(';', Qt::SkipEmptyParts);
-            for (QString part : semicolonParts) {
+            for (QString part : std::as_const(semicolonParts)) {
                 part = part.trimmed();
                 if (part.isEmpty())
                     continue;
@@ -1176,8 +1177,8 @@ void GenreTableModel::EditOrphanTrackGenres() {
                 // now we don't see short strings or meaningful words as possible orphans
                 if (part.contains(' ') && !part.contains(';')) {
                     QStringList spaceParts = part.split(' ', Qt::SkipEmptyParts);
-                    for (QString word : spaceParts) {
-                        word = word.trimmed();
+                    for (const QString& wordRef : std::as_const(spaceParts)) {
+                        QString word = wordRef.trimmed();
 
                         // short meaningless words or symbols like "'n" in "rock 'n roll"
                         if (word.isEmpty() || word.length() <= 2) {
@@ -1188,7 +1189,7 @@ void GenreTableModel::EditOrphanTrackGenres() {
                         // don't need to be shown as orphans
                         static const QSet<QString> ignoredWords = {
                                 "n", "'n", "and", "&", "feat", "ft", "vs", "vs.", "with"};
-                        QString cleaned = word.toLower().remove(QRegularExpression("[^a-z0-9]"));
+                        QString cleaned = word.toLower().remove(nonAlphaNum);
                         if (ignoredWords.contains(cleaned)) {
                             continue;
                         }
@@ -1208,7 +1209,8 @@ void GenreTableModel::EditOrphanTrackGenres() {
         QVariantList genreData;
         GenreDao& genreDao = m_pTrackCollectionManager->internalCollection()->getGenreDao();
         genreDao.loadGenres2QVL(genreData);
-        for (const QVariant& v : genreData) {
+
+        for (const QVariant& v : std::as_const(genreData)) {
             QVariantMap map = v.toMap();
             if (map["is_visible"].toBool()) {
                 genres << map;
@@ -1227,7 +1229,7 @@ void GenreTableModel::EditOrphanTrackGenres() {
                     return a.compare(b, Qt::CaseInsensitive) < 0;
                 });
 
-        for (const QString& orphan : sortedOrphans) {
+        for (const QString& orphan : std::as_const(sortedOrphans)) {
             int newRow = table->rowCount();
             table->insertRow(newRow);
 
@@ -1272,16 +1274,13 @@ void GenreTableModel::EditOrphanTrackGenres() {
             combo->setEnabled(false);
             combo->setMinimumWidth(200);
             combo->addItem("", -1);
-            for (const QVariantMap& genre : genres) {
+
+            for (const QVariantMap& genre : std::as_const(genres)) {
                 combo->addItem(genre["name"].toString(), genre["id"]);
             }
             table->setCellWidget(newRow, 3, combo);
 
-            // connect checkbox -> enable/disable combobox
-            // QObject::connect(linkCheckbox, &QCheckBox::stateChanged, [combo, linkCheckbox]() {
-            //    combo->setEnabled(linkCheckbox->isChecked());
-            //});
-            QObject::connect(linkCheckbox, &QCheckBox::toggled, [combo](bool checked) {
+            QObject::connect(linkCheckbox, &QCheckBox::toggled, this, [combo](bool checked) {
                 combo->setEnabled(checked);
             });
         }
@@ -1360,7 +1359,8 @@ void GenreTableModel::EditOrphanTrackGenres() {
                      << trackIdList.size() << "tracks with orphan:" << orphanStr
                      << "-> tag:" << tag << "trackIdList" << trackIdList;
 
-            for (int id : m_orphanToTrackIds.value(orphanStr)) {
+            const QList<int> trackIds = m_orphanToTrackIds.value(orphanStr);
+            for (int id : trackIds) {
                 qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> Apply: trackId" << id;
 
                 QString selectQueryString =
