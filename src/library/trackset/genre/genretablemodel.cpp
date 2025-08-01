@@ -1402,11 +1402,15 @@ void GenreTableModel::EditOrphanTrackGenres() {
                              << id << ":"
                              << "Old genre:" << genreString
                              << "New genre:" << newGenre;
-                    QString updateQueryString =
-                            QStringLiteral("UPDATE %1 SET genre = '%2' WHERE id = %3")
-                                    .arg(LIBRARY_TABLE)
-                                    .arg(newGenre.replace("'", "''"))
-                                    .arg(id);
+                    // QString updateQueryString =
+                    //         QStringLiteral("UPDATE %1 SET genre = '%2' WHERE id = %3")
+                    //                 .arg(LIBRARY_TABLE)
+                    //                 .arg(newGenre.replace("'", "''"))
+                    //                 .arg(id);
+                    QString updateQueryString = QString("UPDATE %1 SET genre = '%2' WHERE id = %3")
+                                                        .arg(LIBRARY_TABLE,
+                                                                newGenre.replace("'", "''"),
+                                                                QString::number(id));
                     qDebug() << "[GenreTableModel] -> EditOrphanTrackGenres -> "
                                 "Apply: updateQueryString"
                              << updateQueryString;
