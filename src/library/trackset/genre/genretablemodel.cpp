@@ -82,6 +82,45 @@ void GenreTableModel::selectGenre(GenreId genreId) {
                             GenreStorage::formatSubselectQueryForGenreTrackIds(
                                     genreId),
                             LIBRARYTABLE_MIXXXDELETED);
+
+    //// convert to not using henre_tracks
+    // QStringList genreTags;
+    // genreTags << QString("##%1##").arg(genreId.toString());
+
+    //// find existing display_group for genreId
+    // QSqlQuery displayGroupQuery(m_database);
+    // displayGroupQuery.prepare("SELECT id FROM genres WHERE display_group = :group_id");
+    // displayGroupQuery.bindValue(":group_id", genreId.toVariant());
+
+    // if (!displayGroupQuery.exec()) {
+    //     qWarning() << "[GenreStorage] Failed to load display group members:"
+    //     << displayGroupQuery.lastError().text();
+    // } else {
+    //     while (displayGroupQuery.next()) {
+    //         genreTags <<
+    //         QString("##%1##").arg(displayGroupQuery.value(0).toInt());
+    //     }
+    // }
+
+    //// construct where-clause
+    // QStringList likeClauses;
+    // for (const QString& tag : genreTags) {
+    //     likeClauses << QString("library.genre LIKE '%%1%'").arg(tag);
+    // }
+    // QString whereClause = likeClauses.join(" OR ");
+
+    //// create temp view query
+    // QString queryString =
+    //         QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+    //                 "SELECT %2 FROM %3 "
+    //                 "WHERE (%4) AND %5=0")
+    //                 .arg(tableName,
+    //                         columns.join(","),
+    //                         LIBRARY_TABLE,
+    //                         whereClause,
+    //                         LIBRARYTABLE_MIXXXDELETED);
+
+    // qDebug() << "GenreTableModel::selectGenre -> queryString: " << queryString;
     FwdSqlQuery(m_database, queryString).execPrepared();
 
     columns[0] = LIBRARYTABLE_ID;
@@ -1402,11 +1441,6 @@ void GenreTableModel::EditOrphanTrackGenres() {
                              << id << ":"
                              << "Old genre:" << genreString
                              << "New genre:" << newGenre;
-                    // QString updateQueryString =
-                    //         QStringLiteral("UPDATE %1 SET genre = '%2' WHERE id = %3")
-                    //                 .arg(LIBRARY_TABLE)
-                    //                 .arg(newGenre.replace("'", "''"))
-                    //                 .arg(id);
                     QString updateQueryString = QString("UPDATE %1 SET genre = '%2' WHERE id = %3")
                                                         .arg(LIBRARY_TABLE,
                                                                 newGenre.replace("'", "''"),

@@ -243,6 +243,45 @@ void BaseSqlTableModel::select() {
                                                             // queryStringTempView
                                                             // " <<
                                                             // queryStringTempView;
+        //// convert to not using henre_tracks
+        // QStringList genreTags;
+        ////genreTags << QString("##%1##").arg(genreId.toString());
+        // genreTags << QString("##%1##").arg(genreId);
+
+        //// find existing display_group for genreId
+        // QSqlQuery displayGroupQuery(m_database);
+        // displayGroupQuery.prepare("SELECT id FROM genres WHERE display_group = :group_id");
+        // displayGroupQuery.bindValue(":group_id", genreId);
+
+        // if (!displayGroupQuery.exec()) {
+        //     qWarning() << "[GenreStorage] Failed to load display group
+        //     members:" << displayGroupQuery.lastError().text();
+        // } else {
+        //     while (displayGroupQuery.next()) {
+        //         genreTags <<
+        //         QString("##%1##").arg(displayGroupQuery.value(0).toInt());
+        //     }
+        // }
+
+        //// construct where-clause
+        // QStringList likeClauses;
+        // for (const QString& tag : genreTags) {
+        //     likeClauses << QString("library.genre LIKE '%%1%'").arg(tag);
+        // }
+        // QString whereClause = likeClauses.join(" OR ");
+
+        //// create temp view query
+        // QString queryStringTempView =
+        //         QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        //                 "SELECT %2 FROM %3 "
+        //                 "WHERE (%4) AND %5=0")
+        //                 .arg(m_tableName,
+        //                         columns.join(","),
+        //                         LIBRARY_TABLE,
+        //                         whereClause,
+        //                         LIBRARYTABLE_MIXXXDELETED);
+
+        // qDebug() << "[BaseSqlTableModel] -> select -> queryString: " << queryStringTempView;
         FwdSqlQuery(m_database, queryStringTempView).execPrepared();
     }
 
