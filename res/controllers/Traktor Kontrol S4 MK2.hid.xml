@@ -15,4 +15,16 @@
             <file filename="Traktor-Kontrol-S4-MK2-hid-scripts.js" functionprefix="TraktorS4MK2"/>
         </scriptfiles>
     </controller>
+    <settings>
+      <option variable="remixSlotButtonAction" type="enum"
+              label="Action to trigger with remix slot buttons">
+        <value label="Samplers" default="true">SAMPLES</value>
+        <value label="Loop Rolls">LOOPROLLS</value>
+      </option>
+      <option variable="shiftCueButtonAction" type="enum"
+              label="The action to trigger when Shift+Cue is pressed">
+        <value label="Rewind to start of track" default="true">REWIND</value>
+        <value label="Reverse playback direction">REVERSEROLL</value>
+      </option>
+    </settings>
 </MixxxControllerPreset>

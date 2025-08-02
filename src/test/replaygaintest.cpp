@@ -179,13 +179,12 @@ TEST_F(AdjustReplayGainTest, AdjustReplayGainUpdatesPregain) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "pregain"))->set(1.2);
     ControlObject::getControl(ConfigKey(m_sGroup1, "update_replaygain_from_pregain"))->set(1.0);
 
-    // The pregain value is folded into the replaygain value, and all pregains for all decks that
-    // have the same track loaded are adjusted so that the audible volume of the track does not
-    // change.
+    // The pregain value is folded into the replaygain value, and pregains is reset
+    // for the deck where the adjust control was triggered so that the audible volume
+    // of the track does not change.
+    // Pregain should not change on other decks with this track loaded.
     EXPECT_DOUBLE_EQ(1.0, ControlObject::getControl(ConfigKey(m_sGroup1, "pregain"))->get());
-    EXPECT_NEAR(0.83333333,
-            ControlObject::getControl(ConfigKey(m_sGroup2, "pregain"))->get(),
-            .005);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::getControl(ConfigKey(m_sGroup2, "pregain"))->get());
     EXPECT_DOUBLE_EQ(1.2, ControlObject::getControl(ConfigKey(m_sGroup1, "replaygain"))->get());
     EXPECT_DOUBLE_EQ(1.2, ControlObject::getControl(ConfigKey(m_sGroup2, "replaygain"))->get());
     EXPECT_DOUBLE_EQ(1.2, pTrack->getReplayGain().getRatio());

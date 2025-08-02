@@ -10,6 +10,8 @@ Item {
     required property string group
     property bool splitStemTracks: false
 
+    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization() ? "[Channel1]" : group
+
     enum MouseStatus {
         Normal,
         Bending,
@@ -21,6 +23,13 @@ Item {
         group: root.group
         zoom: zoomControl.value
         backgroundColor: "#5e000000"
+
+        Behavior on zoom {
+            SmoothedAnimation {
+                duration: 500
+                velocity: -1
+            }
+        }
 
         Mixxx.WaveformRendererEndOfTrack {
             color: '#ff8872'
@@ -62,11 +71,11 @@ Item {
             }
         }
 
-        Mixxx.WaveformRendererRGB {
+        Mixxx.WaveformRendererFiltered {
             axesColor: '#a1a1a1a1'
-            lowColor: '#ff2154d7'
-            midColor: '#cfb26606'
-            highColor: '#e5029c5c'
+            lowColor: '#2154D7'
+            midColor: '#97632D'
+            highColor: '#D5C2A2'
 
             gainAll: 1.0
             gainLow: 1.0
@@ -84,8 +93,8 @@ Item {
         }
 
         Mixxx.WaveformRendererMark {
-            playMarkerColor: 'cyan'
-            playMarkerBackground: 'orange'
+            playMarkerColor: '#D9D9D9'
+            playMarkerBackground: '#D9D9D9'
             defaultMark: Mixxx.WaveformMark {
                 align: "bottom|right"
                 color: "#00d9ff"
@@ -180,8 +189,14 @@ Item {
     Mixxx.ControlProxy {
         id: zoomControl
 
-        group: root.group
+        group: root.zoomGroup
         key: "waveform_zoom"
+
+        Component.onCompleted: {
+            if (group == root.group) {
+                value = Mixxx.Config.waveformDefaultZoom()
+            }
+        }
     }
 
     MouseArea {
@@ -243,10 +258,10 @@ Item {
             mouseStatus = WaveformDisplay.MouseStatus.Normal;
         }
 
-        onWheel: {
-            if (wheel.angleDelta.y < 0 && zoomControl.value > 1) {
+        onWheel: (mouse) => {
+            if (mouse.angleDelta.y < 0 && zoomControl.value > 1) {
                 zoomControl.value -= 1;
-            } else if (wheel.angleDelta.y > 0 && zoomControl.value < 10.0) {
+            } else if (mouse.angleDelta.y > 0 && zoomControl.value < 10.0) {
                 zoomControl.value += 1;
             }
         }

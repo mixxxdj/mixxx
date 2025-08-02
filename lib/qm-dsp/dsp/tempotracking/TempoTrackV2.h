@@ -39,9 +39,8 @@ public:
 
     // Returned beat periods are given in df increment units; inputtempo and tempi in bpm
     void calculateBeatPeriod(const std::vector<double> &df,
-                             std::vector<double> &beatPeriod,
-                             std::vector<double> &tempi) {
-        calculateBeatPeriod(df, beatPeriod, tempi, 120.0, false);
+                             std::vector<double> &beatPeriod) {
+        calculateBeatPeriod(df, beatPeriod, 120.0, false);
     }
 
     // Returned beat periods are given in df increment units; inputtempo and tempi in bpm
@@ -49,7 +48,6 @@ public:
     // Note, if inputtempo = 120 and constraintempo = false, then functionality is as it was before
     void calculateBeatPeriod(const std::vector<double> &df,
                              std::vector<double> &beatPeriod,
-                             std::vector<double> &tempi,
                              double inputtempo, bool constraintempo);
 
     // Returned beat positions are given in df increment units
@@ -80,8 +78,7 @@ private:
     double mean_array(const d_vec_t &dfin, int start, int end);
     void filter_df(d_vec_t &df);
     void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf);
-    void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv,
-                        d_vec_t &bp, d_vec_t &tempi);
+    void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &bp);
     double get_max_val(const d_vec_t &df);
     int get_max_ind(const d_vec_t &df);
     void normalise_vec(d_vec_t &df);

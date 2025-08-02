@@ -3,9 +3,7 @@
 name: build-checks
 
 on:
-  push:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+  workflow_call:
 
 permissions:
   contents: read #  to fetch code (actions/checkout)

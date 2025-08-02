@@ -45,7 +45,7 @@ class EnginePrimeExportJob : public QThread {
     void jobProgress(int progress);
 
     /// Inform of a completed export job.
-    void completed(int numTracksExported, int numCratesExported);
+    void completed(int numTracksExported, int numCratesExported, int numPlaylistsExported);
 
     /// Inform of a failed export job.
     void failed(const QString& message);
@@ -58,17 +58,23 @@ class EnginePrimeExportJob : public QThread {
     // These slots are used to load data from the Mixxx database on the main
     // thread of the application, which will be different to the worker thread
     // used by an instance of this class.
-    void loadIds(const QSet<CrateId>& crateIdsToExport);
+    void loadIds(const QSet<CrateId>& crateIds, const QSet<int>& playlistIds);
     void loadTrack(const TrackRef& trackRef);
     void loadCrate(const CrateId& crateId);
+    void loadPlaylist(int playlistId, const QString& playlistName);
 
   private:
     QList<TrackRef> m_trackRefs;
     QList<CrateId> m_crateIds;
+    QList<QPair<int, QString>> m_playlistIdsAndNames;
+
     TrackPointer m_pLastLoadedTrack;
     std::unique_ptr<Waveform> m_pLastLoadedWaveform;
     Crate m_lastLoadedCrate;
     QList<TrackId> m_lastLoadedCrateTrackIds;
+    int m_lastLoadedPlaylistId;
+    QString m_lastLoadedPlaylistName;
+    QList<TrackId> m_lastLoadedPlaylistTrackIds;
 
     QAtomicInteger<int> m_cancellationRequested;
 

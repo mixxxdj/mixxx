@@ -50,7 +50,7 @@
       <layout class="QVBoxLayout" name="summary_layout">
        <item>
         <widget class="QGroupBox" name="groupBox">
-         <layout class="QGridLayout" name="tags_layout">
+         <layout class="QGridLayout" name="tags_layout" columnstretch="0,10,0,2">
 
           <item row="0" column="0">
            <widget class="QLabel" name="lblTitle">

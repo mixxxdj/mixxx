@@ -14,8 +14,6 @@
 #include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 
-#define NUM_HOT_CUES 37
-
 class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
@@ -218,6 +216,7 @@ class CueControl : public EngineControl {
 
   private slots:
     void quantizeChanged(double v);
+    void slotCueModeChanged(double v);
 
     void cueUpdated();
     void trackAnalyzed();
@@ -311,12 +310,11 @@ class CueControl : public EngineControl {
     bool m_bypassCueSetByPlay;
     ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
 
-    const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
-    ControlObject* m_pCuePoint;
-    ControlObject* m_pCueMode;
+    std::unique_ptr<ControlObject> m_pCuePoint;
+    std::unique_ptr<ControlObject> m_pCueMode;
     std::unique_ptr<ControlPushButton> m_pCueSet;
     std::unique_ptr<ControlPushButton> m_pCueClear;
     std::unique_ptr<ControlPushButton> m_pCueCDJ;

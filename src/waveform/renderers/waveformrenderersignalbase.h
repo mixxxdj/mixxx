@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "skin/legacy/skincontext.h"
 #include "util/span.h"
 #include "util/types.h"
@@ -12,8 +14,16 @@ class WaveformSignalColors;
 class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstract {
     Q_OBJECT
   public:
+    enum class Option {
+        None = 0b0,
+        SplitStereoSignal = 0b1,
+        HighDetail = 0b10,
+        AllOptionsCombined = SplitStereoSignal | HighDetail,
+    };
+    Q_DECLARE_FLAGS(Options, Option)
+
     explicit WaveformRendererSignalBase(
-            WaveformWidgetRenderer* waveformWidgetRenderer);
+            WaveformWidgetRenderer* waveformWidgetRenderer, Options options);
     virtual ~WaveformRendererSignalBase();
 
     virtual bool init();
@@ -39,8 +49,6 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
     }
 
   protected:
-    void deleteControls();
-
     void getGains(float* pAllGain,
             bool applyCompensation,
             float* pLowGain,
@@ -48,13 +56,13 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
             float* highGain);
 
   protected:
-    ControlProxy* m_pEQEnabled;
-    ControlProxy* m_pLowFilterControlObject;
-    ControlProxy* m_pMidFilterControlObject;
-    ControlProxy* m_pHighFilterControlObject;
-    ControlProxy* m_pLowKillControlObject;
-    ControlProxy* m_pMidKillControlObject;
-    ControlProxy* m_pHighKillControlObject;
+    std::unique_ptr<ControlProxy> m_pEQEnabled;
+    std::unique_ptr<ControlProxy> m_pLowFilterControlObject;
+    std::unique_ptr<ControlProxy> m_pMidFilterControlObject;
+    std::unique_ptr<ControlProxy> m_pHighFilterControlObject;
+    std::unique_ptr<ControlProxy> m_pLowKillControlObject;
+    std::unique_ptr<ControlProxy> m_pMidKillControlObject;
+    std::unique_ptr<ControlProxy> m_pHighKillControlObject;
 
     Qt::Alignment m_alignment;
     Qt::Orientation m_orientation;
@@ -66,6 +74,7 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
 
     float m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
     float m_signalColor_r, m_signalColor_g, m_signalColor_b;
+    float m_signalColor_h, m_signalColor_s, m_signalColor_v;
     float m_lowColor_r, m_lowColor_g, m_lowColor_b;
     float m_midColor_r, m_midColor_g, m_midColor_b;
     float m_highColor_r, m_highColor_g, m_highColor_b;

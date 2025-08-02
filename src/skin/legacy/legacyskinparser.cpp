@@ -38,6 +38,7 @@
 #include "widget/wbeatspinbox.h"
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
+#include "widget/wcuebutton.h"
 #include "widget/wdisplay.h"
 #include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
@@ -539,6 +540,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
     } else if (nodeName == "PlayButton") {
         result = wrapWidget(parsePlayButton(node));
+    } else if (nodeName == "CueButton") {
+        result = wrapWidget(parseCueButton(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
@@ -1968,6 +1971,18 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
 QWidget* LegacySkinParser::parsePlayButton(const QDomElement& element) {
     QString group = lookupNodeGroup(element);
     WPlayButton* pWidget = new WPlayButton(m_pParent, group);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parseCueButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WCueButton* pWidget = new WCueButton(m_pParent, group);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);

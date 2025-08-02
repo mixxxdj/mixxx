@@ -12,8 +12,9 @@
 #include <QLinearGradient>
 
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {

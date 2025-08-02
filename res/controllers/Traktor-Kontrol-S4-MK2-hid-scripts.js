@@ -13,28 +13,13 @@
 // * Find a use for snap / master / other unused buttons?
 
 
-// ==== Friendly User Configuration ====
-// The Remix Slot buttons can have two possible functions:
-// 1. Sample launchers: pressing the buttons activates sample players in Mixxx
-// 2. Loop Roll: Holding the buttons activates a short loop, and when the button is
-//    released playback will resume where the track would have been without the loop.
-// To choose sample launching, set the word in quotes below to SAMPLES, all caps.  For
-// rolls, change the word to LOOPROLLS (no space).
-RemixSlotButtonAction = "SAMPLES";
-// The Cue button, when Shift is also held, can have two possible functions:
-// 1. "REWIND": seeks to the very start of the track.
-// 2. "REVERSEROLL": performs a temporary reverse or "censor" effect, where the track
-//    is momentarily played in reverse until the button is released.
-ShiftCueButtonAction = "REWIND";
-
-
 TraktorS4MK2 = new function() {
     this.controller = new HIDController();
     // TODO: Decide if these should be part of this.controller instead.
     this.partial_packet = Object();
     this.divisor_map = Object();
-    this.RemixSlotButtonAction = RemixSlotButtonAction;
-    this.ShiftCueButtonAction = ShiftCueButtonAction;
+    this.RemixSlotButtonAction = engine.getSetting("remixSlotButtonAction");
+    this.ShiftCueButtonAction = engine.getSetting("shiftCueButtonAction");
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
     this.controller.freeze_lights = false;

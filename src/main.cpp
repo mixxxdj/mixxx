@@ -44,6 +44,7 @@ constexpr int kParseCmdlineArgsErrorExitCode = 2;
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
+const QString kNotifyMaxDbgTimeKey = QStringLiteral("notify_max_dbg_time");
 
 // The default initial QPixmapCache limit is 10MB.
 // But this is used for all CoverArts in all used sizes and
@@ -248,6 +249,14 @@ int main(int argc, char * argv[]) {
         qWarning() << "Qt style for Windows is not set to 'windowsvista'. GUI might look broken!";
     }
 #endif
+
+    auto config = ConfigObject<ConfigValue>(
+            QDir(args.getSettingsPath()).filePath(MIXXX_SETTINGS_FILE),
+            QString(),
+            QString());
+    int notifywarningThreshold = config.getValue<int>(
+            ConfigKey(kConfigGroup, kNotifyMaxDbgTimeKey), 10);
+    app.setNotifyWarningThreshold(notifywarningThreshold);
 
 #ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
