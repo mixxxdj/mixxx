@@ -4894,6 +4894,7 @@ if(VINYLCONTROL)
     mixxx-xwax
     PRIVATE
       lib/xwax/timecoder.c
+      lib/xwax/timecoder_mk2.c
       lib/xwax/lut.c
       lib/xwax/filters.c
       lib/xwax/delayline.c
