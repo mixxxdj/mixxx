@@ -150,6 +150,26 @@ QList<TrackId> PlaylistDAO::getTrackIds(const int playlistId) const {
     return trackIds;
 }
 
+QList<TrackId> PlaylistDAO::getTrackIdsInPlaylistOrder(const int playlistId) const {
+    QList<TrackId> trackIds;
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT track_id FROM PlaylistTracks "
+            "WHERE playlist_id = :id ORDER BY position ASC"));
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return trackIds;
+    }
+
+    const int trackIdColumn = query.record().indexOf("track_id");
+    while (query.next()) {
+        trackIds.append(TrackId(query.value(trackIdColumn)));
+    }
+    return trackIds;
+}
+
 int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
     //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 

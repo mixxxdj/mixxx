@@ -4,6 +4,8 @@
 #include <Shlobj.h>
 #else
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #endif
 
 #include <QFileInfoList>
@@ -94,8 +96,21 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
                 total_count++;
                 if (entry->d_type == DT_UNKNOWN) {
                     unknown_count++;
+                } else if (entry->d_type == DT_DIR) {
+                    has_children = true;
+                    break;
+                } else if (entry->d_type == DT_LNK) {
+                    // Check if this links to a directory
+                    struct stat st;
+                    std::string fullPath = path.toStdString();
+                    fullPath += '/';
+                    fullPath += entry->d_name;
+                    // stat() follows the symlink
+                    if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
+                        has_children = true;
+                        break;
+                    }
                 }
-                has_children = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
             }
         }
         closedir(directory);

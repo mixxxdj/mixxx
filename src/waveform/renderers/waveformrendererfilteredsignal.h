@@ -9,7 +9,7 @@
 class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:
     explicit WaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidget);
+            WaveformWidgetRenderer* waveformWidget, ::WaveformRendererSignalBase::Options options);
     virtual ~WaveformRendererFilteredSignal();
 
     virtual void onSetup(const QDomNode& node);

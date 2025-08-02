@@ -1044,7 +1044,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     }
 
     QList<TrackRef> trackRefs;
-    const int idColumn = query.record().indexOf(LIBRARYTABLE_MIXXXDELETED);
+    const int idColumn = query.record().indexOf(LIBRARYTABLE_ID);
     const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
     while (query.next()) {
         const auto trackId = TrackId(query.value(idColumn));

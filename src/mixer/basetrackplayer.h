@@ -123,7 +123,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     /// When the replaygain is adjusted, we modify the track pregain
     /// to compensate so there is no audible change in volume.
-    void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
+    void slotAdjustReplayGain(mixxx::ReplayGain replayGain, const QString& requestingPlayerGroup);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotTrackColorSelector(int steps);
 

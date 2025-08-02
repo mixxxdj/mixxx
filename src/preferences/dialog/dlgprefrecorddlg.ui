@@ -119,6 +119,20 @@
        </widget>
       </item>
 
+
+      <item row="3" column="0" colspan="3">
+       <widget class="QCheckBox" name="CheckBoxUseCueFileAnnotation">
+        <property name="toolTip">
+         <string>This will include the filepath for each track in the CUE file.
+This option makes the CUE file less portable and can reveal personal
+information from filepaths (i.e. username)</string>
+        </property>
+        <property name="text">
+         <string>Enable File Annotation in CUE file</string>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
@@ -386,6 +400,7 @@
   <tabstop>PushButtonBrowseRecordings</tabstop>
   <tabstop>comboBoxSplitting</tabstop>
   <tabstop>CheckBoxRecordCueFile</tabstop>
+  <tabstop>CheckBoxUseCueFileAnnotation</tabstop>
   <tabstop>SliderCompression</tabstop>
   <tabstop>SliderQuality</tabstop>
   <tabstop>LineEditTitle</tabstop>

@@ -708,13 +708,14 @@
         setCurrentDeck: function(newGroup) {
             this.currentDeck = newGroup;
             this.reconnectComponents(function(component) {
-                if (component.group === undefined
-                      || component.group.search(script.channelRegEx) !== -1) {
+                if (component.group === undefined) {
                     component.group = newGroup;
-                } else if (component.group.search(script.eqRegEx) !== -1) {
-                    component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
-                } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                    component.group = "[QuickEffectRack1_" + newGroup + "]";
+                } else {
+                    // Match the channel anywhere it might appear in the group
+                    // whether it includes the closing brace or is part of
+                    // another group name such as "Channel1_Stem1".
+                    const anyChannelRegEx = /\[Channel\d+([\]_])/;
+                    component.group = component.group.replace(anyChannelRegEx, `${newGroup.slice(0, -1)}$1`);
                 }
                 // Do not alter the Component's group if it does not match any of those RegExs.
 

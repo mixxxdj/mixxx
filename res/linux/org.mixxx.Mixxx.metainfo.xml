@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.7.0" type="development" date="2025-05-14" timestamp="1747200202">
+    <release version="2.7.0" type="development" date="2025-06-29" timestamp="1751222636">
       <description>
 </description>
     </release>
-    <release version="2.6.0" type="development" date="2025-05-14" timestamp="1747200202">
+    <release version="2.6.0" type="development" date="2025-06-29" timestamp="1751222636">
       <description>
  <p>
   STEM file support
@@ -1082,7 +1082,57 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.2" type="development" date="2025-05-14" timestamp="1747200202">
+    <release version="2.5.3" type="development" date="2025-06-29" timestamp="1751222636">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Traktor Kontrol S4 Mk3: tempo offset per deck
+   #14882
+  </li>
+  <li>
+   Traktor Kontrol S4 Mk3: don`t duplicate beatloop_activate behaviour
+   #14992
+  </li>
+  <li>
+   Traktor Kontrol S3: allow full library navigation
+   #14980
+  </li>
+ </ul>
+ <p>
+  Misc
+ </p>
+ <ul>
+  <li>
+   Broadcast preferences: make setting string translatable
+   #15023
+  </li>
+  <li>
+   Sound Hardware preference: add (?) linking to Sound APIs in the manual
+   #14935
+  </li>
+  <li>
+   xwax: do not try to "correct" for drift in absolute mode.
+   #14960
+  </li>
+  <li>
+   Fix column header text assignment
+   #14944
+  </li>
+  <li>
+   Remove runtime assert to not risk crashes
+   #15000
+  </li>
+  <li>
+   Windows: Update build environment to Visual Studio 2022
+   #15006
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.5.2" type="stable" date="2025-06-13" timestamp="1749772800">
       <description>
  <p>
   Library
@@ -1092,18 +1142,92 @@
    Fix playlist export when name contains a dot
    #14737
   </li>
+  <li>
+   Fix loading the wrong track via drag and drop when using symlinks
+   #13708
+   #13706
+  </li>
+  <li>
+   Fix: byte order in hotcue comments imported from rekordbox
+   #14808
+   #14789
+  </li>
+  <li>
+   Tracks table: show ReplayGain with max. 2 decimals, full precision in tooltip
+   #14868
+   #14867
+  </li>
+  <li>
+   Fix keyboard mappings with non-ASCII characters on Linux
+   #14843
+   #14734
+  </li>
+  <li>
+   Computer feature: enable initial sorting during population
+   #14688
+  </li>
+  <li>
+   Computer feature: avoid false-positve 'has children' for non-directory links
+   #14907
+  </li>
+  <li>
+   Fix column header mapping when using external library
+   #13782
+  </li>
+  <li>
+   Fixed Single track cover reload on reload metadata from file
+   #14494
+   #14409
+  </li>
  </ul>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
+   Arturia KeyLab Mk1: initial mapping
+   #14502
+  </li>
+  <li>
+   Denon MC7000: slicer mode TypeError
+   #14804
+  </li>
+  <li>
+   Denon MC7000: crossfader curve using wrong parameter
+   #14803
+  </li>
+  <li>
+   DJ TechTools MIDI Fighter Twister: support 4 decks
+   #14557
+  </li>
+  <li>
    Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
    #14722
   </li>
   <li>
-   Traktor S2 Mk3: Fixed LED issue
+   Icon Pro Audio iControls: initial mapping
+   #14591
+  </li>
+  <li>
+   Numark Mixtrack Platinium FX: Fix 4 steps browsing issue
+   #14778
+  </li>
+  <li>
+   Traktor Kontrol S3: Use GUI config for settings
+   #14904
+  </li>
+  <li>
+   Traktor S2 MK3: Fixed LED issue
    #14717
+  </li>
+  <li>
+   Traktor S4 MK2: Use engine settings API for configuration
+   #14781
+  </li>
+  <li>
+   Traktor S4 MK3: prevent sync lockup, add setting for tempo center snap
+   #14735
+   #14721
   </li>
  </ul>
  <p>
@@ -1114,6 +1238,29 @@
    Control picker: Allow to learn MIDI Aux/Mic enable controls
    #14720
    #14718
+  </li>
+  <li>
+   Make
+   [Main],headSplit
+   CO persistent across restart
+   #14817
+  </li>
+  <li>
+   Fix MIDI Controller button learning
+   #14816
+   #14805
+  </li>
+  <li>
+   Fix learning with "No Mapping" selected
+   #14829
+  </li>
+  <li>
+   Unit tests for engine.beginTimer
+   #12437
+  </li>
+  <li>
+   engine-api.d.ts: brake()/spinback() documentation
+   #14929
   </li>
  </ul>
  <p>
@@ -1127,7 +1274,75 @@
   <li>
    Fix building with gcc &gt;= 14 with LTO and clang &gt;= 19 (fpclassify)
    #14749
-   #14749
+   #14716
+  </li>
+  <li>
+   Fix: gcc
+   -Warray-bounds=
+   in fidlib by using a flexible member
+   #14798
+  </li>
+  <li>
+   Added Linux Mint Codenames to debian_buildenv.sh
+   #14709
+  </li>
+  <li>
+   Add hidden
+   [Config],notify_max_dbg_time
+   setting to reduce warnings in developer mode
+   #14015
+  </li>
+  <li>
+   Detect arch and fail early if not supported when installing buildenv
+   #14478
+  </li>
+ </ul>
+ <p>
+  Misc
+ </p>
+ <ul>
+  <li>
+   Vinyl Control: Reduce sticker drift
+   #14435
+  </li>
+  <li>
+   Fix infinite number of pop ups of the "No Vinyl|Mic|Aux|Passthrough input configured" dialog
+   #14841
+   #14837
+  </li>
+  <li>
+   Reduce CPU usage with Trace log messages
+   #14862
+   #14791
+  </li>
+  <li>
+   Fix adjust Gain after adopting it as ReplayGain only in requesting player
+   #14812
+   #14806
+  </li>
+  <li>
+   Skins: add loop anchor toggle to Deere, Shade, Tango
+   #14890
+   #14173
+  </li>
+  <li>
+   Sound Hardware preferences: add manual link for Mic monitoring modes
+   #14889
+  </li>
+  <li>
+   Work around an Ubuntu, Ibus or Qt issue regarding detecting the current keyboard layout.
+   #14883
+   #14838
+   #14797
+  </li>
+  <li>
+   Fix BPM rounding for the 3/2 case
+   #14751
+  </li>
+  <li>
+   Update cue &amp; play indicators on paused decks when switching cue mode
+   14930
+   9928
   </li>
  </ul>
 </description>

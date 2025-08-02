@@ -8,8 +8,9 @@
 #include "waveformwidgetrenderer.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererHSV::~WaveformRendererHSV() {

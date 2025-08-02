@@ -291,10 +291,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         m_dVinylPosition = static_cast<double>(m_iPosition) / 1000.0 - m_iLeadInTime;
     }
 
-    // Initialize drift control to zero in case we don't get any position data
-    // to calculate it with.
-    double dDriftControl = 0.0;
-
     // Get the playback position in the file in seconds.
     double filePosition = playPos->get() * m_dOldDuration;
 
@@ -452,13 +448,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     if(bHaveSignal) {
         //POSITION: MAYBE  PITCH: YES
 
-        //We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
-        //qDebug() << "Pitch" << dVinylPitch;
-
         if (m_iPosition != -1) {
             //POSITION: YES  PITCH: YES
-            //add a value to the pitch ring (for averaging / smoothing the pitch)
-            //qDebug() << fabs(((m_dVinylPosition - m_dVinylPositionOld) * (dVinylPitch / fabs(dVinylPitch))));
 
             bool reversed = static_cast<bool>(reverseButton->get());
             if (!reversed && m_bWasReversed) {
@@ -487,8 +478,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 }
                 m_bForceResync = false;
-            } else if (fabs(m_dVinylPosition - filePosition) > 0.1 &&
-                       m_dVinylPosition < -2.0) {
+            } else if (fabs(m_dDriftAmt) > 0.1 &&
+                    m_dVinylPosition < -2.0) {
                 //At first I thought it was a bug to resync to leadin in relative mode,
                 //but after using it that way it's actually pretty convenient.
                 //qDebug() << "Vinyl leadin";
@@ -498,14 +489,14 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     m_pRateRatio->set(fabs(dVinylPitch));
                 }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
+                    (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
                 //qDebug() << "resync position (>15.0 sec)";
                 //qDebug() << m_dVinylPosition << m_dVinylPositionOld << m_dVinylPosition - m_dVinylPositionOld;
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
-                       fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
+                    fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
@@ -519,24 +510,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 return;
             } else {
                 togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
-            }
-
-            // Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
-            // (This is caused by the manufacturing process of the vinyl.)
-            if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    std::fabs(m_dDriftAmt) > 0.03 && std::fabs(m_dDriftAmt) < 5.0) {
-                dDriftControl = m_dDriftAmt * .01;
-            } else {
-                // Apply relative drift control
-                if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
-                    if (std::fabs(m_deltaRelativeDriftAmount) > 0.006 &&
-                            std::fabs(m_deltaRelativeDriftAmount) < 1.0 &&
-                            std::fabs(m_deltaFilePos) < 0.03) {
-                        dDriftControl = m_deltaRelativeDriftAmount * 0.3;
-                    }
-                } else {
-                    dDriftControl = 0.0;
-                }
             }
 
             m_dVinylPositionOld = m_dVinylPosition;
@@ -557,7 +530,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                     fabs(dVinylPitch) < 0.05 &&
-                    fabs(m_dDriftAmt) >= 0.3) {
+                    fabs(m_dDriftAmt) >= 1.0) {
                 //qDebug() << "slow, out of sync, syncing position";
                 syncPosition();
             }
@@ -568,6 +541,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
             }
         }
+
+        // Vinyl rate is exactly what is detected.
+        m_pVCRate->set(dVinylPitch);
 
         //playbutton status may have changed
         reportedPlayButton = playButton->toBool();
@@ -585,7 +561,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             m_iPitchRingFilled = 0;
         }
 
-        //only smooth when we have good position (no smoothing for scratching)
+        // Smoothed pitch is only used for UI display, not actual rate.
         double averagePitch = 0.0;
         if (m_iPosition != -1 && reportedPlayButton) {
             for (int i = 0; i < m_iPitchRingFilled; ++i) {
@@ -599,10 +575,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             averagePitch = dVinylPitch;
         }
 
-        m_pVCRate->set(dVinylPitch + dDriftControl);
         if (uiUpdateTime(filePosition)) {
-            double true_pitch = averagePitch + dDriftControl;
-            double pitch_difference = true_pitch - m_dDisplayPitch;
+            double pitch_difference = averagePitch - m_dDisplayPitch;
 
             // The true pitch can show a misleading amount of variance --
             // differences of .1% or less can show up as 1 or 2 bpm changes.
@@ -611,7 +585,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             if (fabs(pitch_difference) > 0.5) {
                 // For large changes in pitch (start/stop, usually), immediately
                 // update the display.
-                m_dDisplayPitch = true_pitch;
+                m_dDisplayPitch = averagePitch;
             } else if (fabs(pitch_difference) > 0.005) {
                 // For medium changes in pitch, take 4 callback loops to
                 // converge on the correct amount.
@@ -642,14 +616,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         m_pRateRatio->set(1.0);
 
-        if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                fabs(m_dVinylPosition - filePosition) >= 0.1) {
-            //qDebug() << "stopped, out of sync, syncing position";
-            syncPosition();
-        }
-
-        if(fabs(filePosition - m_dOldFilePos) >= 0.1 ||
-               filePosition == m_dOldFilePos) {
+        if (fabs(filePosition - m_dOldFilePos) >= 0.3 ||
+                filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
             resetSteadyPitch(0.0, 0.0);

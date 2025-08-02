@@ -216,6 +216,7 @@ class CueControl : public EngineControl {
 
   private slots:
     void quantizeChanged(double v);
+    void slotCueModeChanged(double v);
 
     void cueUpdated();
     void trackAnalyzed();
@@ -312,8 +313,8 @@ class CueControl : public EngineControl {
     QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
-    ControlObject* m_pCuePoint;
-    ControlObject* m_pCueMode;
+    std::unique_ptr<ControlObject> m_pCuePoint;
+    std::unique_ptr<ControlObject> m_pCueMode;
     std::unique_ptr<ControlPushButton> m_pCueSet;
     std::unique_ptr<ControlPushButton> m_pCueClear;
     std::unique_ptr<ControlPushButton> m_pCueCDJ;

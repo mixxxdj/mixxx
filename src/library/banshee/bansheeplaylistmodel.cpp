@@ -238,7 +238,8 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
 
     setTable(m_tempTableName, idColumn, std::move(tableColumns), trackSource);
     setSearch("");
-    setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
@@ -256,23 +257,14 @@ Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {
 TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {
-            const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
+            const QUrl rowUrl(getFieldString(index(row, 0),
+                    ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION));
             if (mixxx::FileInfo::fromQUrl(rowUrl) == pTrack->getFileInfo()) {
                 return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
             }
         }
     }
     return TrackId();
-}
-
-QVariant BansheePlaylistModel::getFieldVariant(const QModelIndex& index,
-        const QString& fieldName) const {
-    return index.sibling(index.row(), fieldIndex(fieldName)).data();
-}
-
-QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
-        const QString& fieldName) const {
-    return getFieldVariant(index, fieldName).toString();
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
@@ -292,21 +284,24 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     // saved with the metadata from Banshee. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (pTrack && !track_already_in_library) {
-        pTrack->setArtist(getFieldString(index, CLM_ARTIST));
-        pTrack->setTitle(getFieldString(index, CLM_TITLE));
-        pTrack->setDuration(getFieldString(index, CLM_DURATION).toDouble());
-        pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
-        pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
-        pTrack->setYear(getFieldString(index, CLM_YEAR));
-        updateTrackGenre(pTrack.get(), getFieldString(index, CLM_GENRE));
-        pTrack->setGrouping(getFieldString(index, CLM_GROUPING));
-        pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
-        pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));
-        double bpm = getFieldString(index, CLM_BPM).toDouble();
+        pTrack->setArtist(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ARTIST));
+        pTrack->setTitle(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_TITLE));
+        pTrack->setDuration(
+                getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_DURATION)
+                        .toDouble());
+        pTrack->setAlbum(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ALBUM));
+        pTrack->setAlbumArtist(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST));
+        pTrack->setYear(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_YEAR));
+        updateTrackGenre(pTrack.get(),
+                getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_GENRE));
+        pTrack->setGrouping(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_GROUPING));
+        pTrack->setRating(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_RATING).toInt());
+        pTrack->setTrackNumber(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER));
+        double bpm = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM).toDouble();
         pTrack->trySetBpm(bpm);
-        pTrack->setBitrate(getFieldString(index, CLM_BITRATE).toInt());
-        pTrack->setComment(getFieldString(index, CLM_COMMENT));
-        pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
+        pTrack->setBitrate(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_BITRATE).toInt());
+        pTrack->setComment(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_COMMENT));
+        pTrack->setComposer(getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER));
     }
     return pTrack;
 }
@@ -324,7 +319,7 @@ QUrl BansheePlaylistModel::getTrackUrl(const QModelIndex& index) const {
     if (!index.isValid()) {
         return {};
     }
-    return QUrl(getFieldString(index, CLM_URI));
+    return QUrl(getFieldString(index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION));
 }
 
 // Gets the on-disk location of the track at the given location.

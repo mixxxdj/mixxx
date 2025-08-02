@@ -277,6 +277,8 @@ void DlgPrefLibrary::slotUpdate() {
     populateDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             kRescanOnStartupConfigKey, false));
+    checkBox_library_scan_summary->setChecked(m_pConfig->getValue(
+            kShowScanSummaryConfigKey, true));
 
     spinbox_history_track_duplicate_distance->setValue(m_pConfig->getValue(
             kHistoryTrackDuplicateDistanceConfigKey,
@@ -508,6 +510,9 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
 void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kRescanOnStartupConfigKey,
             ConfigValue((int)checkBox_library_scan->isChecked()));
+
+    m_pConfig->set(kShowScanSummaryConfigKey,
+            ConfigValue((int)checkBox_library_scan_summary->isChecked()));
 
     m_pConfig->set(kHistoryTrackDuplicateDistanceConfigKey,
             ConfigValue(spinbox_history_track_duplicate_distance->value()));

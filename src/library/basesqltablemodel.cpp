@@ -51,17 +51,6 @@ BaseSqlTableModel::BaseSqlTableModel(
 BaseSqlTableModel::~BaseSqlTableModel() {
 }
 
-void BaseSqlTableModel::initHeaderProperties() {
-    BaseTrackTableModel::initHeaderProperties();
-    // Add playlist columns
-    setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION,
-            tr("#"),
-            30);
-    setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
-            tr("Timestamp"),
-            80);
-}
-
 void BaseSqlTableModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
     for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::IdMax); ++i) {
@@ -633,11 +622,16 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
         // column or a source column.
         int sourceTableIndex = m_trackSource->fieldIndex(fieldName);
         if (sourceTableIndex > -1) {
-            // Subtract one from the fieldIndex() result to account for the id column
+            // Subtract one from the fieldIndex() because the id column is in both
             return m_tableColumns.size() + sourceTableIndex - 1;
         }
     }
     return tableIndex;
+}
+
+int BaseSqlTableModel::endFieldIndex() const {
+    // Subtract one to remove the id column which is in both
+    return m_tableColumns.size() + (m_trackSource ? m_trackSource->endFieldIndex() - 1 : 0);
 }
 
 QString BaseSqlTableModel::modelKey(bool noSearch) const {
@@ -784,7 +778,7 @@ TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     if (index.isValid()) {
-        return TrackId(index.sibling(index.row(), fieldIndex(m_idColumn)).data());
+        return TrackId(getFieldVariant(index, m_idColumn));
     } else {
         return TrackId();
     }
@@ -794,11 +788,8 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return QString();
     }
-    QString nativeLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION))
-                    .data()
-                    .toString();
+    QString nativeLocation = getFieldString(
+            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     return QDir::fromNativeSeparators(nativeLocation);
 }
 
@@ -814,40 +805,17 @@ QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     CoverInfo coverInfo;
     coverInfo.setImageDigest(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_DIGEST))
-                    .data()
-                    .toByteArray(),
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_HASH))
-                    .data()
-                    .toUInt());
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST).toByteArray(),
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH).toUInt());
     coverInfo.color = mixxx::RgbColor::fromQVariant(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_COLOR))
-                    .data());
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR));
     if (coverInfo.hasCacheKey()) {
         coverInfo.type = static_cast<CoverInfo::Type>(
-                index.sibling(index.row(),
-                             fieldIndex(ColumnCache::
-                                             COLUMN_LIBRARYTABLE_COVERART_TYPE))
-                        .data()
-                        .toInt());
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE).toInt());
         coverInfo.source = static_cast<CoverInfo::Source>(
-                index.sibling(index.row(),
-                             fieldIndex(ColumnCache::
-                                             COLUMN_LIBRARYTABLE_COVERART_SOURCE))
-                        .data()
-                        .toInt());
-        coverInfo.coverLocation =
-                index.sibling(index.row(),
-                             fieldIndex(ColumnCache::
-                                             COLUMN_LIBRARYTABLE_COVERART_LOCATION))
-                        .data()
-                        .toString();
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE).toInt());
+        coverInfo.coverLocation = getFieldString(
+                index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION);
         coverInfo.trackLocation = getTrackLocation(index);
     }
     return coverInfo;

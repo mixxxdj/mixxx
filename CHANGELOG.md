@@ -333,30 +333,115 @@
 * Fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
 * qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
-## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (unreleased)
+## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (unreleased)
+
+### Controller Mappings
+
+* Traktor Kontrol S4 Mk3: tempo offset per deck [#14882](https://github.com/mixxxdj/mixxx/pull/14882)
+* Traktor Kontrol S4 Mk3: don`t duplicate beatloop_activate behaviour [#14992](https://github.com/mixxxdj/mixxx/pull/14992)
+* Traktor Kontrol S3: allow full library navigation [#14980](https://github.com/mixxxdj/mixxx/pull/14980)
+
+### Misc
+
+* Broadcast preferences: make setting string translatable [#15023](https://github.com/mixxxdj/mixxx/pull/15023)
+* Sound Hardware preference: add (?) linking to Sound APIs in the manual [#14935](https://github.com/mixxxdj/mixxx/pull/14935)
+* xwax: do not try to "correct" for drift in absolute mode. [#14960](https://github.com/mixxxdj/mixxx/pull/14960)
+* Fix column header text assignment [#14944](https://github.com/mixxxdj/mixxx/pull/14944)
+* Remove runtime assert to not risk crashes [#15000](https://github.com/mixxxdj/mixxx/pull/15000)
+* Windows: Update build environment to Visual Studio 2022 [#15006](https://github.com/mixxxdj/mixxx/pull/15006)
+
+## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (2025-06-13)
 
 ### Library
 
 * Fix playlist export when name contains a dot [#14737](https://github.com/mixxxdj/mixxx/pull/14737)
+* Fix loading the wrong track via drag and drop when using symlinks
+  [#13708](https://github.com/mixxxdj/mixxx/pull/13708)
+  [#13706](https://github.com/mixxxdj/mixxx/issues/13706)
+* Fix: byte order in hotcue comments imported from rekordbox
+  [#14808](https://github.com/mixxxdj/mixxx/pull/14808)
+  [#14789](https://github.com/mixxxdj/mixxx/issues/14789)
+* Tracks table: show ReplayGain with max. 2 decimals, full precision in tooltip
+  [#14868](https://github.com/mixxxdj/mixxx/pull/14868)
+  [#14867](https://github.com/mixxxdj/mixxx/issues/14867)
+* Fix keyboard mappings with non-ASCII characters on Linux
+  [#14843](https://github.com/mixxxdj/mixxx/pull/14843)
+  [#14734](https://github.com/mixxxdj/mixxx/issues/14734)
+* Computer feature: enable initial sorting during population [#14688](https://github.com/mixxxdj/mixxx/pull/14688)
+* Computer feature: avoid false-positve 'has children' for non-directory links
+  [#14907](https://github.com/mixxxdj/mixxx/pull/14907)
+* Fix column header mapping when using external library [#13782](https://github.com/mixxxdj/mixxx/pull/13782)
+* Fixed Single track cover reload on reload metadata from file
+  [#14494](https://github.com/mixxxdj/mixxx/pull/14494)
+  [#14409](https://github.com/mixxxdj/mixxx/issues/14409)
 
 ### Controller Mappings
 
+* Arturia KeyLab Mk1: initial mapping [#14502](https://github.com/mixxxdj/mixxx/pull/14502)
+* Denon MC7000: slicer mode TypeError [#14804](https://github.com/mixxxdj/mixxx/pull/14804)
+* Denon MC7000: crossfader curve using wrong parameter [#14803](https://github.com/mixxxdj/mixxx/pull/14803)
+* DJ TechTools MIDI Fighter Twister: support 4 decks [#14557](https://github.com/mixxxdj/mixxx/pull/14557)
 * Hercules DJControl Inpulse 500: the crossfader was not reaching 100% to the right end
   [#14722](https://github.com/mixxxdj/mixxx/pull/14722)
-* Traktor S2 Mk3: Fixed LED issue [#14717](https://github.com/mixxxdj/mixxx/pull/14717)
+* Icon Pro Audio iControls: initial mapping [#14591](https://github.com/mixxxdj/mixxx/pull/14591)
+* Numark Mixtrack Platinium FX: Fix 4 steps browsing issue [#14778](https://github.com/mixxxdj/mixxx/pull/14778)
+* Traktor Kontrol S3: Use GUI config for settings [#14904](https://github.com/mixxxdj/mixxx/pull/14904)
+* Traktor S2 MK3: Fixed LED issue [#14717](https://github.com/mixxxdj/mixxx/pull/14717)
+* Traktor S4 MK2: Use engine settings API for configuration [#14781](https://github.com/mixxxdj/mixxx/pull/14781)
+* Traktor S4 MK3: prevent sync lockup, add setting for tempo center snap
+  [#14735](https://github.com/mixxxdj/mixxx/pull/14735)
+  [#14721](https://github.com/mixxxdj/mixxx/issues/14721)
 
 ### Controller Backend
 
 * Control picker: Allow to learn MIDI Aux/Mic enable controls
   [#14720](https://github.com/mixxxdj/mixxx/pull/14720)
   [#14718](https://github.com/mixxxdj/mixxx/issues/14718)
+* Make `[Main],headSplit` CO persistent across restart [#14817](https://github.com/mixxxdj/mixxx/pull/14817)
+* Fix MIDI Controller button learning
+  [#14816](https://github.com/mixxxdj/mixxx/pull/14816)
+  [#14805](https://github.com/mixxxdj/mixxx/issues/14805)
+* Fix learning with "No Mapping" selected [#14829](https://github.com/mixxxdj/mixxx/pull/14829)
+* Unit tests for engine.beginTimer [#12437](https://github.com/mixxxdj/mixxx/pull/12437)
+* engine-api.d.ts: brake()/spinback() documentation
+  [#14929](https://github.com/mixxxdj/mixxx/pull/14929)
 
 ### Target support
 
 * Fix building with a CMake multi-config setup [#14614](https://github.com/mixxxdj/mixxx/pull/14614)
 * Fix building with gcc >= 14 with LTO and clang >= 19 (fpclassify)
   [#14749](https://github.com/mixxxdj/mixxx/pull/14749)
-  [#14749](https://github.com/mixxxdj/mixxx/issues/14716)
+  [#14716](https://github.com/mixxxdj/mixxx/issues/14716)
+* Fix: gcc `-Warray-bounds=` in fidlib by using a flexible member [#14798](https://github.com/mixxxdj/mixxx/pull/14798)
+* Added Linux Mint Codenames to debian_buildenv.sh [#14709](https://github.com/mixxxdj/mixxx/pull/14709)
+* Add hidden `[Config],notify_max_dbg_time` setting to reduce warnings in developer mode [#14015](https://github.com/mixxxdj/mixxx/pull/14015)
+* Detect arch and fail early if not supported when installing buildenv [#14478](https://github.com/mixxxdj/mixxx/pull/14478)
+
+### Misc
+
+* Vinyl Control: Reduce sticker drift [#14435](https://github.com/mixxxdj/mixxx/pull/14435)
+* Fix infinite number of pop ups of the "No Vinyl|Mic|Aux|Passthrough input configured" dialog
+  [#14841](https://github.com/mixxxdj/mixxx/pull/14841)
+  [#14837](https://github.com/mixxxdj/mixxx/issues/14837)
+* Reduce CPU usage with Trace log messages
+  [#14862](https://github.com/mixxxdj/mixxx/pull/14862)
+  [#14791](https://github.com/mixxxdj/mixxx/issues/14791)
+* Fix adjust Gain after adopting it as ReplayGain only in requesting player
+  [#14812](https://github.com/mixxxdj/mixxx/pull/14812)
+  [#14806](https://github.com/mixxxdj/mixxx/pull/14806)
+* Skins: add loop anchor toggle to Deere, Shade, Tango
+  [#14890](https://github.com/mixxxdj/mixxx/pull/14890)
+  [#14173](https://github.com/mixxxdj/mixxx/issues/14173)
+* Sound Hardware preferences: add manual link for Mic monitoring modes
+  [#14889](https://github.com/mixxxdj/mixxx/pull/14889)
+* Work around an Ubuntu, Ibus or Qt issue regarding detecting the current keyboard layout.
+  [#14883](https://github.com/mixxxdj/mixxx/pull/14883)
+  [#14838](https://github.com/mixxxdj/mixxx/issues/14838)
+  [#14797](https://github.com/mixxxdj/mixxx/issues/14797)
+* Fix BPM rounding for the 3/2 case [#14751](https://github.com/mixxxdj/mixxx/pull/14751)
+* Update cue & play indicators on paused decks when switching cue mode
+  [14930](https://github.com/mixxxdj/mixxx/pull/14930)
+  [9928](https://github.com/mixxxdj/mixxx/issues/9928)
 
 ## [2.5.1](https://github.com/mixxxdj/mixxx/milestone/45) (2025-04-27)
 

@@ -12,9 +12,92 @@ var MidiFighterSpectra;
         }
     };
 
+    const COLORS = Object.freeze({
+        OFF: 1, // Off
+        DIM_RED: 19,
+        DIM_ORANGE: 31,
+        DIM_YELLOW: 43,
+        DIM_LIME: 55,
+        GREEN: 66,
+        DIM_GREEN: 67,
+        DIM_CELESTE: 79,
+        DIM_BLUE: 91,
+        DIM_PURPLE: 103,
+        DIM_PINK: 115,
+        WHITE: 122,
+    });
+
     class Deck extends components.Deck {
         constructor() {
             super([1, 2, 3, 4]);
+
+            const colorMapper = new ColorMapper({
+                // These colors don't always appear to match what the
+                // manual says they should be. The "bright" version of
+                // the color is what the manual says should be the
+                // "dull" version, and "white" is actually purple (and
+                // the invalid value, 121, provided is actually white).
+                0x000000: COLORS.OFF,
+                0xC50A08: COLORS.DIM_RED,
+                0xF07800: COLORS.DIM_ORANGE,
+                0xF8D200: COLORS.DIM_YELLOW,
+                0xC4D82E: COLORS.DIM_LIME,
+                0x32BE44: COLORS.DIM_GREEN,
+                0x42D4F4: COLORS.DIM_CELESTE,
+                0x0044FF: COLORS.DIM_BLUE,
+                0xAF00CC: COLORS.DIM_PURPLE,
+                0xFCA6D7: COLORS.DIM_PINK,
+                0xF2F2FF: COLORS.WHITE,
+
+                // NI Stem Colors
+                // These are sometimes close enough to the wrong color to be
+                // mapped to it using the closest match algorithm since we use
+                // common Mixxx hotcue colors above.
+                0xFD4a4a: COLORS.DIM_RED,    // mapped to orange otherwise
+                0xFA8d29: COLORS.DIM_YELLOW, // mapped to orange otherwise
+                0xFF652E: COLORS.DIM_ORANGE, // mapped to red otherwise
+            });
+
+            this.stemLayer = [];
+            for (let i = 0; i < 4; i++) {
+                this.stemLayer[i + 4] = new components.Button({
+                    group: `[QuickEffectRack1_[Channel1_Stem${i + 1}]]`,
+                    midi: [0x92, 0x5C + i],
+                    key: "enabled",
+                    type: components.Button.prototype.types.toggle,
+                    on: engine.getSetting("superOnColor"),
+                    off: engine.getSetting("superOffColor"),
+                });
+                this.stemLayer[i] = new components.Button({
+                    group: `[Channel1_Stem${i + 1}]`,
+                    midi: [0x92, 0x60 + i],
+                    key: "mute",
+                    colorKey: "color",
+                    stemNum: i + 1,
+                    type: components.Button.prototype.types.toggle,
+                    colorMapper: colorMapper,
+                    connect: function() {
+                        this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                        this.connections[1] = engine.makeConnection(this.group, this.colorKey, this.output.bind(this));
+                    },
+                    output: function(_value, _group, _control) {
+                        const color = engine.getValue(this.group, this.colorKey);
+                        const channel = script.channelFromStem(this.group);
+                        const stemCount = engine.getValue(channel, "stem_count");
+                        if (color === -1 || this.stemNum > stemCount) {
+                            this.send(this.off);
+                            return;
+                        }
+
+                        const nearestColorValue = this.colorMapper.getValueForNearestColor(color);
+
+                        // If muted, use the dim variant of the color, otherwise
+                        // use the bright version.
+                        const muted = engine.getValue(this.group, this.key);
+                        this.send(nearestColorValue - (muted ? 0 : 1));
+                    },
+                });
+            }
 
             this.cueLayer = [
                 // Intro/outro markers
@@ -59,24 +142,7 @@ var MidiFighterSpectra;
                         0x3C, 0x3D, 0x3E, 0x3F,
                         0x38, 0x39, 0x3A, 0x3B
                     ][i]],
-                    colorMapper: new ColorMapper({
-                        // These colors don't always appear to match what the
-                        // manual says they should be. The "bright" version of
-                        // the color is what the manual says should be the
-                        // "dull" version, and "white" is actually purple (and
-                        // the invalid value, 121, provided is actually white).
-                        0x000000: 1,   // Black (Off)
-                        0xC50A08: 19,  // Dim Red
-                        0xF07800: 31,  // Dim Orange
-                        0xF8D200: 43,  // Dim Yellow
-                        0xC4D82E: 55,  // Dim Lime
-                        0x32BE44: 67,  // Dim Green
-                        0x42D4F4: 79,  // Dim Bianchi/Celeste
-                        0x0044FF: 91,  // Dim Blue
-                        0xAF00CC: 103, // Dim Purple
-                        0xFCA6D7: 115, // Dim Pink
-                        0xF2F2FF: 122, // White
-                    }),
+                    colorMapper: colorMapper,
                     input: function(channel, control, value, status, group) {
                         // If this is a note release event, swap the value as if
                         // this were a normal button release.
@@ -92,14 +158,21 @@ var MidiFighterSpectra;
                         // set the brighter variant of the closest color.
                         if (enabled) {
                             const nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
-                            this.send(nearestColorValue - (enabled ? 1 : 0));
+                            this.send(nearestColorValue - 1);
                             return;
                         }
 
                         // otherwise set the "dim" variant.
-                        components.HotcueButton.prototype.outputColor.bind(this)(colorCode);
+                        components.HotcueButton.prototype.outputColor.call(this, colorCode);
                     },
                 });
+            }
+        }
+
+        setCurrentDeck(newGroup) {
+            components.Deck.prototype.setCurrentDeck.call(this, newGroup);
+            for (const btn of MidiFighterSpectra.controller.selectDeck) {
+                btn.setActive(newGroup);
             }
         }
     }
@@ -139,8 +212,8 @@ var MidiFighterSpectra;
                     midi: [0x92, 0x24 + i],
                     key: "enabled",
                     type: components.Button.prototype.types.toggle,
-                    off: engine.getSetting("superOnColor"),
-                    on: engine.getSetting("superOffColor"),
+                    on: engine.getSetting("superOnColor"),
+                    off: engine.getSetting("superOffColor"),
                 });
             }
 
@@ -159,42 +232,45 @@ var MidiFighterSpectra;
                 });
             }
 
+            this.selectDeck = [];
             this.activeDeck = new Deck();
 
-            // Since this is a radio button set, just have one button that
-            // handles setting and unsetting all the LEDs.
-            this.selectCueDeck = new components.Button({
-                group: "[Channel1]",
-                key: "end_of_track",
-                midi: [0x92, 0x34],
-                input: function(_channel, control, value, _status, group) {
-                    MidiFighterSpectra.controller.activeDeck.setCurrentDeck(group);
-                    this.output(value, group, control);
-                },
-                output: function(_value, _group, control) {
-                    for (let i = 0; i < 4; i++) {
-                        midi.sendShortMsg(this.midi[0], this.midi[1] + i, (control === this.midi[1] + i) ? this.on : this.off);
-                    }
-                },
-                pulse: function(value, group, _control) {
-                    const deckNum = parseInt(script.channelRegEx.exec(group)[1]);
-                    if (value) {
-                        midi.sendShortMsg(this.midi[0] + 1, this.midi[1] + deckNum - 1, 47);
-                    } else {
-                        midi.sendShortMsg(this.midi[0] - 0xF, this.midi[1] + deckNum - 1, 33);
-                    }
-                },
-                on: engine.getSetting("deckSelectedColor"),
-                off: engine.getSetting("deckUnselectedColor"),
-                connect: function() {
-                    if (engine.getSetting("pulseDeckSelect")) {
-                        for (let i = 0; i < 4; i++) {
-                            this.connections[i] = engine.makeConnection(`[Channel${i + 1}]`, "end_of_track", this.pulse.bind(this));
+            for (let i = 0; i < 8; i++) {
+                // The selectDeck buttons are 4 buttons that let you select
+                // which deck is active. Two different layers let you select
+                // buttons this way, so there are 8 virtual buttons. Each set of
+                // 4 are like radio buttons where pressing one changes the
+                // selected deck, then only that button is illuminated in the
+                // active deck color and all other buttons are turned off.
+                // This is accomplished by the setActive method which is kept
+                // separate from the connections/output methods which handle the
+                // `end_of_track' signal for the deck represented by the button.
+                this.selectDeck[i] = new components.Button({
+                    group: `[Channel${(i % 4) + 1}]`,
+                    key: "end_of_track",
+                    midi: [0x92, (i < 4 ? 0x34 : 0x54) + (i % 4)],
+                    on: engine.getSetting("deckSelectedColor"),
+                    off: engine.getSetting("deckUnselectedColor"),
+                    input: function(_channel, control, value, _status, group) {
+                        MidiFighterSpectra.controller.activeDeck.setCurrentDeck(group);
+                    },
+                    setActive: function(group) {
+                        // Set the LED if this button represents the currently
+                        // selected deck.
+                        midi.sendShortMsg(this.midi[0], this.midi[1], (group === this.group) ? this.on : this.off);
+                    },
+                    output: function(value, _group, _control) {
+                        // Pulse the deck select button if the track is ending.
+                        if (engine.getSetting("pulseDeckSelect")) {
+                            if (value) {
+                                midi.sendShortMsg(this.midi[0] + 1, this.midi[1], 47);
+                            } else {
+                                midi.sendShortMsg(this.midi[0] - 0xF, this.midi[1], 33);
+                            }
                         }
-                    }
-                },
-            });
-            this.selectCueDeck.output(0x7F, "[Channel1]", 0x34);
+                    },
+                });
+            }
         }
     }
 
@@ -209,6 +285,7 @@ var MidiFighterSpectra;
 
     MidiFighterSpectra.init = function() {
         MidiFighterSpectra.controller = new Controller();
+        MidiFighterSpectra.controller.activeDeck.setCurrentDeck("[Channel1]");
 
         // Blink the ground effect LEDs when a track is ending.
         MidiFighterSpectra.connections = [];
@@ -261,6 +338,9 @@ var MidiFighterSpectra;
         case "samplers":
             midi.sendShortMsg(0x93, 0x02, 127);
             break;
+        case "stems":
+            midi.sendShortMsg(0x93, 0x03, 127);
+            break;
         }
     };
 
@@ -281,4 +361,4 @@ var MidiFighterSpectra;
     };
 })(MidiFighterSpectra || (MidiFighterSpectra = {}));
 
-// vim:expandtab:tabstop=4:shiftwidth=4
+// vim:expandtab:tabstop=4:shiftwidth=4:backupcopy=yes

@@ -124,6 +124,10 @@ DlgAbout::DlgAbout()
             << "armaan"
             << "Karam Assany"
             << "Anmol Mishra"
+            << "Alec Peng"
+            << "Arthur Vimond"
+            << "Johan Jnn"
+            << "Shiraz McClennon"
             << "Lubosz Sarnecki"
             << "Falk Ebert"
             << "13dixi37"
@@ -132,7 +136,7 @@ DlgAbout::DlgAbout()
             << "evoixmr"
             << "Jos&eacute; Carlos Cuevas"
             << "cucucat"
-            << "Alec Peng";
+            << "Hetarth Jodha";
 
     QStringList specialThanks;
     specialThanks

@@ -85,7 +85,7 @@ class QmlWaveformRendererPreroll
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
-typedef allshader::WaveformRendererSignalBase::Options WaveformRendererSignalBaseOptions;
+typedef WaveformRendererSignalBase::Options WaveformRendererSignalBaseOptions;
 class QmlWaveformRendererSignal
         : public QmlWaveformRendererFactory {
     Q_OBJECT
@@ -139,7 +139,7 @@ class QmlWaveformRendererSignal
 
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
     WaveformRendererSignalBaseOptions m_options{
-            allshader::WaveformRendererSignalBase::Option::None};
+            WaveformRendererSignalBase::Option::None};
 };
 
 class QmlWaveformRendererRGB
@@ -175,6 +175,8 @@ class QmlWaveformRendererHSV
     Q_PROPERTY(double gainLow MEMBER m_gainLow NOTIFY gainLowChanged REQUIRED)
     Q_PROPERTY(double gainMid MEMBER m_gainMid NOTIFY gainMidChanged REQUIRED)
     Q_PROPERTY(double gainHigh MEMBER m_gainHigh NOTIFY gainHighChanged REQUIRED)
+    Q_PROPERTY(WaveformRendererSignalBaseOptions options MEMBER
+                    m_options NOTIFY optionsChanged)
     QML_NAMED_ELEMENT(WaveformRendererHSV)
 
   public:
@@ -187,6 +189,11 @@ class QmlWaveformRendererHSV
     void gainLowChanged(double);
     void gainMidChanged(double);
     void gainHighChanged(double);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void optionsChanged(WaveformRendererSignalBaseOptions);
+#else
+    void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
+#endif
 
   private:
     QColor m_axesColor;
@@ -198,6 +205,8 @@ class QmlWaveformRendererHSV
     double m_gainHigh;
 
     bool m_ignoreStem{false};
+    WaveformRendererSignalBaseOptions m_options{
+            WaveformRendererSignalBase::Option::None};
 };
 
 class QmlWaveformRendererSimple
@@ -207,6 +216,8 @@ class QmlWaveformRendererSimple
     Q_PROPERTY(QColor axesColor MEMBER m_axesColor NOTIFY axesColorChanged REQUIRED)
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged REQUIRED)
     Q_PROPERTY(double gain MEMBER m_gain NOTIFY gainChanged REQUIRED)
+    Q_PROPERTY(WaveformRendererSignalBaseOptions options MEMBER
+                    m_options NOTIFY optionsChanged)
     QML_NAMED_ELEMENT(WaveformRendererSimple)
 
   public:
@@ -216,12 +227,19 @@ class QmlWaveformRendererSimple
     void colorChanged(const QColor&);
     void ignoreStemChanged(bool);
     void gainChanged(double);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void optionsChanged(WaveformRendererSignalBaseOptions);
+#else
+    void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
+#endif
 
   private:
     QColor m_axesColor;
     QColor m_color;
     double m_gain;
     bool m_ignoreStem{false};
+    WaveformRendererSignalBaseOptions m_options{
+            WaveformRendererSignalBase::Option::None};
 };
 
 class QmlWaveformRendererBeat

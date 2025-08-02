@@ -362,13 +362,13 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
-void Track::adjustReplayGainFromPregain(double gain) {
+void Track::adjustReplayGainFromPregain(double gain, const QString& requestingPlayerGroup) {
     auto locked = lockMutex(&m_qMutex);
     mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     replayGain.setRatio(gain * replayGain.getRatio());
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
         markDirtyAndUnlock(&locked);
-        emit replayGainAdjusted(replayGain);
+        emit replayGainAdjusted(replayGain, requestingPlayerGroup);
     }
 }
 

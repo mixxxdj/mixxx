@@ -23,7 +23,7 @@ QString WaveformRendererTextured::fragShaderForType(::WaveformWidgetType::Type t
     default:
         break;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported WaveformWidgetType");
     return QString();
 }
 
@@ -31,8 +31,8 @@ WaveformRendererTextured::WaveformRendererTextured(
         WaveformWidgetRenderer* waveformWidget,
         ::WaveformWidgetType::Type t,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
@@ -153,8 +153,8 @@ bool WaveformRendererTextured::loadTexture() {
                 GL_UNSIGNED_BYTE,
                 m_data.data());
         int error = glGetError();
-        if (error) {
-            qDebug() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
+        VERIFY_OR_DEBUG_ASSERT(!error) {
+            qWarning() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
         }
     } else {
         glDeleteTextures(1, &m_textureId);
@@ -380,7 +380,7 @@ void WaveformRendererTextured::paintGL() {
 
         if (m_type == ::WaveformWidgetType::RGB) {
             m_frameShaderProgram->setUniformValue("splitStereoSignal",
-                    m_options & WaveformRendererSignalBase::Option::SplitStereoSignal);
+                    m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal);
         }
 
         m_frameShaderProgram->setUniformValue("axesColor",
