@@ -75,13 +75,9 @@ TEST(BeatGridTest, Scale) {
     EXPECT_DOUBLE_EQ(bpm.value(),
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
-    pGrid = *pGrid->tryScale(Beats::BpmScale::Double);
-    EXPECT_DOUBLE_EQ(2 * bpm.value(),
-            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
-                    .value());
 
     pGrid = *pGrid->tryScale(Beats::BpmScale::Halve);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    EXPECT_DOUBLE_EQ(bpm.value() / 2,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
@@ -90,18 +86,28 @@ TEST(BeatGridTest, Scale) {
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
-    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
-    EXPECT_DOUBLE_EQ(bpm.value(),
-            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
-                    .value());
-
     pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FiveFourths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 5 / 4,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
     pGrid = *pGrid->tryScale(Beats::BpmScale::FourThirds);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    EXPECT_DOUBLE_EQ(bpm.value() * 4 / 3,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
+    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 2,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = *pGrid->tryScale(Beats::BpmScale::Double);
+    EXPECT_DOUBLE_EQ(bpm.value() * 2,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 }
