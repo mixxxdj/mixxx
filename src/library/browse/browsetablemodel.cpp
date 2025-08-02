@@ -42,13 +42,11 @@ void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
 } // anonymous namespace
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
-        TrackCollectionManager* pTrackCollectionManager,
-        RecordingManager* pRecordingManager)
+        TrackCollectionManager* pTrackCollectionManager)
         : TrackModel(pTrackCollectionManager->internalCollection()->database(),
                   "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_pRecordingManager(pRecordingManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
     QStringList headerLabels;
     /// The order of the columns appended here must exactly match the ordering
@@ -219,14 +217,6 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
 }
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
-    if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
-        QMessageBox::critical(nullptr,
-                tr("Mixxx Library"),
-                tr("Could not load the following file because it is in use by "
-                   "Mixxx or another application.") +
-                        "\n" + trackRef.getLocation());
-        return TrackPointer();
-    }
     // NOTE(uklotzde, 2015-12-08): Accessing tracks from the browse view
     // will implicitly add them to the library. Is this really what we
     // want here??
