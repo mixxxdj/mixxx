@@ -9,6 +9,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/genredao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
@@ -22,7 +23,7 @@ class QDir;
 
 // Manages the internal database.
 class TrackCollection : public QObject,
-    public virtual /*implements*/ SqlStorage {
+                        public virtual /*implements*/ SqlStorage {
     Q_OBJECT
 
   public:
@@ -67,6 +68,10 @@ class TrackCollection : public QObject,
     AnalysisDao& getAnalysisDAO() {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_analysisDao;
+    }
+    GenreDao& getGenreDao() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_genreDao;
     }
 
     void connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
@@ -171,6 +176,7 @@ class TrackCollection : public QObject,
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
+    GenreDao m_genreDAO;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
 
