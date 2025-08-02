@@ -992,17 +992,22 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 	  tc->valid_counter);
 }
 
+
 /*
- * Process a single sample from the incoming audio
+ * Do Traktor-MK2-specific processing of the carrier wave
  *
- * The two input signals (primary and secondary) are in the full range
- * of a signed int; ie. 32-bit signed.
+ * Pushes samples into a delayline, computes the derivative, RMS values
+ * and scales the derivative back up to the original signal's level. Ideally
+ * the gain compensation should be done in the derivative and lowpass filter
+ * structures by determining the amplitude response. I had this implemented
+ * previously, but chose gain compensation by an RMS filter, since it is
+ * easier to understand for developers not trained in signal processing.
+ * 
  */
 
-static void process_sample(struct timecoder *tc,
-			   signed int primary, signed int secondary)
+static void mk2_process_carrier(struct timecoder *tc,
+        signed int primary, signed int secondary)
 {
-    if (tc->def->flags & TRAKTOR_MK2) {
         /* Push the samples into the ringbuffer */
         delayline_push(&tc->primary.mk2.delayline, primary);
         delayline_push(&tc->secondary.mk2.delayline, secondary);
@@ -1023,6 +1028,7 @@ static void process_sample(struct timecoder *tc,
 
         /* Compute the gain compensation for the derivative*/
         tc->gain_compensation = (double) tc->secondary.mk2.rms / tc->secondary.mk2.rms_deriv;
+
         if (tc->gain_compensation > 30.0) // without this limit pitch becomes too sensitive
             tc->gain_compensation = 30.0;
 
@@ -1031,6 +1037,21 @@ static void process_sample(struct timecoder *tc,
         /* Compute the scaled derivative */
         tc->primary.mk2.deriv_scaled = tc->primary.mk2.deriv * tc->gain_compensation;
         tc->secondary.mk2.deriv_scaled = tc->secondary.mk2.deriv * tc->gain_compensation;
+}
+
+
+/*
+ * Process a single sample from the incoming audio
+ *
+ * The two input signals (primary and secondary) are in the full range
+ * of a signed int; ie. 32-bit signed.
+ */
+
+static void process_sample(struct timecoder *tc,
+			   signed int primary, signed int secondary)
+{
+    if (tc->def->flags & TRAKTOR_MK2) {
+        mk2_process_carrier(tc, primary, secondary);
 
         detect_zero_crossing(&tc->primary, tc->primary.mk2.deriv_scaled, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, tc->secondary.mk2.deriv_scaled, tc->zero_alpha, tc->threshold);
