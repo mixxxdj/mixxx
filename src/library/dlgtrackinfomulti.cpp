@@ -1257,7 +1257,7 @@ void DlgTrackInfoMulti::loadGenresFromTracks() {
             firstTrack = false;
             qDebug() << "  - First track - common genres:" << commonGenres;
         } else {
-            QStringList intersection;
+            intersection.clear();
             for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
                     intersection.append(genre);
