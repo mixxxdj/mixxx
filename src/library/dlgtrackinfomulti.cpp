@@ -1257,13 +1257,13 @@ void DlgTrackInfoMulti::loadGenresFromTracks() {
             firstTrack = false;
             qDebug() << "  - First track - common genres:" << commonGenres;
         } else {
-            intersection.clear();
+            m_intersection.clear();
             for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
-                    intersection.append(genre);
+                    m_intersection.append(genre);
                 }
             }
-            commonGenres = intersection;
+            commonGenres = m_intersection;
             qDebug() << "  - After intersection with this track:" << commonGenres;
         }
         if (commonGenres.isEmpty()) {
@@ -1390,15 +1390,13 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
     qDebug() << "=== saveGenresToTracks() End ===";
 }
 
-QStringList intersection;
-
 QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
     if (!m_pTrackCollection) {
         return QStringList();
     }
 
     QStringList commonGenres;
-    QStringList intersection;
+    QStringList m_intersection;
     bool firstTrack = true;
 
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
@@ -1424,13 +1422,13 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
             commonGenres = trackGenres;
             firstTrack = false;
         } else {
-            intersection.clear();
+            m_intersection.clear();
             for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
-                    intersection.append(genre);
+                    m_intersection.append(genre);
                 }
             }
-            commonGenres = intersection;
+            commonGenres = m_intersection;
         }
 
         if (commonGenres.isEmpty()) {
