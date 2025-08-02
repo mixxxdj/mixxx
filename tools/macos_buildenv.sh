@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Ignored in case of a source call, but needed for bash specific sourcing detection
+
 set -o pipefail
 
 # shellcheck disable=SC2091
@@ -15,13 +17,19 @@ realpath() {
     cd "${OLDPWD}" || exit 1
 }
 
-# some hackery is required to be compatible with both bash and zsh
-THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
-[ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
+# Get script file location, compatible with bash and zsh
+if [ -n "$BASH_VERSION" ]; then
+  THIS_SCRIPT_NAME="${BASH_SOURCE[0]}"
+elif [ -n "$ZSH_VERSION" ]; then
+  # shellcheck disable=SC2296
+  THIS_SCRIPT_NAME="${(%):-%N}"
+else
+  THIS_SCRIPT_NAME="$0"
+fi
 
 HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
 
-if [ "$HOST_ARCH" == "x86_64" ]; then
+if [ "$HOST_ARCH" = "x86_64" ]; then
     if [ -n "${BUILDENV_ARM64}" ]; then
         VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.5-rel"
