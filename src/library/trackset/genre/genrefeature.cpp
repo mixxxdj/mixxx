@@ -101,6 +101,18 @@ void GenreFeature::initActions() {
             &QAction::triggered,
             this,
             &GenreFeature::slotEditOrphanTrackGenres);
+    m_pExportGenresToCsv =
+            make_parented<QAction>(tr("Export all genres to csv"), this);
+    connect(m_pExportGenresToCsv.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotExportGenresToCsv);
+    m_pImportGenresFromCsv =
+            make_parented<QAction>(tr("Import genres from csv"), this);
+    connect(m_pImportGenresFromCsv.get(),
+            &QAction::triggered,
+            this,
+            &GenreFeature::slotImportGenresFromCsv);
     m_pCreateGenreAction = make_parented<QAction>(tr("Create New Genre"), this);
     connect(m_pCreateGenreAction.get(),
             &QAction::triggered,
@@ -182,25 +194,6 @@ void GenreFeature::initActions() {
                 }
             });
 #endif
-}
-
-void GenreFeature::slotImportGenreModelFromCsv() {
-    QString csvFileName = QFileDialog::getOpenFileName(
-            m_pSidebarWidget,
-            tr("Select Genre Model CSV"),
-            QString(),
-            tr("CSV files (*.csv);;All files (*.*)"));
-
-    if (csvFileName.isEmpty()) {
-        return;
-    }
-
-    int insertedCount = m_genreTableModel.importFromCsv(csvFileName);
-    QMessageBox::information(m_pSidebarWidget,
-            tr("Import Complete"),
-            tr("Imported %1 new genres from CSV.").arg(insertedCount));
-
-    rebuildChildModel();
 }
 
 void GenreFeature::connectLibrary(Library* pLibrary) {
@@ -422,9 +415,11 @@ void GenreFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pSetAllGenresVisibleAction.get());
     menu.addAction(m_pEditOrphanGenresAction.get());
     menu.addSeparator();
-    menu.addAction(m_pCreateImportPlaylistAction.get());
-    menu.addSeparator();
+    menu.addAction(m_pExportGenresToCsv.get());
+    menu.addAction(m_pImportGenresFromCsv.get());
     menu.addAction(m_pImportGenreModelFromCsvAction.get());
+    menu.addSeparator();
+    menu.addAction(m_pCreateImportPlaylistAction.get());
 #ifdef __ENGINEPRIME__
     menu.addSeparator();
     menu.addAction(m_pExportAllGenresAction.get());
@@ -525,6 +520,24 @@ void GenreFeature::slotEditGenreMulti() {
 void GenreFeature::slotSetAllGenresVisible() {
     qDebug() << "[GenreFeature] -> slotAllGenresVisible()";
     m_genreTableModel.setAllGenresVisible();
+    rebuildChildModel();
+}
+
+void GenreFeature::slotImportGenreModelFromCsv() {
+    qDebug() << "[GenreFeature] -> slotImportGenreModelFromCsv()";
+    m_genreTableModel.importModelFromCsv();
+    rebuildChildModel();
+}
+
+void GenreFeature::slotExportGenresToCsv() {
+    qDebug() << "[GenreFeature] -> slotExportGenresToCsv()";
+    m_genreTableModel.exportGenresToCsv();
+    rebuildChildModel();
+}
+
+void GenreFeature::slotImportGenresFromCsv() {
+    qDebug() << "[GenreFeature] -> slotImportGenresFromCsv()";
+    m_genreTableModel.importGenresFromCsv();
     rebuildChildModel();
 }
 

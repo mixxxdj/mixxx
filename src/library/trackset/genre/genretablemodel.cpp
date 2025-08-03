@@ -4,15 +4,19 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QFile>
+#include <QFileDialog>
 #include <QFormLayout>
 #include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStyledItemDelegate>
 #include <QTableWidgetItem>
+#include <QTextStream>
 #include <QVariantList>
 #include <QVariantMap>
 #include <QtDebug>
@@ -294,25 +298,44 @@ QString GenreTableModel::modelKey(bool noSearch) const {
     }
 }
 
-int GenreTableModel::importFromCsv(const QString& csvFileName) {
-    QFile file(csvFileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "[GenreTableModel] Failed to open CSV file:" << csvFileName;
-        return 0;
-    }
-
+void GenreTableModel::importModelFromCsv() {
     int insertedCount = 0;
 
     QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
             QObject::tr("Confirm CSV-Import"),
-            QObject::tr("This action will add all genres of the model defined in the csv. \n "
-                        "It's not possible to reverse this action. \n "
+            QObject::tr("This action will add all genres of the model defined in the CSV. \n "
+                        "It's not possible to reverse this action. \n\n "
+                        "The format of the CSV you want to import is very strict,  \n "
+                        "the first line of your CSV needs to contain the field_level_names. \n "
+                        "(name_level_1 ... name_level_5) \n\n "
                         "Are you sure you want to continue?"),
             QMessageBox::Yes | QMessageBox::No);
 
     if (reply != QMessageBox::Yes) {
         qDebug() << "[GenreTableModel] -> importCSV -> Action cancelled by user.";
-        return insertedCount;
+        QMessageBox::information(nullptr,
+                tr("Import Cancelled"),
+                tr("Import cancelled by user, no changes made to genres table"));
+        return;
+    }
+
+    QString csvFileName = QFileDialog::getOpenFileName(
+            nullptr,
+            tr("Select Genre Model CSV"),
+            QString(),
+            tr("CSV files (*.csv);;All files (*.*)"));
+
+    if (csvFileName.isEmpty()) {
+        return;
+    }
+
+    QFile file(csvFileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "[GenreTableModel] Failed to open CSV file:" << csvFileName;
+        QMessageBox::information(nullptr,
+                tr("Import Cancelled"),
+                tr("Import cancelled, CSV-file can't be opened."));
+        return;
     }
 
     QTextStream in(&file);
@@ -320,8 +343,29 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
     const QStringList headerFields = headerLine.split(',');
     if (headerFields.isEmpty() || headerFields[0].trimmed().toLower() != "name_level_1") {
         qWarning() << "[GenreTableModel] Invalid CSV header";
-        return 0;
+        QMessageBox::information(nullptr,
+                tr("Import Cancelled"),
+                tr("Import cancelled, Invalid CSV header."));
+        return;
     }
+
+    QStringList lines;
+    QString line;
+
+    while (!in.atEnd()) {
+        line = in.readLine().trimmed();
+        if (!line.isEmpty()) {
+            lines.append(line);
+        }
+    }
+    file.close();
+
+    const int totalLines = lines.size();
+    QList<QStringList> newEntries;
+    QStringList fields;
+    QStringList levels;
+    QStringList nonEmpty;
+    int lineNumber = 1;
 
     QSqlQuery selectQuery(m_database);
     selectQuery.prepare(
@@ -332,62 +376,52 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
             "COALESCE(name_level_4, '') = :lvl4 AND "
             "COALESCE(name_level_5, '') = :lvl5");
 
-    QSqlQuery insertQuery(m_database);
-    insertQuery.prepare(
-            "INSERT INTO genres (name_level_1, name_level_2, name_level_3, "
-            "name_level_4, name_level_5, name, is_visible, is_model_defined) "
-            "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :name, 1, 1)");
-
-    int lineNumber = 1;
-
-    if (!m_database.transaction()) {
-        qWarning() << "[GenreTableModel] Failed to start transaction:"
-                   << m_database.lastError().text();
-        return 0;
-    }
-
-    QStringList nonEmptyLevels;
-    while (!in.atEnd()) {
-        nonEmptyLevels.clear();
-        const QString line = in.readLine();
+    for (const QString& line : std::as_const(lines)) {
         lineNumber++;
-
-        if (line.trimmed().isEmpty()) {
-            continue;
-        }
-
-        QStringList fields = line.split(',');
+        fields.clear();
+        fields = line.split(',');
         fields.reserve(5);
         while (fields.size() < 5) {
             fields.append("");
         }
 
-        QStringList levels;
+        levels.clear();
         levels.reserve(5);
         for (int i = 0; i < 5; ++i) {
             levels << fields[i].trimmed();
         }
 
-        nonEmptyLevels.reserve(5);
-        for (const QString& level : std::as_const(levels)) {
-            if (!level.isEmpty()) {
-                nonEmptyLevels << level;
-            }
-        }
-
-        if (nonEmptyLevels.isEmpty()) {
-            qWarning() << "[GenreTableModel] Line" << lineNumber
-                       << "has no non-empty levels, skipping";
-            continue;
-        }
-
-        const QString Name = nonEmptyLevels.join("//");
         const QString& lvl1 = levels[0];
         const QString& lvl2 = levels[1];
         const QString& lvl3 = levels[2];
         const QString& lvl4 = levels[3];
         const QString& lvl5 = levels[4];
 
+        if (lvl1.isEmpty()) {
+            continue;
+        }
+
+        nonEmpty.clear();
+        for (const QString& level : std::as_const(levels)) {
+            if (!level.isEmpty()) {
+                nonEmpty << level;
+            }
+        }
+        const QString name = nonEmpty.join("//");
+
+        QSqlQuery nameCheckQuery(m_database);
+        nameCheckQuery.prepare("SELECT id FROM genres WHERE name = :name");
+        nameCheckQuery.bindValue(":name", name);
+        if (!nameCheckQuery.exec()) {
+            qWarning() << "[GenreTableModel] Name check failed at line" << lineNumber
+                       << ":" << nameCheckQuery.lastError().text();
+            continue;
+        }
+        if (nameCheckQuery.next()) {
+            continue;
+        }
+
+        // check if this exact level combination already exists or was added with the csv import
         selectQuery.bindValue(":lvl1", lvl1);
         selectQuery.bindValue(":lvl2", lvl2);
         selectQuery.bindValue(":lvl3", lvl3);
@@ -400,20 +434,67 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
             continue;
         }
 
-        if (selectQuery.next()) {
-            continue; // Already exists
+        if (!selectQuery.next()) {
+            newEntries.append(levels);
         }
+    }
+
+    if (newEntries.isEmpty()) {
+        QMessageBox::information(nullptr,
+                tr("Import Genres"),
+                tr("No new genres found to import."));
+        return;
+    }
+
+    QMessageBox::StandardButton proceed = QMessageBox::question(nullptr,
+            tr("Import Genres from CSV"),
+            tr("CSV contains %1 genre rows.\n%2 of them are new and will be "
+               "added.\n\nProceed with import?")
+                    .arg(totalLines)
+                    .arg(newEntries.size()),
+            QMessageBox::Yes | QMessageBox::Cancel);
+
+    if (proceed != QMessageBox::Yes) {
+        return;
+    }
+
+    QSqlQuery insertQuery(m_database);
+    insertQuery.prepare(
+            "INSERT INTO genres (name_level_1, name_level_2, name_level_3, "
+            "name_level_4, name_level_5, name, is_visible, is_model_defined) "
+            "VALUES (:lvl1, :lvl2, :lvl3, :lvl4, :lvl5, :name, 1, 1)");
+
+    if (!m_database.transaction()) {
+        qWarning() << "[GenreTableModel] Failed to start transaction:"
+                   << m_database.lastError().text();
+        return;
+    }
+
+    for (const QStringList& levels : std::as_const(newEntries)) {
+        nonEmpty.clear();
+        for (const QString& level : std::as_const(levels)) {
+            if (!level.isEmpty()) {
+                nonEmpty << level;
+            }
+        }
+
+        const QString name = nonEmpty.join("//");
+        const QString& lvl1 = levels[0];
+        const QString& lvl2 = levels[1];
+        const QString& lvl3 = levels[2];
+        const QString& lvl4 = levels[3];
+        const QString& lvl5 = levels[4];
 
         insertQuery.bindValue(":lvl1", lvl1);
         insertQuery.bindValue(":lvl2", lvl2.isEmpty() ? QVariant() : QVariant(lvl2));
         insertQuery.bindValue(":lvl3", lvl3.isEmpty() ? QVariant() : QVariant(lvl3));
         insertQuery.bindValue(":lvl4", lvl4.isEmpty() ? QVariant() : QVariant(lvl4));
         insertQuery.bindValue(":lvl5", lvl5.isEmpty() ? QVariant() : QVariant(lvl5));
-        insertQuery.bindValue(":name", Name);
+        insertQuery.bindValue(":name", name);
 
         if (!insertQuery.exec()) {
-            qWarning() << "[GenreTableModel] Insert failed at line" << lineNumber
-                       << ":" << insertQuery.lastError().text();
+            qWarning() << "[GenreTableModel] Insert failed:"
+                       << insertQuery.lastError().text();
             continue;
         }
 
@@ -422,10 +503,15 @@ int GenreTableModel::importFromCsv(const QString& csvFileName) {
 
     if (!m_database.commit()) {
         qWarning() << "[GenreTableModel] Commit failed:" << m_database.lastError().text();
-        return insertedCount;
+        QMessageBox::information(nullptr,
+                tr("Import Failed"),
+                tr("Import failed, no changes were made."));
+        return;
     }
 
-    return insertedCount;
+    QMessageBox::information(nullptr,
+            tr("Import Complete"),
+            tr("Imported %1 new genres from CSV.").arg(insertedCount));
 }
 
 void GenreTableModel::rebuildGenreNames() {
@@ -1357,6 +1443,8 @@ void GenreTableModel::EditOrphanTrackGenres() {
                 newGenre.setVisible(true);
                 newGenre.setModelDefined(false);
                 newGenre.setDisplayOrder(0);
+                newGenre.setCount(0);
+                newGenre.setShow(0);
 
                 GenreId newId;
                 if (genreDao.insertGenre(newGenre, &newId)) {
@@ -1501,4 +1589,374 @@ void GenreTableModel::EditOrphanTrackGenres() {
     dialog.exec();
 
     emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
+}
+
+void GenreTableModel::exportGenresToCsv() {
+    const QString defaultFilename = QDate::currentDate().toString("yyyyMMdd") + " - Genres.csv";
+    const QString fileName = QFileDialog::getSaveFileName(
+            nullptr,
+            tr("Export Genres to CSV"),
+            QDir::homePath() + "/" + defaultFilename,
+            tr("CSV Files (*.csv)"));
+
+    if (fileName.isEmpty()) {
+        qDebug() << "[GenreTableModel] Export cancelled by user";
+        return;
+    }
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "[GenreTableModel] Could not open file for writing:" << file.errorString();
+        return;
+    }
+
+    QTextStream out(&file);
+    QStringList row;
+
+    // headers
+    out << "id,name,name_level_1,name_level_2,name_level_3,"
+           "name_level_4,name_level_5,display_group,display_order,"
+           "is_visible,is_model_defined,count,show,locked,autodj_source\n";
+
+    QSqlQuery query(m_database);
+    if (!query.exec("SELECT id, name, name_level_1, name_level_2, name_level_3, "
+                    "name_level_4, name_level_5, display_group, display_order, "
+                    "is_visible, is_model_defined, count, show, locked, autodj_source "
+                    "FROM genres")) {
+        qWarning() << "[GenreTableModel] Failed to query genres table:" << query.lastError().text();
+        return;
+    }
+
+    while (query.next()) {
+        row.clear();
+        for (int i = 0; i < query.record().count(); ++i) {
+            QString value = query.value(i).toString().replace('"', "\"\"");
+            if (value.contains(',') || value.contains('"') || value.contains('\n')) {
+                value = "\"" + value + "\"";
+            }
+            row << value;
+        }
+        out << row.join(",") << "\n";
+    }
+
+    file.close();
+    qDebug() << "[GenreTableModel] Exported genres to:" << fileName;
+
+    QMessageBox::information(nullptr,
+            tr("Export Complete"),
+            tr("Genres have been successfully exported to:\n%1").arg(fileName));
+}
+
+// void GenreTableModel::importGenresFromCsv() {
+//     const QString filePath = QFileDialog::getOpenFileName(
+//             nullptr,
+//             tr("Import Genres from CSV"),
+//             QDir::homePath(),
+//             tr("CSV Files (*.csv);;All Files (*)"));
+//
+//     if (filePath.isEmpty()) {
+//         return;
+//     }
+//
+//     QFile file(filePath);
+//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+//         QMessageBox::warning(nullptr, tr("Import Failed"), tr("Could not open
+//         file for reading.")); return;
+//     }
+//
+//     QTextStream in(&file);
+//     in.setEncoding(QStringConverter::Utf8);
+//
+//     QList<QVariantList> rows;
+//     bool firstLine = true;
+//     while (!in.atEnd()) {
+//         const QString line = in.readLine();
+//         if (line.trimmed().isEmpty()) {
+//             continue;
+//         }
+//
+//         const QStringList columns = line.split(',');
+//
+//         if (columns.size() < 15) {
+//             continue; // Skip malformed rows
+//         }
+//
+//         // Skip header row if detected
+//         if (firstLine) {
+//             QString headerCandidate = columns.join("").toLower();
+//             if (headerCandidate.contains("name") ||
+//             headerCandidate.contains("id")) {
+//                 firstLine = false;
+//                 continue;
+//             }
+//         }
+//         firstLine = false;
+//
+//         QVariantList values;
+//         for (const QString& column : columns) {
+//             values.append(column.trimmed());
+//         }
+//         rows.append(values);
+//     }
+//     file.close();
+//
+//     const int numRecords = rows.size();
+//     QSqlQuery query(m_database);
+//     int importedCount = 0;
+//     QSet<QString> existingNames;
+//
+//     if (numRecords == 0) {
+//         QMessageBox::information(nullptr, tr("No Records"), tr("The CSV file
+//         does not contain any valid genre records.")); return;
+//     }
+//
+//     QMessageBox::StandardButton reply = QMessageBox::question(
+//             nullptr,
+//             tr("Import Genres"),
+//             tr("Found %1 records in the CSV file.\n\n"
+//                "Do you want to delete all existing genres before import?\n\n"
+//                "Press Yes to delete existing genres.\n"
+//                "Press No to only add new genres that do not exist yet.")
+//                     .arg(numRecords),
+//             QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+//
+//     if (reply == QMessageBox::Cancel) {
+//         return;
+//     }
+//
+//     if (reply == QMessageBox::Yes) {
+//         //QSqlQuery deleteQuery(m_database);
+//         //deleteQuery.prepare(QStringLiteral("DELETE FROM genres"));
+//         ////if (!deleteQuery.exec(QStringLiteral("DELETE FROM genres"))) {
+//         //if (!deleteQuery.exec()) {
+//         //    qWarning() << "[GenreTableModel] Failed to delete existing
+//         genres:" << deleteQuery.lastError().text();
+//         //    QMessageBox::warning(nullptr, tr("Import Genres"), tr("Failed
+//         to delete existing genres from database."));
+//         //    qDebug() << "ImportCSV -> deleting existing genres failed";
+//         //    return;
+//         //} else {
+//         //    m_database.commit();
+//         //    qDebug() << "ImportCSV -> deleting existing genres Succeeded";
+//         //}
+//         //  Step 1: Load all genre IDs
+//         QSqlQuery selectQuery(m_database);
+//         if (!selectQuery.exec(QStringLiteral("SELECT id FROM genres"))) {
+//             qWarning() << "[GenreTableModel] Failed to query existing genre
+//             IDs:" << selectQuery.lastError().text();
+//             QMessageBox::warning(nullptr, tr("Import Genres"), tr("Failed to
+//             retrieve genre list from database.")); return;
+//         }
+//
+//         ///TrackCollection* trackCollection =
+//         TrackCollectionManager::internalCollection(); TrackCollection*
+//         pTrackCollection;
+//         //(TrackCollectionManager()->internalCollection()),
+//         if (!pTrackCollection) {
+//             qWarning() << "[GenreTableModel] TrackCollection not available.";
+//             return;
+//         }
+//
+//         QList<GenreId> genreIdsToDelete;
+//         while (selectQuery.next()) {
+//             //genreIdsToDelete.append(GenreId(selectQuery.value(0).toInt()));
+//             //genreIdsToDelete.append(GenreId::fromValue(selectQuery.value(0).toInt()));
+//             genreIdsToDelete.append(makeStrongTypedId<GenreTag>(selectQuery.value(0).toInt()));
+//
+//         }
+//
+//         // Step 2: Delete each genre using the official API
+//         int deletedCount = 0;
+//         for (const GenreId& genreId : genreIdsToDelete) {
+//             if (pTrackCollection->deleteGenre(genreId)) {
+//                 ++deletedCount;
+//             } else {
+//                 qWarning() << "[GenreTableModel] Failed to delete genre with
+//                 ID:" << genreId;
+//             }
+//         }
+//         qDebug() << "ImportCSV -> deleted genres:" << deletedCount;
+//
+//
+//
+//         existingNames.clear(); // Clear cached existing names since we wiped
+//         the table
+//     }
+//
+//     if (reply == QMessageBox::No) {
+//         query.exec("SELECT name FROM genres");
+//         while (query.next()) {
+//             existingNames.insert(query.value(0).toString().toLower());
+//         }
+//     }
+//
+//     //query.prepare(R"(
+//     //query.prepare("
+//     query.prepare(QStringLiteral(
+//         "INSERT INTO genres ("
+//         "name, name_level_1, name_level_2, name_level_3, name_level_4,
+//         name_level_5, " "display_group, display_order, is_visible,
+//         is_model_defined, count, show, " "locked, autodj_source) " "VALUES (
+//         "
+//         ":name, :l1, :l2, :l3, :l4, :l5, "
+//         ":group, :order, :visible, :model, :count, :show, :locked,
+//         :autodj)"));
+//
+//     for (const QVariantList& row : rows) {
+//         const QString name = row[1].toString().trimmed(); // name is at index
+//         1 if (name.isEmpty()) {
+//             continue;
+//         }
+//
+//         if (reply == QMessageBox::No &&
+//         existingNames.contains(name.toLower())) {
+//             continue;
+//         }
+//
+//         query.bindValue(":name", name);
+//         query.bindValue(":l1", row[2]);
+//         query.bindValue(":l2", row[3]);
+//         query.bindValue(":l3", row[4]);
+//         query.bindValue(":l4", row[5]);
+//         query.bindValue(":l5", row[6]);
+//         query.bindValue(":group", row[7]);
+//         query.bindValue(":order", row[8]);
+//         query.bindValue(":visible", row[9]);
+//         query.bindValue(":model", row[10]);
+//         query.bindValue(":count", row[11]);
+//         query.bindValue(":show", row[12]);
+//         query.bindValue(":locked", row[13]);
+//         query.bindValue(":autodj", row[14]);
+//
+//         if (query.exec()) {
+//             importedCount++;
+//         }
+//     }
+//
+//
+//     QMessageBox::information(
+//             nullptr,
+//             tr("Import Completed"),
+//             tr("Imported %1 genre(s) from the CSV
+//             file.").arg(importedCount));
+// }
+
+void GenreTableModel::importGenresFromCsv() {
+    QString filePath = QFileDialog::getOpenFileName(
+            nullptr,
+            tr("Import Genres from CSV"),
+            QDir::homePath(),
+            tr("CSV Files (*.csv)"));
+
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(nullptr, tr("Import Genres"), tr("Failed to open the selected file."));
+        return;
+    }
+
+    QTextStream in(&file);
+    in.setEncoding(QStringConverter::Utf8);
+
+    QStringList lines;
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (!line.isEmpty()) {
+            lines.append(line);
+        }
+    }
+    file.close();
+
+    if (lines.isEmpty()) {
+        QMessageBox::information(nullptr,
+                tr("Import Genres from CSV"),
+                tr("The CSV file is empty."));
+        return;
+    }
+
+    // Remove header if present
+    if (lines.first().contains("name", Qt::CaseInsensitive)) {
+        lines.removeFirst();
+    }
+
+    const int totalRecords = lines.size();
+
+    QSet<QString> existingNames;
+    QSqlQuery selectQuery(m_database);
+    if (!selectQuery.exec(QStringLiteral("SELECT name FROM genres"))) {
+        qWarning() << "[GenreTableModel] -> importGenresFromCsv -> Failed to "
+                      "query existing genres:"
+                   << selectQuery.lastError().text();
+        return;
+    }
+    while (selectQuery.next()) {
+        existingNames.insert(selectQuery.value(0).toString().trimmed().toLower());
+    }
+
+    QList<QStringList> rowsToInsert;
+    for (const QString& line : lines) {
+        const QStringList parts = line.split(",", Qt::KeepEmptyParts);
+        if (parts.isEmpty()) {
+            continue;
+        }
+        const QString name = parts.value(1).trimmed(); // Skip id
+        if (name.isEmpty()) {
+            continue;
+        }
+        if (!existingNames.contains(name.toLower())) {
+            rowsToInsert.append(parts);
+        }
+    }
+
+    const int newRecords = rowsToInsert.size();
+
+    if (newRecords == 0) {
+        QMessageBox::information(nullptr,
+                tr("Import Genres from CSV"),
+                tr("No new genres found to import."));
+        return;
+    }
+
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
+            tr("Import Genres from CSV"),
+            tr("CSV contains %1 genres.\n%2 of them are new and will be "
+               "added.\n\nProceed with import?")
+                    .arg(totalRecords)
+                    .arg(newRecords),
+            QMessageBox::Yes | QMessageBox::Cancel);
+
+    if (reply != QMessageBox::Yes) {
+        return;
+    }
+
+    QSqlQuery insertQuery(m_database);
+    insertQuery.prepare(QStringLiteral(
+            "INSERT INTO genres (name, name_level_1, name_level_2, "
+            "name_level_3, name_level_4, name_level_5, display_group, "
+            "display_order, is_visible, is_model_defined, count, "
+            "show, locked, autodj_source) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+
+    int insertedCount = 0;
+    for (const QStringList& parts : rowsToInsert) {
+        // Skip id column (index 0)
+        for (int i = 1; i < 15; ++i) {
+            insertQuery.bindValue(i - 1, parts.value(i).trimmed());
+        }
+        if (!insertQuery.exec()) {
+            qWarning() << "[GenreTableModel] -> importGenresFromCsv -> Failed "
+                          "to insert genre row:"
+                       << insertQuery.lastError().text();
+        } else {
+            ++insertedCount;
+        }
+    }
+
+    QMessageBox::information(
+            nullptr,
+            tr("Import Complete"),
+            tr("%1 new genres successfully imported.").arg(insertedCount));
 }

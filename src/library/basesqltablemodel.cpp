@@ -221,6 +221,7 @@ void BaseSqlTableModel::select() {
                 << "'' AS " + LIBRARYTABLE_PREVIEW
                 << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
 
+        // old based on genre_tracks
         QString queryStringTempView =
                 QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                         "SELECT %2 FROM %3 "
