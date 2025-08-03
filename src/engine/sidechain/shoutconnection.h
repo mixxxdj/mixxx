@@ -49,7 +49,6 @@ class ShoutConnection
     // gets stream length
     int filelen() override;
 
-    /** connects to server **/
     bool serverConnect();
     bool isConnected();
     void applySettings();
@@ -103,7 +102,7 @@ class ShoutConnection
 
     bool writeSingle(const unsigned char *data, size_t len);
 
-    QByteArray encodeString(const QString& string);
+    const QByteArray encodeString(const QString& string);
 
     bool waitForRetry();
 
@@ -111,7 +110,7 @@ class ShoutConnection
     void insertMetaData(const char *name, const char *value);
 
     QTextCodec* m_pTextCodec;
-    TrackPointer m_pMetaData;
+    TrackPointer m_pMetaDataTrack;
     shout_t *m_pShout;
     shout_metadata_t *m_pShoutMetaData;
     int m_iMetaDataLife;
@@ -128,8 +127,7 @@ class ShoutConnection
     QString m_customTitle;
     QString m_metadataFormat;
 
-    // when static metadata is used, we only need calling shout_set_metedata
-    // once
+    // if static metadata is used, we only need to call shout_set_metedata once
     bool m_firstCall;
 
     bool m_format_is_mp3;
