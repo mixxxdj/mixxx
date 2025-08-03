@@ -176,7 +176,7 @@ class TrackCollection : public QObject,
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
-    GenreDao m_genreDAO;
+    GenreDao m_genreDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
 

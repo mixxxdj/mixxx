@@ -23,7 +23,7 @@ TrackCollection::TrackCollection(
           m_trackDao(m_cueDao,
                   m_playlistDao,
                   m_analysisDao,
-                  m_genreDAO,
+                  m_genreDao,
                   m_libraryHashDao,
                   pConfig) {
     // Forward signals from TrackDAO
