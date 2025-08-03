@@ -350,8 +350,10 @@ void GenreTableModel::importModelFromCsv() {
     }
 
     QStringList lines;
+    QString line;
+
     while (!in.atEnd()) {
-        QString line = in.readLine().trimmed();
+        line = in.readLine().trimmed();
         if (!line.isEmpty()) {
             lines.append(line);
         }
@@ -370,18 +372,21 @@ void GenreTableModel::importModelFromCsv() {
             "COALESCE(name_level_5, '') = :lvl5");
 
     QList<QStringList> newEntries;
+    QStringList fields;
+    QStringList levels;
+    QStringList nonEmpty;
     int lineNumber = 1;
 
     for (const QString& line : std::as_const(lines)) {
         lineNumber++;
-
-        QStringList fields = line.split(',');
+        fields.clear();
+        fields = line.split(',');
         fields.reserve(5);
         while (fields.size() < 5) {
             fields.append("");
         }
 
-        QStringList levels;
+        levels.clear();
         levels.reserve(5);
         for (int i = 0; i < 5; ++i) {
             levels << fields[i].trimmed();
@@ -446,7 +451,7 @@ void GenreTableModel::importModelFromCsv() {
     }
 
     for (const QStringList& levels : std::as_const(newEntries)) {
-        QStringList nonEmpty;
+        nonEmpty.clear();
         for (const QString& level : levels) {
             if (!level.isEmpty()) {
                 nonEmpty << level;
@@ -1586,6 +1591,7 @@ void GenreTableModel::exportGenresToCsv() {
     }
 
     QTextStream out(&file);
+    QStringList row;
 
     // headers
     out << "id,name,name_level_1,name_level_2,name_level_3,"
@@ -1602,7 +1608,7 @@ void GenreTableModel::exportGenresToCsv() {
     }
 
     while (query.next()) {
-        QStringList row;
+        row.clear();
         for (int i = 0; i < query.record().count(); ++i) {
             QString value = query.value(i).toString().replace('"', "\"\"");
             if (value.contains(',') || value.contains('"') || value.contains('\n')) {
