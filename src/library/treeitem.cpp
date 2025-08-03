@@ -31,11 +31,11 @@ TreeItem::TreeItem(
         LibraryFeature* pFeature,
         QString label,
         QVariant data)
-    : m_pFeature(pFeature),
-      m_pParent(nullptr),
-      m_label(std::move(label)),
-      m_data(std::move(data)),
-      m_bold(false) {
+        : m_pFeature(pFeature),
+          m_pParent(nullptr),
+          m_label(std::move(label)),
+          m_data(std::move(data)),
+          m_bold(false) {
 }
 
 TreeItem::~TreeItem() {
@@ -109,4 +109,15 @@ void TreeItem::removeChildren(int row, int count) {
     DEBUG_ASSERT(row <= (m_children.size() - count));
     qDeleteAll(m_children.constBegin() + row, m_children.constBegin() + (row + count));
     constErase(&m_children, m_children.constBegin() + row, m_children.constBegin() + (row + count));
+}
+
+int TreeItem::getRow() const {
+    if (m_pParent) {
+        return m_pParent->m_children.indexOf(const_cast<TreeItem*>(this));
+    }
+    return kInvalidRow; // If this is a root item or parent is missing
+}
+
+int TreeItem::childCount() const {
+    return m_children.size();
 }
