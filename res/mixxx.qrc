@@ -10,6 +10,13 @@
         <file>images/library/ic_library_locked_tracklist.svg</file>
         <file>images/library/cover_default.svg</file>
       <!-- icons for library side bar -->
+        <file>images/library/ic_heart_beige.svg</file>
+        <file>images/library/ic_heart_beige_crossed.svg</file>
+        <file>images/library/ic_heart_disabled.svg</file>
+        <file>images/library/ic_heart_cyan.svg</file>
+        <file>images/library/ic_heart_cyan_xxl.svg</file>
+        <!-- same icon with black blur -->
+        <file>images/library/ic_heart_cyan_xxl.png</file>
         <file>images/library/ic_library_autodj.svg</file>
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->

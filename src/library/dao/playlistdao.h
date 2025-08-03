@@ -66,6 +66,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Get all playlist ids and names of a specific type
     QList<QPair<int, QString>> getPlaylists(const HiddenType hidden) const;
     QList<QPair<int, QString>> getUnlockedPlaylists(const HiddenType hidden) const;
+    // Get all playlist ids of a specific type
+    QSet<int> getPlaylistIds(const HiddenType hidden) const;
     // Find out the name of the playlist at the given Id
     QString getPlaylistName(const int playlistId) const;
     // Get the playlist id by its name
@@ -119,6 +121,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
+    int togglePrepPlaylist(int playlistId);
+    int getPrepPlaylistId() {
+        return m_prepPlaylistId;
+    }
+    bool appendTrackToPrepPlaylist(TrackId id);
+
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 
   signals:
@@ -151,5 +159,6 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     AutoDJProcessor* m_pAutoDJProcessor;
+    int m_prepPlaylistId;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
