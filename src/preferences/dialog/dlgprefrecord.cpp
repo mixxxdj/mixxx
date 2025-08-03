@@ -3,12 +3,14 @@
 #include <QFileDialog>
 #include <QRadioButton>
 #include <QStandardPaths>
+#include <QtGlobal>
 
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
 #include "moc_dlgprefrecord.cpp"
 #include "recording/defs_recording.h"
 #include "util/sandbox.h"
+#include "util/sandboxios.h"
 
 namespace {
 constexpr bool kDefaultCueEnabled = true;
@@ -30,6 +32,19 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         QDir recordDir(musicDir + "/Mixxx/Recordings");
         recordingsPath = recordDir.absolutePath();
         m_pConfig->setValue(ConfigKey(RECORDING_PREF_KEY, "Directory"), recordingsPath);
+    } else {
+#ifdef Q_OS_IOS
+        // On iOS the sandbox prefix may have changed, so we may need to update
+        // the recordings path.
+        QString newPath = mixxx::updateIOSSandboxPath(recordingsPath);
+        if (newPath != recordingsPath) {
+            qInfo() << "Updating recordings directory since iOS sandbox has "
+                       "moved:"
+                    << recordingsPath << "->" << newPath;
+            recordingsPath = newPath;
+            m_pConfig->setValue(ConfigKey(RECORDING_PREF_KEY, "Directory"), recordingsPath);
+        }
+#endif
     }
     LineEditRecordings->setText(recordingsPath);
     connect(PushButtonBrowseRecordings,
