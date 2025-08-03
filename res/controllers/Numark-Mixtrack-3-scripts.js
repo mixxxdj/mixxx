@@ -188,6 +188,13 @@ var PADcolors = {
     "purple": 127
 };
 
+// Two modes for the library controls
+const libraryModes = {
+    focus: 0,
+    classic: 1,
+};
+const LibraryMode = libraryModes[engine.getSetting("libraryMode")] || libraryModes.focus;
+
 // Utilities
 // =====================================================================
 
@@ -1078,24 +1085,34 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
 };
 
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
-    var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.
-        D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
+    const shifted = (
+	NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey || 
+	NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
+    );
 
     if (value === ON) {
-	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
-	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Skin]", "show_maximized_library");
-	        }
-	    }
+        if (engine.getSetting("libraryMode") === "focus") {
+            if (shifted) {
+                // SHIFT + BROWSE push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            } else {
+                // Browse push : expand sidebar item or load track when in track table
+                engine.setValue("[Library]", "GoToItem", true);
+            }
+        } else { // Classic mode
+            if (shifted) {
+                // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+                engine.setValue("[Library]", "GoToItem", true);
+            } else {
+                // Browse push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            }
+        }
     }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    var shifted = (
+    const shifted = (
         NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
         NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
     );
@@ -1103,11 +1120,20 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
     var nval = (value > 0x40 ? value - 0x80 : value);
 
-    // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
-    if (shifted) {
-        engine.setValue("[Playlist]", "SelectPlaylist", nval);
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+    if (LibraryMode === libraryModes.focus) {
+        // SHIFT+Turn BROWSE Knob : change focus between search, track table, and sidebar
+        if (shifted) {
+            engine.setValue("[Library]", "MoveFocus", nval);
+        } else {
+            engine.setValue("[Library]", "MoveVertical", nval);
+        }
+    } else { // Classic mode
+        // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
+        if (shifted) {
+            engine.setValue("[Playlist]", "SelectPlaylist", nval);
+        } else {
+            engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+        }
     }
 };
 
