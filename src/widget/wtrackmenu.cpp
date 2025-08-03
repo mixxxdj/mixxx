@@ -45,7 +45,7 @@
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
-#include "widget/wfindonwebmenu.h
+#include "widget/wfindonwebmenu.h"
 #include "widget/wgenretaginput.h"
 #include "widget/wmenucheckbox.h"
 #include "widget/wsearchrelatedtracksmenu.h"

@@ -1,5 +1,6 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QRegularExpression>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -210,14 +211,6 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
-    /*connect(txtGenre,
-            &QLineEdit::editingFinished,
-            this,
-            [this]() {
-                txtGenre->setText(txtGenre->text().trimmed());
-                m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text());
-            });*/
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -412,17 +405,15 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    /*txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(*/
     if (m_pGenreWidget) {
         QString genreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
         QStringList genres;
         if (!genreString.isEmpty()) {
-             genres = genreString.split(QRegularExpression("[;,]"), 
+            static const QRegularExpression genreSplitRegex("[;,]");
+            genres = genreString.split(genreSplitRegex, Qt::SkipEmptyParts);
             for (QString& genre : genres) {
                 genre = genre.trimmed();
-             }
+            }
         }
         qDebug() << "DlgTrackInfo::updateTrackMetadataFields - loading genres:" << genres;
         m_pGenreWidget->setGenres(genres);
@@ -432,41 +423,42 @@ void DlgTrackInfo::updateTrackMetadataFields() {
         txtGenre->setText(m_trackRecord.getMetadata().getTrackInfo().getGenre());
         txtGenre->setVisible(false);
     }
+    txtComposer->setText(
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
-            txtGrouping->setText(
-                    m_trackRecord.getMetadata().getTrackInfo().getGrouping());
-            txtYear->setText(
-                    m_trackRecord.getMetadata().getTrackInfo().getYear());
-            txtTrackNumber->setText(
-                    m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
-            txtComment->setPlainText(
-                    m_trackRecord.getMetadata().getTrackInfo().getComment());
-            txtBpm->setText(
-                    m_trackRecord.getMetadata().getTrackInfo().getBpmText());
-            displayKeyText();
+    txtGrouping->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
+    txtYear->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getYear());
+    txtTrackNumber->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
+    txtComment->setPlainText(
+            m_trackRecord.getMetadata().getTrackInfo().getComment());
+    txtBpm->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+    displayKeyText();
 
-            // Non-editable fields
-            txtDuration->setText(m_trackRecord.getMetadata().getDurationText(
-                    mixxx::Duration::Precision::SECONDS));
-            QString bitrate = m_trackRecord.getMetadata().getBitrateText();
-            if (bitrate.isEmpty()) {
-                txtBitrate->clear();
-            } else {
-                txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
-            }
-            txtReplayGain->setText(
-                    mixxx::ReplayGain::ratioToString(
-                            m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+    // Non-editable fields
+    txtDuration->setText(m_trackRecord.getMetadata().getDurationText(
+            mixxx::Duration::Precision::SECONDS));
+    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+    if (bitrate.isEmpty()) {
+        txtBitrate->clear();
+    } else {
+        txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
+    }
+    txtReplayGain->setText(
+            mixxx::ReplayGain::ratioToString(
+                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
 
-            auto samplerate = m_trackRecord.getMetadata()
-                                      .getStreamInfo()
-                                      .getSignalInfo()
-                                      .getSampleRate();
-            if (samplerate.isValid()) {
-                txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
-            } else {
-                txtSamplerate->clear();
-            }
+    auto samplerate = m_trackRecord.getMetadata()
+                              .getStreamInfo()
+                              .getSignalInfo()
+                              .getSampleRate();
+    if (samplerate.isValid()) {
+        txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
+    } else {
+        txtSamplerate->clear();
+    }
 }
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
@@ -660,8 +652,10 @@ void DlgTrackInfo::saveTrack() {
     updateKeyText();
 
     if (m_pTrackCollection) {
-        QStringList dbGenresBefore = m_pTrackCollection->getGenreDao().getGenresForTrack(
-                m_pLoadedTrack->getId());
+        QStringList dbGenresBefore =
+                m_pTrackCollection->getGenreDao().getGenresForTrack(
+                        m_pLoadedTrack->getId());
+        qDebug() << "Genres before save:" << dbGenresBefore;
     }
 
     // Update the cached track
@@ -674,8 +668,10 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->replaceRecord(m_trackRecord, m_pBeatsClone);
 
     if (m_pTrackCollection) {
-        QStringList dbGenresAfter = m_pTrackCollection->getGenreDao().getGenresForTrack(
-                m_pLoadedTrack->getId());
+        QStringList dbGenresAfter =
+                m_pTrackCollection->getGenreDao().getGenresForTrack(
+                        m_pLoadedTrack->getId());
+        qDebug() << "Genres before save:" << dbGenresAfter;
     }
 }
 
@@ -948,7 +944,7 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     coverWidget->setFixedHeight(totalHeight);
 }
 
-id DlgTrackInfo::setupGenreWidget() {
+void DlgTrackInfo::setupGenreWidget() {
     // Create the genre widget and replace the txtGenre QLineEdit with it.
     // This allows to use a custom widget for genre input while keeping the
     // existing layout intact.
