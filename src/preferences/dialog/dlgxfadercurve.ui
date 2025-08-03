@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgXfaderCurve</class>
+ <widget class="QDialog" name="DlgXfaderCurve">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>100</width>
+    <height>80</height>
+   </size>
+  </property>
+  <!-- <layout class="QVBoxLayout" name="verticalLayout"> -->
+  <layout class="QGridLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+
+    <item row="0" column="0">
+     <widget class="QGraphicsView" name="graphicsViewXfader">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="fixedSize">
+       <size>
+        <width>123</width>
+        <height>83</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+
+    <item row="0" column="0">
+     <widget class="QWidget" name="mouseCatcher">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="fixedSize">
+       <size>
+        <width>123</width>
+        <height>83</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
