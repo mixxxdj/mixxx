@@ -210,6 +210,45 @@ void BaseSqlTableModel::select() {
     PerformanceTimer time;
     time.start();
 
+    if (m_tableName.startsWith("groupedplaylists_")) {
+        // EVE drop view and rebuild it for Grouped Playlists
+        if (sDebug) {
+            qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [GroupedPlaylists]"
+                     << "Drop temp table "
+                     << m_tableName;
+        }
+        QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
+        FwdSqlQuery(m_database, queryStringDropView).execPrepared();
+        if (sDebug) {
+            qDebug() << "[BASESQLTABLEMODEL] [SELECT] -> [GroupedPlaylists] REBUILD TEMP";
+        }
+        QStringList columns;
+        QString playlistId = m_tableName;
+        playlistId = playlistId.replace("groupedplaylists_", "");
+
+        columns << PLAYLISTTRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
+                << PLAYLISTTRACKSTABLE_POSITION
+                << PLAYLISTTRACKSTABLE_DATETIMEADDED
+                << "'' AS " + LIBRARYTABLE_PREVIEW
+                << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+        FieldEscaper escaper(m_database);
+        QString queryStringTempView = QString(
+                "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                "SELECT %2 FROM PlaylistTracks "
+                "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+                "WHERE PlaylistTracks.playlist_id = %3")
+                                              .arg(escaper.escapeString(m_tableName),
+                                                      columns.join(","),
+                                                      playlistId);
+        if (sDebug) {
+            qDebug() << "[BASESQLTABLEMODEL] [SELECT]"
+                     << "-> [GroupedPlaylists] Rebuild temp view "
+                     << "-> queryStringTempView "
+                     << queryStringTempView;
+        }
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    }
+
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
                                   .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
@@ -348,9 +387,10 @@ void BaseSqlTableModel::select() {
             std::move(trackPosToRows));
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
-
-    qDebug() << this << "select() returned" << m_rowInfo.size()
-             << "results in" << time.elapsed().debugMillisWithUnit();
+    if (sDebug) {
+        qDebug() << this << "select() returned" << m_rowInfo.size()
+                 << "results in" << time.elapsed().debugMillisWithUnit();
+    }
 }
 
 void BaseSqlTableModel::setTable(QString tableName,
@@ -565,7 +605,9 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_trackSourceOrderBy.append(first ? "ORDER BY " : ", ");
             m_trackSourceOrderBy.append(sort_field);
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ? " ASC" : " DESC");
-            //qDebug() << m_trackSourceOrderBy;
+            if (sDebug) {
+                // qDebug() << m_trackSourceOrderBy;
+            }
             first = false;
         }
     }
@@ -581,7 +623,9 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
     int count = parent.isValid() ? 0 : m_rowInfo.size();
-    //qDebug() << "rowCount()" << parent << count;
+    if (sDebug) {
+        // qDebug() << "rowCount()" << parent << count;
+    }
     return count;
 }
 
@@ -690,9 +734,11 @@ QVariant BaseSqlTableModel::rawValue(
         // the case that a track is not in the cache, we attempt to load it
         // on the fly. This will be a steep penalty to pay if there are tons
         // of these tracks in the table that are not cached.
-        qDebug() << __FILE__ << __LINE__
-                    << "Track" << trackId
-                    << "was not present in cache and had to be manually fetched.";
+        if (sDebug) {
+            qDebug() << __FILE__ << __LINE__
+                     << "Track" << trackId
+                     << "was not present in cache and had to be manually fetched.";
+        }
         m_trackSource->ensureCached(trackId);
     }
     return m_trackSource->data(trackId, trackSourceColumn);
@@ -830,7 +876,10 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
-            //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
+            if (sDebug) {
+                // qDebug() << "Row in this result set was updated. Signalling
+                // update. track:" << trackId << "row:" << row;
+            }
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);
             emit dataChanged(topLeft, bottomRight);
