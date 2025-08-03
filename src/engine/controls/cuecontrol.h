@@ -95,6 +95,8 @@ class HotcueControl : public QObject {
     void setStatus(HotcueControl::Status status);
     HotcueControl::Status getStatus() const;
 
+    void setIndicator(double on);
+
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
@@ -166,6 +168,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlObject> m_hotcuePosition;
     std::unique_ptr<ControlObject> m_hotcueEndPosition;
     std::unique_ptr<ControlObject> m_pHotcueStatus;
+    std::unique_ptr<ControlObject> m_pHotcueIndicator;
     std::unique_ptr<ControlObject> m_hotcueType;
     std::unique_ptr<ControlObject> m_hotcueColor;
     // Hotcue button controls
@@ -196,6 +199,7 @@ class CueControl : public EngineControl {
     ~CueControl() override;
 
     void hintReader(gsl::not_null<HintVector*> pHintList) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtIntroCue();
@@ -205,6 +209,9 @@ class CueControl : public EngineControl {
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
+    void notifyWrapAround(mixxx::audio::FramePos triggerPos,
+            mixxx::audio::FramePos targetPos);
 
   signals:
     void loopRemove();
@@ -371,6 +378,13 @@ class CueControl : public EngineControl {
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
+
+    // Position used to update hotcue indicators in updateIndicators()
+    ControlValueAtomic<mixxx::audio::FramePos> m_prevPosition;
+
+    int m_wrapAroundCount;
+    mixxx::audio::FramePos m_jumpPos;
+    mixxx::audio::FramePos m_targetPos;
 
     // Must be locked when using the m_pLoadedTrack and it's properties
     QT_RECURSIVE_MUTEX m_trackMutex;
