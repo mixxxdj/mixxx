@@ -26,7 +26,7 @@ class GenreTableModel final : public TrackSetTableModel {
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;
-    int importFromCsv(const QString& csvFileName);
+    void importModelFromCsv();
     void rebuildGenreNames();
     // void editGenre(const Genre& genre);
     void editGenre(GenreId genreId);
@@ -34,6 +34,8 @@ class GenreTableModel final : public TrackSetTableModel {
     void setGenreInvisible(const GenreId& genreId);
     void EditGenresMulti();
     void EditOrphanTrackGenres();
+    void exportGenresToCsv();
+    void importGenresFromCsv();
 
   private:
     GenreId m_selectedGenre;

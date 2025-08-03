@@ -82,6 +82,8 @@ class GenreFeature : public BaseTrackSetFeature {
     void slotMakeGenreInVisible();
     void slotSetAllGenresVisible();
     void slotEditOrphanTrackGenres();
+    void slotExportGenresToCsv();
+    void slotImportGenresFromCsv();
 
   private:
     void initActions();
@@ -128,6 +130,8 @@ class GenreFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pSetAllGenresVisibleAction;
     parented_ptr<QAction> m_pMakeGenreInVisible;
     parented_ptr<QAction> m_pEditOrphanGenresAction;
+    parented_ptr<QAction> m_pExportGenresToCsv;
+    parented_ptr<QAction> m_pImportGenresFromCsv;
     parented_ptr<QAction> m_pCreateGenreAction;
     parented_ptr<QAction> m_pDeleteGenreAction;
     parented_ptr<QAction> m_pRenameGenreAction;
