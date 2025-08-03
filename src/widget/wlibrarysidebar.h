@@ -30,7 +30,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
   public slots:
-    void selectIndex(const QModelIndex&);
+    void selectIndex(const QModelIndex& index, bool scrollToIndex = true);
     void selectChildIndex(const QModelIndex&, bool selectItem = true);
     void slotSetFont(const QFont& font);
 
