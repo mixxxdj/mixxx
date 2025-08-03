@@ -654,7 +654,8 @@ QVariant BaseTrackTableModel::roleValue(
             return QString::number(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
-        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED: {
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
@@ -869,6 +870,7 @@ QVariant BaseTrackTableModel::roleValue(
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignHCenter);
         }
