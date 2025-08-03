@@ -402,6 +402,27 @@ void GenreTableModel::importModelFromCsv() {
             continue;
         }
 
+        nonEmpty.clear();
+        for (const QString& level : levels) {
+            if (!level.isEmpty()) {
+                nonEmpty << level;
+            }
+        }
+        const QString name = nonEmpty.join("//");
+
+        QSqlQuery nameCheckQuery(m_database);
+        nameCheckQuery.prepare("SELECT id FROM genres WHERE name = :name");
+        nameCheckQuery.bindValue(":name", name);
+        if (!nameCheckQuery.exec()) {
+            qWarning() << "[GenreTableModel] Name check failed at line" << lineNumber
+                       << ":" << nameCheckQuery.lastError().text();
+            continue;
+        }
+        if (nameCheckQuery.next()) {
+            continue;
+        }
+
+        // check if this exact level combination already exists or was added with the csv import
         selectQuery.bindValue(":lvl1", lvl1);
         selectQuery.bindValue(":lvl2", lvl2);
         selectQuery.bindValue(":lvl3", lvl3);
