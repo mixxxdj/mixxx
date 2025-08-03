@@ -1647,7 +1647,6 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
 
     parented_ptr<QMenu> pResetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
-    QString stemPrefix;
     if (addReset) {
         QString resetMenuTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
         pResetControlMenu = make_parented<QMenu>(resetMenuTitle, pMenu);
@@ -1665,7 +1664,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                 pControlMenu,
                 prefix,
                 prefix);
-
+#ifdef __STEM__
         if (deckStemControls) {
             QMenu* pStemsControlMenu = addSubmenu(tr("Deck %1 Stems").arg(i), pControlMenu);
             for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
@@ -1681,7 +1680,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                         stemPrefix);
             }
         }
-
+#endif
         if (pResetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
@@ -1692,7 +1691,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                     pResetControlMenu,
                     prefix,
                     prefix);
-
+#ifdef __STEM__
             if (deckStemControls) {
                 QMenu* pStemsControlMenu = addSubmenu(
                         tr("Deck %1 Stems").arg(i), pResetControlMenu);
@@ -1709,6 +1708,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                             stemPrefix);
                 }
             }
+#endif
         }
     }
 
