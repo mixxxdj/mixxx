@@ -13,7 +13,7 @@ const QString kModelName = "hidden:";
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
+        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.hidden") {
     setTableModel();
 }
 
