@@ -1004,6 +1004,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 pQuickEffectMenu,
                 false,
                 tr("Quick Effect"));
+#ifdef __STEM__
         pQuickEffectMenu->addSeparator();
         // Stem Quick Effects
         for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
@@ -1028,6 +1029,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     false,
                     tr("Quick Effect"));
         }
+#endif
     }
 
     pEffectsMenu->addSeparator();
