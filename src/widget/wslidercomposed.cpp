@@ -14,6 +14,7 @@
 
 WSliderComposed::WSliderComposed(QWidget* parent)
         : WWidget(parent),
+          m_highlight(0),
           m_dHandleLength(0.0),
           m_dSliderLength(0.0),
           m_bHorizontal(false),
@@ -389,4 +390,18 @@ double WSliderComposed::calculateHandleLength() {
 
 void WSliderComposed::inputActivity() {
     update();
+}
+
+int WSliderComposed::getHighlight() const {
+    return m_highlight;
+}
+
+void WSliderComposed::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
+    m_highlight = highlight;
+    style()->polish(this);
+    update();
+    emit highlightChanged(m_highlight);
 }
