@@ -126,16 +126,16 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
-    parented_ptr<WStarRating> m_pWStarRating;
-    bool m_starRatingModified;
-    int m_newRating;
-    bool m_colorChanged;
 
     // Multi-genre widget
     parented_ptr<WGenreTagInput> m_pGenreWidget;
     TrackCollection* m_pTrackCollection;
     bool m_genreAddMode;
 
+    parented_ptr<WStarRating> m_pWStarRating;
+    bool m_starRatingModified;
+    int m_newRating;
+    bool m_colorChanged;
     mixxx::RgbColor::optional_t m_newColor;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 };
