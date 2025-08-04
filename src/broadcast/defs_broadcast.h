@@ -33,3 +33,41 @@
 // the workers are then performed on thread-safe QSharedPointers and not
 // onto the thread-unsafe QVector
 #define BROADCAST_MAX_CONNECTIONS 16
+
+// Available samplerates
+#include "audio/types.h"
+inline const QList<mixxx::audio::SampleRate> kBroadcastSampleRates = {
+        mixxx::audio::SampleRate(8000),
+        mixxx::audio::SampleRate(11025),
+        mixxx::audio::SampleRate(22050),
+        mixxx::audio::SampleRate(32000),
+        mixxx::audio::SampleRate(44100),
+        mixxx::audio::SampleRate(48000),
+        mixxx::audio::SampleRate(96000)};
+
+inline const QList<mixxx::audio::SampleRate> kBroadcastSampleRatesOpus = {
+        mixxx::audio::SampleRate(8000),
+        mixxx::audio::SampleRate(12000),
+        mixxx::audio::SampleRate(16000),
+        mixxx::audio::SampleRate(24000),
+        mixxx::audio::SampleRate(48000)};
+
+// https://github.com/gypified/libmp3lame/blob/master/USAGE
+inline const QList<mixxx::audio::SampleRate> kBroadcastSampleRatesMP3 = {
+        mixxx::audio::SampleRate(8000),
+        mixxx::audio::SampleRate(11025),
+        mixxx::audio::SampleRate(12000),
+        mixxx::audio::SampleRate(16000),
+        mixxx::audio::SampleRate(22050),
+        mixxx::audio::SampleRate(24000),
+        mixxx::audio::SampleRate(32000),
+        mixxx::audio::SampleRate(44100),
+        mixxx::audio::SampleRate(48000)};
+
+inline const QList<mixxx::audio::SampleRate> kBroadcastSampleRatesOGG = {
+        mixxx::audio::SampleRate(8000),
+        mixxx::audio::SampleRate(11025),
+        mixxx::audio::SampleRate(22050),
+        mixxx::audio::SampleRate(32000),
+        mixxx::audio::SampleRate(44100),
+        mixxx::audio::SampleRate(48000)};

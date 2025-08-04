@@ -87,6 +87,9 @@ class BroadcastProfile : public QObject {
     int getChannels() const;
     void setChannels(int value);
 
+    double getSampleRate() const;
+    void setSampleRate(double value);
+
     QString getMountpoint() const;
     void setMountPoint(const QString& value);
 
@@ -183,6 +186,7 @@ class BroadcastProfile : public QObject {
     QString m_format;
     int m_bitrate;
     int m_channels;
+    double m_sampleRate;
 
     bool m_enableMetadata;
     QString m_metadataCharset;

@@ -54,6 +54,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_pConfig(pConfig),
           m_pProfile(profile),
           m_encoder(nullptr),
+          m_broadcastSampleRate(m_pProfile->getSampleRate()),
           m_mainSamplerate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_broadcastEnabled(BROADCAST_PREF_KEY, "enabled"),
           m_custom_metadata(false),
@@ -75,6 +76,10 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_maximumRetries(10) {
     setStatus(BroadcastProfile::STATUS_UNCONNECTED);
     setState(NETWORKSTREAMWORKER_STATE_INIT);
+
+    qDebug() << "Broadcast samplerate for profile "
+             << m_pProfile->getProfileName()
+             << " is: " << m_broadcastSampleRate;
 
     // shout_init() should've already been called by now
     if (!(m_pShout = shout_new())) {
@@ -392,30 +397,31 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    auto mainSamplerate = mixxx::audio::SampleRate::fromDouble(m_mainSamplerate.get());
-    VERIFY_OR_DEBUG_ASSERT(mainSamplerate.isValid()) {
-        qWarning() << "Invalid sample rate!" << mainSamplerate;
+    // auto mainSamplerate = mixxx::audio::SampleRate::fromDouble(m_mainSamplerate.get());
+    auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_broadcastSampleRate);
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
+        qWarning() << "Invalid sample rate!" << sampleRate;
         return;
     }
 
-    if (m_format_is_ov && mainSamplerate == 96000) {
-        errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
-                       "supported. Please try a different sample rate or switch "
-                       "to a different encoding."),
-                    tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
-                       "information."));
-        return;
-    }
+    // if (m_format_is_ov && mainSamplerate == 96000) {
+    //     errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
+    //                    "supported. Please try a different sample rate or switch "
+    //                    "to a different encoding."),
+    //                 tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
+    //                    "information."));
+    //     return;
+    // }
 
-#ifdef __OPUS__
-    if (m_format_is_opus && mainSamplerate != EncoderOpus::getMainSampleRate()) {
-        errorDialog(
-            EncoderOpus::getInvalidSamplerateMessage(),
-            tr("Unsupported sample rate")
-        );
-        return;
-    }
-#endif
+    // #ifdef __OPUS__
+    //     if (m_format_is_opus && mainSamplerate != EncoderOpus::getMainSampleRate()) {
+    //         errorDialog(
+    //             EncoderOpus::getInvalidSamplerateMessage(),
+    //             tr("Unsupported sample rate")
+    //         );
+    //         return;
+    //     }
+    // #endif
 
     if (shout_set_audio_info(
             m_pShout, SHOUT_AI_BITRATE,
@@ -459,7 +465,8 @@ void ShoutConnection::updateFromPreferences() {
     QString userErrorMsg;
     int ret = -1;
     if (m_encoder) {
-        ret = m_encoder->initEncoder(mainSamplerate, &userErrorMsg);
+        qDebug() << "init encoder for broadcast. Samplerate: " << sampleRate;
+        ret = m_encoder->initEncoder(sampleRate, &userErrorMsg);
     }
 
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
@@ -1045,13 +1052,14 @@ void ShoutConnection::run() {
             CSAMPLE* dataPtr2;
             ring_buffer_size_t size2;
 
+            // Read audio frames from FIFO
             // We use size1 and size2, so we can ignore the return value
             (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
                     &dataPtr2, &size2);
 
             // Push frames to the encoder.
             process(dataPtr1, size1);
-            if (size2 > 0) {
+            if (size2 > 0) { // data was non-contiguous
                 process(dataPtr2, size2);
             }
 

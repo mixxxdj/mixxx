@@ -257,7 +257,7 @@
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="1" column="0">
+           <item row="0" column="0">
             <widget class="QLabel" name="label_8">
              <property name="text">
               <string>Format</string>
@@ -267,7 +267,17 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
+           <item row="0" column="1">
+            <widget class="QComboBox" name="comboBoxEncodingFormat">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
             <widget class="QLabel" name="label_4">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -277,6 +287,16 @@
              </property>
              <property name="text">
               <string>Bitrate</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="comboBoxEncodingBitrate">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
             </widget>
            </item>
@@ -318,27 +338,20 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QComboBox" name="comboBoxEncodingFormat">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QComboBox" name="comboBoxEncodingBitrate">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="3" column="0">
+            <widget class="QLabel" name="LabelSampleRate">
+            <property name="text">
+            <string>Sample Rate</string>
+            </property>
+            <property name="buddy">
+            <cstring>comboBoxBroadcastSampleRate</cstring>
+            </property>
             </widget>
            </item>
            <item row="3" column="1">
+            <widget class="QComboBox" name="comboBoxBroadcastSampleRate"/>
+            </item>
+           <item row="4" column="1">
             <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -881,9 +894,10 @@ p, li { white-space: pre-wrap; }
   <tabstop>checkBoxLimitReconnects</tabstop>
   <tabstop>spinBoxMaximumRetries</tabstop>
 
-  <tabstop>comboBoxEncodingBitrate</tabstop>
   <tabstop>comboBoxEncodingFormat</tabstop>
+  <tabstop>comboBoxEncodingBitrate</tabstop>
   <tabstop>comboBoxEncodingChannels</tabstop>
+  <tabstop>comboBoxBroadcastSampleRate</tabstop>
 
   <tabstop>stream_public</tabstop>
   <tabstop>stream_name</tabstop>

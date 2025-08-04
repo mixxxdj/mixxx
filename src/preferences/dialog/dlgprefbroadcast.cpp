@@ -21,14 +21,18 @@ namespace {
 constexpr int kColumnEnabled = 0;
 constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
+
+const ConfigKey kBroadcastSampleRateCfgkey =
+        ConfigKey(QStringLiteral(BROADCAST_PREF_KEY), QStringLiteral("broadcast_samplerate"));
 } // namespace
 
-DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
-                                   BroadcastSettingsPointer pBroadcastSettings)
+DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
+        BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
-          m_pProfileListSelection(nullptr) {
+          m_pProfileListSelection(nullptr)
+/*m_broadcastSampleRate(kBroadcastSampleRateCfgkey)*/ {
     setupUi(this);
 
 #ifndef __QTKEYCHAIN__
@@ -61,7 +65,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
             this,
             &DlgPrefBroadcast::onSectionResized);
 
-    updateModel();
+    updateModel(); // estore previous profiles
     connectionList->setModel(m_pSettingsModel);
     connectionList->setTabKeyNavigation(false);
 
@@ -123,10 +127,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      connect(comboBoxEncodingFormat,
              QOverload<int>::of(&QComboBox::currentIndexChanged),
              this,
-             [this]() {
-                 ogg_dynamicupdate->setEnabled(
-                         comboBoxEncodingFormat->currentData() == ENCODING_OGG);
-             });
+             &DlgPrefBroadcast::slotFormatChanged);
      comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
      comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
@@ -169,7 +170,64 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
 
+     // connect(comboBoxBroadcastSampleRate,
+     //     &QComboBox::currentIndexChanged,
+     //     this,
+     //     &DlgPrefBroadcast::slotSampleRateChanged);
+
      setScrollSafeGuardForAllInputWidgets(this);
+}
+
+const QList<mixxx::audio::SampleRate>&
+DlgPrefBroadcast::createSampleRateGUIForFormat(const QString& format) {
+    const QList<mixxx::audio::SampleRate>& validSampleRates =
+            (format == ENCODING_OPUS)  ? kBroadcastSampleRatesOpus
+            : (format == ENCODING_MP3) ? kBroadcastSampleRatesMP3
+            : (format == ENCODING_OGG) ? kBroadcastSampleRatesOGG
+                                       : kBroadcastSampleRates; // default
+
+    qDebug() << "Valid samplerates: " << validSampleRates;
+
+    updateSampleRates(validSampleRates);
+    return validSampleRates;
+}
+
+void DlgPrefBroadcast::updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates) {
+    comboBoxBroadcastSampleRate->blockSignals(true);
+
+    comboBoxBroadcastSampleRate->clear();
+    for (const auto& sampleRate : sampleRates) {
+        if (sampleRate.isValid()) {
+            // if (sampleRate.value() == m_defaultSampleRate) {
+            //     continue; // do not add default samplerate to list.
+            // }
+            comboBoxBroadcastSampleRate->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate.value()));
+        }
+    }
+    comboBoxBroadcastSampleRate->blockSignals(false);
+}
+
+// called from slotUpdate() chain during pref window initialization
+// and subsequently anytime the format is changed.
+void DlgPrefBroadcast::slotFormatChanged(int newFormatIdx) {
+    auto broadcastFormatNew = comboBoxEncodingFormat->itemData(newFormatIdx).toString();
+    qDebug() << broadcastFormatNew << " is the selected broadcast format";
+
+    if (broadcastFormatNew == ENCODING_OGG) {
+        ogg_dynamicupdate->setEnabled(true);
+    }
+
+    [[maybe_unused]] const auto& customSampleRatesList =
+            createSampleRateGUIForFormat(broadcastFormatNew);
+}
+
+void DlgPrefBroadcast::slotSampleRateChanged(int newRateIdx) {
+    // addItem() is storing samplerate double values.
+    auto broadcastSampleRateNew = comboBoxBroadcastSampleRate->itemData(newRateIdx).value<double>();
+
+    qDebug() << "broadcast samplerate change triggered, new rate: " << broadcastSampleRateNew;
+    comboBoxBroadcastSampleRate->setCurrentIndex(newRateIdx);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {
@@ -179,6 +237,7 @@ DlgPrefBroadcast::~DlgPrefBroadcast() {
 void DlgPrefBroadcast::slotResetToDefaults() {
 }
 
+// Start here. Called when Preferences is opened
 void DlgPrefBroadcast::slotUpdate() {
     updateModel();
     connectOnApply->setChecked(false);
@@ -257,7 +316,7 @@ void DlgPrefBroadcast::slotApply() {
         mountpoints.insert(profileName, profileMountpoint);
     }
 
-    applyModel();
+    applyModel(); // saves profile configuration to XML
     bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
     if (!broadcastingEnabled && connectOnApply->isChecked()) {
         m_pBroadcastEnabled->set(true);
@@ -352,6 +411,7 @@ void DlgPrefBroadcast::connectionListItemSelected(const QModelIndex& selected) {
 
     QString selectedName = m_pSettingsModel->data(selected,
             Qt::DisplayRole).toString();
+    qDebug() << "Selected Profile: " << selectedName;
     BroadcastProfilePtr profile =
             m_pSettingsModel->getProfileByName(selectedName);
     if (profile) {
@@ -512,6 +572,14 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     }
     comboBoxEncodingChannels->setCurrentIndex(tmp_index);
 
+    // set samplerate combobox
+    tmp_index = comboBoxBroadcastSampleRate->findData(
+            QVariant::fromValue(profile->getSampleRate()));
+    if (tmp_index < 0) {
+        tmp_index = 0;
+    }
+    comboBoxBroadcastSampleRate->setCurrentIndex(tmp_index);
+
     // Metadata format
     metadata_format->setText(profile->getMetadataFormat());
 
@@ -553,6 +621,9 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
             comboBoxEncodingFormat->currentIndex()).toString());
     profile->setChannels(comboBoxEncodingChannels->itemData(
             comboBoxEncodingChannels->currentIndex()).toInt());
+    profile->setSampleRate(comboBoxBroadcastSampleRate
+                    ->itemData(comboBoxBroadcastSampleRate->currentIndex())
+                    .toDouble());
 
     mountpoint->setText(mountpoint->text().trimmed());
     profile->setMountPoint(mountpoint->text());

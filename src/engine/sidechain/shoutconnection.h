@@ -120,6 +120,8 @@ class ShoutConnection
     UserSettingsPointer m_pConfig;
     BroadcastProfilePtr m_pProfile;
     EncoderPointer m_encoder;
+    // this needs to be set independently for each connection.
+    double m_broadcastSampleRate;
     PollingControlProxy m_mainSamplerate;
     PollingControlProxy m_broadcastEnabled;
     // static metadata according to prefereneces
