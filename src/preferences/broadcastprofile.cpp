@@ -208,7 +208,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setFormat(this->getFormat());
     other->setBitrate(this->getBitrate());
     other->setChannels(this->getChannels());
-    // other->setSampleRate(this->getSampleRate());
+    other->setSampleRate(this->getSampleRate());
 
     other->setMountPoint(this->getMountpoint());
     other->setStreamName(this->getStreamName());

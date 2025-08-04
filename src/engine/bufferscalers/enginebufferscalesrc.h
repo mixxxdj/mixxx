@@ -26,7 +26,7 @@ class EngineBufferScaleSRC : public EngineBufferScale {
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) override;
 
-    double recScaleBuffer(const CSAMPLE* pInputBuffer,
+    double scaleBufferOneShot(const CSAMPLE* pInputBuffer,
             CSAMPLE* pOutputBuffer,
             SINT iInputBufferSize,
             double baseRate);

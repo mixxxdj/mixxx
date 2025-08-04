@@ -122,8 +122,10 @@ class ShoutConnection
     EncoderPointer m_encoder;
     // this needs to be set independently for each connection.
     double m_broadcastSampleRate;
-    PollingControlProxy m_mainSamplerate;
+    PollingControlProxy m_mainSampleRate;
     PollingControlProxy m_broadcastEnabled;
+    CSAMPLE* m_pBroadcastResampleOutBuffer;
+
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;

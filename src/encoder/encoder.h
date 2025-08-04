@@ -43,7 +43,7 @@ class Encoder {
     // to recording samplerate
     virtual void initResampler();
 
-    double recResampleBuffer(
+    double resampleBufferOneShot(
             const CSAMPLE* pInputBuffer,
             CSAMPLE* pOutputBuffer,
             SINT iInputBufferSize, /*#samples*/

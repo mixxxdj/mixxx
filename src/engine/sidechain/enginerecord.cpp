@@ -232,7 +232,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
         double resampleRatio = m_recSampleRate / m_sampleRate; // output/input
         qDebug() << "Rec resample base rate: " << resampleRatio;
         CSAMPLE* pOutBuffer = m_pRecResampleOutBuffer;
-        double framesGenerated = m_pEncoder->recResampleBuffer(
+        double framesGenerated = m_pEncoder->resampleBufferOneShot(
                 pBuffer, pOutBuffer, bufferSize, resampleRatio);
         qDebug() << "Rec resample: " << bufferSize << " samples give "
                  << framesGenerated * 2 << " samples";

@@ -161,13 +161,13 @@ void Encoder::initResampler() {
     m_pRecResampler = std::make_unique<EngineBufferScaleSRC>();
 }
 
-double Encoder::recResampleBuffer(
+double Encoder::resampleBufferOneShot(
         const CSAMPLE* pInputBuffer,
         CSAMPLE* pOutputBuffer,
         SINT iInputBufferSize, /*#samples*/
         double baseRate) {
     double outputFramesGenerated{};
-    outputFramesGenerated = m_pRecResampler->recScaleBuffer(pInputBuffer,
+    outputFramesGenerated = m_pRecResampler->scaleBufferOneShot(pInputBuffer,
             pOutputBuffer,
             iInputBufferSize,
             baseRate); // needs to consume all input frames.

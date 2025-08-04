@@ -42,7 +42,7 @@ void EngineBufferScaleSRC::clear() {
 }
 
 // baseRate: engine rate/recordingrate
-double EngineBufferScaleSRC::recScaleBuffer(const CSAMPLE* pInputBuffer,
+double EngineBufferScaleSRC::scaleBufferOneShot(const CSAMPLE* pInputBuffer,
         CSAMPLE* pOutputBuffer,
         SINT iInputBufferSize,
         double srcRatio) {

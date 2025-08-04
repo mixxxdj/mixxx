@@ -55,7 +55,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_pProfile(profile),
           m_encoder(nullptr),
           m_broadcastSampleRate(m_pProfile->getSampleRate()),
-          m_mainSamplerate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
+          m_mainSampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_broadcastEnabled(BROADCAST_PREF_KEY, "enabled"),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -397,31 +397,11 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    // auto mainSamplerate = mixxx::audio::SampleRate::fromDouble(m_mainSamplerate.get());
     auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_broadcastSampleRate);
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
         qWarning() << "Invalid sample rate!" << sampleRate;
         return;
     }
-
-    // if (m_format_is_ov && mainSamplerate == 96000) {
-    //     errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
-    //                    "supported. Please try a different sample rate or switch "
-    //                    "to a different encoding."),
-    //                 tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
-    //                    "information."));
-    //     return;
-    // }
-
-    // #ifdef __OPUS__
-    //     if (m_format_is_opus && mainSamplerate != EncoderOpus::getMainSampleRate()) {
-    //         errorDialog(
-    //             EncoderOpus::getInvalidSamplerateMessage(),
-    //             tr("Unsupported sample rate")
-    //         );
-    //         return;
-    //     }
-    // #endif
 
     if (shout_set_audio_info(
             m_pShout, SHOUT_AI_BITRATE,
@@ -749,11 +729,18 @@ void ShoutConnection::process(const CSAMPLE* pBuffer, const std::size_t bufferSi
     // to prevent race conditions when resetting the member
     // pointer while disconnecting in the worker thread!
     const EncoderPointer pEncoder = m_encoder;
-
     // If we are connected, encode the samples.
     if (bufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        pEncoder->encodeBuffer(pBuffer, bufferSize);
+        double resampleRatio = m_broadcastSampleRate / m_mainSampleRate.get();
+        CSAMPLE* pOutBuffer = m_pBroadcastResampleOutBuffer;
+
+        double framesGenerated = pEncoder->resampleBufferOneShot(
+                pBuffer, pOutBuffer, bufferSize, resampleRatio);
+
+        pEncoder->encodeBuffer(pOutBuffer,
+                static_cast<std::size_t>(
+                        framesGenerated * 2)); // assuming stereo
         // the encoded frames are received by the write() callback.
     }
 
