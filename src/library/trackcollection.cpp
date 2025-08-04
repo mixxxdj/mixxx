@@ -19,7 +19,7 @@ TrackCollection::TrackCollection(
         QObject* parent, const UserSettingsPointer& pConfig)
         : QObject(parent),
           m_analysisDao(pConfig),
-          m_genreDAO(this),
+          m_genreDao(this),
           m_trackDao(m_cueDao,
                   m_playlistDao,
                   m_analysisDao,
