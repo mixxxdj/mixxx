@@ -410,7 +410,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
         QStringList genres;
         if (!genreString.isEmpty()) {
             static const QRegularExpression genreSplitRegex("[;,]");
-            genres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+            genres = genreString.split(genreSplitRegex, Qt::SkipEmptyParts);
             for (QString& genre : genres) {
                 genre = genre.trimmed();
             }

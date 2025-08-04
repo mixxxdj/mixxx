@@ -86,6 +86,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void saveGenresToTracks();
     void testGenreDao();
 
+    QStringList m_intersection;
     QStringList getOriginalCommonGenres();
 
     void connectTracksChanged();

@@ -32,6 +32,7 @@ const QString kVariousText = QChar('<') + QObject::tr("various") + QChar('>');
 const char* kOrigValProp = "origVal";
 const QString kClearItem = QStringLiteral("clearItem");
 const QString kClearIconPath = QStringLiteral(":images/library/ic_library_cross_grey.svg");
+static const QRegularExpression genreSeparator("[;,]");
 
 void setItalic(QWidget* pEditor, bool italic) {
     auto font = pEditor->font();
@@ -1227,7 +1228,7 @@ void DlgTrackInfoMulti::loadGenresFromTracks() {
             qDebug() << "  - Track genre field:" << genreString;
 
             if (!genreString.isEmpty()) {
-                trackGenres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+                trackGenres = genreString.split(genreSeparator, Qt::SkipEmptyParts);
                 for (QString& genre : trackGenres) {
                     genre = genre.trimmed();
                 }
@@ -1255,13 +1256,13 @@ void DlgTrackInfoMulti::loadGenresFromTracks() {
             firstTrack = false;
             qDebug() << "  - First track - common genres:" << commonGenres;
         } else {
-            QStringList intersection;
-            for (const QString& genre : commonGenres) {
+            m_intersection.clear();
+            for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
-                    intersection.append(genre);
+                    m_intersection.append(genre);
                 }
             }
-            commonGenres = intersection;
+            commonGenres = m_intersection;
             qDebug() << "  - After intersection with this track:" << commonGenres;
         }
         if (commonGenres.isEmpty()) {
@@ -1314,6 +1315,8 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
     QStringList originalCommonGenres = getOriginalCommonGenres();
     qDebug() << "Original common genres:" << originalCommonGenres;
 
+    QStringList finalGenres;
+    QSet<QString> finalGenresSet;
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         if (!pTrack)
             continue;
@@ -1321,11 +1324,14 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         TrackId trackId = pTrack->getId();
 
         QStringList currentGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+
+        finalGenres.clear();
+        finalGenresSet.clear();
+
         if (currentGenres.isEmpty()) {
             QString trackGenreField = pTrack->getGenre();
             if (!trackGenreField.isEmpty()) {
-                currentGenres = trackGenreField.split(
-                        QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+                currentGenres = trackGenreField.split(genreSeparator, Qt::SkipEmptyParts);
                 for (QString& genre : currentGenres) {
                     genre = genre.trimmed();
                 }
@@ -1335,13 +1341,8 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
 
         qDebug() << "Track" << trackId.toVariant() << "current genres:" << currentGenres;
 
-        // 1. Retrieve original common genres from the DAO
-        // 2. Add all non-common genres from the current track
-        // 3. Add all genres from the widget (might include new common genres)
-        QStringList finalGenres;
-
         // Add non-common genres from the current track
-        for (const QString& currentGenre : currentGenres) {
+        for (const QString& currentGenre : std::as_const(currentGenres)) {
             if (!originalCommonGenres.contains(currentGenre, Qt::CaseInsensitive)) {
                 finalGenres.append(currentGenre);
                 qDebug() << "Track" << trackId.toVariant()
@@ -1350,7 +1351,7 @@ void DlgTrackInfoMulti::saveGenresToTracks() {
         }
 
         // Add all genres from the widget
-        for (const QString& widgetGenre : widgetGenres) {
+        for (const QString& widgetGenre : std::as_const(widgetGenres)) {
             if (!finalGenres.contains(widgetGenre, Qt::CaseInsensitive)) {
                 finalGenres.append(widgetGenre);
                 qDebug() << "Track" << trackId.toVariant() << "adding widget genre:" << widgetGenre;
@@ -1383,6 +1384,7 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
     }
 
     QStringList commonGenres;
+    QStringList m_intersection;
     bool firstTrack = true;
 
     for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
@@ -1395,7 +1397,7 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
         if (trackGenres.isEmpty()) {
             QString genreString = pTrack->getGenre();
             if (!genreString.isEmpty()) {
-                trackGenres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
+                trackGenres = genreString.split(genreSeparator, Qt::SkipEmptyParts);
                 for (QString& genre : trackGenres) {
                     genre = genre.trimmed();
                 }
@@ -1407,13 +1409,13 @@ QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
             commonGenres = trackGenres;
             firstTrack = false;
         } else {
-            QStringList intersection;
-            for (const QString& genre : commonGenres) {
+            m_intersection.clear();
+            for (const QString& genre : std::as_const(commonGenres)) {
                 if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
-                    intersection.append(genre);
+                    m_intersection.append(genre);
                 }
             }
-            commonGenres = intersection;
+            commonGenres = m_intersection;
         }
 
         if (commonGenres.isEmpty()) {
