@@ -409,12 +409,8 @@ void DlgTrackInfo::updateTrackMetadataFields() {
         QString genreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
         QStringList genres;
         if (!genreString.isEmpty()) {
-<<<<<<< HEAD
             static const QRegularExpression genreSplitRegex("[;,]");
-            genres = genreString.split(genreSplitRegex, Qt::SkipEmptyParts);
-=======
             genres = genreString.split(QRegularExpression("[;,]"), Qt::SkipEmptyParts);
->>>>>>> 4f34afe313 (Fix errors and missing requirements)
             for (QString& genre : genres) {
                 genre = genre.trimmed();
             }
