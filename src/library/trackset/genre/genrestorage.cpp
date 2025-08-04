@@ -427,6 +427,47 @@ uint GenreStorage::countGenreTracks(GenreId genreId) const {
     }
 }
 
+// uint GenreStorage::countGenreTracks(GenreId genreId) const {
+//     QStringList genreTags;
+//     genreTags << QString("##%1##").arg(genreId.toString());
+//
+//     // find existing display_group for genreId
+//     QSqlQuery displayGroupQuery(m_database);
+//     displayGroupQuery.prepare("SELECT id FROM genres WHERE display_group = :group_id");
+//     displayGroupQuery.bindValue(":group_id", genreId.toVariant());
+//
+//     if (!displayGroupQuery.exec()) {
+//         qWarning() << "[GenreStorage] Failed to load display group members: "
+//                    << displayGroupQuery.lastError().text();
+//     } else {
+//         while (displayGroupQuery.next()) {
+//             genreTags << QString("##%1##").arg(displayGroupQuery.value(0).toInt());
+//         }
+//     }
+//
+//     // construct where-clause
+//     QStringList likeClauses;
+//     for (const QString& tag : genreTags) {
+//         likeClauses << QString("library.genre LIKE '%%1%'").arg(tag);
+//     }
+//     QString whereClause = likeClauses.join(" OR ");
+//     FwdSqlQuery query(m_database,
+//             QStringLiteral("SELECT COUNT(*) FROM %1 "
+//                     "WHERE (%2) AND %3=0")
+//                     .arg(LIBRARY_TABLE,
+//                             whereClause,
+//                             LIBRARYTABLE_MIXXXDELETED));
+//
+//     if (query.execPrepared() && query.next()) {
+//         uint result = query.fieldValue(0).toUInt();
+//         DEBUG_ASSERT(!query.next());
+//         qDebug() << "[GenreStorage] -> countGenreTracks result: " << result;
+//         return result;
+//     } else {
+//         return 0;
+//     }
+// }
+
 // static
 QString GenreStorage::formatSubselectQueryForGenreTrackIds(GenreId genreId) {
     const QString genreIdStr = genreId.toString();
