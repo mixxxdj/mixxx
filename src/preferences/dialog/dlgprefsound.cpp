@@ -537,6 +537,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
             QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
+        const auto sampleRateNew = sampleRateComboBox->itemData(sampleRateIndex)
+                                           .value<mixxx::audio::SampleRate>();
+        // without this, the default recording samplerate will
+        // be set by default to 44100
+        emit updateDefaultRecordingSampleRate(sampleRateNew);
         if (audioBufferComboBox->count() <= 0) {
             updateAudioBufferSizes(sampleRateIndex); // so the latency combo box is
             // sure to be populated, if setCurrentIndex is called with the

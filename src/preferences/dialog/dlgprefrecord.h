@@ -19,9 +19,6 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     DlgPrefRecord(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefRecord();
 
-  protected:
-    bool eventFilter(QObject* obj, QEvent* event) override;
-
   public slots:
     // Apply changes to widget
     void slotApply() override;
@@ -37,6 +34,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void slotGroupChanged();
 
     void slotDefaultSampleRateUpdated(mixxx::audio::SampleRate newRate);
+    void slotComboBoxItemClicked(int index);
 
   private slots:
     void slotToggleCueEnabled();

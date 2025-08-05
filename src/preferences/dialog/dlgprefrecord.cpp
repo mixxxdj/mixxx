@@ -38,8 +38,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // This is a hack to set the correct positioning.
     // Values found by trial-and-error
     RadioButtonUseCustomSampleRate->setMaximumWidth(80);
-    RadioButtonUseDefaultSampleRate->setMaximumWidth(222);
-    // comboBoxRecSampleRate->setMaximumWidth(160);
+    RadioButtonUseDefaultSampleRate->setMaximumWidth(234);
 
     // Setting recordings path.
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
@@ -90,6 +89,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     setupEncoderUI();
 
+    qDebug() << "Default samplerate = engine samplerate: " << m_defaultSampleRate;
     RadioButtonUseDefaultSampleRate->setText(tr("Default (%1 Hz)").arg(m_defaultSampleRate));
 
     // generate list of custom recording samplerates
@@ -98,10 +98,12 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Restore previous sample-rate
     if (m_useEngineSampleRate.toBool()) {
         // engine sample rate was used in the previous session
+        qDebug() << "Engine Samplerate was used in previous session: " << m_oldRecSampleRate;
         // select the default radiobutton
         RadioButtonUseDefaultSampleRate->setChecked(true);
     } else {
         // select the combo-box item
+        qDebug() << "Custom Samplerate was used in the old session: " << m_oldRecSampleRate;
         int idx = comboBoxRecSampleRate->findData(QVariant::fromValue(m_oldRecSampleRate));
         comboBoxRecSampleRate->setCurrentIndex(idx);
         RadioButtonUseCustomSampleRate->setChecked(true);
@@ -149,7 +151,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
                 slotToggleCustomSampleRateIgnore(checked ? Qt::Checked : Qt::Unchecked);
             });
 
-    comboBoxRecSampleRate->installEventFilter(this);
+    connect(comboBoxRecSampleRate,
+            &QComboBox::activated,
+            this,
+            &DlgPrefRecord::slotComboBoxItemClicked);
 
     connect(comboBoxRecSampleRate,
             &QComboBox::currentIndexChanged,
@@ -212,12 +217,9 @@ void DlgPrefRecord::slotApply() {
     saveSplitSize();
     saveRecSampleRate();
 }
-
-bool DlgPrefRecord::eventFilter(QObject* obj, QEvent* event) {
-    if (obj == comboBoxRecSampleRate && event->type() == QEvent::MouseButtonPress) {
-        RadioButtonUseCustomSampleRate->setChecked(true);
-    }
-    return QWidget::eventFilter(obj, event);
+// only called on a user-triggered index change.
+void DlgPrefRecord::slotComboBoxItemClicked([[maybe_unused]] int index) {
+    RadioButtonUseCustomSampleRate->setChecked(true);
 }
 
 // Called when:
@@ -380,7 +382,7 @@ void DlgPrefRecord::slotFormatChanged() {
     // slotsampleratechanged and all is good.
     int recSampleRateIdx = comboBoxRecSampleRate->findData(
             QVariant::fromValue(m_oldRecSampleRate));
-    if (recSampleRateIdx != -1) { // found in the combobox
+    if (!m_useEngineSampleRate.toBool() && (recSampleRateIdx != -1)) { // found in the combobox
         qDebug() << "Samplerate " << m_oldRecSampleRate << " found in combo-box";
         RadioButtonUseDefaultSampleRate->setChecked(false);       // calls slot ignore
         comboBoxRecSampleRate->setCurrentIndex(recSampleRateIdx); // calls slot sampleratechanged
@@ -667,8 +669,6 @@ void DlgPrefRecord::slotSampleRateChanged(int newRateIdx) {
     auto recSampleRateNew = comboBoxRecSampleRate->itemData(newRateIdx).value<double>();
 
     qDebug() << "Rec samplerate change triggered, new rate: " << recSampleRateNew;
-    comboBoxRecSampleRate->setCurrentIndex(newRateIdx);
-
     m_useEngineSampleRate.set(false);
 }
 
