@@ -23,7 +23,7 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #endif
 
-//for the writer
+// for the writer
 #ifdef __SCALER_DEBUG__
 #include <QFile>
 #include <QTextStream>

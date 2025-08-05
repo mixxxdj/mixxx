@@ -108,6 +108,7 @@ bool BroadcastSettings::saveProfile(BroadcastProfile* profile) {
     }
 
     QString filename = profile->getLastFilename();
+    qDebug() << "Saving profile, filename: " << filename;
     if (filename.isEmpty()) {
         // there was no previous filename, find an unused filename
         for (int index = 0;; ++index) {
@@ -158,6 +159,8 @@ QString BroadcastSettings::getProfilesFolder() {
     return profilesPath;
 }
 
+// Every profile's configuration is saved
+// to a unique XML file in $HOME/.mixxx/broadcast_profiles
 void BroadcastSettings::saveAll() {
     for (const auto& pProfile : std::as_const(m_profiles)) {
         DEBUG_ASSERT(pProfile);
