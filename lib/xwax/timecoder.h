@@ -122,7 +122,7 @@ struct timecoder {
     double gain_compensation; /* Scaling factor for the derivative */
 };
 
-struct timecode_def* timecoder_find_definition(const char *name);
+struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path);
 void timecoder_free_lookup(void);
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,

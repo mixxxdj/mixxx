@@ -303,7 +303,7 @@ static int build_lookup(struct timecode_def *def)
  * Return: pointer to timecode definition, or NULL if not available
  */
 
-struct timecode_def* timecoder_find_definition(const char *name)
+struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path)
 {
     unsigned int n;
 
@@ -313,14 +313,24 @@ struct timecode_def* timecoder_find_definition(const char *name)
         if (strcmp(def->name, name) != 0)
             continue;
 
-        if (def->flags & TRAKTOR_MK2) {
-            if (build_lookup_mk2(def) == -1)
-                return NULL;  /* error */
-        } else {
-            if (build_lookup(def) == -1)
-                return NULL;  /* error */
-        }
+        if (!def->lookup) {
+            if (def->flags & TRAKTOR_MK2) {
+                if (!lut_load_mk2(def, lut_dir_path))
+                    return def;
 
+                if (build_lookup_mk2(def) == -1)
+                    return NULL;  /* error */
+
+                if (lut_store_mk2(def, lut_dir_path)) {
+                    timecoder_free_lookup();
+                    fprintf(stderr, "Couldn't store LUT on disk\n");
+                    return NULL;
+                }
+            } else {
+                if (build_lookup(def) == -1)
+                    return NULL;  /* error */
+            }
+        }
         return def;
     }
 
