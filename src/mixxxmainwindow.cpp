@@ -39,6 +39,7 @@
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
+#include "library/library_prefs.h"
 #include "library/overviewcache.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -1227,6 +1228,11 @@ void MixxxMainWindow::slotHelpAbout() {
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
+    if (!m_pCoreServices->getSettings()->getValue<bool>(
+                mixxx::library::prefs::kShowScanSummaryConfigKey, true)) {
+        return;
+    }
+
     // Don't show the report dialog when the scan is run during startup and no
     // noteworthy changes have been detected.
     if (result.autoscan &&
