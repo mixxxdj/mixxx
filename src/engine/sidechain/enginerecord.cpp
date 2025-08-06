@@ -18,9 +18,9 @@ constexpr int kMaxInterpolationFactor = 12; // 96khz/8khz
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_sampleRateControl(QStringLiteral("[App]"),
-                  QStringLiteral("samplerate")), // pointer to engine samplerate
+                  QStringLiteral("samplerate")), // proxy for engine samplerate
           m_recSampleRateControl(QStringLiteral(RECORDING_PREF_KEY),
-                  QStringLiteral("rec_samplerate")),
+                  QStringLiteral("rec_samplerate")), // proxy for recording samplerate
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),
