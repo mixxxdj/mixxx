@@ -127,7 +127,6 @@ DlgTrackInfoMulti::DlgTrackInfoMulti(
     init();
 }
 
-// EVE
 void DlgTrackInfoMulti::setGenreData(const QVariantList& genreData) {
     m_genreData = genreData;
     // qDebug() << "[DlgTrackInfoMulti] -> setGenreData passing genreData contains:" << m_genreData;
@@ -162,8 +161,6 @@ void DlgTrackInfoMulti::setupGenreCompleter() {
                 genreSelectorEdit->setText(selected.trimmed());
             });
 }
-
-// EVE
 
 void DlgTrackInfoMulti::init() {
     setupUi(this);
@@ -493,12 +490,9 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         artists.insert(rec.getMetadata().getTrackInfo().getArtist());
         aTitles.insert(rec.getMetadata().getAlbumInfo().getTitle());
         aArtists.insert(rec.getMetadata().getAlbumInfo().getArtist());
-        // EVE
-        // genres.insert(rec.getMetadata().getTrackInfo().getGenre());
         QString rawGenre = rec.getMetadata().getTrackInfo().getGenre();
         QString displayGenres = m_genreDao.getDisplayGenreNameForGenreID(rawGenre);
         genres.insert(displayGenres);
-        // EVE
         composers.insert(rec.getMetadata().getTrackInfo().getComposer());
         grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
         years.insert(rec.getMetadata().getTrackInfo().getYear());
@@ -739,9 +733,6 @@ void DlgTrackInfoMulti::saveTracks() {
     const QString artist = validEditText(txtArtist);
     const QString album = validEditText(txtAlbum);
     const QString albumArtist = validEditText(txtAlbumArtist);
-    // EVE
-    // const QString genre = validEditText(txtGenre);
-    // const QString genreDisplay = validEditText(txtGenre);
     const QString genreDisplay = txtGenre->lineEdit()->text().trimmed();
 
     QString rawToSave;
@@ -763,7 +754,6 @@ void DlgTrackInfoMulti::saveTracks() {
             rawToSave = placeholders.join(';');
         }
     }
-    // EVE
 
     const QString composer = validEditText(txtComposer);
     const QString grouping = validEditText(txtGrouping);
@@ -780,9 +770,7 @@ void DlgTrackInfoMulti::saveTracks() {
         // Remove trailing whitespaces.
         comment = mixxx::removeTrailingWhitespaces(currText);
     }
-    // EVE
     QStringList finalGenres;
-    // EVE
     for (auto& rec : m_trackRecords) {
         if (!title.isNull()) {
             rec.refMetadata().refTrackInfo().setTitle(title);
@@ -796,7 +784,6 @@ void DlgTrackInfoMulti::saveTracks() {
         if (!albumArtist.isNull()) {
             rec.refMetadata().refAlbumInfo().setArtist(albumArtist);
         }
-        // EVE
         if (!genreDisplay.isNull() && !genreDisplay.isEmpty()) {
             QStringList newGenres = genreDisplay.split(';', Qt::SkipEmptyParts);
             for (QString& g : newGenres) {
@@ -848,7 +835,6 @@ void DlgTrackInfoMulti::saveTracks() {
             const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(updatedRawGenre);
             m_genreDao.updateGenreTracksForTrack(rec.getId(), genreIds);
         }
-        // EVE
         if (!composer.isNull()) {
             rec.refMetadata().refTrackInfo().setComposer(composer);
         }

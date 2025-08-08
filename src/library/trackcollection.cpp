@@ -677,16 +677,12 @@ bool TrackCollection::removeGenreTracks(
 
     // Emit signals
     emit genreTracksChanged(genreId, QList<TrackId>(), trackIds);
-    // if (trackIds.size() == 1) {
-    //     emit m_trackDao.forceModelUpdate();
-    // } else {
     for (const TrackId& trackId : trackIds) {
         TrackPointer pTrack = getTrackById(trackId);
         if (pTrack) {
             emit pTrack->genreChanged(pTrack->getGenre());
         }
     }
-    //}
     return true;
 }
 
@@ -705,22 +701,6 @@ bool TrackCollection::updateAutoDjCrate(
     crate.setAutoDjSource(isAutoDjSource);
     return updateCrate(crate);
 }
-
-// bool TrackCollection::updateAutoDjGenre(
-//         GenreId genreId,
-//         bool isAutoDjSource) {
-//     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-//
-//     Crate crate;
-//     VERIFY_OR_DEBUG_ASSERT(genres().readGenreById(genreId, &genre)) {
-//         return false; // inexistent or failure
-//     }
-//     if (crate.isAutoDjSource() == isAutoDjSource) {
-//         return false; // nothing to do
-//     }
-//     crate.setAutoDjSource(isAutoDjSource);
-//     return updateGenre(genre);
-// }
 
 bool TrackCollection::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);

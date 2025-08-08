@@ -129,12 +129,8 @@ void GenreQueryFields::populateFromQuery(
     pGenre->setNameLevel4(getNameLevel4(query));
     pGenre->setNameLevel5(getNameLevel5(query));
     pGenre->setDisplayGroup(getDisplayGroup(query));
-    // not sure if needed
     pGenre->setVisible(isVisible(query));
     pGenre->setModelDefined(isModelDefined(query));
-    // pGenre->setCount(getCount(query));
-    // pGenre->setShow(getShow(query));
-    // pGenre->setDisplayOrder(getDisplayOrder(query));
 }
 
 GenreTrackQueryFields::GenreTrackQueryFields(const FwdSqlQuery& query)
@@ -761,57 +757,6 @@ bool GenreStorage::onDeletingGenre(GenreId genreId) {
         }
     }
 }
-
-// bool GenreStorage::onDeletingGenre(
-//         GenreId genreId) {
-//     VERIFY_OR_DEBUG_ASSERT(genreId.isValid()) {
-//         kLogger.warning()
-//                 << "Cannot delete genre without a valid id";
-//         return false;
-//     }
-//     {
-//         FwdSqlQuery query(m_database,
-//                 QStringLiteral("DELETE FROM %1 WHERE %2=:id")
-//                         .arg(GENRE_TRACKS_TABLE, GENRETRACKSTABLE_GENREID));
-//         VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
-//             return false;
-//         }
-//         query.bindValue(":id", genreId);
-//         VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
-//             return false;
-//         }
-//         if (query.numRowsAffected() <= 0) {
-//             if (kLogger.debugEnabled()) {
-//                 kLogger.debug()
-//                         << "Deleting empty genre with id"
-//                         << genreId;
-//             }
-//         }
-//     }
-//     {
-//         FwdSqlQuery query(m_database,
-//                 QStringLiteral("DELETE FROM %1 WHERE %2=:id")
-//                         .arg(GENRE_TABLE, GENRETABLE_ID));
-//         VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
-//             return false;
-//         }
-//         query.bindValue(":id", genreId);
-//         VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
-//             return false;
-//         }
-//         if (query.numRowsAffected() > 0) {
-//             VERIFY_OR_DEBUG_ASSERT(query.numRowsAffected() <= 1) {
-//                 kLogger.warning()
-//                         << "Deleted multiple genres with the same id" << genreId;
-//             }
-//             return true;
-//         } else {
-//             kLogger.warning()
-//                     << "Cannot delete non-existent genre with id" << genreId;
-//             return false;
-//         }
-//     }
-// }
 
 bool GenreStorage::onAddingGenreTracks(GenreId genreId, const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(genreId.isValid()) {

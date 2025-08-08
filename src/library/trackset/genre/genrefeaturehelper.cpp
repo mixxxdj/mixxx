@@ -141,13 +141,6 @@ GenreId GenreFeatureHelper::duplicateGenre(const Genre& oldGenre) {
                 trackIds.append(genreTracks.trackId());
             }
         }
-        // if (m_pTrackCollection->addGenreTracks(newGenreId, trackIds)) {
-        //     qDebug() << "Duplicated genre"
-        //              << oldGenre << "->" << newGenre;
-        // } else {
-        //     qWarning() << "Failed to copy tracks from"
-        //                << oldGenre << "into" << newGenre;
-        // }
     } else {
         qWarning() << "Failed to duplicate genre"
                    << oldGenre << "->" << newGenre.getName();

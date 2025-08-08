@@ -61,74 +61,11 @@ DlgTrackInfo::DlgTrackInfo(
     init();
 }
 
-// EVE
 void DlgTrackInfo::setGenreData(const QVariantList& genreData) {
     m_genreData = genreData;
     // qDebug() << "[DlgTrackInfo] -> setGenreData passing genreData contains:" << m_genreData;
     setupGenreCompleter();
 }
-
-// void DlgTrackInfo::setupGenreCompleter() {
-//     QStringList genreNames = m_genreDao.getGenreNameList();
-//     qDebug() << "Genre names:" << genreNames;
-//
-//     QCompleter* genreCompleter = new QCompleter(genreNames, this);
-//     genreCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-//     genreCompleter->setFilterMode(Qt::MatchContains);
-//     genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
-//     txtGenre->setCompleter(genreCompleter);
-//
-//     connect(txtGenre, &QLineEdit::textEdited, this, [this, genreCompleter](const QString& text) {
-//         qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> full text:" << text;
-//
-//         QStringList parts = text.split(';', Qt::KeepEmptyParts);
-//         qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> parts:" << parts;
-//
-//         QString current = parts.isEmpty() ? QString() : parts.last().trimmed();
-//         qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> "
-//                     "current (last part trimmed):"
-//                  << current;
-//
-//         genreCompleter->setCompletionPrefix(current);
-//         genreCompleter->setWidget(txtGenre); // Necessary if reassigned
-//
-//         if (!current.isEmpty()) {
-//             qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> completion?";
-//             QTimer::singleShot(0, this, [genreCompleter]() {
-//                 genreCompleter->complete();
-//             });
-//         } else {
-//             qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> TextEdited -> hiding popup";
-//             genreCompleter->popup()->hide();
-//         }
-//     });
-//
-//     connect(genreCompleter,
-//             QOverload<const QString&>::of(&QCompleter::activated),
-//             this,
-//             [this](const QString& selected) {
-//                 QString currentText = txtGenre->text();
-//                 QStringList parts = currentText.split(';');
-//                 if (!parts.isEmpty()) {
-//                     parts.last() = selected.trimmed();
-//                 } else {
-//                     parts << selected.trimmed();
-//                 }
-//
-//                 QString newText = parts.join("; ").trimmed();
-//                 if (!newText.endsWith(";")) {
-//                     newText += "; ";
-//                 }
-//
-//                 QSignalBlocker blocker(txtGenre);
-//                 txtGenre->setText(newText);
-//                 txtGenre->setCursorPosition(txtGenre->text().length());
-//
-//                 qDebug() << "[DlgTrackInfo] -> setupGenreCompleter -> "
-//                             "TextEdited -> genreCompleter -> new text:"
-//                          << newText;
-//             });
-// }
 
 void DlgTrackInfo::setupGenreCompleter() {
     QStringList genreNames = m_genreDao.getGenreNameList();
@@ -162,8 +99,6 @@ void DlgTrackInfo::setupGenreCompleter() {
                 genreSelectorEdit->setText(selected.trimmed());
             });
 }
-
-// EVE
 
 void DlgTrackInfo::init() {
     setupUi(this);
@@ -220,14 +155,8 @@ void DlgTrackInfo::init() {
 
         // Get current genres
         QStringList genreParts = txtGenre->text().split(';', Qt::SkipEmptyParts);
-        // genreParts = QSet<QString>(genreParts.begin(), genreParts.end())
-        //                      .values();
-        // for (int i = 0; i < genreParts.size(); ++i) {
-        //     genreParts[i] = genreParts[i].trimmed();
-        // }
         QStringList cleanedGenres;
         QSet<QString> seen; // for duplicate tracking, case-insensitive
-        // for (const QString& genre : genreParts) {
         for (const QString& genre : std::as_const(genreParts)) {
             QString trimmed = genre.trimmed();
             QString lowered = trimmed.toLower();
@@ -350,16 +279,6 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
-    // EVE
-    // OLD:
-    // connect(txtGenre,
-    //        &QLineEdit::editingFinished,
-    //        this,
-    //        [this]() {
-    //            txtGenre->setText(txtGenre->text().trimmed());
-    //            m_trackRecord.refMetadata().refTrackInfo().setGenre(
-    //                    txtGenre->text());
-    //        });
     connect(txtGenre,
             //&QLineEdit::editingFinished,
             &QLineEdit::textChanged,
@@ -372,7 +291,6 @@ void DlgTrackInfo::init() {
                 const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(genreWithIds);
                 m_genreDao.updateGenreTracksForTrack(m_trackRecord.getId(), genreIds);
             });
-    // EVE
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -567,18 +485,8 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    // EVE
-    // txtGenre->setText(
-    //        m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    // m_rawGenreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
-    //    txtGenre->setText(getDisplayGenreNameForGenreID(
-    //            m_trackRecord.getMetadata().getTrackInfo().getGenre()));
-    // txtGenre->setText(m_genreDao.getDisplayGenreNameForGenreID(
-    //        m_trackRecord.getMetadata().getTrackInfo().getGenre()));
     m_rawGenreString = m_trackRecord.getMetadata().getTrackInfo().getGenre();
     txtGenre->setText(m_genreDao.getDisplayGenreNameForGenreID(m_rawGenreString));
-    // EVE
-
     txtComposer->setText(
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
     txtGrouping->setText(

@@ -1118,7 +1118,7 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Genre)) {
-        // Crate menu is lazy loaded on hover by slotPopulateCrateMenu
+        // Genre menu is lazy loaded on hover by slotPopulateGenreMenu
         // to avoid unnecessary database queries
         m_bGenreMenuLoaded = false;
     }
@@ -1716,8 +1716,8 @@ void WTrackMenu::slotPopulateCrateMenu() {
 }
 
 void WTrackMenu::slotPopulateGenreMenu() {
-    // The user may open the Crate submenu, move their cursor away, then
-    // return to the Crate submenu before exiting the track context menu.
+    // The user may open the Genre  submenu, move their cursor away, then
+    // return to the Genre submenu before exiting the track context menu.
     // Avoid querying the database multiple times in that case.
     if (m_bGenreMenuLoaded) {
         return;
@@ -2874,7 +2874,6 @@ void WTrackMenu::slotRemoveFromDisk() {
     emit restoreCurrentViewStateOrIndex();
 }
 
-// EVE
 void WTrackMenu::loadGenreData2QVL() {
     qDebug() << "[WTRACKMENU] -> loadGenreData2QVL() -> started";
     GenreDao& genreDao = m_pLibrary->trackCollectionManager()
@@ -2887,7 +2886,6 @@ void WTrackMenu::loadGenreData2QVL() {
     //          << m_genreData;
     qDebug() << "[WTRACKMENU] -> loadGenreData2QVL() -> finished";
 }
-// EVE
 
 void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {

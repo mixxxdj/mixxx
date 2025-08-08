@@ -102,7 +102,6 @@ class TrackCollection : public QObject,
     bool removeGenreTracks(GenreId genreId, const QList<TrackId>& trackIds);
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
-    // bool updateAutoDjGenre(GenreId genreId, bool isAutoDjSource);
 
   signals:
     // Forwarded signals from LibraryScanner
