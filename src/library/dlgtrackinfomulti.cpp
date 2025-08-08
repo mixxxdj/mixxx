@@ -754,7 +754,6 @@ void DlgTrackInfoMulti::saveTracks() {
             rawToSave = placeholders.join(';');
         }
     }
-
     const QString composer = validEditText(txtComposer);
     const QString grouping = validEditText(txtGrouping);
     const QString year = validEditText(txtYear);
@@ -832,8 +831,6 @@ void DlgTrackInfoMulti::saveTracks() {
             QString updatedRawGenre = placeholders.join(';');
 
             rec.refMetadata().refTrackInfo().setGenre(updatedRawGenre);
-            const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(updatedRawGenre);
-            m_genreDao.updateGenreTracksForTrack(rec.getId(), genreIds);
         }
         if (!composer.isNull()) {
             rec.refMetadata().refTrackInfo().setComposer(composer);

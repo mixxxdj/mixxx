@@ -22,6 +22,10 @@ class WCoverArtMenu;
 class WCoverArtLabel;
 class DlgTagFetcher;
 
+class QScrollArea;
+class QHBoxLayout;
+class QWidget;
+
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
 /// QModelIndex along with TrackModel to enable previous and next buttons
@@ -99,6 +103,17 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void clear();
     void init();
 
+    // Inline Genre Tags UI
+    void genreTagsInitUi();
+    void genreSetTags(const QStringList& names);
+    QStringList genreTags() const {
+        return m_genreTagNames;
+    }
+    QWidget* genreCreateChip(const QString& name);
+    void genreRebuildChips();
+    void genreAddTag(const QString& name);
+    void genreRemoveTag(const QString& name);
+
     void updateKeyText();
     void displayKeyText();
 
@@ -133,6 +148,13 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     mixxx::Bpm m_lastTapedBpm;
 
     QHash<QString, QWidget*> m_propertyWidgets;
+
+    // Genre tag UI state
+    QScrollArea* m_genreTagsArea = nullptr;
+    QWidget* m_genreTagsContainer = nullptr;
+    QHBoxLayout* m_genreTagsLayout = nullptr;
+    QStringList m_genreTagNames;
+    QSet<QString> m_genreSeenLower;
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
