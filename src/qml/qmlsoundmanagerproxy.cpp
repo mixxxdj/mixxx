@@ -257,7 +257,7 @@ std::shared_ptr<SoundManager> QmlSoundManagerProxy::internal() const {
 
 void QmlSoundManagerProxy::commit() {
     m_commitInProgress.storeRelease(1);
-    m_pSoundManager->closeActiveConfig();
+    m_pSoundManager->closeActiveConfig(true);
 }
 
 } // namespace qml

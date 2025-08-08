@@ -574,13 +574,20 @@ Category {
             AudioRouter {
                 id: router
                 anchors.fill: parent
-                opacity: root.committing ? 0.5 : 1
             }
-            MouseArea {
+            Rectangle {
                 anchors.fill: parent
-                enabled: root.committing
-                propagateComposedEvents: false
-                preventStealing: true
+                visible: root.committing
+                color: Qt.alpha('grey', 0.3)
+                MouseArea {
+                    anchors.fill: parent
+                    preventStealing: true
+                    hoverEnabled: true
+
+                    onWheel: (mouse)=> {
+                        mouse.accepted = true
+                    }
+                }
             }
         }
         RowLayout {
