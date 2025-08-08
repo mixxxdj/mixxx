@@ -562,24 +562,22 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
         m_iStartMouseX = x;
         m_iStartMouseY = y;
 
-        if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
-            QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
+        QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
 
-            // Coordinates from center of widget
-            double c_x = x - width() / 2;
-            double c_y = y - height() / 2;
-            double theta = (180.0 / M_PI) * atan2(c_x, -c_y);
-            m_dPrevTheta = theta;
-            m_iFullRotations = calculateFullRotations(m_pPlayPos.get());
-            theta += m_iFullRotations * 360.0;
-            m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples.get();
+        // Coordinates from center of widget
+        double c_x = x - width() / 2;
+        double c_y = y - height() / 2;
+        double theta = (180.0 / M_PI) * atan2(c_x, -c_y);
+        m_dPrevTheta = theta;
+        m_iFullRotations = calculateFullRotations(m_pPlayPos.get());
+        theta += m_iFullRotations * 360.0;
+        m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples.get();
 
-            m_pScratchPos.set(0);
-            m_pScratchToggle.set(1.0);
+        m_pScratchPos.set(0);
+        m_pScratchToggle.set(1.0);
 
-            // Trigger a mouse move to immediately line up the vinyl with the cursor
-            mouseMoveEvent(e);
-        }
+        // Trigger a mouse move to immediately line up the vinyl with the cursor
+        mouseMoveEvent(e);
     } else {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_pLoadedTrack);
