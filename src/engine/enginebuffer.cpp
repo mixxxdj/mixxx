@@ -197,6 +197,11 @@ EngineBuffer::EngineBuffer(const QString& group,
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlControl = new VinylControlControl(group, pConfig);
+    connect(m_pVinylControlControl,
+            &VinylControlControl::noVinylControlInputConfigured,
+            this,
+            // signal-to-signal
+            &EngineBuffer::noVinylControlInputConfigured);
     addControl(m_pVinylControlControl);
 #endif
 

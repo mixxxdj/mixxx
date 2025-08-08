@@ -35,6 +35,9 @@ VinylControlControl::VinylControlControl(const QString& group, UserSettingsPoint
     m_pControlVinylEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
     m_pControlVinylEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylEnabled->connectValueChangeRequest(
+            this,
+            &VinylControlControl::slotControlEnabledChangeRequest);
     m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_wantenabled"));
     m_pControlVinylWantEnabled->set(0);
     m_pControlVinylWantEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -66,6 +69,16 @@ VinylControlControl::~VinylControlControl() {
 
 void VinylControlControl::trackLoaded(TrackPointer pNewTrack) {
     m_pTrack = pNewTrack;
+}
+
+void VinylControlControl::slotControlEnabledChangeRequest(double v) {
+    // Warn the user if they try to enable vinyl control on a player with no
+    // configured input.
+    if (v > 0 && m_inputConfigured.get() <= 0) {
+        emit noVinylControlInputConfigured();
+    } else {
+        m_pControlVinylEnabled->setAndConfirm(v);
+    }
 }
 
 void VinylControlControl::notifySeekQueued() {
