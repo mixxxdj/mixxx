@@ -160,6 +160,13 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
                 setHighVisualGain(highGain);
             });
 
+    connect(pWaveformFactory,
+            &WaveformWidgetFactory::visualizeEqGainChanged,
+            this,
+            [this](bool value) { m_visualizeEqGain = value; });
+
+    m_visualizeEqGain = pWaveformFactory->visualizeEqGain();
+
     setAllChannelVisualGain(pWaveformFactory->getVisualGain(BandIndex::AllBand));
     setLowVisualGain(pWaveformFactory->getVisualGain(BandIndex::Low));
     setMidVisualGain(pWaveformFactory->getVisualGain(BandIndex::Mid));
@@ -183,7 +190,11 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         CSAMPLE_GAIN lowVisualGain = 1.0, midVisualGain = 1.0, highVisualGain = 1.0;
 
         // Only adjust low/mid/high gains if EQs are enabled.
-        if (m_pEQEnabled && m_pEQEnabled->get() > 0.0) {
+        if (!m_visualizeEqGain) {
+            lowVisualGain = m_lowVisualGain;
+            midVisualGain = m_midVisualGain;
+            highVisualGain = m_highVisualGain;
+        } else if (m_pEQEnabled && m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
                     m_pMidFilterControlObject &&
                     m_pHighFilterControlObject) {
