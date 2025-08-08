@@ -6,8 +6,8 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#include "track/track.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/enginemixer.h"
@@ -15,6 +15,7 @@
 #include "library/library.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #ifdef MIXXX_USE_QML
 #include "qml/qmlplayermanagerproxy.h"
 #endif

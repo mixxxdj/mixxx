@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 
@@ -28,4 +30,6 @@ class LegacyMidiControllerMappingFileHandler : public LegacyControllerMappingFil
 
     QDomElement outputMappingToXML(QDomDocument* doc,
             const MidiOutputMapping& mapping) const;
+
+    FRIEND_TEST(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile);
 };
