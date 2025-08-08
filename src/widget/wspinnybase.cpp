@@ -8,6 +8,7 @@
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
 #include "moc_wspinnybase.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
@@ -194,30 +195,32 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_pSlipEnabled->connectValueChanged(this, &WSpinnyBase::updateSlipEnabled);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlSpeedType = make_parented<ControlProxy>(
-            m_group, "vinylcontrol_speed_type", this, ControlFlag::NoAssertIfMissing);
-    // Initialize the rotational speed.
-    updateVinylControlSpeed(m_pVinylControlSpeedType->get());
-    // Match the vinyl control's set RPM so that the spinny widget rotates at
-    // the same speed as your physical decks, if you're using vinyl control.
-    m_pVinylControlSpeedType->connectValueChanged(this,
-            &WSpinnyBase::updateVinylControlSpeed);
+    if (PlayerManager::isDeckGroup(m_group)) {
+        m_pVinylControlSpeedType = make_parented<ControlProxy>(
+                m_group, "vinylcontrol_speed_type", this, ControlFlag::NoAssertIfMissing);
+        // Initialize the rotational speed.
+        updateVinylControlSpeed(m_pVinylControlSpeedType->get());
+        // Match the vinyl control's set RPM so that the spinny widget rotates at
+        // the same speed as your physical decks, if you're using vinyl control.
+        m_pVinylControlSpeedType->connectValueChanged(this,
+                &WSpinnyBase::updateVinylControlSpeed);
 
-    m_pVinylControlEnabled = make_parented<ControlProxy>(
-            m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
-    updateVinylControlEnabled(m_pVinylControlEnabled->get());
-    m_pVinylControlEnabled->connectValueChanged(this,
-            &WSpinnyBase::updateVinylControlEnabled);
+        m_pVinylControlEnabled = make_parented<ControlProxy>(
+                m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
+        updateVinylControlEnabled(m_pVinylControlEnabled->get());
+        m_pVinylControlEnabled->connectValueChanged(this,
+                &WSpinnyBase::updateVinylControlEnabled);
 
-    m_pSignalEnabled = make_parented<ControlProxy>(
-            m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
-    updateVinylControlSignalEnabled(m_pSignalEnabled->get());
-    m_pSignalEnabled->connectValueChanged(this,
-            &WSpinnyBase::updateVinylControlSignalEnabled);
-#else
-    // if no vinyl control, just call it 33
-    this->updateVinylControlSpeed(33.0);
+        m_pSignalEnabled = make_parented<ControlProxy>(
+                m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
+        updateVinylControlSignalEnabled(m_pSignalEnabled->get());
+        m_pSignalEnabled->connectValueChanged(this,
+                &WSpinnyBase::updateVinylControlSignalEnabled);
+        return;
+    }
 #endif
+    // if no vinyl control, just call it 33
+    updateVinylControlSpeed(33.0);
 }
 
 void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
