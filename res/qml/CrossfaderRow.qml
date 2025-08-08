@@ -51,7 +51,7 @@ Item {
         width: root.crossfaderWidth
         height: crossfaderSlider.height + 20
 
-        Skin.ControlSlider {
+        Skin.ControlFader {
             id: crossfaderSlider
 
             anchors.left: parent.left
