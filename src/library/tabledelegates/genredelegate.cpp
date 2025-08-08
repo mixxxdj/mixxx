@@ -1,6 +1,8 @@
 #include "library/tabledelegates/genredelegate.h"
 
+#include <QCompleter>
 #include <QHelpEvent>
+#include <QLineEdit>
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
@@ -8,6 +10,7 @@
 #include <utility>
 
 #include "library/dao/genredao.h"
+#include "library/tabledelegates/genrelineeditor.h"
 #include "library/trackset/tracksettablemodel.h"
 #include "moc_genredelegate.cpp"
 
@@ -81,4 +84,62 @@ bool GenreDelegate::helpEvent(QHelpEvent* event,
     }
 
     return QStyledItemDelegate::helpEvent(event, view, option, index);
+}
+
+QWidget* GenreDelegate::createEditor(QWidget* parent,
+        const QStyleOptionViewItem&,
+        const QModelIndex&) const {
+    auto* editor = new GenreLineEditor(parent);
+    editor->setGenreList(m_pGenreDao->getAllGenres().values());
+    // qDebug() << "[GenreDelegate] -> vreateEditor calls (after values)";
+    return editor;
+}
+
+void GenreDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
+    auto* genreEditor = qobject_cast<GenreLineEditor*>(editor);
+    if (!genreEditor) {
+        return;
+    }
+
+    QString raw = index.model()->data(index, Qt::EditRole).toString();
+    QStringList ids = raw.split(";", Qt::SkipEmptyParts);
+    QStringList names;
+    // qDebug() << "[GenreDelegate] -> names: " << names;
+    for (const QString& id : std::as_const(ids)) {
+        QString name = m_pGenreDao->getDisplayGenreNameForGenreID(id);
+        if (!name.isEmpty()) {
+            names << name;
+        }
+    }
+    genreEditor->setInitialGenres(names);
+}
+
+void GenreDelegate::setModelData(QWidget* editor,
+        QAbstractItemModel* model,
+        const QModelIndex& index) const {
+    auto* genreEditor = qobject_cast<GenreLineEditor*>(editor);
+    if (!genreEditor) {
+        return;
+    }
+
+    QStringList names = genreEditor->genres();
+    // qDebug() << "[GenreDelegate] -> names: " << names;
+    QString encoded = m_pGenreDao->getIdsForGenreNames(names.join("; "));
+    model->setData(index, encoded, Qt::EditRole);
+
+    QList<GenreId> genreIds = m_pGenreDao->getGenreIdsFromIdString(encoded);
+
+    TrackId trackId;
+    QVariant trackIdData = model->data(
+            index.siblingAtColumn(ColumnCache::COLUMN_LIBRARYTABLE_ID),
+            Qt::EditRole);
+    qDebug() << "trackIdData; " << trackIdData;
+
+    if (trackIdData.isValid()) {
+        trackId = TrackId(trackIdData);
+        m_pGenreDao->updateGenreTracksForTrack(trackId, genreIds);
+    } else {
+        qWarning() << "[GenreDelegate] Could not retrieve TrackId for updateGenreTracksForTrack";
+        return;
+    }
 }

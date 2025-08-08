@@ -87,43 +87,6 @@ void GenreTableModel::selectGenre(GenreId genreId) {
                                     genreId),
                             LIBRARYTABLE_MIXXXDELETED);
 
-    //// convert to not using henre_tracks
-    // QStringList genreTags;
-    // genreTags << QString("##%1##").arg(genreId.toString());
-
-    //// find existing display_group for genreId
-    // QSqlQuery displayGroupQuery(m_database);
-    // displayGroupQuery.prepare("SELECT id FROM genres WHERE display_group = :group_id");
-    // displayGroupQuery.bindValue(":group_id", genreId.toVariant());
-
-    // if (!displayGroupQuery.exec()) {
-    //     qWarning() << "[GenreStorage] Failed to load display group members:"
-    //     << displayGroupQuery.lastError().text();
-    // } else {
-    //     while (displayGroupQuery.next()) {
-    //         genreTags <<
-    //         QString("##%1##").arg(displayGroupQuery.value(0).toInt());
-    //     }
-    // }
-
-    //// construct where-clause
-    // QStringList likeClauses;
-    // for (const QString& tag : genreTags) {
-    //     likeClauses << QString("library.genre LIKE '%%1%'").arg(tag);
-    // }
-    // QString whereClause = likeClauses.join(" OR ");
-
-    //// create temp view query
-    // QString queryString =
-    //         QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-    //                 "SELECT %2 FROM %3 "
-    //                 "WHERE (%4) AND %5=0")
-    //                 .arg(tableName,
-    //                         columns.join(","),
-    //                         LIBRARY_TABLE,
-    //                         whereClause,
-    //                         LIBRARYTABLE_MIXXXDELETED);
-
     // qDebug() << "GenreTableModel::selectGenre -> queryString: " << queryString;
     FwdSqlQuery(m_database, queryString).execPrepared();
 
@@ -589,21 +552,6 @@ void GenreTableModel::editGenre(GenreId genreId) {
         qDebug() << "[GenreTableModel] -> editGenre -> error getting genre";
         return;
     }
-
-    // qDebug() << "[GenreTableModel] -> editGenre -> genre id" <<
-    // genre.getId(); qDebug() << "[GenreTableModel] -> editGenre -> genre name"
-    // << genre.getName(); qDebug() << "[GenreTableModel] -> editGenre -> genre
-    // name_level_1" << genre.getNameLevel1(); qDebug() << "[GenreTableModel] ->
-    // editGenre -> genre name_level_2" << genre.getNameLevel2(); qDebug() <<
-    // "[GenreTableModel] -> editGenre -> genre name_level_3" <<
-    // genre.getNameLevel3(); qDebug() << "[GenreTableModel] -> editGenre ->
-    // genre name_level_4" << genre.getNameLevel4(); qDebug() <<
-    // "[GenreTableModel] -> editGenre -> genre name_level_5" <<
-    // genre.getNameLevel5(); qDebug() << "[GenreTableModel] -> editGenre ->
-    // genre display_group" << genre.getDisplayGroup(); qDebug() <<
-    // "[GenreTableModel] -> editGenre -> genre is_visible" <<
-    // genre.isVisible(); qDebug() << "[GenreTableModel] -> editGenre -> genre
-    // is_model_defined" << genre.isUserDefined();
 
     QDialog dialog;
     dialog.setWindowTitle(QObject::tr("Edit Genre"));
@@ -1262,18 +1210,6 @@ void GenreTableModel::EditOrphanTrackGenres() {
             for (const QString& tag : tags)
                 genreField.replace(tag, " ");
 
-            // old but longer strings should be displayed too
-            // like 'classica - opera', this was only 'classica' and 'opera'
-            // const QStringList candidates =
-            // genreField.split(QRegularExpression("[;\\s]"),
-            // Qt::SkipEmptyParts); for (QString orphan : candidates) {
-            //    orphan = orphan.trimmed();
-            //    if (!orphan.isEmpty()) {
-            //        orphanGenreStrings.insert(orphan);
-            //        m_orphanToTrackIds[orphan].append(trackId.toVariant().toInt());
-            //    }
-            //}
-
             // adapted to add the long strings in the orphan editor too
             QStringList semicolonParts = genreField.split(';', Qt::SkipEmptyParts);
             for (QString part : std::as_const(semicolonParts)) {
@@ -1284,20 +1220,6 @@ void GenreTableModel::EditOrphanTrackGenres() {
                 // 1st:  full part like "classica - opera"
                 orphanGenreStrings.insert(part);
                 m_orphanToTrackIds[part].append(trackId.toVariant().toInt());
-
-                // 2nd: if the part contains spaces (no semicolon), also add
-                // individual words as orphans 1st version still adding symbols
-                // and characters as orphans if (part.contains(' ') &&
-                // !part.contains(';')) {
-                //    QStringList spaceParts = part.split(' ',
-                //    Qt::SkipEmptyParts); for (QString word : spaceParts) {
-                //        word = word.trimmed();
-                //        if (!word.isEmpty()) {
-                //            orphanGenreStrings.insert(word);
-                //            m_orphanToTrackIds[word].append(trackId.toVariant().toInt());
-                //        }
-                //    }
-                //}
 
                 // now we don't see short strings or meaningful words as possible orphans
                 if (part.contains(' ') && !part.contains(';')) {
@@ -1544,17 +1466,6 @@ void GenreTableModel::EditOrphanTrackGenres() {
                                       "to update genre field for track"
                                    << id << ":" << updateQuery.lastError();
                     }
-
-                    // QSqlQuery updateQuery(m_database);
-                    // updateQuery.prepare(QStringLiteral("UPDATE %1 SET genre =
-                    // :newGenre WHERE id = :trackId").arg(LIBRARY_TABLE));
-                    // updateQuery.bindValue(":newGenre", newGenre);
-                    // updateQuery.bindValue(":trackId", id);
-                    // if (!updateQuery.exec()) {
-                    //     qWarning() << "[GenreTableModel] Failed to update
-                    //     genre for track" << id << ":" <<
-                    //     updateQuery.lastError();
-                    // }
                 }
 
                 // insert into genre_tracks
@@ -1646,200 +1557,6 @@ void GenreTableModel::exportGenresToCsv() {
             tr("Export Complete"),
             tr("Genres have been successfully exported to:\n%1").arg(fileName));
 }
-
-// void GenreTableModel::importGenresFromCsv() {
-//     const QString filePath = QFileDialog::getOpenFileName(
-//             nullptr,
-//             tr("Import Genres from CSV"),
-//             QDir::homePath(),
-//             tr("CSV Files (*.csv);;All Files (*)"));
-//
-//     if (filePath.isEmpty()) {
-//         return;
-//     }
-//
-//     QFile file(filePath);
-//     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-//         QMessageBox::warning(nullptr, tr("Import Failed"), tr("Could not open
-//         file for reading.")); return;
-//     }
-//
-//     QTextStream in(&file);
-//     in.setEncoding(QStringConverter::Utf8);
-//
-//     QList<QVariantList> rows;
-//     bool firstLine = true;
-//     while (!in.atEnd()) {
-//         const QString line = in.readLine();
-//         if (line.trimmed().isEmpty()) {
-//             continue;
-//         }
-//
-//         const QStringList columns = line.split(',');
-//
-//         if (columns.size() < 15) {
-//             continue; // Skip malformed rows
-//         }
-//
-//         // Skip header row if detected
-//         if (firstLine) {
-//             QString headerCandidate = columns.join("").toLower();
-//             if (headerCandidate.contains("name") ||
-//             headerCandidate.contains("id")) {
-//                 firstLine = false;
-//                 continue;
-//             }
-//         }
-//         firstLine = false;
-//
-//         QVariantList values;
-//         for (const QString& column : columns) {
-//             values.append(column.trimmed());
-//         }
-//         rows.append(values);
-//     }
-//     file.close();
-//
-//     const int numRecords = rows.size();
-//     QSqlQuery query(m_database);
-//     int importedCount = 0;
-//     QSet<QString> existingNames;
-//
-//     if (numRecords == 0) {
-//         QMessageBox::information(nullptr, tr("No Records"), tr("The CSV file
-//         does not contain any valid genre records.")); return;
-//     }
-//
-//     QMessageBox::StandardButton reply = QMessageBox::question(
-//             nullptr,
-//             tr("Import Genres"),
-//             tr("Found %1 records in the CSV file.\n\n"
-//                "Do you want to delete all existing genres before import?\n\n"
-//                "Press Yes to delete existing genres.\n"
-//                "Press No to only add new genres that do not exist yet.")
-//                     .arg(numRecords),
-//             QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-//
-//     if (reply == QMessageBox::Cancel) {
-//         return;
-//     }
-//
-//     if (reply == QMessageBox::Yes) {
-//         //QSqlQuery deleteQuery(m_database);
-//         //deleteQuery.prepare(QStringLiteral("DELETE FROM genres"));
-//         ////if (!deleteQuery.exec(QStringLiteral("DELETE FROM genres"))) {
-//         //if (!deleteQuery.exec()) {
-//         //    qWarning() << "[GenreTableModel] Failed to delete existing
-//         genres:" << deleteQuery.lastError().text();
-//         //    QMessageBox::warning(nullptr, tr("Import Genres"), tr("Failed
-//         to delete existing genres from database."));
-//         //    qDebug() << "ImportCSV -> deleting existing genres failed";
-//         //    return;
-//         //} else {
-//         //    m_database.commit();
-//         //    qDebug() << "ImportCSV -> deleting existing genres Succeeded";
-//         //}
-//         //  Step 1: Load all genre IDs
-//         QSqlQuery selectQuery(m_database);
-//         if (!selectQuery.exec(QStringLiteral("SELECT id FROM genres"))) {
-//             qWarning() << "[GenreTableModel] Failed to query existing genre
-//             IDs:" << selectQuery.lastError().text();
-//             QMessageBox::warning(nullptr, tr("Import Genres"), tr("Failed to
-//             retrieve genre list from database.")); return;
-//         }
-//
-//         ///TrackCollection* trackCollection =
-//         TrackCollectionManager::internalCollection(); TrackCollection*
-//         pTrackCollection;
-//         //(TrackCollectionManager()->internalCollection()),
-//         if (!pTrackCollection) {
-//             qWarning() << "[GenreTableModel] TrackCollection not available.";
-//             return;
-//         }
-//
-//         QList<GenreId> genreIdsToDelete;
-//         while (selectQuery.next()) {
-//             //genreIdsToDelete.append(GenreId(selectQuery.value(0).toInt()));
-//             //genreIdsToDelete.append(GenreId::fromValue(selectQuery.value(0).toInt()));
-//             genreIdsToDelete.append(makeStrongTypedId<GenreTag>(selectQuery.value(0).toInt()));
-//
-//         }
-//
-//         // Step 2: Delete each genre using the official API
-//         int deletedCount = 0;
-//         for (const GenreId& genreId : genreIdsToDelete) {
-//             if (pTrackCollection->deleteGenre(genreId)) {
-//                 ++deletedCount;
-//             } else {
-//                 qWarning() << "[GenreTableModel] Failed to delete genre with
-//                 ID:" << genreId;
-//             }
-//         }
-//         qDebug() << "ImportCSV -> deleted genres:" << deletedCount;
-//
-//
-//
-//         existingNames.clear(); // Clear cached existing names since we wiped
-//         the table
-//     }
-//
-//     if (reply == QMessageBox::No) {
-//         query.exec("SELECT name FROM genres");
-//         while (query.next()) {
-//             existingNames.insert(query.value(0).toString().toLower());
-//         }
-//     }
-//
-//     //query.prepare(R"(
-//     //query.prepare("
-//     query.prepare(QStringLiteral(
-//         "INSERT INTO genres ("
-//         "name, name_level_1, name_level_2, name_level_3, name_level_4,
-//         name_level_5, " "display_group, display_order, is_visible,
-//         is_model_defined, count, show, " "locked, autodj_source) " "VALUES (
-//         "
-//         ":name, :l1, :l2, :l3, :l4, :l5, "
-//         ":group, :order, :visible, :model, :count, :show, :locked,
-//         :autodj)"));
-//
-//     for (const QVariantList& row : rows) {
-//         const QString name = row[1].toString().trimmed(); // name is at index
-//         1 if (name.isEmpty()) {
-//             continue;
-//         }
-//
-//         if (reply == QMessageBox::No &&
-//         existingNames.contains(name.toLower())) {
-//             continue;
-//         }
-//
-//         query.bindValue(":name", name);
-//         query.bindValue(":l1", row[2]);
-//         query.bindValue(":l2", row[3]);
-//         query.bindValue(":l3", row[4]);
-//         query.bindValue(":l4", row[5]);
-//         query.bindValue(":l5", row[6]);
-//         query.bindValue(":group", row[7]);
-//         query.bindValue(":order", row[8]);
-//         query.bindValue(":visible", row[9]);
-//         query.bindValue(":model", row[10]);
-//         query.bindValue(":count", row[11]);
-//         query.bindValue(":show", row[12]);
-//         query.bindValue(":locked", row[13]);
-//         query.bindValue(":autodj", row[14]);
-//
-//         if (query.exec()) {
-//             importedCount++;
-//         }
-//     }
-//
-//
-//     QMessageBox::information(
-//             nullptr,
-//             tr("Import Completed"),
-//             tr("Imported %1 genre(s) from the CSV
-//             file.").arg(importedCount));
-// }
 
 void GenreTableModel::importGenresFromCsv() {
     QString filePath = QFileDialog::getOpenFileName(
