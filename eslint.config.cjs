@@ -48,6 +48,7 @@ module.exports = tseslint.config(
                 // Mixxx custom
                 "ColorMapper": "readonly",
                 "components": "readonly",
+                "controller": "readonly",
                 "engine": "readonly",
                 "midi": "readonly",
                 // common-controller-scripts globals
