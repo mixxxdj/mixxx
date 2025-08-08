@@ -118,9 +118,6 @@ class SoundManager : public QObject {
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
 
-  private slots:
-    void completeDevicesClosing();
-
   private:
     // Closes all the devices and empties the list of devices we have.
     void clearDeviceList(bool sleepAfterClosing);
