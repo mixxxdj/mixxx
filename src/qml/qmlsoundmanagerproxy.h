@@ -11,6 +11,7 @@
 
 #include "control/pollingcontrolproxy.h"
 #include "engine/enginebuffer.h"
+#include "qml_owned_ptr.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 
@@ -24,34 +25,52 @@ class QmlSoundDeviceConnection;
 class QmlSoundDeviceProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString displayName READ getDisplayName CONSTANT)
-    Q_PROPERTY(QmlSoundDeviceProxy::Type type MEMBER m_type CONSTANT)
     Q_PROPERTY(uint channelCount READ getChannelCount CONSTANT)
-    QML_NAMED_ELEMENT(SoundDevice)
-    QML_UNCREATABLE("Use Mixxx.SoundManager to get devices")
+    QML_ANONYMOUS
   public:
-    enum class Type {
-        Input,
-        Output,
-    };
-    Q_ENUM(Type)
-    explicit QmlSoundDeviceProxy(SoundDevicePointer pInternal, Type type, QObject* parent);
+    explicit QmlSoundDeviceProxy(SoundDevicePointer pInternal, QObject* parent)
+            : QObject(parent),
+              m_pInternal(std::move(pInternal)) {
+    }
 
     QString getDisplayName() const {
         return m_pInternal->getDisplayName();
     }
-    Type getType() const {
-        return m_type;
-    }
 
-    uint getChannelCount() const;
+    virtual uint getChannelCount() const = 0;
     SoundDeviceId getDeviceId() const;
 
-    Q_INVOKABLE QList<mixxx::qml::QmlSoundDeviceConnection*> connections(
-            mixxx::qml::QmlSoundManagerProxy* manager);
+    Q_INVOKABLE virtual QList<mixxx::qml::QmlSoundDeviceConnection*> connections(
+            mixxx::qml::QmlSoundManagerProxy* manager) = 0;
 
-  private:
+  protected:
     SoundDevicePointer m_pInternal;
-    Type m_type;
+};
+
+class QmlSoundInputDeviceProxy : public QmlSoundDeviceProxy {
+    Q_OBJECT
+    QML_NAMED_ELEMENT(InputDevice)
+    QML_UNCREATABLE("Use Mixxx.SoundManager to get devices")
+  public:
+    explicit QmlSoundInputDeviceProxy(SoundDevicePointer pInternal, QObject* parent)
+            : QmlSoundDeviceProxy(std::move(pInternal), parent) {
+    }
+    uint getChannelCount() const override;
+    Q_INVOKABLE QList<mixxx::qml::QmlSoundDeviceConnection*> connections(
+            mixxx::qml::QmlSoundManagerProxy* manager) override;
+};
+
+class QmlSoundOutputDeviceProxy : public QmlSoundDeviceProxy {
+    Q_OBJECT
+    QML_NAMED_ELEMENT(OutputDevice)
+    QML_UNCREATABLE("Use Mixxx.SoundManager to get devices")
+  public:
+    explicit QmlSoundOutputDeviceProxy(SoundDevicePointer pInternal, QObject* parent)
+            : QmlSoundDeviceProxy(std::move(pInternal), parent) {
+    }
+    uint getChannelCount() const override;
+    Q_INVOKABLE QList<mixxx::qml::QmlSoundDeviceConnection*> connections(
+            mixxx::qml::QmlSoundManagerProxy* manager) override;
 };
 
 class QmlSoundDeviceConnection : public QObject {
@@ -59,8 +78,7 @@ class QmlSoundDeviceConnection : public QObject {
     Q_PROPERTY(int type READ getType CONSTANT)
     Q_PROPERTY(uchar channelGroup READ getChannelGroup CONSTANT)
     Q_PROPERTY(uchar index READ getIndex CONSTANT)
-    QML_NAMED_ELEMENT(Connection)
-    QML_UNCREATABLE("Use Mixxx.SoundDevice to get connections")
+    QML_ANONYMOUS
   public:
     QmlSoundDeviceConnection(std::unique_ptr<AudioPath> path, QObject* parent = nullptr)
             : QObject(parent),
@@ -73,6 +91,26 @@ class QmlSoundDeviceConnection : public QObject {
 
   private:
     std::unique_ptr<AudioPath> m_audioPath;
+};
+
+class QmlSoundDeviceInputConnection : public QmlSoundDeviceConnection {
+    Q_OBJECT
+    QML_NAMED_ELEMENT(InputConnection)
+    QML_UNCREATABLE("Use Mixxx.SoundDevice to get connections")
+  public:
+    QmlSoundDeviceInputConnection(std::unique_ptr<AudioPath> path, QObject* parent = nullptr)
+            : QmlSoundDeviceConnection(std::move(path), parent) {
+    }
+};
+
+class QmlSoundDeviceOutputConnection : public QmlSoundDeviceConnection {
+    Q_OBJECT
+    QML_NAMED_ELEMENT(OutputConnection)
+    QML_UNCREATABLE("Use Mixxx.SoundDevice to get connections")
+  public:
+    QmlSoundDeviceOutputConnection(std::unique_ptr<AudioPath> path, QObject* parent = nullptr)
+            : QmlSoundDeviceConnection(std::move(path), parent) {
+    }
 };
 
 class QmlSoundManagerProxy : public QObject {
@@ -104,11 +142,11 @@ class QmlSoundManagerProxy : public QObject {
     Q_INVOKABLE unsigned int getAudioBufferSizeIndex() const;
     Q_INVOKABLE void setAudioBufferSizeIndex(unsigned int latency);
     Q_INVOKABLE QList<uint32_t> getSampleRates(const QString& filterAPI) const;
-    Q_INVOKABLE void addOutput(mixxx::qml::QmlSoundDeviceProxy* device,
+    Q_INVOKABLE void addOutput(mixxx::qml::QmlSoundOutputDeviceProxy* device,
             int type,
             unsigned char channelGroup,
             unsigned char index);
-    Q_INVOKABLE void addInput(mixxx::qml::QmlSoundDeviceProxy* device,
+    Q_INVOKABLE void addInput(mixxx::qml::QmlSoundInputDeviceProxy* device,
             int type,
             unsigned char channelGroup,
             unsigned char index);

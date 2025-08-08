@@ -3455,7 +3455,7 @@ if(QML)
       src/qml/qmlwaveformrenderer.cpp
       src/qml/qmlsettingparameter.cpp
       src/qml/qmltrackproxy.cpp
-      src/qml/qmlpreferencesproxy.cpp
+      src/qml/qmlsoundmanagerproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp

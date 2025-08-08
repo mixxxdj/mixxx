@@ -124,7 +124,6 @@ Rectangle {
             cardName = !cardName ? "Unnamed card" : cardName
             deviceName = !deviceName ? "Default" : deviceName
             console.log(`cardName=${cardName},deviceName=${deviceName}`)
-            console.log(`cards=${cards[cardName]}`)
             if (cards[cardName] === undefined) {
                 cards[cardName] = {
                     gateways: {
@@ -139,6 +138,7 @@ Rectangle {
                 }
                 continue
             }
+            console.log(`cards=${cards[cardName]}`)
 
             // If the group (card name) has already a "Default" channel, we add the new channel as "Default #N" for better UX
             if (cards[cardName].gateways[deviceName] !== undefined) {

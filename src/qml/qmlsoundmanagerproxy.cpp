@@ -1,10 +1,11 @@
-#include "qmlpreferencesproxy.h"
+#include "qmlsoundmanagerproxy.h"
 
 #include <qqmlengine.h>
 
 #include <memory>
 
-#include "moc_qmlpreferencesproxy.cpp"
+#include "moc_qmlsoundmanagerproxy.cpp"
+#include "qml_owned_ptr.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/assert.h"
@@ -20,45 +21,47 @@ const ConfigKey kKeylockEngineCfgkey =
 
 } // namespace
 
-QmlSoundDeviceProxy::QmlSoundDeviceProxy(
-        SoundDevicePointer pInternal, Type type, QObject* parent)
-        : QObject(parent),
-          m_pInternal(pInternal),
-          m_type(type) {
+uint QmlSoundInputDeviceProxy::getChannelCount() const {
+    return m_pInternal->getNumInputChannels();
 }
-uint QmlSoundDeviceProxy::getChannelCount() const {
-    return m_type == Type::Input ? m_pInternal->getNumInputChannels()
-                                 : m_pInternal->getNumOutputChannels();
+uint QmlSoundOutputDeviceProxy::getChannelCount() const {
+    return m_pInternal->getNumOutputChannels();
 }
 SoundDeviceId QmlSoundDeviceProxy::getDeviceId() const {
     return m_pInternal->getDeviceId();
 }
 
-QList<QmlSoundDeviceConnection*> QmlSoundDeviceProxy::connections(QmlSoundManagerProxy* manager) {
+QList<QmlSoundDeviceConnection*> QmlSoundInputDeviceProxy::connections(
+        mixxx::qml::QmlSoundManagerProxy* manager) {
+    DEBUG_ASSERT(qml_owned_ptr<mixxx::qml::QmlSoundManagerProxy>(manager));
     QList<QmlSoundDeviceConnection*> connections;
 
     auto pManager = manager->internal();
     auto config = pManager->getConfig();
 
-    if (m_type == Type::Input) {
-        const auto inputDeviceMap = config.getInputs();
-        for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
-            if (it.key() == getDeviceId()) {
-                connections.push_back(new QmlSoundDeviceConnection(
-                        std::make_unique<AudioInput>(it.value()), this));
-            }
-        }
-    } else {
-        const auto ouputDeviceMap = config.getOutputs();
-        for (auto it = ouputDeviceMap.cbegin(); it != ouputDeviceMap.cend(); ++it) {
-            if (it.key() == getDeviceId()) {
-                connections.push_back(new QmlSoundDeviceConnection(
-                        std::make_unique<AudioOutput>(it.value()), this));
-            }
+    const auto inputDeviceMap = config.getInputs();
+    for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
+        if (it.key() == getDeviceId()) {
+            connections.push_back(make_qml_owned<QmlSoundDeviceConnection>(
+                    std::make_unique<AudioInput>(it.value()), this));
         }
     }
-    for (auto* pConnection : connections) {
-        QQmlEngine::setObjectOwnership(pConnection, QQmlEngine::JavaScriptOwnership);
+    return connections;
+}
+
+QList<QmlSoundDeviceConnection*> QmlSoundOutputDeviceProxy::connections(
+        mixxx::qml::QmlSoundManagerProxy* manager) {
+    DEBUG_ASSERT(qml_owned_ptr<mixxx::qml::QmlSoundManagerProxy>(manager));
+    QList<QmlSoundDeviceConnection*> connections;
+
+    auto pManager = manager->internal();
+    auto config = pManager->getConfig();
+    const auto ouputDeviceMap = config.getOutputs();
+    for (auto it = ouputDeviceMap.cbegin(); it != ouputDeviceMap.cend(); ++it) {
+        if (it.key() == getDeviceId()) {
+            connections.push_back(make_qml_owned<QmlSoundDeviceConnection>(
+                    std::make_unique<AudioOutput>(it.value()), this));
+        }
     }
     return connections;
 }
@@ -66,6 +69,7 @@ QList<QmlSoundDeviceConnection*> QmlSoundDeviceProxy::connections(QmlSoundManage
 int QmlSoundDeviceConnection::getType() const {
     return static_cast<int>(m_audioPath->getType());
 }
+
 uchar QmlSoundDeviceConnection::getChannelGroup() const {
     auto group = m_audioPath->getChannelGroup();
     return group.getChannelBase();
@@ -110,7 +114,7 @@ QmlSoundManagerProxy* QmlSoundManagerProxy::create(
         qWarning() << "SoundManager hasn't been registered yet";
         return nullptr;
     }
-    return new QmlSoundManagerProxy(s_pSoundManager, pQmlEngine);
+    return make_qml_owned<QmlSoundManagerProxy>(s_pSoundManager, pQmlEngine);
 }
 
 QList<QString> QmlSoundManagerProxy::getHostAPIList() const {
@@ -121,8 +125,7 @@ QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableInputDevices(const QS
     QList<QmlSoundDeviceProxy*> devices;
 
     for (const auto& device : m_pSoundManager->getDeviceList(filterAPI, false, true)) {
-        devices.push_back(new QmlSoundDeviceProxy(device, QmlSoundDeviceProxy::Type::Input, this));
-        QJSEngine::setObjectOwnership(devices.last(), QJSEngine::JavaScriptOwnership);
+        devices.push_back(make_qml_owned<QmlSoundInputDeviceProxy>(device, this));
     }
 
     return devices;
@@ -132,8 +135,7 @@ QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableOutputDevices(const Q
     QList<QmlSoundDeviceProxy*> devices;
 
     for (const auto& device : m_pSoundManager->getDeviceList(filterAPI, true, false)) {
-        devices.push_back(new QmlSoundDeviceProxy(device, QmlSoundDeviceProxy::Type::Output, this));
-        QJSEngine::setObjectOwnership(devices.last(), QJSEngine::JavaScriptOwnership);
+        devices.push_back(make_qml_owned<QmlSoundOutputDeviceProxy>(device, this));
     }
 
     return devices;
@@ -209,11 +211,11 @@ void QmlSoundManagerProxy::setAudioBufferSizeIndex(unsigned int latency) {
     m_config.setAudioBufferSizeIndex(latency);
 }
 
-void QmlSoundManagerProxy::addOutput(QmlSoundDeviceProxy* device,
+void QmlSoundManagerProxy::addOutput(QmlSoundOutputDeviceProxy* device,
         int type,
         unsigned char channelGroup,
         unsigned char index) {
-    VERIFY_OR_DEBUG_ASSERT(device && device->getType() == QmlSoundDeviceProxy::Type::Output) {
+    VERIFY_OR_DEBUG_ASSERT(device && qml_owned_ptr<QmlSoundOutputDeviceProxy>(device)) {
         return;
     }
     m_config.addOutput(device->getDeviceId(),
@@ -223,11 +225,11 @@ void QmlSoundManagerProxy::addOutput(QmlSoundDeviceProxy* device,
                     index));
 }
 
-void QmlSoundManagerProxy::addInput(QmlSoundDeviceProxy* device,
+void QmlSoundManagerProxy::addInput(QmlSoundInputDeviceProxy* device,
         int type,
         unsigned char channelGroup,
         unsigned char index) {
-    VERIFY_OR_DEBUG_ASSERT(device && device->getType() == QmlSoundDeviceProxy::Type::Input) {
+    VERIFY_OR_DEBUG_ASSERT(device && qml_owned_ptr<QmlSoundInputDeviceProxy>(device)) {
         return;
     }
     m_config.addInput(device->getDeviceId(),

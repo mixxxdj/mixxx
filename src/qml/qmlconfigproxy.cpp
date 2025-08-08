@@ -1,11 +1,8 @@
 #include "qml/qmlconfigproxy.h"
 
-#include <qvariant.h>
-
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
-#include "util/assert.h"
 
 namespace {
 QVariantList paletteToQColorList(const ColorPalette& palette) {
