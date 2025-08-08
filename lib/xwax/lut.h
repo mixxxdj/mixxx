@@ -20,10 +20,13 @@
 #ifndef LUT_H
 #define LUT_H
 
+#include "types.h"
+
 typedef unsigned int slot_no_t;
+typedef unsigned int bits_t;
 
 struct slot {
-    unsigned int timecode;
+    bits_t timecode;
     slot_no_t next; /* next slot with the same hash */
 };
 
@@ -36,7 +39,7 @@ struct lut {
 int lut_init(struct lut *lut, int nslots);
 void lut_clear(struct lut *lut);
 
-void lut_push(struct lut *lut, unsigned int timecode);
-unsigned int lut_lookup(struct lut *lut, unsigned int timecode);
+void lut_push(struct lut *lut, bits_t timecode);
+unsigned int lut_lookup(struct lut *lut, bits_t timecode);
 
 #endif
