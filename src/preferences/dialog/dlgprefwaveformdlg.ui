@@ -88,6 +88,17 @@ Select from different types of displays for the waveform, which differ primarily
      </item>
 
      <item row="4" column="0">
+      <widget class="QLabel" name="waveformSamplingMethodLabel">
+       <property name="text">
+        <string>Waveform sampling method</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1" colspan="4">
+      <widget class="QComboBox" name="waveformSamplingMethodComboBox"/>
+     </item>
+
+     <item row="5" column="0">
       <widget class="QLabel" name="frameRateLabel">
        <property name="text">
         <string>Frame rate</string>
@@ -100,7 +111,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="3">
+     <item row="5" column="1" colspan="3">
       <widget class="QSlider" name="frameRateSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -128,7 +139,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="4" column="4">
+     <item row="5" column="4">
       <widget class="QSpinBox" name="frameRateSpinBox">
        <property name="toolTip">
         <string/>
@@ -148,7 +159,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="endOfTrackWarningTimeLabel">
        <property name="text">
         <string>End of track warning</string>
@@ -161,7 +172,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="3">
+     <item row="6" column="1" colspan="3">
       <widget class="QSlider" name="endOfTrackWarningTimeSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -189,7 +200,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="5" column="4">
+     <item row="6" column="4">
       <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
        <property name="toolTip">
         <string>Highlight the waveforms when the last seconds of a track remains.</string>
@@ -209,7 +220,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="BeatgridWaveform">
        <property name="toolTip">
         <string/>
@@ -225,7 +236,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="3">
+     <item row="7" column="1" colspan="3">
       <widget class="QSlider" name="beatGridAlphaSlider">
        <property name="maximum">
         <number>100</number>
@@ -238,7 +249,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="6" column="4">
+     <item row="7" column="4">
       <widget class="QSpinBox" name="beatGridAlphaSpinBox">
        <property name="toolTip">
         <string>Set amount of opacity on beat grid lines.</string>
@@ -255,14 +266,14 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="playMarkerPositionLabel">
        <property name="text">
         <string>Play marker position</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="4">
+     <item row="8" column="1" colspan="4">
       <widget class="QSlider" name="playMarkerPositionSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -294,7 +305,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="defaultZoomLabel">
        <property name="text">
         <string extracomment="Waveform zoom">Default zoom level</string>
@@ -307,11 +318,11 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="4">
+     <item row="9" column="1" colspan="4">
       <widget class="QComboBox" name="defaultZoomComboBox"/>
      </item>
 
-     <item row="9" column="1" colspan="4">
+     <item row="10" column="1" colspan="4">
       <widget class="QCheckBox" name="synchronizeZoomCheckBox">
        <property name="toolTip">
         <string>Synchronize zoom level across all waveform displays.</string>
@@ -322,7 +333,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="visualGainLabel">
        <property name="text">
         <string>Visual gain</string>
@@ -335,7 +346,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="4">
+     <item row="11" column="1" colspan="4">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
         <widget class="QLabel" name="visualGainLabel_global">
@@ -469,7 +480,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="marker_hints_label">
        <property name="text">
         <string>Play marker hints</string>
@@ -479,14 +490,14 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
+     <item row="12" column="1" colspan="2">
       <widget class="QCheckBox" name="untilMarkShowBeatsCheckBox">
        <property name="text">
         <string>Beats until next marker</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="3" colspan="2">
+     <item row="12" column="3" colspan="2">
       <widget class="QCheckBox" name="untilMarkShowTimeCheckBox">
        <property name="text">
         <string>Time until next marker</string>
@@ -494,7 +505,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="12" column="1" colspan="4">
+     <item row="13" column="1" colspan="4">
       <layout class="QHBoxLayout" name="marker_option_layout">
        <item>
         <layout class="QVBoxLayout" name="marker_options_placement_layout">
@@ -578,7 +589,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout><!-- marker_option_layout -->
      </item>
 
-     <item row="13" column="1" colspan="4">
+     <item row="14" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires waveform acceleration.</string>
@@ -685,6 +696,12 @@ Select from different types of displays for the waveform, which differ primarily
 
   <item>
    <widget class="QGroupBox" name="overview_groupbox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
     <property name="title">
      <string>Overview Waveforms</string>
     </property>

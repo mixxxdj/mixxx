@@ -10,6 +10,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
 namespace {
@@ -31,6 +32,12 @@ DlgPrefWaveform::DlgPrefWaveform(
             tr("Filtered"), QVariant::fromValue(mixxx::OverviewType::Filtered));
     waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(mixxx::OverviewType::HSV));
     waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(mixxx::OverviewType::RGB));
+
+    waveformSamplingMethodComboBox->addItem(
+            tr("Max"), QVariant::fromValue(Waveform::Sampling::MAX));
+    waveformSamplingMethodComboBox->addItem(
+            tr("RMS"), QVariant::fromValue(Waveform::Sampling::RMS));
+
     m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
     m_pTypeControl->setStates(QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
     m_pTypeControl->setReadOnly();
@@ -340,6 +347,9 @@ void DlgPrefWaveform::slotUpdate() {
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
     enableWaveformGenerationWithAnalysis->setChecked(
         waveformSettings.waveformGenerationWithAnalysisEnabled());
+    int cfgWaveformSamplingIndex = waveformSamplingMethodComboBox->findData(
+            QVariant::fromValue(waveformSettings.waveformSamplingFunction()));
+    waveformSamplingMethodComboBox->setCurrentIndex(cfgWaveformSamplingIndex);
     calculateCachedWaveformDiskUsage();
 }
 
@@ -348,6 +358,9 @@ void DlgPrefWaveform::slotApply() {
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
         enableWaveformGenerationWithAnalysis->isChecked());
+    QVariant comboboxData = waveformSamplingMethodComboBox->currentData();
+    DEBUG_ASSERT(comboboxData.canConvert<Waveform::Sampling>());
+    waveformSettings.setWaveformSamplingFunction(comboboxData.value<Waveform::Sampling>());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {

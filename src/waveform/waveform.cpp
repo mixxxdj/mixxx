@@ -1,10 +1,13 @@
 #include "waveform/waveform.h"
 
+#include <QVariant>
 #include <QtDebug>
 
 #include "analyzer/constants.h"
 #include "engine/engine.h"
+#include "moc_waveform.cpp"
 #include "proto/waveform.pb.h"
+#include "util/assert.h"
 
 using namespace mixxx::track;
 
@@ -34,7 +37,8 @@ Waveform::Waveform(
         SINT frameLength,
         int desiredVisualSampleRate,
         int maxVisualSamples,
-        int stemCount)
+        int stemCount,
+        Sampling samplingMode)
         : m_id(-1),
           m_saveState(SaveState::NotSaved),
           m_dataSize(0),
@@ -42,7 +46,8 @@ Waveform::Waveform(
           m_audioVisualRatio(0),
           m_textureStride(1024),
           m_completion(-1),
-          m_stemCount(stemCount) {
+          m_stemCount(stemCount),
+          m_sampling(samplingMode) {
     int numberOfVisualSamples = 0;
     if (audioSampleRate > 0) {
         if (maxVisualSamples == -1) {
@@ -91,12 +96,6 @@ QByteArray Waveform::toByteArray() const {
     // TODO(rryan) get the actual cutoff values from analyzerwaveform.cpp so
     // that if they change we don't have to remember to update these.
 
-    // Frequency cutoffs for butterworth filters:
-    // filtered->set_low_cutoff_frequency(200);
-    // filtered->set_mid_low_cutoff_frequency(200);
-    // filtered->set_mid_high_cutoff_frequency(2000);
-    // filtered->set_high_cutoff_frequency(2000);
-
     // Frequency cutoff for bessel_lowpass4
     filtered->set_low_cutoff_frequency(600);
     // Frequency cutoff for bessel_bandpass
@@ -110,13 +109,14 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::Signal* high = filtered->mutable_high();
 
     // TODO(vrince) set max/min for each signal
-    all->set_units(io::Waveform::RMS);
+    auto unit = m_sampling == Sampling::MAX ? io::Waveform::AMPLITUDE : io::Waveform::RMS;
+    all->set_units(unit);
     all->set_channels(mixxx::kEngineChannelOutputCount);
-    low->set_units(io::Waveform::RMS);
+    low->set_units(unit);
     low->set_channels(mixxx::kEngineChannelOutputCount);
-    mid->set_units(io::Waveform::RMS);
+    mid->set_units(unit);
     mid->set_channels(mixxx::kEngineChannelOutputCount);
-    high->set_units(io::Waveform::RMS);
+    high->set_units(unit);
     high->set_channels(mixxx::kEngineChannelOutputCount);
 
     int dataSize = getDataSize();
@@ -130,7 +130,7 @@ QByteArray Waveform::toByteArray() const {
 
     int stemIdx = 0;
     for (auto& stem : stems) {
-        stem->set_units(io::Waveform::RMS);
+        stem->set_units(unit);
         stem->set_channels(mixxx::kEngineChannelOutputCount);
         for (int i = 0; i < dataSize; ++i) {
             const WaveformData& datum = m_data.at(i);
@@ -205,29 +205,30 @@ void Waveform::readByteArray(const QByteArray& data) {
         qDebug() << "WARNING: Filtered data size does not match all-signal size.";
     }
 
-    // TODO(XXX) If non-RMS, convert but since we only save RMS today we can add
-    // this later.
-    bool low_valid = low.units() == io::Waveform::RMS;
-    bool mid_valid = mid.units() == io::Waveform::RMS;
-    bool high_valid = high.units() == io::Waveform::RMS;
+    m_sampling = low.units() == io::Waveform::RMS ? Sampling::RMS : Sampling::MAX;
+    DEBUG_ASSERT(mid.units() == low.units() && mid.units() == high.units());
+
     for (int i = 0; i < dataSize; ++i) {
         m_data[i].filtered.all = static_cast<unsigned char>(all.value(i));
-        bool use_low = low_valid && i < low.value_size();
-        bool use_mid = mid_valid && i < mid.value_size();
-        bool use_high = high_valid && i < high.value_size();
-        m_data[i].filtered.low = use_low ? static_cast<unsigned char>(low.value(i)) : 0;
-        m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
-        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
+        m_data[i].filtered.low = i < low.value_size()
+                ? static_cast<unsigned char>(low.value(i))
+                : 0;
+        m_data[i].filtered.mid = i < mid.value_size()
+                ? static_cast<unsigned char>(mid.value(i))
+                : 0;
+        m_data[i].filtered.high = i < high.value_size()
+                ? static_cast<unsigned char>(high.value(i))
+                : 0;
     }
     m_stemCount = waveform.signal_stems_size();
     for (int stemIdx = 0; stemIdx < m_stemCount; ++stemIdx) {
         const io::Waveform::Signal& stem = waveform.signal_stems(stemIdx);
-        if (stem.units() == io::Waveform::RMS && stem.value_size() > 0) {
+        if (stem.value_size() > 0) {
             for (int i = 0; i < std::min(dataSize, stem.value_size()); ++i) {
                 m_data[i].stems[stemIdx] = static_cast<unsigned char>(stem.value(i));
             }
         }
-        if (stem.units() != io::Waveform::RMS || dataSize > stem.value_size()) {
+        if (dataSize > stem.value_size()) {
             for (int i = stem.value_size(); i < dataSize; ++i) {
                 m_data[i].stems[stemIdx] = 0;
             }
@@ -254,6 +255,7 @@ void Waveform::assign(int size) {
 void Waveform::dump() const {
     qDebug() << "Waveform" << this
              << "size(" + QString::number(getDataSize()) + ")"
+             << "sampling(" + QVariant::fromValue(m_sampling).toString() + ")"
              << "stems(" + QString::number(m_stemCount) + ")"
              << "textureStride(" + QString::number(m_textureStride) + ")"
              << "completion(" + QString::number(getCompletion()) + ")"

@@ -6,8 +6,8 @@ option optimize_for = LITE_RUNTIME;
 
 message Waveform {
   enum Units {
-    RMS = 0;
-    AMPLITUDE = 1;
+    AMPLITUDE = 0;
+    RMS = 1;
   }
   message Signal {
     repeated int32 value = 1;
