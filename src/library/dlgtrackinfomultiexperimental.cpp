@@ -1355,7 +1355,7 @@ QWidget* DlgTrackInfoMultiExperimental::genreCreateChip(const QString& name) {
     auto* btn = new QToolButton(chip);
     btn->setAutoRaise(true);
     btn->setCursor(Qt::PointingHandCursor);
-    btn->setText(QString::fromUtf8("\u00D7")); // × symbol
+    btn->setText(QString::fromUtf8("\u00D7")); // Ã— symbol
     btn->setFixedSize(QSize(18, 18));
     btn->setStyleSheet(QString(
             "QToolButton {"
@@ -1449,7 +1449,7 @@ void DlgTrackInfoMultiExperimental::genreAddTag(const QString& name) {
     m_genreTagNames << nice;
     m_genreSeenLower.insert(low);
     m_pendingAdd.insert(low);
-    m_pendingRemove.remove(low); // se c’era una rimozione precedente, annullala
+    m_pendingRemove.remove(low); // se câ€™era una rimozione precedente, annullala
     genreRebuildChips();
 }
 
