@@ -21,6 +21,7 @@
 class DlgTagFetcher;
 class DlgTrackInfo;
 class DlgTrackInfoMulti;
+class DlgTrackInfoMultiExperimental;
 //class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
 class Library;
@@ -113,6 +114,7 @@ class WTrackMenu : public QMenu {
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
     void slotShowDlgTrackInfo();
+    void slotShowDlgTrackInfoExperimental();
     // Library management
     void slotRemoveFromDisk();
     const QString getDeckGroup() const;
@@ -340,6 +342,7 @@ class WTrackMenu : public QMenu {
 
     // Show track-editor action
     parented_ptr<QAction> m_pPropertiesAct;
+    parented_ptr<QAction> m_pPropertiesActExp;
 
     // Open file in default file browser
     parented_ptr<QAction> m_pFileBrowserAct;
@@ -396,6 +399,7 @@ class WTrackMenu : public QMenu {
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
+    std::unique_ptr<DlgTrackInfoMultiExperimental> m_pDlgTrackInfoMultiExperimental;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {

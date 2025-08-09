@@ -17,6 +17,7 @@
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
 #include "library/dlgtrackinfomulti.h"
+#include "library/dlgtrackinfomultiexperimental.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
@@ -384,6 +385,7 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = make_parented<QAction>(tr("Properties"), this);
+        m_pPropertiesActExp = make_parented<QAction>(tr("Properties Experimental"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
         // The keypress is caught in WTrackTableView::keyPressEvent
@@ -393,8 +395,17 @@ void WTrackMenu::createActions() {
                     QKeySequence(
                             static_cast<int>(kPropertiesShortcutModifier) |
                             kPropertiesShortcutKey));
+            m_pPropertiesActExp->setShortcut(
+                    // TODO(XXX): Qt6 replace enum | with QKeyCombination
+                    QKeySequence(
+                            static_cast<int>(kPropertiesShortcutModifier) |
+                            kPropertiesShortcutKey));
         }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
+        connect(m_pPropertiesActExp,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotShowDlgTrackInfoExperimental);
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {
@@ -804,6 +815,8 @@ void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::Properties)) {
         addSeparator();
         addAction(m_pPropertiesAct);
+        addSeparator();
+        addAction(m_pPropertiesActExp);
     }
 }
 
@@ -2921,6 +2934,74 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         m_pDlgTrackInfoMulti->loadTracks(tracks);
         m_pDlgTrackInfoMulti->show();
         m_pDlgTrackInfoMulti->focusField(m_trackProperty);
+    } else {
+        // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
+        // Create a fresh dialog on invocation.
+        auto& genreDao = m_pLibrary->trackCollectionManager()->internalCollection()->getGenreDao();
+        m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+                m_pConfig,
+                genreDao,
+                m_pTrackModel);
+        connect(m_pDlgTrackInfo.get(),
+                &QDialog::finished,
+                this,
+                [this]() {
+                    if (m_pDlgTrackInfo.get() == sender()) {
+                        m_pDlgTrackInfo.release()->deleteLater();
+                        // clear the track property name
+                        m_trackProperty.clear();
+                    }
+                });
+        // Method getFirstTrackPointer() is not applicable here!
+        // DlgTrackInfo relies on a track model for certain operations,
+        // for example show/hide the Next/Prev buttons.
+        // It can be loaded with either an index (must have a model),
+        // or a TrackPointer (must NOT have a model then).
+        m_pDlgTrackInfo->setGenreData(m_genreData);
+        if (m_pTrackModel) {
+            m_pDlgTrackInfo->loadTrack(m_trackIndexList.at(0));
+        } else {
+            m_pDlgTrackInfo->loadTrack(m_pTrack);
+        }
+        m_pDlgTrackInfo->show();
+        m_pDlgTrackInfo->focusField(m_trackProperty);
+    }
+}
+
+void WTrackMenu::slotShowDlgTrackInfoExperimental() {
+    if (isEmpty()) {
+        return;
+    }
+    loadGenreData2QVL();
+    if (m_pTrackModel && getTrackCount() > 1) {
+        // Use the batch editor.
+        // Create a fresh dialog on invocation.
+        auto& genreDao = m_pLibrary->trackCollectionManager()->internalCollection()->getGenreDao();
+        m_pDlgTrackInfoMultiExperimental = std::make_unique<DlgTrackInfoMultiExperimental>(
+                m_pConfig,
+                genreDao);
+        // m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
+        //         m_pConfig);
+        connect(m_pDlgTrackInfoMultiExperimental.get(),
+                &QDialog::finished,
+                this,
+                [this]() {
+                    if (m_pDlgTrackInfoMultiExperimental.get() == sender()) {
+                        m_pDlgTrackInfoMultiExperimental.release()->deleteLater();
+                        // clear the track property name
+                        m_trackProperty.clear();
+                    }
+                });
+        QList<TrackPointer> tracks;
+        tracks.reserve(getTrackCount());
+        for (int i = 0; i < m_trackIndexList.size(); i++) {
+            tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
+        }
+        //        m_pDlgTrackInfoMulti->setGenreData(m_genreData);
+        m_pDlgTrackInfoMultiExperimental->setGenreData(m_genreData);
+        m_pDlgTrackInfoMultiExperimental->loadTracks(tracks);
+        m_pDlgTrackInfoMultiExperimental->show();
+        m_pDlgTrackInfoMultiExperimental->focusField(m_trackProperty);
     } else {
         // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
         // Create a fresh dialog on invocation.

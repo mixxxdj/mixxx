@@ -1332,6 +1332,8 @@ add_library(
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackinfomulti.cpp
   src/library/dlgtrackinfomulti.ui
+  src/library/dlgtrackinfomultiexperimental.cpp
+  src/library/dlgtrackinfomultiexperimental.ui
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
