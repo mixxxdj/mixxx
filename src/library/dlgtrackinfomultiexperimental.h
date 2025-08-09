@@ -7,7 +7,7 @@
 #include <QStringList>
 #include <memory>
 
-#include "library/ui_DlgTrackInfoMultiExperimental.h"
+#include "library/ui_dlgtrackinfomultiexperimental.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
