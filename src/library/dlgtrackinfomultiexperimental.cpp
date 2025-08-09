@@ -498,6 +498,7 @@ void DlgTrackInfoMultiExperimental::updateTrackMetadataFields() {
     QSet<double> durations;
     QSet<uint32_t> samplerates;
     QSet<QString> filetypes;
+    QStringList common;
 
     for (const auto& rec : std::as_const(m_trackRecords)) {
         titles.insert(rec.getMetadata().getTrackInfo().getTitle());
@@ -524,7 +525,7 @@ void DlgTrackInfoMultiExperimental::updateTrackMetadataFields() {
                 interLower = interLower.intersect(cur);
             }
         }
-        QStringList common;
+        common.clear();
         for (const QString& low : std::as_const(interLower)) {
             QString nice = low;
             if (!nice.isEmpty()) {
@@ -1420,9 +1421,9 @@ void DlgTrackInfoMultiExperimental::genreRebuildChips() {
 void DlgTrackInfoMultiExperimental::genreSetTags(const QStringList& names) {
     m_genreTagNames = names;
     m_genreSeenLower.clear();
-    for (const QString& n : names)
+    for (const QString& n : names) {
         m_genreSeenLower.insert(n.trimmed().toLower());
-
+    }
     m_pendingAdd.clear();
     m_pendingRemove.clear();
 
