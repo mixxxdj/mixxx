@@ -53,6 +53,7 @@ class TrackModel {
         Analyze = 1u << 17u,
         Properties = 1u << 18u,
         Sorting = 1u << 19u,
+        RemoveGenre = 1u << 20u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 

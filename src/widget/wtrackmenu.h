@@ -8,6 +8,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/pollingcontrolproxy.h"
 #include "library/coverart.h"
+#include "library/dao/genredao.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
@@ -20,6 +21,7 @@
 class DlgTagFetcher;
 class DlgTrackInfo;
 class DlgTrackInfoMulti;
+class DlgTrackInfoMultiExperimental;
 //class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
 class Library;
@@ -58,8 +60,9 @@ class WTrackMenu : public QMenu {
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
+        Genre = 1 << 18,
         TrackModelFeatures = Remove | HideUnhidePurge,
-        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
+        All = AutoDJ | LoadTo | Playlist | Crate | Genre | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
                 FindOnWeb
@@ -72,6 +75,7 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::SearchRelated |
             WTrackMenu::Feature::Playlist |
             WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Genre |
             WTrackMenu::Feature::Metadata |
             WTrackMenu::Feature::Reset |
             WTrackMenu::Feature::Analyze |
@@ -110,9 +114,12 @@ class WTrackMenu : public QMenu {
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
     void slotShowDlgTrackInfo();
+    void slotShowDlgTrackInfoExperimental();
     // Library management
     void slotRemoveFromDisk();
     const QString getDeckGroup() const;
+
+    void loadGenreData2QVL();
 
   signals:
 #ifdef __STEM__
@@ -183,6 +190,10 @@ class WTrackMenu : public QMenu {
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
 
+    // Genre
+    void slotPopulateGenreMenu();
+    void addSelectionToNewGenre();
+
     // Auto DJ
     void slotAddToAutoDJBottom();
     void slotAddToAutoDJTop();
@@ -243,6 +254,7 @@ class WTrackMenu : public QMenu {
 
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* pWidget);
+    void updateSelectionGenres(QWidget* pWidget);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void addToAnalysis(AnalyzerTrack::Options options = AnalyzerTrack::Options());
@@ -288,6 +300,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QMenu> m_pSamplerMenu;
     parented_ptr<QMenu> m_pPlaylistMenu;
     parented_ptr<QMenu> m_pCrateMenu;
+    parented_ptr<QMenu> m_pGenreMenu;
     parented_ptr<QMenu> m_pMetadataMenu;
     parented_ptr<QMenu> m_pMetadataUpdateExternalCollectionsMenu;
     parented_ptr<QMenu> m_pHotcueMenu;
@@ -321,6 +334,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pRemoveAct;
     parented_ptr<QAction> m_pRemovePlaylistAct;
     parented_ptr<QAction> m_pRemoveCrateAct;
+    parented_ptr<QAction> m_pRemoveGenreAct;
     parented_ptr<QAction> m_pHideAct;
     parented_ptr<QAction> m_pUnhideAct;
     parented_ptr<QAction> m_pPurgeAct;
@@ -328,6 +342,7 @@ class WTrackMenu : public QMenu {
 
     // Show track-editor action
     parented_ptr<QAction> m_pPropertiesAct;
+    parented_ptr<QAction> m_pPropertiesActExp;
 
     // Open file in default file browser
     parented_ptr<QAction> m_pFileBrowserAct;
@@ -384,6 +399,7 @@ class WTrackMenu : public QMenu {
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
+    std::unique_ptr<DlgTrackInfoMultiExperimental> m_pDlgTrackInfoMultiExperimental;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {
@@ -395,6 +411,7 @@ class WTrackMenu : public QMenu {
 
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
+    bool m_bGenreMenuLoaded;
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;
@@ -402,6 +419,7 @@ class WTrackMenu : public QMenu {
     QString m_trackProperty;
 
     static bool s_showPurgeSuccessPopup;
+    QVariantList m_genreData;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

@@ -48,6 +48,98 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+  if(NOT DEFINED BUILDENV_BASEPATH)
+    if(DEFINED ENV{BUILDENV_BASEPATH})
+      set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
+    else()
+      set(BUILDENV_BASEPATH "${CMAKE_SOURCE_DIR}/buildenv")
+    endif()
+  endif()
+
+  if(NOT DEFINED BUILDENV_URL)
+    if(DEFINED ENV{BUILDENV_URL})
+      set(BUILDENV_URL "$ENV{BUILDENV_URL}")
+    elseif(NOT DEFINED BUILDENV_URL)
+      message(FATAL_ERROR "BUILDENV_URL not specified")
+    endif()
+  endif()
+
+  # Extract the filename from the URL
+  get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
+
+  # Remove the extension from the filename (note that our buildenv names contain two dots)
+  string(
+    REGEX REPLACE
+    "\\.[^.]*$"
+    ""
+    BUILDENV_NAME
+    "${FILENAME_WITH_EXTENSION}"
+  )
+
+  message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}")
+
+  if(
+    NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
+    OR NOT IS_DIRECTORY "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
+  )
+    if(NOT DEFINED BUILDENV_SHA256)
+      if(DEFINED ENV{BUILDENV_SHA256})
+        set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
+      elseif(NOT DEFINED BUILDENV_SHA256)
+        message(STATUS "BUILDENV_SHA256 not specified")
+      endif()
+    endif()
+
+    if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      message(
+        STATUS
+        "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
+      )
+      file(
+        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+        SHOW_PROGRESS
+        TLS_VERIFY ON
+      )
+    else()
+      # Reference to suppress intentionally unused variable warnings
+      set(_dummy "${BUILDENV_URL}")
+    endif()
+
+    if(NOT ${BUILDENV_SHA256} STREQUAL "")
+      message(
+        STATUS
+        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+      )
+      file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
+
+      if(NOT actual_sha256 STREQUAL ${BUILDENV_SHA256})
+        message(
+          FATAL_ERROR
+          "SHA256 checksum mismatch:\nexpected: ${BUILDENV_SHA256}\n     got: ${actual_sha256}"
+        )
+      else()
+        message(STATUS "SHA256 ${BUILDENV_SHA256} is correct!")
+      endif()
+    endif()
+
+    message(
+      STATUS
+      "Unpacking file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+    )
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf "${BUILDENV_NAME}.zip"
+      WORKING_DIRECTORY ${BUILDENV_BASEPATH}
+    )
+  else()
+    # Reference to suppress intentionally unused variable warnings
+    set(_dummy "${BUILDENV_SHA256}")
+  endif()
+else()
+  # Reference to suppress intentionally unused variable warnings
+  set(_dummy "${BUILDENV_URL} ${BUILDENV_BASEPATH} ${BUILDENV_SHA256}")
+endif()
+
 # Use this function to throw an error because the build environment is not set
 # up correctly.
 function(fatal_error_missing_env)
@@ -1226,6 +1318,7 @@ add_library(
   src/library/dao/cuedao.cpp
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
+  src/library/dao/genredao.cpp
   src/library/dao/playlistdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
@@ -1239,6 +1332,8 @@ add_library(
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackinfomulti.cpp
   src/library/dlgtrackinfomulti.ui
+  src/library/dlgtrackinfomultiexperimental.cpp
+  src/library/dlgtrackinfomultiexperimental.ui
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
@@ -1291,6 +1386,8 @@ add_library(
   src/library/tabledelegates/checkboxdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/genredelegate.cpp
+  src/library/tabledelegates/genrelineeditor.cpp
   src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
@@ -1311,6 +1408,10 @@ add_library(
   src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/genre/genrefeature.cpp
+  src/library/trackset/genre/genrefeaturehelper.cpp
+  src/library/trackset/genre/genrestorage.cpp
+  src/library/trackset/genre/genretablemodel.cpp
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
