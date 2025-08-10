@@ -585,42 +585,35 @@ reapplying those migrations.
     </sql>
   </revision>
   <revision version="40" min_compatible="3">
-  <description>
-    Multi-Genre Support (Flat Model):
-    - Adds a 'genres' table for a centralized, flat list of genre names.
-    - Adds a 'genre_tracks' junction table for many-to-many track-genre associations.
-    - Migrates existing single genres from 'library.genre' to the new tables.
-  </description>
-  <sql>
-    CREATE TABLE IF NOT EXISTS genres (
+ <sql>
+      CREATE TABLE IF NOT EXISTS genres (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL COLLATE NOCASE
-    );
+      name TEXT NOT NULL COLLATE NOCASE,
+      name_level_1 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_2 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_3 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_4 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_5 TEXT DEFAULT NULL COLLATE NOCASE,
+      display_group TEXT DEFAULT NULL,
+      display_order INTEGER DEFAULT 0,
+      is_visible INTEGER DEFAULT 1,
+      is_model_defined INTEGER DEFAULT 0,
+      count integer DEFAULT 0,
+      show integer DEFAULT 1,
+      locked integer DEFAULT 0,
+      autodj_source integer DEFAULT 0
+      );
 
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_genres_name_unique ON genres(name);
-
-    CREATE TABLE IF NOT EXISTS genre_tracks (
+      CREATE TABLE IF NOT EXISTS genre_tracks (
       track_id INTEGER NOT NULL,
       genre_id INTEGER NOT NULL,
       PRIMARY KEY (track_id, genre_id),
       FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE,
       FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
-    );
+      );
 
-    CREATE INDEX IF NOT EXISTS idx_genre_tracks_track_id ON genre_tracks(track_id);
-    CREATE INDEX IF NOT EXISTS idx_genre_tracks_genre_id ON genre_tracks(genre_id);
-
-    INSERT INTO genres (name)
-    SELECT DISTINCT TRIM(genre)
-    FROM library
-    WHERE genre IS NOT NULL AND TRIM(genre) != '';
-
-    INSERT INTO genre_tracks (track_id, genre_id)
-    SELECT T.id, G.id
-    FROM library T
-    JOIN genres G ON TRIM(T.genre) = G.name COLLATE NOCASE
-    WHERE T.genre IS NOT NULL AND TRIM(T.genre) != '';
-  </sql>
+      CREATE INDEX IF NOT EXISTS idx_genre_tracks_genre_id ON genre_tracks(genre_id);
+</sql>
 </revision>
 
 </schema>
