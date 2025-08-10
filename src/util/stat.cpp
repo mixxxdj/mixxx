@@ -1,6 +1,5 @@
 #include "util/stat.h"
 
-#include <QDebug>
 #include <QStringList>
 #include <chrono>
 #include <limits>
