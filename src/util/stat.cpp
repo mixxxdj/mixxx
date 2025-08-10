@@ -4,7 +4,6 @@
 #include <chrono>
 #include <limits>
 
-#include "util/math.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
 
