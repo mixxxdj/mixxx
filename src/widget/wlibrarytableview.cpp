@@ -10,6 +10,7 @@
 
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
+#include "widget/wlibrarytableview.h"
 
 class QFocusEvent;
 

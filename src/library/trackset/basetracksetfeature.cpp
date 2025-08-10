@@ -1,6 +1,8 @@
 #include "library/trackset/basetracksetfeature.h"
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "library/trackset/searchcrate/dlggroupedsearchcratesinfo.h"
+#include "library/trackset/searchcrate/dlgsearchcrateinfo.h"
 #include "moc_basetracksetfeature.cpp"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
