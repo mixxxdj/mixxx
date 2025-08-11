@@ -25,8 +25,7 @@ class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
     BrowseFeature(Library* pLibrary,
-            UserSettingsPointer pConfig,
-            RecordingManager* pRecordingManager);
+            UserSettingsPointer pConfig);
     ~BrowseFeature() override;
 
     QVariant title() override;
