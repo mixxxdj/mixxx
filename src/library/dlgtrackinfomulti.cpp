@@ -379,7 +379,10 @@ void DlgTrackInfoMulti::loadTracks(const QList<TrackPointer>& pTracks) {
         m_pLoadedTracks.clear();
     }
     for (const auto& pTrack : pTracks) {
-        m_pLoadedTracks.insert(pTrack.get()->getId(), pTrack);
+        if (pTrack.get()) {
+            m_pLoadedTracks.insert(pTrack.get()->getId(), pTrack);
+        }
+        // Skip unavailable tracks
     }
 
     updateFromTracks();

@@ -1327,7 +1327,7 @@ TrackIdList WTrackMenu::getTrackIds() const {
     TrackIdList trackIds;
     if (m_pTrackModel) {
         trackIds.reserve(m_trackIndexList.size());
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             const auto trackId = m_pTrackModel->getTrackId(index);
             if (!trackId.isValid()) {
                 // Skip unavailable tracks
@@ -1349,7 +1349,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
     QList<TrackRef> trackRefs;
     if (m_pTrackModel) {
         trackRefs.reserve(m_trackIndexList.size());
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             auto trackRef = TrackRef::fromFilePath(
                     m_pTrackModel->getTrackLocation(index),
                     m_pTrackModel->getTrackId(index));
@@ -1370,7 +1370,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
 
 TrackPointer WTrackMenu::getFirstTrackPointer() const {
     if (m_pTrackModel) {
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             const auto pTrack = m_pTrackModel->getTrack(index);
             if (pTrack) {
                 return pTrack;
@@ -1385,7 +1385,7 @@ TrackPointer WTrackMenu::getFirstTrackPointer() const {
 TrackPointerList WTrackMenu::getTrackPointers() const {
     TrackPointerList tracks;
     if (m_pTrackModel) {
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             const auto pTrack = m_pTrackModel->getTrack(index);
             if (pTrack) {
                 tracks.append(pTrack);
@@ -2926,8 +2926,12 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 });
         QList<TrackPointer> tracks;
         tracks.reserve(getTrackCount());
-        for (int i = 0; i < m_trackIndexList.size(); i++) {
-            tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
+        for (const auto& index : std::as_const(m_trackIndexList)) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                tracks.append(pTrack);
+            }
+            // Skip unavailable tracks
         }
         //        m_pDlgTrackInfoMulti->setGenreData(m_genreData);
         m_pDlgTrackInfoMulti->setGenreData(m_genreData);

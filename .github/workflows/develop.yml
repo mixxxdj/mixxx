@@ -1,0 +1,88 @@
+name: Pull request or branch build
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+  push:
+    branches:
+      - "*"
+      - "!main"
+      - "![0-9].[0-9]"
+  workflow_dispatch:
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+  checks: write #  to create new checks (coverallsapp/github-action)
+
+jobs:
+  stop-build:
+    name: Check if build should be stopped
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
+    steps:
+      - name: Check if there is an open PR for this branch
+        id: stop-build
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        env:
+          ORGANIZATION: mixxxdj
+          REPOSITORY: mixxx
+        with:
+          script: |
+            try {
+              const branch = context.ref.replace('refs/heads/', '');
+              const { data: pullRequests } = await github.rest.pulls.list({
+                owner: process.env.ORGANIZATION,
+                repo: process.env.REPOSITORY,
+                head: `${context.repo.owner}:${branch}`,
+                state: 'open'
+              });
+              console.log(`There is ${pullRequests.length} PR open upstream for branch '${context.repo.owner}:${branch}'`);
+              return pullRequests.length != 0;
+            } catch (error) {
+              console.log(`Didn't find a PR for branch '${context.repo.owner}:${branch}' on '${process.env.ORGANIZATION}/${process.env.REPOSITORY}'.`);
+              return false;
+            }
+
+  pre-commit:
+    if: needs.stop-build.outputs.result == 'false'
+    needs:
+      - stop-build
+    uses: ./.github/workflows/pre-commit.yml
+    with:
+      pull_request: ${{ github.event_name == 'pull_request' }}
+
+  checks:
+    if: needs.stop-build.outputs.result == 'false'
+    needs:
+      - stop-build
+    uses: ./.github/workflows/checks.yml
+
+  git:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/git.yml
+
+  build:
+    if: needs.stop-build.outputs.result == 'false'
+    needs:
+      - stop-build
+    uses: ./.github/workflows/build.yml
+
+  # This task is used as a probe for auto merge
+  # In the future, it could also be used to perform a status update (e.g once the whole CI is passing + is ready for review, add a specific label such as `need review`)
+  ready:
+    name: Ready to merge
+    needs:
+      - pre-commit
+      - checks
+      - git
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ready to go
+        run: "exit 0"
