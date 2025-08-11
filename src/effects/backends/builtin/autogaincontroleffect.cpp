@@ -27,11 +27,11 @@ EffectManifestPointer AutoGainControlEffect::getManifest() {
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Auto Gain Control"));
     pManifest->setShortName(QObject::tr("AGC"));
-    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setAuthor(QObject::tr("The Mixxx Team"));
     pManifest->setVersion("1.0");
-    pManifest->setDescription(
+    pManifest->setDescription(QObject::tr(
             "Auto Gain Control (AGC) automatically adjusts the gain of an "
-            "audio signal to maintain a consistent output level.");
+            "audio signal to maintain a consistent output level."));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.0);
 
