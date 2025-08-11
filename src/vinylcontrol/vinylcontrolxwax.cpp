@@ -96,12 +96,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
         timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_XWAX_NAME;
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_XWAX_NAME;
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2CD_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
         timecode = MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBES7INCH) {
@@ -123,22 +117,12 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         m_pSteadyGross = new SteadyPitch(0.5, false);
     }
 
-    // Determine the config folder path
-    std::string lut_dir_string;
-    const char* lut_dir_path = nullptr;
-
-    if (!getLutDir().isEmpty()) {
-        lut_dir_string = getLutDir().toStdString();
-        lut_dir_path = lut_dir_string.c_str();
-    }
-
-    // Pass the config folder path to the timecoder
-    timecode_def* tc_def = timecoder_find_definition(timecode, lut_dir_path);
+    timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == nullptr) {
         qDebug() << "Error finding timecode definition for " << timecode
                  << ", defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
         timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
-        tc_def = timecoder_find_definition(timecode, lut_dir_path);
+        tc_def = timecoder_find_definition(timecode);
     }
 
     double speed = 1.0;
@@ -208,18 +192,6 @@ void VinylControlXwax::freeLUTs() {
     s_xwaxLUTMutex.unlock();
 }
 
-QString VinylControlXwax::getLutDir() {
-    QDir lutPath(m_pConfig->getSettingsPath().append("/lut/"));
-
-    if (!lutPath.exists()) {
-        if (!lutPath.mkpath(".")) {
-            qWarning() << "Failed to create LUT directory at" << lutPath;
-            return QString{};
-        }
-    }
-
-    return lutPath.absolutePath();
-}
 
 bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
     if (pReport) {

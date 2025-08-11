@@ -1,0 +1,36 @@
+name: Pull request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+jobs:
+  pre-commit:
+    uses: ./.github/workflows/pre-commit.yml
+
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  git:
+    uses: ./.github/workflows/git.yml
+
+  build:
+    uses: ./.github/workflows/build.yml
+
+  # This task is used as a probe for auto merge
+  # In the future, it could also be used to perform a status update (e.g once the whole CI is passing + is ready for review, add a specific label such as `need review`)
+  ready:
+    name: Ready to merge
+    needs:
+      - pre-commit
+      - checks
+      - git
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ready to go
+        run: "exit 0"

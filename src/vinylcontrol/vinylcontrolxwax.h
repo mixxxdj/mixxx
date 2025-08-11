@@ -29,7 +29,6 @@ class VinylControlXwax : public VinylControl {
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
-    QString getLutDir();
     void analyzeSamples(CSAMPLE* pSamples, size_t nFrames);
 
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);

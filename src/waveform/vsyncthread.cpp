@@ -64,13 +64,13 @@ void VSyncThread::run() {
         runTimer();
         break;
     default:
-        DEBUG_ASSERT(!"unsupported sync mode");
+        assert(false);
         break;
     }
 }
 
 void VSyncThread::runFree() {
-    DEBUG_ASSERT(m_vSyncMode == ST_FREE);
+    assert(m_vSyncMode == ST_FREE);
     while (m_bDoRendering) {
         // for benchmark only!
 
@@ -87,7 +87,7 @@ void VSyncThread::runFree() {
 }
 
 void VSyncThread::runPLL() {
-    DEBUG_ASSERT(m_vSyncMode == ST_PLL);
+    assert(m_vSyncMode == ST_PLL);
     qint64 offsetAdjustedAt = 0;
     qint64 offset = 0;
     qint64 nextSwapMicros = 0;
@@ -180,7 +180,7 @@ void VSyncThread::runPLL() {
 }
 
 void VSyncThread::runTimer() {
-    DEBUG_ASSERT(m_vSyncMode == ST_TIMER);
+    assert(m_vSyncMode == ST_TIMER);
 
     while (m_bDoRendering) {
         emit vsyncRender(); // renders the new waveform.

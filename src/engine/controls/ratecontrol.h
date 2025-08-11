@@ -77,7 +77,6 @@ public:
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
   void notifySeek(mixxx::audio::FramePos position) override;
-  void resetPositionScratchController();
 
 public slots:
   void slotRateRangeChanged(double);
