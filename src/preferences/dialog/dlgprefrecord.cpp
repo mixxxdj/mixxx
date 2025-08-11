@@ -4,6 +4,7 @@
 #include <QRadioButton>
 #include <QStandardPaths>
 
+#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
 #include "moc_dlgprefrecord.cpp"
@@ -13,13 +14,31 @@
 namespace {
 constexpr bool kDefaultCueEnabled = true;
 constexpr bool kDefaultCueFileAnnotationEnabled = false;
+
+const ConfigKey kRecSampleRateCfgkey =
+        ConfigKey(QStringLiteral(RECORDING_PREF_KEY), QStringLiteral("rec_samplerate"));
+
+const ConfigKey kUseEngineSampleRateCfgkey =
+        ConfigKey(QStringLiteral(RECORDING_PREF_KEY), QStringLiteral("use_engine_samplerate"));
+
 } // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_selFormat({QString(), QString(), false, QString()}) {
-    setupUi(this);
+          m_selFormat({QString(), QString(), false, QString()}),
+          m_recSampleRate(kRecSampleRateCfgkey),
+          m_useEngineSampleRate(kUseEngineSampleRateCfgkey),
+          m_defaultSampleRate(PollingControlProxy(
+                  QStringLiteral("[App]"), QStringLiteral("samplerate"))
+                          .get()),
+          m_oldRecSampleRate(m_recSampleRate.get()) {
+    setupUi(this); // uses the .ui file to generate qt gui elements.
+
+    // This is a hack to set the correct positioning.
+    // Values found by trial-and-error
+    RadioButtonUseCustomSampleRate->setMaximumWidth(80);
+    RadioButtonUseDefaultSampleRate->setMaximumWidth(234);
 
     // Setting recordings path.
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
@@ -70,6 +89,26 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     setupEncoderUI();
 
+    qDebug() << "Default samplerate = engine samplerate: " << m_defaultSampleRate;
+    RadioButtonUseDefaultSampleRate->setText(tr("Default (%1 Hz)").arg(m_defaultSampleRate));
+
+    // generate list of custom recording samplerates
+    [[maybe_unused]] const auto& customSampleRatesList = createSampleRateGUIForFormat(prefformat);
+
+    // Restore previous sample-rate
+    if (m_useEngineSampleRate.toBool()) {
+        // engine sample rate was used in the previous session
+        qDebug() << "Engine Samplerate was used in previous session: " << m_oldRecSampleRate;
+        // select the default radiobutton
+        RadioButtonUseDefaultSampleRate->setChecked(true);
+    } else {
+        // select the combo-box item
+        qDebug() << "Custom Samplerate was used in the old session: " << m_oldRecSampleRate;
+        int idx = comboBoxRecSampleRate->findData(QVariant::fromValue(m_oldRecSampleRate));
+        comboBoxRecSampleRate->setCurrentIndex(idx);
+        RadioButtonUseCustomSampleRate->setChecked(true);
+    }
+
     // Setting Metadata
     loadMetaData();
 
@@ -105,7 +144,23 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     setScrollSafeGuard(comboBoxSplitting);
 
-    // Do the one-time connection of signals here.
+    connect(RadioButtonUseDefaultSampleRate,
+            &QRadioButton::toggled,
+            this,
+            [this](bool checked) {
+                slotToggleCustomSampleRateIgnore(checked ? Qt::Checked : Qt::Unchecked);
+            });
+
+    connect(comboBoxRecSampleRate,
+            &QComboBox::activated,
+            this,
+            &DlgPrefRecord::slotComboBoxItemClicked);
+
+    connect(comboBoxRecSampleRate,
+            &QComboBox::currentIndexChanged,
+            this,
+            &DlgPrefRecord::slotSampleRateChanged);
+
     connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
     connect(SliderQuality, &QAbstractSlider::sliderMoved, this, &DlgPrefRecord::slotSliderQuality);
     connect(SliderQuality,
@@ -160,8 +215,46 @@ void DlgPrefRecord::slotApply() {
     saveUseCueFile();
     saveUseCueFileAnnotation();
     saveSplitSize();
+    saveRecSampleRate();
+}
+// only called on a user-triggered index change.
+void DlgPrefRecord::slotComboBoxItemClicked([[maybe_unused]] int index) {
+    RadioButtonUseCustomSampleRate->setChecked(true);
 }
 
+// Called when:
+// - Default samplerate radio button is selected.
+// - Custom samplerate radio button is selected.
+void DlgPrefRecord::slotToggleCustomSampleRateIgnore([[maybe_unused]] int buttonState) {
+    // comboBoxRecSampleRate->setEnabled(buttonState != Qt::Checked);
+
+    // if custom samplerate enabled: set false
+    if (RadioButtonUseCustomSampleRate->isChecked()) {
+        m_useEngineSampleRate.set(false);
+        return;
+    }
+
+    m_useEngineSampleRate.set(true);
+}
+
+// m_pConfig is accessible from the enginerecord instance.
+// only when a custom recording samplerate is being used.
+void DlgPrefRecord::saveRecSampleRate() {
+    double recSampleRate{};
+    if (!m_useEngineSampleRate.toBool()) {
+        // samplerate values stored as double in additem()
+        recSampleRate = comboBoxRecSampleRate->currentData().value<double>();
+    } else {
+        recSampleRate = m_defaultSampleRate;
+    }
+    m_recSampleRate.set(recSampleRate);
+
+    // when a samplerate is applied, it becomes the base
+    // for future changes.
+    m_oldRecSampleRate = recSampleRate;
+
+    m_pConfig->set(kRecSampleRateCfgkey, ConfigValue(m_recSampleRate.get()));
+}
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate() {
     // Find out the max width of the labels. This is needed to keep the
@@ -169,7 +262,7 @@ void DlgPrefRecord::slotUpdate() {
     // It is not perfect, but it didn't get better than this.
     int max=0;
     if (LabelQuality->size().width()> max) {
-        max=LabelQuality->size().width();
+        max = LabelQuality->size().width() + 10; // quick fix for gui bug
     }
     LabelLossless->setMaximumWidth(max);
     LabelLossy->setMaximumWidth(max);
@@ -224,6 +317,12 @@ void DlgPrefRecord::slotResetToDefaults() {
 
     // Sets 'Enable File Annotation in CUE file' checkbox value
     CheckBoxUseCueFileAnnotation->setChecked(kDefaultCueFileAnnotationEnabled);
+
+    // Let 48000 Hz be the "default" non-engine sample rate.
+    int index = comboBoxRecSampleRate->findData(QVariant::fromValue(48000.0));
+    if (index != -1) {
+        comboBoxRecSampleRate->setCurrentIndex(index);
+    }
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
@@ -247,7 +346,93 @@ void DlgPrefRecord::slotBrowseRecordingsDir() {
 void DlgPrefRecord::slotFormatChanged() {
     QObject *senderObj = sender();
     m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
+    const auto& formatName = m_selFormat.internalName;
+    qDebug() << senderObj->objectName() << ": Format updated to " << formatName;
+    qDebug() << "Samplerate before changing format, needs to persist: " << m_oldRecSampleRate;
+
+    // Recreate the available custom samplerates GUI according to the
+    // newly chosen format
+    const auto& customSampleRatesList = createSampleRateGUIForFormat(formatName);
+
+    // It is possible that the current default samplerate
+    // i.e. engine sample rate is not supported by certain
+    // formats (ex. OPUS does not support 96khz, 44.1khz). In this case,
+    // we must disable the default radio button, and select the
+    // custom radiobutton.
+    bool isDefaultRateValid = true;
+    auto defaultRate = mixxx::audio::SampleRate(static_cast<unsigned>(m_defaultSampleRate));
+    qDebug() << "Current default samplerate: " << m_defaultSampleRate;
+    isDefaultRateValid = customSampleRatesList.contains(defaultRate);
+    qDebug() << "Is the current default samplerate a valid rec samplerate for "
+                "this format? "
+             << isDefaultRateValid;
+    RadioButtonUseDefaultSampleRate->setEnabled(isDefaultRateValid);
+
+    // Now we inspect the user-selected value
+    // It is possible that the old recording samplerate
+    // is also available in the new format. In this case, we
+    // have two choices: If the old sample rate equals the current default
+    // (engine) samplerate, we check the usedefault radio button. If not,
+    // we select the correct index from the combo-box. If the combo-box
+    // does not have the value either, we must conclude that this
+    // samplerate value is not common to the old and new formats.
+    // Warn that the recording samplerate will have to be
+    // changed, and allow the user to select a samplerate
+    // from the new custom list. This gui action triggers
+    // slotsampleratechanged and all is good.
+    int recSampleRateIdx = comboBoxRecSampleRate->findData(
+            QVariant::fromValue(m_oldRecSampleRate));
+    if (!m_useEngineSampleRate.toBool() && (recSampleRateIdx != -1)) { // found in the combobox
+        qDebug() << "Samplerate " << m_oldRecSampleRate << " found in combo-box";
+        RadioButtonUseDefaultSampleRate->setChecked(false);       // calls slot ignore
+        comboBoxRecSampleRate->setCurrentIndex(recSampleRateIdx); // calls slot sampleratechanged
+        RadioButtonUseCustomSampleRate->setChecked(true);
+    } else {
+        // If the updated GUI list is missing the old rec samplerate,
+        // that samplerate is the new default, i.e. engine samplerate.
+        // select the default radio button instead.
+        // However it could also be the case that even the default samplerate
+        // is not supported. Need to check the value of default samplerate.
+        qDebug() << "Default rate: " << m_defaultSampleRate << " old rate: " << m_oldRecSampleRate;
+        if (isDefaultRateValid) {
+            RadioButtonUseDefaultSampleRate->setEnabled(true);
+            if (m_defaultSampleRate == m_oldRecSampleRate) {
+                RadioButtonUseDefaultSampleRate->setChecked(true);
+            } else {
+                RadioButtonUseCustomSampleRate->setChecked(true);
+            }
+        } else {
+            RadioButtonUseDefaultSampleRate->setEnabled(false);
+            RadioButtonUseDefaultSampleRate->setChecked(false);
+            RadioButtonUseCustomSampleRate->setChecked(true);
+            qWarning() << "The current format does not support the original "
+                          "recording samplerate ("
+                       << m_oldRecSampleRate << "Hz)";
+        }
+    }
     setupEncoderUI();
+}
+
+// Update the set of custom sample rates offered in
+// the recording combo-box.
+// called on 2 occasions during a Mixxx run:
+// 1. From a slot, whenever the engine samplerate is updated.
+// 2. From a slot, whenever the recording format is changed.
+void DlgPrefRecord::updateSampleRates(
+        const QList<mixxx::audio::SampleRate>& sampleRates) {
+    comboBoxRecSampleRate->blockSignals(true);
+
+    comboBoxRecSampleRate->clear();
+    for (const auto& sampleRate : sampleRates) {
+        if (sampleRate.isValid()) {
+            // if (sampleRate.value() == m_defaultSampleRate) {
+            //     continue; // do not add default samplerate to list.
+            // }
+            comboBoxRecSampleRate->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate.value()));
+        }
+    }
+    comboBoxRecSampleRate->blockSignals(false);
 }
 
 void DlgPrefRecord::setupEncoderUI() {
@@ -298,7 +483,7 @@ void DlgPrefRecord::setupEncoderUI() {
                 QCheckBox* button = new QCheckBox(name, this);
                 widget = button;
             } else {
-                QRadioButton* button = new QRadioButton(name, this);
+                QRadioButton* button = new QRadioButton(name, this); // qradiobutton
                 widget = button;
             }
             connect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
@@ -471,4 +656,74 @@ void DlgPrefRecord::saveUseCueFileAnnotation() {
 void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
                    ConfigValue(comboBoxSplitting->currentText()));
+}
+
+// only when recsamplerate combobox is chosen, i.e.
+// custom recording samplerate.
+void DlgPrefRecord::slotSampleRateChanged(int newRateIdx) {
+    if (m_useEngineSampleRate.toBool()) {
+        qDebug() << "Rec samplerate set changed, but using default (engine) samplerate.";
+        return;
+    }
+    // addItem() is storing samplerate double values.
+    auto recSampleRateNew = comboBoxRecSampleRate->itemData(newRateIdx).value<double>();
+
+    qDebug() << "Rec samplerate change triggered, new rate: " << recSampleRateNew;
+    m_useEngineSampleRate.set(false);
+}
+
+const QList<mixxx::audio::SampleRate>&
+DlgPrefRecord::createSampleRateGUIForFormat(const QString& recFormat) {
+    const QList<mixxx::audio::SampleRate>& validSampleRates =
+            (recFormat == ENCODING_OPUS)  ? kRecSampleRatesOpus
+            : (recFormat == ENCODING_MP3) ? kRecSampleRatesMP3
+            : (recFormat == ENCODING_OGG) ? kRecSampleRatesOGG
+                                          : kRecSampleRates; // default
+
+    qDebug() << "Valid samplerates: " << validSampleRates;
+
+    updateSampleRates(validSampleRates);
+    return validSampleRates;
+}
+void DlgPrefRecord::slotDefaultSampleRateUpdated(mixxx::audio::SampleRate newRate) {
+    RadioButtonUseDefaultSampleRate->setText(QString("Default (%1 Hz)").arg(newRate.toDouble()));
+    double rate = newRate.toDouble();
+    m_defaultSampleRate = rate;
+
+    bool enableRadioButtonDefault = true;
+    double oldSampleRate = m_oldRecSampleRate;
+
+    // recreate the available custom samplerates in the GUI
+    const auto& customSampleRatesList = createSampleRateGUIForFormat(m_selFormat.internalName);
+
+    // If the current format allows the value of
+    // new engine samplerate (i.e. default rec samplerate),
+    // allow the user to choose it.
+    enableRadioButtonDefault = customSampleRatesList.contains(newRate);
+    RadioButtonUseDefaultSampleRate->setEnabled(enableRadioButtonDefault);
+
+    // Ensure that the previous recording samplerate remains unchanged
+    // even if the engine samplerate has changed.
+    int recSampleRateIdx = comboBoxRecSampleRate->findData(
+            QVariant::fromValue(oldSampleRate));
+    if (recSampleRateIdx != -1) { // found in the combobox
+        qDebug() << oldSampleRate << " found in combobox for format " << m_selFormat.internalName;
+        RadioButtonUseDefaultSampleRate->setChecked(false); // calls slot ignore
+        comboBoxRecSampleRate->setCurrentIndex(recSampleRateIdx);
+    } else {
+        // If the updated GUI list is missing the old rec samplerate,
+        // that samplerate is the new default, i.e. engine samplerate.
+        // select the default radio button instead.
+        // However it could also be the case that even the default samplerate
+        // is not supported. Need to check the value of default samplerate.
+        qDebug() << "Default rate: " << m_defaultSampleRate << " New rate: " << newRate;
+        DEBUG_ASSERT(m_defaultSampleRate == newRate.value());
+
+        auto defaultRate = mixxx::audio::SampleRate(static_cast<unsigned>(m_defaultSampleRate));
+        bool isDefaultSampleRateSupported = customSampleRatesList.contains(defaultRate);
+
+        RadioButtonUseCustomSampleRate->setChecked(!isDefaultSampleRateSupported);
+        // calls slottogglecustomsamplerateignore
+        RadioButtonUseDefaultSampleRate->setChecked(isDefaultSampleRateSupported);
+    }
 }
