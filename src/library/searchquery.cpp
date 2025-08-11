@@ -6,6 +6,8 @@
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
 #include "library/trackset/crate/cratestorage.h" // for CrateTrackSelectResult
+#include "library/trackset/genre/genreschema.h"
+#include "library/trackset/genre/genrestorage.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/db/dbconnection.h"
@@ -255,6 +257,13 @@ CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
           m_matchInitialized(false) {
 }
 
+GenreFilterNode::GenreFilterNode(const GenreStorage* pGenreStorage,
+        const QString& genreNameLike)
+        : m_pGenreStorage(pGenreStorage),
+          m_genreNameLike(genreNameLike),
+          m_genreMatchInitialized(false) {
+}
+
 bool CrateFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_matchInitialized) {
         CrateTrackSelectResult crateTracks(
@@ -270,15 +279,42 @@ bool CrateFilterNode::match(const TrackPointer& pTrack) const {
     return std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
 }
 
+bool GenreFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_genreMatchInitialized) {
+        GenreTrackSelectResult genreTracks(
+                m_pGenreStorage->selectTracksSortedByGenreNameLike(m_genreNameLike));
+
+        while (genreTracks.next()) {
+            m_matchingTrackIds.push_back(genreTracks.trackId());
+        }
+        m_genreMatchInitialized = true;
+    }
+
+    return std::binary_search(m_matchingTrackIds.begin(),
+            m_matchingTrackIds.end(),
+            pTrack->getId());
+}
+
 QString CrateFilterNode::toSql() const {
     return QString("id IN (%1)")
             .arg(m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(
                     m_crateNameLike));
 }
 
+QString GenreFilterNode::toSql() const {
+    return QString("id IN (%1)")
+            .arg(m_pGenreStorage->formatQueryForTrackIdsByGenreNameLike(
+                    m_genreNameLike));
+}
+
 NoCrateFilterNode::NoCrateFilterNode(const CrateStorage* pCrateStorage)
         : m_pCrateStorage(pCrateStorage),
           m_matchInitialized(false) {
+}
+
+NoGenreFilterNode::NoGenreFilterNode(const GenreStorage* pGenreStorage)
+        : m_pGenreStorage(pGenreStorage),
+          m_genreMatchInitialized(false) {
 }
 
 bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
@@ -296,10 +332,33 @@ bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
     return !std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
 }
 
+bool NoGenreFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_genreMatchInitialized) {
+        GenreTrackSelectResult tracks(
+                m_pGenreStorage->selectAllTracksSorted());
+
+        while (tracks.next()) {
+            m_matchingTrackIds.push_back(tracks.trackId());
+        }
+
+        m_genreMatchInitialized = true;
+    }
+
+    return !std::binary_search(m_matchingTrackIds.begin(),
+            m_matchingTrackIds.end(),
+            pTrack->getId());
+}
+
 QString NoCrateFilterNode::toSql() const {
     return QString("%1 NOT IN (%2)")
             .arg(CRATETABLE_ID,
                     CrateStorage::formatQueryForTrackIdsWithCrate());
+}
+
+QString NoGenreFilterNode::toSql() const {
+    return QString("%1 NOT IN (%2)")
+            .arg(GENRETABLE_ID,
+                    GenreStorage::formatQueryForTrackIdsWithGenre());
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)

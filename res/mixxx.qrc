@@ -14,6 +14,7 @@
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_crates.svg</file>
+        <file>images/library/ic_library_genres.svg</file>
         <file>images/library/ic_library_cross_grey.svg</file>
         <file>images/library/ic_library_cross_orange.svg</file>
         <file>images/library/ic_library_history.svg</file>
