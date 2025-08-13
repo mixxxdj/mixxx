@@ -91,6 +91,8 @@ TraktorS3.ChannelColors = {
     "[Channel4]": engine.getSetting("chan4Color")
 };
 
+TraktorS3.HotcueUnsetColor = engine.getSetting("unsetHotcueColor");
+
 // Each color has four brightnesses, so these values can be between 0 and 3.
 TraktorS3.LEDDimValue = parseInt(engine.getSetting("ledDimValue"), 10) || 0x01;
 TraktorS3.LEDBrightValue = parseInt(engine.getSetting("ledBrightValue"), 10) || 0x03;
@@ -1522,7 +1524,7 @@ TraktorS3.Deck = class {
 
     lightHotcue(number) {
         const hotCueStatus = engine.getValue(this.activeChannel, `hotcue_${  number  }_status`);
-        let ledValue = this.controller.hid.LEDColors.OFF;
+        let ledValue = this.controller.hid.LEDColors[TraktorS3.HotcueUnsetColor];
         // If hotcue is set, change the color.
         if (hotCueStatus) {
             ledValue = this.colorForHotcue(number);
