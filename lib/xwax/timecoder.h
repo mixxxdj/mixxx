@@ -26,6 +26,7 @@
 #include "lut.h"
 #include "lut_mk2.h"
 #include "pitch.h"
+#include "pitch_kalman.h"
 #include "delayline.h"
 
 #define TIMECODER_CHANNELS 2
@@ -100,7 +101,10 @@ struct timecoder {
 
     bool forwards;
     struct timecoder_channel primary, secondary;
+
+    bool use_legacy_pitch_filter;
     struct pitch pitch;
+    struct pitch_kalman pitch_kalman;
 
     /* Numerical timecode */
 
@@ -151,7 +155,10 @@ static inline struct timecode_def* timecoder_get_definition(struct timecoder *tc
 
 static inline double timecoder_get_pitch(struct timecoder *tc)
 {
-    return pitch_current(&tc->pitch) / tc->speed;
+    if (tc->use_legacy_pitch_filter)
+        return pitch_current(&tc->pitch) / tc->speed;
+    else
+        return pitch_kalman_current(&tc->pitch_kalman) / tc->speed;
 }
 
 /*

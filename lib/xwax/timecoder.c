@@ -19,6 +19,10 @@
 
 #include <assert.h>
 #include <limits.h>
+#include <pitch.h>
+#include <pitch.h>
+#include <pitch_kalman.h>
+#include <pitch_kalman.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -433,9 +437,21 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
-    init_channel(tc->def, &tc->primary);
+        init_channel(tc->def, &tc->primary);
     init_channel(tc->def, &tc->secondary);
-    pitch_init(&tc->pitch, tc->dt);
+
+    tc->use_legacy_pitch_filter = false; /* Switch for pitch filter type */
+
+    if (tc->use_legacy_pitch_filter) {
+        pitch_init(&tc->pitch, tc->dt);
+    } else {
+        pitch_kalman_init(&tc->pitch_kalman, tc->dt,
+                KALMAN_COEFFS(1e-8, 5.0),  /* stable mode */
+                KALMAN_COEFFS(1e-2, 1e-3), /* medium mode */
+                KALMAN_COEFFS(1e-1, 1e-4), /* reactive mode */
+                40e-5,  /* medium threshold  */
+                15e-4); /* scratch threshold  */
+    }
 
     tc->ref_level = INT_MAX;
     tc->bitstream = 0;
@@ -663,14 +679,21 @@ static void process_sample(struct timecoder *tc,
      * counters */
 
     if (!tc->primary.swapped && !tc->secondary.swapped)
-	pitch_dt_observation(&tc->pitch, 0.0);
+        if (tc->use_legacy_pitch_filter)
+            pitch_dt_observation(&tc->pitch, 0.0);
+        else
+            pitch_kalman_update(&tc->pitch_kalman, 0.0);
     else {
 	double dx;
 
 	dx = 1.0 / tc->def->resolution / 4;
 	if (!tc->forwards)
 	    dx = -dx;
-	pitch_dt_observation(&tc->pitch, dx);
+
+        if (tc->use_legacy_pitch_filter)
+            pitch_dt_observation(&tc->pitch, dx);
+        else
+            pitch_kalman_update(&tc->pitch_kalman, dx);
     }
 
     /* If we have crossed the primary channel in the right polarity,
