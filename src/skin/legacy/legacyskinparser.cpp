@@ -36,6 +36,7 @@
 #include "widget/wbasewidget.h"
 #include "widget/wbattery.h"
 #include "widget/wbeatspinbox.h"
+#include <widget/wbpmeditor.h>
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
 #include "widget/wcuebutton.h"
@@ -575,6 +576,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
         result = wrapWidget(parseLabelWidget<WNumber>(node));
+    } else if (nodeName == "BpmEditor") {
+        result = wrapWidget(parseBpmEditor(node));
     } else if (nodeName == "NumberDb") {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
@@ -1032,6 +1035,24 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
     return pLabel;
 }
 #endif
+
+QWidget* LegacySkinParser::parseBpmEditor(const QDomElement& node) {
+    const QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+    WBpmEditor* pBpmEditor = new WBpmEditor(group, m_pParent);
+    pBpmEditor->setup(node, *m_pContext);
+    commonWidgetSetup(node, pBpmEditor);
+    // Set tooltips for children
+    const QString tapTooltip = m_tooltips.tooltipForId("tempo_tap_bpm_tap");
+    const QString editTooltip = m_tooltips.tooltipForId("tempo_edit");
+    pBpmEditor->setTapButtonTooltip(tapTooltip);
+    pBpmEditor->setEditButtonTooltip(editTooltip);
+    return pBpmEditor;
+}
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML

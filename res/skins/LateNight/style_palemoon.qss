@@ -348,11 +348,24 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
+WBpmEditor,
+#BpmClickButton,
+#BpmTapButton,
+#BpmTapButton:focus {
+  background-color: transparent;
+}
+WBpmEditor,
+#BpmClickButton {
+  border: none;
+}
+
 WTrackProperty:hover,
 WTrackProperty:hover[selected="false"],
 WTrackProperty:hover[selected="true"],
 WTrackProperty[selected="true"],
 #BpmTapContainer:hover,
+#BpmText:hover,
+#BpmTapSelectButton, #BpmEditSelectButton,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
   }
@@ -360,10 +373,22 @@ WTrackProperty[selected="true"],
   WTrackProperty[selected="true"] {
     background-color: #181819;
   }
+  #BpmTap,
   #BpmTap[pressed="true"],
-  WTrackProperty[selected="true"] {
+  WTrackProperty[selected="true"],
+  #BpmTapSelectButton, #BpmEditSelectButton,
+  #BpmTapButton {
     border: 1px solid #7d350d;
-/*    border: 1px solid #888;*/
+  }
+  #BpmTapSelectButton {
+    image: url(skins:LateNight/palemoon/buttons/btn__bpm_tap_select.svg) no-repeat center center;
+  }
+  #BpmEditSelectButton {
+    border-left: 0px;
+    image: url(skins:LateNight/palemoon/buttons/btn__bpm_edit_select.svg) no-repeat left top;
+  }
+  QPushButton#BpmTapButton:pressed {
+    border: 1px solid #257b82;
   }
 
 /* Disabled for now since the hover effect is stuck as soon as the
@@ -651,6 +676,9 @@ WTrackProperty[selected="true"],
 #SyncBox {
   margin: 2px 1px 1px 2px;
 }
+#BpmRateTapContainer {
+  margin: 1px 1px 1px 2px;
+}
 
 #RateControls {
   margin: 0px 1px 0px 2px;
@@ -659,11 +687,13 @@ WTrackProperty[selected="true"],
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
 WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
 #spinBoxTransition {
   selection-color: #a7998b;
   selection-background-color: #111;
   }
   WBeatSpinBox:focus,
+  WBpmEditor QDoubleSpinBox:focus,
   #spinBoxTransition:focus,
   #LibraryBPMSpinBox:focus  {
     selection-color: #000;
@@ -675,6 +705,7 @@ WBeatSpinBox {
   border-width: 3px 19px 2px 3px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
+
 #spinBoxTransition {
   width: 24px;
   height: 19px;
@@ -682,46 +713,91 @@ WBeatSpinBox {
   margin: 0px 2px 3px 5px;
   border-width: 3px 19px 2px 3px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
+}
+WBeatSpinBox:focus
+#spinBoxTransition:focus {
+  border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
+}
+
+WBpmEditor QDoubleSpinBox {
+  margin: 0px;
+  padding: 0px 0px 0px 1px;
+  /*border-width: 3px 2px 2px 3px;*/
+  /*border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 2 2 3;*/
   }
-  WBeatSpinBox:focus,
-  #spinBoxTransition:focus {
-    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
+  WBpmEditor QDoubleSpinBox:focus {
+    border-image: none;
+    border: 1px solid #257b82;
+    border-radius: 2px;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
   }
 
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
+WBpmEditor QDoubleSpinBox::up-button,
+WBpmEditor QDoubleSpinBox::down-button
 #spinBoxTransition::up-button,
 #spinBoxTransition::down-button {
   subcontrol-origin: content;
   position: relative;
-  /* as with spinbox: border is added to size. */
-  width: 18px;
   padding: 0px;
   }
   WBeatSpinBox::up-button,
+  WBeatSpinBox::down-button,
+  #spinBoxTransition::up-button,
+  #spinBoxTransition::down-button {
+    width: 18px;
+  }
+  WBpmEditor QDoubleSpinBox::up-button,
+  WBpmEditor QDoubleSpinBox::down-button {
+    width: 0px;
+  }
+
+  WBeatSpinBox::up-button,
+  WBpmEditor QDoubleSpinBox::up-button,
   #spinBoxTransition::up-button {
-    height: 11px;
     subcontrol-position: top right;
-    image: url(skins:LateNight/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
+    }
+    WBeatSpinBox::up-button,
+    #spinBoxTransition::up-button {
+      image: url(skins:LateNight/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
+    }
+    WBpmEditor QDoubleSpinBox::up-button {
+      image: url(skins:LateNight/palemoon/buttons/btn__spinbox_bpm_down.svg) no-repeat;
+      /*margin-left: -10px;*/
+    }
+    WBeatSpinBox::up-button,
+    #spinBoxTransition::up-button {
+      height: 11px;
     }
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
-      }
+    }
     #spinBoxTransition::up-button {
       margin: -2px -3px 0px 0px;
-      }
+    }
+
   WBeatSpinBox::down-button,
+  WBpmEditor QDoubleSpinBox::down-button,
   #spinBoxTransition::down-button {
-    height: 11px;
     subcontrol-position: bottom right;
-    image: url(skins:LateNight/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
+    }
+    WBeatSpinBox::down-button,
+    #spinBoxTransition::down-button {
+      image: url(skins:LateNight/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
+      height: 11px;
+    }
+    WBpmEditor QDoubleSpinBox::down-button {
+      image: url(skins:LateNight/palemoon/buttons/btn__spinbox_bpm_down.svg) no-repeat;
+      /*margin-left: -10px;*/
     }
     WBeatSpinBox::down-button {
       margin: 0px -1px -3px 0px;
-      }
+    }
     #spinBoxTransition::down-button {
       margin: 0px -3px -1px 0px;
-      }
+    }
 
 
 /************** Mixer ***************************************************/
@@ -1297,6 +1373,7 @@ WEffectChainPresetSelector:!editable:on,
   }
 
   WBeatSpinBox,
+  WBpmEditor QDoubleSpinBox,
   #spinBoxTransition {
     color: #a7998b;
   }
@@ -1493,8 +1570,6 @@ WEffectSelector:!editable,
   border-width: 2px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-  /*
-  WPushButton#BpmTap[displayValue="1"], */
   WPushButton#VinylStatus[displayValue="1"],
   WPushButton#VinylStatus[displayValue="2"],
   WPushButton#VinylStatus[displayValue="3"],
@@ -1605,6 +1680,9 @@ WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
+WBpmEditor QDoubleSpinBox,
+WBpmEditor QDoubleSpinBox::up-button,
+WBpmEditor QDoubleSpinBox::down-button,
 WBeatSpinBox,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button {
@@ -1737,7 +1815,9 @@ WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"]
+#FxUnit4 #FxToggleButton[displayValue="1"],
+WBpmEditor QDoubleSpinBox::up-button:pressed,
+WBpmEditor QDoubleSpinBox::down-button:pressed,
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
