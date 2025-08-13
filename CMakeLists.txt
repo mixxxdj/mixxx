@@ -4899,6 +4899,7 @@ if(VINYLCONTROL)
       lib/xwax/lut_mk2.c
       lib/xwax/filters.c
       lib/xwax/delayline.c
+      lib/xwax/pitch_kalman.c
   )
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)

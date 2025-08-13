@@ -112,8 +112,6 @@ class VinylControlXwax : public VinylControl {
     // How much of the pitch ring buffer is "filled" versus empty (used before
     // it fills up completely).
     int m_iPitchRingFilled;
-    // A smoothed pitch value to show to the user.
-    double m_dDisplayPitch;
 
     // Steady pitch trackers.  "Subtle" will be more likely to return true,
     // so it is used to set the play button.  "Gross" is more likely to return
