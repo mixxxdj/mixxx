@@ -39,6 +39,30 @@
         High does not work when using bus power and will appear the same as mid.
       </description>
     </option>
+    <option variable="unsetHotcueColor" type="enum"
+      label="Color of unset Hotcues">
+      <value label="Black (Off)" default="true">OFF</value>
+      <value label="Red">RED</value>
+      <value label="Carrot">CARROT</value>
+      <value label="Orange">ORANGE</value>
+      <value label="Honey">HONEY</value>
+      <value label="Yellow">YELLOW</value>
+      <value label="Lime">LIME</value>
+      <value label="Green">GREEN</value>
+      <value label="Aqua">AQUA</value>
+      <value label="Celeste">CELESTE</value>
+      <value label="Sky">SKY</value>
+      <value label="Blue">BLUE</value>
+      <value label="Purple">PURPLE</value>
+      <value label="Fuchsia">FUCHSIA</value>
+      <value label="Magenta">MAGENTA</value>
+      <value label="Azalea">AZALEA</value>
+      <value label="Salmon">SALMON</value>
+      <value label="White">WHITE</value>
+      <description>
+        Set the default color for Hotcue buttons who have not yet been assigned a position.
+      </description>
+    </option>
     <option variable="fxMode" type="enum"
       label="Effect section layout">
       <value label="Quick Effect" default="true">QUICK_EFFECT</value>
