@@ -139,9 +139,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         latency = 20;
     }
 
-    const auto sampleRate = mixxx::audio::SampleRate(
-            m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate"))
-                    .toUInt());
+    const auto sampleRate = static_cast<unsigned int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate"))));
 
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
@@ -155,7 +154,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, sampleRate.value(), /* phono */ false);
+    timecoder_init(&timecoder, tc_def, speed, sampleRate, /* phono */ false);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
