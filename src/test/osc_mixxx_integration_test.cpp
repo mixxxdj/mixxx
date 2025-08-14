@@ -6,30 +6,6 @@
 #include <iostream>
 #include <thread>
 
-// Handler for incoming OSC messages
-// int osc_message_handler(const char* path,
-//        const char* types,
-//        lo_arg** argv,
-//        int argc,
-//        lo_message msg,
-//        void* user_data) {
-//    auto* flag = static_cast<std::atomic<bool>*>(user_data);
-//    flag->store(true);
-//    std::cout << "[OSC TEST] Message received at path: " << path << std::endl;
-//    return 0;
-//}
-
-// int osc_message_handler(const char* path /*path*/,
-//         const char* /*types*/,
-//         lo_arg** /*argv*/,
-//         int /*argc*/,
-//         lo_message /*msg*/,
-//         void* user_data) {
-//     auto* flag = static_cast<bool*>(user_data);
-//     *flag = true;
-//     return 0;
-// }
-
 int osc_message_handler(const char* path,
         const char* types,
         lo_arg** argv,
@@ -91,52 +67,3 @@ int main() {
 
     return messageReceived.load() ? 0 : 1;
 }
-
-// #include <lo/lo.h>
-//
-// #include <atomic>
-// #include <chrono>
-// #include <iostream>
-// #include <thread>
-//
-// std::atomic<bool> messageReceived(false);
-//
-// int osc_message_handler(const char* path, const char* types, lo_arg** argv,
-// int argc, lo_message msg, void* user_data) {
-//     std::cout << "[OSC] Message received on path: " << path << "\n";
-//     messageReceived.store(true);
-//     return 0;
-// }
-//
-// int main() {
-//     const char* port = "12345";
-//
-//     // Create OSC server
-//     lo_server_thread st = lo_server_thread_new(port, nullptr);
-//     lo_server_thread_add_method(st, NULL, NULL, osc_message_handler,
-//     nullptr); lo_server_thread_start(st); std::cout << "[OSC] Receiver
-//     started on port " << port << "\n";
-//
-//     // Send a test message
-//     lo_address taddr = lo_address_new("localhost", port);
-//     lo_send(taddr, "/test", "s", "hello");
-//     lo_address_free(taddr);
-//
-//     // Wait up to 10 seconds for a message
-//     for (int i = 0; i < 100; ++i) {
-//         if (messageReceived.load())
-//             break;
-//         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//     }
-//
-//     if (messageReceived.load()) {
-//         std::cout << "[OSC] Test result: message was received!\n";
-//     } else {
-//         std::cout << "[OSC] Test result: no message received.\n";
-//     }
-//
-//     lo_server_thread_stop(st);
-//     lo_server_thread_free(st);
-//
-//     return 0;
-// }
