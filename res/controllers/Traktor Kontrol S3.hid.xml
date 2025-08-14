@@ -32,8 +32,8 @@
       label="Bright LED Level">
       <value label="Off">0</value>
       <value label="Low">1</value>
-      <value label="Mid">2</value>
-      <value label="High" default="true">3</value>
+      <value label="Mid" default="true">2</value>
+      <value label="High">3</value>
       <description>
         Sets the brightness of the LEDs when they are set to bright mode.
         High does not work when using bus power and will appear the same as mid.
