@@ -41,7 +41,7 @@
     </option>
     <option variable="unsetHotcueColor" type="enum"
       label="Color of unset Hotcues">
-      <value label="Black (Off)">OFF</value>
+      <value label="Black (Off)" default="true">OFF</value>
       <value label="Red">RED</value>
       <value label="Carrot">CARROT</value>
       <value label="Orange">ORANGE</value>
@@ -58,7 +58,7 @@
       <value label="Magenta">MAGENTA</value>
       <value label="Azalea">AZALEA</value>
       <value label="Salmon">SALMON</value>
-      <value label="White" default="true">WHITE</value>
+      <value label="White">WHITE</value>
       <description>
         Set the default color for Hotcue buttons who have not yet been assigned a position.
       </description>
