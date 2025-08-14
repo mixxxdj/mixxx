@@ -401,12 +401,16 @@ void Tooltips::addStandardTooltips() {
             << tr("Holds the gain of the low EQ to zero while active.")
             << eqKillLatch;
 
-    QString tempoDisplay = tr("Displays the tempo of the loaded track in BPM (beats per minute).");
+    const QString tempoDisplay =
+            tr("Displays the tempo of the loaded track in BPM (beats per "
+               "minute).");
     // TODO Clarify this refers to 'file BPM', not playback rate?
-    QString bpmTapButton = tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
-    QString tempoTapButton =
+    const QString bpmTapButton = tr(
+            "When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+    const QString tempoTapButton =
             tr("When tapped repeatedly, adjusts the tempo to match the tapped "
                "BPM.");
+    const QString bpmTempoEdit = tr("Click to open the tempo/BPM editor");
     add("visual_bpm")
             << tr("Tempo")
             << tempoDisplay;
@@ -416,6 +420,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Key")
             << tr("Displays the current musical key of the loaded track after pitch shifting.");
 
+    add("visual_bpm_edit")
+            << tempoDisplay
+            << bpmTempoEdit;
     add("bpm_tap")
             << tr("BPM Tap")
             << bpmTapButton;
@@ -426,6 +433,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Rate Tap and BPM Tap")
             << QString("%1: %2").arg(leftClick, tempoTapButton)
             << QString("%1: %2").arg(rightClick, bpmTapButton);
+    add("tempo_edit")
+            << tr("Set Tempo")
+            << tr("Set the desired tempo in BPM. If the track currently has no BPM detected, "
+                  "set the desired tempo in percent.");
 
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
