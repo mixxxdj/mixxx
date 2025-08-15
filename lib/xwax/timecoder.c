@@ -300,7 +300,7 @@ static void init_channel(struct timecoder_channel *ch)
  */
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono)
+                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator)
 {
     assert(def != NULL);
 
@@ -321,7 +321,7 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     init_channel(&tc->primary);
     init_channel(&tc->secondary);
 
-    tc->use_legacy_pitch_filter = false; /* Switch for pitch filter type */
+    tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
 
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch, tc->dt);
