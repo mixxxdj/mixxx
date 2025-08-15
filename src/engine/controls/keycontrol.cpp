@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
+#include "mixer/playermanager.h"
 #include "moc_keycontrol.cpp"
 #include "track/keyutils.h"
 
@@ -104,13 +105,14 @@ KeyControl::KeyControl(const QString& group,
     m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
-    m_pVCEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
-    m_pVCEnabled->connectValueChanged(this, &KeyControl::slotRateChanged,
-            Qt::DirectConnection);
+    // VinylControl is only available on main decks
+    if (PlayerManager::isDeckGroup(group)) {
+        m_pVCEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
+        m_pVCEnabled->connectValueChanged(this, &KeyControl::slotRateChanged, Qt::DirectConnection);
 
-    m_pVCRate = make_parented<ControlProxy>(group, "vinylcontrol_rate", this);
-    m_pVCRate->connectValueChanged(this, &KeyControl::slotRateChanged,
-                Qt::DirectConnection);
+        m_pVCRate = make_parented<ControlProxy>(group, "vinylcontrol_rate", this);
+        m_pVCRate->connectValueChanged(this, &KeyControl::slotRateChanged, Qt::DirectConnection);
+    }
 
     m_pKeylock = make_parented<ControlProxy>(group, "keylock", this);
     m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
@@ -149,8 +151,7 @@ void KeyControl::slotRateChanged() {
 // keylock are changed, but also when EngineBuffer::processTrackLocked requests
 // m_pitchRateInfo struct while rate, pitch or pitch_adjust were just updated.
 void KeyControl::updateRate() {
-
-    if(m_pVCEnabled->toBool()) {
+    if (m_pVCEnabled && m_pVCRate && m_pVCEnabled->toBool()) {
         m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
         m_pitchRateInfo.tempoRatio = m_pRateRatio->get();
