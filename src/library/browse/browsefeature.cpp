@@ -336,6 +336,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     QString path = pItem->getData().toString();
 
     if (path == QUICK_LINK_NODE) {
+        // TODO add bookmark action here.
+        // Also define one in BaseTrackSetFeature for all derived features.
         return;
     }
 
