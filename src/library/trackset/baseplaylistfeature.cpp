@@ -1589,7 +1589,65 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     int currentIndex = 0;
     QSqlDatabase database = m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
-    auto runSearch = [&](const QString& title, const QString& artist) {
+    // auto runSearch = [&](const QString& title, const QString& artist) {
+    //     tableCandidates->setRowCount(0);
+
+    //    QString titleFilter = title.isEmpty() ? "%" : title;
+    //    QString artistFilter = artist.isEmpty() ? "%" : artist;
+
+    //    titleFilter.replace("%", "\\%")
+    //            .replace("_", "\\_")
+    //            .replace("'", "''")
+    //            .replace("\"", "\\\"");
+    //    artistFilter.replace("%", "\\%")
+    //            .replace("_", "\\_")
+    //            .replace("'", "''")
+    //            .replace("\"", "\\\"");
+
+    //    QSqlQuery query(database);
+    //    if (checkMatchBoth->isChecked()) {
+    //        query.prepare(
+    //                "SELECT id, title, artist, album, album_artist "
+    //                "FROM library "
+    //                "WHERE lower(title) LIKE lower(?) ESCAPE '\\' "
+    //                "AND lower(artist) LIKE lower(?) ESCAPE '\\'");
+    //    } else {
+    //        query.prepare(
+    //                "SELECT id, title, artist, album, album_artist "
+    //                "FROM library "
+    //                "WHERE lower(title) LIKE lower(?) ESCAPE '\\' "
+    //                "OR lower(artist) LIKE lower(?) ESCAPE '\\'");
+    //    }
+    //    query.addBindValue(QStringLiteral("%%1%").arg(titleFilter));
+    //    query.addBindValue(QStringLiteral("%%1%").arg(artistFilter));
+
+    //    if (!query.exec()) {
+    //        qWarning() << "Failed to query library:" << query.lastError().text();
+    //        return;
+    //    }
+
+    //    while (query.next()) {
+    //        int row = tableCandidates->rowCount();
+    //        tableCandidates->insertRow(row);
+    //        tableCandidates->setItem(row, 0, new
+    //        QTableWidgetItem(query.value("title").toString()));
+    //        tableCandidates->setItem(row,
+    //                1,
+    //                new QTableWidgetItem(query.value("artist").toString()));
+    //        tableCandidates->setItem(row, 2, new
+    //        QTableWidgetItem(query.value("album").toString()));
+    //        tableCandidates->setItem(row,
+    //                3,
+    //                new QTableWidgetItem(
+    //                        query.value("album_artist").toString()));
+    //        tableCandidates->setItem(row, 4, new
+    //        QTableWidgetItem(query.value("id").toString()));
+    //    }
+    //};
+
+    auto runSearch = [tableCandidates,
+                             checkMatchBoth,
+                             database](const QString& title, const QString& artist) {
         tableCandidates->setRowCount(0);
 
         QString titleFilter = title.isEmpty() ? "%" : title;
@@ -1622,7 +1680,8 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         query.addBindValue(QStringLiteral("%%1%").arg(artistFilter));
 
         if (!query.exec()) {
-            qWarning() << "Failed to query library:" << query.lastError().text();
+            qWarning() << "[BasePlaylistFeature] Failed to query library:"
+                       << query.lastError().text();
             return;
         }
 
@@ -1642,7 +1701,35 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         }
     };
 
-    auto advanceToNext = [&]() {
+    // auto advanceToNext = [&]() {
+    //     if (currentIndex >= playlistEntries.size()) {
+    //         dialog.accept();
+    //         return;
+    //     }
+
+    //    const auto& entry = playlistEntries[currentIndex];
+    //    labelCurrentEntry->setText(
+    //            tr("Select a corresponding track for importfile-entry (%1):<br>"
+    //               "<b><span style='font-size:14pt;'>%2 - %3</span></b>")
+    //                    .arg(currentIndex + 1)
+    //                    .arg(entry.first, entry.second));
+
+    //    // Fill line edits with current CSV entry
+    //    lineEditTitle->setText(entry.first);
+    //    lineEditArtist->setText(entry.second);
+
+    //    tableCandidates->setSortingEnabled(false);
+    //    runSearch(entry.first, entry.second);
+    //    tableCandidates->setSortingEnabled(true);
+    //};
+
+    auto advanceToNext = [&,
+                                 labelCurrentEntry,
+                                 lineEditTitle,
+                                 lineEditArtist,
+                                 tableCandidates,
+                                 playlistEntries,
+                                 runSearch]() {
         if (currentIndex >= playlistEntries.size()) {
             dialog.accept();
             return;
@@ -1650,11 +1737,10 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         const auto& entry = playlistEntries[currentIndex];
         labelCurrentEntry->setText(
-                tr("Select a corresponding track for importfile-entry (%1):<br>"
-                   "<b><span style='font-size:14pt;'>%2 - %3</span></b>")
+                QObject::tr("Select a corresponding track for importfile-entry (%1):<br>"
+                            "<b><span style='font-size:14pt;'>%2 - %3</span></b>")
                         .arg(currentIndex + 1)
-                        .arg(entry.first)
-                        .arg(entry.second));
+                        .arg(entry.first, entry.second));
 
         // Fill line edits with current CSV entry
         lineEditTitle->setText(entry.first);
@@ -1666,63 +1752,154 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     };
 
     // Search button uses line edits
-    QObject::connect(searchBtn, &QPushButton::clicked, [&]() {
-        tableCandidates->setSortingEnabled(false);
-        runSearch(lineEditTitle->text(), lineEditArtist->text());
-        tableCandidates->setSortingEnabled(true);
-    });
+    // QObject::connect(searchBtn, &QPushButton::clicked, [&]() {
+    //    tableCandidates->setSortingEnabled(false);
+    //    runSearch(lineEditTitle->text(), lineEditArtist->text());
+    //    tableCandidates->setSortingEnabled(true);
+    //});
+    // QObject::connect(searchBtn, &QPushButton::clicked, &dialog, [&]() {
+    //    tableCandidates->setSortingEnabled(false);
+    //    runSearch(lineEditTitle->text(), lineEditArtist->text());
+    //    tableCandidates->setSortingEnabled(true);
+    //});
+
+    QObject::connect(searchBtn,
+            &QPushButton::clicked,
+            &dialog,
+            [tableCandidates, lineEditTitle, lineEditArtist, &runSearch]() {
+                tableCandidates->setSortingEnabled(false);
+                runSearch(lineEditTitle->text(), lineEditArtist->text());
+                tableCandidates->setSortingEnabled(true);
+            });
 
     // Keep checkbox connection
-    QObject::connect(checkMatchBoth, &QCheckBox::toggled, [&]() {
-        if (currentIndex < playlistEntries.size()) {
-            tableCandidates->setSortingEnabled(false);
-            runSearch(lineEditTitle->text(), lineEditArtist->text());
-            tableCandidates->setSortingEnabled(true);
-        }
-    });
+    // QObject::connect(checkMatchBoth, &QCheckBox::toggled, [&]() {
+    //    if (currentIndex < playlistEntries.size()) {
+    //        tableCandidates->setSortingEnabled(false);
+    //        runSearch(lineEditTitle->text(), lineEditArtist->text());
+    //        tableCandidates->setSortingEnabled(true);
+    //    }
+    //});
+    // QObject::connect(checkMatchBoth, &QCheckBox::toggled, &dialog, [&]() {
+    //    if (currentIndex < playlistEntries.size()) {
+    //        tableCandidates->setSortingEnabled(false);
+    //        runSearch(lineEditTitle->text(), lineEditArtist->text());
+    //        tableCandidates->setSortingEnabled(true);
+    //    }
+    //});
 
-    QObject::connect(addSelectedBtn, &QPushButton::clicked, [&]() {
-        QList<int> trackIdsToAdd;
-        for (auto item : tableCandidates->selectedItems()) {
-            if (item->column() == 0) {
-                int row = item->row();
-                int trackId = tableCandidates->item(row, 4)->text().toInt();
-                trackIdsToAdd.append(trackId);
-            }
-        }
+    QObject::connect(checkMatchBoth,
+            &QCheckBox::toggled,
+            &dialog,
+            [tableCandidates,
+                    lineEditTitle,
+                    lineEditArtist,
+                    &runSearch,
+                    playlistEntries,
+                    &currentIndex]() {
+                if (currentIndex < playlistEntries.size()) {
+                    tableCandidates->setSortingEnabled(false);
+                    runSearch(lineEditTitle->text(), lineEditArtist->text());
+                    tableCandidates->setSortingEnabled(true);
+                }
+            });
 
-        if (trackIdsToAdd.isEmpty()) {
-            QMessageBox::information(&dialog,
-                    tr("No selection"),
-                    tr("Please select at least one track."));
-            return;
-        }
+    // QObject::connect(addSelectedBtn, &QPushButton::clicked, &dialog, [&]() {
+    //     QList<int> trackIdsToAdd;
+    //     for (auto item : tableCandidates->selectedItems()) {
+    //         if (item->column() == 0) {
+    //             int row = item->row();
+    //             int trackId = tableCandidates->item(row, 4)->text().toInt();
+    //             trackIdsToAdd.append(trackId);
+    //         }
+    //     }
 
-        QSqlQuery query(database);
-        for (int trackId : trackIdsToAdd) {
-            position = position + 1;
-            query.prepare(
-                    "INSERT INTO PlaylistTracks (playlist_id, track_id, "
-                    "position) VALUES (?, ?, ?)");
-            query.addBindValue(playlistId);
-            query.addBindValue(trackId);
-            query.addBindValue(position);
-            if (!query.exec()) {
-                qWarning() << "[BasePlaylistFeature] Failed to insert track "
-                              "into PlaylistTracks:"
-                           << query.lastError().text();
-            }
-        }
-    });
+    //    if (trackIdsToAdd.isEmpty()) {
+    //        QMessageBox::information(&dialog,
+    //                tr("No selection"),
+    //                tr("Please select at least one track."));
+    //        return;
+    //    }
 
-    QObject::connect(nextBtn, &QPushButton::clicked, [&]() {
-        ++currentIndex;
-        advanceToNext();
-    });
+    //    QSqlQuery query(database);
+    //    for (int trackId : trackIdsToAdd) {
+    //        position = position + 1;
+    //        query.prepare(
+    //                "INSERT INTO PlaylistTracks (playlist_id, track_id, "
+    //                "position) VALUES (?, ?, ?)");
+    //        query.addBindValue(playlistId);
+    //        query.addBindValue(trackId);
+    //        query.addBindValue(position);
+    //        if (!query.exec()) {
+    //            qWarning() << "[BasePlaylistFeature] Failed to insert track "
+    //                          "into PlaylistTracks:"
+    //                       << query.lastError().text();
+    //        }
+    //    }
+    //});
 
-    QObject::connect(cancelBtn, &QPushButton::clicked, [&]() {
-        dialog.reject();
-    });
+    QObject::connect(addSelectedBtn,
+            &QPushButton::clicked,
+            &dialog,
+            [tableCandidates, &database, playlistId, &position, &dialog]() {
+                QList<int> trackIdsToAdd;
+                for (auto item : tableCandidates->selectedItems()) {
+                    if (item->column() == 0) {
+                        int row = item->row();
+                        int trackId =
+                                tableCandidates->item(row, 4)->text().toInt();
+                        trackIdsToAdd.append(trackId);
+                    }
+                }
+
+                if (trackIdsToAdd.isEmpty()) {
+                    QMessageBox::information(&dialog,
+                            QObject::tr("No selection"),
+                            QObject::tr("Please select at least one track."));
+                    return;
+                }
+
+                QSqlQuery query(database);
+                for (int trackId : trackIdsToAdd) {
+                    position = position + 1;
+                    query.prepare(
+                            "INSERT INTO PlaylistTracks (playlist_id, "
+                            "track_id, "
+                            "position) VALUES (?, ?, ?)");
+                    query.addBindValue(playlistId);
+                    query.addBindValue(trackId);
+                    query.addBindValue(position);
+                    if (!query.exec()) {
+                        qWarning() << "[BasePlaylistFeature] Failed to insert "
+                                      "track "
+                                      "into PlaylistTracks:"
+                                   << query.lastError().text();
+                    }
+                }
+            });
+
+    // QObject::connect(nextBtn, &QPushButton::clicked, &dialog, [&]() {
+    //     ++currentIndex;
+    //     advanceToNext();
+    // });
+
+    QObject::connect(nextBtn,
+            &QPushButton::clicked,
+            &dialog,
+            [advanceToNext, &currentIndex]() mutable {
+                ++currentIndex;
+                advanceToNext();
+            });
+
+    // QObject::connect(cancelBtn, &QPushButton::clicked, &dialog, [&]() {
+    //     dialog.reject();
+    // });
+
+    // QObject::connect(cancelBtn, &QPushButton::clicked, &dialog, [&dialog]() {
+    //     dialog.reject();
+    // });
+
+    QObject::connect(cancelBtn, &QPushButton::clicked, &dialog, &QDialog::reject);
 
     advanceToNext();
     dialog.exec();
