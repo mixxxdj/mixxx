@@ -38,6 +38,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
+    int levenshteinDistance(const QString& s1, const QString& s2);
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -76,6 +77,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotImportPlaylist();
     void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
+    void slotCreateImportPlaylistFindTracks();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
@@ -117,6 +119,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pLockPlaylistAction;
     parented_ptr<QAction> m_pImportPlaylistAction;
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
+    parented_ptr<QAction> m_pCreateImportPlaylistFindTracksAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pDuplicatePlaylistAction;
