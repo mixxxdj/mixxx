@@ -326,8 +326,8 @@ void mk2_process_carrier(struct timecoder *tc, signed int primary, signed int se
     tc->gain_compensation = (double)tc->secondary.mk2.rms / tc->secondary.mk2.rms_deriv;
 
     /* Without this limit pitch becomes too sensitive */
-    if (tc->gain_compensation > 30.0)
-        tc->gain_compensation = 30.0;
+    if (tc->gain_compensation > 25.0)
+        tc->gain_compensation = 25.0;
 
     tc->dB = 20 * log10((double)tc->secondary.mk2.rms / INT_MAX);
 
