@@ -907,8 +907,9 @@ int BasePlaylistFeature::levenshteinDistance(const QString& s1, const QString& s
     QVector<int> col(len2 + 1);
     QVector<int> prevCol(len2 + 1);
 
-    for (int i = 0; i <= len2; i++)
+    for (int i = 0; i <= len2; i++) {
         prevCol[i] = i;
+    }
 
     for (int i = 0; i < len1; i++) {
         col[0] = i + 1;
