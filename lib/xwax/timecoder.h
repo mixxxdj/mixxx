@@ -130,7 +130,7 @@ struct timecode_def* timecoder_find_definition(const char *name, const char *lut
 void timecoder_free_lookup(void);
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono);
+                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator);
 void timecoder_clear(struct timecoder *tc);
 
 int timecoder_monitor_init(struct timecoder *tc, int size);

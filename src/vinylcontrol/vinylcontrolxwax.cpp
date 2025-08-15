@@ -76,6 +76,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         ConfigKey(group,"vinylcontrol_vinyl_type"));
     QString strVinylSpeed = m_pConfig->getValueString(
         ConfigKey(group,"vinylcontrol_speed_type"));
+    QString strPitchEstimator = m_pConfig->getValueString(
+        ConfigKey(group,"vinylcontrol_pitch_estimator_type"));
 
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
@@ -170,7 +172,15 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, sampleRate.value(), /* phono */ false);
+    bool use_legacy_pitch_filter;
+
+    if (strPitchEstimator == MIXXX_VINYL_PITCH_FILTER_LEGACY) {
+        use_legacy_pitch_filter = true;
+    } else {
+        use_legacy_pitch_filter = false;
+    }
+
+    timecoder_init(&timecoder, tc_def, speed, sampleRate.value(), /* phono */ false, use_legacy_pitch_filter);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
