@@ -1,11 +1,16 @@
 #include "library/trackset/baseplaylistfeature.h"
 
 #include <QAction>
+#include <QCheckBox>
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QRegExp>
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
 #include <QSqlTableModel>
 #include <QStandardPaths>
+#include <QTableWidget>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -134,6 +139,13 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreateImportPlaylist);
+    m_pCreateImportPlaylistFindTracksAction =
+            make_parented<QAction>(tr("Import Playlist - Find Tracks"), this);
+    connect(m_pCreateImportPlaylistFindTracksAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreateImportPlaylistFindTracks);
+
     m_pExportPlaylistAction = make_parented<QAction>(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction,
             &QAction::triggered,
@@ -545,6 +557,633 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         slotImportPlaylistFile(playlistFile, lastPlaylistId);
     }
     activatePlaylist(lastPlaylistId);
+}
+
+// QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
+//     QStringList fields;
+//     QString field;
+//     bool inQuotes = false;
+//     int quoteCount = 0;
+//
+//     for (int i = 0; i < line.length(); ++i) {
+//         const QChar c = line[i];
+//
+//         if (c == '"') {
+//             quoteCount++;
+//             // Only toggle inQuotes if we're not in the middle of double quotes
+//             if (i + 1 < line.length() && line[i + 1] == '"') {
+//                 field += '"';
+//                 i++; // Skip next quote
+//                 quoteCount++;
+//             } else {
+//                 inQuotes = !inQuotes;
+//             }
+//         } else if (c == ',' && !inQuotes) {
+//             // Only split on comma if not inside quotes
+//             fields.append(field);
+//             field.clear();
+//             quoteCount = 0;
+//         } else {
+//             field += c;
+//         }
+//     }
+//     fields.append(field); // Add last field
+//
+//     return fields;
+// }
+
+// QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
+//     QStringList fields;
+//     QString field;
+//     bool inQuotes = false;
+//
+//     for (qsizetype i = 0; i < line.size(); ++i) {
+//         QChar c = line[i];
+//
+//         if (c == '"') {
+//             // Only toggle inQuotes if not a doubled quote
+//             if (i + 1 < line.size() && line[i + 1] == '"') {
+//                 field += '"';
+//                 ++i; // Skip next quote
+//             } else {
+//                 inQuotes = !inQuotes;
+//             }
+//         } else if (c == ',' && !inQuotes) {
+//             fields.append(field);
+//             field.clear();
+//         } else {
+//             field += c;
+//         }
+//     }
+//     fields.append(field);
+//
+//     return fields;
+// }
+
+QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
+    QStringList fields;
+    QString field;
+    bool inQuotes = false;
+
+    const qsizetype len = line.length();
+    for (qsizetype i = 0; i < len; ++i) {
+        const QChar c = line[i];
+
+        if (c == '"') {
+            // Handle double quotes inside quotes
+            if (i + 1 < len && line[i + 1] == '"') {
+                field += '"';
+                ++i; // skip next quote
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (c == ',' && !inQuotes) {
+            fields.append(field);
+            field.clear();
+        } else {
+            field += c;
+        }
+    }
+    fields.append(field); // Add last field
+    return fields;
+}
+
+// QString BasePlaylistFeature::cleanString(const QString& input) const {
+//     QString s = input;
+//
+//     // Remove text between parentheses
+//     s.remove(QRegularExpression("\\(.*?\\)"));
+//
+//     // Remove text between []
+//     s.remove(QRegularExpression("\\[.*?\\]"));
+//
+//     // Normalize apostrophes: replace with space
+//     s.replace(QChar(0x2019), ' '); // Unicode right single quote
+//     s.replace('\'', ' ');          // ASCII apostrophe
+//
+//     // Remove quotes
+//     s.remove('\"');
+//
+//     // Replace ASCII punctuation
+//     s.replace(QRegularExpression("[.,;!?]+"), " ");
+//
+//     // Replace common Unicode punctuation
+//     s.replace(QChar(0x2026), ' '); // ellipsis
+//     s.replace(QChar(0x2013), ' '); // en dash
+//     s.replace(QChar(0x2014), ' '); // em dash
+//     s.replace(QChar(0x00B7), ' '); // middle dot
+//
+//     // Collapse multiple spaces into one
+//     s = s.simplified();
+//
+//     return s.trimmed();
+// }
+
+QString BasePlaylistFeature::cleanString(const QString& input) const {
+    QString s = input;
+
+    static const QRegularExpression reParens("\\(.*?\\)");
+    s.remove(reParens);
+
+    static const QRegularExpression reBrackets("\\[.*?\\]");
+    s.remove(reBrackets);
+
+    // Normalize apostrophes: replace with space
+    s.replace(QChar(0x2019), ' '); // Unicode right single quote
+    s.replace('\'', ' ');          // ASCII apostrophe
+
+    // Remove quotes
+    s.remove('\"');
+
+    static const QRegularExpression reAsciiPunct("[.,;!?]+");
+    s.replace(reAsciiPunct, " ");
+
+    // Replace common Unicode punctuation
+    s.replace(QChar(0x2026), ' '); // ellipsis
+    s.replace(QChar(0x2013), ' '); // en dash
+    s.replace(QChar(0x2014), ' '); // em dash
+    s.replace(QChar(0x00B7), ' '); // middle dot
+
+    // Collapse multiple spaces into one
+    s = s.simplified();
+
+    return s.trimmed();
+}
+
+void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
+            QObject::tr("Confirm CSV/TXT-Import"),
+            QObject::tr("This action will show a dialog of all results for "
+                        "each entry in the file,\n "
+                        "1 by 1. For each entry you'll be able to selec "
+                        "0/1/more results from your library.\n\n "
+                        "The selected results will be added to a new playlist. "
+                        " \n\n "
+                        "Are you sure you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+
+    if (reply != QMessageBox::Yes) {
+        qDebug() << "[slotCreateImportPlaylistFindTracks] -> importCSVTXT -> "
+                    "Action cancelled by user.";
+        QMessageBox::information(nullptr,
+                tr("Import Cancelled"),
+                tr("Import cancelled by user, NO entries will be shown"));
+        return;
+    }
+
+    QString inputFile = QFileDialog::getOpenFileName(
+            nullptr,
+            tr("Select the file to inspect CSV/TXT"),
+            QString(),
+            tr("CSV files (*.csv);; TXT files (*.txt);; All files (*.*)"));
+
+    if (inputFile.isEmpty()) {
+        return;
+    }
+
+    QFile file(inputFile);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "[slotCreateImportPlaylistFindTracks] Failed to open CSV file:" << inputFile;
+        QMessageBox::information(nullptr,
+                tr("Import Cancelled"),
+                tr("Import cancelled, CSV/TXT-file can't be opened."));
+        return;
+    }
+
+    QFileInfo fileInfo(inputFile);
+    QString baseName = fileInfo.completeBaseName();
+    QString playlistName = baseName;
+
+    const QString& checkStamp = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss");
+
+    int playlistId = m_playlistDao.createPlaylist(playlistName + "-" + checkStamp);
+
+    if (playlistId == kInvalidPlaylistId) {
+        QMessageBox::warning(nullptr,
+                tr("Playlist Creation Failed"),
+                tr("An unknown error occurred while creating playlist: ") + playlistName);
+        return;
+    }
+
+    // Create report file in same folder as inputfile
+    QString reportFilePath = fileInfo.absolutePath() + "/" + baseName +
+            "-import-report-" + checkStamp + ".txt";
+    QFile reportFile(reportFilePath);
+    if (!reportFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "[slotCreateImportPlaylistFindTracks] Failed to open "
+                      "report file for writing:"
+                   << reportFilePath;
+    }
+    QTextStream reportStream(&reportFile);
+    // flag to know it there was an import action for the displayed track
+    int imported = 0;
+    int position = 0;
+
+    // read CSV -> find artist & title in the header for eg deezer:
+    // Row Index,Title,Artist,Album,Source Context,Duration,Date,Popularity,
+    // Favorited,Has Lyrics,Artist Link,Album Link,Cover URL
+
+    QList<QPair<QString, QString>> playlistEntries;
+    QTextStream in(&file);
+
+    // read header and find column positions
+    if (in.atEnd()) {
+        qWarning() << "[CSV Import] Empty file.";
+        return;
+    }
+
+    QString headerLine = in.readLine();
+    QStringList headerFields = parseCsvLine(headerLine);
+    // QStringList headerFields = headerLine.split(',', Qt::KeepEmptyParts);
+
+    int titleIndex = -1;
+    int artistIndex = -1;
+
+    // for (int i = 0; i < headerFields.size(); ++i) {
+    //     QString colName = headerFields[i].trimmed().toLower();
+    //     if (colName == "title" || colName == "song") {
+    //         titleIndex = i;
+    //     } else if (colName == "artist") {
+    //         artistIndex = i;
+    //     }
+    // }
+
+    for (qsizetype i = 0; i < headerFields.size(); ++i) {
+        const QString colName = headerFields[i].trimmed().toLower();
+        if (colName == "title" || colName == "song") {
+            titleIndex = i;
+        } else if (colName == "artist") {
+            artistIndex = i;
+        }
+    }
+
+    if (titleIndex == -1 || artistIndex == -1) {
+        qWarning() << "[CSV Import] Could not find both Title and Artist "
+                      "columns in header:"
+                   << headerFields;
+        QMessageBox::warning(nullptr,
+                tr("[CSV Import]"),
+                tr(" Could not find both Title and Artist columns in header: Import aborted"));
+        return;
+    }
+
+    while (!in.atEnd()) {
+        const QString line = in.readLine();
+        if (line.trimmed().isEmpty())
+            continue;
+
+        const QStringList fields = parseCsvLine(line);
+        if (fields.size() <= qMax(titleIndex, artistIndex))
+            continue;
+
+        const QString title = cleanString(fields[titleIndex]);
+        const QString artist = cleanString(fields[artistIndex]);
+
+        playlistEntries.append(qMakePair(title, artist));
+    }
+
+    // while (!in.atEnd()) {
+    //     QString line = in.readLine();
+    //     if (line.trimmed().isEmpty())
+    //         continue;
+
+    //    QStringList fields = parseCsvLine(line); // use member function now
+    //    if (fields.size() <= qMax(titleIndex, artistIndex))
+    //        continue;
+
+    //    QString title = cleanString(fields[titleIndex]);
+    //    QString artist = cleanString(fields[artistIndex]);
+
+    //    playlistEntries.append(qMakePair(title, artist));
+    //}
+    // read the rest of the lines
+    // while (!in.atEnd()) {
+    //    QString line = in.readLine();
+    //    if (line.trimmed().isEmpty()) {
+    //        continue;
+    //    }
+
+    //    QStringList fields = line.split(',', Qt::KeepEmptyParts);
+    //    if (fields.size() <= qMax(titleIndex, artistIndex)) {
+    //        continue;
+    //    }
+
+    //    QString title = cleanString(fields[titleIndex]);
+    //    QString artist = cleanString(fields[artistIndex]);
+
+    //    playlistEntries.append(qMakePair(title, artist));
+    //}
+
+    QDialog dialog(nullptr);
+    dialog.setWindowTitle(tr("Inspect Import File Entries"));
+    dialog.resize(900, 600);
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    QLabel* labelCurrentEntry = new QLabel(&dialog);
+    layout->addWidget(labelCurrentEntry);
+
+    // editable title & artist fields
+    QHBoxLayout* editLayout = new QHBoxLayout();
+    QLineEdit* lineEditTitle = new QLineEdit(&dialog);
+    QLineEdit* lineEditArtist = new QLineEdit(&dialog);
+    lineEditTitle->setPlaceholderText(tr("Title"));
+    lineEditArtist->setPlaceholderText(tr("Artist"));
+    QPushButton* searchBtn = new QPushButton(tr("Search"), &dialog);
+
+    editLayout->addWidget(new QLabel(tr("Title:"), &dialog));
+    editLayout->addWidget(lineEditTitle);
+    editLayout->addWidget(new QLabel(tr("Artist:"), &dialog));
+    editLayout->addWidget(lineEditArtist);
+    editLayout->addWidget(searchBtn);
+    layout->addLayout(editLayout);
+
+    QCheckBox* checkMatchBoth = new QCheckBox(tr("Match title AND artist"));
+    checkMatchBoth->setToolTip(
+            tr("If checked, results must match both title and artist. "
+               "Otherwise, either field may match."));
+    checkMatchBoth->setChecked(true);
+    layout->addWidget(checkMatchBoth);
+
+    QTableWidget* tableCandidates = new QTableWidget(&dialog);
+    tableCandidates->setColumnCount(5);
+    tableCandidates->setColumnWidth(0, 250);
+    tableCandidates->setColumnWidth(1, 250);
+    tableCandidates->setColumnWidth(2, 200);
+    tableCandidates->setColumnWidth(3, 200);
+    tableCandidates->setHorizontalHeaderLabels({"Title", "Artist", "Album", "Album Artist", "Id"});
+    tableCandidates->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableCandidates->setColumnHidden(4, true);
+    tableCandidates->sortItems(0, Qt::AscendingOrder);
+    layout->addWidget(tableCandidates);
+
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    QPushButton* nextBtn = new QPushButton(tr("Next"), &dialog);
+    QPushButton* addSelectedBtn = new QPushButton(tr("Add Selected"), &dialog);
+    QPushButton* cancelBtn = new QPushButton(tr("Cancel"), &dialog);
+    buttonLayout->addWidget(addSelectedBtn);
+    buttonLayout->addWidget(nextBtn);
+    buttonLayout->addWidget(cancelBtn);
+    layout->addLayout(buttonLayout);
+
+    int currentIndex = 0;
+    QSqlDatabase database = m_pLibrary->trackCollectionManager()->internalCollection()->database();
+
+    auto runSearch = [this, tableCandidates, checkMatchBoth, database](
+                             const QString& title, const QString& artist) {
+        tableCandidates->setRowCount(0);
+
+        QString titleFilter = title.isEmpty() ? "%" : cleanString(title);
+        QString artistFilter = artist.isEmpty() ? "%" : cleanString(artist);
+
+        auto escapeSqlLike = [](QString& s) {
+            s.replace("%", "\\%")
+                    .replace("_", "\\_")
+                    .replace("'", "''")
+                    .replace("\"", "\\\"");
+        };
+        escapeSqlLike(titleFilter);
+        escapeSqlLike(artistFilter);
+
+        auto extractWords = [](const QString& filter) {
+            QStringList result;
+            // for (const QString& w : filter.split(' ', Qt::SkipEmptyParts)) {
+            const QStringList words = filter.split(' ', Qt::SkipEmptyParts);
+            for (const QString& w : words) {
+                if (w.size() > 1) {
+                    result << w;
+                }
+            }
+            return result;
+        };
+
+        const QStringList titleWords = extractWords(titleFilter);
+        const QStringList artistWords = extractWords(artistFilter);
+
+        QStringList titleConds;
+        for (const QString& w : titleWords) {
+            titleConds << QStringLiteral("lower(title) LIKE lower('%%1%') ESCAPE '\\'").arg(w);
+        }
+        const QString titleWhere = titleConds.join(QStringLiteral(" AND "));
+
+        QStringList artistConds;
+        for (const QString& w : artistWords) {
+            artistConds << QStringLiteral("lower(artist) LIKE lower('%%1%') ESCAPE '\\'").arg(w);
+        }
+        const QString artistWhere = artistConds.join(QStringLiteral(" AND "));
+
+        QStringList conditions;
+        if (!titleWhere.isEmpty()) {
+            conditions << "(" + titleWhere + ")";
+        }
+        if (!artistWhere.isEmpty()) {
+            conditions << "(" + artistWhere + ")";
+        }
+
+        QString whereClause;
+        if (!conditions.isEmpty()) {
+            const QString conjunction = checkMatchBoth->isChecked() ? QStringLiteral(" AND ")
+                                                                    : QStringLiteral(" OR ");
+            whereClause = QStringLiteral("WHERE ") + conditions.join(conjunction);
+        }
+
+        QSqlQuery query(database);
+        const QString queryString =
+                QStringLiteral("SELECT id, title, artist, album, album_artist FROM library %1")
+                        .arg(whereClause);
+
+        if (!query.exec(queryString)) { // no need to call prepare()
+            qWarning() << "[BasePlaylistFeature] Failed to query library:"
+                       << query.lastError().text();
+            return;
+        }
+
+        while (query.next()) {
+            const int row = tableCandidates->rowCount();
+            tableCandidates->insertRow(row);
+            tableCandidates->setItem(row, 0, new QTableWidgetItem(query.value("title").toString()));
+            tableCandidates->setItem(row,
+                    1,
+                    new QTableWidgetItem(query.value("artist").toString()));
+            tableCandidates->setItem(row, 2, new QTableWidgetItem(query.value("album").toString()));
+            tableCandidates->setItem(row,
+                    3,
+                    new QTableWidgetItem(
+                            query.value("album_artist").toString()));
+            tableCandidates->setItem(row, 4, new QTableWidgetItem(query.value("id").toString()));
+        }
+    };
+
+    auto advanceToNext = [&,
+                                 labelCurrentEntry,
+                                 lineEditTitle,
+                                 lineEditArtist,
+                                 tableCandidates,
+                                 playlistEntries,
+                                 runSearch]() {
+        if (currentIndex >= playlistEntries.size()) {
+            dialog.accept();
+            return;
+        }
+
+        const auto& entry = playlistEntries[currentIndex];
+        labelCurrentEntry->setText(
+                QObject::tr("Select a corresponding track for importfile-entry (%1):<br>"
+                            "<b><span style='font-size:14pt;'>%2 - %3</span></b>")
+                        .arg(currentIndex + 1)
+                        .arg(entry.first, entry.second));
+
+        // Fill line edits with current CSV entry
+        lineEditTitle->setText(entry.first);
+        lineEditArtist->setText(entry.second);
+
+        tableCandidates->setSortingEnabled(false);
+        runSearch(entry.first, entry.second);
+        tableCandidates->setSortingEnabled(true);
+        ++currentIndex;
+    };
+
+    QObject::connect(searchBtn,
+            &QPushButton::clicked,
+            &dialog,
+            [tableCandidates, lineEditTitle, lineEditArtist, &runSearch]() {
+                tableCandidates->setSortingEnabled(false);
+                runSearch(lineEditTitle->text(), lineEditArtist->text());
+                tableCandidates->setSortingEnabled(true);
+            });
+
+    QObject::connect(checkMatchBoth,
+            &QCheckBox::toggled,
+            &dialog,
+            [tableCandidates,
+                    lineEditTitle,
+                    lineEditArtist,
+                    &runSearch,
+                    playlistEntries,
+                    &currentIndex]() {
+                if (currentIndex < playlistEntries.size()) {
+                    tableCandidates->setSortingEnabled(false);
+                    runSearch(lineEditTitle->text(), lineEditArtist->text());
+                    tableCandidates->setSortingEnabled(true);
+                }
+            });
+
+    auto addSelectedTracks = [tableCandidates,
+                                     &database,
+                                     playlistId,
+                                     &position,
+                                     &dialog,
+                                     &imported]() {
+        QList<int> trackIdsToAdd;
+        const auto selectedItems = tableCandidates->selectedItems();
+        for (const auto& item : selectedItems) {
+            if (item->column() == 0) {
+                int row = item->row();
+                int trackId = tableCandidates->item(row, 4)->text().toInt();
+                trackIdsToAdd.append(trackId);
+            }
+        }
+
+        if (trackIdsToAdd.isEmpty()) {
+            QMessageBox::information(&dialog,
+                    QObject::tr("No selection"),
+                    QObject::tr("Please select at least one track."));
+            return;
+        }
+
+        QSqlQuery query(database);
+        for (int trackId : trackIdsToAdd) {
+            position = position + 1;
+            query.prepare(
+                    "INSERT INTO PlaylistTracks (playlist_id, track_id, "
+                    "position) VALUES (?, ?, ?)");
+            query.addBindValue(playlistId);
+            query.addBindValue(trackId);
+            query.addBindValue(position);
+            if (!query.exec()) {
+                qWarning() << "[BasePlaylistFeature] Failed to insert track into PlaylistTracks:"
+                           << query.lastError().text();
+            }
+        }
+        imported = 1;
+    };
+
+    QObject::connect(addSelectedBtn, &QPushButton::clicked, &dialog, addSelectedTracks);
+
+    QObject::connect(tableCandidates,
+            &QTableWidget::cellDoubleClicked,
+            &dialog,
+            [addSelectedTracks, &advanceToNext](int /*row*/, int /*col*/) {
+                addSelectedTracks();
+                advanceToNext();
+            });
+
+    QObject::connect(nextBtn,
+            &QPushButton::clicked,
+            &dialog,
+            [advanceToNext, &currentIndex, &playlistEntries, &reportStream, &imported]() mutable {
+                if (currentIndex < playlistEntries.size()) {
+                    const auto& entry = playlistEntries[currentIndex];
+                    if (reportStream.device()) {
+                        // "Artist - Title - imported|not imported"
+                        reportStream << entry.second << " - " << entry.first << " - "
+                                     << (imported == 1 ? "imported" : "not imported") << "\n";
+                        reportStream.flush();
+                    }
+                }
+
+                // import flag reset for the next entry
+                imported = 0;
+                advanceToNext();
+            });
+
+    QObject::connect(cancelBtn,
+            &QPushButton::clicked,
+            &dialog,
+            [&dialog, &playlistEntries, &currentIndex, &reportStream]() {
+                // Write "not imported" for all remaining entries
+                for (int i = currentIndex; i < playlistEntries.size(); ++i) {
+                    const auto& entry =
+                            playlistEntries[i]; // entry.first = title,
+                                                // entry.second = artist
+                    if (reportStream.device()) {
+                        reportStream << entry.second << " - " << entry.first << " - not imported\n";
+                    }
+                }
+                reportStream.flush();
+
+                dialog.reject();
+            });
+
+    advanceToNext();
+    dialog.exec();
+    if (reportFile.isOpen()) {
+        reportFile.close();
+        qDebug() << "[BasePlaylistFeature] Import report written to:" << reportFilePath;
+    }
+
+    activatePlaylist(playlistId);
+}
+
+int BasePlaylistFeature::levenshteinDistance(const QString& s1, const QString& s2) {
+    const int len1 = s1.size();
+    const int len2 = s2.size();
+
+    QVector<int> col(len2 + 1);
+    QVector<int> prevCol(len2 + 1);
+
+    for (int i = 0; i <= len2; i++) {
+        prevCol[i] = i;
+    }
+
+    for (int i = 0; i < len1; i++) {
+        col[0] = i + 1;
+        for (int j = 0; j < len2; j++) {
+            int cost = (s1[i] == s2[j]) ? 0 : 1;
+            col[j + 1] = qMin(qMin(col[j] + 1, prevCol[j + 1] + 1), prevCol[j] + cost);
+        }
+        prevCol = col;
+    }
+    return col[len2];
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
