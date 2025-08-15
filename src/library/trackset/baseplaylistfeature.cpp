@@ -849,7 +849,8 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             &dialog,
             [tableCandidates, &database, playlistId, &position, &dialog]() {
                 QList<int> trackIdsToAdd;
-                for (const auto& item : tableCandidates->selectedItems()) {
+                const auto selectedItems = tableCandidates->selectedItems();
+                for (const auto& item : selectedItems) {
                     if (item->column() == 0) {
                         int row = item->row();
                         int trackId = tableCandidates->item(row, 4)->text().toInt();
