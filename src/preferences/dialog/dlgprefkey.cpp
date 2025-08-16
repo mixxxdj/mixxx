@@ -12,7 +12,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
           m_keySettings(pConfig),
           m_bAnalyzerEnabled(m_keySettings.getKeyDetectionEnabledDefault()),
           m_bFastAnalysisEnabled(m_keySettings.getFastAnalysisDefault()),
-          m_bReanalyzeEnabled(m_keySettings.getReanalyzeWhenSettingsChangeDefault()) {
+          m_bReanalyzeEnabled(m_keySettings.getReanalyzeWhenSettingsChangeDefault()),
+          m_stemStrategy(KeyDetectionSettings::StemStrategy::Disabled) {
     setupUi(this);
 
     m_keyLineEdits.insert(mixxx::track::io::key::C_MAJOR, c_major_edit);
@@ -48,6 +49,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
 
     loadSettings();
+
+    // TODO (#13466) Keeping the setting hidden for now
+    comboBoxStemStrategy->hide();
+    labelStemStrategy->hide();
 
     // Connections
     connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -88,6 +93,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
             this, &DlgPrefKey::setNotationTraditional);
     connect(radioNotationCustom, &QRadioButton::toggled,
             this, &DlgPrefKey::setNotationCustom);
+    connect(comboBoxStemStrategy,
+            &QComboBox::currentIndexChanged,
+            this,
+            &DlgPrefKey::slotStemStrategyChanged);
 }
 
 DlgPrefKey::~DlgPrefKey() {
@@ -145,6 +154,7 @@ void DlgPrefKey::loadSettings() {
     m_pKeyNotation->set(static_cast<double>(notation_type));
 
     slotUpdate();
+    m_stemStrategy = m_keySettings.getStemStrategy();
 }
 
 void DlgPrefKey::slotResetToDefaults() {
@@ -173,6 +183,7 @@ void DlgPrefKey::slotResetToDefaults() {
         notation_type = KeyUtils::KeyNotation::OpenKey;
     }
     setNotation(notation_type); // calls slotUpdate()
+    m_stemStrategy = m_keySettings.getStemStrategyDefault();
 }
 
 void DlgPrefKey::pluginSelected(int i) {
@@ -210,6 +221,18 @@ void DlgPrefKey::reanalyzeEnabled(Qt::CheckState state) {
 void DlgPrefKey::reanalyzeEnabled(int i) {
     m_bReanalyzeEnabled = static_cast<bool>(i);
 #endif
+    slotUpdate();
+}
+
+void DlgPrefKey::slotStemStrategyChanged(int index) {
+    switch (index) {
+    case 1:
+        m_stemStrategy = KeyDetectionSettings::StemStrategy::Enforced;
+        break;
+    default:
+        m_stemStrategy = KeyDetectionSettings::StemStrategy::Disabled;
+        break;
+    }
     slotUpdate();
 }
 
@@ -259,6 +282,7 @@ void DlgPrefKey::slotApply() {
     m_keySettings.setKeyNotation(notation_name);
     KeyUtils::setNotation(notation);
     m_pKeyNotation->set(static_cast<double>(notation_type));
+    m_keySettings.setStemStrategy(m_stemStrategy);
 }
 
 void DlgPrefKey::slotUpdate() {
@@ -288,6 +312,9 @@ void DlgPrefKey::slotUpdate() {
             m_selectedAnalyzerId = m_availablePlugins[0].id();
         }
     }
+    comboBoxStemStrategy->setCurrentIndex(
+            m_stemStrategy == KeyDetectionSettings::StemStrategy::Enforced ? 1
+                                                                           : 0);
 }
 
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {

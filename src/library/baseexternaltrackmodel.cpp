@@ -51,9 +51,8 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     QString year = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
     QString genre = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
     float bpm = getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM).toFloat();
-    QString nativeLocation = getFieldString(
-            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
-    QString location = QDir::fromNativeSeparators(nativeLocation);
+
+    QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -84,6 +83,10 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     return pTrack;
 }
 
+QString BaseExternalTrackModel::resolveLocation(const QString& nativeLocation) const {
+    return QDir::fromNativeSeparators(nativeLocation);
+}
+
 TrackId BaseExternalTrackModel::getTrackId(const QModelIndex& index) const {
     const auto track = getTrack(index);
     if (track) {
@@ -93,6 +96,11 @@ TrackId BaseExternalTrackModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
+QString BaseExternalTrackModel::getTrackLocation(const QModelIndex& index) const {
+    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return resolveLocation(nativeLocation);
+}
+
 TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         // The external table has foreign Track IDs, so we need to compare
@@ -100,7 +108,7 @@ TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
         for (int row = 0; row < rowCount(); ++row) {
             QString nativeLocation = getFieldString(index(row, 0),
                     ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
-            QString location = QDir::fromNativeSeparators(nativeLocation);
+            QString location = resolveLocation(nativeLocation);
             if (location == pTrack->getLocation()) {
                 return TrackId(index(row, 0).data());
             }

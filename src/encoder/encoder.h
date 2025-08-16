@@ -29,7 +29,7 @@ class Encoder {
 
     virtual int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
-    virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
+    virtual void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used
     // by EngineRecord, ShoutConnection does something different.
     virtual void updateMetaData(const QString& artist, const QString& title, const QString& album) = 0;

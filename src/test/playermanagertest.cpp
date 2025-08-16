@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QTest>
+#include <gsl/pointers>
 
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
@@ -20,6 +21,9 @@
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 
 namespace {
 
@@ -61,7 +65,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 true);
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
-        m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+        m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
 
         CoverArtCache::createInstance();
 
@@ -95,6 +99,14 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 m_pRecordingManager.get());
 
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+        RubberBandWorkerPool::createInstance();
+    }
+
+    void TearDown() override {
+        CoverArtCache::destroy();
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::destroy();
+#endif
     }
 
     ~PlayerManagerTest() {
@@ -107,7 +119,6 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pEffectsManager.reset();
         m_pTrackCollectionManager.reset();
         m_pControlIndicatorTimer.reset();
-        CoverArtCache::destroy();
     }
 
   protected:
@@ -138,7 +149,11 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
@@ -151,7 +166,11 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     // Load another track.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Ejecting in an empty deck loads the last-ejected track.
     auto deck2 = m_pPlayerManager->getDeck(2);
@@ -172,7 +191,11 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
 
     m_pEngine->process(1024);
@@ -181,7 +204,11 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     // Load another track, replacing the first, causing it to be unloaded.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
     waitForTrackToBeLoaded(deck1);
 
@@ -217,7 +244,11 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
-    deck1->slotLoadTrack(pTrack1, false);
+    deck1->slotLoadTrack(pTrack1,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
     waitForTrackToBeLoaded(deck1);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());
@@ -225,7 +256,11 @@ TEST_F(PlayerManagerTest, UnReplaceTest) {
     // Load another track.
     TrackPointer pTrack2 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest2));
     ASSERT_NE(nullptr, pTrack2);
-    deck1->slotLoadTrack(pTrack2, false);
+    deck1->slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     m_pEngine->process(1024);
     waitForTrackToBeLoaded(deck1);
     ASSERT_NE(nullptr, deck1->getLoadedTrack());

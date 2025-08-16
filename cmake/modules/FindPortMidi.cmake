@@ -34,28 +34,26 @@ The following cache variables may also be set:
 
 include(IsStaticLibrary)
 
-find_path(PortMidi_INCLUDE_DIR
+find_path(
+  PortMidi_INCLUDE_DIR
   NAMES portmidi.h
   PATH_SUFFIXES portmidi
-  DOC "PortMidi include directory")
+  DOC "PortMidi include directory"
+)
 mark_as_advanced(PortMidi_INCLUDE_DIR)
 
-find_path(PortTime_INCLUDE_DIR
+find_path(
+  PortTime_INCLUDE_DIR
   NAMES porttime.h
   PATH_SUFFIXES portmidi porttime
-  DOC "PortTime include directory")
+  DOC "PortTime include directory"
+)
 mark_as_advanced(PortTime_INCLUDE_DIR)
 
-find_library(PortMidi_LIBRARY
-  NAMES portmidi portmidi_s
-  DOC "PortMidi library"
-)
+find_library(PortMidi_LIBRARY NAMES portmidi portmidi_s DOC "PortMidi library")
 mark_as_advanced(PortMidi_LIBRARY)
 
-find_library(PortTime_LIBRARY
-  NAMES porttime
-  DOC "PortTime library"
-)
+find_library(PortTime_LIBRARY NAMES porttime DOC "PortTime library")
 mark_as_advanced(PortTime_LIBRARY)
 
 if(DEFINED PC_PortMidi_VERSION AND NOT PC_PortMidi_VERSION STREQUAL "")
@@ -71,7 +69,8 @@ find_package_handle_standard_args(
 
 if(PortMidi_FOUND AND NOT TARGET PortMidi::portmidi)
   add_library(PortMidi::portmidi UNKNOWN IMPORTED)
-  set_target_properties(PortMidi::portmidi
+  set_target_properties(
+    PortMidi::portmidi
     PROPERTIES
       IMPORTED_LOCATION "${PortMidi_LIBRARY}"
       INTERFACE_COMPILE_OPTIONS "${PC_PortMidi_CFLAGS_OTHER}"
@@ -84,7 +83,8 @@ if(PortMidi_FOUND AND NOT TARGET PortMidi::portmidi)
   if(PortTime_LIBRARY)
     if(NOT TARGET PortTime::porttime)
       add_library(PortTime::porttime UNKNOWN IMPORTED)
-      set_target_properties(PortTime::porttime
+      set_target_properties(
+        PortTime::porttime
         PROPERTIES
           IMPORTED_LOCATION "${PortTime_LIBRARY}"
           INTERFACE_COMPILE_OPTIONS "${PC_PortTime_CFLAGS_OTHER}"
@@ -99,8 +99,10 @@ if(PortMidi_FOUND AND NOT TARGET PortMidi::portmidi)
   if(PortMidi_IS_STATIC)
     find_package(ALSA)
     if(ALSA_FOUND)
-      set_property(TARGET PortMidi::portmidi APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        ALSA::ALSA
+      set_property(
+        TARGET PortMidi::portmidi
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES ALSA::ALSA
       )
     endif()
   endif()

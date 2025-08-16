@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "moc_wslidercomposed.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
@@ -63,7 +64,7 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
         PixmapSource sourceSlider = context.getPixmapSource(slider);
         setSliderPixmap(
                 sourceSlider,
-                context.selectScaleMode(slider, Paintable::FIXED),
+                context.selectScaleMode(slider, Paintable::DrawMode::Fixed),
                 scaleFactor);
     }
 
@@ -76,7 +77,7 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // compatibility.
     setHandlePixmap(
             sourceHandle,
-            context.selectScaleMode(handle, Paintable::FIXED),
+            context.selectScaleMode(handle, Paintable::DrawMode::Fixed),
             scaleFactor);
 
     // Set up the level bar.
@@ -162,13 +163,13 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             m_handler.setEventWhileDrag(false);
         }
     }
-    if (!m_connections.isEmpty()) {
-        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-        if (defaultConnection) {
-            if (defaultConnection->getEmitOption() &
+    if (!m_connections.empty()) {
+        auto& pDefaultConnection = m_connections[0];
+        if (pDefaultConnection) {
+            if (pDefaultConnection->getEmitOption() &
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
-                defaultConnection->setEmitOption(
+                pDefaultConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
             }
         }
@@ -183,7 +184,7 @@ void WSliderComposed::setSliderPixmap(const PixmapSource& sourceSlider,
     m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode, scaleFactor);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
-    } else if (drawMode == Paintable::FIXED) {
+    } else if (drawMode == Paintable::DrawMode::Fixed) {
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
     }
@@ -207,8 +208,8 @@ void WSliderComposed::setHandlePixmap(
 }
 
 void WSliderComposed::unsetPixmaps() {
-    m_pSlider.clear();
-    m_pHandle.clear();
+    m_pSlider.reset();
+    m_pHandle.reset();
 }
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
@@ -237,7 +238,7 @@ void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
     QStylePainter p(this);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
+    if (m_pSlider && !m_pSlider->isNull()) {
         m_pSlider->draw(rect(), &p);
     }
 
@@ -246,7 +247,7 @@ void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
         drawBar(&p);
     }
 
-    if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
+    if (m_pHandle && !m_pHandle->isNull()) {
         // Slider position rounded, verify this for HiDPI : bug 1479037
         double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
         QRectF targetRect;
@@ -353,10 +354,10 @@ double WSliderComposed::calculateHandleLength() {
         Paintable::DrawMode mode = m_pHandle->drawMode();
         if (m_bHorizontal) {
             // Stretch the pixmap to be the height of the widget.
-            if (mode == Paintable::FIXED || mode == Paintable::STRETCH ||
-                    mode == Paintable::TILE || m_pHandle->height() == 0.0) {
+            if (mode == Paintable::DrawMode::Fixed || mode == Paintable::DrawMode::Stretch ||
+                    mode == Paintable::DrawMode::Tile || m_pHandle->height() == 0.0) {
                 return m_pHandle->width();
-            } else if (mode == Paintable::STRETCH_ASPECT) {
+            } else if (mode == Paintable::DrawMode::StretchAspect) {
                 const int iHeight = m_pHandle->height();
                 if (iHeight == 0) {
                   qDebug() << "WSliderComposed: Invalid height.";
@@ -368,10 +369,10 @@ double WSliderComposed::calculateHandleLength() {
             }
         } else {
             // Stretch the pixmap to be the width of the widget.
-            if (mode == Paintable::FIXED || mode == Paintable::STRETCH ||
-                    mode == Paintable::TILE || m_pHandle->width() == 0.0) {
+            if (mode == Paintable::DrawMode::Fixed || mode == Paintable::DrawMode::Stretch ||
+                    mode == Paintable::DrawMode::Tile || m_pHandle->width() == 0.0) {
                 return m_pHandle->height();
-            } else if (mode == Paintable::STRETCH_ASPECT) {
+            } else if (mode == Paintable::DrawMode::StretchAspect) {
                 const int iWidth = m_pHandle->width();
                 if (iWidth == 0) {
                   qDebug() << "WSliderComposed: Invalid width.";

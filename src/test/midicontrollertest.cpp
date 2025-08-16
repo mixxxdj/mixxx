@@ -20,14 +20,46 @@ class MockMidiController : public MidiController {
     ~MockMidiController() override {
     }
 
-    MOCK_METHOD0(open, int());
+    MOCK_METHOD1(open, int(const QString& resourcePath));
     MOCK_METHOD0(close, int());
     MOCK_METHOD3(sendShortMsg,
             void(unsigned char status,
                     unsigned char byte1,
                     unsigned char byte2));
-    MOCK_METHOD1(sendBytes, void(const QByteArray& data));
+    MOCK_METHOD1(sendBytes, bool(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
+
+    QString getVendorString() const override {
+        static const QString manufacturer = "Test Manufacturer";
+        return manufacturer;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+
+    QString getProductString() const override {
+        static const QString product = "Test Product";
+        return product;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+
+    QString getSerialNumber() const override {
+        static const QString serialNumber = "123456789";
+        return serialNumber;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
 };
 
 class MidiControllerTest : public MixxxTest {
@@ -262,7 +294,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
     // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -297,7 +329,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
     // (NOTE_ON, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -327,7 +359,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
     // push button.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -367,7 +399,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
     // button rather than a momentary push button.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -423,7 +455,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
     // as (CC, 0x7f) for press and (CC, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
-    cpb.setButtonMode(ControlPushButton::TOGGLE);
+    cpb.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;

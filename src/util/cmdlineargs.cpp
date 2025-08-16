@@ -50,6 +50,7 @@ bool calcUseColorsAuto() {
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_startAutoDJ(false),
+          m_rescanLibrary(false),
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
@@ -188,6 +189,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "Starts Auto DJ when Mixxx is launched.")
                             : QString());
     parser.addOption(startAutoDJ);
+
+    const QCommandLineOption rescanLibrary(QStringLiteral("rescan-library"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Rescans the library when Mixxx is launched.")
+                            : QString());
+    parser.addOption(rescanLibrary);
 
     // An option with a value
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
@@ -369,6 +376,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "you specify will be loaded into the next virtual deck.")
                             : QString());
 
+    const QCommandLineOption controllerPreviewScreens(QStringLiteral("controller-preview-screens"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Preview rendered controller screens in the Setting windows.")
+                            : QString());
+    parser.addOption(controllerPreviewScreens);
+
     if (forUserFeedback) {
         // We know form the first path, that there will be likely an error message, check again.
         // This is not the case if the user uses a Qt internal option that is unknown
@@ -408,6 +421,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_startAutoDJ = true;
     }
 
+    if (parser.isSet(rescanLibrary)) {
+        m_rescanLibrary = true;
+    }
+
     if (parser.isSet(settingsPath)) {
         m_settingsPath = parser.value(settingsPath);
         if (!m_settingsPath.endsWith("/")) {
@@ -437,6 +454,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_useLegacyVuMeter = parser.isSet(enableLegacyVuMeter);
     m_useLegacySpinny = parser.isSet(enableLegacySpinny);
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerPreviewScreens = parser.isSet(controllerPreviewScreens);
     m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML

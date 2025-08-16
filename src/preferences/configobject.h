@@ -15,6 +15,8 @@
 
 // Class for the key for a specific configuration element. A key consists of a
 // group and an item.
+//
+// NOTE: new ConfigKey's item should use the `snake_case` formatting
 class ConfigKey final {
   public:
     ConfigKey() = default; // is required for qMetaTypeConstructHelper()

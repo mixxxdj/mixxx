@@ -136,7 +136,7 @@
      * @param {object} parent Constructor of parent whose prototype is used as base
      * @param {object} members Own members that are not inherited
      * @returns {object} A new prototype based on parent with the given members
-     * @private
+     * @public
      */
     const deriveFrom = function(parent, members) {
         return Object.assign(Object.create(parent.prototype), members);
@@ -1007,6 +1007,7 @@
             LayerManager.prototype.defaultContainerName,
             LayerManager.prototype.shiftContainerName]);
         this.activeLayer = new components.ComponentContainer();
+        this.inputConnections = {};
         components.Component.call(this, options);
     };
     LayerManager.prototype = deriveFrom(components.Component, {
@@ -1093,7 +1094,7 @@
         ,
 
         /**
-         * Add a component to a layer.
+         * Add a component to a layer, and provide an input connection for its MIDI address.
          *
          * @param {components.Component} component A component
          * @param {boolean} shift Target layer: Shift iff true, otherwise Default
@@ -1101,10 +1102,18 @@
          */
         register: function(component, shift) {
             this.onRegistry(this.componentRegistry.register, component, shift);
+            if (component.midi) {
+                const id = findComponentId(component.midi);
+                if (this.inputConnections[id] === undefined) {
+                    this.inputConnections[id] = midi.makeInputHandler(
+                        component.midi[0], component.midi[1], this.input.bind(this));
+                }
+            }
         },
 
         /**
-         * Remove a component from a layer.
+         * Remove a component from a layer,
+         * and disconnect the MIDI input if not used by another component.
          *
          * @param {components.Component} component A component
          * @param {boolean} shift Source layer: Shift iff true, otherwise Default
@@ -1113,6 +1122,10 @@
         unregister: function(component, shift) {
             const id = this.onRegistry(this.componentRegistry.unregister, component, shift);
             delete this.activeLayer[id];
+            if (!this.findComponent(id)) {
+                this.inputConnections[id].disconnect();
+                delete this.inputConnections[id];
+            }
         },
 
         /**
@@ -1227,6 +1240,11 @@
      *     |     |  |            to the hardware controller on changes. The address of the MIDI
      *     |     |  |            message is taken from the `midi` property of the affected
      *     |     |  |            component.
+     *     |     |  +- feedbackOnRelease: Enable controller feedback on button release (boolean, optional)
+     *     |     |  |            When set to `true`, values of the buttons in this unit are sent
+     *     |     |  |            to the hardware controller on release, no matter if changed or not.
+     *     |     |  |            The address of the MIDI message is taken from the `midi` property of the
+     *     |     |  |            affected component.
      *     |     |  +- output: Additional output definitions (optional).
      *     |     |             The structure of this object is the same as the structure of
      *     |     |             `midi`. Every value change of a component contained in `output`
@@ -1239,6 +1257,7 @@
      *     |        |          `enabled: [0x90, 0x02]`
      *     |        |          `super1: [0xB0, 0x06]`
      *     |        +- feedback: As described for equalizer unit
+     *     |        +- feedbackOnRelease: As described for equalizer unit
      *     |        +- output: As described for equalizer unit
      *     |
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
@@ -1249,6 +1268,7 @@
      *     |     |          `effectFocusButton: [0xB0, 0x15]`
      *     |     |          `knobs: {1: [0xB0, 0x26], 2: [0xB0, 0x25], 3: [0xB0, 0x24]}`
      *     |     +- feedback: As described for equalizer unit
+     *     |     +- feedbackOnRelease: As described for equalizer unit
      *     |     +- output: As described for equalizer unit
      *     |     +- sendShiftedFor: Type of components that send shifted MIDI messages (optional)
      *     |                        When set, all components of this type within this effect unit
@@ -1506,10 +1526,10 @@
             if (definition.feedback) {
                 const triggers = rebindTriggers || [];
                 const createPublisher = this.createPublisher; // `this` is bound to implementation
-                implementation.forEachComponent(function(effectComponent) {
-                    if (effectComponent instanceof components.Pot) {
-                        const publisher = createPublisher(effectComponent, publisherStorage);
-                        const prototype = Object.getPrototypeOf(effectComponent);
+                implementation.forEachComponent(function(source) {
+                    if (source instanceof components.Pot) {
+                        const publisher = createPublisher(source, publisherStorage);
+                        const prototype = Object.getPrototypeOf(source);
                         triggers.forEach(function(functionName) {
                             const delegate = prototype[functionName];
                             if (typeof delegate === "function") {
@@ -1532,6 +1552,16 @@
                             publisherStorage);
                     });
             }
+
+            /* Enable feedback on button release for configured components */
+            if (definition.feedbackOnRelease) {
+                implementation.forEachComponent(function(component) {
+                    if (component instanceof components.Button) {
+                        component.triggerOnRelease = true;
+                    }
+                });
+            }
+
             return implementation;
         },
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QQueue>
-#include <list>
+#include <queue>
+#include <vector>
 
 // Truncated Interquartile mean
 
@@ -13,8 +13,11 @@
 class MovingInterquartileMean {
   public:
     // Constructs an empty MovingTruncatedIQM.
-    MovingInterquartileMean(const unsigned int listLength);
-    virtual ~MovingInterquartileMean();
+    MovingInterquartileMean(std::size_t listLength)
+            : m_dMean(0.0),
+              m_bChanged(true) {
+        m_list.reserve(listLength);
+    }
 
     // Inserts value to the list and returns the new truncated mean.
     double insert(double value);
@@ -23,18 +26,19 @@ class MovingInterquartileMean {
     // Returns the current truncated mean. Input list must not be empty.
     double mean();
     // Returns how many values have been input.
-    int size() const;
-    // Returns the maximum size of the input list.
-    int listMaxSize() const;
+    int size() const {
+        return static_cast<int>(m_list.size());
+    }
 
   private:
-    double m_dMean;
-    int m_iListMaxSize;
+    double calcMean() const;
     // The list keeps input doubles ordered by value.
-    std::list<double> m_list;
-    // The queue keeps pointers to doubles in the list ordered
-    // by the order they were received.
-    QQueue<std::list<double>::iterator> m_queue;
+    std::vector<double> m_list;
+    // The queue keeps a second copy of the list, but in insertion
+    // order. This is to track which value we need to evict in order
+    // not stay within memory constraints.
+    std::queue<double> m_queue;
+    double m_dMean;
 
     // sum() checks this to know if it has to recalculate the mean.
     bool m_bChanged;

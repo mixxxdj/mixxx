@@ -21,6 +21,7 @@ class AnalyzerBeats : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer tio) override;
@@ -41,6 +42,7 @@ class AnalyzerBeats : public Analyzer {
     bool m_bPreferencesFastAnalysis;
 
     mixxx::audio::SampleRate m_sampleRate;
+    mixxx::audio::ChannelCount m_channelCount;
     SINT m_maxFramesToProcess;
     SINT m_currentFrame;
 };

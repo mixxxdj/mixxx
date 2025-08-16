@@ -33,7 +33,7 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathElement.isNull()) {
         setPixmapBackground(
                 context.getPixmapSource(backPathElement),
-                context.selectScaleMode(backPathElement, Paintable::STRETCH),
+                context.selectScaleMode(backPathElement, Paintable::DrawMode::Stretch),
                 scaleFactor);
     }
 
@@ -42,7 +42,7 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     if (!knobNode.isNull()) {
         setPixmapKnob(
                 context.getPixmapSource(knobNode),
-                context.selectScaleMode(knobNode, Paintable::STRETCH),
+                context.selectScaleMode(knobNode, Paintable::DrawMode::Stretch),
                 scaleFactor);
     }
 
@@ -77,15 +77,15 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WKnobComposed::clear() {
-    m_pPixmapBack.clear();
-    m_pKnob.clear();
+    m_pPixmapBack.reset();
+    m_pKnob.reset();
 }
 
 void WKnobComposed::setPixmapBackground(const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+    if (!m_pPixmapBack || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
     }
@@ -95,7 +95,7 @@ void WKnobComposed::setPixmapKnob(const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pKnob = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pKnob.isNull() || m_pKnob->isNull()) {
+    if (!m_pKnob || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading knob pixmap:" << source.getPath();
     }
@@ -149,7 +149,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
-    if ((!m_pKnob.isNull() && !m_pKnob->isNull()) || m_dArcRadius > 0.1) {
+    if ((m_pKnob && !m_pKnob->isNull()) || m_dArcRadius > 0.1) {
         // We update m_dCurrentAngle since onConnectedControlChanged uses it for
         // no-op detection.
         m_dCurrentAngle = std::lerp(m_dMinAngle, m_dMaxAngle, getControlParameterDisplay());
@@ -160,7 +160,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     }
 
     QTransform transform;
-    if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
+    if (m_pKnob && !m_pKnob->isNull()) {
         qreal tx = m_dKnobCenterXOffset + width() / 2.0;
         qreal ty = m_dKnobCenterYOffset + height() / 2.0;
         transform.translate(-tx, -ty);

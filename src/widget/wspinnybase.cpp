@@ -15,6 +15,7 @@
 #include "util/fpclassify.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
@@ -146,8 +147,8 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
             context.getScaleFactor());
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
-            Paintable::FIXED);
-    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
+            Paintable::DrawMode::Fixed);
+    if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::DrawMode::Fixed) {
         setFixedSize(m_pBgImage->size());
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);

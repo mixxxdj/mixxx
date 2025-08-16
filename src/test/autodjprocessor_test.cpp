@@ -24,7 +24,7 @@ using ::testing::Return;
 
 namespace {
 const int kDefaultTransitionTime = 10;
-const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelOutputCount;
 const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
@@ -34,7 +34,7 @@ class FakeMixer {
     FakeMixer()
             : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
               crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
-        crossfaderReverse.setButtonMode(ControlPushButton::TOGGLE);
+        crossfaderReverse.setButtonMode(mixxx::control::ButtonMode::Toggle);
     }
 
     ControlPotmeter crossfader;
@@ -56,8 +56,8 @@ class FakeDeck : public BaseTrackPlayer {
               outroStartPos(ConfigKey(group, "outro_start_position")),
               outroEndPos(ConfigKey(group, "outro_end_position")),
               orientation(ConfigKey(group, "orientation")) {
-        play.setButtonMode(ControlPushButton::TOGGLE);
-        repeat.setButtonMode(ControlPushButton::TOGGLE);
+        play.setButtonMode(mixxx::control::ButtonMode::Toggle);
+        repeat.setButtonMode(mixxx::control::ButtonMode::Toggle);
         outroStartPos.set(Cue::kNoPosition);
         outroEndPos.set(Cue::kNoPosition);
         orientation.set(orient);
@@ -95,7 +95,11 @@ class FakeDeck : public BaseTrackPlayer {
     // a success or failure signal. To simulate a load success, call
     // fakeTrackLoadedEvent. To simulate a failure, call
     // fakeTrackLoadFailedEvent.
-    void slotLoadTrack(TrackPointer pTrack, bool bPlay) override {
+    void slotLoadTrack(TrackPointer pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection,
+#endif
+            bool bPlay) override {
         loadedTrack = pTrack;
         samplerate.set(pTrack->getSampleRate());
         play.set(bPlay);
@@ -264,7 +268,11 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -283,7 +291,11 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Set intro + outro cues. Outro is 10 seconds long; intro is 30 seconds.
     const double kSamplesPerSecond = kChannelCount * pTrack->getSampleRate();
@@ -342,7 +354,11 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerOutro) {
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -359,7 +375,11 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerOutro) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Set intro + outro cues. Outro is 20 seconds long; intro is 10 seconds.
     const double kSamplesPerSecond = kChannelCount * pTrack->getSampleRate();
@@ -422,7 +442,11 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerIntro) {
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -439,7 +463,11 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerIntro) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Set intro + outro cues. Outro is 10 seconds long; intro is 20 seconds.
     const double kSamplesPerSecond = kChannelCount * pTrack->getSampleRate();
@@ -498,7 +526,11 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerOutro) {
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -515,7 +547,11 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerOutro) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 
     // Set intro + outro cues. Outro is 20 seconds long; intro is 10 seconds.
     const double kSamplesPerSecond = kChannelCount * pTrack->getSampleRate();
@@ -645,7 +681,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
     TrackPointer pTrack = trackCollectionManager()->getTrackById(testId);
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
 
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -691,7 +731,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
     TrackPointer pTrack(newTestTrack(testId));
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
 
     // Signal that the request to load pTrack failed.
     deck1.fakeTrackLoadFailedEvent(pTrack);
@@ -709,7 +753,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Now pretend that the follow-up load request succeeded.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // Expect that we will receive a load call for [Channel2] after we get the
@@ -757,7 +805,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
     TrackPointer pTrack(newTestTrack(testId));
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
 
     // Signal that the request to load pTrack to deck1 succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
@@ -781,14 +833,22 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
 
     // Now pretend that the deck2 load request failed.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadFailedEvent(pTrack);
 
     // Check that we are still in ADJ_IDLE mode.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the deck2 load request succeeded.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // Check that we are still in ADJ_IDLE mode and the left deck is playing.
@@ -805,7 +865,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -827,7 +891,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -844,7 +912,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -873,7 +945,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
 
     // Pretend the track load fails.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadFailedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -883,7 +959,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -900,7 +980,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck2.slotLoadTrack(pTrack, true);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck2.fakeTrackLoadedEvent(pTrack);
 
@@ -923,7 +1007,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -940,7 +1028,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck2.slotLoadTrack(pTrack, true);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck2.fakeTrackLoadedEvent(pTrack);
 
@@ -969,7 +1061,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
 
     // Pretend the track load fails.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadFailedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -979,7 +1075,11 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1014,7 +1114,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck2.slotLoadTrack(pTrack, true);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck2.fakeTrackLoadedEvent(pTrack);
 
@@ -1039,7 +1143,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -1082,7 +1190,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Pretend the track load request succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1101,7 +1213,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck2.slotLoadTrack(pTrack, true);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck2.fakeTrackLoadedEvent(pTrack);
 
@@ -1128,7 +1244,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -1175,7 +1295,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
 
     // Pretend the track load request fails.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadFailedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1185,7 +1309,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Pretend the second track load request succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1204,7 +1332,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -1229,7 +1361,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -1272,7 +1408,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Pretend the track load request succeeds.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1291,7 +1431,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -1318,7 +1462,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -1365,7 +1513,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
 
     // Pretend the track load request fails.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadFailedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1375,7 +1527,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Pretend the track load request succeeds.
-    deck1.slotLoadTrack(pTrack, false);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck1.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader, or play states.
@@ -1397,7 +1553,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -1414,7 +1574,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // Set a long transition time
@@ -1486,7 +1650,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     // Pretend that track is 2 minutes long.
     pTrack->setDuration(120);
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -1502,7 +1670,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // The track should have been cued at 0.0.
@@ -1516,7 +1688,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_DOUBLE_EQ(0.0, deck2.playposition.get());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // The newly loaded track should have been seeked back by the trackSamples of transition.
@@ -1566,7 +1742,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -1583,7 +1763,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -1618,7 +1802,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
 
@@ -1635,7 +1823,11 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
     // Pretend the track load succeeds.
-    deck2.slotLoadTrack(pTrack, false);
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
     // No change to the mode, crossfader or play states.
@@ -1694,7 +1886,11 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // have connected to this eventually).
     TrackPointer pTrack(newTestTrack(testId));
     pTrack->setDuration(0);
-    deck1.slotLoadTrack(pTrack, true);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
 
     // Expect that the track is rejected an a new one is loaded
     // Signal that the request to load pTrack succeeded.

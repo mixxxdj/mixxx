@@ -304,7 +304,7 @@ ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
 ca,de,fr,it,nl,pl,sv,es*	Intro
 cs,de,fr,sl	Formant
-da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv	Auto DJ
+da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL	Auto DJ
 da,fr,nb,nl,nn	Type
 de,nl,pl,sv	Status
 da,de,it,nl	Computer
@@ -399,7 +399,7 @@ de,it,nl,pl,pt,pt_PT,ru,zh*	BW
 de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
 nl	Track #
 de	Name
-de,et,fr,nb,nl,pl,ro,sl	Transport
+de,et,fr,nb,nl,pl,ro,sl,sq_AL	Transport
 de,lt,nl,pt_BR	Cues
 de,es*,hu,it,nl,pt_BR,ro,tr,vi,zh,zh_HK	Hotcue %1
 de,pt,pt_BR,vi	Looping
@@ -441,9 +441,19 @@ nl,de	Release (ms)
 it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
-sq_AL	Off
+es*	No
+nl,sq_AL,es*	VID:
+nl	Product ID
+nl,sq_AL,es*	PID:
+nl	Lossy
+nl	Lossless
+nl	Top
+nl	OpenGL Status
+nl	Stem Label
+nl	Stem Mute
 sq_AL	Artist + Album
-it	Okay
+sq_AL	Off
 de	Attack (ms)
 de	Attack
+it	Okay
 vi	Samplerate

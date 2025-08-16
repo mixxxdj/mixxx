@@ -1,9 +1,23 @@
 #include "test/controller_mapping_validation_test.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+#ifdef MIXXX_USE_QML
+#include "effects/effectsmanager.h"
+#include "engine/channelhandle.h"
+#include "engine/enginemixer.h"
+#include "library/coverartcache.h"
+#include "library/library.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "qml/qmlplayermanagerproxy.h"
+#include "soundio/soundmanager.h"
+#endif
 #include "moc_controller_mapping_validation_test.cpp"
 
 FakeMidiControllerJSProxy::FakeMidiControllerJSProxy()
@@ -107,9 +121,72 @@ bool FakeController::isMappable() const {
     return false;
 }
 
+#ifdef MIXXX_USE_QML
+void deleteTrack(Track* pTrack) {
+    // Delete track objects directly in unit tests with
+    // no main event loop
+    delete pTrack;
+};
+#endif
+
 void LegacyControllerMappingValidationTest::SetUp() {
     m_mappingPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
     m_pEnumerator.reset(new MappingInfoEnumerator(QList<QString>{m_mappingPath.absolutePath()}));
+#ifdef MIXXX_USE_QML
+    // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
+    // but it does a lot of local disk / settings setup.
+    auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+    m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
+    m_pEngine = std::make_shared<EngineMixer>(
+            m_pConfig,
+            "[Master]",
+            m_pEffectsManager.get(),
+            pChannelHandleFactory,
+            true);
+    m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
+    m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
+    m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
+    m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
+            m_pSoundManager.get(),
+            m_pEffectsManager.get(),
+            m_pEngine.get());
+
+    m_pPlayerManager->addConfiguredDecks();
+    m_pPlayerManager->addSampler();
+    PlayerInfo::create();
+    m_pEffectsManager->setup();
+
+    const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPooler());
+    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+        exit(1);
+    }
+    m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
+            nullptr,
+            m_pConfig,
+            dbConnectionPooler(),
+            deleteTrack);
+
+    m_pRecordingManager = std::make_shared<RecordingManager>(m_pConfig, m_pEngine.get());
+    CoverArtCache::createInstance();
+    m_pLibrary = std::make_shared<Library>(
+            nullptr,
+            m_pConfig,
+            dbConnectionPooler(),
+            m_pTrackCollectionManager.get(),
+            m_pPlayerManager.get(),
+            m_pRecordingManager.get());
+
+    m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(m_pPlayerManager);
+    ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
+}
+
+void LegacyControllerMappingValidationTest::TearDown() {
+    PlayerInfo::destroy();
+    CoverArtCache::destroy();
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
+    ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+#endif
 }
 
 bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& mapping) {
@@ -122,7 +199,7 @@ bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& m
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping();
+    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
     controller.stopEngine();
     return result;
 }

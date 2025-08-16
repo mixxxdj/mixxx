@@ -12,6 +12,9 @@
 #include "library/dao/trackdao.h"
 #include "library/treeitemmodel.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class KeyboardEventFilter;
 class Library;
@@ -135,7 +138,16 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play = false);
+#else
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            bool play = false);
+#endif
     /// saves the scroll, selection and current state of the library model
     void saveModelState();
     /// restores the scroll, selection and current state of the library model

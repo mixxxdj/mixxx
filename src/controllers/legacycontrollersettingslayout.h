@@ -57,7 +57,7 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
     /// the right parameters
     /// @param setting The controller setting to add to the layout container
     void addItem(std::shared_ptr<AbstractLegacyControllerSetting> setting);
-    void addItem(std::unique_ptr<LegacyControllerSettingsLayoutContainer>&& container) {
+    void addItem(std::unique_ptr<LegacyControllerSettingsLayoutContainer> container) {
         m_elements.push_back(std::move(container));
     }
 

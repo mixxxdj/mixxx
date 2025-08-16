@@ -3,10 +3,12 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
+#include <optional>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
+#include "util/color/colorpalette.h"
 
 class TrackCollectionManager;
 
@@ -121,6 +123,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int kBpmColumnPrecisionMinimum = 0;
     static constexpr int kBpmColumnPrecisionMaximum = 10;
     static void setBpmColumnPrecision(int precision);
+
+    static constexpr bool kKeyColorsEnabledDefault = true;
+    static void setKeyColorsEnabled(bool keyColorsEnabled);
+
+    static void setKeyColorPalette(const ColorPalette& palette);
 
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
@@ -246,6 +253,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     void slotRefreshCoverRows(
             const QList<int>& rows);
 
+    void slotRefreshOverviewRows(const QList<int>& rows);
+
     void slotRefreshAllRows();
 
     void slotCoverFound(
@@ -292,6 +301,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
+    static bool s_keyColorsEnabled;
+    // The value need to be left uninitialized (std::nullopt) to avoid static
+    // initialization order issues
+    static std::optional<ColorPalette> s_keyColorPalette;
 
     static bool s_bApplyPlayedTrackColor;
 };

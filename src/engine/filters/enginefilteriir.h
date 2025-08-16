@@ -6,6 +6,7 @@
 #define MIXXX
 #include <fidlib.h>
 
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/sample.h"
 
@@ -66,17 +67,18 @@ class EngineFilterIIR : public EngineFilterIIRBase {
     void processAndPauseFilter(
             const CSAMPLE* pIn,
             CSAMPLE* pOutput,
-            int iBufferSize) {
-        process(pIn, pOutput, iBufferSize);
+            std::size_t bufferSize) {
+        process(pIn, pOutput, bufferSize);
         if (m_startFromDry) {
             SampleUtil::linearCrossfadeBuffersOut(
                     pOutput, // fade out filtered
                     pIn,     // fade in dry
-                    iBufferSize);
+                    bufferSize,
+                    mixxx::kEngineChannelOutputCount);
         } else {
             SampleUtil::applyRampingGain(
                     pOutput, 1.0, 0, // fade out filtered
-                    iBufferSize);
+                    bufferSize);
         }
         pauseFilterInner();
     }
@@ -92,7 +94,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
     }
 
     void setCoefs(const char* spec,
-            size_t bufsize,
+            std::size_t bufsize,
             double sampleRate,
             double freq0,
             double freq1 = 0,
@@ -234,24 +236,23 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         m_doStart = false;
     }
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                         const int iBufferSize) {
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
         if (!m_doRamping) {
-            for (int i = 0; i < iBufferSize; i += 2) {
+            for (std::size_t i = 0; i < bufferSize; i += 2) {
                 pOutput[i] = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
                 pOutput[i + 1] = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
             }
         } else {
             double cross_mix = 0.0;
-            double cross_inc = 4.0 / static_cast<double>(iBufferSize);
-            for (int i = 0; i < iBufferSize; i += 2) {
+            double cross_inc = 4.0 / static_cast<double>(bufferSize);
+            for (std::size_t i = 0; i < bufferSize; i += 2) {
                 // Do a linear cross fade between the output of the old
                 // Filter and the new filter.
                 // The new filter is settled for Input = 0 and it sees
                 // all frequencies of the rectangular start impulse.
                 // Since the group delay, after which the start impulse
                 // has passed is unknown here, we just what the half
-                // iBufferSize until we use the samples of the new filter.
+                // bufferSize until we use the samples of the new filter.
                 // In one of the previous version we have faded the Input
                 // of the new filter but it turns out that this produces
                 // a gain drop due to the filter delay which is more
@@ -274,7 +275,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
                 double new1 = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
                 double new2 = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
 
-                if (i < iBufferSize / 2) {
+                if (i < bufferSize / 2) {
                     pOutput[i] = static_cast<CSAMPLE>(old1);
                     pOutput[i + 1] = static_cast<CSAMPLE>(old2);
                 } else {

@@ -10,14 +10,28 @@
 
 class CompressorGroupState : public EffectState {
   public:
-    CompressorGroupState(const mixxx::EngineParameters& engineParameters);
+    CompressorGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters) {
+        clear(engineParameters);
+    }
 
-    double previousStateDB;
+    void clear(const mixxx::EngineParameters& engineParameters);
+
+    void calculateCoeffsIfChanged(
+            const mixxx::EngineParameters& engineParameters,
+            double attackParamMs,
+            double releaseParamMs);
+
+    double stateDB;
+    double attackCoeff;
+    double releaseCoeff;
+    CSAMPLE_GAIN makeUpGainState;
+    CSAMPLE_GAIN makeUpCoeff;
+
     double previousAttackParamMs;
-    double previousAttackCoeff;
     double previousReleaseParamMs;
-    double previousReleaseCoeff;
-    CSAMPLE_GAIN previousMakeUpGain;
+    SINT previousFramesPerBuffer;
+    mixxx::audio::SampleRate previousSampleRate;
 };
 
 class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
@@ -58,13 +72,12 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(CompressorEffect);
 
-    void applyCompression(CompressorGroupState* pState,
+    CSAMPLE* applyCompression(CompressorGroupState* pState,
             const mixxx::EngineParameters& engineParameters,
             const CSAMPLE* pInput,
-            CSAMPLE* pOutput);
+            CSAMPLE* pGainBuffer);
 
     void applyAutoMakeUp(CompressorGroupState* pState,
-            const CSAMPLE* pInput,
-            CSAMPLE* pOutput,
-            const SINT& numSamples);
+            SINT numSamples,
+            CSAMPLE* pGainBuffer);
 };

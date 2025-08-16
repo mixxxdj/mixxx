@@ -28,9 +28,9 @@ class LoopingControl : public EngineControl {
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentPosition.
-    void process(const double dRate,
+    void process(const double rate,
             mixxx::audio::FramePos currentPosition,
-            const int iBufferSize) override;
+            const std::size_t bufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentPosition and the playback direction.
@@ -103,7 +103,7 @@ class LoopingControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
-    double getTrackSamples() const;
+    mixxx::audio::FramePos getTrackFrame() const;
 
   signals:
     void loopReset();

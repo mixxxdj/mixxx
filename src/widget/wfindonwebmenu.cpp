@@ -18,8 +18,8 @@ bool WFindOnWebMenu::hasEntriesForTrack(const Track& track) {
 }
 
 void WFindOnWebMenu::addActionToServiceMenu(
-        QMenu* serviceMenu, const QString& actionText, const QUrl& serviceUrl) {
-    serviceMenu->addAction(actionText,
+        const QString& actionText, const QUrl& serviceUrl) {
+    addAction(actionText,
             this,
             [this, serviceUrl] {
                 openInBrowser(serviceUrl);

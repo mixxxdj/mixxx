@@ -45,14 +45,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_SndFile QUIET sndfile)
 endif()
 
-find_path(SndFile_INCLUDE_DIR
+find_path(
+  SndFile_INCLUDE_DIR
   NAMES sndfile.h
   HINTS ${PC_SndFile_INCLUDE_DIRS}
   PATH_SUFFIXES sndfile
-  DOC "SndFile include directory")
+  DOC "SndFile include directory"
+)
 mark_as_advanced(SndFile_INCLUDE_DIR)
 
-find_library(SndFile_LIBRARY
+find_library(
+  SndFile_LIBRARY
   NAMES sndfile sndfile-1
   HINTS ${PC_SndFile_LIBRARY_DIRS}
   DOC "SndFile library"
@@ -70,7 +73,12 @@ find_package_handle_standard_args(
   VERSION_VAR SndFile_VERSION
 )
 
-file(STRINGS "${SndFile_INCLUDE_DIR}/sndfile.h" SndFile_SUPPORTS_SET_COMPRESSION_LEVEL REGEX ".*SFC_SET_COMPRESSION_LEVEL.*")
+file(
+  STRINGS
+  "${SndFile_INCLUDE_DIR}/sndfile.h"
+  SndFile_SUPPORTS_SET_COMPRESSION_LEVEL
+  REGEX ".*SFC_SET_COMPRESSION_LEVEL.*"
+)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   set(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL ON)
 else()
@@ -85,7 +93,8 @@ if(SndFile_FOUND)
 
   if(NOT TARGET SndFile::sndfile)
     add_library(SndFile::sndfile UNKNOWN IMPORTED)
-    set_target_properties(SndFile::sndfile
+    set_target_properties(
+      SndFile::sndfile
       PROPERTIES
         IMPORTED_LOCATION "${SndFile_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_SndFile_CFLAGS_OTHER}"
@@ -95,8 +104,10 @@ if(SndFile_FOUND)
     if(SndFile_IS_STATIC)
       find_package(FLAC)
       if(FLAC_FOUND)
-        set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          FLAC::FLAC
+        set_property(
+          TARGET SndFile::sndfile
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES FLAC::FLAC
         )
       endif()
 
@@ -104,8 +115,10 @@ if(SndFile_FOUND)
       if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
         find_package(mpg123 CONFIG)
         if(mpg123_FOUND)
-          set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-            MPG123::libmpg123
+          set_property(
+            TARGET SndFile::sndfile
+            APPEND
+            PROPERTY INTERFACE_LINK_LIBRARIES MPG123::libmpg123
           )
         endif()
       endif()

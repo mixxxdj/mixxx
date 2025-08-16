@@ -79,7 +79,11 @@ class HotcueControlTest : public BaseSignalPathTest {
     }
 
     void unloadTrack() {
-        m_pMixerDeck1->slotLoadTrack(TrackPointer(), false);
+        m_pMixerDeck1->slotLoadTrack(TrackPointer(),
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
     }
 
     mixxx::audio::FramePos currentFramePosition() {

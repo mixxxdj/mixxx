@@ -12,7 +12,9 @@ class PollingControlProxy {
   public:
     // constructing a PollingControlProxy without a ConfigKey or ControlFlag::AllowMissingOrInvalid
     // would always trigger a DEBUG_ASSERT.
-    PollingControlProxy() = delete;
+    PollingControlProxy() 
+            : m_pControl(ControlDoublePrivate::getDefaultControl()) {
+        }
 
     PollingControlProxy(ControlFlags flags)
             : PollingControlProxy(ConfigKey(), flags) {

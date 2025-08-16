@@ -46,16 +46,19 @@
         <file>images/preferences/dark/ic_preferences_autodj.svg</file>
         <file>images/preferences/dark/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/dark/ic_preferences_broadcast.svg</file>
+        <file>images/preferences/dark/ic_preferences_bulk.svg</file>
         <file>images/preferences/dark/ic_preferences_colors.svg</file>
         <file>images/preferences/dark/ic_preferences_controllers.svg</file>
         <file>images/preferences/dark/ic_preferences_crossfader.svg</file>
         <file>images/preferences/dark/ic_preferences_decks.svg</file>
         <file>images/preferences/dark/ic_preferences_effects.svg</file>
         <file>images/preferences/dark/ic_preferences_equalizers.svg</file>
+        <file>images/preferences/dark/ic_preferences_hid.svg</file>
         <file>images/preferences/dark/ic_preferences_interface.svg</file>
         <file>images/preferences/dark/ic_preferences_keydetect.svg</file>
         <file>images/preferences/dark/ic_preferences_library.svg</file>
         <file>images/preferences/dark/ic_preferences_lv2.svg</file>
+        <file>images/preferences/dark/ic_preferences_midi.svg</file>
         <file>images/preferences/dark/ic_preferences_modplug.svg</file>
         <file>images/preferences/dark/ic_preferences_recording.svg</file>
         <file>images/preferences/dark/ic_preferences_replaygain.svg</file>
@@ -69,16 +72,19 @@
         <file>images/preferences/light/ic_preferences_autodj.svg</file>
         <file>images/preferences/light/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/light/ic_preferences_broadcast.svg</file>
+        <file>images/preferences/light/ic_preferences_bulk.svg</file>
         <file>images/preferences/light/ic_preferences_colors.svg</file>
         <file>images/preferences/light/ic_preferences_controllers.svg</file>
         <file>images/preferences/light/ic_preferences_crossfader.svg</file>
         <file>images/preferences/light/ic_preferences_decks.svg</file>
         <file>images/preferences/light/ic_preferences_effects.svg</file>
         <file>images/preferences/light/ic_preferences_equalizers.svg</file>
+        <file>images/preferences/light/ic_preferences_hid.svg</file>
         <file>images/preferences/light/ic_preferences_interface.svg</file>
         <file>images/preferences/light/ic_preferences_keydetect.svg</file>
         <file>images/preferences/light/ic_preferences_library.svg</file>
         <file>images/preferences/light/ic_preferences_lv2.svg</file>
+        <file>images/preferences/light/ic_preferences_midi.svg</file>
         <file>images/preferences/light/ic_preferences_modplug.svg</file>
         <file>images/preferences/light/ic_preferences_recording.svg</file>
         <file>images/preferences/light/ic_preferences_replaygain.svg</file>

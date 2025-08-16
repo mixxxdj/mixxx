@@ -13,11 +13,13 @@
 #include "test/mixxxtest.h"
 #include "util/time.h"
 
+using namespace std::chrono_literals;
+
 class ControllerLibraryColumnIDRegressionTest : public MixxxTest {
   protected:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
-        mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
+        mixxx::Time::addTestTime(10ms);
     }
 
     void TearDown() override {
@@ -75,7 +77,7 @@ TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
         auto pEnum = std::dynamic_pointer_cast<LegacyControllerEnumSetting>(setting);
         EXPECT_TRUE(pEnum);
         for (const auto& opt : pEnum->options()) {
-            EXPECT_EQ(static_cast<int>(COLUMN_MAPPING[std::get<0>(opt)]), std::get<1>(opt).toInt());
+            EXPECT_EQ(static_cast<int>(COLUMN_MAPPING[opt.value]), opt.label.toInt());
         }
         count++;
     }

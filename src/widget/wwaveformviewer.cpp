@@ -195,9 +195,9 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+            onZoomChange(m_waveformWidget->getZoom() / 1.05);
         } else if (event->angleDelta().y() < 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
+            onZoomChange(m_waveformWidget->getZoom() * 1.05);
         }
     }
 }
@@ -225,6 +225,19 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
+}
+
+#ifdef __STEM__
+void WWaveformViewer::slotSelectStem(mixxx::StemChannelSelection stemMask) {
+    if (m_waveformWidget) {
+        m_waveformWidget->selectStem(stemMask);
+        update();
+    }
+}
+#endif
+
+void WWaveformViewer::slotTrackUnloaded(TrackPointer pOldTrack) {
+    slotLoadingTrack(pOldTrack, TrackPointer());
 }
 
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -303,7 +316,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 #endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type
-        if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
+        if (m_waveformWidget->getType() == WaveformWidgetType::Empty) {
             return;
         }
         connect(this,

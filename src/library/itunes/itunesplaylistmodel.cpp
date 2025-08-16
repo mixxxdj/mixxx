@@ -1,6 +1,9 @@
 #include "library/itunes/itunesplaylistmodel.h"
 
 #include "library/baseexternalplaylistmodel.h"
+#ifdef __IOS_ITUNES_LIBRARY__
+#include "library/itunes/itunesiostrackresolver.h"
+#endif
 #include "moc_itunesplaylistmodel.cpp"
 
 ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
@@ -78,4 +81,13 @@ void ITunesPlaylistModel::initSortColumnMapping() {
                 m_columnIndexBySortColumnId[static_cast<int>(sortColumn)],
                 sortColumn);
     }
+}
+
+QString ITunesPlaylistModel::resolveLocation(const QString& nativeLocation) const {
+#ifdef __IOS_ITUNES_LIBRARY__
+    if (nativeLocation.startsWith("ipod-library:")) {
+        return mixxx::resolveiPodLibraryTrack(QUrl(nativeLocation));
+    }
+#endif
+    return BaseExternalPlaylistModel::resolveLocation(nativeLocation);
 }

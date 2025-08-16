@@ -43,14 +43,18 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_wavpack QUIET wavpack)
 endif()
 
-find_path(wavpack_INCLUDE_DIR
+find_path(
+  wavpack_INCLUDE_DIR
   NAMES wavpack.h
   PATH_SUFFIXES wavpack
   HINTS ${PC_wavpack_INCLUDE_DIRS}
-  DOC "wavpack include directory")
+  DOC "wavpack include directory"
+)
 mark_as_advanced(wavpack_INCLUDE_DIR)
 
-find_library(wavpack_LIBRARY NAMES wavpack wv wavpackdll
+find_library(
+  wavpack_LIBRARY
+  NAMES wavpack wv wavpackdll
   HINTS ${PC_wavpack_LIBRARY_DIRS}
   DOC "wavpack library"
 )
@@ -74,7 +78,8 @@ if(wavpack_FOUND)
 
   if(NOT TARGET WavPack::wavpack)
     add_library(WavPack::wavpack UNKNOWN IMPORTED)
-    set_target_properties(WavPack::wavpack
+    set_target_properties(
+      WavPack::wavpack
       PROPERTIES
         IMPORTED_LOCATION "${wavpack_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_wavpack_CFLAGS_OTHER}"

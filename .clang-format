@@ -28,6 +28,7 @@ IndentCaseLabels: false
 DerivePointerAlignment: false
 SpaceAfterTemplateKeyword: false
 SpacesBeforeTrailingComments: 1
+PackConstructorInitializers: Never
 # StatementMacros don't require a trailing semicolon.
 # Trailing semicolons should be omitted after these macros
 # when compiling with -Wpedantic to avoid warnings.

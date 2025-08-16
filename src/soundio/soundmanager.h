@@ -74,6 +74,7 @@ class SoundManager : public QObject {
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
+    void closeActiveConfig();
     void checkConfig();
 
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);

@@ -41,13 +41,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Fftw3 QUIET fftw3)
 endif()
 
-find_path(FFTW3_INCLUDE_DIR
+find_path(
+  FFTW3_INCLUDE_DIR
   NAMES fftw3.h
   HINTS ${PC_Fftw3_INCLUDE_DIRS}
-  DOC "FFTW3 include directory")
+  DOC "FFTW3 include directory"
+)
 mark_as_advanced(FFTW3_INCLUDE_DIR)
 
-find_library(FFTW3_LIBRARY
+find_library(
+  FFTW3_LIBRARY
   NAMES fftw3 fftw-3.3
   HINTS ${PC_Fftw3_LIBRARY_DIRS}
   DOC "FFTW3 library"
@@ -72,7 +75,8 @@ if(FFTW3_FOUND)
 
   if(NOT TARGET FFTW3::fftw3)
     add_library(FFTW3::fftw3 UNKNOWN IMPORTED)
-    set_target_properties(FFTW3::fftw3
+    set_target_properties(
+      FFTW3::fftw3
       PROPERTIES
         IMPORTED_LOCATION "${FFTW3_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Fftw3_CFLAGS_OTHER}"

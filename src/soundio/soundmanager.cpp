@@ -415,7 +415,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
             // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
-            const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
+            const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out).data();
             if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
@@ -553,22 +553,20 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
-    SoundDeviceStatus status = SoundDeviceStatus::Ok;
-    m_config = config;
-    checkConfig();
-
+void SoundManager::closeActiveConfig() {
     // Close open devices. After this call we will not get any more
     // onDeviceOutputCallback() or pushBuffer() calls because all the
     // SoundDevices are closed. closeDevices() blocks and can take a while.
     const bool sleepAfterClosing = true;
     closeDevices(sleepAfterClosing);
+}
 
-    // certain parts of mixxx rely on this being here, for the time being, just
-    // letting those be -- bkgood
-    // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"),
-            ConfigValue(static_cast<int>(m_config.getSampleRate().value())));
+SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
+    SoundDeviceStatus status = SoundDeviceStatus::Ok;
+    m_config = config;
+    checkConfig();
+
+    closeActiveConfig();
 
     status = setupDevices();
     if (status == SoundDeviceStatus::Ok) {

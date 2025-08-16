@@ -26,6 +26,7 @@ class Analyzer {
     //  3. If the initialization failed log the internal error and return false.
     virtual bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) = 0;
 
     // Analyze the next chunk of audio samples and return true if successful.
@@ -68,9 +69,10 @@ class AnalyzerWithState final {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) {
         DEBUG_ASSERT(!m_active);
-        return m_active = m_analyzer->initialize(track, sampleRate, frameLength);
+        return m_active = m_analyzer->initialize(track, sampleRate, channelCount, frameLength);
     }
 
     void processSamples(const CSAMPLE* pIn, const int count) {

@@ -335,9 +335,15 @@ bool TrackRecord::updateStreamInfoFromSource(
         streamInfoFromSource.setBitrate(
                 getMetadata().getStreamInfo().getBitrate());
     }
-    // Stream properties are not expected to vary during a session
+    // Stream properties are not expected to vary during a session, apart from
+    // the channel count and so the bitrate as different components may request
+    // the stream in stereo or multi channels
     VERIFY_OR_DEBUG_ASSERT(!m_streamInfoFromSource ||
-            *m_streamInfoFromSource == streamInfoFromSource) {
+            (m_streamInfoFromSource->getDuration() ==
+                            streamInfoFromSource.getDuration() &&
+                    m_streamInfoFromSource->getSignalInfo().getSampleRate() ==
+                            streamInfoFromSource.getSignalInfo()
+                                    .getSampleRate())) {
         kLogger.warning()
                 << "Varying stream properties:"
                 << *m_streamInfoFromSource

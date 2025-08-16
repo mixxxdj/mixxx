@@ -14,7 +14,8 @@
 /// for why this design is used for effects rather than alternatives.
 class EffectsMessenger {
   public:
-    EffectsMessenger(std::unique_ptr<EffectsRequestPipe> pRequestPipe);
+    // passing by rvalue-ref because we want to ensure we're the only on with access to that pipe
+    EffectsMessenger(EffectsRequestPipe&& requestPipe);
     ~EffectsMessenger();
     /// Write an EffectsRequest to the EngineEffectsManager. EffectsMessenger takes
     /// ownership of request and deletes it once a response is received.
@@ -30,9 +31,8 @@ class EffectsMessenger {
         return "EffectsMessenger";
     }
 
-    bool m_bShuttingDown;
-
-    std::unique_ptr<EffectsRequestPipe> m_pRequestPipe;
-    qint64 m_nextRequestId;
     QHash<qint64, EffectsRequest*> m_activeRequests;
+    EffectsRequestPipe m_requestPipe;
+    qint64 m_nextRequestId;
+    bool m_bShuttingDown;
 };

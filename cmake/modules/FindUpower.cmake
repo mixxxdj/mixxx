@@ -43,14 +43,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Upower QUIET upower-glib)
 endif()
 
-find_path(Upower_INCLUDE_DIR
+find_path(
+  Upower_INCLUDE_DIR
   NAMES upower.h
   PATH_SUFFIXES upower-glib libupower-glib
   HINTS ${PC_Upower_INCLUDE_DIRS}
-  DOC "Upower include directory")
+  DOC "Upower include directory"
+)
 mark_as_advanced(Upower_INCLUDE_DIR)
 
-find_library(Upower_LIBRARY
+find_library(
+  Upower_LIBRARY
   NAMES upower-glib
   HINTS ${PC_Upower_LIBRARY_DIRS}
   DOC "Upower library"
@@ -75,7 +78,8 @@ if(Upower_FOUND)
 
   if(NOT TARGET Upower::Upower)
     add_library(Upower::Upower UNKNOWN IMPORTED)
-    set_target_properties(Upower::Upower
+    set_target_properties(
+      Upower::Upower
       PROPERTIES
         IMPORTED_LOCATION "${Upower_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Upower_CFLAGS_OTHER}"

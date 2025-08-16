@@ -33,28 +33,31 @@ const char* const kValidEnumOption = "<value label=\"%1\">%2</value>";
 
 TEST_F(LegacyControllerMappingSettingsTest, booleanSettingParsing) {
     QDomDocument doc;
-    doc.setContent(QString(kValidBoolean).arg("false").toLatin1());
+    {
+        doc.setContent(QString(kValidBoolean).arg("false").toLatin1());
 
-    EXPECT_TRUE(LegacyControllerBooleanSetting::match(doc.documentElement()));
-    std::shared_ptr<LegacyControllerBooleanSetting> pSetting =
-            LegacyControllerBooleanSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create a boolean setting";
+        EXPECT_TRUE(LegacyControllerBooleanSetting::match(doc.documentElement()));
+        LegacyControllerBooleanSetting setting(doc.documentElement());
+        EXPECT_TRUE(setting.valid()) << "Unable to create a boolean setting";
 
-    EXPECT_EQ(pSetting->variableName(), "myToggle1");
-    EXPECT_EQ(pSetting->label(), "Test label");
-    EXPECT_EQ(pSetting->description(), "Test description");
+        EXPECT_EQ(setting.variableName(), "myToggle1");
+        EXPECT_EQ(setting.label(), "Test label");
+        EXPECT_EQ(setting.description(), "Test description");
 
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_TRUE(pSetting->isDefault());
-    EXPECT_EQ(pSetting->stringify(), "false");
-    EXPECT_TRUE(pSetting->valid());
+        EXPECT_FALSE(setting.isDirty());
+        EXPECT_TRUE(setting.isDefault());
+        EXPECT_EQ(setting.stringify(), "false");
+        EXPECT_TRUE(setting.valid());
+    }
 
-    doc.setContent(QString(kValidBoolean).arg("true").toLatin1());
+    {
+        doc.setContent(QString(kValidBoolean).arg("true").toLatin1());
 
-    pSetting = LegacyControllerBooleanSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create a boolean setting";
+        LegacyControllerBooleanSetting setting(doc.documentElement());
+        EXPECT_TRUE(setting.valid()) << "Unable to create a boolean setting";
 
-    EXPECT_EQ(pSetting->stringify(), "true");
+        EXPECT_EQ(setting.stringify(), "true");
+    }
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, booleanSettingEditing) {
@@ -63,85 +66,89 @@ TEST_F(LegacyControllerMappingSettingsTest, booleanSettingEditing) {
             QByteArray("<option variable=\"myToggle1\" type=\"boolean\" "
                        "default=\"false\" label=\"Test label\"/>"));
 
-    std::shared_ptr<LegacyControllerBooleanSetting> pSetting =
-            LegacyControllerBooleanSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create a boolean setting";
+    LegacyControllerBooleanSetting setting(doc.documentElement());
+    EXPECT_TRUE(setting.valid()) << "Unable to create a boolean setting";
 
-    pSetting->m_editedValue = true;
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->m_savedValue, true);
+    setting.m_editedValue = true;
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.m_savedValue, true);
 
     bool ok;
-    pSetting->parse("true", &ok);
+    setting.parse("true", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "true");
-    EXPECT_TRUE(pSetting->value().isBool());
-    EXPECT_TRUE(pSetting->value().toBool());
-    EXPECT_FALSE(pSetting->isDefault());
-    pSetting->parse("1", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "true");
+    EXPECT_TRUE(setting.value().isBool());
+    EXPECT_TRUE(setting.value().toBool());
+    EXPECT_FALSE(setting.isDefault());
+    setting.parse("1", &ok);
     EXPECT_TRUE(ok);
-    pSetting->parse("0", &ok);
+    setting.parse("0", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "false");
-    pSetting->parse("TRUE", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "false");
+    setting.parse("TRUE", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_EQ(pSetting->stringify(), "true");
-    EXPECT_TRUE(pSetting->value().isBool());
-    EXPECT_TRUE(pSetting->value().toBool());
-    pSetting->reset();
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_EQ(pSetting->stringify(), "false");
-    EXPECT_TRUE(pSetting->isDefault());
+    EXPECT_EQ(setting.stringify(), "true");
+    EXPECT_TRUE(setting.value().isBool());
+    EXPECT_TRUE(setting.value().toBool());
+    setting.reset();
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_EQ(setting.stringify(), "false");
+    EXPECT_TRUE(setting.isDefault());
 
-    EXPECT_TRUE(pSetting->value().isBool());
-    EXPECT_FALSE(pSetting->value().toBool());
+    EXPECT_TRUE(setting.value().isBool());
+    EXPECT_FALSE(setting.value().toBool());
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, integerSettingParsing) {
     QDomDocument doc;
-    doc.setContent(QString(kValidInteger).arg("42", "1", "99", "1").toLatin1());
+    {
+        doc.setContent(QString(kValidInteger).arg("42", "1", "99", "1").toLatin1());
 
-    EXPECT_TRUE(LegacyControllerIntegerSetting::match(doc.documentElement()));
-    std::shared_ptr<LegacyControllerIntegerSetting> pSetting =
-            LegacyControllerIntegerSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create an integer setting";
+        EXPECT_TRUE(LegacyControllerIntegerSetting::match(doc.documentElement()));
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_TRUE(setting.valid()) << "Unable to create an integer setting";
 
-    EXPECT_EQ(pSetting->variableName(), "myInteger1");
-    EXPECT_EQ(pSetting->label(), "Test label");
-    EXPECT_EQ(pSetting->description(), "Test description");
+        EXPECT_EQ(setting.variableName(), "myInteger1");
+        EXPECT_EQ(setting.label(), "Test label");
+        EXPECT_EQ(setting.description(), "Test description");
 
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_TRUE(pSetting->isDefault());
-    EXPECT_EQ(pSetting->stringify(), "42");
-    EXPECT_TRUE(pSetting->valid());
-
-    doc.setContent(QString(kValidInteger).arg("18", "1", "99", "1").toLatin1());
-    pSetting = LegacyControllerIntegerSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create an integer setting";
-    EXPECT_EQ(pSetting->stringify(), "18");
-    EXPECT_TRUE(pSetting->valid());
-
-    // Invalid if default is out of range
-    doc.setContent(QString(kValidInteger).arg("10", "20", "30", "1").toLatin1());
-    pSetting = LegacyControllerIntegerSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "10");
-    EXPECT_FALSE(pSetting->valid());
-
-    doc.setContent(QString(kValidInteger).arg("10", "1", "5", "1").toLatin1());
-    pSetting = LegacyControllerIntegerSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "10");
-    EXPECT_FALSE(pSetting->valid());
-
-    // Invalid if step is zero
-    doc.setContent(QString(kValidInteger).arg("10", "0", "30", "0").toLatin1());
-    pSetting = LegacyControllerIntegerSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "10");
-    EXPECT_FALSE(pSetting->valid());
+        EXPECT_FALSE(setting.isDirty());
+        EXPECT_TRUE(setting.isDefault());
+        EXPECT_EQ(setting.stringify(), "42");
+        EXPECT_TRUE(setting.valid());
+    }
+    {
+        doc.setContent(QString(kValidInteger).arg("18", "1", "99", "1").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_TRUE(setting.valid()) << "Unable to create an integer setting";
+        EXPECT_EQ(setting.stringify(), "18");
+        EXPECT_TRUE(setting.valid());
+    }
+    {
+        // Invalid if default is out of range
+        doc.setContent(QString(kValidInteger).arg("10", "20", "30", "1").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "10");
+        EXPECT_FALSE(setting.valid());
+    }
+    {
+        doc.setContent(QString(kValidInteger).arg("10", "1", "5", "1").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "10");
+        EXPECT_FALSE(setting.valid());
+    }
+    {
+        // Invalid if step is zero
+        doc.setContent(QString(kValidInteger).arg("10", "0", "30", "0").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "10");
+        EXPECT_FALSE(setting.valid());
+    }
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, integerSettingEditing) {
@@ -149,85 +156,89 @@ TEST_F(LegacyControllerMappingSettingsTest, integerSettingEditing) {
     doc.setContent(
             QByteArray("<option variable=\"myInteger1\" type=\"integer\" label=\"Test label\"/>"));
 
-    std::shared_ptr<LegacyControllerIntegerSetting> pSetting =
-            LegacyControllerIntegerSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create an integer setting";
+    LegacyControllerIntegerSetting setting(doc.documentElement());
+    EXPECT_TRUE(setting.valid()) << "Unable to create an integer setting";
 
-    pSetting->m_editedValue = true;
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->m_savedValue, true);
+    setting.m_editedValue = true;
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.m_savedValue, true);
 
     bool ok;
-    pSetting->parse("42", &ok);
+    setting.parse("42", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "42");
-    EXPECT_TRUE(pSetting->value().isNumber());
-    EXPECT_EQ(pSetting->value().toInt(), 42);
-    EXPECT_FALSE(pSetting->isDefault());
-    pSetting->parse("-15", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "42");
+    EXPECT_TRUE(setting.value().isNumber());
+    EXPECT_EQ(setting.value().toInt(), 42);
+    EXPECT_FALSE(setting.isDefault());
+    setting.parse("-15", &ok);
     EXPECT_TRUE(ok);
-    pSetting->parse("0", &ok);
+    setting.parse("0", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "0");
-    pSetting->parse("30 ", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "0");
+    setting.parse("30 ", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_EQ(pSetting->stringify(), "30");
-    EXPECT_TRUE(pSetting->value().isNumber());
-    EXPECT_EQ(pSetting->value().toInt(), 30);
-    pSetting->reset();
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_EQ(pSetting->stringify(), "0");
-    EXPECT_TRUE(pSetting->isDefault());
-    pSetting->parse("abc ", &ok);
+    EXPECT_EQ(setting.stringify(), "30");
+    EXPECT_TRUE(setting.value().isNumber());
+    EXPECT_EQ(setting.value().toInt(), 30);
+    setting.reset();
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_EQ(setting.stringify(), "0");
+    EXPECT_TRUE(setting.isDefault());
+    setting.parse("abc ", &ok);
     EXPECT_FALSE(ok);
-    EXPECT_TRUE(pSetting->value().isNumber());
-    EXPECT_EQ(pSetting->value().toInt(), 0);
+    EXPECT_TRUE(setting.value().isNumber());
+    EXPECT_EQ(setting.value().toInt(), 0);
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, doubleSettingParsing) {
     QDomDocument doc;
-    doc.setContent(QString(kValidDouble).arg("42", "1", "99", "1").toLatin1());
+    {
+        doc.setContent(QString(kValidDouble).arg("42", "1", "99", "1").toLatin1());
 
-    EXPECT_TRUE(LegacyControllerRealSetting::match(doc.documentElement()));
-    std::shared_ptr<LegacyControllerRealSetting> pSetting =
-            LegacyControllerRealSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create a real setting";
+        EXPECT_TRUE(LegacyControllerRealSetting::match(doc.documentElement()));
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_TRUE(setting.valid()) << "Unable to create a real setting";
 
-    EXPECT_EQ(pSetting->variableName(), "myReal1");
-    EXPECT_EQ(pSetting->label(), "myReal1");
-    EXPECT_TRUE(pSetting->description().isEmpty());
+        EXPECT_EQ(setting.variableName(), "myReal1");
+        EXPECT_EQ(setting.label(), "myReal1");
+        EXPECT_TRUE(setting.description().isEmpty());
 
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_TRUE(pSetting->isDefault());
-    EXPECT_EQ(pSetting->stringify(), "42");
-    EXPECT_TRUE(pSetting->valid());
-
-    doc.setContent(QString(kValidInteger).arg("18", "1", "99", "1").toLatin1());
-    pSetting = LegacyControllerRealSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "18");
-    EXPECT_TRUE(pSetting->valid());
-
-    // Invalid if default is out of range
-    doc.setContent(QString(kValidInteger).arg("10", "20", "30", "1").toLatin1());
-    pSetting = LegacyControllerRealSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "10");
-    EXPECT_FALSE(pSetting->valid());
-
-    doc.setContent(QString(kValidInteger).arg("10", "1", "5", "1").toLatin1());
-    pSetting = LegacyControllerRealSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "10");
-    EXPECT_FALSE(pSetting->valid());
-
-    // Invalid if step is zero
-    doc.setContent(QString(kValidInteger).arg("10", "0", "30", "0").toLatin1());
-    pSetting = LegacyControllerRealSetting::createFrom(doc.documentElement());
-    EXPECT_EQ(pSetting->stringify(), "10");
-    EXPECT_FALSE(pSetting->valid());
+        EXPECT_FALSE(setting.isDirty());
+        EXPECT_TRUE(setting.isDefault());
+        EXPECT_EQ(setting.stringify(), "42");
+        EXPECT_TRUE(setting.valid());
+    }
+    {
+        doc.setContent(QString(kValidInteger).arg("18", "1", "99", "1").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "18");
+        EXPECT_TRUE(setting.valid());
+    }
+    {
+        // Invalid if default is out of range
+        doc.setContent(QString(kValidInteger).arg("10", "20", "30", "1").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "10");
+        EXPECT_FALSE(setting.valid());
+    }
+    {
+        doc.setContent(QString(kValidInteger).arg("10", "1", "5", "1").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "10");
+        EXPECT_FALSE(setting.valid());
+    }
+    {
+        // Invalid if step is zero
+        doc.setContent(QString(kValidInteger).arg("10", "0", "30", "0").toLatin1());
+        LegacyControllerIntegerSetting setting(doc.documentElement());
+        EXPECT_EQ(setting.stringify(), "10");
+        EXPECT_FALSE(setting.valid());
+    }
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, doubleSettingEditing) {
@@ -235,72 +246,73 @@ TEST_F(LegacyControllerMappingSettingsTest, doubleSettingEditing) {
     doc.setContent(
             QByteArray("<option variable=\"myReal1\" type=\"real\" label=\"Test label\"/>"));
 
-    std::shared_ptr<LegacyControllerRealSetting> pSetting =
-            LegacyControllerRealSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create a double setting";
+    LegacyControllerRealSetting setting(doc.documentElement());
+    EXPECT_TRUE(setting.valid()) << "Unable to create a double setting";
 
-    pSetting->m_editedValue = 1.0;
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->m_savedValue, true);
+    setting.m_editedValue = 1.0;
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.m_savedValue, true);
 
     bool ok;
-    pSetting->parse("0.001", &ok);
+    setting.parse("0.001", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "0.001");
-    EXPECT_TRUE(pSetting->value().isNumber());
-    EXPECT_EQ(pSetting->value().toNumber(), 0.001);
-    EXPECT_FALSE(pSetting->isDefault());
-    pSetting->parse("-15", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "0.001");
+    EXPECT_TRUE(setting.value().isNumber());
+    EXPECT_EQ(setting.value().toNumber(), 0.001);
+    EXPECT_FALSE(setting.isDefault());
+    setting.parse("-15", &ok);
     EXPECT_TRUE(ok);
-    pSetting->parse("0", &ok);
+    setting.parse("0", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "0");
-    pSetting->parse("30.0 ", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "0");
+    setting.parse("30.0 ", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_EQ(pSetting->stringify(), "30");
-    EXPECT_TRUE(pSetting->value().isNumber());
-    EXPECT_EQ(pSetting->value().toNumber(), 30.0);
-    pSetting->reset();
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_EQ(pSetting->stringify(), "0");
-    EXPECT_TRUE(pSetting->isDefault());
-    pSetting->parse("abc ", &ok);
+    EXPECT_EQ(setting.stringify(), "30");
+    EXPECT_TRUE(setting.value().isNumber());
+    EXPECT_EQ(setting.value().toNumber(), 30.0);
+    setting.reset();
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_EQ(setting.stringify(), "0");
+    EXPECT_TRUE(setting.isDefault());
+    setting.parse("abc ", &ok);
     EXPECT_FALSE(ok);
-    EXPECT_TRUE(pSetting->value().isNumber());
-    EXPECT_EQ(pSetting->value().toNumber(), .0);
+    EXPECT_TRUE(setting.value().isNumber());
+    EXPECT_EQ(setting.value().toNumber(), .0);
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, enumSettingParsing) {
     QDomDocument doc;
-    doc.setContent(QString(kValidEnum)
-                           .arg(QList({QString(kValidEnumOption)
-                                                      .arg("My option label",
-                                                              "myOptionValue")})
-                                           .join(""))
-                           .toLatin1());
+    {
+        doc.setContent(QString(kValidEnum)
+                        .arg(QList({QString(kValidEnumOption)
+                                                   .arg("My option label",
+                                                           "myOptionValue")})
+                                        .join(""))
+                        .toLatin1());
 
-    EXPECT_TRUE(LegacyControllerEnumSetting::match(doc.documentElement()));
-    std::shared_ptr<LegacyControllerEnumSetting> pSetting =
-            LegacyControllerEnumSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create an enum setting";
+        EXPECT_TRUE(LegacyControllerEnumSetting::match(doc.documentElement()));
+        LegacyControllerEnumSetting setting(doc.documentElement());
+        EXPECT_TRUE(setting.valid()) << "Unable to create an enum setting";
 
-    EXPECT_EQ(pSetting->variableName(), "myEnum1");
-    EXPECT_EQ(pSetting->label(), "Test label");
-    EXPECT_EQ(pSetting->description(), "Test description");
+        EXPECT_EQ(setting.variableName(), "myEnum1");
+        EXPECT_EQ(setting.label(), "Test label");
+        EXPECT_EQ(setting.description(), "Test description");
 
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_TRUE(pSetting->isDefault());
-    EXPECT_EQ(pSetting->stringify(), "myOptionValue");
-    EXPECT_TRUE(pSetting->valid());
-
-    doc.setContent(QString(kValidEnum).arg("").toLatin1());
-    pSetting = LegacyControllerEnumSetting::createFrom(doc.documentElement());
-    EXPECT_FALSE(pSetting->valid());
+        EXPECT_FALSE(setting.isDirty());
+        EXPECT_TRUE(setting.isDefault());
+        EXPECT_EQ(setting.stringify(), "myOptionValue");
+        EXPECT_TRUE(setting.valid());
+    }
+    {
+        doc.setContent(QString(kValidEnum).arg("").toLatin1());
+        LegacyControllerEnumSetting setting(doc.documentElement());
+        EXPECT_FALSE(setting.valid());
+    }
 }
 
 TEST_F(LegacyControllerMappingSettingsTest, enumSettingEditing) {
@@ -321,36 +333,35 @@ TEST_F(LegacyControllerMappingSettingsTest, enumSettingEditing) {
                            .toLatin1());
 
     EXPECT_TRUE(LegacyControllerEnumSetting::match(doc.documentElement()));
-    std::shared_ptr<LegacyControllerEnumSetting> pSetting =
-            LegacyControllerEnumSetting::createFrom(doc.documentElement());
-    EXPECT_TRUE(pSetting->valid()) << "Unable to create an enum setting";
+    LegacyControllerEnumSetting setting(doc.documentElement());
+    EXPECT_TRUE(setting.valid()) << "Unable to create an enum setting";
 
-    pSetting->m_editedValue = 2;
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->m_savedValue, 2);
-    EXPECT_EQ(pSetting->stringify(), "myOptionValue3");
-    EXPECT_TRUE(pSetting->value().isString());
-    EXPECT_EQ(pSetting->value().toString(), "myOptionValue3");
+    setting.m_editedValue = 2;
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.m_savedValue, 2);
+    EXPECT_EQ(setting.stringify(), "myOptionValue3");
+    EXPECT_TRUE(setting.value().isString());
+    EXPECT_EQ(setting.value().toString(), "myOptionValue3");
 
     bool ok;
-    pSetting->parse("myOptionValue2", &ok);
+    setting.parse("myOptionValue2", &ok);
     EXPECT_TRUE(ok);
-    EXPECT_FALSE(pSetting->isDirty());
-    EXPECT_EQ(pSetting->stringify(), "myOptionValue2");
-    EXPECT_TRUE(pSetting->value().isString());
-    EXPECT_EQ(pSetting->value().toString(), "myOptionValue2");
-    EXPECT_FALSE(pSetting->isDefault());
-    pSetting->reset();
-    EXPECT_TRUE(pSetting->isDirty());
-    pSetting->save();
-    EXPECT_EQ(pSetting->stringify(), "myOptionValue1");
-    EXPECT_TRUE(pSetting->isDefault());
-    pSetting->parse("abc ", &ok);
+    EXPECT_FALSE(setting.isDirty());
+    EXPECT_EQ(setting.stringify(), "myOptionValue2");
+    EXPECT_TRUE(setting.value().isString());
+    EXPECT_EQ(setting.value().toString(), "myOptionValue2");
+    EXPECT_FALSE(setting.isDefault());
+    setting.reset();
+    EXPECT_TRUE(setting.isDirty());
+    setting.save();
+    EXPECT_EQ(setting.stringify(), "myOptionValue1");
+    EXPECT_TRUE(setting.isDefault());
+    setting.parse("abc ", &ok);
     EXPECT_FALSE(ok);
-    EXPECT_TRUE(pSetting->value().isString());
-    EXPECT_EQ(pSetting->value().toString(), "myOptionValue1");
+    EXPECT_TRUE(setting.value().isString());
+    EXPECT_EQ(setting.value().toString(), "myOptionValue1");
 }
 
 class LegacyDummyMapping : public LegacyControllerMapping {

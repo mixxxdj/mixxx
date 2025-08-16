@@ -43,14 +43,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_ID3Tag QUIET id3tag)
 endif()
 
-find_path(ID3Tag_INCLUDE_DIR
+find_path(
+  ID3Tag_INCLUDE_DIR
   NAMES id3tag.h
   HINTS ${PC_ID3Tag_INCLUDE_DIRS}
   PATH_SUFFIXES id3tag
-  DOC "ID3Tag include directory")
+  DOC "ID3Tag include directory"
+)
 mark_as_advanced(ID3Tag_INCLUDE_DIR)
 
-find_library(ID3Tag_LIBRARY
+find_library(
+  ID3Tag_LIBRARY
   NAMES id3tag
   HINTS ${PC_ID3Tag_LIBRARY_DIRS}
   DOC "ID3Tag library"
@@ -75,7 +78,8 @@ if(ID3Tag_FOUND)
 
   if(NOT TARGET ID3Tag::ID3Tag)
     add_library(ID3Tag::ID3Tag UNKNOWN IMPORTED)
-    set_target_properties(ID3Tag::ID3Tag
+    set_target_properties(
+      ID3Tag::ID3Tag
       PROPERTIES
         IMPORTED_LOCATION "${ID3Tag_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_ID3Tag_CFLAGS_OTHER}"

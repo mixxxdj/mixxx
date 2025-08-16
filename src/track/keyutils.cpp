@@ -6,6 +6,9 @@
 #include <QtDebug>
 
 #include "preferences/keydetectionsettings.h"
+#include "util/color/colorpalette.h"
+#include "util/color/predefinedcolorpalettes.h"
+#include "util/color/rgbcolor.h"
 #include "util/compatibility/qmutex.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -24,7 +27,8 @@ const QRegularExpression s_openKeyRegex(QStringLiteral(
 // Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
 // or "I", "L", "M", "D", "P", "C" for the advanced modes
 const QRegularExpression s_lancelotKeyRegex(
-        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"));
+        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"),
+        QRegularExpression::CaseInsensitiveOption);
 constexpr std::string_view s_lancelotMajorModes = "BILM";
 
 // a-g followed by any number of sharps or flats, optionally followed by
@@ -457,8 +461,9 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
         const QChar lancelotScaleMode = lancelotMatch.captured(2).at(0);
-        bool major = (s_lancelotMajorModes.find(lancelotScaleMode.toLatin1()) != std::string::npos);
-
+        bool major = (s_lancelotMajorModes.find(
+                              lancelotScaleMode.toUpper().toLatin1()) !=
+                std::string::npos);
         return openKeyNumberToKey(openKeyNumber, major);
     }
 
@@ -563,6 +568,19 @@ KeyUtils::KeyNotation KeyUtils::keyNotationFromString(const QString& notationNam
 // static
 double KeyUtils::keyToNumericValue(ChromaticKey key) {
     return key;
+}
+
+// static
+QColor KeyUtils::keyToColor(ChromaticKey key, const ColorPalette& palette) {
+    int openKeyNumber = keyToOpenKeyNumber(key);
+
+    if (openKeyNumber != 0) {
+        DEBUG_ASSERT(openKeyNumber <= palette.size() && openKeyNumber >= 1);
+        const auto rgbColor = palette.at(openKeyNumber - 1); // Open Key numbers start from 1
+        return mixxx::RgbColor::toQColor(rgbColor);
+    } else {
+        return {}; // return invalid color
+    }
 }
 
 // static

@@ -17,12 +17,7 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
           m_dChainParameter(0.0) {
 }
 
-EffectParameterSlotBase::~EffectParameterSlotBase() {
-    m_pEffectParameter = nullptr;
-    m_pManifestParameter.clear();
-    delete m_pControlLoaded;
-    delete m_pControlType;
-}
+EffectParameterSlotBase::~EffectParameterSlotBase() = default;
 
 QString EffectParameterSlotBase::name() const {
     if (m_pManifestParameter) {

@@ -1,31 +1,31 @@
 #pragma once
 
-#include "shaders/rgbshader.h"
+#ifndef QT_OPENGL_ES_2
+
+#include "rendergraph/openglnode.h"
 #include "track/track_decl.h"
-#include "util/class.h"
-#include "waveform/renderers/allshader/rgbdata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/waveform.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 class QOpenGLFramebufferObject;
 class QOpenGLShaderProgram;
 
 namespace allshader {
 class WaveformRendererTextured;
-}
+} // namespace allshader
 
 // Based on GLSLWaveformRendererSignal (waveform/renderers/glslwaveformrenderersignal.h)
-class allshader::WaveformRendererTextured : public QObject,
-                                            public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererTextured final : public allshader::WaveformRendererSignalBase,
+                                                  public rendergraph::OpenGLNode {
     Q_OBJECT
   public:
-    enum class Type {
-        Filtered,
-        RGB,
-        Stacked, // was RGBFiltered,
-    };
-
-    explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget, Type t);
+    explicit WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
+            WaveformWidgetType::Type t,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play,
+            WaveformRendererSignalBase::Options options =
+                    WaveformRendererSignalBase::Option::None);
     ~WaveformRendererTextured() override;
 
     // override ::WaveformRendererSignalBase
@@ -35,13 +35,24 @@ class allshader::WaveformRendererTextured : public QObject,
     void paintGL() override;
     void resizeGL(int w, int h) override;
 
+    bool supportsSlip() const override {
+        return true;
+    }
+
     void onSetTrack() override;
 
   public slots:
     void slotWaveformUpdated();
 
   private:
-    static QString fragShaderForType(Type t);
+    struct WaveformTexture {
+        unsigned char low;
+        unsigned char mid;
+        unsigned char high;
+        unsigned char all;
+    };
+
+    static QString fragShaderForType(WaveformWidgetType::Type t);
     bool loadShaders();
     bool loadTexture();
 
@@ -54,12 +65,18 @@ class allshader::WaveformRendererTextured : public QObject,
     TrackPointer m_loadedTrack;
     int m_textureRenderedWaveformCompletion;
 
+    std::vector<WaveformFilteredData> m_data;
+
     // Frame buffer for two pass rendering.
     std::unique_ptr<QOpenGLFramebufferObject> m_framebuffer;
 
     // shaders
+    bool m_isSlipRenderer;
+    WaveformRendererSignalBase::Options m_options;
     bool m_shadersValid;
-    Type m_type;
+    WaveformWidgetType::Type m_type;
     const QString m_pFragShader;
     std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
 };
+
+#endif // QT_OPENGL_ES_2

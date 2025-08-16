@@ -2,21 +2,41 @@
 
 #include "skin/legacy/skincontext.h"
 #include "util/span.h"
+#include "util/types.h"
+#include "waveform/waveform.h"
 #include "waveformrendererabstract.h"
 
 class ControlProxy;
 class WaveformSignalColors;
 
-class WaveformRendererSignalBase : public WaveformRendererAbstract {
-public:
-    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidgetRenderer);
+class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstract {
+    Q_OBJECT
+  public:
+    explicit WaveformRendererSignalBase(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererSignalBase();
 
     virtual bool init();
     virtual void setup(const QDomNode& node, const SkinContext& context);
 
-    virtual bool onInit() {return true;}
-    virtual void onSetup(const QDomNode &node) = 0;
+    virtual bool onInit() {
+        return true;
+    }
+    virtual void onSetup(const QDomNode& node) = 0;
+
+  public slots:
+    void setAllChannelVisualGain(double gain) {
+        m_allChannelVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
+    void setLowVisualGain(double gain) {
+        m_lowVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
+    void setMidVisualGain(double gain) {
+        m_midVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
+    void setHighVisualGain(double gain) {
+        m_highVisualGain = static_cast<CSAMPLE_GAIN>(gain);
+    }
 
   protected:
     void deleteControls();
@@ -26,15 +46,6 @@ public:
             float* pLowGain,
             float* pMidGain,
             float* highGain);
-
-    static std::span<float, 256> unscaleTable();
-    inline float unscale(unsigned char value) {
-        // The all and hi components of the waveform data are scaled with pow(value, 2.0f * 0.316f)
-        // (see analyzerwaveform.h). This function can be used to undo that scaling,
-        // but apparently it is intentional.
-        static const auto table = unscaleTable();
-        return table[value];
-    }
 
   protected:
     ControlProxy* m_pEQEnabled;
@@ -48,7 +59,11 @@ public:
     Qt::Alignment m_alignment;
     Qt::Orientation m_orientation;
 
-    const WaveformSignalColors* m_pColors;
+    CSAMPLE_GAIN m_allChannelVisualGain;
+    CSAMPLE_GAIN m_lowVisualGain;
+    CSAMPLE_GAIN m_midVisualGain;
+    CSAMPLE_GAIN m_highVisualGain;
+
     float m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
     float m_signalColor_r, m_signalColor_g, m_signalColor_b;
     float m_lowColor_r, m_lowColor_g, m_lowColor_b;

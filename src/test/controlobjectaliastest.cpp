@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QString>
+#include <gsl/pointers>
 
 #include "control/control.h"
 #include "control/controlindicatortimer.h"
@@ -126,7 +127,7 @@ TEST_F(ControlObjectAliasTest, PlayerManager) {
             true);
     auto controlIndicatorTimer = mixxx::ControlIndicatorTimer();
     auto pSoundManager = std::make_shared<SoundManager>(m_pConfig, pEngineMixer.get());
-    pEngineMixer->registerNonEngineChannelSoundIO(pSoundManager.get());
+    pEngineMixer->registerNonEngineChannelSoundIO(gsl::make_not_null(pSoundManager.get()));
     auto pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
             pSoundManager.get(),
             pEffectsManager.get(),

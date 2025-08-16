@@ -119,7 +119,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                 readableSampleFrames.readableData(),
                 readableSampleFrames.frameLength());
     } else {
-        SampleUtil::copyMultiToStereo(
+        SampleUtil::copyOneStereoFromMulti(
                 writableSlice.data(),
                 readableSampleFrames.readableData(),
                 readableSampleFrames.frameLength(),

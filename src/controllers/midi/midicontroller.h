@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QJSValue>
-#include <utility>
 
 #include "controllers/controller.h"
-#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/softtakeover.h"
 
@@ -44,6 +43,14 @@ class MidiController : public Controller {
 
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
+
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::MIDI;
+    }
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -75,7 +82,7 @@ class MidiController : public Controller {
             unsigned char control,
             const QJSValue& scriptCode);
 
-    bool applyMapping() override;
+    bool applyMapping(const QString& resourcePath) override;
     int close() override;
 
   protected slots:

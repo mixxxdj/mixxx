@@ -33,13 +33,12 @@ EffectsManager::EffectsManager(
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
 
-    auto [pRequestPipe, pResponsePipe] = TwoWayMessagePipe<EffectsRequest*,
-            EffectsResponse>::makeTwoWayMessagePipe(kEffectMessagePipeFifoSize,
+    auto [requestPipe, responsePipe] = makeTwoWayMessagePipe<EffectsRequest*,
+            EffectsResponse>(kEffectMessagePipeFifoSize,
             kEffectMessagePipeFifoSize);
 
-    m_pMessenger = EffectsMessengerPointer(new EffectsMessenger(
-            std::move(pRequestPipe)));
-    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(std::move(pResponsePipe));
+    m_pMessenger = EffectsMessengerPointer::create(std::move(requestPipe));
+    m_pEngineEffectsManager = std::make_unique<EngineEffectsManager>(std::move(responsePipe));
 
     m_pEffectPresetManager = EffectPresetManagerPointer(
             new EffectPresetManager(pConfig, m_pBackendManager));
@@ -60,6 +59,7 @@ EffectsManager::~EffectsManager() {
     // ~LV2GroupState calls lilv_instance_free, which will segfault if called
     // after ~LV2Backend calls lilv_world_free.
     m_equalizerEffectChains.clear();
+    m_quickStemEffectChains.clear();
     m_quickEffectChains.clear();
     m_standardEffectChains.clear();
     m_outputEffectChain.clear();
@@ -143,6 +143,24 @@ void EffectsManager::addDeck(const ChannelHandleAndGroup& deckHandleGroup) {
     // previous state.
     if (m_initializedFromEffectsXml) {
         readEffectsXmlSingleDeck(deckHandleGroup.m_name);
+    }
+}
+
+void EffectsManager::addStem(const ChannelHandleAndGroup& stemHandleGroup) {
+    VERIFY_OR_DEBUG_ASSERT(!m_quickStemEffectChains.contains(
+            QuickEffectChain::formatEffectChainGroup(stemHandleGroup.name()))) {
+        return;
+    }
+    auto pChainSlot = QuickEffectChainPointer(
+            new QuickEffectChain(stemHandleGroup, this, m_pMessenger));
+    m_quickStemEffectChains.insert(stemHandleGroup.name(), pChainSlot);
+    m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
+
+    // If a stem is added after setup() was run we need to read effects.xml
+    // again to initialize its QuickEffect chain, either with defaults or the
+    // previous state.
+    if (m_initializedFromEffectsXml) {
+        readEffectsXmlSingleDeckStem(stemHandleGroup.m_name);
     }
 }
 
@@ -243,6 +261,15 @@ void EffectsManager::readEffectsXml() {
         }
     }
 
+    QHashIterator<QString, EffectChainPresetPointer> qseDataIt(data.quickStemEffectChainPresets);
+    while (qseDataIt.hasNext()) {
+        qseDataIt.next();
+        auto pChainSlot = m_quickStemEffectChains.value(qseDataIt.key());
+        if (pChainSlot) {
+            pChainSlot->loadChainPreset(qseDataIt.value());
+        }
+    }
+
     m_pVisibleEffectsList->readEffectsXml(doc, m_pBackendManager);
 }
 
@@ -273,6 +300,25 @@ void EffectsManager::readEffectsXmlSingleDeck(const QString& deckGroup) {
     auto pQuickEffectChainSlot = m_quickEffectChains.value(deckGroup);
     if (pQuickEffectChainSlot) {
         pQuickEffectChainSlot->loadChainPreset(data.quickEffectChainPreset);
+    }
+}
+
+void EffectsManager::readEffectsXmlSingleDeckStem(const QString& deckStemGroup) {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
+    QDomDocument doc;
+
+    if (file.open(QIODevice::ReadOnly)) {
+        doc.setContent(&file);
+    }
+    file.close();
+
+    EffectChainPresetPointer pPreset =
+            m_pChainPresetManager->readEffectsXmlSingleDeckStem(doc, deckStemGroup);
+
+    auto pQuickEffectChainSlot = m_quickStemEffectChains.value(deckStemGroup);
+    if (pQuickEffectChainSlot) {
+        pQuickEffectChainSlot->loadChainPreset(pPreset);
     }
 }
 
@@ -307,8 +353,18 @@ void EffectsManager::saveEffectsXml() {
         quickEffectChainPresets.insert(qeIt.key(), pPreset);
     }
 
+    QHash<QString, EffectChainPresetPointer> quickStemEffectChainPresets;
+    quickStemEffectChainPresets.reserve(m_quickStemEffectChains.size());
+    QHashIterator<QString, QuickEffectChainPointer> qseIt(m_quickStemEffectChains);
+    while (qseIt.hasNext()) {
+        qseIt.next();
+        auto* pQuickEffectChain = qseIt.value().data();
+        auto pPreset = EffectChainPresetPointer::create(pQuickEffectChain);
+        quickStemEffectChainPresets.insert(qseIt.key(), pPreset);
+    }
+
     QList<EffectChainPresetPointer> standardEffectChainPresets;
-    standardEffectChainPresets.reserve(m_quickEffectChains.size());
+    standardEffectChainPresets.reserve(m_standardEffectChains.size());
     for (const auto& pChainSlot : std::as_const(m_standardEffectChains)) {
         auto* pChain = pChainSlot.data();
         auto pPreset = EffectChainPresetPointer::create(pChain);
@@ -326,6 +382,7 @@ void EffectsManager::saveEffectsXml() {
             EffectsXmlData{
                     eqEffectManifests,
                     quickEffectChainPresets,
+                    quickStemEffectChainPresets,
                     standardEffectChainPresets,
                     outputChainPreset});
 

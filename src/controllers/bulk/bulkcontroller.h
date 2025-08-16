@@ -2,6 +2,7 @@
 
 #include <QAtomicInt>
 #include <QThread>
+#include <optional>
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
@@ -45,12 +46,41 @@ class BulkController : public Controller {
 
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::USB_BULK_TRANSFER;
+    }
+
+    QString getVendorString() const override {
+        return m_manufacturer;
+    }
+    QString getProductString() const override {
+        return m_product;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return m_vendorId;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return m_productId;
+    }
+    QString getSerialNumber() const override {
+        return m_sUID;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_interfaceNumber;
+    }
 
     bool isMappable() const override {
-        if (!m_pMapping) {
-            return false;
-        }
-        return m_pMapping->isMappable();
+        // On raw USB transfer level, there isn't any information about mappable controls
+        return false;
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
@@ -59,12 +89,12 @@ class BulkController : public Controller {
     void send(const QList<int>& data, unsigned int length) override;
 
   private:
-    int open() override;
+    int open(const QString& resourcePath) override;
     int close() override;
 
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
     bool matchProductInfo(const ProductInfo& product);
 
@@ -73,13 +103,12 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short m_vendorId;
-    unsigned short m_productId;
-    unsigned char m_inEndpointAddr;
-    unsigned char m_outEndpointAddr;
-#if defined(__WINDOWS__) || defined(__APPLE__)
-    unsigned int m_interfaceNumber;
-#endif
+    std::uint16_t m_vendorId;
+    std::uint16_t m_productId;
+    std::uint8_t m_inEndpointAddr;
+    std::uint8_t m_outEndpointAddr;
+    std::optional<std::uint8_t> m_interfaceNumber;
+
     QString m_manufacturer;
     QString m_product;
 

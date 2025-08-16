@@ -454,6 +454,16 @@ void PlayerManager::addDeckInner() {
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);
 
+#ifdef __STEM__
+    // Setup stem QuickEffect chain for this deck
+    for (int i = 0; i < 4; i++) {
+        ChannelHandleAndGroup stemHandleGroup =
+                m_pEngine->registerChannelGroup(groupForDeckStem(deckIndex, i));
+        pDeck->getEngineDeck()->addStemHandle(stemHandleGroup);
+        m_pEffectsManager->addStem(stemHandleGroup);
+    }
+#endif
+
     // Setup EQ ControlProxies used for resetting EQs on track load
     pDeck->setupEqControls();
 }
@@ -661,7 +671,15 @@ void PlayerManager::slotCloneDeck(const QString& source_group, const QString& ta
     pPlayer->slotCloneFromGroup(source_group);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
+#ifdef __STEM__
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack,
+        const QString& group,
+        mixxx::StemChannelSelection stemMask,
+        bool play) {
+#else
+void PlayerManager::slotLoadTrackToPlayer(
+        TrackPointer pTrack, const QString& group, bool play) {
+#endif
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
@@ -712,7 +730,11 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     if (clone) {
         pPlayer->slotCloneDeck();
     } else {
+#ifdef __STEM__
+        pPlayer->slotLoadTrack(pTrack, stemMask, play);
+#else
         pPlayer->slotLoadTrack(pTrack, play);
+#endif
     }
 
     m_lastLoadedPlayer = group;
@@ -764,7 +786,11 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         return;
     }
 
-    pDeck->slotLoadTrack(pTrack, false);
+    pDeck->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
 }
 
 void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
@@ -787,7 +813,11 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     }
     locker.unlock();
 
+#ifdef __STEM__
+    pSampler->slotLoadTrack(pTrack, mixxx::StemChannelSelection(), false);
+#else
     pSampler->slotLoadTrack(pTrack, false);
+#endif
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {

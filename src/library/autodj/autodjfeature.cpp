@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QtDebug>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
 #include "library/dao/trackschema.h"
@@ -96,6 +97,20 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &AutoDJFeature::slotCrateChanged);
 
+    // Create context-menu items for enabling/disabling the auto-DJ
+    m_pEnableAutoDJAction = make_parented<QAction>(tr("Enable Auto DJ"), this);
+    connect(m_pEnableAutoDJAction.get(),
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotEnableAutoDJ);
+
+    m_pDisableAutoDJAction = make_parented<QAction>(tr("Disable Auto DJ"), this);
+    connect(m_pDisableAutoDJAction.get(),
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotDisableAutoDJ);
+
+    // Create context-menu item for clearing the auto-DJ queue
     m_pClearQueueAction = make_parented<QAction>(tr("Clear Auto DJ Queue"), this);
     const auto removeKeySequence =
             // TODO(XXX): Qt6 replace enum | with QKeyCombination
@@ -161,6 +176,13 @@ void AutoDJFeature::bindLibraryWidget(
             &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
+
+    // Update shortcuts displayed in the context menu
+    QKeySequence toggleAutoDJShortcut = QKeySequence(
+            keyboard->getKeyboardConfig()->getValueString(ConfigKey("[AutoDJ]", "enabled")),
+            QKeySequence::PortableText);
+    m_pEnableAutoDJAction->setShortcut(toggleAutoDJShortcut);
+    m_pDisableAutoDJAction->setShortcut(toggleAutoDJShortcut);
 }
 
 void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -231,6 +253,14 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
 bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
+}
+
+void AutoDJFeature::slotEnableAutoDJ() {
+    m_pAutoDJProcessor->toggleAutoDJ(true);
+}
+
+void AutoDJFeature::slotDisableAutoDJ() {
+    m_pAutoDJProcessor->toggleAutoDJ(false);
 }
 
 void AutoDJFeature::slotClearQueue() {
@@ -340,6 +370,11 @@ void AutoDJFeature::constructCrateChildModel() {
 
 void AutoDJFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
+    if (m_pAutoDJProcessor->getState() == AutoDJProcessor::ADJ_DISABLED) {
+        menu.addAction(m_pEnableAutoDJAction.get());
+    } else {
+        menu.addAction(m_pDisableAutoDJAction.get());
+    }
     menu.addAction(m_pClearQueueAction.get());
     menu.exec(globalPos);
 }

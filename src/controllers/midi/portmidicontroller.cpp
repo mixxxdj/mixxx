@@ -43,7 +43,7 @@ PortMidiController::~PortMidiController() {
     }
 }
 
-int PortMidiController::open() {
+int PortMidiController::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "PortMIDI device" << getName() << "already open";
         return -1;
@@ -79,7 +79,7 @@ int PortMidiController::open() {
         }
     }
     startEngine();
-    applyMapping();
+    applyMapping(resourcePath);
     setOpen(true);
     return 0;
 }
@@ -222,28 +222,30 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
     }
 }
 
-void PortMidiController::sendBytes(const QByteArray& data) {
+bool PortMidiController::sendBytes(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
     // Pm_WriteSysEx. Instead, it scans for a MidiOpCode::EndOfExclusive byte
     // to know when the message is over. If one is not provided, it will
     // overflow the buffer and cause a segfault.
     if (!data.endsWith(MidiUtils::opCodeValue(MidiOpCode::EndOfExclusive))) {
         qCDebug(m_logOutput) << "SysEx message does not end with 0xF7 -- ignoring.";
-        return;
+        return false;
     }
 
     if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
-        return;
+        return false;
     }
 
     PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
     if (err == pmNoError) {
         qCDebug(m_logOutput) << QStringLiteral("outgoing: ")
                              << MidiUtils::formatSysexMessage(getName(), data);
+        return true;
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
         qCWarning(m_logOutput) << "Error sending SysEx message:"
                                << MidiUtils::formatSysexMessage(getName(), data);
         qCWarning(m_logOutput) << "PortMidi error:" << Pm_GetErrorText(err);
     }
+    return false;
 }

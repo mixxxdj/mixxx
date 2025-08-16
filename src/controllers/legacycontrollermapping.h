@@ -4,11 +4,22 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QHash>
+#include <QImage>
+#include <QList>
+#include <QString>
+#include <bit>
+#include <chrono>
+#include <memory>
+#ifdef MIXXX_USE_QML
+#include <bit>
+#endif
 
 #include "controllers/legacycontrollersettings.h"
 #include "controllers/legacycontrollersettingslayout.h"
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
+#include "util/assert.h"
 
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
@@ -35,6 +46,10 @@ class LegacyControllerMapping {
               m_settingsLayout(other.m_settingsLayout.get() != nullptr
                               ? other.m_settingsLayout->clone()
                               : nullptr),
+#ifdef MIXXX_USE_QML
+              m_modules(other.m_modules),
+              m_screens(other.m_screens),
+#endif
               m_scripts(other.m_scripts),
               m_deviceDirection(other.m_deviceDirection) {
     }
@@ -45,14 +60,20 @@ class LegacyControllerMapping {
 
   public:
     struct ScriptFileInfo {
-        ScriptFileInfo()
-                : builtin(false) {
-        }
+        enum class Type {
+            Javascript,
+#ifdef MIXXX_USE_QML
+            Qml,
+#endif
+        };
 
-        QString name;
-        QString functionPrefix;
-        QFileInfo file;
-        bool builtin;
+        QString name;       // Name of the script file to add.
+        QString identifier; // The script's function prefix with Javascript OR
+                            // the screen identifier this QML should be run for
+                            // (or empty string).
+        QFileInfo file;     // A FileInfo object pointing to the script file.
+        Type type;          // A ScriptFileInfo::Type the specify script file type.
+        bool builtin;       // If this is true, the script won't be written to the XML.
     };
 
     // TODO (xxx): this is a temporary solution to address devices that don't
@@ -68,21 +89,46 @@ class LegacyControllerMapping {
     };
     Q_DECLARE_FLAGS(DeviceDirections, DeviceDirection)
 
+#ifdef MIXXX_USE_QML
+    struct QMLModuleInfo {
+        QMLModuleInfo(const QFileInfo& aDirinfo,
+                bool isBuiltin)
+                : dirinfo(aDirinfo),
+                  builtin(isBuiltin) {
+        }
+
+        QFileInfo dirinfo;
+        bool builtin;
+    };
+
+    struct ScreenInfo {
+        // Defining a custom enum here as std::endian contains `native` which is
+        // confusing and will have unpredictable behaviour depending of the
+        // platform.
+        enum class ColorEndian {
+            Big = static_cast<int>(std::endian::big),
+            Little = static_cast<int>(std::endian::little),
+        };
+
+        QString identifier; // The screen identifier.
+        QSize size;         // The size of the screen.
+        uint target_fps;    // The maximum FPS to render.
+        uint msaa;          // The MSAA value to use for render.
+        std::chrono::milliseconds
+                splash_off;         // The rendering grace time given when the screen is
+                                    // requested to shutdown.
+        QImage::Format pixelFormat; // The pixel encoding format.
+        ColorEndian endian;         // The pixel endian format.
+        bool reversedColor;         // Whether or not the RGB is swapped BGR.
+        bool rawData;               // Whether or not the screen is allowed to receive bare
+                                    // data, not transformed.
+    };
+#endif
+
     /// Adds a script file to the list of controller scripts for this mapping.
-    /// @param filename Name of the script file to add
-    /// @param functionprefix The script's function prefix (or empty string)
-    /// @param file A FileInfo object pointing to the script file
-    /// @param builtin If this is true, the script won't be written to the XML
-    void addScriptFile(const QString& name,
-            const QString& functionprefix,
-            const QFileInfo& file,
-            bool builtin = false) {
-        ScriptFileInfo info;
-        info.name = name;
-        info.functionPrefix = functionprefix;
-        info.file = file;
-        info.builtin = builtin;
-        m_scripts.append(info);
+    /// @param info The script info to add.
+    virtual void addScriptFile(ScriptFileInfo info) {
+        m_scripts.append(std::move(info));
         setDirty(true);
     }
 
@@ -110,8 +156,8 @@ class LegacyControllerMapping {
     /// @brief Set a setting layout as they should be perceived when edited in
     /// the preference dialog.
     /// @param layout The layout root element
-    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement>&& layout) {
-        VERIFY_OR_DEBUG_ASSERT(layout.get()) {
+    void setSettingLayout(std::unique_ptr<LegacyControllerSettingsLayoutElement> layout) {
+        VERIFY_OR_DEBUG_ASSERT(layout) {
             return;
         }
         m_settingsLayout = std::move(layout);
@@ -145,6 +191,42 @@ class LegacyControllerMapping {
     DeviceDirections getDeviceDirection() const {
         return m_deviceDirection;
     }
+
+#ifdef MIXXX_USE_QML
+    /// Adds a custom QML module file to the list of controller modules for this mapping.
+    /// @param dirInfo A FileInfo of the directory or QML module
+    /// @param builtin If this is true, the script won't be written to the XML
+    virtual void addModule(const QFileInfo& dirInfo,
+            bool builtin = false) {
+        m_modules.append(QMLModuleInfo(
+                dirInfo,
+                builtin));
+        setDirty(true);
+    }
+
+    const QList<QMLModuleInfo>& getModules() const {
+        return m_modules;
+    }
+
+    /// @brief Adds a screen info where QML will be rendered.
+    /// @param identifier The screen identifier
+    /// @param size the size of the screen
+    /// @param targetFps the maximum FPS to render
+    /// @param msaa the MSAA value to use for render
+    /// @param splashoff the rendering grace time given when the screen is requested to shutdown
+    /// @param pixelFormat the pixel encoding format
+    /// @param endian the pixel endian format
+    /// @param reversedColor whether or not the RGB is swapped BGR
+    /// @param rawData whether or not the screen is allowed to reserve bare data, not transformed
+    virtual void addScreenInfo(ScreenInfo info) {
+        m_screens.append(std::move(info));
+        setDirty(true);
+    }
+
+    const QList<ScreenInfo>& getInfoScreens() const {
+        return m_screens;
+    }
+#endif
 
     void setDirty(bool bDirty) {
         m_bDirty = bDirty;
@@ -291,6 +373,10 @@ class LegacyControllerMapping {
 
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
     std::unique_ptr<LegacyControllerSettingsLayoutElement> m_settingsLayout;
+#ifdef MIXXX_USE_QML
+    QList<QMLModuleInfo> m_modules;
+    QList<ScreenInfo> m_screens;
+#endif
     QList<ScriptFileInfo> m_scripts;
     DeviceDirections m_deviceDirection;
 };

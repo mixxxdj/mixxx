@@ -43,13 +43,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Modplug QUIET libmodplug)
 endif()
 
-find_path(Modplug_INCLUDE_DIR
+find_path(
+  Modplug_INCLUDE_DIR
   NAMES libmodplug/modplug.h
   HINTS ${PC_Modplug_INCLUDE_DIRS}
-  DOC "Modplug include directory")
+  DOC "Modplug include directory"
+)
 mark_as_advanced(Modplug_INCLUDE_DIR)
 
-find_library(Modplug_LIBRARY
+find_library(
+  Modplug_LIBRARY
   NAMES modplug
   HINTS ${PC_Modplug_LIBRARY_DIRS}
   DOC "Modplug library"
@@ -74,7 +77,8 @@ if(Modplug_FOUND)
 
   if(NOT TARGET Modplug::Modplug)
     add_library(Modplug::Modplug UNKNOWN IMPORTED)
-    set_target_properties(Modplug::Modplug
+    set_target_properties(
+      Modplug::Modplug
       PROPERTIES
         IMPORTED_LOCATION "${Modplug_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Modplug_CFLAGS_OTHER}"

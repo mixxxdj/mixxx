@@ -97,6 +97,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
                 ],
                 equalizerUnit: {
                     feedback: true,
+                    feedbackOnRelease: true,
                     midi: {
                         enabled: [cc, p.pushEncoderGroup2[0].button],
                         super1: [cc, p.pushEncoderGroup2[0].encoder],
@@ -192,6 +193,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
                 ],
                 equalizerUnit: {
                     feedback: true,
+                    feedbackOnRelease: true,
                     midi: {
                         enabled: [cc, p.pushEncoderGroup2[4].button],
                         super1: [cc, p.pushEncoderGroup2[4].encoder],
@@ -210,6 +212,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
             }],
             effectUnits: [{
                 feedback: true,
+                feedbackOnRelease: true,
                 unitNumbers: [1, 3],
                 midi: {
                     effectFocusButton: [cc, p.buttonRow2[0]],
@@ -228,6 +231,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
             },
             {
                 feedback: true,
+                feedbackOnRelease: true,
                 unitNumbers: [2, 4],
                 midi: {
                     effectFocusButton: [cc, p.buttonRow2[4]],

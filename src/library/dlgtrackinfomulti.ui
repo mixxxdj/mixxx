@@ -408,15 +408,7 @@
        </widget>
       </item>
 
-      <item row="9" column="1" colspan="3">
-       <widget class="QPushButton" name="btnImportMetadataFromFile">
-        <property name="text">
-         <string>Re-Import Metadata from files</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="10" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="lblTrackColor">
         <property name="text">
          <string>Color</string>
@@ -426,7 +418,7 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="1" colspan="3">
+      <item row="9" column="1" colspan="3">
        <widget class="QPushButton" name="btnColorPicker">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -437,7 +429,7 @@
        </widget>
       </item>
 
-      <item row="0" column="0">
+      <item row="10" column="0">
        <spacer name="spacerColorPicker">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -449,6 +441,14 @@
          </size>
         </property>
        </spacer>
+      </item>
+
+      <item row="11" column="0" colspan="4">
+       <widget class="QPushButton" name="btnImportMetadataFromFile">
+        <property name="text">
+         <string>Re-Import Metadata from files</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -748,8 +748,8 @@
   <tabstop>txtYear</tabstop>
   <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
-  <tabstop>btnImportMetadataFromFile</tabstop>
   <tabstop>btnColorPicker</tabstop>
+  <tabstop>btnImportMetadataFromFile</tabstop>
   <tabstop>btnCancel</tabstop>
   <tabstop>btnApply</tabstop>
   <tabstop>btnOK</tabstop>

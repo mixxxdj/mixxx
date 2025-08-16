@@ -134,7 +134,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
-    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
+    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -310,4 +310,56 @@ declare namespace engine {
      *               SoftStart with low factors would take a while until sound is audible. [default = 1.0]
      */
     function softStart(deck: number, activate: boolean, factor?: number): void;
+
+    /**
+     * Returns true if the deck is currently braking.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently braking.
+     */
+    function isBraking(deck: number): bool;
+
+    /**
+     * Returns true if the deck is currently soft-starting.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently soft-starting.
+     */
+    function isSoftStarting(deck: number): bool;
+
+    enum Charset {
+        ASCII,          // American Standard Code for Information Interchange (7-Bit)
+        UTF_8,          // Unicode Transformation Format (8-Bit)
+        UTF_16LE,       // UTF-16 for Little-Endian devices (ARM, x86)
+        UTF_16BE,       // UTF-16 for Big-Endian devices (MIPS, PPC)
+        UTF_32LE,       // UTF-32 for Little-Endian devices (ARM, x86)
+        UTF_32BE,       // UTF-32 for Big-Endian devices (MIPS, PPC)
+        CentralEurope,  // Windows_1250 which includes all characters of ISO_8859_2
+        Cyrillic,       // Windows_1251 which includes all characters of ISO_8859_5
+        WesternEurope,  // Windows_1252 which includes all characters of ISO_8859_1
+        Greek,          // Windows_1253 which includes all characters of ISO_8859_7
+        Turkish,        // Windows_1254 which includes all characters of ISO_8859_9
+        Hebrew,         // Windows_1255 which includes all characters of ISO_8859_8
+        Arabic,         // Windows_1256 which includes all characters of ISO_8859_6
+        Baltic,         // Windows_1257 which includes all characters of ISO_8859_13
+        Vietnamese,     // Windows_1258 which includes all characters of ISO_8859_14
+        Latin9,         // ISO_8859_15
+        Shift_JIS,      // Japanese Industrial Standard (JIS X 0208)
+        EUC_JP,         // Extended Unix Code for Japanese
+        EUC_KR,         // Extended Unix Code for Korean
+        Big5_HKSCS,     // Includes all characters of Big5 and the Hong Kong Supplementary Character Set (HKSCS)
+        KOI8_U,         // Includes all characters of KOI8_R for Russian language and adds Ukrainian language characters
+        UCS2,           // Universal Character Set (2-Byte) ISO_10646
+        SCSU,           // Standard Compression Scheme for Unicode
+        BOCU_1,         // Binary Ordered Compression for Unicode
+        CESU_8,         // Compatibility Encoding Scheme for UTF-16 (8-Bit)
+        Latin1          // ISO_8859_1, available on Qt < 6.5
+    }
+
+    /**
+     * Converts a string into another charset.
+     * 
+     * @param value The string to encode
+     * @param targetCharset The charset to encode the string into.
+     * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
+     */
+    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer
 }

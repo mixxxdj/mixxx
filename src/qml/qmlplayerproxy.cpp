@@ -31,7 +31,12 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
         : QObject(parent),
           m_pTrackPlayer(pTrackPlayer),
           m_pBeatsModel(new QmlBeatsModel(this)),
-          m_pHotcuesModel(new QmlCuesModel(this)) {
+          m_pHotcuesModel(new QmlCuesModel(this))
+#ifdef __STEM__
+          ,
+          m_pStemsModel(std::make_unique<QmlStemsModel>(this))
+#endif
+{
     connect(m_pTrackPlayer,
             &BaseTrackPlayer::loadingTrack,
             this,
@@ -129,8 +134,18 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 &Track::cuesUpdated,
                 this,
                 &QmlPlayerProxy::slotHotcuesChanged);
+#ifdef __STEM__
+        connect(pTrack.get(),
+                &Track::stemsUpdated,
+                this,
+                &QmlPlayerProxy::slotStemsChanged);
+#endif
         slotBeatsChanged();
         slotHotcuesChanged();
+#ifdef __STEM__
+        slotStemsChanged();
+#endif
+        slotWaveformChanged();
     }
     emit trackChanged();
     emit trackLoaded();
@@ -175,6 +190,9 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit colorChanged();
     emit coverArtUrlChanged();
     emit trackLocationUrlChanged();
+#ifdef __STEM__
+    emit stemsChanged();
+#endif
 
     emit waveformLengthChanged();
     emit waveformTextureChanged();
@@ -198,8 +216,22 @@ void QmlPlayerProxy::slotWaveformChanged() {
     }
     const int textureWidth = pWaveform->getTextureStride();
     const int textureHeight = pWaveform->getTextureSize() / pWaveform->getTextureStride();
-    const uchar* data = reinterpret_cast<const uchar*>(pWaveform->data());
-    m_waveformTexture = QImage(data, textureWidth, textureHeight, QImage::Format_RGBA8888);
+
+    const WaveformData* data = pWaveform->data();
+    // Make a copy of the waveform data, stripping the stems portion. Note that the datasize is
+    // different from the texture size -- we want the full texture size so the upload works. See
+    // m_data in waveform/waveform.h.
+    m_waveformData.resize(pWaveform->getTextureSize());
+    for (int i = 0; i < pWaveform->getDataSize(); i++) {
+        m_waveformData[i] = data[i].filtered;
+    }
+
+    m_waveformTexture =
+            QImage(reinterpret_cast<const uchar*>(m_waveformData.data()),
+                    textureWidth,
+                    textureHeight,
+                    QImage::Format_RGBA8888);
+    DEBUG_ASSERT(!m_waveformTexture.isNull());
     emit waveformTextureChanged();
 }
 
@@ -218,6 +250,20 @@ void QmlPlayerProxy::slotBeatsChanged() {
         m_pBeatsModel->setBeats(nullptr, audio::kStartFramePos);
     }
 }
+
+#ifdef __STEM__
+void QmlPlayerProxy::slotStemsChanged() {
+    VERIFY_OR_DEBUG_ASSERT(m_pStemsModel != nullptr) {
+        return;
+    }
+
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        m_pStemsModel->setStems(pTrack->getStemInfo());
+        emit stemsChanged();
+    }
+}
+#endif
 
 void QmlPlayerProxy::slotHotcuesChanged() {
     VERIFY_OR_DEBUG_ASSERT(m_pHotcuesModel != nullptr) {

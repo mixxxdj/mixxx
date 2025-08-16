@@ -131,8 +131,9 @@
                     </Connection>
                   </PushButton>
                   <!-- Play -->
-                  <PushButton>
+                  <PlayButton>
                     <TooltipId>cue_gotoandplay_cue_default</TooltipId>
+                    <Group><Variable name="group"/></Group>
                     <Pos>3,7</Pos>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -156,7 +157,7 @@
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play_latched</ConfigKey>
                     </Connection>
-                  </PushButton>
+                  </PlayButton>
                 </Children>
               </WidgetGroup>
 
@@ -176,7 +177,7 @@
                     <SignalHighColor></SignalHighColor>
                     <SignalMidColor></SignalMidColor>
                     <SignalLowColor></SignalLowColor>
-                    <SignalColor>#191F24</SignalColor>
+                    <SignalColor><Variable name="SignalColor"/></SignalColor>
                     <PlayPosColor>#00FF00</PlayPosColor>
                     <ShowCueTimes>false</ShowCueTimes>
                     <DefaultMark>

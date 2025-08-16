@@ -43,13 +43,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_MP4 QUIET mp4)
 endif()
 
-find_path(MP4_INCLUDE_DIR
+find_path(
+  MP4_INCLUDE_DIR
   NAMES mp4/mp4.h
   HINTS ${PC_MP4_INCLUDE_DIRS}
-  DOC "MP4 include directory")
+  DOC "MP4 include directory"
+)
 mark_as_advanced(MP4_INCLUDE_DIR)
 
-find_library(MP4_LIBRARY
+find_library(
+  MP4_LIBRARY
   NAMES mp4
   HINTS ${PC_MP4_LIBRARY_DIRS}
   DOC "MP4 library"
@@ -74,7 +77,8 @@ if(MP4_FOUND)
 
   if(NOT TARGET MP4::MP4)
     add_library(MP4::MP4 UNKNOWN IMPORTED)
-    set_target_properties(MP4::MP4
+    set_target_properties(
+      MP4::MP4
       PROPERTIES
         IMPORTED_LOCATION "${MP4_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_MP4_CFLAGS_OTHER}"
