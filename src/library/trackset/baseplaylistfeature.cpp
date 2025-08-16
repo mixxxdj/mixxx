@@ -568,20 +568,20 @@ QString BasePlaylistFeature::cleanString(const QString& input) const {
     s.remove(QRegularExpression("\\[.*?\\]"));
 
     // Normalize apostrophes: replace with space
-    s.replace(QChar(0x2019), ' ');
-    s.replace('\'', ' ');
+    s.replace(QChar(0x2019), ' '); // Unicode right single quote
+    s.replace('\'', ' ');          // ASCII apostrophe
 
     // Remove quotes
     s.remove('\"');
 
-    // Replace punctuation (ASCII)
+    // Replace ASCII punctuation
     s.replace(QRegularExpression("[.,;!?]+"), " ");
 
-    // Replace common Unicode punctuation individually
-    s.replace(QChar(0x2026), ' '); // …
-    s.replace(QChar(0x2013), ' '); // –
-    s.replace(QChar(0x2014), ' '); // —
-    s.replace(QChar(0x00B7), ' '); // ·
+    // Replace common Unicode punctuation
+    s.replace(QChar(0x2026), ' '); // ellipsis
+    s.replace(QChar(0x2013), ' '); // en dash
+    s.replace(QChar(0x2014), ' '); // em dash
+    s.replace(QChar(0x00B7), ' '); // middle dot
 
     // Collapse multiple spaces into one
     s = s.simplified();
