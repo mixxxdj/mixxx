@@ -1143,9 +1143,9 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
         m_pMapping = pMapping;
     }
 
+#ifdef MIXXX_USE_QML
     // Add the screens tab if there are screens
     if (pMapping && CmdlineArgs::Instance().getControllerPreviewScreens()) {
-#ifdef MIXXX_USE_QML
         auto screens = pMapping->getInfoScreens();
         bool hasScreens = !screens.isEmpty();
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, hasScreens);
@@ -1153,11 +1153,13 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
         if (hasScreens) {
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
         }
-#endif
     } else {
+#endif
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
         m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, false);
+#ifdef MIXXX_USE_QML
     }
+#endif
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =
