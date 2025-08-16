@@ -538,8 +538,7 @@ void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
     // qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
     //             "icr" << m_iFullRotations;
 
-    if (((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) &&
-            !m_bVinylActive) {
+    if ((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) {
         // Convert deltaTheta into a percentage of song length.
         double absPos = calculatePositionFromAngle(theta);
         double absPosInSamples = absPos * m_pTrackSamples->get();
@@ -576,11 +575,6 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
 
         m_iStartMouseX = x;
         m_iStartMouseY = y;
-
-        // don't do anything if vinyl control is active
-        if (m_bVinylActive) {
-            return;
-        }
 
         if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
             QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
