@@ -4122,7 +4122,6 @@ if(RUBBERBAND)
   target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
   target_compile_definitions(mixxx-lib PUBLIC __RUBBERBAND__)
   if(QML)
-    target_link_libraries(mixxx-qml-lib PRIVATE rubberband::rubberband)
     target_compile_definitions(mixxx-qml-lib PUBLIC __RUBBERBAND__)
   endif()
   target_sources(

@@ -1,9 +1,7 @@
 #pragma once
 
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #include <QObject>
 #include <QQmlEngine>
-#endif
 #include <QPointer>
 #include <memory>
 
@@ -15,6 +13,7 @@
 // manual delete to free the heap memory when they go out of scope, as they will
 // be handled by the engine garbage collector.
 template<typename T>
+    requires(std::is_base_of_v<QObject, T>)
 class qml_owned_ptr final {
   public:
     explicit qml_owned_ptr(T* t = nullptr) noexcept
@@ -46,16 +45,15 @@ class qml_owned_ptr final {
     // If U* is convertible to T* then qml_owned_ptr<U> is convertible to qml_owned_ptr<T>
     template<
             typename U,
-            typename = typename std::enable_if<std::is_convertible<U*, T*>::value, U>::type>
+            typename = typename std::enable_if_t<std::is_convertible_v<U*, T*>, U>>
     qml_owned_ptr(qml_owned_ptr<U>&& u) noexcept
             : m_ptr{u.m_ptr} {
         u.m_ptr = nullptr;
     }
 
     // If U* is convertible to T* then qml_owned_ptr<U> is assignable to qml_owned_ptr<T>
-    template<
-            typename U,
-            typename = typename std::enable_if<std::is_convertible<U*, T*>::value, U>::type>
+    template<typename U>
+        requires std::is_convertible_v<U*, T*>
     qml_owned_ptr& operator=(qml_owned_ptr<U>&& u) noexcept {
         qml_owned_ptr temp{std::move(u)};
         std::swap(temp.m_ptr, m_ptr);
@@ -99,14 +97,10 @@ class qml_owned_ptr final {
 
   private:
     T* m_ptr;
-
-    template<typename>
-    friend class qml_owned_ptr;
 };
 
 template<typename T, typename... Args>
-    requires(std::is_base_of_v<QObject, T>)
-inline qml_owned_ptr<T> make_qml_owned(Args&&... args) {
+qml_owned_ptr<T> make_qml_owned(Args&&... args) {
     return qml_owned_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
@@ -119,40 +113,8 @@ inline qml_owned_ptr<T> make_qml_owned(Args&&... args) {
 // automatically be destructed such that the DEBUG_ASSERT that checks whether a parent exists is
 // triggered.
 template<typename T>
-inline qml_owned_ptr<T> qml_owned(std::unique_ptr<T>& u) noexcept {
+qml_owned_ptr<T> to_qml_owned(std::unique_ptr<T>& u) noexcept {
     // the DEBUG_ASSERT in the qml_owned_ptr constructor will catch cases where
     // the unique_ptr should not have been released
     return qml_owned_ptr<T>{u.release()};
-}
-
-// Comparison operator definitions:
-
-template<typename T, typename U>
-inline bool operator==(const T* lhs, const qml_owned_ptr<U>& rhs) noexcept {
-    return lhs == rhs.get();
-}
-
-template<typename T, typename U>
-inline bool operator==(const qml_owned_ptr<T>& lhs, const U* rhs) noexcept {
-    return lhs.get() == rhs;
-}
-
-template<typename T, typename U>
-inline bool operator==(const qml_owned_ptr<T>& lhs, const qml_owned_ptr<U>& rhs) noexcept {
-    return lhs.get() == rhs.get();
-}
-
-template<typename T, typename U>
-inline bool operator!=(const T* lhs, const qml_owned_ptr<U>& rhs) noexcept {
-    return !(lhs == rhs.get());
-}
-
-template<typename T, typename U>
-inline bool operator!=(const qml_owned_ptr<T>& lhs, const U* rhs) noexcept {
-    return !(lhs.get() == rhs);
-}
-
-template<typename T, typename U>
-inline bool operator!=(const qml_owned_ptr<T>& lhs, const qml_owned_ptr<U>& rhs) noexcept {
-    return !(lhs.get() == rhs.get());
 }
