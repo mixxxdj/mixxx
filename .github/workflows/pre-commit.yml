@@ -21,7 +21,7 @@ jobs:
     container: holzhaus/mixxx-ci:20220930
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
         with:
           # Unfortunately we need the whole history and can't use a shallow clone
           # because the Appstream Metadata hook parses the history to find the

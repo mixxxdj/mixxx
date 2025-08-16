@@ -10,8 +10,12 @@
 /// It is basically a PIMPL version of a ControlDoublePrivate Shared pointer
 class PollingControlProxy {
   public:
-    PollingControlProxy()
-            : m_pControl(ControlDoublePrivate::getDefaultControl()) {
+    // constructing a PollingControlProxy without a ConfigKey or ControlFlag::AllowMissingOrInvalid
+    // would always trigger a DEBUG_ASSERT.
+    PollingControlProxy() = delete;
+
+    PollingControlProxy(ControlFlags flags)
+            : PollingControlProxy(ConfigKey(), flags) {
     }
 
     PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)
