@@ -946,7 +946,9 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         auto extractWords = [](const QString& filter) {
             QStringList result;
-            for (const QString& w : filter.split(' ', Qt::SkipEmptyParts)) {
+            // for (const QString& w : filter.split(' ', Qt::SkipEmptyParts)) {
+            const QStringList words = filter.split(' ', Qt::SkipEmptyParts);
+            for (const QString& w : words) {
                 if (w.size() > 1) {
                     result << w;
                 }
