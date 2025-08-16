@@ -170,6 +170,11 @@ QList<TrackId> PlaylistDAO::getTrackIdsInPlaylistOrder(const int playlistId) con
     return trackIds;
 }
 
+QList<TrackId> PlaylistDAO::getAutoDJTrackIds() const {
+    const int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
+    return getTrackIds(iAutoDJPlaylistId);
+}
+
 int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
     //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 
