@@ -575,7 +575,8 @@ QString BasePlaylistFeature::cleanString(const QString& input) const {
     s.remove(QRegularExpression("[\"]"));
 
     // Replace punctuation (ASCII and common Unicode) with space
-    s.replace(QRegularExpression(R"([.,;!?…–—·]+)"), " ");
+    // s.replace(QRegularExpression(R"([.,;!?…–—·]+)"), " ");
+    s.replace(QRegularExpression(R"([.,;!?\u2026\u2013\u2014\u00B7]+)"), " ");
 
     // Replace Unicode ellipsis …
     s.replace(QChar(0x2026), ' ');
