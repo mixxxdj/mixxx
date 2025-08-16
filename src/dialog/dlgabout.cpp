@@ -69,28 +69,15 @@ DlgAbout::DlgAbout()
             << "Be"
             << "Uwe Klotz"
             << "D&aacute;vid Szak&aacute;llas"
-            << "Philip Gottschling"
-            << "Adam Szmigin"
             << "Christian"
             << "Geraldo Nascimento"
             << "Allen Wittenauer"
             << "Raphael Bigal"
             << "Filok"
-            << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
-            << "Fatih Emre YILDIZ"
             << "Neil Naveen"
-            << "Javier Vilalta"
             << "David Chocholat&yacute;"
-            << "Fabian Wolter"
-            << "Matteo Gheza"
-            << "Michael Bacarella"
-            << "Bilal Ahmed Karbelkar"
-            << "Alice Psykose"
             << "Jakob Leifhelm"
-            << "Florian Goth"
-            << "Chase Durand"
-            << "John Last"
             << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
             << "Robbert van der Helm"
@@ -141,6 +128,14 @@ DlgAbout::DlgAbout()
             << "Arthur Vimond"
             << "Johan Jnn"
             << "Shiraz McClennon"
+            << "Lubosz Sarnecki"
+            << "Falk Ebert"
+            << "13dixi37"
+            << "endcredits33"
+            << "Jakob Stolberg"
+            << "evoixmr"
+            << "Jos&eacute; Carlos Cuevas"
+            << "cucucat"
             << "Hetarth Jodha";
 
     QStringList specialThanks;
@@ -191,7 +186,6 @@ DlgAbout::DlgAbout()
             << "Max Linke"
             << "Marcos Cardinot"
             << "Nicu Badescu"
-            << "Uwe Klotz"
             << "Sean Pappalardo"
             << "S. Brandt";
 
@@ -416,7 +410,20 @@ DlgAbout::DlgAbout()
             << "Maty&aacute;&scaron; Bobek"
             << "Mr. Rincewind"
             << "Stefan N&uuml;rnberger"
-            << "motific";
+            << "motific"
+            << "Philip Gottschling"
+            << "Adam Szmigin"
+            << "tcoyvwac"
+            << "Fatih Emre YILDIZ"
+            << "Javier Vilalta"
+            << "Fabian Wolter"
+            << "Matteo Gheza"
+            << "Michael Bacarella"
+            << "Bilal Ahmed Karbelkar"
+            << "Alice Psykose"
+            << "Florian Goth"
+            << "Chase Durand"
+            << "John Last";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");

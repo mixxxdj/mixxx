@@ -3,12 +3,12 @@
 namespace mixxx {
 
 // static
-LLTIMER Time::s_timer;
+Time::LLTIMER Time::s_timer;
 
 // static
 bool Time::s_testMode = false;
 
 // static
-Duration Time::s_testElapsed = Duration::fromNanos(0);
+Time::time_point Time::s_testElapsed = Time::time_point::min();
 
 } // namespace mixxx

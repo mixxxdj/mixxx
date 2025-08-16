@@ -1,13 +1,22 @@
 #include "effects/backends/builtin/compressoreffect.h"
 
+#include "util/math.h"
+
 namespace {
-constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03f;
+// Auto make up time is empirically selected parameter, which is good enough for most cases
+constexpr double defaultMakeUpAttackMs = 150;
 constexpr double defaultAttackMs = 1;
 constexpr double defaultReleaseMs = 300;
 constexpr CSAMPLE_GAIN defaultThresholdDB = -20;
 
 double calculateBallistics(double paramMs, const mixxx::EngineParameters& engineParameters) {
     return exp(-1000.0 / (paramMs * engineParameters.sampleRate()));
+}
+
+CSAMPLE_GAIN calculateMakeUpAttackCoeff(const mixxx::EngineParameters& engineParameters) {
+    return static_cast<CSAMPLE>(
+            (1 - calculateBallistics(defaultMakeUpAttackMs, engineParameters)) *
+            engineParameters.framesPerBuffer());
 }
 
 } // anonymous namespace
@@ -122,15 +131,50 @@ EffectManifestPointer CompressorEffect::getManifest() {
     return pManifest;
 }
 
-CompressorGroupState::CompressorGroupState(
-        const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          previousStateDB(0),
-          previousAttackParamMs(defaultAttackMs),
-          previousAttackCoeff(calculateBallistics(defaultAttackMs, engineParameters)),
-          previousReleaseParamMs(defaultReleaseMs),
-          previousReleaseCoeff(calculateBallistics(defaultReleaseMs, engineParameters)),
-          previousMakeUpGain(1) {
+void CompressorGroupState::clear(const mixxx::EngineParameters& engineParameters) {
+    stateDB = 0;
+    attackCoeff = calculateBallistics(defaultAttackMs, engineParameters);
+    releaseCoeff = calculateBallistics(defaultReleaseMs, engineParameters);
+    makeUpGainState = CSAMPLE_GAIN_ONE;
+    makeUpCoeff = calculateMakeUpAttackCoeff(engineParameters);
+
+    previousAttackParamMs = defaultAttackMs;
+    previousReleaseParamMs = defaultReleaseMs;
+    previousFramesPerBuffer = engineParameters.framesPerBuffer();
+    previousSampleRate = engineParameters.sampleRate();
+}
+
+void CompressorGroupState::calculateCoeffsIfChanged(
+        const mixxx::EngineParameters& engineParameters,
+        double attackParamMs,
+        double releaseParamMs) {
+    if (engineParameters.sampleRate() != previousSampleRate) {
+        attackCoeff = calculateBallistics(attackParamMs, engineParameters);
+        previousAttackParamMs = attackParamMs;
+
+        releaseCoeff = calculateBallistics(releaseParamMs, engineParameters);
+        previousReleaseParamMs = releaseParamMs;
+
+        makeUpCoeff = calculateMakeUpAttackCoeff(engineParameters);
+        previousFramesPerBuffer = engineParameters.framesPerBuffer();
+
+        previousSampleRate = engineParameters.sampleRate();
+    } else {
+        if (attackParamMs != previousAttackParamMs) {
+            attackCoeff = calculateBallistics(attackParamMs, engineParameters);
+            previousAttackParamMs = attackParamMs;
+        }
+
+        if (releaseParamMs != previousReleaseParamMs) {
+            releaseCoeff = calculateBallistics(releaseParamMs, engineParameters);
+            previousReleaseParamMs = releaseParamMs;
+        }
+
+        if (engineParameters.framesPerBuffer() != previousFramesPerBuffer) {
+            makeUpCoeff = calculateMakeUpAttackCoeff(engineParameters);
+            previousFramesPerBuffer = engineParameters.framesPerBuffer();
+        }
+    }
 }
 
 void CompressorEffect::loadEngineEffectParameters(
@@ -152,75 +196,65 @@ void CompressorEffect::processChannel(
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState);
+
+    if (enableState == EffectEnableState::Enabling) {
+        pState->clear(engineParameters);
+    } else {
+        pState->calculateCoeffsIfChanged(engineParameters, m_pAttack->value(), m_pRelease->value());
+    }
 
     SINT numSamples = engineParameters.samplesPerBuffer();
 
     // Compression
-    applyCompression(pState, engineParameters, pInput, pOutput);
+    CSAMPLE* pGainBuffer = applyCompression(pState, engineParameters, pInput, pOutput);
 
     // Auto make up
     if (m_pAutoMakeUp->toInt() == static_cast<int>(AutoMakeUp::AutoMakeUpOn)) {
-        applyAutoMakeUp(pState, pInput, pOutput, numSamples);
+        applyAutoMakeUp(pState, numSamples, pGainBuffer);
     }
 
     // Output gain
     CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(m_pLevel->value()));
-    SampleUtil::applyGain(pOutput, gain, numSamples);
-}
 
-void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
-        const CSAMPLE* pInput,
-        CSAMPLE* pOutput,
-        const SINT& numSamples) {
-    CSAMPLE rmsInput = SampleUtil::rms(pInput, numSamples);
-    if (rmsInput > CSAMPLE_ZERO) {
-        CSAMPLE_GAIN makeUpGainState = pState->previousMakeUpGain;
-
-        CSAMPLE rmsOutput = SampleUtil::rms(pOutput, numSamples);
-        CSAMPLE_GAIN makeUp = rmsInput / rmsOutput;
-
-        // smoothing
-        makeUpGainState = kMakeUpAttackCoeff * makeUp + (1 - kMakeUpAttackCoeff) * makeUpGainState;
-
-        pState->previousMakeUpGain = makeUpGainState;
-        SampleUtil::applyGain(pOutput, makeUpGainState, numSamples);
+    // Finally applying all gains
+    for (SINT i = 0; i < engineParameters.samplesPerBuffer(); i++) {
+        pOutput[i] = pInput[i] * pGainBuffer[i] * gain;
     }
 }
 
-void CompressorEffect::applyCompression(CompressorGroupState* pState,
+void CompressorEffect::applyAutoMakeUp(
+        CompressorGroupState* pState, SINT numSamples, CSAMPLE* pGainBuffer) {
+    CSAMPLE rmsGain = SampleUtil::rms(pGainBuffer, numSamples);
+
+    CSAMPLE_GAIN makeUpGainState = pState->makeUpGainState;
+
+    // smoothing
+    makeUpGainState = pState->makeUpCoeff * rmsGain + (1 - pState->makeUpCoeff) * makeUpGainState;
+
+    SampleUtil::applyRampingGain(pGainBuffer,
+            1 / pState->makeUpGainState,
+            1 / makeUpGainState,
+            numSamples);
+    pState->makeUpGainState = makeUpGainState;
+}
+
+CSAMPLE* CompressorEffect::applyCompression(CompressorGroupState* pState,
         const mixxx::EngineParameters& engineParameters,
         const CSAMPLE* pInput,
-        CSAMPLE* pOutput) {
+        CSAMPLE* pGainBuffer) {
     double thresholdParam = m_pThreshold->value();
     double ratioParam = m_pRatio->value();
     double kneeParam = m_pKnee->value();
     double kneeHalf = kneeParam / 2.0f;
 
-    double attackParamMs = m_pAttack->value();
-    double attackCoeff = pState->previousAttackCoeff;
-    if (attackParamMs != pState->previousAttackParamMs) {
-        attackCoeff = calculateBallistics(attackParamMs, engineParameters);
-        pState->previousAttackParamMs = attackParamMs;
-        pState->previousAttackCoeff = attackCoeff;
-    }
-
-    double releaseParamMs = m_pRelease->value();
-    double releaseCoeff = pState->previousReleaseCoeff;
-    if (releaseParamMs != pState->previousReleaseParamMs) {
-        releaseCoeff = calculateBallistics(releaseParamMs, engineParameters);
-        pState->previousReleaseParamMs = releaseParamMs;
-        pState->previousReleaseCoeff = releaseCoeff;
-    }
-
-    double stateDB = pState->previousStateDB;
+    double stateDB = pState->stateDB;
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
     for (SINT i = 0; i < numSamples; i += channelCount) {
         CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
         if (maxSample == CSAMPLE_ZERO) {
-            pOutput[i] = CSAMPLE_ZERO;
-            pOutput[i + 1] = CSAMPLE_ZERO;
+            pGainBuffer[i] = CSAMPLE_ONE;
+            pGainBuffer[i + 1] = CSAMPLE_ONE;
             continue;
         }
 
@@ -235,14 +269,15 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
 
         // attack/release
         if (compressedDB < stateDB) {
-            stateDB = compressedDB + attackCoeff * (stateDB - compressedDB);
+            stateDB = compressedDB + pState->attackCoeff * (stateDB - compressedDB);
         } else {
-            stateDB = compressedDB + releaseCoeff * (stateDB - compressedDB);
+            stateDB = compressedDB + pState->releaseCoeff * (stateDB - compressedDB);
         }
 
         CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(stateDB));
-        pOutput[i] = pInput[i] * gain;
-        pOutput[i + 1] = pInput[i + 1] * gain;
+        pGainBuffer[i] = gain;
+        pGainBuffer[i + 1] = gain;
     }
-    pState->previousStateDB = stateDB;
+    pState->stateDB = stateDB;
+    return pGainBuffer;
 }

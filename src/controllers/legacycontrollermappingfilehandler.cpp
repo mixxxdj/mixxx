@@ -2,13 +2,67 @@
 
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "util/logger.h"
 #include "util/xml.h"
 
 #if defined(__HID__) || defined(__BULK__)
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #endif
 
+#ifdef MIXXX_USE_QML
+QMap<QString, QImage::Format> LegacyControllerMappingFileHandler::kSupportedPixelFormat = {
+        {"RBG", QImage::Format_RGB888},
+        {"RBGA", QImage::Format_RGBA8888},
+        {"RGB565", QImage::Format_RGB16},
+};
+
+QMap<QString, LegacyControllerMapping::ScreenInfo::ColorEndian>
+        LegacyControllerMappingFileHandler::kEndianFormat = {
+                {"big", LegacyControllerMapping::ScreenInfo::ColorEndian::Big},
+                {"little",
+                        LegacyControllerMapping::ScreenInfo::ColorEndian::
+                                Little},
+};
+#endif
 namespace {
+const mixxx::Logger kLogger("LegacyControllerMappingFileHandler");
+
+const QString kRequiredScriptFile = QStringLiteral("common-controller-scripts.js");
+
+#ifdef MIXXX_USE_QML
+
+/// Find a module directory (QML) in the mapping or system path.
+///
+/// @param mapping The controller mapping the module directory belongs to.
+/// @param dirname The module directory name.
+/// @param systemMappingsPath The system mappings path to use as fallback.
+/// @return Returns a QFileInfo object. If the script was not found in either
+/// of the search directories, the QFileInfo object might point to a
+/// non-existing file.
+QFileInfo findLibraryPath(
+        const LegacyControllerMapping& mapping,
+        const QString& dirname,
+        const QDir& systemMappingsPath) {
+    // Always try to load module directory from the mapping's directory first
+    QFileInfo dir = QFileInfo(mapping.dirPath().absoluteFilePath(dirname));
+
+    // If the module directory does not exist, try to find it in the fallback dir
+    if (!dir.isDir()) {
+        dir = QFileInfo(systemMappingsPath.absoluteFilePath(dirname));
+    }
+    return dir;
+}
+
+/// @brief Parse a string that contain a boolean value in human representation
+/// @param value the string containing the boolean setting
+/// @return true for string value "true", false otherwise
+bool parseHumanBoolean(const QString& value, bool* ok) {
+    if (ok) {
+        *ok = value == QStringLiteral("true") || value == QStringLiteral("false");
+    }
+    return value == QStringLiteral("true");
+}
+#endif
 
 /// Find script file in the mapping or system path.
 ///
@@ -30,6 +84,102 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
     }
     return file;
 }
+
+#ifdef MIXXX_USE_QML
+#define LOG_IF_NOT_OK(FIELD, TYPE)                                             \
+    if (!ok) {                                                                 \
+        kLogger.warning().nospace()                                            \
+                << "Unable to parse the field \"" << FIELD << "\" as " << TYPE \
+                << " in the screen definition.";                               \
+    }
+/// @brief Parse the screen info from the XML definition and add it to the mapping object
+/// @param screen the screen XML definition
+/// @param mapping the mapping being parsed
+/// @return true if the screen definition could be parse, false otherwise
+bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapping* mapping) {
+    bool ok;
+    QString identifier = screen.attribute("identifier", "");
+    uint targetFps = screen.attribute("targetFps", "30").toUInt(&ok);
+    LOG_IF_NOT_OK("targetFps", "an unsigned integer");
+    uint msaa = screen.attribute("msaa", "1").toUInt(&ok);
+    LOG_IF_NOT_OK("msaa", "an unsigned integer");
+    QString pixelFormatName = screen.attribute("pixelType", "RBG");
+    QString endianName = screen.attribute("endian", "little");
+    bool reversedColor = parseHumanBoolean(
+            screen.attribute("reversed", "false").toLower().trimmed(), &ok);
+    LOG_IF_NOT_OK("reversed", "a boolean");
+    bool rawData = parseHumanBoolean(screen.attribute("raw", "false").toLower().trimmed(), &ok);
+    LOG_IF_NOT_OK("raw", "a boolean");
+    uint splashOff = screen.attribute("splashoff", "0").toUInt(&ok);
+    LOG_IF_NOT_OK("splashoff", "an unsigned integer");
+
+    if (!targetFps || targetFps > LegacyControllerMappingFileHandler::kMaxTargetFps) {
+        kLogger.warning()
+                << "Invalid target FPS. Target FPS must be between 1 and"
+                << LegacyControllerMappingFileHandler::kMaxTargetFps;
+        return false;
+    }
+    if (!msaa || msaa > LegacyControllerMappingFileHandler::kMaxMsaa) {
+        kLogger.warning()
+                << "Invalid MSAA value. MSAA value must be between 1 and"
+                << LegacyControllerMappingFileHandler::kMaxMsaa;
+        return false;
+    }
+
+    if (splashOff > LegacyControllerMappingFileHandler::kMaxSplashOffDuration) {
+        kLogger.warning()
+                << QString("Invalid splashoff duration. Splashoff duration "
+                           "must be "
+                           "between 0 and %1. Clamping to %2")
+                           .arg(QString::number(
+                                        LegacyControllerMappingFileHandler::
+                                                kMaxSplashOffDuration),
+                                   QString::number(
+                                           LegacyControllerMappingFileHandler::
+                                                   kMaxSplashOffDuration));
+        splashOff = LegacyControllerMappingFileHandler::kMaxSplashOffDuration;
+    }
+
+    if (!LegacyControllerMappingFileHandler::kSupportedPixelFormat.contains(pixelFormatName)) {
+        kLogger.warning() << "Unsupported pixel format" << pixelFormatName;
+        return false;
+    }
+
+    if (!LegacyControllerMappingFileHandler::kEndianFormat.contains(endianName)) {
+        kLogger.warning() << "Unknown endian format" << endianName;
+        return false;
+    }
+
+    QImage::Format pixelFormat =
+            LegacyControllerMappingFileHandler::kSupportedPixelFormat.value(
+                    pixelFormatName);
+    auto endian = LegacyControllerMappingFileHandler::kEndianFormat.value(endianName);
+
+    uint width = screen.attribute("width", "0").toUInt(&ok);
+    LOG_IF_NOT_OK("width", "an unsigned integer");
+    uint height = screen.attribute("height", "0").toUInt(&ok);
+    LOG_IF_NOT_OK("height", "an unsigned integer");
+
+    if (!width || !height) {
+        kLogger.warning() << "Invalid screen size. Screen size must have a width "
+                             "and height above 1 pixel";
+        return false;
+    }
+
+    kLogger.debug() << "Adding screen" << identifier;
+    mapping->addScreenInfo(LegacyControllerMapping::ScreenInfo{
+            identifier,
+            QSize(width, height),
+            targetFps,
+            msaa,
+            std::chrono::milliseconds(splashOff),
+            pixelFormat,
+            endian,
+            reversedColor,
+            rawData});
+    return true;
+}
+#endif
 
 } // namespace
 
@@ -230,20 +380,68 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
                                      .firstChildElement("file");
 
     // Default currently required file
-    mapping->addScriptFile(REQUIRED_SCRIPT_FILE,
+    mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
+            kRequiredScriptFile,
             "",
-            findScriptFile(mapping, REQUIRED_SCRIPT_FILE, systemMappingsPath),
-            true);
+            findScriptFile(mapping, kRequiredScriptFile, systemMappingsPath),
+            LegacyControllerMapping::ScriptFileInfo::Type::Javascript,
+            true});
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
-        QString functionPrefix = scriptFile.attribute("functionprefix", "");
         QString filename = scriptFile.attribute("filename", "");
         QFileInfo file = findScriptFile(mapping, filename, systemMappingsPath);
-
-        mapping->addScriptFile(filename, functionPrefix, file);
+        if (file.suffix() == "qml") {
+#ifdef MIXXX_USE_QML
+            QString identifier = scriptFile.attribute("identifier", "");
+            mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
+                    filename,
+                    identifier,
+                    file,
+                    LegacyControllerMapping::ScriptFileInfo::Type::Qml,
+                    false});
+#else
+            kLogger.warning()
+                    << "Unsupported render scene for file" << file.filePath()
+                    << ". Mixxx isn't built with QML support";
+            return;
+#endif
+        } else {
+            QString functionPrefix = scriptFile.attribute("functionprefix", "");
+            mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{filename,
+                    functionPrefix,
+                    file,
+                    LegacyControllerMapping::ScriptFileInfo::Type::Javascript,
+                    false});
+        }
         scriptFile = scriptFile.nextSiblingElement("file");
     }
+
+#ifdef MIXXX_USE_QML
+    // Build a list of QML files to load
+    QDomElement screen = controller.firstChildElement("screens")
+                                 .firstChildElement("screen");
+
+    // Look for additional ones
+    while (!screen.isNull()) {
+        if (!parseAndAddScreenDefinition(screen, mapping.get())) {
+            return;
+        }
+        screen = screen.nextSiblingElement("screen");
+    }
+    // Build a list of QML files to load
+    QDomElement qmlLibrary = controller.firstChildElement("qmllibraries")
+                                     .firstChildElement("library");
+
+    // Look for additional ones
+    while (!qmlLibrary.isNull()) {
+        QString libFilename = qmlLibrary.attribute("path", "");
+        QFileInfo path = findLibraryPath(*mapping, libFilename, systemMappingsPath);
+        kLogger.debug() << "Adding QML directory " << libFilename;
+        mapping->addModule(path);
+        qmlLibrary = qmlLibrary.nextSiblingElement("library");
+    }
+#endif
 }
 
 bool LegacyControllerMappingFileHandler::writeDocument(
@@ -326,8 +524,8 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         if (script.builtin) {
             continue;
         }
-        qDebug() << "writing script block for" << filename;
-        QString functionPrefix = script.functionPrefix;
+        kLogger.debug() << "writing script block for" << filename;
+        QString functionPrefix = script.identifier;
         QDomElement scriptFile = doc.createElement("file");
 
         scriptFile.setAttribute("filename", filename);

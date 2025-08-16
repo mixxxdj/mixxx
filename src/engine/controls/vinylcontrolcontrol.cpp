@@ -32,25 +32,23 @@ VinylControlControl::VinylControlControl(const QString& group, UserSettingsPoint
     m_pControlVinylRate = new ControlObject(ConfigKey(group, "vinylcontrol_rate"));
     m_pControlVinylScratching = new ControlPushButton(ConfigKey(group, "vinylcontrol_scratching"));
     m_pControlVinylScratching->set(0);
-    m_pControlVinylScratching->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylScratching->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pControlVinylEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
-    m_pControlVinylEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pControlVinylEnabled->connectValueChangeRequest(
             this,
             &VinylControlControl::slotControlEnabledChangeRequest);
     m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_wantenabled"));
     m_pControlVinylWantEnabled->set(0);
-    m_pControlVinylWantEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylWantEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pControlVinylMode = new ControlPushButton(ConfigKey(group, "vinylcontrol_mode"));
-    m_pControlVinylMode->setStates(3);
-    m_pControlVinylMode->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylMode->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pControlVinylCueing = new ControlPushButton(ConfigKey(group, "vinylcontrol_cueing"));
-    m_pControlVinylCueing->setStates(3);
-    m_pControlVinylCueing->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylCueing->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_signal_enabled"));
     m_pControlVinylSignalEnabled->set(1);
-    m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlVinylSignalEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pPlayEnabled = new ControlProxy(group, "play", this);
 }

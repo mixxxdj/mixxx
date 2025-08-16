@@ -42,8 +42,32 @@ class Hss1394Controller : public MidiController {
             int deviceIndex);
     ~Hss1394Controller() override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::FireWire;
+    }
+
+    QString getVendorString() const override {
+        return QString();
+    }
+    QString getProductString() const override {
+        return m_deviceInfo.sName.c_str();
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+    QString getSerialNumber() const override {
+        return QString();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
+
   private slots:
-    int open() override;
+    int open(const QString& resourcePath) override;
     int close() override;
 
   protected:
@@ -53,7 +77,7 @@ class Hss1394Controller : public MidiController {
   private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
     hss1394::TNodeInfo m_deviceInfo;
     int m_iDeviceIndex;

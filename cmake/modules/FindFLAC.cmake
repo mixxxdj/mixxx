@@ -45,13 +45,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_FLAC QUIET flac)
 endif()
 
-find_path(FLAC_INCLUDE_DIR
+find_path(
+  FLAC_INCLUDE_DIR
   NAMES FLAC/all.h
   HINTS ${PC_FLAC_INCLUDE_DIRS}
-  DOC "FLAC include directory")
+  DOC "FLAC include directory"
+)
 mark_as_advanced(FLAC_INCLUDE_DIR)
 
-find_library(FLAC_LIBRARY
+find_library(
+  FLAC_LIBRARY
   NAMES FLAC
   HINTS ${PC_FLAC_LIBRARY_DIRS}
   DOC "FLAC library"
@@ -76,7 +79,8 @@ if(FLAC_FOUND)
 
   if(NOT TARGET FLAC::FLAC)
     add_library(FLAC::FLAC UNKNOWN IMPORTED)
-    set_target_properties(FLAC::FLAC
+    set_target_properties(
+      FLAC::FLAC
       PROPERTIES
         IMPORTED_LOCATION "${FLAC_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_FLAC_CFLAGS_OTHER}"
@@ -85,8 +89,10 @@ if(FLAC_FOUND)
     is_static_library(FLAC_IS_STATIC FLAC::FLAC)
     if(FLAC_IS_STATIC)
       if(WIN32)
-        set_property(TARGET FLAC::FLAC APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
-          FLAC__NO_DLL
+        set_property(
+          TARGET FLAC::FLAC
+          APPEND
+          PROPERTY INTERFACE_COMPILE_DEFINITIONS FLAC__NO_DLL
         )
       endif()
     endif()

@@ -56,13 +56,13 @@ mixxx::Bpm averageBpmRoundedWithinRange(double averageLength, double rateRatio) 
 BpmControl::BpmControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_pReverseButton(group, QStringLiteral("reverse")),
-          m_pQuantize(group, QStringLiteral("quantize")),
-          m_pNextBeat(group, QStringLiteral("beat_next")),
-          m_pPrevBeat(group, QStringLiteral("beat_prev")),
-          m_pLoopEnabled(group, QStringLiteral("loop_enabled")),
-          m_pLoopStartPosition(group, QStringLiteral("loop_start_position")),
-          m_pLoopEndPosition(group, QStringLiteral("loop_end_position")),
+          m_reverseButton(group, QStringLiteral("reverse")),
+          m_quantize(group, QStringLiteral("quantize")),
+          m_nextBeat(group, QStringLiteral("beat_next")),
+          m_prevBeat(group, QStringLiteral("beat_prev")),
+          m_loopEnabled(group, QStringLiteral("loop_enabled")),
+          m_loopStartPosition(group, QStringLiteral("loop_start_position")),
+          m_loopEndPosition(group, QStringLiteral("loop_end_position")),
           // Measures distance from last beat in percentage: 0.5 = half-beat away.
           m_pThisBeatDistance(group, QStringLiteral("beat_distance")),
           m_pSyncMode(group, QStringLiteral("sync_mode")),
@@ -109,6 +109,13 @@ BpmControl::BpmControl(const QString& group,
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotTranslateBeatsLater,
+            Qt::DirectConnection);
+    m_pTranslateBeatsHalf = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_half"), false);
+    connect(m_pTranslateBeatsHalf.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsHalf,
             Qt::DirectConnection);
     m_pTranslateBeatsMove = std::make_unique<ControlEncoder>(
             ConfigKey(group, "beats_translate_move"), false);
@@ -241,7 +248,7 @@ BpmControl::BpmControl(const QString& group,
 
     m_pBpmLock = std::make_unique<ControlPushButton>(
             ConfigKey(group, "bpmlock"), false);
-    m_pBpmLock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pBpmLock->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pBpmLock->connectValueChangeRequest(
             this,
             &BpmControl::slotToggleBpmLock,
@@ -315,6 +322,26 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     slotTranslateBeatsMove(1);
 }
 
+// slotTranslateBeatsHalf works only with constant BPM tracks
+void BpmControl::slotTranslateBeatsHalf(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
+    if (!translatedBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*translatedBeats);
+}
+
 void BpmControl::slotTranslateBeatsMove(double v) {
     v = std::round(v);
     if (v == 0) {
@@ -328,7 +355,8 @@ void BpmControl::slotTranslateBeatsMove(double v) {
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
         const double sampleOffset = frameInfo().sampleRate * v * 0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
+        const mixxx::audio::FrameDiff_t frameOffset =
+                sampleOffset / mixxx::kEngineChannelOutputCount;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
@@ -475,17 +503,17 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // If we are not quantized, or there are no beats, or we're leader,
     // or we're in reverse, just return the rate as-is.
-    if (!m_pQuantize.toBool() || !m_pBeats || m_pReverseButton.toBool()) {
+    if (!m_quantize.toBool() || !m_pBeats || m_reverseButton.toBool()) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
 
     const auto prevBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pPrevBeat.get());
+                    m_prevBeat.get());
     const auto nextBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pNextBeat.get());
+                    m_nextBeat.get());
 
     if (!prevBeatPosition.isValid() || !nextBeatPosition.isValid()) {
         m_resetSyncAdjustment = true;
@@ -496,13 +524,13 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now that we have our beat distance we can also check how large the
     // current loop is.  If we are in a <1 beat loop, don't worry about offset.
-    if (m_pLoopEnabled.toBool()) {
+    if (m_loopEnabled.toBool()) {
         const auto loopStartPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pLoopStartPosition.get());
+                        m_loopStartPosition.get());
         const auto loopEndPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pLoopEndPosition.get());
+                        m_loopEndPosition.get());
         // This should always be true when a loop is enabled, but we check it
         // anyway to prevent race conditions.
         if (loopStartPosition.isValid() && loopEndPosition.isValid()) {
@@ -611,10 +639,10 @@ double BpmControl::getBeatDistance(mixxx::audio::FramePos thisPosition) const {
     }
     mixxx::audio::FramePos prevBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pPrevBeat.get());
+                    m_prevBeat.get());
     mixxx::audio::FramePos nextBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pNextBeat.get());
+                    m_nextBeat.get());
 
     if (!prevBeatPosition.isValid() || !nextBeatPosition.isValid()) {
         return 0.0 - m_dUserOffset.getValue();
@@ -716,10 +744,10 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
     // Get the current position of this deck.
     mixxx::audio::FramePos thisPrevBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pPrevBeat.get());
+                    m_prevBeat.get());
     mixxx::audio::FramePos thisNextBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pNextBeat.get());
+                    m_nextBeat.get());
     mixxx::audio::FrameDiff_t thisBeatLengthFrames;
     if (!thisPrevBeatPosition.isValid() || !thisNextBeatPosition.isValid() ||
             thisPosition > thisNextBeatPosition ||
@@ -826,13 +854,13 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
     }
 
     // We might be seeking outside the loop.
-    const bool loopEnabled = m_pLoopEnabled.toBool();
+    const bool loopEnabled = m_loopEnabled.toBool();
     const auto loopStartPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopStartPosition.get());
+                    m_loopStartPosition.get());
     const auto loopEndPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopEndPosition.get());
+                    m_loopEndPosition.get());
 
     // Cases for sanity:
     //
@@ -911,10 +939,10 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     // Get the current position of this deck.
     mixxx::audio::FramePos thisPrevBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pPrevBeat.get());
+                    m_prevBeat.get());
     mixxx::audio::FramePos thisNextBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pNextBeat.get());
+                    m_nextBeat.get());
     mixxx::audio::FrameDiff_t thisBeatLengthFrames;
 
     // Look up the next beat and beat length for the new position
@@ -1034,13 +1062,13 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     }
 
     // We might be seeking outside the loop.
-    const bool loopEnabled = m_pLoopEnabled.toBool();
+    const bool loopEnabled = m_loopEnabled.toBool();
     const auto loopStartPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopStartPosition.get());
+                    m_loopStartPosition.get());
     const auto loopEndPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopEndPosition.get());
+                    m_loopEndPosition.get());
 
     // Cases for sanity:
     //
@@ -1105,7 +1133,7 @@ void BpmControl::slotUpdateRateSlider(double value) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
                         << value;
     }
-    // Adjust rate slider position response to a change in rate range or m_pEngineBpm
+    // Adjust rate slider position in response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm == 0.0) {
@@ -1283,10 +1311,10 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures, double speed
     // Get the current position of this deck.
     mixxx::audio::FramePos prevBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pPrevBeat.get());
+                    m_prevBeat.get());
     mixxx::audio::FramePos nextBeatPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pNextBeat.get());
+                    m_nextBeat.get());
     mixxx::audio::FrameDiff_t beatLengthFrames;
     double beatFraction;
     if (getBeatContextNoLookup(info.currentPosition,

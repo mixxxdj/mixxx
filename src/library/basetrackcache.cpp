@@ -272,6 +272,7 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
     }
 
     QStringList idStrings;
+    idStrings.reserve(trackIds.size());
     for (const auto& trackId: trackIds) {
         idStrings << trackId.toString();
     }

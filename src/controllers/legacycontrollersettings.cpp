@@ -1,15 +1,22 @@
 #include "controllers/legacycontrollersettings.h"
 
-#include <util/assert.h>
-
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QColorDialog>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
+#include <QPainter>
+#include <QPixmap>
+#include <QPushButton>
 #include <QSpinBox>
+#include <QStringLiteral>
 
 #include "moc_legacycontrollersettings.cpp"
+#include "util/assert.h"
+#include "util/parented_ptr.h"
 #include "widget/wsettingscheckboxlabel.h"
 
 namespace {
@@ -55,13 +62,17 @@ LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
     registerType<LegacyControllerIntegerSetting>();
     registerType<LegacyControllerRealSetting>();
     registerType<LegacyControllerEnumSetting>();
+    registerType<LegacyControllerColorSetting>();
+    registerType<LegacyControllerFileSetting>();
 }
 
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
-    m_variableName = element.attribute("variable").trimmed();
-    m_label = replaceMarkupStyleStr(element.attribute("label", m_variableName).trimmed());
+    m_variableName = element.attribute(QStringLiteral("variable")).trimmed();
+    m_label = replaceMarkupStyleStr(
+            element.attribute(QStringLiteral("label"), m_variableName)
+                    .trimmed());
 
-    QDomElement description = element.firstChildElement("description");
+    QDomElement description = element.firstChildElement(QStringLiteral("description"));
     if (!description.isNull()) {
         m_description = replaceMarkupStyleStr(description.text().trimmed());
     }
@@ -98,7 +109,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
     pLabelWidget->setText(label());
 
     if (!description().isEmpty()) {
-        pRoot->setToolTip(QString("<p>%1</p>").arg(description()));
+        pRoot->setToolTip(QStringLiteral("<p>%1</p>").arg(description()));
     }
 
     pLayout->addWidget(pLabelWidget);
@@ -114,8 +125,8 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element) {
-    m_defaultValue = parseValue(element.attribute("default"));
+        : LegacyControllerSettingMixin(element) {
+    m_defaultValue = parseValue(element.attribute(QStringLiteral("default")));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
 }
@@ -135,7 +146,7 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     }
 
     if (!description().isEmpty()) {
-        pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
+        pCheckBox->setToolTip(QStringLiteral("<p>%1</p>").arg(description()));
     }
 
     connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, pCheckBox]() {
@@ -174,9 +185,9 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "boolean",
+    return element.hasAttribute(QStringLiteral("type")) &&
+            QString::compare(element.attribute(QStringLiteral("type")),
+                    QStringLiteral("boolean"),
                     Qt::CaseInsensitive) == 0;
 }
 
@@ -225,14 +236,23 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element), m_options(), m_defaultValue(0) {
+        : LegacyControllerSettingMixin(element, 0),
+          m_options() {
     size_t pos = 0;
-    for (QDomElement value = element.firstChildElement("value");
+    for (QDomElement value = element.firstChildElement(QStringLiteral("value"));
             !value.isNull();
-            value = value.nextSiblingElement("value")) {
+            value = value.nextSiblingElement(QStringLiteral("value"))) {
         QString val = value.text();
-        m_options.append(std::tuple<QString, QString>(val, value.attribute("label", val)));
-        if (value.hasAttribute("default")) {
+        QColor color = QColor(value.attribute(QStringLiteral("color")));
+        // TODO: Remove once we mandate GCC 10/Clang 16
+#if defined(__cpp_aggregate_paren_init) &&       \
+        __cpp_aggregate_paren_init >= 201902L && \
+        !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
+        m_options.emplace_back(val, value.attribute(QStringLiteral("label"), val), color);
+#else
+        m_options.emplace_back(Item{val, value.attribute(QStringLiteral("label"), val), color});
+#endif
+        if (value.hasAttribute(QStringLiteral("default"))) {
             m_defaultValue = pos;
         }
         pos++;
@@ -249,8 +269,8 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
     save();
 
     size_t pos = 0;
-    for (const auto& value : std::as_const(m_options)) {
-        if (std::get<0>(value) == in) {
+    for (const auto& item : std::as_const(m_options)) {
+        if (item.value == in) {
             if (ok != nullptr) {
                 *ok = true;
             }
@@ -265,8 +285,15 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     auto* pComboBox = new QComboBox(pParent);
 
-    for (const auto& value : std::as_const(m_options)) {
-        pComboBox->addItem(std::get<1>(value));
+    for (const auto& item : std::as_const(m_options)) {
+        if (item.color.isValid()) {
+            QPixmap icon(24, 24);
+            QPainter painter(&icon);
+            painter.fillRect(0, 0, 24, 24, item.color);
+            pComboBox->addItem(QIcon(icon), item.label);
+        } else {
+            pComboBox->addItem(item.label);
+        }
     }
     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
 
@@ -283,4 +310,134 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
             });
 
     return pComboBox;
+}
+
+LegacyControllerColorSetting::LegacyControllerColorSetting(
+        const QDomElement& element)
+        : LegacyControllerSettingMixin(element,
+                  QColor(element.attribute(QStringLiteral("default")))) {
+}
+
+LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
+
+void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
+    if (ok != nullptr) {
+        *ok = false;
+    }
+    reset();
+    save();
+
+    m_savedValue = QColor(in);
+    if (ok != nullptr) {
+        *ok = m_editedValue.isValid();
+    }
+    if (!m_editedValue.isValid()) {
+        return;
+    }
+    m_editedValue = m_savedValue;
+}
+
+QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
+    auto* pPushButton = new QPushButton(tr("Change color"), pParent);
+
+    auto setColorIcon = [pPushButton](const QColor& color) {
+        QPixmap icon(24, 24);
+        QPainter painter(&icon);
+        painter.fillRect(0, 0, 24, 24, color);
+        pPushButton->setIcon(QIcon(icon));
+    };
+
+    connect(this,
+            &AbstractLegacyControllerSetting::valueReset,
+            pPushButton,
+            [this, pPushButton, setColorIcon]() {
+                if (m_editedValue.isValid()) {
+                    setColorIcon(m_editedValue);
+                } else {
+                    pPushButton->setIcon(QIcon());
+                }
+            });
+
+    connect(pPushButton, &QPushButton::clicked, this, [this, pPushButton, setColorIcon](bool) {
+        auto color = QColorDialog::getColor(m_editedValue, pPushButton, tr("Choose a new color"));
+        if (color.isValid()) {
+            m_editedValue = color;
+            setColorIcon(color);
+            emit changed();
+        }
+    });
+
+    if (m_savedValue.isValid()) {
+        setColorIcon(m_savedValue);
+    }
+
+    return pPushButton;
+}
+
+LegacyControllerFileSetting::LegacyControllerFileSetting(
+        const QDomElement& element)
+        : LegacyControllerSettingMixin(element,
+                  QFileInfo(element.attribute(QStringLiteral("default")))),
+          m_fileFilter(element.attribute(QStringLiteral("pattern"))) {
+}
+LegacyControllerFileSetting::~LegacyControllerFileSetting() = default;
+
+void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
+    if (ok != nullptr) {
+        *ok = false;
+    }
+    reset();
+    save();
+
+    m_editedValue = QFileInfo(in);
+    if (ok != nullptr) {
+        *ok = m_editedValue.exists();
+    }
+    if (!m_editedValue.exists()) {
+        return;
+    }
+    m_savedValue = m_editedValue;
+}
+
+QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
+    auto* pWidget = new QWidget(pParent);
+    pWidget->setLayout(new QHBoxLayout);
+    auto* pPushButton = new QPushButton(tr("Browse..."), pWidget);
+    auto* pLabel = new QLabel(pWidget);
+    auto setLabelText = [pLabel](QString&& text) {
+        pLabel->setText(QStringLiteral("<i>%1</i>").arg(text));
+    };
+    pWidget->layout()->addWidget(pLabel);
+    pWidget->layout()->addWidget(pPushButton);
+
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pLabel, [this, setLabelText]() {
+        if (m_editedValue.exists()) {
+            setLabelText(m_editedValue.absoluteFilePath());
+        } else {
+            setLabelText(tr("No file selected"));
+        }
+    });
+
+    connect(pPushButton,
+            &QPushButton::clicked,
+            this,
+            [this, pLabel, pPushButton](bool) {
+                auto file = QFileInfo(QFileDialog::getOpenFileName(pPushButton,
+                        tr("Select a file"),
+                        QString(),
+                        m_fileFilter));
+                if (file.exists()) {
+                    m_editedValue = file;
+                    pLabel->setText(QStringLiteral("<i>%1</i>").arg(file.absoluteFilePath()));
+                    emit changed();
+                }
+            });
+
+    if (m_savedValue.exists()) {
+        setLabelText(m_savedValue.absoluteFilePath());
+    } else {
+        setLabelText(tr("No file selected"));
+    }
+
+    return pWidget;
 }

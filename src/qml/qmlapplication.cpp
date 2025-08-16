@@ -1,24 +1,16 @@
 #include "qmlapplication.h"
 
 #include <QQmlEngineExtensionPlugin>
+#include <QQuickStyle>
 
-#include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"
+#include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "qml/asyncimageprovider.h"
-#include "qml/qmlconfigproxy.h"
-#include "qml/qmlcontrolproxy.h"
 #include "qml/qmldlgpreferencesproxy.h"
-#include "qml/qmleffectmanifestparametersmodel.h"
-#include "qml/qmleffectslotproxy.h"
-#include "qml/qmleffectsmanagerproxy.h"
-#include "qml/qmllibraryproxy.h"
-#include "qml/qmllibrarytracklistmodel.h"
-#include "qml/qmlplayermanagerproxy.h"
-#include "qml/qmlplayerproxy.h"
-#include "qml/qmlvisibleeffectsmodel.h"
-#include "qml/qmlwaveformoverview.h"
 #include "soundio/soundmanager.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/waveformwidgetfactory.h"
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
 Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
 
@@ -41,11 +33,14 @@ namespace qml {
 
 QmlApplication::QmlApplication(
         QApplication* app,
-        std::shared_ptr<CoreServices> pCoreServices)
-        : m_pCoreServices(pCoreServices),
-          m_mainFilePath(pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
+        const CmdlineArgs& args)
+        : m_pCoreServices(std::make_unique<mixxx::CoreServices>(args, app)),
+          m_visualsManager(std::make_unique<VisualsManager>()),
+          m_mainFilePath(m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
           m_autoReload() {
+    QQuickStyle::setStyle("Basic");
+
     m_pCoreServices->initialize(app);
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {
@@ -64,24 +59,11 @@ QmlApplication::QmlApplication(
 
     // Since DlgPreferences is only meant to be used in the main QML engine, it
     // follows a strict singleton pattern design
-    QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(pDlgPreferences, this);
-
-    // Any uncreateable non-singleton types registered here require arguments
-    // that we don't want to expose to QML directly. Instead, they can be
-    // retrieved by member properties or methods from the singleton types.
-    //
-    // The alternative would be to register their *arguments* in the QML
-    // system, which would improve nothing, or we had to expose them as
-    // singletons to that they can be accessed by components instantiated by
-    // QML, which would also be suboptimal.
-    QmlEffectsManagerProxy::registerEffectsManager(pCoreServices->getEffectsManager());
-    QmlPlayerManagerProxy::registerPlayerManager(pCoreServices->getPlayerManager());
-    QmlConfigProxy::registerUserSettings(pCoreServices->getSettings());
-    QmlLibraryProxy::registerLibrary(pCoreServices->getLibrary());
-
+    QmlDlgPreferencesProxy::s_pInstance =
+            std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
     loadQml(m_mainFilePath);
 
-    pCoreServices->getControllerManager()->setUpDevices();
+    m_pCoreServices->getControllerManager()->setUpDevices();
 
     connect(&m_autoReload,
             &QmlAutoReload::triggered,
@@ -89,15 +71,31 @@ QmlApplication::QmlApplication(
             [this]() {
                 loadQml(m_mainFilePath);
             });
+
+    const QStringList visualGroups =
+            m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
+    for (const QString& group : visualGroups) {
+        m_visualsManager->addDeck(group);
+    }
+
+    m_pCoreServices->getPlayerManager()->connect(
+            m_pCoreServices->getPlayerManager().get(),
+            &PlayerManager::numberOfDecksChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForDeck(i);
+                    m_visualsManager->addDeckIfNotExist(group);
+                }
+            });
 }
 
 QmlApplication::~QmlApplication() {
     // Delete all the QML singletons in order to prevent leak detection in CoreService
-    QmlEffectsManagerProxy::registerEffectsManager(nullptr);
-    QmlPlayerManagerProxy::registerPlayerManager(nullptr);
-    QmlConfigProxy::registerUserSettings(nullptr);
-    QmlLibraryProxy::registerLibrary(nullptr);
-    QmlDlgPreferencesProxy::s_pInstance->deleteLater();
+    QmlDlgPreferencesProxy::s_pInstance.reset();
+    m_visualsManager.reset();
+    m_pAppEngine.reset();
+    m_pCoreServices.reset();
 }
 
 void QmlApplication::loadQml(const QString& path) {

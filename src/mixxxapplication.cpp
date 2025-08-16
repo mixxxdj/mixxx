@@ -50,7 +50,9 @@ Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
 #endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
+#if !defined(Q_OS_IOS)
 Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
+#endif
 Q_IMPORT_PLUGIN(QSvgPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)

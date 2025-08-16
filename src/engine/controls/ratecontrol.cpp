@@ -97,7 +97,8 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
                   std::make_unique<PositionScratchController>(group)),
           m_pJog(std::make_unique<ControlObject>(
                   ConfigKey(group, QStringLiteral("jog")))),
-          m_pJogFilter(std::make_unique<Rotary>()),
+          // FIXME: The filter length should be dependent on sample rate/block size or something
+          m_pJogFilter(std::make_unique<Rotary>(25)),
           // Vinyl control
           m_pVCEnabled(ControlObject::getControl(ConfigKey(
                   getGroup(), QStringLiteral("vinylcontrol_enabled")))),
@@ -196,18 +197,15 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
     // this control.
     m_pScratch2Scratching->set(1.0);
 
-    // FIXME: This should be dependent on sample rate/block size or something
-    m_pJogFilter->setFilterLength(25);
+    //     // Update Internal Settings
+    //     // Set Pitchbend Mode
+    //     m_eRateRampMode = static_cast<RampMode>(
+    //         getConfig()->getValue(ConfigKey("[Controls]","RateRamp"),
+    //                               static_cast<int>(RampMode::Stepping)));
 
-//     // Update Internal Settings
-//     // Set Pitchbend Mode
-//     m_eRateRampMode = static_cast<RampMode>(
-//         getConfig()->getValue(ConfigKey("[Controls]","RateRamp"),
-//                               static_cast<int>(RampMode::Stepping)));
-
-//     // Set the Sensitivity
-//     m_iRateRampSensitivity =
-//             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+    //     // Set the Sensitivity
+    //     m_iRateRampSensitivity =
+    //             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 }
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
@@ -390,14 +388,16 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_syncMode.get());
 }
 
-double RateControl::calculateSpeed(double baserate, double speed, bool paused,
-                                   int iSamplesPerBuffer,
-                                   bool* pReportScratching,
-                                   bool* pReportReverse) {
+double RateControl::calculateSpeed(double baserate,
+        double speed,
+        bool paused,
+        std::size_t samplesPerBuffer,
+        bool* pReportScratching,
+        bool* pReportReverse) {
     *pReportScratching = false;
     *pReportReverse = false;
 
-    processTempRate(iSamplesPerBuffer);
+    processTempRate(samplesPerBuffer);
 
     double rate;
     const double searching = m_pRateSearch->get();
@@ -462,7 +462,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         // (beatloop or track repeat) so it can correctly interpret the sample position delta.
         m_pScratchController->process(currentSample,
                 rate,
-                iSamplesPerBuffer,
+                samplesPerBuffer,
                 baserate,
                 m_wrapAroundCount,
                 m_jumpPos,
@@ -506,7 +506,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     return rate;
 }
 
-void RateControl::processTempRate(const int bufferSamples) {
+void RateControl::processTempRate(const std::size_t bufferSamples) {
     // Code to handle temporary rate change buttons.
     // We support two behaviors, the standard ramped pitch bending
     // and pitch shift stepping, which is the old behavior.

@@ -137,7 +137,7 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOLoopAnchor = new ControlPushButton(ConfigKey(group, "loop_anchor"),
             true,
             static_cast<double>(LoopAnchorPoint::Start));
-    m_pCOLoopAnchor->setButtonMode(ControlPushButton::TOGGLE);
+    m_pCOLoopAnchor->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
@@ -237,7 +237,7 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotLoopDouble);
 
     m_pLoopRemoveButton = new ControlPushButton(ConfigKey(group, "loop_remove"));
-    m_pLoopRemoveButton->setButtonMode(ControlPushButton::TRIGGER);
+    m_pLoopRemoveButton->setButtonMode(mixxx::control::ButtonMode::Trigger);
     connect(m_pLoopRemoveButton,
             &ControlObject::valueChanged,
             this,
@@ -361,10 +361,10 @@ void LoopingControl::slotLoopDouble(double pressed) {
     m_pCOBeatLoopSize->set(m_pCOBeatLoopSize->get() * 2.0);
 }
 
-void LoopingControl::process(const double dRate,
+void LoopingControl::process(const double rate,
         mixxx::audio::FramePos currentPosition,
-        const int iBufferSize) {
-    Q_UNUSED(iBufferSize);
+        const std::size_t bufferSize) {
+    Q_UNUSED(bufferSize);
 
     const auto previousPosition = m_currentPosition.getValue();
 
@@ -385,7 +385,7 @@ void LoopingControl::process(const double dRate,
                     // should be moved with it
                     const auto targetPosition =
                             adjustedPositionInsideAdjustedLoop(currentPosition,
-                                    dRate < 0, // reverse
+                                    rate < 0, // reverse
                                     m_oldLoopInfo.startPosition,
                                     m_oldLoopInfo.endPosition,
                                     loopInfo.startPosition,
@@ -540,9 +540,9 @@ mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
     return mixxx::audio::kInvalidFramePos;
 }
 
-double LoopingControl::getTrackSamples() const {
+mixxx::audio::FramePos LoopingControl::getTrackFrame() const {
     const FrameInfo info = frameInfo();
-    return info.trackEndPosition.toEngineSamplePos();
+    return info.trackEndPosition;
 }
 
 void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {
@@ -2013,7 +2013,7 @@ BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
     // is the state of the beatloop control (1 for enabled, 0 for disabled).
     m_pLegacy = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1", size));
-    m_pLegacy->setButtonMode(ControlPushButton::TOGGLE);
+    m_pLegacy->setButtonMode(mixxx::control::ButtonMode::Toggle);
     connect(m_pLegacy.get(),
             &ControlObject::valueChanged,
             this,

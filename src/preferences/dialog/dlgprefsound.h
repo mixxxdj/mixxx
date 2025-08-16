@@ -2,21 +2,24 @@
 
 #include <memory>
 
+#include "control/pollingcontrolproxy.h"
 #include "defs_urls.h"
+#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
+#include "util/parented_ptr.h"
 
-class SoundManager;
-class PlayerManager;
 class ControlObject;
+class ControlProxy;
+class DlgPrefSoundItem;
+class PlayerManager;
 class SoundDevice;
 class SoundDeviceId;
-class DlgPrefSoundItem;
-class ControlProxy;
+class SoundManager;
 
 // TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
 // on EngineMaster that emits every time a channel is added, and a slot here
@@ -28,6 +31,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     DlgPrefSound(QWidget* parent,
             std::shared_ptr<SoundManager> soundManager,
             UserSettingsPointer pSettings);
+
+    void selectIOTab(mixxx::preferences::SoundHardwareTab tab);
 
     QUrl helpUrl() const override;
 
@@ -72,6 +77,10 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void deviceChannelsChanged();
     void configuredDeviceNotFound();
     void queryClicked();
+#ifdef __RUBBERBAND__
+    void updateKeylockDualThreadingCheckbox();
+    void updateKeylockMultithreading(bool enabled);
+#endif
 
   private:
     void initializePaths();
@@ -83,16 +92,19 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
-    ControlProxy* m_pAudioLatencyOverloadCount;
-    ControlProxy* m_pOutputLatencyMs;
-    ControlProxy* m_pHeadDelay;
-    ControlProxy* m_pMainDelay;
-    ControlProxy* m_pBoothDelay;
-    ControlProxy* m_pLatencyCompensation;
-    ControlProxy* m_pKeylockEngine;
-    ControlProxy* m_pMainEnabled;
-    ControlProxy* m_pMainMonoMixdown;
-    ControlProxy* m_pMicMonitorMode;
+
+    PollingControlProxy m_pLatencyCompensation;
+    PollingControlProxy m_pMainDelay;
+    PollingControlProxy m_pHeadDelay;
+    PollingControlProxy m_pBoothDelay;
+    PollingControlProxy m_pMicMonitorMode;
+    PollingControlProxy m_pKeylockEngine;
+
+    parented_ptr<ControlProxy> m_pAudioLatencyOverloadCount;
+    parented_ptr<ControlProxy> m_pOutputLatencyMs;
+    parented_ptr<ControlProxy> m_pMainEnabled;
+    parented_ptr<ControlProxy> m_pMainMonoMixdown;
+
     QList<SoundDevicePointer> m_inputDevices;
     QList<SoundDevicePointer> m_outputDevices;
     QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> m_selectedOutputChannelIndices;

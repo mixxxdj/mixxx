@@ -8,9 +8,10 @@ class GLRGBWaveformWidget : public GLWaveformWidgetAbstract {
     GLRGBWaveformWidget(const QString& group, QWidget* parent);
     virtual ~GLRGBWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLRGBWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::RGB;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }

@@ -5,7 +5,7 @@
 
 namespace allshader {
 class RGBAData;
-}
+} // namespace allshader
 
 class allshader::RGBAData {
     QVector<QVector4D> mData;

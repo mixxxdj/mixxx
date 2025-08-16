@@ -73,7 +73,7 @@ Hss1394Controller::~Hss1394Controller() {
     }
 }
 
-int Hss1394Controller::open() {
+int Hss1394Controller::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "HSS1394 device" << getName() << "already open";
         return -1;
@@ -130,7 +130,7 @@ int Hss1394Controller::open() {
     }
 
     startEngine();
-    applyMapping();
+    applyMapping(resourcePath);
     setOpen(true);
     return 0;
 }
@@ -186,7 +186,7 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
     }
 }
 
-void Hss1394Controller::sendBytes(const QByteArray& data) {
+bool Hss1394Controller::sendBytes(const QByteArray& data) {
     const int bytesSent = m_pChannel->SendChannelBytes(
             reinterpret_cast<const unsigned char*>(data.constData()), data.size());
 
@@ -194,5 +194,7 @@ void Hss1394Controller::sendBytes(const QByteArray& data) {
     if (bytesSent != data.size()) {
         qCWarning(m_logOutput) << "Sent" << bytesSent << "of" << data.size() << "bytes (SysEx)";
         //m_pChannel->Flush();
+        return false;
     }
+    return true;
 }

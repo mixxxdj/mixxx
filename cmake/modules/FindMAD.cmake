@@ -43,14 +43,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_MAD QUIET mad)
 endif()
 
-find_path(MAD_INCLUDE_DIR
+find_path(
+  MAD_INCLUDE_DIR
   NAMES mad.h
   HINTS ${PC_MAD_INCLUDE_DIRS}
   PATH_SUFFIXES mad
-  DOC "MAD include directory")
+  DOC "MAD include directory"
+)
 mark_as_advanced(MAD_INCLUDE_DIR)
 
-find_library(MAD_LIBRARY
+find_library(
+  MAD_LIBRARY
   NAMES mad
   HINTS ${PC_MAD_LIBRARY_DIRS}
   DOC "MAD library"
@@ -75,7 +78,8 @@ if(MAD_FOUND)
 
   if(NOT TARGET MAD::MAD)
     add_library(MAD::MAD UNKNOWN IMPORTED)
-    set_target_properties(MAD::MAD
+    set_target_properties(
+      MAD::MAD
       PROPERTIES
         IMPORTED_LOCATION "${MAD_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_MAD_CFLAGS_OTHER}"

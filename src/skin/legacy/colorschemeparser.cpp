@@ -18,8 +18,8 @@ void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
     QDomNode schemeNode = findConfiguredColorSchemeNode(docElem, pConfig);
 
     if (!schemeNode.isNull()) {
-        QSharedPointer<ImgSource> pImgSrc =
-                QSharedPointer<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
+        std::shared_ptr<ImgSource> pImgSrc =
+                std::shared_ptr<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
         WPixmapStore::setLoader(pImgSrc);
         WImageStore::setLoader(pImgSrc);
         WSkinColor::setLoader(pImgSrc);
@@ -33,8 +33,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
             *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
         }
     } else {
-        QSharedPointer<ImgSource> pImgSrc =
-                QSharedPointer<ImgSource>(new ImgLoader());
+        std::shared_ptr<ImgSource> pImgSrc = std::make_shared<ImgLoader>();
         WPixmapStore::setLoader(pImgSrc);
         WImageStore::setLoader(pImgSrc);
         WSkinColor::setLoader(pImgSrc);

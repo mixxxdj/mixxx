@@ -32,9 +32,7 @@ BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
-    QString nativeLocation = getFieldString(
-            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
-    QString location = QDir::fromNativeSeparators(nativeLocation);
+    QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -69,6 +67,15 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         pTrack->trySetBpm(bpm);
     }
     return pTrack;
+}
+
+QString BaseExternalPlaylistModel::resolveLocation(const QString& nativeLocation) const {
+    return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QString BaseExternalPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return resolveLocation(nativeLocation);
 }
 
 TrackId BaseExternalPlaylistModel::getTrackId(const QModelIndex& index) const {

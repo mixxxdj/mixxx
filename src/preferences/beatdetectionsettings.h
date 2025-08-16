@@ -17,9 +17,18 @@
 #define BPM_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
 #define BPM_REANALYZE_IMPORTED "ReanalyzeImported"
 #define BPM_FAST_ANALYSIS_ENABLED "FastAnalysisEnabled"
+#define BPM_STEM_STRATEGY "stem_strategy"
 
 class BeatDetectionSettings {
   public:
+    enum class StemStrategy {
+        Disabled = 0,
+        // TODO (#13466) - detect if the stem is using compliant labels for its
+        // channels and use the first channel if so - to be implemented
+        // Automatic
+        Enforced = 2
+    };
+
     BeatDetectionSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
 
     DEFINE_PREFERENCE_HELPERS(BpmDetectionEnabled, bool,
@@ -30,6 +39,12 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange, bool,
                               BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
+
+    DEFINE_PREFERENCE_HELPERS(StemStrategy,
+            StemStrategy,
+            BPM_CONFIG_KEY,
+            BPM_REANALYZE_WHEN_SETTINGS_CHANGE,
+            StemStrategy::Disabled);
 
     DEFINE_PREFERENCE_HELPERS(ReanalyzeImported,
             bool,

@@ -45,6 +45,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void setNotationLancelotAndTraditional(bool);
     void setNotationTraditional(bool);
     void setNotationCustom(bool);
+    void slotStemStrategyChanged(int index);
 
   private:
     void loadSettings();
@@ -57,4 +58,5 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
+    KeyDetectionSettings::StemStrategy m_stemStrategy;
 };

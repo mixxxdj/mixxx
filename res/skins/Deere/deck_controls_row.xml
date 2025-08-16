@@ -20,25 +20,47 @@
         <MaximumSize>60, -1</MaximumSize>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <Template src="skin:left_right_display_2state_button.xml">
-            <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
-            <SetVariable name="ObjectName">DeckCue</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
-            <SetVariable name="LeftClickIsPushButton">true</SetVariable>
-            <SetVariable name="state_0_text">CUE</SetVariable>
-            <SetVariable name="state_1_text">CUE</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,cue_default</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
-            <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
-          </Template>
+          <CueButton>
+            <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+            <ObjectName>DeckCue</ObjectName>
+            <MinimumSize><Variable name="HorizontalStretchButtonMinimumSize"/></MinimumSize>
+            <MaximumSize><Variable name="HorizontalStretchButtonMaximumSize"/></MaximumSize>
+            <SizePolicy><Variable name="HorizontalStretchButtonSizePolicy"/></SizePolicy>
+            <NumberStates>2</NumberStates>
+            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <Group><Variable name="group"/></Group>
+            <State>
+              <Number>0</Number>
+              <Text>CUE</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>CUE</Text>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </CueButton>
 
           <WidgetGroup><!-- Play button + play_indicator -->
             <Layout>stacked</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <Template src="skin:left_right_display_2state_button.xml">
+              <Template src="skin:left_right_display_play_2state_button.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ObjectName">PlayToggle</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>

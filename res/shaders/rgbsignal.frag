@@ -5,6 +5,7 @@ uniform vec4 axesColor;
 uniform vec4 lowColor;
 uniform vec4 midColor;
 uniform vec4 highColor;
+uniform bool splitStereoSignal;
 
 uniform int waveformLength;
 uniform int textureSize;
@@ -34,12 +35,6 @@ void main(void) {
     float new_currentIndex = floor(firstVisualIndex + uv.x *
                                    (lastVisualIndex - firstVisualIndex)) * 2;
 
-    // Texture coordinates put (0,0) at the bottom left, so show the right
-    // channel if we are in the bottom half.
-    if (uv.y < 0.5) {
-        new_currentIndex += 1;
-    }
-
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
     bool showing = false;
     bool showingUnscaled = false;
@@ -50,7 +45,16 @@ void main(void) {
     // to show other things (e.g. the axes lines) even when we are on a pixel
     // that does not have valid waveform data.
     if (new_currentIndex >= 0 && new_currentIndex <= waveformLength - 1) {
-      vec4 new_currentDataUnscaled = getWaveformData(new_currentIndex) * allGain;
+        vec4 new_currentDataUnscaled;
+        if (splitStereoSignal) {
+            // Texture coordinates put (0,0) at the bottom left, so show the right
+            // channel if we are in the bottom half.
+            new_currentDataUnscaled = getWaveformData(uv.y < 0.5 ? new_currentIndex + 1 : new_currentIndex) * allGain;
+        } else {
+            vec4 leftDataUnscaled = getWaveformData(new_currentIndex);
+            vec4 rightDataUnscaled = getWaveformData(new_currentIndex + 1);
+            new_currentDataUnscaled = max(leftDataUnscaled, rightDataUnscaled) * allGain;
+        }
 
       vec4 new_currentData = new_currentDataUnscaled;
       new_currentData.x *= lowGain;

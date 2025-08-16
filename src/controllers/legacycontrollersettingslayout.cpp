@@ -13,6 +13,7 @@
 #include "controllers/legacycontrollersettings.h"
 #include "moc_legacycontrollersettingslayout.cpp"
 #include "util/parented_ptr.h"
+#include "widget/wcollapsiblegroupbox.h"
 
 namespace {
 constexpr int kMinScreenSizeForControllerSettingRow = 960;
@@ -25,7 +26,7 @@ void LegacyControllerSettingsLayoutContainer::addItem(
 }
 
 QBoxLayout* LegacyControllerSettingsLayoutContainer::buildLayout(QWidget* pParent) const {
-    auto pLayout = make_parented<QBoxLayout>(QBoxLayout::TopToBottom);
+    auto pLayout = make_parented<QBoxLayout>(QBoxLayout::TopToBottom, pParent);
 
     pParent->setLayout(pLayout);
 
@@ -53,8 +54,11 @@ QWidget* LegacyControllerSettingsLayoutContainer::build(QWidget* pParent) {
 }
 
 QWidget* LegacyControllerSettingsGroup::build(QWidget* pParent) {
-    auto pContainer = make_parented<QGroupBox>(m_label, pParent);
+    auto pContainer = make_parented<WCollapsibleGroupBox>(m_label, pParent);
     QBoxLayout* pLayout = buildLayout(pContainer);
+
+    // Note: Don't set checkable here, yet! We do this for top-level groups
+    // only in DlgPrefController.
 
     for (auto& element : m_elements) {
         pLayout->addWidget(element->build(pContainer));

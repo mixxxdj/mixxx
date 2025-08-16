@@ -8,6 +8,7 @@
 #include "util/duration.h"
 #include "util/performancetimer.h"
 #include "util/stat.h"
+#include "util/stringformat.h"
 
 static constexpr Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
@@ -39,32 +40,40 @@ class Timer {
 // TODO: replace with std::experimental::scope_exit<Timer> once stabilized
 class ScopedTimer {
   public:
-    ScopedTimer(QStringView key,
-            Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : ScopedTimer(key, QStringView(), compute) {
-    }
-    ScopedTimer(QStringView key,
-            int i,
-            Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : ScopedTimer(key,
-                      CmdlineArgs::Instance().getDeveloper()
-                              ? QString::number(i)
-                              : QStringView(),
-                      compute) {
+    // Allows the timer to contain a format string which is only assembled
+    // when we're not in `--developer` mode.
+    /// @param compute Flags to use for the Stat::ComputeFlags (can be omitted)
+    /// @param key The format string as QStringLiteral to identify the timer
+    /// @param args The arguments to pass to the format string
+    template<typename T, typename... Ts>
+    ScopedTimer(Stat::ComputeFlags compute, T&& key, Ts&&... args)
+            : m_maybeTimer(std::nullopt) {
+        // we take a T here so we can detect the type and warn the user accordingly
+        // instead of paying for an implicit runtime conversion at the call site
+        static_assert(std::is_same_v<T, QString>,
+                "only QString is supported as key type. Wrap it in u\"\""
+                "_s or QStringLiteral() "
+                "to avoid runtime UTF-16 conversion.");
+        // we can now assume that T is a QString.
+        if (!CmdlineArgs::Instance().getDeveloper()) {
+            return; // leave timer in cancelled state
+        }
+        DEBUG_ASSERT(key.capacity() == 0);
+        m_maybeTimer = std::make_optional<Timer>(([&]() {
+            // only try to call QString::arg when we've been given parameters
+            if constexpr (sizeof...(args) > 0) {
+                return key.arg(convertToQStringConvertible(std::forward<Ts>(args))...);
+            } else {
+                return key;
+            }
+        })(),
+                compute);
+        m_maybeTimer->start();
     }
 
-    ScopedTimer(QStringView key, QStringView arg, Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_maybeTimer(std::nullopt) {
-        if (!CmdlineArgs::Instance().getDeveloper()) {
-            return;
-        }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-        QString strKey = arg.isEmpty() ? key.toString() : key.arg(arg);
-#else
-        QString strKey = arg.isEmpty() ? key.toString() : key.toString().arg(arg);
-#endif
-        m_maybeTimer = std::make_optional<Timer>(std::move(strKey), compute);
-        m_maybeTimer->start();
+    template<typename T, typename... Ts>
+    ScopedTimer(T&& key, Ts&&... args)
+            : ScopedTimer(kDefaultComputeFlags, std::forward<T>(key), std::forward<Ts>(args)...) {
     }
 
     ~ScopedTimer() noexcept {
@@ -73,6 +82,7 @@ class ScopedTimer {
         }
     }
 
+    // copying would technically be possible, but likely not intended
     ScopedTimer(const ScopedTimer&) = delete;
     ScopedTimer& operator=(const ScopedTimer&) = delete;
 

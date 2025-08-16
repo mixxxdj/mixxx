@@ -45,7 +45,8 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_LibUSB QUIET libusb-1.0)
 endif()
 
-find_path(LibUSB_INCLUDE_DIR
+find_path(
+  LibUSB_INCLUDE_DIR
   NAMES libusb.h
   PATH_SUFFIXES libusb libusb-1.0
   HINTS ${PC_LibUSB_INCLUDE_DIRS}
@@ -53,7 +54,8 @@ find_path(LibUSB_INCLUDE_DIR
 )
 mark_as_advanced(LibUSB_INCLUDE_DIR)
 
-find_library(LibUSB_LIBRARY
+find_library(
+  LibUSB_LIBRARY
   NAMES usb-1.0 usb
   HINTS ${PC_LibUSB_LIBRARY_DIRS}
   DOC "LibUSB library"
@@ -78,7 +80,8 @@ if(LibUSB_FOUND)
 
   if(NOT TARGET LibUSB::LibUSB)
     add_library(LibUSB::LibUSB UNKNOWN IMPORTED)
-    set_target_properties(LibUSB::LibUSB
+    set_target_properties(
+      LibUSB::LibUSB
       PROPERTIES
         IMPORTED_LOCATION "${LibUSB_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_LibUSB_CFLAGS_OTHER}"
@@ -89,8 +92,10 @@ if(LibUSB_FOUND)
     if(LibUSB_IS_STATIC)
       find_package(Libudev)
       if(Libudev_FOUND)
-        set_property(TARGET LibUSB::LibUSB APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          Libudev::Libudev
+        set_property(
+          TARGET LibUSB::LibUSB
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES Libudev::Libudev
         )
       endif()
     endif()

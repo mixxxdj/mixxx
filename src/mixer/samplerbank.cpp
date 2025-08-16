@@ -212,7 +212,12 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                     }
 
                     if (location.isEmpty()) {
-                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group, false);
+                        m_pPlayerManager->slotLoadTrackToPlayer(
+                                TrackPointer(), group,
+#ifdef __STEM__
+                                mixxx::StemChannelSelection(),
+#endif
+                                false);
                     } else {
                         m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
                     }

@@ -145,7 +145,7 @@ void PositionScratchController::slotUpdateFilterParameters(double sampleRate) {
 
 void PositionScratchController::process(double currentSamplePos,
         double releaseRate,
-        int bufferSize,
+        std::size_t bufferSize,
         double baseSampleRate,
         int wrappedAround,
         mixxx::audio::FramePos trigger,
@@ -215,9 +215,9 @@ void PositionScratchController::process(double currentSamplePos,
                 sampleDelta += loopLength * wrappedAround;
             }
 
-            // Measure the total distance traveled since last call, add it to the
-            // running total and normalize to one buffer.
-            // This is required to scratch within loop boundaries.
+            // Measure the total distance traveled since last frame and add
+            // it to the running total. This is required to scratch within loop
+            // boundaries. And normalize to one buffer
             m_samplePosDeltaSum += (sampleDelta) / (bufferSize * baseSampleRate);
 
             m_scratchPosSampleTime += m_dt;

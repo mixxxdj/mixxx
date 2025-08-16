@@ -37,17 +37,36 @@ ControllerJSProxy* Controller::jsProxy() {
     return new ControllerJSProxy(this);
 }
 
+QString Controller::physicalTransport2String(PhysicalTransportProtocol protocol) {
+    switch (protocol) {
+    case PhysicalTransportProtocol::USB:
+        return QStringLiteral("USB");
+    case PhysicalTransportProtocol::BlueTooth:
+        return QStringLiteral("Bluetooth");
+    case PhysicalTransportProtocol::I2C:
+        return QStringLiteral("I2C");
+    case PhysicalTransportProtocol::SPI:
+        return QStringLiteral("SPI");
+    case PhysicalTransportProtocol::FireWire:
+        return QStringLiteral("Firewire - IEEE 1394");
+    case PhysicalTransportProtocol::UNKNOWN:
+        break; // Effectively fallthrough
+    }
+    return tr("Unknown");
+}
+
 void Controller::startEngine() {
     qCInfo(m_logBase) << "Starting engine";
     if (m_pScriptEngineLegacy) {
         qCWarning(m_logBase) << "startEngine(): Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this, m_logBase);
-    QObject::connect(m_pScriptEngineLegacy,
+    m_pScriptEngineLegacy = std::make_shared<ControllerScriptEngineLegacy>(this, m_logBase);
+    QObject::connect(m_pScriptEngineLegacy.get(),
             &ControllerScriptEngineBase::beforeShutdown,
             this,
             &Controller::slotBeforeEngineShutdown);
+    emit engineStarted(m_pScriptEngineLegacy.get());
 }
 
 void Controller::stopEngine() {
@@ -56,12 +75,11 @@ void Controller::stopEngine() {
         qCWarning(m_logBase) << "No engine exists!";
         return;
     }
-
-    delete m_pScriptEngineLegacy;
-    m_pScriptEngineLegacy = nullptr;
+    m_pScriptEngineLegacy.reset();
+    emit engineStopped();
 }
 
-bool Controller::applyMapping() {
+bool Controller::applyMapping(const QString& resourcePath) {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
     // Load the script code into the engine
@@ -81,6 +99,13 @@ bool Controller::applyMapping() {
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
     m_pScriptEngineLegacy->setSettings(getMappingSettings());
+#ifdef MIXXX_USE_QML
+    m_pScriptEngineLegacy->setModulePaths(getMappingModules());
+    m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
+    m_pScriptEngineLegacy->setResourcePath(resourcePath);
+#else
+    Q_UNUSED(resourcePath);
+#endif
     return m_pScriptEngineLegacy->initialize();
 }
 

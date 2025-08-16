@@ -10,7 +10,7 @@
 namespace {
 constexpr double kdMaxDelayPot = 500;
 const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
-        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
+        mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelOutputCount);
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
@@ -50,7 +50,7 @@ void EngineDelay::slotDelayChanged() {
     }
 }
 
-void EngineDelay::process(CSAMPLE* pInputOutput, const int iBufferSize) {
+void EngineDelay::process(CSAMPLE* pInputOutput, const std::size_t bufferSize) {
     if (m_iDelay > 0) {
         // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
         // From a mathematical point of view, this addition can be removed. Anyway,
@@ -66,7 +66,7 @@ void EngineDelay::process(CSAMPLE* pInputOutput, const int iBufferSize) {
             return;
         }
 
-        for (int i = 0; i < iBufferSize; ++i) {
+        for (std::size_t i = 0; i < bufferSize; ++i) {
             // put sample into delay buffer:
             m_delayBuffer[m_iDelayPos] = pInputOutput[i];
             m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;

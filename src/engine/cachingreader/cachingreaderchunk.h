@@ -23,22 +23,18 @@ public:
   // easier memory alignment.
   // TODO(XXX): The optimum value of the "constant" kFrames depends
   // on the properties of the AudioSource as the remarks above suggest!
-  static constexpr mixxx::audio::ChannelCount kChannels = mixxx::kEngineChannelCount;
   static constexpr SINT kFrames = 8192; // ~ 170 ms at 48 kHz
-  static constexpr SINT kSamples = kFrames * kChannels;
 
   // Converts frames to samples
-  static constexpr SINT frames2samples(SINT frames) noexcept {
-      return frames * kChannels;
-  }
-  static constexpr double dFrames2samples(SINT frames) noexcept {
-      return static_cast<double>(frames) * kChannels;
+  static constexpr SINT frames2samples(
+          SINT frames, mixxx::audio::ChannelCount channelCount) noexcept {
+      return frames * channelCount;
   }
     // Converts samples to frames
-    static SINT samples2frames(SINT samples) {
-        DEBUG_ASSERT(0 == (samples % kChannels));
-        return samples / kChannels;
-    }
+  static SINT samples2frames(SINT samples, mixxx::audio::ChannelCount channelCount) {
+      DEBUG_ASSERT(0 == (samples % channelCount));
+      return samples / channelCount;
+  }
 
     // Returns the corresponding chunk index for a frame index
     static SINT indexForFrame(
@@ -67,24 +63,25 @@ public:
             const mixxx::AudioSourcePointer& pAudioSource,
             mixxx::SampleBuffer::WritableSlice tempOutputBuffer);
 
-    mixxx::IndexRange readBufferedSampleFrames(
-            CSAMPLE* sampleBuffer,
+    mixxx::IndexRange readBufferedSampleFrames(CSAMPLE* sampleBuffer,
+            mixxx::audio::ChannelCount channelCount,
             const mixxx::IndexRange& frameIndexRange) const;
     mixxx::IndexRange readBufferedSampleFramesReverse(
             CSAMPLE* reverseSampleBuffer,
+            mixxx::audio::ChannelCount channelCount,
             const mixxx::IndexRange& frameIndexRange) const;
 
-protected:
+  protected:
     explicit CachingReaderChunk(
             mixxx::SampleBuffer::WritableSlice sampleBuffer);
     virtual ~CachingReaderChunk() = default;
 
     void init(SINT index);
 
-private:
-  SINT frameIndexOffset() const noexcept {
+  private:
+    SINT frameIndexOffset() const noexcept {
         return m_index * kFrames;
-  }
+    }
 
     SINT m_index;
 
@@ -99,22 +96,22 @@ private:
 // the worker thread is in control.
 class CachingReaderChunkForOwner: public CachingReaderChunk {
 public:
-    explicit CachingReaderChunkForOwner(
-            mixxx::SampleBuffer::WritableSlice sampleBuffer);
-    ~CachingReaderChunkForOwner() override = default;
+  explicit CachingReaderChunkForOwner(
+          mixxx::SampleBuffer::WritableSlice sampleBuffer);
+  ~CachingReaderChunkForOwner() override = default;
 
-    void init(SINT index);
-    void free();
+  void init(SINT index);
+  void free();
 
-    enum State {
-        FREE,
-        READY,
-        READ_PENDING
-    };
+  enum State {
+      FREE,
+      READY,
+      READ_PENDING
+  };
 
-    State getState() const noexcept {
+  State getState() const noexcept {
         return m_state;
-    }
+  }
 
     // The state is controlled by the cache as the owner of each chunk!
     void giveToWorker() {

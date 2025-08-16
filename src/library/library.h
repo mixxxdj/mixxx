@@ -114,7 +114,14 @@ class Library: public QObject {
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
+#ifdef __STEM__
+    void slotLoadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+#endif
     void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
@@ -127,7 +134,16 @@ class Library: public QObject {
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play = false);
+#else
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            bool play = false);
+#endif
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();
@@ -140,6 +156,7 @@ class Library: public QObject {
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);
+    void exportPlaylist(int playlistId);
 #endif
     void saveModelState();
     void restoreModelState();

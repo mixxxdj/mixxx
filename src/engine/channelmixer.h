@@ -19,7 +19,7 @@ class ChannelMixer {
                     channelGainCache,
             CSAMPLE* pOutput,
             const ChannelHandle& outputHandle,
-            unsigned int iBufferSize,
+            std::size_t bufferSize,
             mixxx::audio::SampleRate sampleRate,
             EngineEffectsManager* pEngineEffectsManager);
     // This does modify the input channel buffers, then mixes them to make the output buffer.
@@ -31,7 +31,7 @@ class ChannelMixer {
                     channelGainCache,
             CSAMPLE* pOutput,
             const ChannelHandle& outputHandle,
-            unsigned int iBufferSize,
+            std::size_t bufferSize,
             mixxx::audio::SampleRate sampleRate,
             EngineEffectsManager* pEngineEffectsManager);
 };

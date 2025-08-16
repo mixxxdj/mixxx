@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QScopedPointer>
 #include <QVersionNumber>
+#include <gsl/pointers>
 
 #include "config.h"
 #include "controllers/defs_controllers.h"
@@ -19,7 +20,9 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
 #include "util/versionstore.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/vsyncthread.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
 Upgrade::Upgrade()
@@ -32,47 +35,106 @@ Upgrade::~Upgrade() {
 
 namespace {
 // mapping to proactively move users to the new all-shader waveform types
-WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformType) {
+std::tuple<WaveformWidgetType::Type,
+        WaveformWidgetBackend,
+        allshader::WaveformRendererSignalBase::Options>
+upgradeToAllShaders(int unsafeWaveformType,
+        int unsafeWaveformBackend,
+        int unsafeWaveformOption) {
     // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
     using WWT = WaveformWidgetType;
-    switch (waveformType) {
-    case WWT::EmptyWaveform:
-    case WWT::SoftwareSimpleWaveform:
-    case WWT::SoftwareWaveform:
-    case WWT::GLVSyncTest:
-    case WWT::QtVSyncTest:
-    case WWT::AllShaderRGBWaveform:
-    case WWT::AllShaderLRRGBWaveform:
-    case WWT::AllShaderFilteredWaveform:
-    case WWT::AllShaderRGBStackedWaveform:
-    case WWT::AllShaderSimpleWaveform:
-    case WWT::AllShaderHSVWaveform:
-    case WWT::AllShaderTexturedFiltered:
-    case WWT::AllShaderTexturedRGB:
-    case WWT::AllShaderTexturedStacked:
-    case WWT::Count_WaveformwidgetType:
-        return waveformType;
-    case WWT::QtSimpleWaveform:
-    case WWT::GLSimpleWaveform:
-        return WaveformWidgetType::AllShaderSimpleWaveform;
-    case WWT::GLFilteredWaveform:
-        return WaveformWidgetType::AllShaderFilteredWaveform;
-    case WWT::GLSLFilteredWaveform:
-        return WaveformWidgetType::AllShaderTexturedFiltered;
-    case WWT::QtWaveform:
-    case WWT::RGBWaveform:
-    case WWT::GLRGBWaveform:
-    case WWT::QtRGBWaveform:
-        return WWT::AllShaderRGBWaveform;
-    case WWT::GLSLRGBWaveform:
-        return WWT::AllShaderTexturedRGB;
-    case WWT::GLSLRGBStackedWaveform:
-        return WWT::AllShaderTexturedStacked;
-    case WWT::HSVWaveform:
-    case WWT::QtHSVWaveform:
-        return WWT::AllShaderHSVWaveform;
+
+    if (static_cast<int>(WaveformWidgetBackend::AllShader) == unsafeWaveformBackend) {
+        allshader::WaveformRendererSignalBase::Options waveformOption =
+                static_cast<allshader::WaveformRendererSignalBase::Options>(
+                        unsafeWaveformOption) &
+                allshader::WaveformRendererSignalBase::Option::AllOptionsCombined;
+        switch (unsafeWaveformType) {
+        case WWT::Simple:
+        case WWT::Filtered:
+        case WWT::HSV:
+        case WWT::Stacked:
+        case WWT::Empty:
+            return {static_cast<WaveformWidgetType::Type>(unsafeWaveformType),
+                    WaveformWidgetBackend::AllShader,
+                    waveformOption};
+            ;
+        default:
+            return {WaveformWidgetFactory::defaultType(),
+                    WaveformWidgetBackend::AllShader,
+                    waveformOption};
+        }
     }
-    return WWT::AllShaderRGBWaveform;
+
+    // Reset the options
+    allshader::WaveformRendererSignalBase::Options waveformOption =
+            allshader::WaveformRendererSignalBase::Option::None;
+    WaveformWidgetType::Type waveformType =
+            static_cast<WaveformWidgetType::Type>(unsafeWaveformType);
+    WaveformWidgetBackend waveformBackend = WaveformWidgetBackend::AllShader;
+
+    // The switch includes raw values that have been removed from the enum
+    switch (unsafeWaveformType) {
+    // None or test waveforms
+    case WWT::Empty:
+        // Not supported by AllShader
+        waveformBackend = WaveformWidgetBackend::None;
+        break;
+    case WWT::VSyncTest: // GLVSyncTest
+    case 13:             // QtVSyncTest
+        // Not supported by AllShader
+        waveformBackend = WaveformWidgetBackend::None;
+        waveformType = WaveformWidgetType::VSyncTest;
+        break;
+
+    // Simple waveforms
+    case 3:  // QtSimpleWaveform
+    case 20: // AllShaderSimpleWaveform
+    case WWT::Simple:
+        waveformType = WaveformWidgetType::Simple;
+        break;
+
+    // Filtered waveforms
+    case WWT::Filtered: // GLSLFilteredWaveform
+    case 22:            // AllShaderTexturedFiltered
+        waveformOption = allshader::WaveformRendererSignalBase::Option::HighDetail;
+        [[fallthrough]];
+    case 2:  // SoftwareWaveform
+    case 4:  // QtWaveform
+    case 6:  // GLFilteredWaveform
+    case 19: // AllShaderFilteredWaveform
+        waveformType = WaveformWidgetType::Filtered;
+        break;
+
+    // HSV waveforms
+    case 14: // QtHSVWaveform
+    case 21: // AllShaderHSVWaveform
+    case WWT::HSV:
+        waveformType = WaveformWidgetType::HSV;
+        break;
+
+    // Stacked waveform
+    case 24:           // AllShaderTexturedStacked
+    case WWT::Stacked: // GLSLRGBStackedWaveform
+        waveformOption = allshader::WaveformRendererSignalBase::Option::HighDetail;
+        [[fallthrough]];
+    case 26: // AllShaderRGBStackedWaveform
+        waveformType = WaveformWidgetType::Stacked;
+        break;
+
+    // RGB waveform (preferred)
+    case 18: // AllShaderLRRGBWaveform
+    case 23: // AllShaderTexturedRGB
+    case 12: // GLSLRGBWaveform
+        waveformOption = unsafeWaveformType == 18
+                ? allshader::WaveformRendererSignalBase::Option::SplitStereoSignal
+                : allshader::WaveformRendererSignalBase::Option::HighDetail;
+        [[fallthrough]];
+    default:
+        waveformType = WaveformWidgetFactory::defaultType();
+        break;
+    }
+    return {waveformType, waveformBackend, waveformOption};
 }
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
@@ -515,28 +577,38 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     }
 
     const auto configFileVersion = QVersionNumber::fromString(configVersion);
+    // Only update the framerate if the version we are migrating from is less than 2.4.0.
+    if (configFileVersion < QVersionNumber(2, 4, 0)) {
+        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
+    }
 
-    // When upgrading from 2.3.x or older to 2.4, or when upgrading
-    // from 2.4.0-beta once we are out of beta
-    if (QVersionNumber::fromString(configVersion) < QVersionNumber(2, 4, 0) ||
-            (VersionStore::version() != "2.4.0-beta" &&
-                    configVersion.startsWith("2.4.0-"))) {
+    // When upgrading from 2.5.x or older to 2.6, or when upgrading
+    // from 2.6.0-beta once we are out of beta
+    if (configFileVersion < QVersionNumber(2, 6, 0) ||
+            (VersionStore::version() != "2.6.0-beta" &&
+                    configVersion.startsWith("2.6.0-"))) {
         // Proactively move users to an all-shader waveform widget type and set the
         // framerate to 60 fps
-        bool ok = false;
-        auto waveformType =
-                config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
-                        .toInt(&ok);
-        if (ok) {
-            config->set(ConfigKey("[Waveform]", "WaveformType"),
-                    ConfigValue(upgradeToAllShaders(
-                            static_cast<WaveformWidgetType::Type>(
-                                    waveformType))));
-        }
-        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
-
+        int waveformType =
+                config->getValue<int>(ConfigKey("[Waveform]", "WaveformType"));
+        // values might be out of range for the enum, avoid undefined
+        // behavior by not casting to the enum type just yet.
+        int waveformBackend = config->getValue<int>(
+                ConfigKey("[Waveform]", "use_hardware_acceleration"));
+        int waveformOption = config->getValue<int>(ConfigKey("[Waveform]", "waveform_options"));
+        auto [correctedWaveformType,
+                correctedWaveformBacked,
+                correctedWaveformOption] =
+                upgradeToAllShaders(
+                        waveformType, waveformBackend, waveformOption);
+        config->setValue(ConfigKey("[Waveform]", "WaveformType"),
+                correctedWaveformType);
+        config->setValue(ConfigKey("[Waveform]", "use_hardware_acceleration"),
+                correctedWaveformBacked);
+        config->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
+                correctedWaveformOption);
         // mark the configuration as updated
-        configVersion = "2.4.0";
+        configVersion = "2.6.0";
         config->set(ConfigKey("[Config]", "Version"),
                 ConfigValue(configVersion));
     }
@@ -544,7 +616,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     // This variable indicates the first known version that requires no changes.
     // If additional upgrades are added for later versions, they should go before
     // this block and cleanVersion should be bumped to the latest version.
-    const QVersionNumber cleanVersion(2, 4, 0);
+    const QVersionNumber cleanVersion(2, 6, 0);
     if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();

@@ -53,7 +53,7 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
-    inline bool isPrimaryDeck() {
+    inline bool isPrimaryDeck() const {
         return m_bIsPrimaryDeck;
     };
     int getChannelIndex() {
@@ -66,8 +66,8 @@ class EngineChannel : public EngineObject {
     virtual void postProcessLocalBpm() {
     }
 
-    virtual void postProcess(const int iBufferSize) {
-        Q_UNUSED(iBufferSize)
+    virtual void postProcess(const std::size_t bufferSize) {
+        Q_UNUSED(bufferSize)
     }
 
     // TODO(XXX) This hack needs to be removed.

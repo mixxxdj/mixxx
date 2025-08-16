@@ -11,6 +11,9 @@
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -40,8 +43,16 @@ class WTrackTableView : public WLibraryTableView {
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void editSelectedItem();
     void activateSelectedTrack();
-    void loadSelectedTrackToGroup(const QString& group, bool play);
+#ifdef __STEM__
+    void loadSelectedTrackToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
+    void loadSelectedTrackToGroup(const QString& group,
+            bool play);
+#endif
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
@@ -134,6 +145,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:

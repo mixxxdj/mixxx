@@ -17,6 +17,7 @@
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/itunesplaylistmodel.h"
+#include "library/itunes/itunestrackmodel.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -32,11 +33,15 @@
 #include "library/itunes/itunesmacosimporter.h"
 #endif
 
+#ifdef __IOS_ITUNES_LIBRARY__
+#include "library/itunes/itunesiosimporter.h"
+#endif
+
 namespace {
 
 const QString kItdbPathKey = "mixxx.itunesfeature.itdbpath";
 
-bool isMacOSImporterAvailable() {
+bool isNativeImporterAvailable() {
 #ifdef __MACOS_ITUNES_LIBRARY__
     // The iTunesLibrary framework is only available on macOS 10.13+
     // Note that this uses a Clang directive to check the macOS version at
@@ -46,6 +51,8 @@ bool isMacOSImporterAvailable() {
     if (__builtin_available(macOS 10.13, *)) {
         return true;
     }
+#elif defined(__IOS_ITUNES_LIBRARY__)
+    return true;
 #endif
     return false;
 }
@@ -91,10 +98,8 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             std::move(columns),
             std::move(searchColumns),
             false);
-    m_pITunesTrackModel = new BaseExternalTrackModel(this,
+    m_pITunesTrackModel = new ITunesTrackModel(this,
             m_pLibrary->trackCollectionManager(),
-            "mixxx.db.model.itunes",
-            "itunes_library",
             m_trackSource);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this,
             m_pLibrary->trackCollectionManager(),
@@ -187,7 +192,7 @@ void ITunesFeature::activate(bool forceReload) {
             m_dbfile = getiTunesMusicPath();
         }
 
-        if (!isMacOSImporterUsed()) {
+        if (!isNativeImporterUsed()) {
             mixxx::FileInfo fileInfo(m_dbfile);
             if (fileInfo.checkFileExists()) {
                 // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
@@ -251,8 +256,8 @@ QString ITunesFeature::showOpenDialog() {
             "iTunes XML (*.xml)");
 }
 
-bool ITunesFeature::isMacOSImporterUsed() {
-    return isMacOSImporterAvailable() && m_dbfile.isEmpty();
+bool ITunesFeature::isNativeImporterUsed() {
+    return isNativeImporterAvailable() && m_dbfile.isEmpty();
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
@@ -289,9 +294,9 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
 
 QString ITunesFeature::getiTunesMusicPath() {
     QString musicFolder;
-    if (isMacOSImporterAvailable()) {
+    if (isNativeImporterAvailable()) {
         qDebug() << "Using empty iTunes music path (which we interpret as "
-                    "using ITunesMacOSImporter)";
+                    "using ITunesMacOSImporter/ITunesIOSImporter)";
         return "";
     }
 #if defined(__APPLE__)
@@ -311,9 +316,14 @@ std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
     std::unique_ptr<ITunesDAO> dao = std::make_unique<ITunesDAO>();
     dao->initialize(m_database);
 #ifdef __MACOS_ITUNES_LIBRARY__
-    if (isMacOSImporterUsed()) {
+    if (isNativeImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
         return std::make_unique<ITunesMacOSImporter>(this, std::move(dao));
+    }
+#elif defined(__IOS_ITUNES_LIBRARY__)
+    if (isNativeImporterUsed()) {
+        qDebug() << "Using ITunesIOSImporter to read default iTunes library";
+        return std::make_unique<ITunesIOSImporter>(this, std::move(dao));
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;

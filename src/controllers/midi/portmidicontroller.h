@@ -55,6 +55,36 @@ class PortMidiController : public MidiController {
             int outputDeviceIndex);
     ~PortMidiController() override;
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::UNKNOWN;
+    }
+
+    QString getVendorString() const override {
+        return QString();
+    }
+    QString getProductString() const override {
+        if (m_pInputDevice) {
+            return QString::fromLocal8Bit(m_pInputDevice->info()->name);
+        }
+        if (m_pOutputDevice) {
+            return QString::fromLocal8Bit(m_pOutputDevice->info()->name);
+        }
+        return QString();
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+    QString getSerialNumber() const override {
+        return QString();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
+
   private slots:
     bool poll() override;
 
@@ -64,12 +94,12 @@ class PortMidiController : public MidiController {
                       unsigned char byte2) override;
 
   private:
-    int open() override;
+    int open(const QString& resourcePath) override;
     int close() override;
 
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
     bool isPolling() const override {
         return true;

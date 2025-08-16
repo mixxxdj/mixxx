@@ -35,13 +35,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Opus QUIET opus)
 endif()
 
-find_path(Opus_INCLUDE_DIR
+find_path(
+  Opus_INCLUDE_DIR
   NAMES opus/opus.h
   HINTS ${PC_Opus_INCLUDE_DIRS}
-  DOC "Opus include directory")
+  DOC "Opus include directory"
+)
 mark_as_advanced(Opus_INCLUDE_DIR)
 
-find_library(Opus_LIBRARY
+find_library(
+  Opus_LIBRARY
   NAMES opus
   HINTS ${PC_Opus_LIBRARY_DIRS}
   DOC "Opus library"
@@ -66,7 +69,8 @@ if(Opus_FOUND)
 
   if(NOT TARGET Opus::Opus)
     add_library(Opus::Opus UNKNOWN IMPORTED)
-    set_target_properties(Opus::Opus
+    set_target_properties(
+      Opus::Opus
       PROPERTIES
         IMPORTED_LOCATION "${Opus_LIBRARIES}"
         INTERFACE_COMPILE_OPTIONS "${Opus_DEFINITIONS}"

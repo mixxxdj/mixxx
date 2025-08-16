@@ -41,7 +41,7 @@ void WVuMeterLegacy::setup(const QDomNode& node, const SkinContext& context) {
         // compatibility.
         setPixmapBackground(
                 context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::FIXED),
+                context.selectScaleMode(backPathNode, Paintable::DrawMode::Fixed),
                 context.getScaleFactor());
     }
 
@@ -50,7 +50,7 @@ void WVuMeterLegacy::setup(const QDomNode& node, const SkinContext& context) {
     // compatibility.
     setPixmaps(context.getPixmapSource(vuNode),
             bHorizontal,
-            context.selectScaleMode(vuNode, Paintable::FIXED),
+            context.selectScaleMode(vuNode, Paintable::DrawMode::Fixed),
             context.getScaleFactor());
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
@@ -81,10 +81,10 @@ void WVuMeterLegacy::setPixmapBackground(
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+    if (!m_pPixmapBack || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
-    } else if (mode == Paintable::FIXED) {
+    } else if (mode == Paintable::DrawMode::Fixed) {
         setFixedSize(m_pPixmapBack->size());
     }
 }
@@ -94,7 +94,7 @@ void WVuMeterLegacy::setPixmaps(const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
+    if (!m_pPixmapVu || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeterLegacy: Error loading vu pixmap" << source.getPath();
     } else {
         m_bHorizontal = bHorizontal;
@@ -165,16 +165,16 @@ void WVuMeterLegacy::showEvent(QShowEvent* e) {
 }
 
 void WVuMeterLegacy::paintEvent(QPaintEvent* /*unused*/) {
-    ScopedTimer t(u"WVuMeterLegacy::paintEvent");
+    ScopedTimer t(QStringLiteral("WVuMeterLegacy::paintEvent"));
 
     QPainter p(this);
 
-    if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
+    if (m_pPixmapBack && !m_pPixmapBack->isNull()) {
         // Draw background. DrawMode takes care of whether to stretch or not.
         m_pPixmapBack->draw(rect(), &p);
     }
 
-    if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
+    if (m_pPixmapVu && !m_pPixmapVu->isNull()) {
         const double widgetWidth = width();
         const double widgetHeight = height();
         const double pixmapWidth = m_pPixmapVu->width();

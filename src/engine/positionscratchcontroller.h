@@ -20,7 +20,7 @@ class PositionScratchController : public QObject {
 
     void process(double currentSample,
             double releaseRate,
-            int bufferSize,
+            std::size_t bufferSize,
             double baseSampleRate,
             int wrappedAround,
             mixxx::audio::FramePos trigger,
@@ -56,7 +56,7 @@ class PositionScratchController : public QObject {
     double m_moveDelay;
     double m_scratchPosSampleTime;
 
-    int m_bufferSize;
+    std::size_t m_bufferSize;
 
     double m_dt;
     double m_callsPerDt;

@@ -6,11 +6,11 @@
 #include "effects/defs.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
 #include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -313,6 +313,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Move Beatgrid"),
             tr("Adjust the beatgrid to the left or right"),
             pBpmMenu);
+    addDeckControl("beats_translate_half",
+            tr("Move Beatgrid Half a Beat"),
+            tr("Adjust the beatgrid by exactly one half beat. Usable only for "
+               "tracks with constant tempo."),
+            pBpmMenu);
     addDeckControl("beats_translate_curpos",
             tr("Adjust Beatgrid"),
             tr("Align beatgrid to current position"),
@@ -523,20 +528,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Hotcues
     QMenu* pHotcueMainMenu = addSubmenu(tr("Hotcues"));
-    QString hotcueActivateTitle = tr("Hotcue %1");
-    QString hotcueClearTitle = tr("Clear Hotcue %1");
-    QString hotcueSetTitle = tr("Set Hotcue %1");
-    QString hotcueGotoTitle = tr("Jump To Hotcue %1");
-    QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 And Stop");
-    QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 And Play");
-    QString hotcuePreviewTitle = tr("Preview Hotcue %1");
-    QString hotcueActivateDescription = tr("Set, preview from or jump to hotcue %1");
-    QString hotcueClearDescription = tr("Clear hotcue %1");
-    QString hotcueSetDescription = tr("Set hotcue %1");
-    QString hotcueGotoDescription = tr("Jump to hotcue %1");
-    QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
-    QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
-    QString hotcuePreviewDescription = tr("Preview from hotcue %1");
     addDeckControl("shift_cues_earlier",
             tr("Shift cue points earlier"),
             tr("Shift cue points 10 milliseconds earlier"),
@@ -553,6 +544,29 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Shift cue points later (fine)"),
             tr("Shift cue points 1 millisecond later"),
             pHotcueMainMenu);
+    addDeckControl("sort_hotcues",
+            tr("Sort hotcues by position"),
+            tr("Sort hotcues by position"),
+            pHotcueMainMenu);
+    addDeckControl("sort_hotcues_remove_offsets",
+            tr("Sort hotcues by position (remove offsets)"),
+            tr("Sort hotcues by position (remove offsets)"),
+            pHotcueMainMenu);
+
+    const QString hotcueActivateTitle = tr("Hotcue %1");
+    const QString hotcueClearTitle = tr("Clear Hotcue %1");
+    const QString hotcueSetTitle = tr("Set Hotcue %1");
+    const QString hotcueGotoTitle = tr("Jump To Hotcue %1");
+    const QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 And Stop");
+    const QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 And Play");
+    const QString hotcuePreviewTitle = tr("Preview Hotcue %1");
+    const QString hotcueActivateDescription = tr("Set, preview from or jump to hotcue %1");
+    const QString hotcueClearDescription = tr("Clear hotcue %1");
+    const QString hotcueSetDescription = tr("Set hotcue %1");
+    const QString hotcueGotoDescription = tr("Jump to hotcue %1");
+    const QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
+    const QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
+    const QString hotcuePreviewDescription = tr("Preview from hotcue %1");
     // add menus for hotcues 1-16.
     // though, keep the menu small put additional hotcues in a separate menu,
     // but don't create that submenu for less than 4 additional hotcues.
@@ -560,14 +574,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     int moreMenuThreshold = 4;
     QMenu* pParentMenu = pHotcueMainMenu;
     QMenu* pHotcueMoreMenu = nullptr;
-    bool moreHotcues = NUM_HOT_CUES >= preferredHotcuesVisible + moreMenuThreshold;
+    bool moreHotcues = kMaxNumberOfHotcues >= preferredHotcuesVisible + moreMenuThreshold;
     if (moreHotcues) {
         // populate menu here, add it below #preferredHotcuesVisible
         pHotcueMoreMenu = new QMenu(
-                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(NUM_HOT_CUES),
+                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(kMaxNumberOfHotcues),
                 pHotcueMainMenu);
     }
-    for (int i = 1; i <= NUM_HOT_CUES; ++i) {
+    for (int i = 1; i <= kMaxNumberOfHotcues; ++i) {
         if (moreHotcues && i > preferredHotcuesVisible) {
             pParentMenu = pHotcueMoreMenu;
         }

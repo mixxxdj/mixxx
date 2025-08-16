@@ -36,17 +36,19 @@ EngineVuMeter::EngineVuMeter(const QString& group, const QString& legacyGroup)
     reset();
 }
 
-void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
+void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
 
     const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
 
     SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL,
-            &fVolSumR, pIn, iBufferSize);
+            &fVolSumR,
+            pIn,
+            bufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_samplesCalculated += static_cast<unsigned int>(iBufferSize / 2);
+    m_samplesCalculated += static_cast<unsigned int>(bufferSize / 2);
 
     // Are we ready to update the VU meter?:
     if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
@@ -81,7 +83,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0);
-        m_peakDurationL = kPeakDuration * sampleRate / iBufferSize / 2000;
+        m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / bufferSize / 2000);
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0);
     } else {
@@ -90,7 +92,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0);
-        m_peakDurationR = kPeakDuration * sampleRate / iBufferSize / 2000;
+        m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / bufferSize / 2000);
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0);
     } else {

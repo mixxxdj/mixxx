@@ -35,7 +35,8 @@
 // Poll every 1ms (where possible) for good controller response
 #ifdef __LINUX__
 // Many Linux distros ship with the system tick set to 250Hz so 1ms timer
-// reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
+// reportedly causes CPU hosage. See https://github.com/mixxxdj/mixxx/issues/6383
+// rryan 6/2012
 const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(5);
 #else
 const mixxx::Duration ControllerManager::kPollInterval = mixxx::Duration::fromMillis(1);
@@ -154,13 +155,13 @@ void ControllerManager::slotInitialize() {
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
 #ifdef __PORTMIDI__
-    m_enumerators.append(new PortMidiEnumerator());
+    m_enumerators.append(new PortMidiEnumerator(m_pConfig));
 #endif
 #ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator(m_pConfig));
+    m_enumerators.append(new Hss1394Enumerator());
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator(m_pConfig));
+    m_enumerators.append(new BulkEnumerator());
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
@@ -296,7 +297,7 @@ void ControllerManager::slotSetUpDevices() {
 
         qDebug() << "Opening controller:" << name;
 
-        int value = pController->open();
+        int value = pController->open(m_pConfig->getResourcePath());
         if (value != 0) {
             qWarning() << "There was a problem opening" << name;
             continue;
@@ -387,7 +388,7 @@ void ControllerManager::openController(Controller* pController) {
     if (pController->isOpen()) {
         pController->close();
     }
-    int result = pController->open();
+    int result = pController->open(m_pConfig->getResourcePath());
     pollIfAnyControllersOpen();
 
     // If successfully opened the device, apply the mapping and save the

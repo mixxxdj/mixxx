@@ -50,26 +50,32 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_GPerfTools_PROFILER QUIET libprofiler)
 endif()
 
-find_path(GPerfTools_TCMALLOC_INCLUDE_DIR
+find_path(
+  GPerfTools_TCMALLOC_INCLUDE_DIR
   NAMES gperftools/tcmalloc.h
   HINTS ${PC_GPerfTools_TCMALLOC_INCLUDE_DIRS}
-  DOC "tcmalloc include directory")
+  DOC "tcmalloc include directory"
+)
 mark_as_advanced(GPerfTools_TCMALLOC_INCLUDE_DIR)
 
-find_library(GPerfTools_TCMALLOC_LIBRARY
+find_library(
+  GPerfTools_TCMALLOC_LIBRARY
   NAMES tcmalloc
   HINTS ${PC_GPerfTools_TCMALLOC_LIBRARY_DIRS}
   DOC "tcmalloc library"
 )
 mark_as_advanced(GPerfTools_TCMALLOC_LIBRARY)
 
-find_path(GPerfTools_PROFILER_INCLUDE_DIR
+find_path(
+  GPerfTools_PROFILER_INCLUDE_DIR
   NAMES gperftools/profiler.h
   HINTS ${PC_GPerfTools_PROFILER_INCLUDE_DIRS}
-  DOC "profiler include directory")
+  DOC "profiler include directory"
+)
 mark_as_advanced(GPerfTools_PROFILER_INCLUDE_DIR)
 
-find_library(GPerfTools_PROFILER_LIBRARY
+find_library(
+  GPerfTools_PROFILER_LIBRARY
   NAMES profiler
   HINTS ${PC_GPerfTools_PROFILER_LIBRARY_DIRS}
   DOC "profiler library"
@@ -87,31 +93,40 @@ find_package_handle_standard_args(
 )
 
 if(GPerfTools_FOUND)
-  set(GPerfTools_LIBRARIES
+  set(
+    GPerfTools_LIBRARIES
     ${GPerfTools_TCMALLOC_LIBRARY}
     ${GPerfTools_PROFILER_LIBRARY}
   )
-  set(GPerfTools_INCLUDE_DIRS
+  set(
+    GPerfTools_INCLUDE_DIRS
     ${GPerfTools_TCMALLOC_INCLUDE_DIR}
     ${GPerfTools_PROFILER_INCLUDE_DIR}
   )
-  set(GPerfTools_DEFINITIONS
+  set(
+    GPerfTools_DEFINITIONS
     ${PC_GPerfTools_TCMALLOC_CFLAGS_OTHER}
     ${PC_GPerfTools_PROFILER_CFLAGS_OTHER}
   )
 
-  if (NOT TARGET GPerfTools::tcmalloc)
+  if(NOT TARGET GPerfTools::tcmalloc)
     add_library(GPerfTools::tcmalloc UNKNOWN IMPORTED)
-    set_target_properties(GPerfTools::tcmalloc PROPERTIES
-      IMPORTED_LOCATION ${GPerfTools_TCMALLOC_LIBRARY}
-      INTERFACE_COMPILE_OPTIONS "${PC_GPerfTools_TCMALLOC_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GPerfTools_TCMALLOC_INCLUDE_DIR}")
+    set_target_properties(
+      GPerfTools::tcmalloc
+      PROPERTIES
+        IMPORTED_LOCATION ${GPerfTools_TCMALLOC_LIBRARY}
+        INTERFACE_COMPILE_OPTIONS "${PC_GPerfTools_TCMALLOC_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GPerfTools_TCMALLOC_INCLUDE_DIR}"
+    )
   endif()
-  if (NOT TARGET GPerfTools::profiler)
+  if(NOT TARGET GPerfTools::profiler)
     add_library(GPerfTools::profiler UNKNOWN IMPORTED)
-    set_target_properties(GPerfTools::profiler PROPERTIES
-      IMPORTED_LOCATION "${GPerfTools_PROFILER_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_GPerfTools_PROFILER_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GPerfTools_PROFILER_INCLUDE_DIR}")
+    set_target_properties(
+      GPerfTools::profiler
+      PROPERTIES
+        IMPORTED_LOCATION "${GPerfTools_PROFILER_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_GPerfTools_PROFILER_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${GPerfTools_PROFILER_INCLUDE_DIR}"
+    )
   endif()
 endif()

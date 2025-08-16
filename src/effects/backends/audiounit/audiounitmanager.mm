@@ -1,15 +1,17 @@
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
-#include "util/assert.h"
+#import <dispatch/dispatch.h>
 
 #include <QString>
 
 #include "effects/backends/audiounit/audiounitmanager.h"
+#include "util/assert.h"
 
 AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component)
         : m_name(component != nil ? QString::fromNSString([component name])
                                   : "Unknown"),
-          m_isInstantiated(false) {
+          m_isInstantiated(false),
+          m_instantiationGroup(dispatch_group_create()) {
 }
 
 AudioUnitManagerPointer AudioUnitManager::create(
@@ -56,6 +58,14 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() const {
     return m_audioUnit;
 }
 
+bool AudioUnitManager::waitForAudioUnit(int timeoutMs) const {
+    bool success =
+            dispatch_group_wait(m_instantiationGroup,
+                    dispatch_time(DISPATCH_TIME_NOW, timeoutMs * 1000000)) == 0;
+    DEBUG_ASSERT(!success || m_isInstantiated.load());
+    return success;
+}
+
 void AudioUnitManager::instantiateAudioUnitAsync(
         AudioUnitManagerPointer pManager,
         AVAudioUnitComponent* _Nonnull component,
@@ -75,6 +85,8 @@ void AudioUnitManager::instantiateAudioUnitAsync(
     qDebug() << "Instantiating Audio Unit" << pManager->m_name
              << "asynchronously";
 
+    dispatch_group_enter(pManager->m_instantiationGroup);
+
     // TODO: Fix the weird formatting of blocks
     // clang-format off
     AudioComponentInstantiate(component.audioComponent, options, ^(AudioUnit _Nullable audioUnit, OSStatus error) {
@@ -86,6 +98,7 @@ void AudioUnitManager::instantiateAudioUnitAsync(
         }
 
         pManager->initializeWith(audioUnit);
+        dispatch_group_leave(pManager->m_instantiationGroup);
     });
     // clang-format on
 }

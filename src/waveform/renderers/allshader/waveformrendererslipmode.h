@@ -3,10 +3,10 @@
 #include <QColor>
 #include <memory>
 
-#include "shaders/slipmodeshader.h"
+#include "rendergraph/geometrynode.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
-#include "waveform/renderers/allshader/waveformrenderer.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class ControlProxy;
 class QDomNode;
@@ -14,29 +14,35 @@ class SkinContext;
 
 namespace allshader {
 class WaveformRendererSlipMode;
-}
+} // namespace allshader
 
-class allshader::WaveformRendererSlipMode final : public allshader::WaveformRenderer {
+class allshader::WaveformRendererSlipMode final
+        : public ::WaveformRendererAbstract,
+          public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererSlipMode(
             WaveformWidgetRenderer* waveformWidget);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    // Pure virtual from WaveformRendererAbstract, not used
+    void draw(QPainter* painter, QPaintEvent* event) override final;
+
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     bool init() override;
 
-    void initializeGL() override;
-    void paintGL() override;
+    // Virtual for rendergraph::Node
+    void preprocess() override;
 
   private:
-    mixxx::SlipModeShader m_shader;
-    std::unique_ptr<ControlProxy> m_pSlipMode;
+    std::unique_ptr<ControlProxy> m_pSlipModeControl;
 
     float m_slipBorderTopOutlineSize;
     float m_slipBorderBottomOutlineSize;
 
     QColor m_color;
     PerformanceTimer m_timer;
+
+    bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererSlipMode);
 };

@@ -2,47 +2,68 @@
 
 #include <QColor>
 
-#include "shaders/rgbashader.h"
-#include "shaders/textureshader.h"
-#include "util/opengltexture2d.h"
-#include "waveform/renderers/allshader/digitsrenderer.h"
-#include "waveform/renderers/allshader/waveformrendererabstract.h"
+#include "rendergraph/geometrynode.h"
+#include "rendergraph/node.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
-class SkinContext;
-class QOpenGLTexture;
+
+namespace rendergraph {
+class GeometryNode;
+class Context;
+} // namespace rendergraph
 
 namespace allshader {
+class DigitsRenderNode;
 class WaveformRenderMark;
-}
+} // namespace allshader
 
 class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
-                                      public allshader::WaveformRendererAbstract {
+                                      public rendergraph::Node {
+    Q_OBJECT
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
-    void draw(QPainter* painter, QPaintEvent* event) override {
-        Q_UNUSED(painter);
-        Q_UNUSED(event);
-    }
+    // Pure virtual from WaveformRendererAbstract, not used
+    void draw(QPainter* painter, QPaintEvent* event) override final;
 
-    allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {
-        return this;
-    }
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
     bool init() override;
 
-    void initializeGL() override;
-    void paintGL() override;
-    void resizeGL(int w, int h) override;
+    void update() override;
+
+    bool isSubtreeBlocked() const override;
+
+  public slots:
+    void setPlayMarkerForegroundColor(const QColor& fgPlayColor) {
+        m_playMarkerForegroundColor = fgPlayColor;
+    }
+    void setPlayMarkerBackgroundColor(const QColor& bgPlayColor) {
+        m_playMarkerBackgroundColor = bgPlayColor;
+    }
+    void setUntilMarkShowBeats(bool untilMarkShowBeats) {
+        m_untilMarkShowBeats = untilMarkShowBeats;
+    }
+    void setUntilMarkShowTime(bool untilMarkShowTime) {
+        m_untilMarkShowTime = untilMarkShowTime;
+    }
+    void setUntilMarkAlign(Qt::Alignment untilMarkAlign) {
+        m_untilMarkAlign = untilMarkAlign;
+    }
+    void setUntilMarkTextSize(int untilMarkTextSize) {
+        m_untilMarkTextSize = untilMarkTextSize;
+    }
+    void setUntilMarkTextHeightLimit(float untilMarkTextHeightLimit) {
+        m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
+    }
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
 
-    void updatePlayPosMarkTexture();
+    void updatePlayPosMarkTexture(rendergraph::Context* pContext);
 
     void drawTriangle(QPainter* painter,
             const QBrush& fillColor,
@@ -50,16 +71,13 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p2,
             QPointF p3);
 
-    void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
-    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* pTexture);
     void updateUntilMark(double playPosition, double markerPosition);
-    void drawUntilMark(const QMatrix4x4& matrix, float x);
+    void updateDigitsNodeForUntilMark(float x);
     float getMaxHeightForText(float proportion) const;
+    void updateRangeNode(rendergraph::GeometryNode* pNode,
+            const QRectF& rect,
+            QColor color);
 
-    mixxx::RGBAShader m_rgbaShader;
-    mixxx::TextureShader m_textureShader;
-    OpenGLTexture2D m_playPosMarkTexture;
-    DigitsRenderer m_digitsRenderer;
     int m_beatsUntilMark;
     double m_timeUntilMark;
     double m_currentBeatPosition;
@@ -67,6 +85,24 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     bool m_isSlipRenderer;
+
+    rendergraph::Node* m_pRangeNodesParent{};
+    rendergraph::Node* m_pMarkNodesParent{};
+
+    rendergraph::GeometryNode* m_pPlayPosNode;
+    float m_playPosHeight;
+    float m_playPosDevicePixelRatio;
+
+    DigitsRenderNode* m_pDigitsRenderNode{};
+
+    QColor m_playMarkerForegroundColor;
+    QColor m_playMarkerBackgroundColor;
+
+    bool m_untilMarkShowBeats;
+    bool m_untilMarkShowTime;
+    Qt::Alignment m_untilMarkAlign;
+    int m_untilMarkTextSize;
+    float m_untilMarkTextHeightLimit;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

@@ -32,7 +32,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     void clear() override;
 
   private:
-    void onSampleRateChanged() override;
+    void onSignalChanged() override;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;

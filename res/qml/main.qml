@@ -98,12 +98,12 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck3waveform
 
             group: "[Channel3]"
             width: root.width
-            height: 60
+            height: 120
             visible: root.show4decks && !root.maximizeLibrary
 
             FadeBehavior on visible {
@@ -111,12 +111,12 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck1waveform
 
             group: "[Channel1]"
             width: root.width
-            height: 60
+            height: 120
             visible: !root.maximizeLibrary
 
             FadeBehavior on visible {
@@ -124,12 +124,12 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck2waveform
 
             group: "[Channel2]"
             width: root.width
-            height: 60
+            height: 120
             visible: !root.maximizeLibrary
 
             FadeBehavior on visible {
@@ -137,12 +137,12 @@ ApplicationWindow {
             }
         }
 
-        WaveformRow {
+        Skin.WaveformDisplay {
             id: deck4waveform
 
             group: "[Channel4]"
             width: root.width
-            height: 60
+            height: 120
             visible: root.show4decks && !root.maximizeLibrary
 
             FadeBehavior on visible {

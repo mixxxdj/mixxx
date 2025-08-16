@@ -271,6 +271,9 @@ void Tooltips::addStandardTooltips() {
     add("show_beatgrid_controls")
             << tr("Show/hide the beatgrid controls section");
 
+    add("show_stem_controls")
+            << tr("Show/hide the stem mixing controls section");
+
     add("show_library")
             << tr("Show Library")
             << tr("Show or hide the track library.");
@@ -432,13 +435,33 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust BPM Up")
             << tr("When tapped, adjusts the average BPM up by a small amount.");
 
+    const QString beatsTranslateEarlierTitle = tr("Adjust Beats Earlier");
+    const QString beatsTranslateLaterTitle = tr("Adjust Beats Later");
+    const QString beatsTranslateEarlierDescription =
+            tr("When tapped, moves the beatgrid left by a small amount.");
+    const QString beatsTranslateLaterDescription =
+            tr("When tapped, moves the beatgrid right by a small amount.");
+    const QString moveHalfBeat =
+            tr("Adjust beatgrid by exactly one half beat. "
+               "Usable only on\ntracks with constant tempo.");
+
     add("beats_translate_earlier")
-            << tr("Adjust Beats Earlier")
-            << tr("When tapped, moves the beatgrid left by a small amount.");
+            << beatsTranslateEarlierTitle
+            << beatsTranslateEarlierDescription;
 
     add("beats_translate_later")
-            << tr("Adjust Beats Later")
-            << tr("When tapped, moves the beatgrid right by a small amount.");
+            << beatsTranslateLaterTitle
+            << beatsTranslateLaterDescription;
+
+    add("beats_translate_earlier_move_half_beat")
+            << beatsTranslateEarlierTitle
+            << QString("%1: %2").arg(leftClick, beatsTranslateEarlierDescription)
+            << QString("%1: %2").arg(rightClick, moveHalfBeat);
+
+    add("beats_translate_later_move_half_beat")
+            << beatsTranslateLaterTitle
+            << QString("%1: %2").arg(leftClick, beatsTranslateLaterDescription)
+            << QString("%1: %2").arg(rightClick, moveHalfBeat);
 
     add("beats_translate_curpos")
             << tr("Adjust Beatgrid")
@@ -531,8 +554,13 @@ void Tooltips::addStandardTooltips() {
     // Currently used for samplers
     add("play_start")
             << tr("Play/Pause")
-            << QString("%1: %2").arg(leftClick, tr("Starts playing from the beginning of the track."))
-            << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
+            << QString("%1: %2").arg(leftClick,
+                       tr("Starts playing from the beginning of the track."))
+            << QString("%1: %2").arg(rightClick,
+                       tr("Jumps to the beginning of the track and stops."))
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
@@ -541,7 +569,7 @@ void Tooltips::addStandardTooltips() {
     QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
     QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
             "OR preview from it (Denon mode).");
-    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Decks.");
     QString latchingPlay = tr("Is latching the playing state.");
 
     // Currently used for decks
@@ -549,7 +577,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
             << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
-            << QString("%1: %2").arg(rightClick, cueSet);
+            << QString("%1: %2").arg(rightClick, cueSet)
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
 
     // Currently used for minimal decks
     add("play_cue_default")
@@ -558,7 +589,10 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
             << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
             << cueHint
-            << quantizeSnap;
+            << quantizeSnap
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
@@ -696,7 +730,14 @@ void Tooltips::addStandardTooltips() {
                   << QString("%1 + %2: %3")
                              .arg(rightClick,
                                      shift,
-                                     tr("Delete selected hotcue."));
+                                     tr("Delete selected hotcue."))
+                  << tr("Drag this button onto another Hotcue button to move it "
+                        "there (change its index). If the other hotcue is set, "
+                        "the two are swapped.")
+                  << tr("Drag this button onto a Play button while previewing "
+                        "to continue playback after release.")
+                  << tr("Dragging with Shift key pressed will not start previewing "
+                        "the hotcue.");
 
     // Status displays and toggle buttons
     add("toggle_recording")
@@ -1151,6 +1192,22 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle")
             << tr("Toggle the current effect.")
             << eqKillLatch;
+
+    // Stem Channel Controls
+    add("StemLabel")
+            << tr("Stem Label")
+            << tr("Name of the stem stored in the stem file")
+            << tr("Text is displayed in the stem color stored in the stem file")
+            << tr("this stem color is also used for the waveform of this stem");
+
+    add("StemMuteButton")
+            << tr("Stem Mute")
+            << tr("Toggle the stem mute/unmuted");
+
+    add("StemVolumeKnob")
+            << tr("Stem Volume Knob")
+            << tr("Adjusts the volume of the stem")
+            << resetWithRightAndDoubleClick;
 
     // Equalizer Rack Controls
     add("EqualizerRack_effect_parameter")

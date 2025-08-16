@@ -413,9 +413,10 @@ bool SoundSourceM4A::replaceDecoder(
     } else {
         pNewConfig->outputFormat = faad2::FMT_FLOAT;
         const auto desiredChannelCount =
-                getSignalInfo().getChannelCount().isValid()
-                ? getSignalInfo().getChannelCount()
-                : m_openParams.getSignalInfo().getChannelCount();
+                std::min(getSignalInfo().getChannelCount().isValid()
+                                ? getSignalInfo().getChannelCount()
+                                : m_openParams.getSignalInfo().getChannelCount(),
+                        mixxx::kMaxEngineChannelInputCount);
         if (desiredChannelCount == 1 || desiredChannelCount == 2) {
             pNewConfig->downMatrix = 1;
         } else {
