@@ -572,19 +572,20 @@ QString BasePlaylistFeature::cleanString(const QString& input) const {
     s.replace('\'', ' ');
 
     // Remove quotes
-    s.remove(QRegularExpression("[\"]"));
+    s.remove('\"');
 
-    // Replace punctuation (ASCII and common Unicode) with space
-    // s.replace(QRegularExpression(R"([.,;!?…–—·]+)"), " ");
-    s.replace(QRegularExpression(R"([.,;!?\u2026\u2013\u2014\u00B7]+)"), " ");
+    // Replace punctuation (ASCII)
+    s.replace(QRegularExpression("[.,;!?]+"), " ");
 
-    // Replace Unicode ellipsis …
-    s.replace(QChar(0x2026), ' ');
+    // Replace common Unicode punctuation individually
+    s.replace(QChar(0x2026), ' '); // …
+    s.replace(QChar(0x2013), ' '); // –
+    s.replace(QChar(0x2014), ' '); // —
+    s.replace(QChar(0x00B7), ' '); // ·
 
     // Collapse multiple spaces into one
     s = s.simplified();
 
-    // Trim leading/trailing spaces
     return s.trimmed();
 }
 
