@@ -39,6 +39,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
     int levenshteinDistance(const QString& s1, const QString& s2);
+    QString cleanString(const QString& input) const;
 
   public slots:
     void activateChild(const QModelIndex& index) override;
