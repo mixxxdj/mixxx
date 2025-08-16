@@ -560,21 +560,29 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 
 QString BasePlaylistFeature::cleanString(const QString& input) const {
     QString s = input;
+
     // Remove text between parentheses
     s.remove(QRegularExpression("\\(.*?\\)"));
+
     // Remove text between []
     s.remove(QRegularExpression("\\[.*?\\]"));
+
     // Normalize apostrophes: replace with space
     s.replace(QChar(0x2019), ' ');
     s.replace('\'', ' ');
+
     // Remove quotes
     s.remove(QRegularExpression("[\"]"));
+
     // Replace punctuation (ASCII and common Unicode) with space
     s.replace(QRegularExpression(R"([.,;!?…–—·]+)"), " ");
+
     // Replace Unicode ellipsis …
     s.replace(QChar(0x2026), ' ');
+
     // Collapse multiple spaces into one
     s = s.simplified();
+
     // Trim leading/trailing spaces
     return s.trimmed();
 }
