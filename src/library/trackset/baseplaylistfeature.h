@@ -145,7 +145,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
     QString fetchPlaylistLabel(int playlistId);
-
+    QStringList parseCsvLine(const QString& line) const;
 
     const bool m_keepHiddenTracks;
 };
