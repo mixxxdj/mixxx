@@ -559,67 +559,6 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     activatePlaylist(lastPlaylistId);
 }
 
-// QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
-//     QStringList fields;
-//     QString field;
-//     bool inQuotes = false;
-//     int quoteCount = 0;
-//
-//     for (int i = 0; i < line.length(); ++i) {
-//         const QChar c = line[i];
-//
-//         if (c == '"') {
-//             quoteCount++;
-//             // Only toggle inQuotes if we're not in the middle of double quotes
-//             if (i + 1 < line.length() && line[i + 1] == '"') {
-//                 field += '"';
-//                 i++; // Skip next quote
-//                 quoteCount++;
-//             } else {
-//                 inQuotes = !inQuotes;
-//             }
-//         } else if (c == ',' && !inQuotes) {
-//             // Only split on comma if not inside quotes
-//             fields.append(field);
-//             field.clear();
-//             quoteCount = 0;
-//         } else {
-//             field += c;
-//         }
-//     }
-//     fields.append(field); // Add last field
-//
-//     return fields;
-// }
-
-// QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
-//     QStringList fields;
-//     QString field;
-//     bool inQuotes = false;
-//
-//     for (qsizetype i = 0; i < line.size(); ++i) {
-//         QChar c = line[i];
-//
-//         if (c == '"') {
-//             // Only toggle inQuotes if not a doubled quote
-//             if (i + 1 < line.size() && line[i + 1] == '"') {
-//                 field += '"';
-//                 ++i; // Skip next quote
-//             } else {
-//                 inQuotes = !inQuotes;
-//             }
-//         } else if (c == ',' && !inQuotes) {
-//             fields.append(field);
-//             field.clear();
-//         } else {
-//             field += c;
-//         }
-//     }
-//     fields.append(field);
-//
-//     return fields;
-// }
-
 QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
     QStringList fields;
     QString field;
@@ -644,40 +583,9 @@ QStringList BasePlaylistFeature::parseCsvLine(const QString& line) const {
             field += c;
         }
     }
-    fields.append(field); // Add last field
+    fields.append(field);
     return fields;
 }
-
-// QString BasePlaylistFeature::cleanString(const QString& input) const {
-//     QString s = input;
-//
-//     // Remove text between parentheses
-//     s.remove(QRegularExpression("\\(.*?\\)"));
-//
-//     // Remove text between []
-//     s.remove(QRegularExpression("\\[.*?\\]"));
-//
-//     // Normalize apostrophes: replace with space
-//     s.replace(QChar(0x2019), ' '); // Unicode right single quote
-//     s.replace('\'', ' ');          // ASCII apostrophe
-//
-//     // Remove quotes
-//     s.remove('\"');
-//
-//     // Replace ASCII punctuation
-//     s.replace(QRegularExpression("[.,;!?]+"), " ");
-//
-//     // Replace common Unicode punctuation
-//     s.replace(QChar(0x2026), ' '); // ellipsis
-//     s.replace(QChar(0x2013), ' '); // en dash
-//     s.replace(QChar(0x2014), ' '); // em dash
-//     s.replace(QChar(0x00B7), ' '); // middle dot
-//
-//     // Collapse multiple spaces into one
-//     s = s.simplified();
-//
-//     return s.trimmed();
-// }
 
 QString BasePlaylistFeature::cleanString(const QString& input) const {
     QString s = input;
@@ -794,19 +702,9 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
     QString headerLine = in.readLine();
     QStringList headerFields = parseCsvLine(headerLine);
-    // QStringList headerFields = headerLine.split(',', Qt::KeepEmptyParts);
 
     int titleIndex = -1;
     int artistIndex = -1;
-
-    // for (int i = 0; i < headerFields.size(); ++i) {
-    //     QString colName = headerFields[i].trimmed().toLower();
-    //     if (colName == "title" || colName == "song") {
-    //         titleIndex = i;
-    //     } else if (colName == "artist") {
-    //         artistIndex = i;
-    //     }
-    // }
 
     for (qsizetype i = 0; i < headerFields.size(); ++i) {
         const QString colName = headerFields[i].trimmed().toLower();
@@ -841,38 +739,6 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         playlistEntries.append(qMakePair(title, artist));
     }
-
-    // while (!in.atEnd()) {
-    //     QString line = in.readLine();
-    //     if (line.trimmed().isEmpty())
-    //         continue;
-
-    //    QStringList fields = parseCsvLine(line); // use member function now
-    //    if (fields.size() <= qMax(titleIndex, artistIndex))
-    //        continue;
-
-    //    QString title = cleanString(fields[titleIndex]);
-    //    QString artist = cleanString(fields[artistIndex]);
-
-    //    playlistEntries.append(qMakePair(title, artist));
-    //}
-    // read the rest of the lines
-    // while (!in.atEnd()) {
-    //    QString line = in.readLine();
-    //    if (line.trimmed().isEmpty()) {
-    //        continue;
-    //    }
-
-    //    QStringList fields = line.split(',', Qt::KeepEmptyParts);
-    //    if (fields.size() <= qMax(titleIndex, artistIndex)) {
-    //        continue;
-    //    }
-
-    //    QString title = cleanString(fields[titleIndex]);
-    //    QString artist = cleanString(fields[artistIndex]);
-
-    //    playlistEntries.append(qMakePair(title, artist));
-    //}
 
     QDialog dialog(nullptr);
     dialog.setWindowTitle(tr("Inspect Import File Entries"));
@@ -946,7 +812,6 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         auto extractWords = [](const QString& filter) {
             QStringList result;
-            // for (const QString& w : filter.split(' ', Qt::SkipEmptyParts)) {
             const QStringList words = filter.split(' ', Qt::SkipEmptyParts);
             for (const QString& w : words) {
                 if (w.size() > 1) {
@@ -991,7 +856,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
                 QStringLiteral("SELECT id, title, artist, album, album_artist FROM library %1")
                         .arg(whereClause);
 
-        if (!query.exec(queryString)) { // no need to call prepare()
+        if (!query.exec(queryString)) {
             qWarning() << "[BasePlaylistFeature] Failed to query library:"
                        << query.lastError().text();
             return;
