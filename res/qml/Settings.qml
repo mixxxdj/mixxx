@@ -21,6 +21,8 @@ Popup {
         opacity: parent.radius < 0 ? Math.max(0.1, 1 + parent.radius / 8) : 1
         radius: 8
     }
+    verticalPadding: 20
+    horizontalPadding: 20
     contentItem: Item {
         anchors.centerIn: parent
         height: parent.height - 40
@@ -81,6 +83,7 @@ Popup {
                     }
                     ListView {
                         id: categoryList
+                        currentIndex: 2
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         clip: true
