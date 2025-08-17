@@ -694,7 +694,15 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     // Row Index,Title,Artist,Album,Source Context,Duration,Date,Popularity,
     // Favorited,Has Lyrics,Artist Link,Album Link,Cover URL
 
-    QList<QPair<QString, QString>> playlistEntries;
+    struct PlaylistEntry {
+        QString title;
+        QString artist;
+        QString duration; // only set if found
+    };
+
+    QList<PlaylistEntry> playlistEntries;
+
+    // QList<QPair<QString, QString>> playlistEntries;
     QTextStream in(&file);
 
     // read header and find column positions
@@ -708,6 +716,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
     int titleIndex = -1;
     int artistIndex = -1;
+    int durationIndex = -1;
 
     for (qsizetype i = 0; i < headerFields.size(); ++i) {
         const QString colName = headerFields[i].trimmed().toLower();
@@ -715,6 +724,8 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             titleIndex = i;
         } else if (colName == "artist") {
             artistIndex = i;
+        } else if (colName == "duration" || colName == "time") {
+            durationIndex = i;
         }
     }
 
@@ -727,7 +738,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
                 tr(" Could not find both Title and Artist columns in header: Import aborted"));
         return;
     }
-
+    PlaylistEntry entry;
     while (!in.atEnd()) {
         const QString line = in.readLine();
         if (line.trimmed().isEmpty()) {
@@ -739,10 +750,13 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             continue;
         }
 
-        const QString title = cleanString(fields[titleIndex]);
-        const QString artist = cleanString(fields[artistIndex]);
+        entry.title = cleanString(fields[titleIndex]);
+        entry.artist = cleanString(fields[artistIndex]);
+        if (durationIndex != -1 && durationIndex < fields.size()) {
+            entry.duration = cleanString(fields[durationIndex]);
+        }
 
-        playlistEntries.append(qMakePair(title, artist));
+        playlistEntries.append(entry);
     }
 
     QDialog dialog(nullptr);
@@ -787,8 +801,6 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     tableCandidates->setColumnWidth(7, 50);
     tableCandidates->setColumnWidth(8, 50);
     tableCandidates->setColumnWidth(9, 60);
-    // tableCandidates->setHorizontalHeaderLabels({"Title", "Artist", "Album",
-    // "Album Artist", "Id"});
     tableCandidates->setHorizontalHeaderLabels({"Title",
             "Artist",
             "Album",
@@ -832,8 +844,6 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         return item;
     };
 
-    // auto runSearch = [this, tableCandidates, checkMatchBoth, database](
-    //                          const QString& title, const QString& artist) {
     auto runSearch = [this, tableCandidates, checkMatchBoth, database, makeItemWithTooltip](
                              const QString& title, const QString& artist) {
         tableCandidates->setRowCount(0);
@@ -893,13 +903,6 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         QSqlQuery query(database);
         const QString queryString =
-                //                QStringLiteral("SELECT id, title, artist,
-                //                album, album_artist, FROM library %1")
-                //                        .arg(whereClause);
-
-                // QStringLiteral("SELECT id, title, artist, album,
-                // album_artist, duration, btrate, rating  FROM library %1")
-                //         .arg(whereClause);
                 QStringLiteral(
                         "SELECT library.id as id, "
                         "    library.title as title, "
@@ -976,17 +979,21 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         const auto& entry = playlistEntries[currentIndex];
         labelCurrentEntry->setText(
-                QObject::tr("Select a corresponding track for importfile-entry (%1):<br>"
-                            "<b><span style='font-size:14pt;'>%2 - %3</span></b>")
+                QObject::tr("Select a corresponding track for importfile-entry (%1/%2):<br>"
+                            "<b><span style='font-size:14pt;'>%3 - %4%5</span></b>")
                         .arg(currentIndex + 1)
-                        .arg(entry.first, entry.second));
+                        .arg(playlistEntries.size())
+                        .arg(entry.title, entry.artist)
+                        .arg(entry.duration.isEmpty()
+                                        ? QString()
+                                        : QString(" [%1]").arg(entry.duration)));
 
         // Fill line edits with current CSV entry
-        lineEditTitle->setText(entry.first);
-        lineEditArtist->setText(entry.second);
+        lineEditTitle->setText(entry.title);
+        lineEditArtist->setText(entry.artist);
 
         tableCandidates->setSortingEnabled(false);
-        runSearch(entry.first, entry.second);
+        runSearch(entry.title, entry.artist);
         tableCandidates->setSortingEnabled(true);
         ++currentIndex;
     };
@@ -1072,8 +1079,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
                 if (currentIndex < playlistEntries.size()) {
                     const auto& entry = playlistEntries[currentIndex - 1];
                     if (reportStream.device()) {
-                        // "Artist - Title - imported|not imported"
-                        reportStream << entry.second << " - " << entry.first << " - "
+                        reportStream << entry.artist << " - " << entry.title << " - "
                                      << (imported == 1 ? "imported" : "not imported") << "\n";
                         reportStream.flush();
                     }
@@ -1092,7 +1098,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
                     const auto& entry = playlistEntries[currentIndex - 1];
                     if (reportStream.device()) {
                         // "Artist - Title - imported|not imported"
-                        reportStream << entry.second << " - " << entry.first << " - "
+                        reportStream << entry.artist << " - " << entry.title << " - "
                                      << (imported == 1 ? "imported" : "not imported") << "\n";
                         reportStream.flush();
                     }
@@ -1109,11 +1115,9 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             [&dialog, &playlistEntries, &currentIndex, &reportStream]() {
                 // Write "not imported" for all remaining entries
                 for (int i = currentIndex; i < playlistEntries.size(); ++i) {
-                    const auto& entry =
-                            playlistEntries[i]; // entry.first = title,
-                                                // entry.second = artist
+                    const auto& entry = playlistEntries[i];
                     if (reportStream.device()) {
-                        reportStream << entry.second << " - " << entry.first << " - not imported\n";
+                        reportStream << entry.artist << " - " << entry.title << " - not imported\n";
                     }
                 }
                 reportStream.flush();
