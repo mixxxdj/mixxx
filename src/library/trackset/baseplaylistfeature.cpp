@@ -1112,8 +1112,26 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     QObject::connect(tableCandidates,
             &QTableWidget::cellDoubleClicked,
             &dialog,
-            [addSelectedTracks, &advanceToNext](int /*row*/, int /*col*/) {
+            [addSelectedTracks,
+                    &advanceToNext,
+                    &currentIndex,
+                    &playlistEntries,
+                    &reportStream,
+                    &imported](int /*row*/, int /*col*/) mutable {
                 addSelectedTracks();
+
+                if (currentIndex < playlistEntries.size()) {
+                    const auto& entry = playlistEntries[currentIndex - 1];
+                    if (reportStream.device()) {
+                        // "Artist - Title - imported|not imported"
+                        reportStream << entry.second << " - " << entry.first << " - "
+                                     << (imported == 1 ? "imported" : "not imported") << "\n";
+                        reportStream.flush();
+                    }
+                }
+
+                // import flag reset for the next entry
+                imported = 0;
                 advanceToNext();
             });
 
@@ -1122,7 +1140,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             &dialog,
             [advanceToNext, &currentIndex, &playlistEntries, &reportStream, &imported]() mutable {
                 if (currentIndex < playlistEntries.size()) {
-                    const auto& entry = playlistEntries[currentIndex];
+                    const auto& entry = playlistEntries[currentIndex - 1];
                     if (reportStream.device()) {
                         // "Artist - Title - imported|not imported"
                         reportStream << entry.second << " - " << entry.first << " - "
