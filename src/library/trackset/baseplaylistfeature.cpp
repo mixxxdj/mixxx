@@ -3,6 +3,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QFileInfo>
+#include <QHeaderView>
 #include <QInputDialog>
 #include <QList>
 #include <QRegExp>
@@ -622,11 +623,13 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     QMessageBox::StandardButton reply = QMessageBox::question(nullptr,
             QObject::tr("Confirm CSV/TXT-Import"),
             QObject::tr("This action will show a dialog of all results for "
-                        "each entry in the file,\n "
-                        "1 by 1. For each entry you'll be able to selec "
-                        "0/1/more results from your library.\n\n "
-                        "The selected results will be added to a new playlist. "
-                        " \n\n "
+                        "each entry in the importfile, 1 by 1. For each entry you'll "
+                        "be able to select 0/1/more results from your library.\n\n "
+                        "Doubleclick on a result adds the track to the playlist "
+                        "and proceeds to the next entry in the importfile.\n\n "
+                        "After selecting multiple results you can add all selected tracks "
+                        "with the 'add selection'-button, then press 'next' to proceed "
+                        "to the next entry.in the importfile.\n\n "
                         "Are you sure you want to continue?"),
             QMessageBox::Yes | QMessageBox::No);
 
@@ -727,12 +730,14 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
     while (!in.atEnd()) {
         const QString line = in.readLine();
-        if (line.trimmed().isEmpty())
+        if (line.trimmed().isEmpty()) {
             continue;
+        }
 
         const QStringList fields = parseCsvLine(line);
-        if (fields.size() <= qMax(titleIndex, artistIndex))
+        if (fields.size() <= qMax(titleIndex, artistIndex)) {
             continue;
+        }
 
         const QString title = cleanString(fields[titleIndex]);
         const QString artist = cleanString(fields[artistIndex]);
@@ -771,12 +776,39 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     layout->addWidget(checkMatchBoth);
 
     QTableWidget* tableCandidates = new QTableWidget(&dialog);
-    tableCandidates->setColumnCount(5);
-    tableCandidates->setColumnWidth(0, 250);
-    tableCandidates->setColumnWidth(1, 250);
-    tableCandidates->setColumnWidth(2, 200);
-    tableCandidates->setColumnWidth(3, 200);
-    tableCandidates->setHorizontalHeaderLabels({"Title", "Artist", "Album", "Album Artist", "Id"});
+    tableCandidates->setColumnCount(10);
+    tableCandidates->setColumnWidth(0, 200);
+    tableCandidates->setColumnWidth(1, 200);
+    tableCandidates->setColumnWidth(2, 90);
+    tableCandidates->setColumnWidth(3, 90);
+    tableCandidates->setColumnWidth(4, 0);
+    tableCandidates->setColumnWidth(5, 60);
+    tableCandidates->setColumnWidth(6, 80);
+    tableCandidates->setColumnWidth(7, 50);
+    tableCandidates->setColumnWidth(8, 50);
+    tableCandidates->setColumnWidth(9, 60);
+    // tableCandidates->setHorizontalHeaderLabels({"Title", "Artist", "Album",
+    // "Album Artist", "Id"});
+    tableCandidates->setHorizontalHeaderLabels({"Title",
+            "Artist",
+            "Album",
+            "Album Artist",
+            "Id",
+            "Duration",
+            "Bitrate (type)",
+            "Rating",
+            "Size",
+            "Location"});
+    tableCandidates->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    tableCandidates->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    // tableCandidates->horizontalHeader()->setSectionResizeMode(9, QHeaderView::Stretch);
+    for (int col = 0; col < tableCandidates->columnCount(); ++col) {
+        QTableWidgetItem* headerItem = tableCandidates->horizontalHeaderItem(col);
+        if (headerItem) {
+            headerItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        }
+    }
+
     tableCandidates->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableCandidates->setColumnHidden(4, true);
     tableCandidates->sortItems(0, Qt::AscendingOrder);
@@ -794,7 +826,15 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     int currentIndex = 0;
     QSqlDatabase database = m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
-    auto runSearch = [this, tableCandidates, checkMatchBoth, database](
+    auto makeItemWithTooltip = [](const QString& text) {
+        auto* item = new QTableWidgetItem(text);
+        item->setToolTip(text);
+        return item;
+    };
+
+    // auto runSearch = [this, tableCandidates, checkMatchBoth, database](
+    //                          const QString& title, const QString& artist) {
+    auto runSearch = [this, tableCandidates, checkMatchBoth, database, makeItemWithTooltip](
                              const QString& title, const QString& artist) {
         tableCandidates->setRowCount(0);
 
@@ -853,9 +893,36 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         QSqlQuery query(database);
         const QString queryString =
-                QStringLiteral("SELECT id, title, artist, album, album_artist FROM library %1")
+                //                QStringLiteral("SELECT id, title, artist,
+                //                album, album_artist, FROM library %1")
+                //                        .arg(whereClause);
+
+                // QStringLiteral("SELECT id, title, artist, album,
+                // album_artist, duration, btrate, rating  FROM library %1")
+                //         .arg(whereClause);
+                QStringLiteral(
+                        "SELECT library.id as id, "
+                        "    library.title as title, "
+                        "    library.artist as artist, "
+                        "    library.album as album, "
+                        "    library.album_artist as album_artist, "
+                        "    printf('%d:%02d', "
+                        "        CAST(library.duration AS INT) / 60, "
+                        "        CAST(library.duration AS INT) % 60) AS "
+                        "duration_mss, "
+                        "    library.bitrate || ' (' || library.filetype || "
+                        "')' as filebitrate, "
+                        "    library.rating as rating, "
+                        "    track_locations.directory || '/' || "
+                        "track_locations.filename AS tracklocation, "
+                        "    printf('%.2f', track_locations.filesize / (1024.0 "
+                        "* 1024.0)) AS filesize_mb "
+                        "FROM library "
+                        "JOIN track_locations ON library.id = "
+                        "track_locations.id %1")
                         .arg(whereClause);
 
+        qDebug() << "queryString: " << queryString;
         if (!query.exec(queryString)) {
             qWarning() << "[BasePlaylistFeature] Failed to query library:"
                        << query.lastError().text();
@@ -865,16 +932,33 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         while (query.next()) {
             const int row = tableCandidates->rowCount();
             tableCandidates->insertRow(row);
-            tableCandidates->setItem(row, 0, new QTableWidgetItem(query.value("title").toString()));
+
+            tableCandidates->setItem(row, 0, makeItemWithTooltip(query.value("title").toString()));
             tableCandidates->setItem(row,
                     1,
-                    new QTableWidgetItem(query.value("artist").toString()));
-            tableCandidates->setItem(row, 2, new QTableWidgetItem(query.value("album").toString()));
+                    makeItemWithTooltip(
+                            query.value("library.artist").toString()));
+            tableCandidates->setItem(row, 2, makeItemWithTooltip(query.value("album").toString()));
             tableCandidates->setItem(row,
                     3,
-                    new QTableWidgetItem(
+                    makeItemWithTooltip(
                             query.value("album_artist").toString()));
             tableCandidates->setItem(row, 4, new QTableWidgetItem(query.value("id").toString()));
+            tableCandidates->setItem(row,
+                    5,
+                    makeItemWithTooltip(
+                            query.value("duration_mss").toString()));
+            tableCandidates->setItem(row,
+                    6,
+                    makeItemWithTooltip(query.value("filebitrate").toString()));
+            tableCandidates->setItem(row, 7, makeItemWithTooltip(query.value("rating").toString()));
+            tableCandidates->setItem(row,
+                    8,
+                    makeItemWithTooltip(query.value("filesize_mb").toString()));
+            tableCandidates->setItem(row,
+                    9,
+                    makeItemWithTooltip(
+                            query.value("tracklocation").toString()));
         }
     };
 
