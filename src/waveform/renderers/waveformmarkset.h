@@ -18,8 +18,12 @@ class WaveformMarkSet {
         QString markAlign;
         QString text;
         QString pixmapPath;
+        QString endPixmapPath;
         QString iconPath;
+        QString endIconPath;
         QColor color;
+        float enabledOpacity;
+        float disabledOpacity;
     };
 
     WaveformMarkSet();
@@ -52,6 +56,24 @@ class WaveformMarkSet {
         for (const auto& pMark : std::as_const(m_marks)) {
             if (pMark->hasVisible()) {
                 pMark->connectVisibleChanged(receiver, slot);
+            }
+        }
+    }
+
+    template<typename Receiver, typename Slot>
+    void connectTypeChanged(Receiver receiver, Slot slot) const {
+        for (const auto& pMark : std::as_const(m_marks)) {
+            if (pMark->isValid()) {
+                pMark->connectTypeChanged(receiver, slot);
+            }
+        }
+    }
+
+    template<typename Receiver, typename Slot>
+    void connectStatusChanged(Receiver receiver, Slot slot) const {
+        for (const auto& pMark : std::as_const(m_marks)) {
+            if (pMark->isValid()) {
+                pMark->connectStatusChanged(receiver, slot);
             }
         }
     }
