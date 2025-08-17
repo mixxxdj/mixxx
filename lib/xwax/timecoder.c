@@ -323,6 +323,10 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 
     tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
 
+    tc->quadrant = 0;
+    tc->last_quadrant = 0;
+    tc->direction_changed = false;
+
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch, tc->dt);
     } else {
@@ -500,6 +504,56 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 }
 
 /*
+ * Compare the last quadrant we were in to the new one and return the
+ * correct displacement for the pitch filter model.
+ *
+ * A full revolution of the carrier has the length of 1.0 / tc->def->resolution,
+ * which is also the sample rate of the timecode (not the audio). One quadrant
+ * corresponds to 1/4 * revolution, which is the time between two zero
+ * crossings. Hence we multiply this quantity by displacement in quadrants.
+ */
+
+static double quantize_phase(struct timecoder *tc)
+{
+    unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
+
+    /* Check for a displacement of four quadrants */
+    if (diff == 0 && !tc->direction_changed) {
+        return 1.0 / tc->def->resolution;
+
+    /* Check for a displacement of three quadrants */
+    } else if ((tc->forwards && diff == 3) || (!tc->forwards && diff == 1)) {
+        return (3.0 / tc->def->resolution) / 4.0;
+
+    /* Check for a displacement of two quadrants  */
+    } else if (diff == 2) {
+        return (1.0 / tc->def->resolution) / 2.0;
+
+    /* Fallback */
+    } else {
+        return (1.0 / tc->def->resolution) / 4.0;
+    }
+}
+
+/*
+ * Track the quadrature phase of the pitch counter on the unit circle
+ *
+ * There are four zero crossings in a whole cycle. In between are the four
+ * quadrants of the sine and cosine, which are in quadrature.
+ */
+
+static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
+{
+    tc->last_quadrant = tc->quadrant;
+    tc->direction_changed = direction_changed;
+
+    bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
+    bool add = tc->secondary.swapped ? 0b1 : 0b0;
+
+    tc->quadrant = (!pos << 1) | add;
+}
+
+/*
  * Process a single sample from the incoming audio
  *
  * The two input signals (primary and secondary) are in the full range
@@ -527,6 +581,8 @@ static void process_sample(struct timecoder *tc,
         if (tc->def->flags & SWITCH_PHASE)
 	    forwards = !forwards;
 
+        track_quadrature_phase(tc, forwards != tc->forwards);
+
         if (forwards != tc->forwards) { /* direction has changed */
             tc->forwards = forwards;
             tc->valid_counter = 0;
@@ -538,20 +594,21 @@ static void process_sample(struct timecoder *tc,
      * counters. This occurs four time per cycle of the sinusoid.
      */
 
-    if (!tc->primary.swapped && !tc->secondary.swapped)
+    if (!tc->primary.swapped && !tc->secondary.swapped) {
         if (tc->use_legacy_pitch_filter)
             pitch_dt_observation(&tc->pitch, 0.0);
         else
             pitch_kalman_update(&tc->pitch_kalman, 0.0);
-    else {
+    } else {
         double dx;
 
         /*
-         * Assumption: We advance 1 / carrier_frequency / 4, which
-         * is exactly a quarter of the cycle
+         * Assumption: We usually advance by a quarter rotation,
+         * unless we skip zero crossings. In this case the new quadrature
+         * tracker calculates the correct displacement for the pitch filter.
          */
 
-        dx = 1.0 / tc->def->resolution / 4;
+        dx = quantize_phase(tc);
         if (!tc->forwards)
             dx = -dx;
 

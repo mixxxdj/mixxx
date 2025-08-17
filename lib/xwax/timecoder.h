@@ -30,6 +30,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+
 #endif // __cplusplus
 
 typedef unsigned int bits_t;
@@ -71,6 +72,8 @@ struct timecoder {
     bool use_legacy_pitch_filter;
     struct pitch pitch;
     struct pitch_kalman pitch_kalman;
+    unsigned quadrant, last_quadrant;
+    bool direction_changed;
 
     /* Numerical timecode */
 
