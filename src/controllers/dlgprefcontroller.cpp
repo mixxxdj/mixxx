@@ -324,13 +324,6 @@ DlgPrefController::DlgPrefController(
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
     m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
     m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
-
-#ifndef MIXXX_USE_QML
-    // Remove the screens tab
-    m_ui.controllerTabs->removeTab(m_screensTabIndex);
-    // Just to be save
-    m_screensTabIndex = -1;
-#endif
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -1161,8 +1154,10 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
         }
     } else {
+#endif
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
         m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, false);
+#ifdef MIXXX_USE_QML
     }
 #endif
 
