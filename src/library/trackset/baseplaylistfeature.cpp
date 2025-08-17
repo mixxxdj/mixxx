@@ -978,15 +978,17 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         }
 
         const auto& entry = playlistEntries[currentIndex];
-        labelCurrentEntry->setText(
-                QObject::tr("Select a corresponding track for importfile-entry (%1/%2):<br>"
-                            "<b><span style='font-size:14pt;'>%3 - %4%5</span></b>")
+        labelCurrentEntry->setText(QObject::tr(
+                "Select a corresponding track for importfile-entry (%1/%2):<br>"
+                "<b><span style='font-size:14pt;'>%3 - %4%5</span></b>")
                         .arg(currentIndex + 1)
                         .arg(playlistEntries.size())
-                        .arg(entry.title, entry.artist)
-                        .arg(entry.duration.isEmpty()
+                        .arg(entry.title,
+                                entry.artist,
+                                entry.duration.isEmpty()
                                         ? QString()
-                                        : QString(" [%1]").arg(entry.duration)));
+                                        : QString(" [%1]").arg(
+                                                  entry.duration)));
 
         // Fill line edits with current CSV entry
         lineEditTitle->setText(entry.title);
