@@ -101,6 +101,7 @@ TempoTrackV2::filter_df(d_vec_t &df)
 void
 TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
                                   vector<double> &beat_period,
+                                  vector<double> &tempi,
                                   double inputtempo, bool constraintempo)
 {
     // to follow matlab.. split into 512 sample frames with a 128 hop size
@@ -167,7 +168,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     }
 
     // now call viterbi decoding function
-    viterbi_decode(rcfmat,wv,beat_period);
+    viterbi_decode(rcfmat,wv,beat_period,tempi);
 }
 
 
@@ -227,7 +228,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
 }
 
 void
-TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &beat_period)
+TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &beat_period, d_vec_t &tempi)
 {
     // following Kevin Murphy's Viterbi decoding to get best path of
     // beat periods through rfcmat
@@ -315,8 +316,13 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     }
 
     i_vec_t bestpath(T);
+    d_vec_t tmp_vec(Q);
+    for (int i = 0; i < Q; i++) {
+        tmp_vec[i] = delta[T-1][i];
+    }
+
     // find starting point - best beat period for "last" frame
-    bestpath[T-1] = get_max_ind(delta[T-1]);
+    bestpath[T-1] = get_max_ind(tmp_vec);
 
     // backtrace through index of maximum values in psi
     for (int t=T-2; t>0 ;t--) {
@@ -339,6 +345,10 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     // fill in the last values...
     for (int i = lastind; i < int(beat_period.size()); i++) {
         beat_period[i] = beat_period[lastind];
+    }
+
+    for (int i = 0; i < int(beat_period.size()); i++) {
+        tempi.push_back((60. * m_rate / m_increment)/beat_period[i]);
     }
 }
 

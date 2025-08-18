@@ -18,6 +18,7 @@ class WColorPickerAction;
 class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
+class GenreDao;
 
 /// A dialog box to display and edit properties of multiple tracks.
 /// Use TrackPointers to load a track into the dialog.
@@ -25,11 +26,16 @@ class WCoverArtLabel;
 class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     Q_OBJECT
   public:
-    explicit DlgTrackInfoMulti(UserSettingsPointer pUserSettings);
+    explicit DlgTrackInfoMulti(
+            UserSettingsPointer pUserSettings,
+            GenreDao& genreDao);
     ~DlgTrackInfoMulti() override = default;
 
     void loadTracks(const QList<TrackPointer>& pTracks);
     void focusField(const QString& property);
+
+    void setGenreData(const QVariantList& genreData);
+    void setupGenreCompleter();
 
   protected:
     /// We need this to set the max width of the comment QComboBox which has
@@ -104,7 +110,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     }
 
     const UserSettingsPointer m_pUserSettings;
-
+    GenreDao& m_genreDao;
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
     QList<mixxx::TrackRecord> m_trackRecords;
 
@@ -118,4 +124,6 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     bool m_colorChanged;
     mixxx::RgbColor::optional_t m_newColor;
     parented_ptr<WColorPickerAction> m_pColorPicker;
+    QVariantList m_genreData;
+    QString m_rawGenreString;
 };

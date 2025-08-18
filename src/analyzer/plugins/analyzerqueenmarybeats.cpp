@@ -84,6 +84,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
 
     std::vector<double> df;
     std::vector<double> beatPeriod;
+    std::vector<double> tempi;
     const auto required_size = std::max(0, nonZeroCount - 2);
     df.reserve(required_size);
     beatPeriod.reserve(required_size);
@@ -96,7 +97,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
     }
 
     TempoTrackV2 tt(m_sampleRate, m_stepSizeFrames);
-    tt.calculateBeatPeriod(df, beatPeriod);
+    tt.calculateBeatPeriod(df, beatPeriod, tempi);
 
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);

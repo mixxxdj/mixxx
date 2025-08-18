@@ -7,6 +7,7 @@
 #include <QtGlobal>
 
 #include "library/coverartcache.h"
+#include "library/dao/genredao.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
@@ -14,6 +15,7 @@
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
 #include "library/tabledelegates/defaultdelegate.h"
+#include "library/tabledelegates/genredelegate.h"
 #include "library/tabledelegates/keydelegate.h"
 #include "library/tabledelegates/locationdelegate.h"
 #include "library/tabledelegates/multilineeditdelegate.h"
@@ -387,6 +389,12 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 pOverviewDelegate,
                 &OverviewDelegate::slotInhibitLazyLoading);
         return pOverviewDelegate;
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE)) {
+        // reloadGenreData();
+        GenreDao& genreDao = m_pTrackCollectionManager
+                                     ->internalCollection()
+                                     ->getGenreDao();
+        return new GenreDelegate(&genreDao, this);
     }
     return new DefaultDelegate(pTableView);
 }

@@ -9,6 +9,7 @@
 #include "library/starrating.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/genre/genreschema.h"
 #include "mixer/playermanager.h"
 #include "moc_basesqltablemodel.cpp"
 #include "track/keyutils.h"
@@ -209,6 +210,81 @@ void BaseSqlTableModel::select() {
 
     PerformanceTimer time;
     time.start();
+
+    if (m_tableName.startsWith("genre")) {
+        QString queryStringDropView = QString("DROP VIEW IF EXISTS %1 ").arg(m_tableName);
+        FwdSqlQuery(m_database, queryStringDropView).execPrepared();
+        QStringList columns;
+        QString genreId = m_tableName;
+        genreId = genreId.replace("genre_", "");
+        columns << LIBRARYTABLE_ID
+                << "'' AS " + LIBRARYTABLE_PREVIEW
+                << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+
+        // old based on genre_tracks
+        QString queryStringTempView =
+                QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                        "SELECT %2 FROM %3 "
+                        "WHERE %4 IN (SELECT %5 FROM %6 WHERE %7 = %8) "
+                        "AND %9=0")
+                        .arg(m_tableName,                   // 1
+                                columns.join(","),          // 2
+                                LIBRARY_TABLE,              // 3
+                                LIBRARYTABLE_ID,            // 4
+                                GENRETRACKSTABLE_TRACKID,   // 5
+                                GENRE_TRACKS_TABLE,         // 6
+                                GENRETRACKSTABLE_GENREID,   // 7
+                                genreId,                    // 8
+                                LIBRARYTABLE_MIXXXDELETED); // 9
+                                                            // qDebug() <<
+                                                            // "[BASESQLTABLEMODEL]
+                                                            // [SELECT] ->
+                                                            // [GENRES] Rebuild
+                                                            // temp view ->
+                                                            // queryStringTempView
+                                                            // " <<
+                                                            // queryStringTempView;
+        //// convert to not using henre_tracks
+        // QStringList genreTags;
+        ////genreTags << QString("##%1##").arg(genreId.toString());
+        // genreTags << QString("##%1##").arg(genreId);
+
+        //// find existing display_group for genreId
+        // QSqlQuery displayGroupQuery(m_database);
+        // displayGroupQuery.prepare("SELECT id FROM genres WHERE display_group = :group_id");
+        // displayGroupQuery.bindValue(":group_id", genreId);
+
+        // if (!displayGroupQuery.exec()) {
+        //     qWarning() << "[GenreStorage] Failed to load display group
+        //     members:" << displayGroupQuery.lastError().text();
+        // } else {
+        //     while (displayGroupQuery.next()) {
+        //         genreTags <<
+        //         QString("##%1##").arg(displayGroupQuery.value(0).toInt());
+        //     }
+        // }
+
+        //// construct where-clause
+        // QStringList likeClauses;
+        // for (const QString& tag : genreTags) {
+        //     likeClauses << QString("library.genre LIKE '%%1%'").arg(tag);
+        // }
+        // QString whereClause = likeClauses.join(" OR ");
+
+        //// create temp view query
+        // QString queryStringTempView =
+        //         QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        //                 "SELECT %2 FROM %3 "
+        //                 "WHERE (%4) AND %5=0")
+        //                 .arg(m_tableName,
+        //                         columns.join(","),
+        //                         LIBRARY_TABLE,
+        //                         whereClause,
+        //                         LIBRARYTABLE_MIXXXDELETED);
+
+        // qDebug() << "[BaseSqlTableModel] -> select -> queryString: " << queryStringTempView;
+        FwdSqlQuery(m_database, queryStringTempView).execPrepared();
+    }
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -565,7 +641,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_trackSourceOrderBy.append(first ? "ORDER BY " : ", ");
             m_trackSourceOrderBy.append(sort_field);
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ? " ASC" : " DESC");
-            //qDebug() << m_trackSourceOrderBy;
+            // qDebug() << m_trackSourceOrderBy;
             first = false;
         }
     }
@@ -581,7 +657,7 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
     int count = parent.isValid() ? 0 : m_rowInfo.size();
-    //qDebug() << "rowCount()" << parent << count;
+    // qDebug() << "rowCount()" << parent << count;
     return count;
 }
 
@@ -691,8 +767,8 @@ QVariant BaseSqlTableModel::rawValue(
         // on the fly. This will be a steep penalty to pay if there are tons
         // of these tracks in the table that are not cached.
         qDebug() << __FILE__ << __LINE__
-                    << "Track" << trackId
-                    << "was not present in cache and had to be manually fetched.";
+                 << "Track" << trackId
+                 << "was not present in cache and had to be manually fetched.";
         m_trackSource->ensureCached(trackId);
     }
     return m_trackSource->data(trackId, trackSourceColumn);
@@ -830,7 +906,8 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
-            //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
+            // qDebug() << "Row in this result set was updated. Signalling
+            // update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);
             emit dataChanged(topLeft, bottomRight);
@@ -849,7 +926,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+    select(); // Repopulate the data model.
 }
 
 QList<TrackRef> BaseSqlTableModel::getTrackRefs(

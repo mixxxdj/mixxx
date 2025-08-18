@@ -18,6 +18,7 @@
 #include "util/logger.h"
 
 namespace {
+const char* kSettingsGroupHeader = "Settings for %1";
 constexpr int kColumnEnabled = 0;
 constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
@@ -416,8 +417,9 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     }
 
     // Set groupbox header
-    //: Settings for broadcast profile, %1 is the profile name placeholder
-    const QString headerText = tr("Settings for %1").arg(profile->getProfileName());
+    QString headerText =
+            QString(tr(kSettingsGroupHeader))
+            .arg(profile->getProfileName());
     groupBoxProfileSettings->setTitle(headerText);
 
     rbPasswordCleartext->setChecked(!profile->secureCredentialStorage());

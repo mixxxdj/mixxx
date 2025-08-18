@@ -217,18 +217,6 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefWaveform::slotSetUntilMarkTextHeightLimit);
-    connect(stemReorderLayerOnChangedCheckBox,
-            &QCheckBox::clicked,
-            this,
-            &DlgPrefWaveform::slotStemReorderOnChange);
-    connect(stemOpacitySpinBox,
-            &QDoubleSpinBox::valueChanged,
-            this,
-            &DlgPrefWaveform::slotStemOpacity);
-    connect(stemOutlineOpacitySpinBox,
-            &QDoubleSpinBox::valueChanged,
-            this,
-            &DlgPrefWaveform::slotStemOutlineOpacity);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -317,10 +305,6 @@ void DlgPrefWaveform::slotUpdate() {
     untilMarkTextHeightLimitComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(
                     factory->getUntilMarkTextHeightLimit()));
-
-    stemReorderLayerOnChangedCheckBox->setChecked(factory->isStemReorderOnChange());
-    stemOpacitySpinBox->setValue(factory->getStemOpacity());
-    stemOutlineOpacitySpinBox->setValue(factory->getStemOutlineOpacity());
 
     mixxx::OverviewType cfgOverviewType =
             m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
@@ -688,17 +672,6 @@ void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
 void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
     WaveformWidgetFactory::instance()->setUntilMarkTextHeightLimit(
             WaveformWidgetFactory::toUntilMarkTextHeightLimit(index));
-}
-
-void DlgPrefWaveform::slotStemOpacity(float value) {
-    WaveformWidgetFactory::instance()->setStemOpacity(value);
-}
-void DlgPrefWaveform::slotStemReorderOnChange(bool value) {
-    WaveformWidgetFactory::instance()->setStemReorderOnChange(value);
-}
-
-void DlgPrefWaveform::slotStemOutlineOpacity(float value) {
-    WaveformWidgetFactory::instance()->setStemOutlineOpacity(value);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
