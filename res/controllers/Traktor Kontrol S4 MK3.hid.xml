@@ -691,7 +691,7 @@
             </row>
         </group>
     </settings>
-    <controller id="Traktor">
+    <controller id="Traktor" namespace="S4MK3">
         <scriptfiles>
             <file filename="Traktor-Kontrol-S4-MK3.js" functionprefix="TraktorS4MK3"/>
         </scriptfiles>
