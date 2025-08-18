@@ -3163,6 +3163,11 @@ class S4Mk3MotorManager {
                 // targetRate is 1.0 +/- pitch adjustment. So +8% pitch means targetRate == 1.08
                 targetRate = engine.getValue(this.deck.group, "rate_ratio");
 
+                // if the performer is holding the REV button, spin the wheel backwards
+                if (engine.getValue(this.deck.group, "reverseroll")) {
+                    targetRate = -targetRate;
+                }
+
                 // First, determine the error between target vs measured
                 playbackError = targetRate - normalizedVelocity;
 
