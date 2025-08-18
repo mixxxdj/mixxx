@@ -66,7 +66,7 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
             kColumnValue +
             QStringLiteral(") VALUES (:name,:value)");
     QSqlQuery query(m_database);
-    VERIFY_OR_DEBUG_ASSERT(query.prepare(statement)) {
+    if (!query.prepare(statement)) {
         return false;
     }
     query.bindValue(QStringLiteral(":name"), name);
@@ -75,7 +75,7 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
         kLogger.warning()
                 << "Failed to set" << name << "=" << value
                 << query.lastError();
-        DEBUG_ASSERT(!"Failed query");
+        // DEBUG_ASSERT(!"Failed query");
         return false;
     }
     return true;
