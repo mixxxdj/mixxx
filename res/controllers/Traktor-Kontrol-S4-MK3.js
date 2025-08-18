@@ -21,6 +21,30 @@ const LedColors = {
     white: 68,
 };
 
+const LedColorMap = {
+    0xCC0000: LedColors.red,
+    0xCC5E00: LedColors.carrot,
+    0xCC7800: LedColors.orange,
+    0xCC9200: LedColors.honey,
+
+    0xCCCC00: LedColors.yellow,
+    0x81CC00: LedColors.lime,
+    0x00CC00: LedColors.green,
+    0x00CC49: LedColors.aqua,
+
+    0x00CCCC: LedColors.celeste,
+    0x0091CC: LedColors.sky,
+    0x0000CC: LedColors.blue,
+    0xCC00CC: LedColors.purple,
+
+    0xAD65FF: LedColors.fuscia,
+    0xCC0079: LedColors.magenta,
+    0xCC477E: LedColors.azalea,
+    0xCC4761: LedColors.salmon,
+
+    0xCCCCCC: LedColors.white,
+};
+
 
 // This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
 const KeyboardColors = [
@@ -163,6 +187,8 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
+// Whether or not to use the ShareDataAPI, available in the PR 12199.
+const UseSharedDataAPI = engine.getSetting("useSharedDataAPI");
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
@@ -206,6 +232,17 @@ const SamplerCrossfaderAssign = true;
 
 const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
+
+/*
+ * Kontrol S4 Mk3 hardware-specific constants
+ */
+const wheelRelativeMax = 2 ** 32 - 1;
+const wheelAbsoluteMax = 2879;
+
+const wheelTimerMax = 2 ** 32 - 1;
+
+const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
+
 
 /*
  * HID report parsing library
@@ -1355,6 +1392,7 @@ Pot.prototype.inBit = 0;
 Pot.prototype.inBitLength = 16;
 
 Encoder.prototype.inBitLength = 4;
+Encoder.prototype.tickDelta = 1 / (2 << Encoder.prototype.inBitLength);
 
 // valid range 0 - 3, but 3 makes some colors appear whitish
 Button.prototype.brightnessOff = 0;
@@ -1366,38 +1404,8 @@ Button.prototype.uncoloredOutput = function(value) {
     const color = (value > 0) ? (this.color || LedColors.white) + this.brightnessOn : LedColors.off;
     this.send(color);
 };
-Button.prototype.colorMap = new ColorMapper({
-    0xCC0000: LedColors.red,
-    0xCC5E00: LedColors.carrot,
-    0xCC7800: LedColors.orange,
-    0xCC9200: LedColors.honey,
+Button.prototype.colorMap = new ColorMapper(LedColorMap);
 
-    0xCCCC00: LedColors.yellow,
-    0x81CC00: LedColors.lime,
-    0x00CC00: LedColors.green,
-    0x00CC49: LedColors.aqua,
-
-    0x00CCCC: LedColors.celeste,
-    0x0091CC: LedColors.sky,
-    0x0000CC: LedColors.blue,
-    0xCC00CC: LedColors.purple,
-
-    0xCC0091: LedColors.fuscia,
-    0xCC0079: LedColors.magenta,
-    0xCC477E: LedColors.azalea,
-    0xCC4761: LedColors.salmon,
-
-    0xCCCCCC: LedColors.white,
-});
-
-const wheelRelativeMax = 2 ** 32 - 1;
-const wheelAbsoluteMax = 2879;
-
-const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
-
-const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
-const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
 
 const wheelLEDmodes = {
     off: 0,
