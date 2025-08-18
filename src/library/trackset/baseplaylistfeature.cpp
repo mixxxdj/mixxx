@@ -698,6 +698,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         QString title;
         QString artist;
         QString duration; // only set if found
+        QString album;    // only set if found
     };
 
     QList<PlaylistEntry> playlistEntries;
@@ -717,6 +718,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
     int titleIndex = -1;
     int artistIndex = -1;
     int durationIndex = -1;
+    int albumIndex = -1;
 
     for (qsizetype i = 0; i < headerFields.size(); ++i) {
         const QString colName = headerFields[i].trimmed().toLower();
@@ -726,6 +728,8 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             artistIndex = i;
         } else if (colName == "duration" || colName == "time") {
             durationIndex = i;
+        } else if (colName == "album") {
+            albumIndex = i;
         }
     }
 
@@ -750,10 +754,15 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             continue;
         }
 
-        entry.title = cleanString(fields[titleIndex]);
-        entry.artist = cleanString(fields[artistIndex]);
+        // entry.title = cleanString(fields[titleIndex]);
+        // entry.artist = cleanString(fields[artistIndex]);
+        entry.title = fields[titleIndex];
+        entry.artist = fields[artistIndex];
         if (durationIndex != -1 && durationIndex < fields.size()) {
             entry.duration = cleanString(fields[durationIndex]);
+        }
+        if (albumIndex != -1 && albumIndex < fields.size()) {
+            entry.album = cleanString(fields[albumIndex]);
         }
 
         playlistEntries.append(entry);
@@ -896,9 +905,17 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         QString whereClause;
         if (!conditions.isEmpty()) {
-            const QString conjunction = checkMatchBoth->isChecked() ? QStringLiteral(" AND ")
-                                                                    : QStringLiteral(" OR ");
-            whereClause = QStringLiteral("WHERE ") + conditions.join(conjunction);
+            if (!title.isEmpty() && !artist.isEmpty()) {
+                const QString conjunction = checkMatchBoth->isChecked() ? QStringLiteral(" AND ")
+                                                                        : QStringLiteral(" OR ");
+                whereClause = QStringLiteral("WHERE ") + conditions.join(conjunction);
+            } else if (title.isEmpty() && !artist.isEmpty()) {
+                whereClause = QStringLiteral("WHERE ") + artistWhere;
+            } else if (!title.isEmpty() && artist.isEmpty()) {
+                whereClause = QStringLiteral("WHERE ") + titleWhere;
+            } else {
+                whereClause = QStringLiteral("WHERE library.id = -1");
+            }
         }
 
         QSqlQuery query(database);
@@ -935,7 +952,6 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
         while (query.next()) {
             const int row = tableCandidates->rowCount();
             tableCandidates->insertRow(row);
-
             tableCandidates->setItem(row, 0, makeItemWithTooltip(query.value("title").toString()));
             tableCandidates->setItem(row,
                     1,
@@ -979,20 +995,28 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
 
         const auto& entry = playlistEntries[currentIndex];
         labelCurrentEntry->setText(QObject::tr(
-                "Select a corresponding track for importfile-entry (%1/%2):<br>"
-                "<b><span style='font-size:14pt;'>%3 - %4%5</span></b>")
+                "<span style='font-size:12pt;'>Select a corresponding track "
+                "for importfile-entry (%1/%2):</spam><br>"
+                "<b><span style='font-size:14pt;'>%3 - %4%5%6</span></b>")
                         .arg(currentIndex + 1)
                         .arg(playlistEntries.size())
                         .arg(entry.title,
                                 entry.artist,
                                 entry.duration.isEmpty()
                                         ? QString()
-                                        : QString(" [%1]").arg(
-                                                  entry.duration)));
+                                        : QString(" [%1]").arg(entry.duration),
+                                entry.album.isEmpty()
+                                        ? QString()
+                                        : QString("<br><span "
+                                                  "style='font-size:12pt;'>"
+                                                  "Album: %1</spam>")
+                                                  .arg(entry.album)));
 
         // Fill line edits with current CSV entry
-        lineEditTitle->setText(entry.title);
-        lineEditArtist->setText(entry.artist);
+        // lineEditTitle->setText(entry.title);
+        lineEditTitle->setText(cleanString(entry.title));
+        // lineEditArtist->setText(entry.artist);
+        lineEditArtist->setText(cleanString(entry.artist));
 
         tableCandidates->setSortingEnabled(false);
         runSearch(entry.title, entry.artist);
