@@ -829,7 +829,7 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             headerItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }
-
+    tableCandidates->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableCandidates->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableCandidates->setColumnHidden(4, true);
     tableCandidates->sortItems(0, Qt::AscendingOrder);
@@ -1105,8 +1105,11 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
                 if (currentIndex < playlistEntries.size()) {
                     const auto& entry = playlistEntries[currentIndex - 1];
                     if (reportStream.device()) {
-                        reportStream << entry.artist << " - " << entry.title << " - "
-                                     << (imported == 1 ? "imported" : "not imported") << "\n";
+                        reportStream
+                                << entry.artist.trimmed() << " - "
+                                << entry.title.trimmed() << " - "
+                                << (imported == 1 ? "imported" : "not imported")
+                                << "\n";
                         reportStream.flush();
                     }
                 }
@@ -1124,8 +1127,11 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
                     const auto& entry = playlistEntries[currentIndex - 1];
                     if (reportStream.device()) {
                         // "Artist - Title - imported|not imported"
-                        reportStream << entry.artist << " - " << entry.title << " - "
-                                     << (imported == 1 ? "imported" : "not imported") << "\n";
+                        reportStream
+                                << entry.artist.trimmed() << " - "
+                                << entry.title.trimmed() << " - "
+                                << (imported == 1 ? "imported" : "not imported")
+                                << "\n";
                         reportStream.flush();
                     }
                 }
@@ -1140,10 +1146,12 @@ void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
             &dialog,
             [&dialog, &playlistEntries, &currentIndex, &reportStream]() {
                 // Write "not imported" for all remaining entries
-                for (int i = currentIndex; i < playlistEntries.size(); ++i) {
+                for (int i = currentIndex - 1; i < playlistEntries.size(); ++i) {
                     const auto& entry = playlistEntries[i];
                     if (reportStream.device()) {
-                        reportStream << entry.artist << " - " << entry.title << " - not imported\n";
+                        reportStream << entry.artist.trimmed() << " - "
+                                     << entry.title.trimmed()
+                                     << " - not imported\n";
                     }
                 }
                 reportStream.flush();
