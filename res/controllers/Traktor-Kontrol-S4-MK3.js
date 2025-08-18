@@ -153,6 +153,18 @@ const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize8") || "double"
 ];
 
+// Predefined beatjump.
+const BeatJumps = [
+    engine.getSetting("beatJumpSize1"), // Default to 1
+    engine.getSetting("beatJumpSize2"), // Default to 2
+    engine.getSetting("beatJumpSize3"), // Default to 4
+    engine.getSetting("beatJumpSize4"), // Default to 8
+    engine.getSetting("beatJumpSize5"), // Default to 16
+    engine.getSetting("beatJumpSize6"), // Default to 32
+    engine.getSetting("beatJumpSize7"), // Default to 64
+    engine.getSetting("beatJumpSize8"), // Default to "beatjump"
+];
+
 
 // Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the scratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
@@ -241,11 +253,16 @@ const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
 
 // The active tab ID. This is used when SharedDataAPI is active, to communicate with the screens which tab is currently selected.
 const ActiveTabPadID = {
-    record: 8,
+    jump: 1,
+    hotcue: 2,
+    roll: 3,
     samples: 4,
+    loop: 5,
     mute: 7,
-    stems: 5,
-    cue: 11,
+    record: 8,
+    tone: 11,
+    fxbank1: 12,
+    fxbank2: 13,
 };
 
 const wheelLEDmodes = {
@@ -1217,6 +1234,61 @@ class BeatLoopRollButton extends TriggerButton {
             this.send(LedColors.white + (value ? this.brightnessOn : this.brightnessOff));
         } else {
             this.send(this.color);
+        }
+    }
+}
+
+/*
+ * Represent a pad button that will trigger a pre-defined beatjump as set in BeatJumps.
+ */
+class BeatJumpButton extends TriggerButton {
+    constructor(options) {
+        if (options.number === undefined || !Number.isInteger(options.number) || options.number < 0 || options.number > 7) {
+            throw Error("BeatJumpButton must have a number property of an integer between 0 and 7");
+        }
+        if (BeatJumps[options.number] === "beatjump") {
+            options.key = "beatjump_forward";
+        } else if (BeatJumps[options.number] === "half") {
+            options.key = "beatjump_size_halve";
+        } else if (BeatJumps[options.number] === "double") {
+            options.key = "beatjump_size_double";
+        } else {
+            const size = parseFloat(BeatJumps[options.number]);
+            if (isNaN(size)) {
+                throw Error(`BeatJumpButton ${options.number}'s size "${BeatJumps[options.number]}" is invalid. Must be a float, or the literal 'beatjump', 'half' or 'double'`);
+            }
+            options.key = `beatjump_${size}_forward`;
+        }
+        super(options);
+        if (this.deck === undefined) {
+            throw Error("BeatJumpButton must have a deck attached to it");
+        }
+
+        this.outConnect();
+    }
+    shift() {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.setKey("beatjump_backward");
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            const size = parseFloat(BeatJumps[this.number]);
+            this.setKey(`beatjump_${size}_backward`);
+        }
+    }
+    unshift() {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.setKey("beatjump_forward");
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            const size = parseFloat(BeatJumps[this.number]);
+            this.setKey(`beatjump_${size}_forward`);
+        }
+    }
+    output(value) {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.send(LedColors.salmon);
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            this.send(this.color + (value ? this.brightnessOn : this.brightnessOff));
+        } else {
+            this.send(LedColors.white);
         }
     }
 }
@@ -2572,6 +2644,7 @@ class S4Mk3Deck extends Deck {
         ];
         const hotcuePage2 = Array(8).fill({});
         const hotcuePage3 = Array(8).fill({});
+        const beatJumpPage = Array(8).fill({});
         const samplerOrBeatloopRollPage = Array(8).fill({});
         const keyboard = Array(8).fill({});
         const stem = [
@@ -2610,6 +2683,10 @@ class S4Mk3Deck extends Deck {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
             hotcuePage2[i] = new HotcueButton({number: i + 1, deck: this});
             hotcuePage3[i] = new HotcueButton({number: i + 13, deck: this});
+            beatJumpPage[i] = new BeatJumpButton({
+                number: i,
+                deck: this,
+            });
             if (UseBeatloopRollInsteadOfSampler) {
                 samplerOrBeatloopRollPage[i] = new BeatLoopRollButton({
                     number: i,
@@ -2686,6 +2763,7 @@ class S4Mk3Deck extends Deck {
             samplerPage: 3,
             keyboard: 5,
             stem: 6,
+            beatJump: 6,
         };
         switch (DefaultPadLayout) {
         case DefaultPadLayoutHotcue:
@@ -2693,11 +2771,15 @@ class S4Mk3Deck extends Deck {
             this.currentPadLayer = this.padLayers.hotcuePage2;
             break;
         case DefaultPadLayoutSamplerBeatloop:
+            switchPadLayer(this, beatJumpPage);
+            this.currentPadLayer = this.padLayers.beatJump;
+            break;
+        case DefaultPadLayoutSamplerBeatloop:
             switchPadLayer(this, samplerOrBeatloopRollPage);
             this.currentPadLayer = this.padLayers.samplerPage;
             break;
         case DefaultPadLayoutKeyboard:
-            switchPadLayer(this, this.keyboard);
+            switchPadLayer(this, keyboard);
             this.currentPadLayer = this.padLayers.keyboard;
             break;
         default:
@@ -3723,6 +3805,7 @@ class S4MK3 {
                 "[Channel4]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[3])) - 1,
             },
             rollpadSize: BeatLoopRolls,
+            beatjumpSize: BeatJumps,
             selectedQuickFX: null,
             selectedHotcue: {
                 "[Channel1]": null,
