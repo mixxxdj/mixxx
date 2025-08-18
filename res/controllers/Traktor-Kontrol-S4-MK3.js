@@ -383,13 +383,13 @@ class Component {
         this.send(value);
     }
     outConnect() {
-        if (this.outKey !== undefined && this.group !== undefined) {
+        if (this.outKey !== undefined && this.group !== undefined && this.outConnections.length === 0) {
             const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
             if (connection) {
-                this.outConnections[0] = connection;
+                this.outConnections.push(connection);
             } else {
-                console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
+                console.warn(`Unable to connect '${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -401,6 +401,7 @@ class Component {
     }
     outTrigger() {
         for (const connection of this.outConnections) {
+            if (!connection) { continue; }
             connection.trigger();
         }
     }
@@ -428,6 +429,9 @@ class ComponentContainer extends Component {
     }
     reconnectComponents(callback) {
         for (const component of this) {
+            if (typeof component.unshift === "function" && component.unshift.length === 0) {
+                component.unshift();
+            }
             if (typeof component.outDisconnect === "function" && component.outDisconnect.length === 0) {
                 component.outDisconnect();
             }
@@ -666,8 +670,6 @@ class TriggerButton extends Button {
 class PowerWindowButton extends Button {
     constructor(options) {
         super(options);
-        this.isLongPressed = false;
-        this.longPressTimer = 0;
     }
     onShortPress() {
         script.toggleControl(this.group, this.inKey);
@@ -784,10 +786,10 @@ class HotcueButton extends PushButton {
         }
     }
     outConnect() {
-        if (undefined !== this.group) {
+        if (undefined !== this.group && this.outConnections.length === 0) {
             const connection0 = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             if (connection0) {
-                this.outConnections[0] = connection0;
+                this.outConnections.push(connection0);
             } else {
                 console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
             }
@@ -796,7 +798,7 @@ class HotcueButton extends PushButton {
                 this.output(engine.getValue(this.group, this.outKey));
             });
             if (connection1) {
-                this.outConnections[1] = connection1;
+                this.outConnections.push(connection1);
             } else {
                 console.warn(`Unable to connect ${this.group}.${this.colorKey}' to the controller output. The control appears to be unavailable.`);
             }
@@ -856,13 +858,13 @@ class KeyboardButton extends PushButton {
         }
     }
     outConnect() {
-        if (undefined !== this.group) {
+        if (undefined !== this.group && this.outConnections.length === 0) {
             const connection = engine.makeConnection(this.group, "key", (key) => {
                 const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
                 this.output(key === this.number + offset);
             });
             if (connection) {
-                this.outConnections[0] = connection;
+                this.outConnections.push(connection);
             } else {
                 console.warn(`Unable to connect ${this.group}.key' to the controller output. The control appears to be unavailable.`);
             }
@@ -952,16 +954,16 @@ class SamplerButton extends Button {
         }
     }
     outConnect() {
-        if (undefined !== this.group) {
+        if (undefined !== this.group && this.outConnections.length === 0) {
             const connection0 = engine.makeConnection(this.group, "play", this.output.bind(this));
             if (connection0) {
-                this.outConnections[0] = connection0;
+                this.outConnections.push(connection0);
             } else {
                 console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (connection1) {
-                this.outConnections[1] = connection1;
+                this.outConnections.push(connection1);
             } else {
                 console.warn(`Unable to connect ${this.group}.track_loaded' to the controller output. The control appears to be unavailable.`);
             }
@@ -1366,16 +1368,16 @@ class QuickEffectButton extends Button {
         this.outConnections[1].trigger();
     }
     outConnect() {
-        if (this.group !== undefined) {
+        if (this.group !== undefined && this.outConnections.length === 0) {
             const connection0 = engine.makeConnection(this.group, "loaded_chain_preset", this.presetLoaded.bind(this));
             if (connection0) {
-                this.outConnections[0] = connection0;
+                this.outConnections.push(connection0);
             } else {
                 console.warn(`Unable to connect ${this.group}.loaded_chain_preset' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, "enabled", this.output.bind(this));
             if (connection1) {
-                this.outConnections[1] = connection1;
+                this.outConnections.push(connection1);
             } else {
                 console.warn(`Unable to connect ${this.group}.enabled' to the controller output. The control appears to be unavailable.`);
             }
@@ -1782,10 +1784,10 @@ class S4Mk3Deck extends Deck {
                 this.setKey("loop_enabled");
             },
             outConnect: function() {
-                if (this.outKey !== undefined && this.group !== undefined) {
+                if (this.outKey !== undefined && this.group !== undefined && this.outConnections.length === 0) {
                     const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                     if (connection) {
-                        this.outConnections[0] = connection;
+                        this.outConnections.push(connection);
                     } else {
                         console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
                     }
@@ -2132,7 +2134,7 @@ class S4Mk3Deck extends Deck {
                 });
                 // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
                 if (connection) {
-                    this.outConnections[0] = connection;
+                    this.outConnections.push(connection);
                 } else {
                     console.warn(`Unable to connect ${this.group}.focused_widget' to the controller output. The control appears to be unavailable.`);
                 }
