@@ -151,6 +151,12 @@ class WTrackTableView : public WLibraryTableView {
   protected:
     QString getModelStateKey() const override;
 
+    // Returns the list of selected row indices, or an empty list if none are selected.
+    QModelIndexList getSelectedRows() const;
+
+    // Returns the current TrackModel, or returns NULL if none is set.
+    TrackModel* getTrackModel() const;
+
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void dragMoveEvent(QDragMoveEvent * event) override;
@@ -166,13 +172,8 @@ class WTrackTableView : public WLibraryTableView {
     // when dragging.
     void mouseMoveEvent(QMouseEvent *pEvent) override;
 
-    // Returns the list of selected row indices, or an empty list if none are selected.
-    QModelIndexList getSelectedRows() const;
     // Returns the list of selected row numbers, or an empty list if none are selected.
     QList<int> getSelectedRowNumbers() const;
-
-    // Returns the current TrackModel, or returns NULL if none is set.
-    TrackModel* getTrackModel() const;
 
     void initTrackMenu();
     void showTrackMenu(const QPoint pos, const QModelIndex& index);
