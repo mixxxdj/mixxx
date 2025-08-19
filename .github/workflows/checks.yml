@@ -24,7 +24,7 @@ jobs:
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Add clazy PPA
         if: matrix.name == 'clazy'
         # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
