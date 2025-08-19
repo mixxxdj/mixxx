@@ -310,13 +310,13 @@ class Track : public QObject {
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
-            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            mixxx::RgbColor color = mixxx::predefinedcolorpalettes::kDefaultCueColor);
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
             double startPositionSamples,
             double endPositionSamples,
-            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+            mixxx::RgbColor color = mixxx::predefinedcolorpalettes::kDefaultCueColor) {
         return createAndAddCue(type,
                 hotCueIndex,
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(

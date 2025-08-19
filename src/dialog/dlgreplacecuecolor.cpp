@@ -86,7 +86,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);
     ColorPalette hotcuePalette = colorPaletteSettings.getHotcueColorPalette();
-    mixxx::RgbColor firstColor = mixxx::PredefinedColorPalettes::kDefaultCueColor;
+    mixxx::RgbColor firstColor = mixxx::predefinedcolorpalettes::kDefaultCueColor;
     DEBUG_ASSERT(hotcuePalette.size() > 0);
     if (hotcuePalette.size() > 0) { // Should always be true
         firstColor = hotcuePalette.at(0);
@@ -118,7 +118,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     // Set up 'Current color' button
     setButtonColor(pushButtonCurrentColor,
             mixxx::RgbColor::toQColor(
-                    mixxx::PredefinedColorPalettes::kDefaultCueColor));
+                    mixxx::predefinedcolorpalettes::kDefaultCueColor));
 
     // Update apply button when the current color comparison combobox is
     // modified
@@ -136,7 +136,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
     m_pCurrentColorPickerAction->setSelectedColor(
-            mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            mixxx::predefinedcolorpalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
             this,
