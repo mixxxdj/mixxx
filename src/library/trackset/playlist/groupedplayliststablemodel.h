@@ -3,21 +3,25 @@
 #include "library/trackset/tracksettablemodel.h"
 #include "util/duration.h"
 
-class PlaylistTableModel final : public TrackSetTableModel {
+class GroupedPlaylistsTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:
-    PlaylistTableModel(QObject* parent,
+    GroupedPlaylistsTableModel(
+            QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
             UserSettingsPointer pConfig,
             const char* settingsNamespace,
             bool keepHiddenTracks = false);
-    ~PlaylistTableModel() final = default;
+    ~GroupedPlaylistsTableModel() final = default;
 
     void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
+
+    void selectPlaylistGroup(const QString& groupName);
+    QList<QVariantMap> getGroupedPlaylists();
 
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
@@ -55,4 +59,5 @@ class PlaylistTableModel final : public TrackSetTableModel {
     bool m_keepHiddenTracks;
     QHash<int, QString> m_searchTexts;
     UserSettingsPointer m_pConfig;
+    int m_selectedPlaylist;
 };
