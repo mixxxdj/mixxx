@@ -118,6 +118,7 @@ class DeckAttributes : public QObject {
     int index;
     QString group;
     double startPos;     // Set in toDeck nature
+    double playNextPos;  // Needed for Radio Laneway Crossfade
     double fadeBeginPos; // set in fromDeck nature
     double fadeEndPos;   // set in fromDeck nature
     bool isFromDeck;
@@ -164,7 +165,8 @@ class AutoDJProcessor : public QObject {
         FadeAtOutroStart,
         FixedFullTrack,
         FixedSkipSilence,
-        FixedStartCenterSkipSilence
+        FixedStartCenterSkipSilence,
+        RadioLanewayCrossfade
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -265,6 +267,9 @@ class AutoDJProcessor : public QObject {
     double getFirstSoundSecond(DeckAttributes* pDeck);
     double getLastSoundSecond(DeckAttributes* pDeck);
     double getEndSecond(DeckAttributes* pDeck);
+    double getMainCueSecond(DeckAttributes* pDeck);
+    double getFadeInSecond(DeckAttributes* pDeck);
+    double getFadeOutSecond(DeckAttributes* pDeck);
     double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
@@ -295,6 +300,7 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
+    bool m_isNowStartingEarly;
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
