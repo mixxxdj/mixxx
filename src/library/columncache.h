@@ -9,6 +9,8 @@
 
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
+// When you add columns, remember to also add them to
+// constexpr ColumnProperties kColumnPropertiesByEnum
 class ColumnCache : public QObject {
   Q_OBJECT
   public:
@@ -44,6 +46,7 @@ class ColumnCache : public QObject {
         COLUMN_LIBRARYTABLE_KEY,
         COLUMN_LIBRARYTABLE_KEY_ID,
         COLUMN_LIBRARYTABLE_BPM_LOCK,
+        COLUMN_LIBRARYTABLE_BEATS_VERSION,
         COLUMN_LIBRARYTABLE_PREVIEW,
         COLUMN_LIBRARYTABLE_COLOR,
         COLUMN_LIBRARYTABLE_COVERART,

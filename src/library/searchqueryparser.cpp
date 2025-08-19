@@ -262,7 +262,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                         // restore = operator removed by getTextArgument()
                         argument.prepend('=');
                     }
-                    pNode = std::make_unique<BpmFilterNode>(argument, fuzzy, negate);
+                    pNode = std::make_unique<BpmFilterNode>(
+                            argument,
+                            fuzzy,
+                            negate,
+                            m_pTrackCollection->database());
                 }
             }
         } else {
