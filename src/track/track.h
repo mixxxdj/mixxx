@@ -310,20 +310,32 @@ class Track : public QObject {
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
-            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor,
+            double stem1vol = 1.0,
+            double stem2vol = 1.0,
+            double stem3vol = 1.0,
+            double stem4vol = 1.0);
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
             double startPositionSamples,
             double endPositionSamples,
-            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor,
+            double stem1vol = 1.0,
+            double stem2vol = 1.0,
+            double stem3vol = 1.0,
+            double stem4vol = 1.0) {
         return createAndAddCue(type,
                 hotCueIndex,
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         startPositionSamples),
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         endPositionSamples),
-                color);
+                color,
+                stem1vol,
+                stem2vol,
+                stem3vol,
+                stem4vol);
     }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;

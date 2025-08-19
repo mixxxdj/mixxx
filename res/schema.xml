@@ -584,4 +584,15 @@ reapplying those migrations.
       UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
+  <revision version="40" min_compatible="3">
+    <description>
+      Add StemVols to Cues Table.
+    </description>
+    <sql>
+      ALTER TABLE cues ADD COLUMN stem_1_vol REAL DEFAULT 1.00 NOT NULL;
+      ALTER TABLE cues ADD COLUMN stem_2_vol REAL DEFAULT 1.00 NOT NULL;
+      ALTER TABLE cues ADD COLUMN stem_3_vol REAL DEFAULT 1.00 NOT NULL;
+      ALTER TABLE cues ADD COLUMN stem_4_vol REAL DEFAULT 1.00 NOT NULL;
+    </sql>
+  </revision>
 </schema>

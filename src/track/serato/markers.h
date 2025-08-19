@@ -100,7 +100,6 @@ class SeratoMarkersEntry {
     SeratoStoredHotcueColor m_color;
     bool m_hasStartPosition;
     bool m_hasEndPosition;
-    ;
     bool m_isLocked;
     quint32 m_startPosition;
     quint32 m_endPosition;
