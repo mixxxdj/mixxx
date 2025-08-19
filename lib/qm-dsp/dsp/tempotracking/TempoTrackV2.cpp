@@ -109,7 +109,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // then call viterbi decoding with weight vector and transition matrix
     // and get best path
 
-    int wv_len = 128;
+    const int wv_len = 128;
 
     // MEPD 28/11/12
     // the default value of inputtempo in the beat tracking plugin is 120
@@ -117,7 +117,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     // accordingly.
     // note: 60*44100/512 is a magic number
     // this might (will?) break if a user specifies a different frame rate for the onset detection function
-    double rayparam = (60*44100/512)/inputtempo;
+    const double rayparam = (60 * 44100 / 512.0) / inputtempo;
 
     // make rayleigh weighting curve
     d_vec_t wv(wv_len);
@@ -152,10 +152,21 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
 
     // Loop over the onset detection function half a window padding on both ends
     for (int i = -winlen / 2; i < df_len - winlen / 2; i += hopsize) {
-        for (int k = 0; k < winlen; k++) {
-            int j = i + k;
-            dfframe[k] = (j >= 0 && j < df_len) ? df[j] : 0.0;
+        int k = 0;
+        int l = winlen;
+
+        if (i < 0) {
+            k = -i;
+            std::fill(dfframe.begin(), dfframe.begin() + k, 0.0);
         }
+
+        if (i + l > df_len) {
+            l = df_len - i;
+            std::fill(dfframe.begin() + l, dfframe.end(), 0.0);
+        }
+        
+        std::copy(df.begin() + i + k, df.begin() + i + l,
+                      dfframe.begin() + k);
 
         // Apply the resonator comb filter (RCF) bank to the window
         // The result is a vector of filter responses for different periods.
