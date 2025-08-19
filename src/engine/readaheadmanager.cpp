@@ -1,13 +1,15 @@
 #include "engine/readaheadmanager.h"
 
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
 ReadAheadManager::ReadAheadManager()
-        : m_pLoopingControl(nullptr),
+        : m_pCueControl(nullptr),
+          m_pLoopingControl(nullptr),
           m_pRateControl(nullptr),
           m_currentPosition(0),
           m_pReader(nullptr),
@@ -18,7 +20,8 @@ ReadAheadManager::ReadAheadManager()
 
 ReadAheadManager::ReadAheadManager(CachingReader* pReader,
         LoopingControl* pLoopingControl)
-        : m_pLoopingControl(pLoopingControl),
+        : m_pCueControl(nullptr),
+          m_pLoopingControl(pLoopingControl),
           m_pRateControl(nullptr),
           m_currentPosition(0),
           m_pReader(pReader),
@@ -125,7 +128,9 @@ SINT ReadAheadManager::getNextSamples(double dRate,
         if (m_pRateControl) {
             m_pRateControl->notifyWrapAround(loopTriggerPosition, targetPosition);
         }
-        // TODO probably also useful for hotcue_X_indicator in CueControl::updateIndicators()
+        if (m_pCueControl) {
+            m_pCueControl->notifyWrapAround(loopTriggerPosition, targetPosition);
+        }
 
         // Jump to other end of loop or track.
         m_currentPosition = target;
@@ -206,6 +211,10 @@ SINT ReadAheadManager::getNextSamples(double dRate,
 
     // qDebug() << "read" << m_currentPosition << samples_from_reader;
     return samples_from_reader;
+}
+
+void ReadAheadManager::addCueControl(CueControl* pCueControl) {
+    m_pCueControl = pCueControl;
 }
 
 void ReadAheadManager::addRateControl(RateControl* pRateControl) {

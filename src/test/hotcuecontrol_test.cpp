@@ -1525,3 +1525,92 @@ TEST_F(HotcueControlTest, SavedLoopUseLoopInOutWhileActive) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pHotcue1Position);
     EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pHotcue1EndPosition);
 }
+
+TEST_F(HotcueControlTest, HotcueIndicatorTest) {
+    // Indicator should be activated only if
+    // * we jump to the hotcue (playing or stopped)
+    // * we cross the hotcue position while playing
+    // should not be activated if we jump over the hotcue
+    // Setup fake track with 120 bpm
+    createAndLoadFakeTrack();
+
+    constexpr mixxx::audio::FramePos hotcue1Pos(100);
+    constexpr mixxx::audio::FramePos hotcue2Pos(200);
+    constexpr mixxx::audio::FramePos beforeHotcue3Pos(9950);
+    constexpr mixxx::audio::FramePos hotcue3Pos(9998);
+    constexpr mixxx::audio::FramePos hotcue4Pos(10000);
+    constexpr mixxx::audio::FramePos hotcue5Pos(10002);
+
+    auto pHotcue3Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_3_activate");
+    auto pHotcue4Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_4_activate");
+    auto pHotcue5Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_5_activate");
+    auto pHotcue2Indicator = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_indicator");
+    auto pHotcue3Indicator = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_3_indicator");
+    auto pHotcue4Indicator = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_4_indicator");
+    auto pHotcue5Indicator = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_5_indicator");
+
+    m_pQuantizeEnabled->set(0);
+
+    setCurrentFramePosition(hotcue2Pos);
+    m_pHotcue2Activate->set(1);
+    m_pHotcue2Activate->set(0);
+
+    setCurrentFramePosition(hotcue4Pos);
+    pHotcue4Activate->set(1);
+    pHotcue4Activate->set(0);
+
+    setCurrentFramePosition(hotcue1Pos);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
+
+    // Start playing. we will cross hotcue2 and the indicator should be activated
+    qWarning() << "  at hotcue1, pos:" << currentFramePosition().value();
+    m_pPlay->set(1);
+    qWarning() << "  at hotcue1, start playing, pos:" << currentFramePosition().value();
+    ProcessBuffer();
+    qWarning() << "  --- process ------------now at:" << currentFramePosition().value();
+    EXPECT_DOUBLE_EQ(1.0, pHotcue2Indicator->get());
+    ProcessBuffer();
+    qWarning() << "  --- process ------------now at:" << currentFramePosition().value();
+    // Indicator should be reset in the next buffer process
+    EXPECT_DOUBLE_EQ(0.0, pHotcue2Indicator->get());
+
+    // Now go to hotcue1 and seek to hotcue3.
+    // Indicator 2 should not be activated.
+    m_pPlay->set(0);
+    ProcessBuffer();
+    pHotcue3Activate->set(1);
+    pHotcue3Activate->set(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, pHotcue2Indicator->get());
+
+    // Now jump backwards over hotcue2.
+    // Indicator should not be activated
+    ProcessBuffer();
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, pHotcue2Indicator->get());
+
+    // Jump to hotcue2, indicator should be activated
+    m_pHotcue2Activate->set(1);
+    m_pHotcue2Activate->set(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(1.0, pHotcue2Indicator->get());
+
+    // Create and activate a loop from htcoue2 to hotcue4.
+    m_pChannel1->getEngineBuffer()->setLoop(hotcue2Pos, hotcue4Pos, true);
+    // Jump to just before hotcue4, so the next buffer process when playing
+    // should activate 3 and 2 (because we'll wrap around).
+    // Neither 4 (loop_out) nor 5 (slightly after loop out) should be activated.
+    setCurrentFramePosition(beforeHotcue3Pos);
+    EXPECT_FRAMEPOS_EQ(currentFramePosition(), beforeHotcue3Pos);
+    m_pPlay->set(1);
+    qWarning() << "  before hotcue3, start playing, pos:" << currentFramePosition().value();
+    ProcessBuffer();
+    qWarning() << "  was before hotcue3, playing, now at:" << currentFramePosition().value();
+    EXPECT_DOUBLE_EQ(1.0, pHotcue2Indicator->get());
+    EXPECT_DOUBLE_EQ(1.0, pHotcue3Indicator->get());
+    EXPECT_DOUBLE_EQ(0.0, pHotcue4Indicator->get());
+    EXPECT_DOUBLE_EQ(0.0, pHotcue5Indicator->get());
+}
