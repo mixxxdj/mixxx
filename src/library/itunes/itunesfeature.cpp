@@ -17,6 +17,7 @@
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/itunesplaylistmodel.h"
+#include "library/itunes/itunesschema.h"
 #include "library/itunes/itunestrackmodel.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
@@ -63,7 +64,7 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("itunes")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
-    QString tableName = "itunes_library";
+    QString tableName = ITUNES_LIBRARY_TABLE;
     QString idColumn = "id";
     QStringList columns = {
             "id",
@@ -138,8 +139,8 @@ ITunesFeature::createPlaylistModelForPlaylist(const QString& playlist) {
     auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.itunes_playlist",
-            "itunes_playlists",
-            "itunes_playlist_tracks",
+            ITUNES_PLAYLISTS_TABLE,
+            ITUNES_PLAYLIST_TRACKS_TABLE,
             m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
@@ -175,9 +176,9 @@ void ITunesFeature::activate(bool forceReload) {
 
         //Delete all table entries of iTunes feature
         ScopedTransaction transaction(m_database);
-        clearTable("itunes_playlist_tracks");
-        clearTable("itunes_library");
-        clearTable("itunes_playlists");
+        clearTable(ITUNES_PLAYLIST_TRACKS_TABLE);
+        clearTable(ITUNES_LIBRARY_TABLE);
+        clearTable(ITUNES_PLAYLISTS_TABLE);
         transaction.commit();
 
         emit showTrackModel(m_pITunesTrackModel);

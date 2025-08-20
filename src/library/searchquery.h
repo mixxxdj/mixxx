@@ -137,6 +137,34 @@ class NoCrateFilterNode : public QueryNode {
     mutable std::vector<TrackId> m_matchingTrackIds;
 };
 
+class ExternalPlaylistFilterNode : public QueryNode {
+  public:
+    ExternalPlaylistFilterNode(const QSqlDatabase& database,
+            QString playlistNameLike,
+            QString externalPlaylistsTable,
+            QString externalPlaylistTracksTable,
+            QString externalLibraryTable);
+
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+  private:
+    QSqlDatabase m_database;
+    QString m_playlistNameLike;
+    QString m_externalPlaylistsTable;
+    QString m_externalPlaylistTracksTable;
+    QString m_externalLibraryTable;
+    mutable bool m_matchInitialized;
+    mutable std::vector<TrackId> m_matchingTrackIds;
+
+    QString formatQuerySuffixForTrackIds() const;
+};
+
+class ITunesFilterNode : public ExternalPlaylistFilterNode {
+  public:
+    ITunesFilterNode(const QSqlDatabase& database, const QString& playlistNameLike);
+};
+
 class NumericFilterNode : public QueryNode {
   public:
     NumericFilterNode(const QStringList& sqlColumns, const QString& argument);
