@@ -584,4 +584,22 @@ reapplying those migrations.
       UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
+  <revision version="40" min_compatible="3">
+    <description>
+      Add composer, played, last_played_at and datetime_added to iTunes tracks
+      and a (non-unique) display_name to iTunes playlists.
+    </description>
+    <sql>
+      ALTER TABLE itunes_library ADD COLUMN composer TEXT DEFAULT "";
+      ALTER TABLE itunes_library ADD COLUMN timesplayed INTEGER DEFAULT 0;
+      ALTER TABLE itunes_library ADD COLUMN last_played_at DATETIME DEFAULT NULL;
+      ALTER TABLE itunes_library ADD COLUMN datetime_added DATETIME DEFAULT NULL;
+
+      ALTER TABLE itunes_playlists ADD COLUMN display_name TEXT DEFAULT "";
+
+      -- Default to the unique name for now, this will be overridden on the next
+      -- iTunes import anyway.
+      UPDATE itunes_playlists SET display_name=name;
+    </sql>
+  </revision>
 </schema>
