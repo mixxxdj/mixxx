@@ -62,6 +62,15 @@ DlgPrefVinyl::DlgPrefVinyl(
         box->addItem(MIXXX_VINYL_SPEED_45);
     }
 
+    m_vcPitchEstimatorBoxes = {ComboBoxPitchEstimator1,
+            ComboBoxPitchEstimator2,
+            ComboBoxPitchEstimator3,
+            ComboBoxPitchEstimator4};
+    for (auto* box : std::as_const(m_vcPitchEstimatorBoxes)) {
+        box->addItem(MIXXX_VINYL_PITCH_FILTER_KALMAN);
+        box->addItem(MIXXX_VINYL_PITCH_FILTER_LEGACY);
+    }
+
     m_vcLeadInBoxes = {LeadinTime1, LeadinTime2, LeadinTime3, LeadinTime4};
     for (auto* box : std::as_const(m_vcLeadInBoxes)) {
         box->setSuffix(" s");
@@ -70,6 +79,7 @@ DlgPrefVinyl::DlgPrefVinyl(
     DEBUG_ASSERT(m_vcLabels.length() == kMaximumVinylControlInputs);
     DEBUG_ASSERT(m_vcTypeBoxes.length() == kMaximumVinylControlInputs);
     DEBUG_ASSERT(m_vcSpeedBoxes.length() == kMaximumVinylControlInputs);
+    DEBUG_ASSERT(m_vcPitchEstimatorBoxes.length() == kMaximumVinylControlInputs);
     DEBUG_ASSERT(m_vcLeadInBoxes.length() == kMaximumVinylControlInputs);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -198,6 +208,14 @@ void DlgPrefVinyl::slotUpdate() {
             m_vcSpeedBoxes[i]->setCurrentIndex(comboIndex);
         }
 
+        // Set pitch filter types
+        comboIndex =
+                m_vcPitchEstimatorBoxes[i]->findText(config->getValueString(
+                        ConfigKey(group, "vinylcontrol_pitch_estimator_type")));
+        if (comboIndex != -1) {
+            m_vcPitchEstimatorBoxes[i]->setCurrentIndex(comboIndex);
+        }
+
         // set lead-in time
         int leadIn = config->getValue(
                 ConfigKey(group, "vinylcontrol_lead_in_time"),
@@ -254,6 +272,8 @@ void DlgPrefVinyl::slotApply() {
                 ConfigValue(m_vcTypeBoxes[i]->currentText()));
         config->set(ConfigKey(group, "vinylcontrol_speed_type"),
                 ConfigValue(m_vcSpeedBoxes[i]->currentText()));
+        config->set(ConfigKey(group, "vinylcontrol_pitch_estimator_type"),
+                ConfigValue(m_vcPitchEstimatorBoxes[i]->currentText()));
         verifyAndSaveLeadInTime(i, group);
 
         m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputConnected(i));
@@ -306,12 +326,14 @@ void DlgPrefVinyl::setDeckWidgetsVisible(int deck, bool visible) {
         m_vcLabels[deck]->show();
         m_vcTypeBoxes[deck]->show();
         m_vcSpeedBoxes[deck]->show();
+        m_vcPitchEstimatorBoxes[deck]->show();
         m_vcLeadInBoxes[deck]->show();
         m_signalWidgets[deck]->show();
     } else {
         m_vcLabels[deck]->hide();
         m_vcTypeBoxes[deck]->hide();
         m_vcSpeedBoxes[deck]->hide();
+        m_vcPitchEstimatorBoxes[deck]->hide();
         m_vcLeadInBoxes[deck]->hide();
         m_signalWidgets[deck]->hide();
     }

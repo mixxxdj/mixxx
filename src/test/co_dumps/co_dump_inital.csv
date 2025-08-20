@@ -5028,6 +5028,7 @@
 [Channel2],hotcue_11_activate_preview,0
 [Sampler1],hotcue_27_enabled,0
 [Channel3],vinylcontrol_speed_type,33.3
+[Channel3],vinylcontrol_pitch_estimator_type,"Kalman filter (accurate)"
 [Sampler3],beatloop_0.0625_enabled,0
 [Channel3],hotcue_19_set,0
 [EqualizerRack1_[Channel2]],enabled,1
@@ -5038,6 +5039,7 @@
 [Channel1],playposition_up,0
 [EqualizerRack1_[Channel2]_Effect1],parameter6_set_default,0
 [Channel4],vinylcontrol_speed_type,33.3
+[Channel4],vinylcontrol_pitch_estimator_type,"Kalman filter (accurate)"
 [PreviewDeck1],hotcue_4_enabled,0
 [Channel4],hotcue_19_set,0
 [EqualizerRack1_[Channel4]_Effect1],parameter15_set_zero,0
@@ -5200,6 +5202,7 @@
 [Channel2],hotcue_20_gotoandstop,0
 [EffectRack1_EffectUnit3_Effect1],parameter12_set_default,0
 [Channel1],vinylcontrol_speed_type,33.3
+[Channel1],vinylcontrol_pitch_estimator_type,"Kalman filter (accurate)"
 [QuickEffectRack1_[Channel4]_Effect1],parameter6_up,0
 [EqualizerRack1_[Channel1]_Effect1],parameter6_down,0
 [PreviewDeck1],hotcue_8_goto,0
@@ -5211,6 +5214,7 @@
 [Channel3],hotcue_20_gotoandstop,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter3_set_minus_one,0
 [Channel2],vinylcontrol_speed_type,33.3
+[Channel2],vinylcontrol_pitch_estimator_type,"Kalman filter (accurate)"
 [PreviewDeck1],hotcue_27_activate_preview,0
 [EffectRack1_EffectUnit2],loaded,1
 [EqualizerRack1_[Channel4]_Effect1],parameter8_link_inverse,0
