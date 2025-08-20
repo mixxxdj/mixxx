@@ -2,8 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////
 //
-// Traktor Kontrol S3 HID controller script v2.00
-// Last modification: January 2023
+// Traktor Kontrol S3 HID controller script
 // Authors: Owen Williams, Robbert van der Helm
 // https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 //
@@ -92,9 +91,11 @@ TraktorS3.ChannelColors = {
     "[Channel4]": engine.getSetting("chan4Color")
 };
 
+TraktorS3.HotcueUnsetColor = engine.getSetting("unsetHotcueColor");
+
 // Each color has four brightnesses, so these values can be between 0 and 3.
-TraktorS3.LEDDimValue = 0x00;
-TraktorS3.LEDBrightValue = 0x02;
+TraktorS3.LEDDimValue = parseInt(engine.getSetting("ledDimValue"), 10) || 0x01;
+TraktorS3.LEDBrightValue = parseInt(engine.getSetting("ledBrightValue"), 10) || 0x03;
 
 // By default the jog wheel's behavior when rotating it matches 33 1/3 rpm
 // vinyl. Changing this value to 2.0 causes a single rotation of the platter to
@@ -1527,14 +1528,14 @@ TraktorS3.Deck = class {
     }
 
     lightHotcue(number) {
-        const loaded = engine.getValue(this.activeChannel, "hotcue_" + number + "_status");
-        const active = engine.getValue(this.activeChannel, "hotcue_" + number + "_activate");
-        let ledValue = this.controller.hid.LEDColors.WHITE;
-        if (loaded) {
+        const hotCueStatus = engine.getValue(this.activeChannel, `hotcue_${  number  }_status`);
+        let ledValue = this.controller.hid.LEDColors[TraktorS3.HotcueUnsetColor];
+        // If hotcue is set, change the color.
+        if (hotCueStatus) {
             ledValue = this.colorForHotcue(number);
-            ledValue += TraktorS3.LEDDimValue;
         }
-        if (active) {
+        // If hotcue is active, make it brighter.
+        if (hotCueStatus === 2) {
             ledValue += TraktorS3.LEDBrightValue;
         } else {
             ledValue += TraktorS3.LEDDimValue;
