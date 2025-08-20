@@ -1,5 +1,6 @@
 #pragma once
 
+#include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -20,7 +21,11 @@ class VinylControlControl : public EngineControl {
     bool isScratching();
     void trackLoaded(TrackPointer pNewTrack) override;
 
+  signals:
+    void noVinylControlInputConfigured();
+
   private slots:
+    void slotControlEnabledChangeRequest(double v);
     void slotControlVinylSeek(double fractionalPos);
 
   private:
@@ -35,6 +40,7 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
     ControlProxy* m_pPlayEnabled;
+    PollingControlProxy m_inputConfigured;
 
     TrackPointer m_pTrack; // is written from an engine worker thread
 

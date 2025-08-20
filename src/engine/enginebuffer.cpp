@@ -83,6 +83,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
           m_slipModeState(SlipModeState::Disabled),
+          m_quantize(ControlFlag::AllowMissingOrInvalid),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -199,6 +200,11 @@ EngineBuffer::EngineBuffer(const QString& group,
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlControl = new VinylControlControl(group, pConfig);
+    connect(m_pVinylControlControl,
+            &VinylControlControl::noVinylControlInputConfigured,
+            this,
+            // signal-to-signal
+            &EngineBuffer::noVinylControlInputConfigured);
     addControl(m_pVinylControlControl);
 #endif
 

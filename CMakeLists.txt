@@ -3004,6 +3004,7 @@ if(ENGINEPRIME)
         SHA256=f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
+      PREFIX "libdjinterop-${LIBDJINTEROP_VERSION}"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       LIST_SEPARATOR "|"
       CMAKE_ARGS
@@ -3159,6 +3160,7 @@ if(KEYFINDER)
         SHA256=4f10e9e5673d948776e47e78273fa4d61408155cb0e210af1538c83222f285d4
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${FETCH_LIBKEYFINDER_VERSION}.zip"
+      PREFIX "libdjinterop-${FETCH_LIBKEYFINDER_VERSION}"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       LIST_SEPARATOR "|"
       CMAKE_ARGS
@@ -5006,31 +5008,42 @@ else()
 endif()
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
+
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-open-sans")
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-ubuntu")
 if(QT6)
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-svg-plugins")
+  endif()
   if(QML)
-    set(
+    list(
+      APPEND
       CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins, qml6-module-qt5compat-graphicaleffects, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-qtquick-nativestyle, qml6-module-qtquick-templates, qml6-module-qtquick-window, qml6-module-qt-labs-qmlmodels, qml6-module-qtquick-shapes, qml6-module-qtqml-workerscript"
+      "qml6-module-qt5compat-graphicaleffects"
     )
-  else()
-    set(
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins"
-    )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-nativestyle")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
   endif()
 else()
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite")
   if(QML)
-    set(
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu, qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qt-labs-qmlmodels, qml-module-qtquick-shapes"
-    )
-  else()
-    set(
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu"
-    )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls2")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qt-labs-qmlmodels")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-shapes")
   endif()
 endif()
+list(JOIN CPACK_DEBIAN_PACKAGE_DEPENDS ", " CPACK_DEBIAN_PACKAGE_DEPENDS)
+
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
