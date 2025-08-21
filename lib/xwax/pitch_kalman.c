@@ -2,6 +2,16 @@
 
 #include "pitch_kalman.h"
 
+static bool kalman_debug_state = false;
+
+#define kalman_debug(...)          \
+    {                                     \
+        if (kalman_debug_state) {                      \
+            fprintf(stderr, __VA_ARGS__); \
+        }                                 \
+    }
+
+
 enum { x = 0, v = 1 }; /* Matrix indices: x = position and v = velocity */
 
 static inline double pow2(double val)
@@ -22,15 +32,19 @@ static inline double pow3(double val)
  * r: variance of dx measurement (tune up if observations are noisier)
  */
 
-void pitch_kalman_init(struct pitch_kalman* p, double dt,
-        struct kalman_coeffs stable, struct kalman_coeffs medium, struct kalman_coeffs reactive,
-        double medium_threshold, double reactive_threshold)
+void pitch_kalman_init(struct pitch_kalman *p, double dt, struct kalman_coeffs stable,
+                       struct kalman_coeffs adjust, struct kalman_coeffs reactive,
+                       struct kalman_coeffs scratch, double adjust_threshold,
+                       double reactive_threshold, double scratch_threshold, bool debug)
 {
-    if (!p || medium_threshold > reactive_threshold) {
+    const bool thresholds_well_ordered = scratch_threshold > reactive_threshold && reactive_threshold > adjust_threshold;
+    if (!p || !thresholds_well_ordered) {
         errno = EINVAL;
         perror(__func__);
         return;
     }
+
+    kalman_debug_state = debug;
 
     /* Sampling interval */
 
@@ -53,14 +67,16 @@ void pitch_kalman_init(struct pitch_kalman* p, double dt,
 
     /* Fixed thresholds for the mode switches */
 
+    p->scratch_threshold = scratch_threshold;
     p->reactive_threshold = reactive_threshold;
-    p->medium_threshold = medium_threshold;
+    p->adjust_threshold = adjust_threshold;
 
     /* Q and R for the different modes */
 
     p->stable = stable;
-    p->medium = medium;
+    p->adjust = adjust;
     p->reactive = reactive;
+    p->scratch = scratch;
 
     /* Initialize as reactive */
 
@@ -167,17 +183,26 @@ void pitch_kalman_update(struct pitch_kalman* p, double dx)
 
     const double y_abs = fabs(y);
 
-    if (y_abs > p->reactive_threshold)
+    kalman_debug("innovation: %+f, ", y);
+    if (y_abs > p->scratch_threshold) {
+        kalman_debug("                                                SCRATCH MODE\n");
+        kalman_tune_sensitivity(p, &p->scratch);
+    } else if (y_abs > p->reactive_threshold) {
+        kalman_debug("                               REACTIVE MODE\n");
         kalman_tune_sensitivity(p, &p->reactive);
-    else if (y_abs > p->medium_threshold && y_abs < p->reactive_threshold)
-        kalman_tune_sensitivity(p, &p->medium);
-    else
+    } else if (y_abs > p->adjust_threshold) {
+        kalman_debug("                ADJUST MODE\n");
+        kalman_tune_sensitivity(p, &p->adjust);
+    } else {
+        kalman_debug("STABLE MODE\n");
         kalman_tune_sensitivity(p, &p->stable);
+    }
 
     /* Ensure reactivity and quick decay after standstill */
 
-    if (fabs(p->Xk[v]) < 5e-2)
-        kalman_tune_sensitivity(p, &p->reactive);
+    if (fabs(p->Xk[v]) < 5e-2) {
+        kalman_tune_sensitivity(p, &p->scratch);
+    }
 
     /*
      * Innovation covariance: S = H * P_pred * H^T + R
