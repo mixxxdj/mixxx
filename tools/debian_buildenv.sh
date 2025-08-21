@@ -56,6 +56,7 @@ case "$1" in
         fi
 
         sudo apt-get install -y --no-install-recommends -- \
+            ableton-link-dev \
             ccache \
             cmake \
             clazy \
