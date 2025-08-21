@@ -22,6 +22,7 @@ struct WaveformStride {
     WaveformStride(double samples, double averageSamples, int stemCount)
             : m_position(0),
               m_stemCount(stemCount),
+              m_sampleCount(0),
               m_length(samples),
               m_averageLength(averageSamples),
               m_averagePosition(0),
@@ -34,6 +35,7 @@ struct WaveformStride {
     inline void reset() {
         m_position = 0;
         m_averageDivisor = 0;
+        m_sampleCount = 0;
         for (int i = 0; i < ChannelCount; ++i) {
             m_overallData[i] = 0.0f;
             m_averageOverallData[i] = 0.0f;
@@ -41,6 +43,28 @@ struct WaveformStride {
             SampleUtil::clear(m_averageFilteredData[i], BandCount);
             SampleUtil::clear(m_stemData[i], m_stemCount);
         }
+    }
+
+    void transformEachStereoChannel(auto F) {
+        for (auto& channel : m_overallData) {
+            F(channel);
+        }
+        for (auto& channel : m_filteredData) {
+            for (auto& band : channel) {
+                F(band);
+            }
+        }
+    }
+
+    void computeAverage() {
+        if (!m_sampleCount) {
+            return;
+        }
+
+        transformEachStereoChannel([this](auto& sample) {
+            sample = std::sqrt(sample / m_sampleCount);
+        });
+        m_sampleCount = 1;
     }
 
     inline void store(WaveformData* data) {
@@ -71,6 +95,7 @@ struct WaveformStride {
             for (int stemIdx = 0; stemIdx < m_stemCount; ++stemIdx) {
                 m_stemData[i][stemIdx] = 0.0f;
             }
+            m_sampleCount = 0;
         }
     }
 
@@ -119,6 +144,7 @@ struct WaveformStride {
 
     int m_position;
     int m_stemCount;
+    uint m_sampleCount;
     double m_length;
     double m_averageLength;
     int m_averagePosition;
@@ -198,6 +224,7 @@ class AnalyzerWaveform : public Analyzer {
     Buffers m_buffers;
 
     PerformanceTimer m_timer;
+    UserSettingsPointer m_pConfig;
 
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;
