@@ -3,9 +3,9 @@
 #include <QHash>
 
 #include "library/basetrackcache.h"
-#include "library/dao/trackdao.h"
 #include "library/basetracktablemodel.h"
 #include "library/columncache.h"
+#include "library/dao/trackdao.h"
 #include "util/class.h"
 
 class TrackCollectionManager;
@@ -176,6 +176,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
+    QVariantList m_genreData;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

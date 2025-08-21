@@ -584,4 +584,83 @@ reapplying those migrations.
       UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
+  <revision version="40" min_compatible="3">
+    <description>
+      Multi-Genre Support:
+      - Adds 'genres' table for centralized, hiererarchical genre management.
+      - Adds 'track_genres' junction table for many-to-many track-genre links.
+      - Migrates existing single genre-from 'library.genre' to the new tables.
+      - name: Concatenated or user-defined genre name
+      - display_group: Points to another genre's name or ##id##
+      - is_visible: If false, hidden from genre selection/tree
+      - is_model_defined: False for imported models (Discogs, MusicBrainz)
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS genres (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL COLLATE NOCASE,
+      name_level_1 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_2 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_3 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_4 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_5 TEXT DEFAULT NULL COLLATE NOCASE,
+      display_group TEXT DEFAULT NULL,
+      display_order INTEGER DEFAULT 0,
+      is_visible INTEGER DEFAULT 1,
+      is_model_defined INTEGER DEFAULT 0,
+      count integer DEFAULT 0,
+      show integer DEFAULT 1,
+      locked integer DEFAULT 0,
+      autodj_source integer DEFAULT 0
+      );
+
+      CREATE TABLE IF NOT EXISTS genre_tracks (
+      track_id INTEGER NOT NULL,
+      genre_id INTEGER NOT NULL,
+      PRIMARY KEY (track_id, genre_id),
+      FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE,
+      FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_genre_tracks_genre_id ON genre_tracks(genre_id);
+
+      <!--INSERT INTO genres (name, name_level_1, is_visible, display_order, is_user_defined)
+      SELECT DISTINCT TRIM(library.genre), TRIM(library.genre), 1, 0, 1
+      FROM library
+      WHERE library.genre IS NOT NULL AND TRIM(library.genre) != '';-->
+
+      <!--INSERT INTO genres (name, name_level_1, is_visible, display_order, is_model_defined)
+      SELECT DISTINCT
+      trimmed_genre, trimmed_genre, 1, 0, 0
+      FROM (
+        SELECT TRIM(library.genre) AS trimmed_genre
+        FROM library
+        WHERE library.genre IS NOT NULL AND TRIM(library.genre) != ''
+      )
+      AS candidates
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM genres g
+        WHERE g.name = candidates.trimmed_genre COLLATE NOCASE
+      );
+
+      INSERT INTO genre_tracks (track_id, genre_id)
+      SELECT T.id, G.id
+      FROM library T
+      JOIN genres G
+      ON TRIM(T.genre) = G.name_level_1 COLLATE NOCASE
+      WHERE T.genre IS NOT NULL AND TRIM(T.genre) != '';
+
+      UPDATE library
+      SET genre = '##' || (
+      SELECT g.id
+      FROM genres AS g
+      WHERE TRIM(library.genre) = g.name_level_1 COLLATE NOCASE
+      LIMIT 1
+      ) || '##'
+      WHERE library.genre IS NOT NULL
+      AND LENGTH(TRIM(library.genre)) > 0
+      AND library.genre NOT LIKE '##%##';-->
+    </sql>
+  </revision>
 </schema>
