@@ -44,6 +44,9 @@ constexpr int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_SPEED_33 "33.3 RPM"
 #define MIXXX_VINYL_SPEED_45 "45 RPM"
 
+#define MIXXX_VINYL_PITCH_FILTER_LEGACY "Alpha-Beta filter (fast)"
+#define MIXXX_VINYL_PITCH_FILTER_KALMAN "Kalman filter (accurate)"
+
 #define MIXXX_VINYL_SPEED_33_NUM (100.0 / 3.0)
 #define MIXXX_VINYL_SPEED_45_NUM 45.0
 
