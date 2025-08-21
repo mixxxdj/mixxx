@@ -7,6 +7,8 @@ class BeatsTranslateTest : public MockedEngineBackendTest {
 };
 
 TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
+    ControlObject::set(ConfigKey(m_sGroup1, QStringLiteral("quantize")), 0);
+    ControlObject::set(ConfigKey(m_sGroup2, QStringLiteral("quantize")), 0);
     // Set up BeatGrids for decks 1 and 2.
     const auto bpm = mixxx::Bpm(60.0);
     constexpr auto firstBeat = mixxx::audio::kStartFramePos;
