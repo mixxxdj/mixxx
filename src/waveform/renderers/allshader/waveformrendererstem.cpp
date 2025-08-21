@@ -223,11 +223,18 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Apply the gains
                 if (layerIdx) {
-                    max *= m_pStemMute[stemIdx]->toBool() ||
-                                    (selectedStems &&
-                                            !(selectedStems & 1 << stemIdx))
-                            ? 0.f
-                            : static_cast<float>(m_pStemGain[stemIdx]->get());
+                    if (selectedStems) {
+                        max *= !(selectedStems & 1 << stemIdx)
+                                ? 0.f
+                                : 1.f;
+                    } else if (!m_pStemMute.empty() && m_pStemMute[stemIdx]->toBool()) {
+                        max = 0;
+                    } else {
+                        float volume = m_pStemGain.empty()
+                                ? 1.f
+                                : static_cast<float>(m_pStemGain[stemIdx]->get());
+                        max *= volume;
+                    }
                 }
 
                 // Lines are thin rectangles
