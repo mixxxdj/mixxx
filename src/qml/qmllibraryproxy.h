@@ -27,6 +27,10 @@ class QmlLibraryProxy : public QObject {
         s_pLibrary = std::move(pLibrary);
     }
 
+    static Library* get() {
+        return s_pLibrary.get();
+    }
+
   private:
     static inline std::shared_ptr<Library> s_pLibrary;
 
