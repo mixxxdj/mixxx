@@ -357,9 +357,20 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to"
-                     << VersionStore::version();
-            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+#ifdef MIXXX_USE_QML
+            if (CmdlineArgs::Instance().isQml()) {
+                // If running the QML version (aka 3.0 unstable), we set a dummy
+                // unstable version in the settings. This is used to detect if
+                // the current user profile is being used for testing purpose
+                // and if it is safe for the user to potentially lose their data
+                config->setValue(ConfigKey("[Config]", "Version"), VersionStore::FUTURE_UNSTABLE);
+            } else
+#endif
+            {
+                qDebug() << "No version number in configuration file. Setting to"
+                         << VersionStore::version();
+                config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+            }
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__

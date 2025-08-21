@@ -285,6 +285,14 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "Loads experimental QML GUI instead of legacy QWidget skin")
                             : QString());
     parser.addOption(qml);
+    const QCommandLineOption awareOfRisk(
+            QStringLiteral("allow-dangerous-data-corruption-risk"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Force Mixxx to load an unstable version with an "
+                              "existing user profile from a stable version")
+                    : QString());
+    parser.addOption(awareOfRisk);
 #endif
     const QCommandLineOption safeMode(QStringLiteral("safe-mode"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -459,6 +467,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML
     m_qml = parser.isSet(qml);
+    m_awareOfRisk = parser.isSet(awareOfRisk);
 #endif
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);
