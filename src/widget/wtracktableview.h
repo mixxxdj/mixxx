@@ -82,6 +82,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_backgroundColorOpacity;
     }
 
+    // Color for the table items' focus border. Default: white
+    // Used by table delegates.
+    static constexpr QColor kDefaultFocusBorderColor = QColor(0xff, 0xff, 0xff);
     Q_PROPERTY(QColor focusBorderColor
                     MEMBER m_focusBorderColor
                             NOTIFY focusBorderColorChanged
@@ -90,9 +93,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_focusBorderColor;
     }
 
-    // Default color for played tracks' text color. A bit darker than Qt::darkgray.
+    // Color for played tracks' text color. Default: a bit darker than Qt::darkgray
     // BaseTrackTableModel uses this for the ForegroundRole of played tracks.
-    static constexpr const char* kDefaultTrackPlayedColor = "#555555";
+    static constexpr QColor kDefaultTrackPlayedColor = QColor(0x55, 0x55, 0x55);
     Q_PROPERTY(QColor trackPlayedColor
                     MEMBER m_trackPlayedColor
                             NOTIFY trackPlayedColorChanged
@@ -100,9 +103,9 @@ class WTrackTableView : public WLibraryTableView {
     QColor getTrackPlayedColor() const {
         return m_trackPlayedColor;
     }
-    // Default color for missing tracks' text color. Qt::red.
+    // Color for missing tracks' text color.  Default: red
     // BaseTrackTableModel uses this for the ForegroundRole of missing tracks.
-    static constexpr const char* kDefaultTrackMissingColor = "#ff0000";
+    static constexpr QColor kDefaultTrackMissingColor = QColor(0xff, 0x00, 0x00);
     Q_PROPERTY(QColor trackMissingColor
                     MEMBER m_trackMissingColor
                             NOTIFY trackMissingColorChanged
@@ -110,8 +113,8 @@ class WTrackTableView : public WLibraryTableView {
     QColor getTrackMissingColor() const {
         return m_trackMissingColor;
     }
-    // Default color for the track drop indicator line: Qt::red.
-    static constexpr const char* kDefaultDropIndicatorColor = "#ff0000";
+    // Color for the track drop indicator line. Default: red
+    static constexpr QColor kDefaultDropIndicatorColor = QColor(0xff, 0x00, 0x00);
     Q_PROPERTY(QColor dropIndicatorColor
                     MEMBER m_dropIndicatorColor
                             NOTIFY dropIndicatorColorChanged
