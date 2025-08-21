@@ -225,7 +225,7 @@ bool WaveformRendererStem::preprocessInner() {
                 }
 
                 // Cast to float
-                float max = static_cast<float>(u8max);
+                float max = static_cast<float>(u8max) * allGain;
 
                 // Apply the gains
                 if (layerIdx) {
