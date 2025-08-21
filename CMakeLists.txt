@@ -2659,6 +2659,8 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 # With gcc >= 14 and -flto some code is inlined to fast-math code and then
 # optimized away. Disable it explicit for all compiler just in case.
+# Note: This does not set -fno-lto to override an external provided -flto=auto like on
+# Launchpad. Setting it explicit below.
 set_target_properties(FpClassify PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
@@ -2666,7 +2668,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_SIMULATE_ID MATCHES "MSV
 elseif(GNU_GCC OR LLVM_CLANG)
   # The option `-ffp-contract=on` must precede `-fno-fast-math`
   # to silence a warning on Clang 14
-  target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
+  target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math -fno-lto)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
