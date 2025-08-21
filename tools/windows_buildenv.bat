@@ -36,7 +36,6 @@ IF /I "%PLATFORM%"=="x64" (
     IF DEFINED BUILDENV_RELEASE (
         SET BUILDENV_BRANCH=2.5-rel
         SET VCPKG_TARGET_TRIPLET=x64-windows-release
-        vcpkg_update_main
         SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
         SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
     ) ELSE (
