@@ -346,7 +346,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
 
     // Defaults
     setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragOnly);
     // Always enable drag for now (until we have a model that doesn't support
     // this.)
     setDragEnabled(true);
@@ -354,8 +353,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
         setDragDropMode(QAbstractItemView::DragDrop);
         setDropIndicatorShown(true);
-        setAcceptDrops(true);
         //viewport()->setAcceptDrops(true);
+    } else {
+        setDragDropMode(QAbstractItemView::DragOnly);
     }
 
     // Possible giant fuckup alert - It looks like Qt has something like these
