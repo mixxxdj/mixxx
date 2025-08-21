@@ -1,0 +1,12 @@
+<Template>
+  <Template src="skin:left_2state_button.xml">
+    <SetVariable name="TooltipId">EffectUnit_<Variable name="SourceType"/>_enabled</SetVariable>
+    <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="FXAssignmentButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="FXAssignmentButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="FXAssignmentButtonSizePolicy"/></SetVariable>
+    <SetVariable name="state_0_text">FX<Variable name="EffectUnit"/></SetVariable>
+    <SetVariable name="state_1_text">FX<Variable name="EffectUnit"/></SetVariable>
+    <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_<Variable name="group"/>_enable</SetVariable>
+  </Template>
+</Template>
