@@ -658,49 +658,10 @@
                     min="8000"
                     max="60000"
                     step="500"
-                    default="25000"
+                    default="60000"
                     label="Jogwheel torque">
                     <description>
                         This setting defines how much torque can Mixxx use on the motor.
-                    </description>
-                </option>
-
-                <option
-                    variable="proportionalGain"
-                    type="integer"
-                    min="1"
-                    max="100000"
-                    step="500"
-                    default="100000"
-                    label="(testing) P-CONTROLLER GAIN">
-                    <description>
-                        How strongly the velocity error translates into motor output
-                    </description>
-                </option>
-
-                <option
-                    variable="integrativeGain"
-                    type="integer"
-                    min="0"
-                    max="10000"
-                    step="10"
-                    default="1000"
-                    label="(testing) I-CONTROLLER GAIN">
-                    <description>
-                        How strongly the integrative error affects motor output
-                    </description>
-                </option>
-
-                <option
-                    variable="derivativeGain"
-                    type="integer"
-                    min="0"
-                    max="100000"
-                    step="10"
-                    default="50000"
-                    label="(testing) D-CONTROLLER GAIN">
-                    <description>
-                        How strongly the error delta affects motor output
                     </description>
                 </option>
 
@@ -711,9 +672,9 @@
                     max="20000"
                     step="100"
                     default="6000"
-                    label="(testing) SLIP FRICTION FORCE">
+                    label="Slipmat friction force">
                     <description>
-                        How strongly the TT resists scratching
+                        During scratch mode, simulate friction with a force that always pulls towards the normal playback rotation velocity
                     </description>
                 </option>
             </row>

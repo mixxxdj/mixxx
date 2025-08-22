@@ -150,10 +150,6 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
-// Motor PID controller coefficients
-const ProportionalGain = engine.getSetting("proportionalGain") || 80000;
-const IntegrativeGain = engine.getSetting("integrativeGain") || 1000;
-const DerivativeGain = engine.getSetting("derivativeGain") || 50000;
 // Force that simulates the pull of a slipmat when scratching
 const SlipFrictionForce = engine.getSetting("slipFrictionForce") || 12000;
 
@@ -226,6 +222,11 @@ const MoveModes = {
 // motor wind up/down
 const MotorWindUpMilliseconds = 0;
 const MotorWindDownMilliseconds = 0;
+
+// Motor PID controller coefficients
+const ProportionalGain = 80000;
+const IntegrativeGain = 1000;
+const DerivativeGain = 50000;
 
 //----------------
 // Input filtering of wheel velocity signal
