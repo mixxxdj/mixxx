@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QQmlEngine>
 #include <QPointer>
+#include <QQmlEngine>
 #include <memory>
 
 #include "util/assert.h"
