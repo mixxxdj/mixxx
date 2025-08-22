@@ -85,14 +85,8 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
         QString dataPath = analysisPath.absoluteFilePath(
             QString::number(info.analysisId));
         const QByteArray compressedData = loadDataFromFile(dataPath);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         const int file_checksum = qChecksum(
                 compressedData);
-#else
-        const int file_checksum = qChecksum(
-                compressedData.constData(),
-                compressedData.length());
-#endif
         if (checksum != file_checksum) {
             qDebug() << "WARNING: Corrupt analysis loaded from" << dataPath
                      << "length" << compressedData.length();
@@ -121,14 +115,8 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     time.start();
 
     const QByteArray compressedData = qCompress(info->data, kCompressionLevel);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     const int checksum = qChecksum(
             compressedData);
-#else
-    const int checksum = qChecksum(
-            compressedData.constData(),
-            compressedData.length());
-#endif
     QSqlQuery query(m_database);
     if (info->analysisId == -1) {
         query.prepare(QString(

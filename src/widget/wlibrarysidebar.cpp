@@ -79,11 +79,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dragMoveEvent" << pEvent->mimeData()->formats();
     toggleDragHoverPropertyAndUpdateStyle(true);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint pos = pEvent->position().toPoint();
-#else
-    QPoint pos = pEvent->pos();
-#endif
+    const QPoint pos = pEvent->position().toPoint();
     const QModelIndex index = indexAt(pos);
     if (m_hoverIndex == index) {
         m_lastDragMoveAccepted ? pEvent->acceptProposedAction() : pEvent->ignore();
@@ -168,12 +164,7 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
         pEvent->ignore();
         return;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint pos = pEvent->position().toPoint();
-#else
-    QPoint pos = pEvent->pos();
-#endif
-
+    const QPoint pos = pEvent->position().toPoint();
     const QModelIndex destIndex = indexAt(pos);
     // pEvent->source() will return NULL if something is dropped from
     // a different application

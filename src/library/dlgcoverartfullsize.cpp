@@ -246,11 +246,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
         m_clickTimer.setSingleShot(true);
         m_clickTimer.start(500);
         m_coverPressed = true;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QPoint eventPosition = event->globalPosition().toPoint();
-#else
-        QPoint eventPosition = event->globalPos();
-#endif
         m_dragStartPosition = eventPosition - frameGeometry().topLeft();
     }
 }
@@ -275,11 +271,7 @@ void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
 
 void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
     if (m_coverPressed) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QPoint eventPosition = event->globalPosition().toPoint();
-#else
-        QPoint eventPosition = event->globalPos();
-#endif
         move(eventPosition - m_dragStartPosition);
         event->accept();
     } else {
@@ -318,11 +310,7 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // To keep the same part of the image under the cursor, shift the
     // origin (top left point) by the distance the point moves under the cursor.
     QPoint oldOrigin = geometry().topLeft();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QPoint oldPointUnderCursor = event->position().toPoint();
-#else
-    QPoint oldPointUnderCursor = event->pos();
-#endif
 
     const auto newPointX = static_cast<int>(
             static_cast<double>(oldPointUnderCursor.x()) / oldWidth * newSize.width());
