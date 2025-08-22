@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "engine/channelhandle.h"
-#include "util/compatibility/qhash.h"
 
 enum class EffectEnableState {
     Disabled,
@@ -22,8 +21,8 @@ enum class EffectBackendType {
     Unknown
 };
 
-inline qhash_seed_t qHash(const EffectBackendType& backendType) {
-    return static_cast<qhash_seed_t>(backendType);
+inline size_t qHash(const EffectBackendType& backendType) {
+    return static_cast<size_t>(backendType);
 }
 
 enum class SignalProcessingStage {
@@ -31,9 +30,9 @@ enum class SignalProcessingStage {
     Postfader
 };
 
-inline qhash_seed_t qHash(
+inline size_t qHash(
         SignalProcessingStage stage,
-        qhash_seed_t seed = 0) {
+        size_t seed = 0) {
     return qHash(static_cast<uint>(stage), seed);
 };
 

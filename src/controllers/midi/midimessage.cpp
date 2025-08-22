@@ -5,7 +5,7 @@ QDebug operator<<(QDebug debug, MidiOpCode midiOpCode) {
     return debug;
 }
 
-qhash_seed_t qHash(MidiOpCode key, qhash_seed_t seed) {
+size_t qHash(MidiOpCode key, size_t seed) {
     return qHash(static_cast<uint8_t>(key), seed);
 }
 
