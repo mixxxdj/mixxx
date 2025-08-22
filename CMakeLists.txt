@@ -1786,7 +1786,6 @@ set(
   src/util/color/predefinedcolorpalettes.h
   src/util/color/rgbcolor.h
   src/util/colorcomponents.h
-  src/util/compatibility/qatomic.h
   src/util/compatibility/qbytearray.h
   src/util/compatibility/qhash.h
   src/util/compatibility/qmutex.h

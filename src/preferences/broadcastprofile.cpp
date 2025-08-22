@@ -21,7 +21,6 @@ using namespace QKeychain;
 #include "errordialoghandler.h"
 #include "moc_broadcastprofile.cpp"
 #include "recording/defs_recording.h"
-#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 #include "util/xml.h"
 
@@ -440,7 +439,7 @@ void BroadcastProfile::setConnectionStatus(int newState) {
 }
 
 int BroadcastProfile::connectionStatus() {
-    return atomicLoadRelaxed(m_connectionStatus);
+    return m_connectionStatus.loadRelaxed();
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
