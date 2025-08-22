@@ -58,11 +58,7 @@ bool DlgPreferencePage::eventFilter(QObject* pObj, QEvent* pEvent) {
                 (spin && !spin->hasFocus()) ||
                 (spinDbl && !spinDbl->hasFocus()) ||
                 (slider && !slider->hasFocus())) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             QApplication::sendEvent(layout()->parent(), pEvent);
-#else
-            QApplication::sendEvent(qobject_cast<QObject*>(layout()), pEvent);
-#endif
             return true;
         }
     }
