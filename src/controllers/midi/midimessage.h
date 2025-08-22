@@ -13,7 +13,6 @@
 
 #include "preferences/usersettings.h"
 #include "util/always_false_v.h"
-#include "util/compatibility/qhash.h"
 
 // The second value of each OpCode will be the channel number the message
 // corresponds to.  So 0xB0 is a CC on the first channel, and 0xB1 is a CC
@@ -102,7 +101,7 @@ enum class MidiOpCode : uint8_t {
     SystemReset = 0xFF,
 };
 QDebug operator<<(QDebug debug, MidiOpCode midiOpCode);
-qhash_seed_t qHash(MidiOpCode key, qhash_seed_t seed);
+size_t qHash(MidiOpCode key, size_t seed);
 
 enum class MidiOption : uint16_t {
     None = 0x0000,
