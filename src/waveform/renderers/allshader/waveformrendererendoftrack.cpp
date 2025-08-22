@@ -9,7 +9,6 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
-#include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
@@ -89,7 +88,7 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
 
     QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     float r, g, b, a;
-    getRgbF(m_color, &r, &g, &b, &a);
+    m_color.getRgbF(&r, &g, &b, &a);
 
     const float posx0 = 0.f;
     const float posx1 = static_cast<float>(size.width()) / 2.f;
