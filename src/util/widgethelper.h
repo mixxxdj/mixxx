@@ -28,28 +28,6 @@ QPoint mapPopupToScreen(
 QWindow* getWindow(
         const QWidget& widget);
 
-/// Obtains the corresponding screen for the given widget.
-///
-/// Might return nullptr if no screen could be determined.
-inline QScreen* getScreen(
-        const QWidget& widget) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    return widget.screen();
-#else
-    const auto* pWindow = getWindow(widget);
-    if (!pWindow && widget.parent()) {
-        // The window might still be hidden and invisible. Then we
-        // try to obtain the screen from its parent recursively.
-        return getScreen(*qobject_cast<QWidget*>(widget.parent()));
-    }
-    if (!pWindow) {
-        // This might happen if the widget is not yet displayed
-        return nullptr;
-    }
-    return pWindow->screen();
-#endif
-}
-
 /// Obtains the screen for the active application window or the given widget.
 ///
 /// This supports both QWidget and QML top-level windows. A visible widget's
