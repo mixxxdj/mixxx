@@ -109,11 +109,7 @@ class DbId {
 private:
   static constexpr int kInvalidValue = -1;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   static const QMetaType kVariantType;
-#else
-    static const QVariant::Type kVariantType;
-#endif
 
   static bool isValidValue(int value) {
         return 0 <= value;
