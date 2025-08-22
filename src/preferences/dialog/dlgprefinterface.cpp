@@ -19,7 +19,6 @@
 #include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
-#include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -236,8 +235,7 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
+    auto* pScreen = screen();
     if (!pScreen) {
         // Obtain the primary screen. This is necessary if no window is
         // available before the widget is displayed.
