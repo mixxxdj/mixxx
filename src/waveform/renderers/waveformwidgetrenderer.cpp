@@ -355,11 +355,7 @@ void WaveformWidgetRenderer::drawPassthroughLabel(QPainter* painter) {
     font.setFamily("Open Sans"); // default label font
     // Make the label always fit
     font.setPixelSize(math_min(25, int(m_height * 0.8)));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    font.setWeight(75); // bold
-#else
     font.setWeight(QFont::Bold); // bold
-#endif
     font.setItalic(false);
 
     QString label = QObject::tr("Passthrough");

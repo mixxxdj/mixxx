@@ -641,11 +641,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     // Clear the pickup position display, we have all cue info in the menu.
                     leaveEvent(nullptr);
                     m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_pCueMenuPopup->popup(e->globalPosition().toPoint());
-#else
-                    m_pCueMenuPopup->popup(e->globalPos());
-#endif
                 }
             }
         }
@@ -1197,11 +1193,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    shadowFont.setWeight(99);
-#else
     shadowFont.setWeight(QFont::Black);
-#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 

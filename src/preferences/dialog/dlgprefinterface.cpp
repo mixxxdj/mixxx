@@ -113,11 +113,7 @@ DlgPrefInterface::DlgPrefInterface(
         // "If country is not present, or is not a valid ISO 3166 code, the most
         // appropriate country is chosen for the specified language."
         if (localeNameFixed.contains('_')) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            territoryName = QLocale::countryToString(locale.country());
-#else
             territoryName = QLocale::territoryToString(locale.territory());
-#endif
             DEBUG_ASSERT(!territoryName.isEmpty());
         }
         QString displayName = languageName;

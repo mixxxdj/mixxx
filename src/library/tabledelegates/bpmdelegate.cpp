@@ -35,10 +35,6 @@ BPMDelegate::BPMDelegate(QTableView* pTableView)
     // Register a custom QItemEditorFactory to override the default
     // QDoubleSpinBox editor.
     m_pFactory = new QItemEditorFactory();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_pFactory->registerEditor(QMetaType::Double, new BpmEditorCreator());
-#else
-    m_pFactory->registerEditor(QVariant::Double, new BpmEditorCreator());
-#endif
     setItemEditorFactory(m_pFactory);
 }

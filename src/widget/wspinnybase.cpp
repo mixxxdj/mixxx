@@ -502,13 +502,8 @@ void WSpinnyBase::updateSlipEnabled(double enabled) {
 }
 
 void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     int y = static_cast<int>(e->position().y());
     int x = static_cast<int>(e->position().x());
-#else
-    int y = e->y();
-    int x = e->x();
-#endif
 
     // Keeping these around in case we want to switch to control relative
     // to the original mouse position.
@@ -567,13 +562,8 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
     }
 
     if (e->button() == Qt::LeftButton) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         int y = static_cast<int>(e->position().y());
         int x = static_cast<int>(e->position().x());
-#else
-        int y = e->y();
-        int x = e->x();
-#endif
 
         m_iStartMouseX = x;
         m_iStartMouseY = y;
@@ -605,11 +595,7 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_pLoadedTrack);
         } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             m_pCoverMenu->popup(e->globalPosition().toPoint());
-#else
-            m_pCoverMenu->popup(e->globalPos());
-#endif
         }
     }
 }

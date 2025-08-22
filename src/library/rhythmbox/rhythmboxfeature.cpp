@@ -126,11 +126,7 @@ void RhythmboxFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         m_track_future = QtConcurrent::run(&RhythmboxFeature::importMusicCollection, this);
-#else
-        m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
-#endif
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
