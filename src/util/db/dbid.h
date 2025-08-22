@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "util/assert.h"
-#include "util/compatibility/qhash.h"
 
 // Base class for ID values of objects that are stored in the database.
 //
@@ -100,9 +99,9 @@ class DbId {
         return in;
     }
 
-    friend qhash_seed_t qHash(
+    friend size_t qHash(
             const DbId& dbId,
-            qhash_seed_t seed = 0) {
+            size_t seed = 0) {
         return qHash(dbId.m_value, seed);
     }
 
