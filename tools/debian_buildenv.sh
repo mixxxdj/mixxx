@@ -90,7 +90,7 @@ case "$1" in
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt6core5compat6-dev\
+            libqt6core5compat6-dev \
             libqt6opengl6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
