@@ -20,11 +20,7 @@
 
 const bool sDebug = false;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex Sandbox::s_mutex;
-#else
-QMutex Sandbox::s_mutex(QMutex::Recursive);
-#endif
 bool Sandbox::s_bInSandbox = false;
 QSharedPointer<ConfigObject<ConfigValue>> Sandbox::s_pSandboxPermissions;
 QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;

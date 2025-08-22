@@ -13,11 +13,7 @@ QString SqlStringFormatter::format(
     VERIFY_OR_DEBUG_ASSERT(pDriver != nullptr) {
         return value; // unformatted
     }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QSqlField stringField{QString(), QMetaType(QMetaType::QString)};
-#else
-    QSqlField stringField(QString(), QVariant::String);
-#endif
     stringField.setValue(value);
     return pDriver->formatValue(stringField);
 }
