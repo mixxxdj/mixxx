@@ -10,7 +10,6 @@
 #include "mixer/basetrackplayer.h"
 #include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
-#include "util/widgethelper.h"
 #include "widget/wcoverartmenu.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(
@@ -191,7 +190,7 @@ void DlgCoverArtFullSize::adjustImageAndDialogSize() {
         centerOverWidget = this;
     }
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    const auto* const pScreen = centerOverWidget->screen();
     QRect screenGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";

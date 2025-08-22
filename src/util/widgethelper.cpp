@@ -13,7 +13,7 @@ QPoint mapPopupToScreen(
         const QWidget& widget,
         const QPoint& popupUpperLeft,
         const QSize& popupSize) {
-    const auto* const pScreen = getScreen(widget);
+    const auto* const pScreen = widget.screen();
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         // This should never fail
         return popupUpperLeft;
@@ -37,8 +37,7 @@ QPoint mapPopupToScreen(
     return QPoint(adjustedX, adjustedY);
 }
 
-QWindow* getWindow(
-        const QWidget& widget) {
+QWindow* getWindow(const QWidget& widget) {
     if (auto* window = widget.windowHandle()) {
         return window;
     }
@@ -52,7 +51,7 @@ void growListWidget(QListWidget& listWidget, const QWidget& parent) {
     // Try to display all files and the complete file locations to avoid
     // horizontal scrolling.
     // Get the screen dimensions
-    QScreen* const pScreen = getScreen(parent);
+    const auto* const pScreen = parent.screen();
     QSize screenSpace;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Screen not detected. Assuming screen size of 800x600px.";
@@ -67,7 +66,7 @@ void growListWidget(QListWidget& listWidget, const QWidget& parent) {
     int minW = listWidget.sizeHintForColumn(0) + margin;
     int minH = listWidget.sizeHintForRow(0) * listWidget.count() + margin;
     // The file list should fit into the window, but clamp to 75% of screen size
-    // so (hoepfully) the entire containing dialog is visible even if there are
+    // so (hopefully) the entire containing dialog is visible even if there are
     // toolbars at the screen edges
     int newW = std::min(minW, static_cast<int>(screenSpace.width() * 0.75));
     int newH = std::min(minH, static_cast<int>(screenSpace.height() * 0.75));
