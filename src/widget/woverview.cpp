@@ -15,7 +15,6 @@
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/colorcomponents.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"

@@ -3,7 +3,6 @@
 #include "rendergraph/material/rgbmaterial.h"
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
-#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -81,7 +80,7 @@ bool WaveformRendererHSV::preprocessInner() {
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(m_waveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
+    m_waveformRenderer->getWaveformSignalColors()->getLowColor().getHsvF(&h, &s, &v);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
