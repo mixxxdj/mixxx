@@ -20,7 +20,6 @@
 #include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
-#include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -243,12 +242,12 @@ QScreen* DlgPrefInterface::getScreen() const {
         // Ignore other popups and hidden track menus
         QMainWindow* pMainWindow = qobject_cast<QMainWindow*>(pWidget);
         if (pMainWindow) {
-            pScreen = mixxx::widgethelper::getScreen(*pMainWindow);
+            pScreen = pMainWindow->screen();
             break;
         }
     }
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
-        pScreen = mixxx::widgethelper::getScreen(*this);
+        pScreen = screen();
     }
     if (!pScreen) {
         // Obtain the primary screen. This is necessary if no window is
