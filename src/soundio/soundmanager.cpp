@@ -145,13 +145,13 @@ QList<QString> SoundManager::getHostAPIList() const {
     return apiList;
 }
 
-void SoundManager::closeDevices(bool sleepAfterClosing, bool async) {
-    //qDebug() << "SoundManager::closeDevices()";
+void SoundManager::closeDevices(
+        [[maybe_unused]] bool sleepAfterClosing, [[maybe_unused]] bool async) {
+    // sleepAfterClosing and async maybe unused depending on platform support
+    // qDebug() << "SoundManager::closeDevices()";
 
 #ifdef __LINUX__
     bool closed = false;
-#else
-    Q_UNUSED(sleepAfterClosing);
 #endif
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (pDevice->isOpen()) {
