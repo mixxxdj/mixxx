@@ -130,6 +130,7 @@ class WaveformWidgetFactory : public QObject,
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    WaveformWidgetBackend getBackendFromConfig() const;
     WaveformWidgetBackend preferredBackend() const;
     static WaveformWidgetType::Type defaultType() {
         return WaveformWidgetType::RGB;
@@ -228,6 +229,7 @@ class WaveformWidgetFactory : public QObject,
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
