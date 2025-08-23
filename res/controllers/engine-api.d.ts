@@ -321,7 +321,7 @@ declare namespace engine {
     /**
      * Returns true if the deck is currently performing a spinback.
      * @param deck The deck number to use, e.g: 1
-     * @returns Rerturn true if the deck is currently performing a spinback.
+     * @returns Returns true if the deck is currently performing a spinback.
      */
     function isSpinbackActive(deck: number): bool;
 
