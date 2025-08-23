@@ -92,7 +92,7 @@ void EngineDeck::slotStem1MuteToggled(int value) {
     bool stem1Unmuted = value == 0;
 
     // Toggle all other stems to the opposite state of stem 1
-    for (int i = 1; i < m_stemMute.size(); ++i) {
+    for (std::size_t i = 1; i < m_stemMute.size(); ++i) {
         m_stemMute[i]->set(stem1Unmuted ? 1 : 0);
         m_stemGain[i]->set(1);
     }
