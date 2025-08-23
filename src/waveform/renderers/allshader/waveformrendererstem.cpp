@@ -198,11 +198,18 @@ bool WaveformRendererStem::preprocessInner() {
             // Stem is drawn twice with different opacity level, this allow to
             // see the maximum signal by transparency
             for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
-                QColor stemColor = stemInfo[stemIdx].getColor();
+                QColor stemColor;
+                if (stemIdx - 1 == 0) {
+                    stemColor = stemColor.redF();
+                } else {
+                    stemColor = stemInfo[stemIdx - 1].getColor();
+                }
+
                 float color_r = stemColor.redF(),
                       color_g = stemColor.greenF(),
                       color_b = stemColor.blueF(),
                       color_a = stemColor.alphaF() * (layerIdx ? m_opacity : m_outlineOpacity);
+
                 const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
                 const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 

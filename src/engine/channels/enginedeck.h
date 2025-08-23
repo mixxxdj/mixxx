@@ -72,6 +72,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void cloneStemState(const EngineDeck* deckToClone);
     void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
     static QString getGroupForStem(QStringView deckGroup, int stemIdx);
+    void slotStem1MuteToggled(int value);
 #endif
 
   signals:
