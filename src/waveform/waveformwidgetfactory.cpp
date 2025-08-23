@@ -1044,14 +1044,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            kHardwareAccelerationKey,
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1066,14 +1059,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            kHardwareAccelerationKey,
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1087,14 +1073,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            kHardwareAccelerationKey,
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1109,14 +1088,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
 #ifdef MIXXX_USE_QOPENGL
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            kHardwareAccelerationKey,
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer, options);
@@ -1128,14 +1100,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            kHardwareAccelerationKey,
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1278,6 +1243,17 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
         }
     }
     return -1;
+}
+
+WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    return m_config->getValue(
+            ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("use_hardware_acceleration")),
+            preferredBackend());
 }
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
