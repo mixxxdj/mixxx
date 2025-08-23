@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "util/assert.h"
-#include "util/compatibility/qhash.h"
 #include "util/debug.h"
 
 // Class for the key for a specific configuration element. A key consists of a
@@ -63,9 +62,9 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline qhash_seed_t qHash(
+inline size_t qHash(
         const ConfigKey& key,
-        qhash_seed_t seed = 0) {
+        size_t seed = 0) {
     return qHash(key.group, seed) ^
             qHash(key.item, seed);
 }
@@ -99,9 +98,9 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline qhash_seed_t qHash(
+inline size_t qHash(
         const ConfigValue& key,
-        qhash_seed_t seed = 0) {
+        size_t seed = 0) {
     return qHash(key.value.toUpper(), seed);
 }
 

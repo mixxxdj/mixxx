@@ -41,7 +41,7 @@ QmlApplication::QmlApplication(
           m_autoReload() {
     QQuickStyle::setStyle("Basic");
 
-    m_pCoreServices->initialize(app);
+    m_pCoreServices->initialize();
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {
         const int reInt = static_cast<int>(result);

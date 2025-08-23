@@ -49,11 +49,7 @@ class ControllerMappingTableModel : public QAbstractTableModel {
         VERIFY_OR_DEBUG_ASSERT(m_pTableView) {
             return nullptr;
         }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         return qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegateForIndex(index));
-#else
-        return qobject_cast<QStyledItemDelegate*>(m_pTableView->itemDelegate(index));
-#endif
     }
 
     QVector<QHash<int, QVariant>> m_headerInfo;

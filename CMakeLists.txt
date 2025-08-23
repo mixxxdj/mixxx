@@ -1553,7 +1553,6 @@ add_library(
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
-  src/util/colorcomponents.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -1785,10 +1784,6 @@ set(
   src/util/color/colorpalette.h
   src/util/color/predefinedcolorpalettes.h
   src/util/color/rgbcolor.h
-  src/util/colorcomponents.h
-  src/util/compatibility/qatomic.h
-  src/util/compatibility/qbytearray.h
-  src/util/compatibility/qhash.h
   src/util/compatibility/qmutex.h
   src/util/console.h
   src/util/counter.h

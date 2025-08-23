@@ -311,11 +311,7 @@ std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) con
     auto pQuery = std::make_unique<OrNode>();
 
     const QStringList rawAndNodes = query.split(kSplitOnOrOperatorRegexp,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             Qt::SkipEmptyParts);
-#else
-            QString::SkipEmptyParts);
-#endif
     for (const QString& rawAndNode : rawAndNodes) {
         if (!rawAndNode.isEmpty()) {
             pQuery->addNode(parseAndNode(rawAndNode));
@@ -343,11 +339,7 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
 
 QStringList SearchQueryParser::splitQueryIntoWords(const QString& query) {
     QStringList queryWordList = query.split(kSplitIntoWordsRegexp,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             Qt::SkipEmptyParts);
-#else
-            QString::SkipEmptyParts);
-#endif
     return queryWordList;
 }
 

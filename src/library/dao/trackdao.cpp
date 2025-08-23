@@ -707,11 +707,7 @@ bool insertTrackLibrary(
     pTrackLibraryInsert->bindValue(":mixxx_deleted", 0);
 
     // We no longer store the wavesummary in the library table.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QMetaType(QMetaType::QByteArray)));
-#else
-    pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
-#endif
 
     if (!pTrackLibraryInsert->exec()) {
         // We failed to insert the track. Maybe it is already in the library
@@ -988,11 +984,7 @@ void TrackDAO::afterHidingTracks(
     // However, the proposed alternative has just been introduced in Qt
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     emit tracksRemoved(QSet<TrackId>(trackIds.begin(), trackIds.end()));
-#else
-    emit tracksRemoved(QSet<TrackId>::fromList(trackIds));
-#endif
 }
 
 // If a track has been manually "hidden" from Mixxx's library by the user via
@@ -1021,11 +1013,7 @@ void TrackDAO::afterUnhidingTracks(
     // However, the proposed alternative has just been introduced in Qt
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     emit tracksAdded(QSet<TrackId>(trackIds.begin(), trackIds.end()));
-#else
-    emit tracksAdded(QSet<TrackId>::fromList(trackIds));
-#endif
 }
 
 QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
@@ -1137,11 +1125,7 @@ void TrackDAO::afterPurgingTracks(
     // However, the proposed alternative has just been introduced in Qt
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
-#else
-    QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
-#endif
     emit tracksRemoved(tracksRemovedSet);
     // notify trackmodels that they should update their cache as well.
     emit forceModelUpdate();

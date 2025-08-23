@@ -17,7 +17,6 @@
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
-#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/versionstore.h"
@@ -692,7 +691,7 @@ int SoundManager::getConfiguredDeckCount() const {
 
 void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
     if (m_underflowUpdateCount == 0) {
-        if (atomicLoadRelaxed(m_underflowHappened)) {
+        if (m_underflowHappened.loadRelaxed()) {
             m_audioLatencyOverload.set(1.0);
             m_audioLatencyOverloadCount.set(
                     m_audioLatencyOverloadCount.get() + 1);

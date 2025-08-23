@@ -448,12 +448,8 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
                 trackRefs.insert(trackRef);
             }
         }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_trackRefs = QList<TrackRef>{trackRefs.begin(), trackRefs.end()};
-#else
-        m_trackRefs = trackRefs.toList();
-#endif
+
         qDebug() << "Identified" << m_trackRefs.size() << " tracks to export";
 
         // Convert a list of track refs to a list of track ids, and use that
@@ -465,11 +461,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
         auto crateIdsOfTracks = m_pTrackCollectionManager->internalCollection()
                                         ->crates()
                                         .collectCrateIdsOfTracks(trackIds);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_crateIds = QList<CrateId>{crateIdsOfTracks.begin(), crateIdsOfTracks.end()};
-#else
-        m_crateIds = crateIdsOfTracks.toList();
-#endif
         qDebug() << "Identified" << m_crateIds.size() << " crates to export";
 
         // Just export all playlists.
@@ -481,11 +473,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
         // Explicit crates/playlists have been specified to export.
         qDebug() << "Loading track refs from" << crateIds.size()
                  << "crate(s) and" << playlistIds.size() << "playlist(s)";
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_crateIds = QList<CrateId>{crateIds.begin(), crateIds.end()};
-#else
-        m_crateIds = crateIds.toList();
-#endif
         qDebug() << "Identified" << m_crateIds.size() << " crates to export";
 
         for (auto&& playlistIdAndName : m_pTrackCollectionManager
@@ -526,11 +514,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
             }
         }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_trackRefs = QList<TrackRef>{trackRefs.begin(), trackRefs.end()};
-#else
-        m_trackRefs = trackRefs.toList();
-#endif
         qDebug() << "Identified" << m_trackRefs.size() << " tracks to export";
     }
 }

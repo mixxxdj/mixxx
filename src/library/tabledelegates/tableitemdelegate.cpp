@@ -54,9 +54,6 @@ void TableItemDelegate::paint(
     painter->setBrush(brush);
     // Pen for the 'location' text
     // Note: seems not to be required anymore (Qt 6.2.3)
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    painter->setPen(brush.color());
-#endif
 
     QStyle* style = m_pTableView->style();
     if (style) {

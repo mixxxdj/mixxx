@@ -1,6 +1,5 @@
 #include "waveformrendererhsv.h"
 
-#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "waveform/waveform.h"
@@ -83,7 +82,7 @@ void WaveformRendererHSV::draw(
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(pColors->getLowColor(), &h, &s, &v);
+    pColors->getLowColor().getHsvF(&h, &s, &v);
 
     QColor color;
     float lo, hi, total;

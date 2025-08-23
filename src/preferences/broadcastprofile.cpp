@@ -12,20 +12,15 @@
 #include <QTextStream>
 
 #ifdef __QTKEYCHAIN__
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <qt6keychain/keychain.h>
-#else
-#include <qt5keychain/keychain.h>
 #endif
 using namespace QKeychain;
-#endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "moc_broadcastprofile.cpp"
 #include "recording/defs_recording.h"
-#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 #include "util/xml.h"
 
@@ -444,7 +439,7 @@ void BroadcastProfile::setConnectionStatus(int newState) {
 }
 
 int BroadcastProfile::connectionStatus() {
-    return atomicLoadRelaxed(m_connectionStatus);
+    return m_connectionStatus.loadRelaxed();
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
