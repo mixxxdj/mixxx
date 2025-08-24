@@ -279,7 +279,7 @@ TEST_F(EngineBufferE2ETest, BasicProcessingTest) {
 //     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
 //             QStringLiteral("ScratchTestMain"));
 // }
-//
+
 // TEST_F(EngineBufferE2ETest, ScratchTestStart) {
 //     // Confirm that vinyl scratching smoothly transitions from zero speed
 //     // to an the other speed above the 0.07 threshold.

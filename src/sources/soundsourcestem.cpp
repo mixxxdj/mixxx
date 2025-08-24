@@ -728,7 +728,8 @@ void SoundSourceSTEM::processWithoutResampler(size_t streamIdx,
             globalSampleFrames.frameIndexRange(),
             SampleBuffer::WritableSlice(m_buffer.data(), outputSampleLength));
 
-    auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
+    // auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
+    m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
     // qDebug() << "Read" << readResult.frameIndexRange().length() << "frames";
 
     // Check audio data
