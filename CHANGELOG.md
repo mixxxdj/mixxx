@@ -4,18 +4,71 @@
 
 ### Controller Mappings
 
+* Icon P1-Nano MIDI 1: new mapping [#14602](https://github.com/mixxxdj/mixxx/pull/14602)
 * Traktor Kontrol S4 Mk3: tempo offset per deck [#14882](https://github.com/mixxxdj/mixxx/pull/14882)
 * Traktor Kontrol S4 Mk3: don`t duplicate beatloop_activate behaviour [#14992](https://github.com/mixxxdj/mixxx/pull/14992)
 * Traktor Kontrol S3: allow full library navigation [#14980](https://github.com/mixxxdj/mixxx/pull/14980)
+* Traktor Kontrol S3: fix hotcue color output [#15185](https://github.com/mixxxdj/mixxx/pull/15185)
+* Numark NS6II: map the shiftbutton messages to decks 1/3 and 2/4 [#15229](https://github.com/mixxxdj/mixxx/pull/15229)
+
+### Engine
+
+* Turn on deck quantize buttons by default [#15245](https://github.com/mixxxdj/mixxx/pull/15245)
+* Avoid engine freeze when loading a new track while scratching with waveform or spinny
+  [#15086](https://github.com/mixxxdj/mixxx/pull/15086)
+  [#15082](https://github.com/mixxxdj/mixxx/issues/15082)
+* Prevent crash with null track pointer [#15114](https://github.com/mixxxdj/mixxx/pull/15114)
+* Fix Metronom with 96 kHz engine sample rate [#15130](https://github.com/mixxxdj/mixxx/pull/15130)
+* Waveforms: don't scratch on mousepress/move with empty waveform
+  [#15143](https://github.com/mixxxdj/mixxx/pull/15143)
+  [#15088](https://github.com/mixxxdj/mixxx/issues/15088)
+
+### Vinyl Control
+
+* Do not try to "correct" for drift in absolute mode. [#14960](https://github.com/mixxxdj/mixxx/pull/14960)
+* Fix connection to "passthrough" and "scratch_position_enable" controls.
+  [#15173](https://github.com/mixxxdj/mixxx/pull/15173)
+  [#15167](https://github.com/mixxxdj/mixxx/issues/15167)
+  [#15174](https://github.com/mixxxdj/mixxx/pull/15174)
+* Fix getting sample rate
+  [#15195](https://github.com/mixxxdj/mixxx/pull/15195)
+  [#13974](https://github.com/mixxxdj/mixxx/issues/13974)
+* Remove track selection mode
+  [#15189](https://github.com/mixxxdj/mixxx/pull/15189)
+* Fix handling of "vinylcontrol_enabled" causes a frozen vinyl spinny mouse control
+  [#15168](https://github.com/mixxxdj/mixxx/pull/15168)
+  [#15165](https://github.com/mixxxdj/mixxx/issues/15165)
+* Pitch filter improvements [#15230](https15054://github.com/mixxxdj/mixxx/pull/15230)
+* Add a quadrature phase tracker [#15217](https://github.com/mixxxdj/mixxx/pull/15217)
+
+### Target support
+
+* Windows: Update build environment to Visual Studio 2022 [#15006](https://github.com/mixxxdj/mixxx/pull/15006)
+* Retire Ubuntu Oracular 24.10 [#15100](https://github.com/mixxxdj/mixxx/pull/15100)
+* Add qt6-svg-plugins to Debian package
+  [#15124](https://github.com/mixxxdj/mixxx/pull/15124)
+  [#15117](https://github.com/mixxxdj/mixxx/issues/15117)
+* missing include cstdlib [#15132](https://github.com/mixxxdj/mixxx/pull/15132)
+* Improve zsh compatibility for macos_buildenv.sh
+  [#15097](https://github.com/mixxxdj/mixxx/pull/15097)
+  [#15091](https://github.com/mixxxdj/mixxx/issues/15091)
+  [#15092](https://github.com/mixxxdj/mixxx/issues/15092)
+* CMake: Set PREFIX in ExternalProject_Add()
+  [#15170](https://github.com/mixxxdj/mixxx/pull/15170)
+* Allow to build with GCC 15 and LTO enabled
+  [#15238](https://github.com/mixxxdj/mixxx/pull/15238)
 
 ### Misc
 
-* Broadcast preferences: make setting string translatable [#15023](https://github.com/mixxxdj/mixxx/pull/15023)
+* Broadcast preferences: make setting string translatable
+  [#15023](https://github.com/mixxxdj/mixxx/pull/15023)
+  [#15013](https://github.com/mixxxdj/mixxx/issues/15013)
+* Add missing translation in Eject button tooltip
+  [#15113](https://github.com/mixxxdj/mixxx/pull/15113)
+  [#15105](https://github.com/mixxxdj/mixxx/issues/15105)
 * Sound Hardware preference: add (?) linking to Sound APIs in the manual [#14935](https://github.com/mixxxdj/mixxx/pull/14935)
-* xwax: do not try to "correct" for drift in absolute mode. [#14960](https://github.com/mixxxdj/mixxx/pull/14960)
 * Fix column header text assignment [#14944](https://github.com/mixxxdj/mixxx/pull/14944)
 * Remove runtime assert to not risk crashes [#15000](https://github.com/mixxxdj/mixxx/pull/15000)
-* Windows: Update build environment to Visual Studio 2022 [#15006](https://github.com/mixxxdj/mixxx/pull/15006)
 
 ## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (2025-06-13)
 
