@@ -39,6 +39,7 @@
   [#15168](https://github.com/mixxxdj/mixxx/pull/15168)
   [#15165](https://github.com/mixxxdj/mixxx/issues/15165)
 * Pitch filter improvements [#15230](https15054://github.com/mixxxdj/mixxx/pull/15230)
+* Add a quadrature phase tracker [#15217](https://github.com/mixxxdj/mixxx/pull/15217)
 
 ### Target support
 

@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.3" type="development" date="2025-08-22" timestamp="1755845932">
+    <release version="2.5.3" type="development" date="2025-08-22" timestamp="1755898268">
       <description>
  <p>
   Controller Mappings
@@ -185,6 +185,10 @@
   <li>
    Pitch filter improvements
    #15230
+  </li>
+  <li>
+   Add a quadrature phase tracker
+   #15217
   </li>
  </ul>
  <p>
