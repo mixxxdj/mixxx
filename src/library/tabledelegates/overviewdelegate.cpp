@@ -157,10 +157,13 @@ void OverviewDelegate::paintItem(QPainter* painter,
             // non-cache we can request an update.
             m_cacheMissIds.insert(trackId);
         } else {
+            // FIXME get OverviewCalseMode and maybe normalize the image
+
             pixmap = m_pCache->requestUncachedOverview(m_type,
                     m_signalColors,
                     trackId,
                     this,
+                    // replayGainRatio
                     option.rect.size() * scaleFactor);
         }
         paintItemBackground(painter, option, index);

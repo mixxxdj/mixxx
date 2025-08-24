@@ -42,7 +42,7 @@ OverviewCache::OverviewCache(UserSettingsPointer pConfig,
           m_stopClearing(false) {
 }
 
-void OverviewCache::onNormalizeOrVisualGainChanged() {
+void OverviewCache::onScaleModeNormalizeChanged() {
     // Clear the cache and emit changed signal so OverviewDelegate requests
     // new pixmaps.
     // Prevent interferences of repeated calls when Normalize or VisualGainAll
