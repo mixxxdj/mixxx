@@ -51,7 +51,8 @@ void WStemLabel::slotTrackLoaded(TrackPointer pTrack) {
 
     //    qDebug() << "EVE -> m_stemInfo: " << m_stemInfo;
     if (m_stemNo == 1) {
-        QColor color = "#FFFFFF";
+        // QColor color = "#FFFFFF";
+        QColor color(0xFFFFFF);
         QString text = "Pre-Mix";
         setTextColor(color);
         setLabelText(text);

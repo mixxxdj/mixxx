@@ -305,14 +305,14 @@ SoundSource::OpenResult SoundSourceSingleSTEM::tryOpen(
     return OpenResult::Succeeded;
 }
 
-// SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
-//         : SoundSource(url) {
-// }
-
 SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
-        : SoundSource(url),
-          m_debugCounter(0) {
+        : SoundSource(url) {
 }
+
+// SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
+//         : SoundSource(url),
+//           m_debugCounter(0) {
+// }
 
 // SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
 //         : SoundSource(url),
@@ -360,7 +360,7 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         return OpenResult::Failed;
     }
 
-    AVStream* firstAudioStream = nullptr;
+    // AVStream* firstAudioStream = nullptr;
     int stemCount = 0;
     uint selectedStemMask = params.stemMask();
     VERIFY_OR_DEBUG_ASSERT(selectedStemMask <= 1 << mixxx::kMaxSupportedStems) {
@@ -732,14 +732,14 @@ void SoundSourceSTEM::processWithoutResampler(size_t streamIdx,
     // qDebug() << "Read" << readResult.frameIndexRange().length() << "frames";
 
     // Check audio data
-    bool hasAudio = false;
+    // bool hasAudio = false;
     SINT checkLimit = outputSampleLength;
     if (checkLimit > 1000) {
         checkLimit = 1000;
     }
     for (SINT i = 0; i < checkLimit; i++) {
         if (std::abs(m_buffer[i]) > 0.0001f) {
-            hasAudio = true;
+            // hasAudio = true;
             break;
         }
     }
