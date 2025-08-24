@@ -26,6 +26,10 @@
 
 namespace {
 
+#ifdef __STEM__
+constexpr int kMaxSupportedStems = 5;
+#endif
+
 const mixxx::Logger kLogger("PlayerManager");
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
@@ -456,7 +460,7 @@ void PlayerManager::addDeckInner() {
 
 #ifdef __STEM__
     // Setup stem QuickEffect chain for this deck
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < kMaxSupportedStems; i++) {
         ChannelHandleAndGroup stemHandleGroup =
                 m_pEngine->registerChannelGroup(groupForDeckStem(deckIndex, i));
         pDeck->getEngineDeck()->addStemHandle(stemHandleGroup);

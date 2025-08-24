@@ -192,79 +192,161 @@ bool WaveformRendererStem::preprocessInner() {
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
-    for (int visualIdx = 0; visualIdx < stripLength; visualIdx++) {
+    for (int visualIdx = 0; visualIdx < stripLength; ++visualIdx) {
         int stemLayer = 0;
+
+        // PreMix mute state (index 0 = Stem1 = premix)
+        const bool premixMuted =
+                (!m_pStemMute.empty() && m_pStemMute.size() > 0) ? m_pStemMute[0]->toBool() : false;
+
         for (int stemIdx : std::as_const(m_stackOrder)) {
             // Stem is drawn twice with different opacity level, this allow to
             // see the maximum signal by transparency
-            for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
-                QColor stemColor;
-                if (stemIdx - 1 == 0) {
-                    stemColor = stemColor.redF();
-                } else {
-                    stemColor = stemInfo[stemIdx - 1].getColor();
+            // Skip premix entirely; we never draw it
+            if (stemIdx == 0) {
+                continue;
+            }
+
+            // Map to stemInfo index (0..3) from internal (1..4)
+            const int colorIdx = stemIdx - 1;
+            if (colorIdx < 0 || colorIdx >= static_cast<int>(stemInfo.size())) {
+                continue;
+            }
+
+            // Color for this stem
+            const QColor stemColor = stemInfo[colorIdx].getColor();
+            const float color_r = stemColor.redF();
+            const float color_g = stemColor.greenF();
+            const float color_b = stemColor.blueF();
+            const float color_a_base = stemColor.alphaF();
+
+            // Window of samples contributing to this pixel column
+            const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
+            const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
+            const int visualIndexStart = std::max(visualFrameStart * 2, 0);
+            const int visualIndexStop =
+                    std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
+
+            const float fVisualIdx = static_cast<float>(visualIdx) * invDevicePixelRatio;
+
+            // Find the max values for current eq in the waveform data.
+            // - Max of left and right
+            uchar u8max = 0;
+            for (int chn = 0; chn < 2; ++chn) {
+                // data is interleaved left / right
+                for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                    const WaveformData& waveformData = data[i];
+                    // waveformData.stems[] is 0..4, where 0 is premix, 1..4 our musical stems
+                    u8max = math_max(u8max, waveformData.stems[stemIdx]);
                 }
+            }
 
-                float color_r = stemColor.redF(),
-                      color_g = stemColor.greenF(),
-                      color_b = stemColor.blueF(),
-                      color_a = stemColor.alphaF() * (layerIdx ? m_opacity : m_outlineOpacity);
+            // Cast to float
+            float max = static_cast<float>(u8max);
 
-                const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
-                const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
+            // Two layers (outline + fill) for stems not for PreMix
+            for (int layerIdx = 0; layerIdx < 2; ++layerIdx) {
+                float color_a = color_a_base * (layerIdx ? m_opacity : m_outlineOpacity);
 
-                const int visualIndexStart = std::max(visualFrameStart * 2, 0);
-                const int visualIndexStop =
-                        std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
+                // Apply the gains -> effective gain:
+                // - If premix is unmuted -> show all stems at 100% (bright)
+                // - Else follow this stem’s mute/gain and selection mask
+                float effectiveGain = 1.0f;
+                if (premixMuted) {
+                    const bool isMuted = (m_pStemMute.size() > static_cast<size_t>(stemIdx))
+                            ? m_pStemMute[stemIdx]->toBool()
+                            : false;
+                    const float volume = (m_pStemGain.size() > static_cast<size_t>(stemIdx))
+                            ? static_cast<float>(m_pStemGain[stemIdx]->get())
+                            : 1.0f;
 
-                const float fVisualIdx = static_cast<float>(visualIdx) * invDevicePixelRatio;
-
-                // Find the max values for current eq in the waveform data.
-                // - Max of left and right
-                uchar u8max{};
-                for (int chn = 0; chn < 2; chn++) {
-                    // data is interleaved left / right
-                    for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
-                        const WaveformData& waveformData = data[i];
-
-                        u8max = math_max(u8max, waveformData.stems[stemIdx]);
-                    }
+                    const bool deselected = selectedStems && !(selectedStems & (1 << stemIdx));
+                    effectiveGain = (isMuted || deselected) ? 0.0f : volume;
                 }
-
-                // Cast to float
-                float max = static_cast<float>(u8max);
-
-                // Apply the gains
-                if (layerIdx) {
-                    bool isMuted = m_pStemMute.empty() ? false : m_pStemMute[stemIdx]->toBool();
-                    float volume = m_pStemGain.empty()
-                            ? 1.f
-                            : static_cast<float>(m_pStemGain[stemIdx]->get());
-                    max *= isMuted ||
-                                    (selectedStems &&
-                                            !(selectedStems & 1 << stemIdx))
-                            ? 0.f
-                            : volume;
-                }
-
+                const float h = heightFactor * (max * effectiveGain);
                 // Lines are thin rectangles
                 // shadow
                 vertexUpdater.addRectangle(
                         {fVisualIdx - halfStripSize,
-                                stemLayer * stemBreadth + halfBreadth -
-                                        heightFactor * max},
+                                stemLayer * stemBreadth + halfBreadth - h},
                         {fVisualIdx + halfStripSize,
-                                m_isSlipRenderer
-                                        ? stemLayer * stemBreadth + halfBreadth
-                                        : stemLayer * stemBreadth + halfBreadth +
-                                                heightFactor * max},
+                                stemLayer * stemBreadth + halfBreadth +
+                                        (m_isSlipRenderer ? 0.0f : h)},
                         {color_r, color_g, color_b, color_a});
             }
-            stemLayer++;
+            ++stemLayer;
         }
 
         xVisualFrame += visualIncrementPerPixel;
     }
+
+    // for (int visualIdx = 0; visualIdx < stripLength; visualIdx++) {
+    //     int stemLayer = 0;
+    //     for (int stemIdx : std::as_const(m_stackOrder)) {
+    //         // Stem is drawn twice with different opacity level, this allow to
+    //         // see the maximum signal by transparency
+    //         for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
+    //             QColor stemColor = stemInfo[stemIdx].getColor();
+    //             float color_r = stemColor.redF(),
+    //                   color_g = stemColor.greenF(),
+    //                   color_b = stemColor.blueF(),
+    //                   color_a = stemColor.alphaF() * (layerIdx ? m_opacity : m_outlineOpacity);
+    //             const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
+    //             const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
+
+    //            const int visualIndexStart = std::max(visualFrameStart * 2,
+    //            0); const int visualIndexStop =
+    //                    std::min(std::max(visualFrameStop, visualFrameStart +
+    //                    1) * 2, dataSize - 1);
+
+    //            const float fVisualIdx = static_cast<float>(visualIdx) * invDevicePixelRatio;
+
+    //            // Find the max values for current eq in the waveform data.
+    //            // - Max of left and right
+    //            uchar u8max{};
+    //            for (int chn = 0; chn < 2; chn++) {
+    //                // data is interleaved left / right
+    //                for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+    //                    const WaveformData& waveformData = data[i];
+
+    //                    u8max = math_max(u8max, waveformData.stems[stemIdx]);
+    //                }
+    //            }
+
+    //            // Cast to float
+    //            float max = static_cast<float>(u8max);
+
+    //            // Apply the gains
+    //            if (layerIdx) {
+    //                bool isMuted = m_pStemMute.empty() ? false : m_pStemMute[stemIdx]->toBool();
+    //                float volume = m_pStemGain.empty()
+    //                        ? 1.f
+    //                        : static_cast<float>(m_pStemGain[stemIdx]->get());
+    //                max *= isMuted ||
+    //                                (selectedStems &&
+    //                                        !(selectedStems & 1 << stemIdx))
+    //                        ? 0.f
+    //                        : volume;
+    //            }
+
+    //            // Lines are thin rectangles
+    //            // shadow
+    //            vertexUpdater.addRectangle(
+    //                    {fVisualIdx - halfStripSize,
+    //                            stemLayer * stemBreadth + halfBreadth -
+    //                                    heightFactor * max},
+    //                    {fVisualIdx + halfStripSize,
+    //                            m_isSlipRenderer
+    //                                    ? stemLayer * stemBreadth + halfBreadth
+    //                                    : stemLayer * stemBreadth + halfBreadth +
+    //                                            heightFactor * max},
+    //                    {color_r, color_g, color_b, color_a});
+    //        }
+    //        stemLayer++;
+    //    }
+
+    //    xVisualFrame += visualIncrementPerPixel;
+    //}
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
 

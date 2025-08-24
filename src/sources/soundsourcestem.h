@@ -75,7 +75,7 @@ class SoundSourceSTEM : public SoundSource {
 
     QMap<int, qint64> m_streamTotalFramesProcessed;
     QMap<int, qint64> m_streamTotalResamplingTime;
-    QElapsedTimer m_resampleTimer;
+    // QElapsedTimer m_resampleTimer;
     int m_debugCounter;
 
   protected:
