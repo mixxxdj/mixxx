@@ -84,12 +84,21 @@ double EngineBufferScaleLinear::scaleBuffer(
         // first half: rate goes from old rate to zero
         m_dOldRate = rate_add_old;
         m_dRate = 0.0;
-        frames_read += do_scale(pOutputBuffer, getOutputSignal().samples2frames(iOutputBufferSize));
+        // updated for PreMix + stems -->
+        // frames_read += do_scale(pOutputBuffer,
+        // getOutputSignal().samples2frames(iOutputBufferSize));
+        const SINT channels = getOutputSignal().getChannelCount().value(); // 10 now
+        const SINT safeBufSize = iOutputBufferSize - (iOutputBufferSize % channels);
+
+        frames_read = do_scale(pOutputBuffer, getOutputSignal().samples2frames(safeBufSize));
+        // updated for PreMix + stems <--
 
         // reset m_floorSampleOld in a way as we were coming from
         // the other direction
         SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
-        int chCount = getOutputSignal().getChannelCount();
+        // changed for premix
+        // int chCount = getOutputSignal().getChannelCount();
+        const SINT chCount = getOutputSignal().getChannelCount().value();
         if (iNextSample >= 0 && iNextSample + chCount <= m_bufferIntSize) {
             SampleUtil::copy(m_floorSampleOld.data(), &m_bufferInt[iNextSample], chCount);
         } else {
@@ -110,6 +119,7 @@ double EngineBufferScaleLinear::scaleBuffer(
 
             SINT next_samples_read = m_pReadAheadManager->getNextSamples(
                     rate_add_new, m_bufferInt, extra_samples, getOutputSignal().getChannelCount());
+
             frames_read += getOutputSignal().samples2frames(next_samples_read);
         }
         // force a buffer read:
@@ -117,6 +127,13 @@ double EngineBufferScaleLinear::scaleBuffer(
         // make sure the indexes stay correct for interpolation
         m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
+        // Changed for PreMix -->
+        // frames_read += do_scale(pOutputBuffer,
+        // getOutputSignal().samples2frames(iOutputBufferSize)); const SINT
+        // chCount = getOutputSignal().getChannelCount().value(); SINT
+        // safeBufSize = iOutputBufferSize - (iOutputBufferSize % chCount);
+        frames_read += do_scale(pOutputBuffer, safeBufSize);
+        // Changed for PreMix <--
 
         // second half: rate goes from zero to new rate
         m_dOldRate = 0.0;
@@ -124,16 +141,28 @@ double EngineBufferScaleLinear::scaleBuffer(
         // pass the address of the frame at the halfway point
         SINT frameOffset =  getOutputSignal().samples2frames(iOutputBufferSize) / 2;
         SINT sampleOffset = getOutputSignal().frames2samples(frameOffset);
-        frames_read += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
+        // Changed for PreMix -->
+        // frames_read += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
+        SINT secondHalfSize = safeBufSize - sampleOffset;
+        secondHalfSize -= secondHalfSize % chCount;
+        frames_read += do_scale(pOutputBuffer + sampleOffset, secondHalfSize);
+        // Changed for PreMix <--
+
     } else {
         frames_read += do_scale(pOutputBuffer, iOutputBufferSize);
     }
     return frames_read;
 }
 
+// changed for PreMix -->
 SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
     SINT samples_needed = buf_size;
     CSAMPLE* write_buf = buf;
+    const int chCount = getOutputSignal().getChannelCount(); // 10 for premix + 4 stems
+
+    // Align samples_needed to full frames
+    samples_needed -= samples_needed % chCount;
+
     // Use up what's left of the internal buffer.
     SINT iNextFrame = static_cast<SINT>(ceil(m_dNextFrame));
     SINT iNextSample = math_max<SINT>(getOutputSignal().frames2samples(iNextFrame), 0);
@@ -143,45 +172,106 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
         samples_needed -= readSize;
         write_buf += readSize;
     }
-    // Protection against infinite read loops when (for example) we are
-    // reading from a broken file.
+
+    // Protection against infinite read loops when RAMAN cannot fill enough
     int read_failed_count = 0;
-    // We need to repeatedly call the RAMAN because the RAMAN does not bend
-    // over backwards to satisfy our request. It assumes you will continue
-    // to call getNextSamples until you receive the number of samples you
-    // wanted.
     while (samples_needed > 0) {
-        SINT read_size = m_pReadAheadManager->getNextSamples(m_dRate,
+        SINT read_size = m_pReadAheadManager->getNextSamples(
+                m_dRate,
                 write_buf,
                 samples_needed,
-                getOutputSignal().getChannelCount());
+                mixxx::audio::ChannelCount(chCount));
+        // SINT read_size = m_pReadAheadManager->getNextSamples(
+        //         m_dRate,
+        //         write_buf,
+        //         samples_needed,
+        //         chCount);
+
         if (read_size == 0) {
-            if (++read_failed_count > 1) {
+            if (++read_failed_count > 1)
                 break;
-            } else {
+            else
                 continue;
-            }
         }
+
         samples_needed -= read_size;
         write_buf += read_size;
     }
 
-    // Instead of counting how many samples we got from the internal buffer
-    // and the RAMAN calls, just measure the difference between what we
-    // requested and what we still need.
+    // Compute how many samples were actually read
     SINT read_samples = buf_size - samples_needed;
-    // Zero the remaining samples if we didn't fill them.
-    SampleUtil::clear(write_buf, samples_needed);
-    // update our class members so next time we need to scale it's ok. we do
-    // blow away the fractional sample position here
-    m_bufferIntSize = 0; // force buffer read
+
+    // Ensure remaining samples are multiples of chCount before clearing
+    if (samples_needed > 0) {
+        SINT samples_to_clear = samples_needed - (samples_needed % chCount);
+        if (samples_to_clear > 0) {
+            SampleUtil::clear(write_buf, samples_to_clear);
+        }
+    }
+
+    // Reset buffer state
+    m_bufferIntSize = 0;
     m_dNextFrame = 0;
-    int chCount = getOutputSignal().getChannelCount();
+
+    // Store last frame for interpolation
     if (read_samples > chCount - 1) {
         SampleUtil::copy(m_floorSampleOld.data(), &buf[read_samples - chCount], chCount);
     }
+
     return read_samples;
 }
+
+// SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
+//     SINT samples_needed = buf_size;
+//     CSAMPLE* write_buf = buf;
+//     // Use up what's left of the internal buffer.
+//     SINT iNextFrame = static_cast<SINT>(ceil(m_dNextFrame));
+//     SINT iNextSample = math_max<SINT>(getOutputSignal().frames2samples(iNextFrame), 0);
+//     SINT readSize = math_min<SINT>(m_bufferIntSize - iNextSample, samples_needed);
+//     if (readSize > 0) {
+//         SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
+//         samples_needed -= readSize;
+//         write_buf += readSize;
+//     }
+//     // Protection against infinite read loops when (for example) we are
+//     // reading from a broken file.
+//     int read_failed_count = 0;
+//     // We need to repeatedly call the RAMAN because the RAMAN does not bend
+//     // over backwards to satisfy our request. It assumes you will continue
+//     // to call getNextSamples until you receive the number of samples you
+//     // wanted.
+//     while (samples_needed > 0) {
+//         SINT read_size = m_pReadAheadManager->getNextSamples(m_dRate,
+//                 write_buf,
+//                 samples_needed,
+//                 getOutputSignal().getChannelCount());
+//         if (read_size == 0) {
+//             if (++read_failed_count > 1) {
+//                 break;
+//             } else {
+//                 continue;
+//             }
+//         }
+//         samples_needed -= read_size;
+//         write_buf += read_size;
+//     }
+//
+//     // Instead of counting how many samples we got from the internal buffer
+//     // and the RAMAN calls, just measure the difference between what we
+//     // requested and what we still need.
+//     SINT read_samples = buf_size - samples_needed;
+//     // Zero the remaining samples if we didn't fill them.
+//     SampleUtil::clear(write_buf, samples_needed);
+//     // update our class members so next time we need to scale it's ok. we do
+//     // blow away the fractional sample position here
+//     m_bufferIntSize = 0; // force buffer read
+//     m_dNextFrame = 0;
+//     int chCount = getOutputSignal().getChannelCount();
+//     if (read_samples > chCount - 1) {
+//         SampleUtil::copy(m_floorSampleOld.data(), &buf[read_samples - chCount], chCount);
+//     }
+//     return read_samples;
+// }
 
 // Stretch a specified buffer worth of audio using linear interpolation
 double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
@@ -316,10 +406,18 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
         CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame) - currentFrameFloor;
 
         // Perform linear interpolation
-        for (int chIdx = 0; chIdx < chCount; chIdx++) {
-            buf[i + chIdx] = m_floorSample[chIdx] +
-                    frac * (m_ceilSample[chIdx] - m_floorSample[chIdx]);
+        // changed for PreMix -->
+        // for (int chIdx = 0; chIdx < chCount; chIdx++) {
+        //    buf[i + chIdx] = m_floorSample[chIdx] +
+        //            frac * (m_ceilSample[chIdx] - m_floorSample[chIdx]);
+        //}
+        if (i + chCount <= buf_size) {
+            for (int chIdx = 0; chIdx < chCount; chIdx++) {
+                buf[i + chIdx] = m_floorSample[chIdx] +
+                        frac * (m_ceilSample[chIdx] - m_floorSample[chIdx]);
+            }
         }
+        // changed for PreMix -->
 
         m_floorSampleOld.swap(m_floorSample);
 
@@ -333,7 +431,14 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
         i += chCount;
     }
 
-    SampleUtil::clear(&buf[i], buf_size - i);
+    // Changed for PReMix -->
+    // SampleUtil::clear(&buf[i], buf_size - i);
+    SINT remaining = buf_size - i;
+    if (remaining > 0) {
+        remaining -= remaining % chCount; // make multiple of channels
+        SampleUtil::clear(&buf[i], remaining);
+    }
+    // Changed for PReMix <--
 
     return m_dNextFrame - startFrame;
 }
