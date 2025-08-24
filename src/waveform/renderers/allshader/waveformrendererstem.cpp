@@ -259,7 +259,7 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Apply the gains -> effective gain:
                 // - If premix is unmuted -> show all stems at 100% (bright)
-                // - Else follow this stem’s mute/gain and selection mask
+                // - Else follow this stemâ€™s mute/gain and selection mask
                 float effectiveGain = 1.0f;
                 if (premixMuted) {
                     const bool isMuted = (m_pStemMute.size() > static_cast<size_t>(stemIdx))
