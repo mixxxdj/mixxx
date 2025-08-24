@@ -9,6 +9,7 @@
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
+#include "waveform/overviewscalemode.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
@@ -121,7 +122,7 @@ class WaveformWidgetFactory : public QObject,
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
-//    bool getVSync() const { return m_vSyncType;}
+    // bool getVSync() const { return m_vSyncType;}
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
@@ -212,8 +213,10 @@ class WaveformWidgetFactory : public QObject,
     void setVisualGain(BandIndex index, double gain);
     double getVisualGain(BandIndex index) const;
 
-    void setOverviewNormalized(bool normalize);
-    int isOverviewNormalized() const { return m_overviewNormalized;}
+    void setOverviewScaleMode(mixxx::OverviewScaleMode mode);
+    mixxx::OverviewScaleMode getOverviewScaleMode() const;
+    void setOverviewCustomScaleFactor(double gain);
+    double getOverviewCustomScaleFactor() const;
 
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
@@ -239,7 +242,8 @@ class WaveformWidgetFactory : public QObject,
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
-    void overviewNormalizeChanged();
+    void overviewScalingChanged();
+    void overviewScaleModeNormalizeChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
 
     void untilMarkShowBeatsChanged(bool value);
@@ -307,6 +311,8 @@ class WaveformWidgetFactory : public QObject,
     bool m_zoomSync;
     double m_visualGain[BandCount];
     bool m_overviewNormalized;
+    mixxx::OverviewScaleMode m_overviewScaleMode;
+    double m_overviewCustomGain;
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;

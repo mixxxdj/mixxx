@@ -21,6 +21,7 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "waveform/overviewscalemode.h"
 #include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -33,6 +34,8 @@ constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
 } // anonymous namespace
 
+using namespace mixxx;
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -41,7 +44,7 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(mixxx::OverviewType::RGB),
+          m_type(OverviewType::RGB),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -101,20 +104,30 @@ WOverview::WOverview(
     m_pMinuteMarkersControl->connectValueChanged(this, &WOverview::slotMinuteMarkersChanged);
     slotMinuteMarkersChanged(static_cast<bool>(m_pMinuteMarkersControl->get()));
 
-    // Update immediately when the normalize option or the visual gain have been
+    // Update immediately when the scale mode or the custom gain have been
     // changed in the preferences.
     WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overviewNormalizeChanged,
+            &WaveformWidgetFactory::overviewScalingChanged,
             this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    connect(pWidgetFactory,
-            &WaveformWidgetFactory::visualGainChanged,
-            this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    // Also listen to ReplayGain changes to scale the waveform
-    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
-    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
+            &WOverview::slotScalingChanged);
+    // Also update when the ReplayGain and related options have been
+    m_pReplayGain = make_parented<ControlProxy>(m_group, QStringLiteral("replaygain"), this);
+    // FIXME Instead of creating these ControlProxies for every overview,
+    // we might as well emit a signal `replayGainSettingsChanged` somewhere
+    // (WaveformWidgetFactory?) and listen to that. Then use
+    // PollingControlProxies here.
+    m_pReplayGainEnabled = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainEnabled"), this);
+    m_pReplayGainBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainBoost"), this);
+    m_pReplayGainDefaultBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("DefaultBoost"), this);
+
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainEnabled->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainDefaultBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -443,8 +456,8 @@ void WOverview::onPassthroughChange(double v) {
 
 void WOverview::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
-    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
-    mixxx::OverviewType type = static_cast<mixxx::OverviewType>(static_cast<int>(v));
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<OverviewType>().keyCount());
+    OverviewType type = static_cast<OverviewType>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -458,7 +471,7 @@ void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
 
-void WOverview::slotNormalizeOrVisualGainChanged() {
+void WOverview::slotScalingChanged() {
     update();
 }
 
@@ -734,24 +747,50 @@ void WOverview::drawAxis(QPainter* pPainter) {
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
     if (!m_waveformSourceImage.isNull()) {
+        float diffGain = 0.0f;
         WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
-        float diffGain;
-        bool normalize = pWidgetFactory->isOverviewNormalized();
-        if (normalize && m_pixmapDone && m_waveformPeak > 1) {
-            diffGain = 255 - m_waveformPeak - 1;
-        } else {
-            DEBUG_ASSERT(m_pCurrentTrack);
-            const auto replayGain = m_pCurrentTrack->getReplayGain();
-            const auto visualGain = static_cast<float>(
-                    pWidgetFactory->getVisualGain(BandIndex::AllBand) *
-                    (replayGain.hasRatio()
-                                    ? replayGain.getRatio()
-                                    : 1.0));
+        OverviewScaleMode scaleMode = pWidgetFactory->getOverviewScaleMode();
+        switch (scaleMode) {
+        case OverviewScaleMode::FileLevel: {
+            // use original waveform image and maybe apply custom factor
+            const auto customScaleFactor = static_cast<float>(
+                    pWidgetFactory->getOverviewCustomScaleFactor());
+            diffGain = 255.0f - (255.0f / customScaleFactor);
+            break;
+        }
+        case OverviewScaleMode::Normalize: {
+            if (m_pixmapDone && m_waveformPeak > 1) {
+                diffGain = 255 - m_waveformPeak - 1;
+            }
+            break;
+        }
+        case OverviewScaleMode::AllGainReplayGain: {
+            // Try to get same visual gain like in the scrolling waveforms.
+            // Note: there the gain still varies per renderer :|
+            // This essentially repeats the calculations of EnginePregain::process(),
+            // just without `pregain`.
+            CSAMPLE_GAIN trackGainRatio = 1;
+            if (m_pReplayGainEnabled) {
+                auto replayGain = static_cast<CSAMPLE_GAIN>(m_pReplayGain->get());
+                if (replayGain == 0) {
+                    // Not analyzed yet or cleared manually. Use default boost
+                    trackGainRatio =
+                            static_cast<CSAMPLE_GAIN>(m_pReplayGainDefaultBoost->get());
+                } else {
+                    // ReplayGain boost
+                    trackGainRatio =
+                            replayGain * static_cast<CSAMPLE_GAIN>(m_pReplayGainBoost->get());
+                }
+            }
+            const auto visualGain = static_cast<float>(trackGainRatio *
+                    pWidgetFactory->getVisualGain(BandIndex::AllBand));
             diffGain = 255.0f - (255.0f / visualGain);
+            break;
+        }
         }
 
         if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            QRect sourceRect(0,
+            const QRect sourceRect(0,
                     static_cast<int>(diffGain),
                     m_waveformSourceImage.width(),
                     m_waveformSourceImage.height() -
@@ -1422,21 +1461,21 @@ bool WOverview::drawNextPixmapPart() {
                 static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
-    if (m_type == mixxx::OverviewType::Filtered) {
+    if (m_type == OverviewType::Filtered) {
         waveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else if (m_type == mixxx::OverviewType::HSV) {
+    } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else { // mixxx::OverviewType::RGB:
+    } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,

@@ -17,6 +17,9 @@ const ConfigKey kOverviewTypeCfgKey(QStringLiteral("[Waveform]"),
         QStringLiteral("WaveformOverviewType"));
 } // namespace
 
+// for OverviewType and OverviewScaleMode
+using namespace mixxx;
+
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -28,20 +31,20 @@ DlgPrefWaveform::DlgPrefWaveform(
 
     // Waveform overview init
     waveformOverviewComboBox->addItem(
-            tr("Filtered"), QVariant::fromValue(mixxx::OverviewType::Filtered));
-    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(mixxx::OverviewType::HSV));
-    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(mixxx::OverviewType::RGB));
+            tr("Filtered"), QVariant::fromValue(OverviewType::Filtered));
+    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(OverviewType::HSV));
+    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(OverviewType::RGB));
     m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
-    m_pTypeControl->setStates(QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+    m_pTypeControl->setStates(QMetaEnum::fromType<OverviewType>().keyCount());
     m_pTypeControl->setReadOnly();
     // Update the control with the config value
-    mixxx::OverviewType overviewType =
-            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
+    OverviewType overviewType =
+            m_pConfig->getValue<OverviewType>(kOverviewTypeCfgKey, OverviewType::RGB);
     int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
     if (cfgTypeIndex == -1) {
         // Invalid config value, set default type RGB and write it to config
         waveformOverviewComboBox->setCurrentIndex(
-                waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
+                waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
         m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
     } else {
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
@@ -173,14 +176,16 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &DlgPrefWaveform::slotSetVisualGainHigh);
-    connect(normalizeOverviewCheckBox,
-            &QCheckBox::toggled,
+
+    connect(overview_scale_options,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
-            &DlgPrefWaveform::slotSetNormalizeOverview);
-    connect(overviewMinuteMarkersCheckBox,
-            &QCheckBox::toggled,
+            &DlgPrefWaveform::slotSetOverviewScaling);
+    connect(overview_scale_custom_spinbox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
-            &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+            &DlgPrefWaveform::slotSetOverviewCustomFactor);
+
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
             this,
@@ -301,7 +306,6 @@ void DlgPrefWaveform::slotUpdate() {
     lowVisualGain->setValue(factory->getVisualGain(BandIndex::Low));
     midVisualGain->setValue(factory->getVisualGain(BandIndex::Mid));
     highVisualGain->setValue(factory->getVisualGain(BandIndex::High));
-    normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
@@ -322,14 +326,31 @@ void DlgPrefWaveform::slotUpdate() {
     stemOpacitySpinBox->setValue(factory->getStemOpacity());
     stemOutlineOpacitySpinBox->setValue(factory->getStemOutlineOpacity());
 
-    mixxx::OverviewType cfgOverviewType =
-            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
+    OverviewType cfgOverviewType =
+            m_pConfig->getValue<OverviewType>(kOverviewTypeCfgKey, OverviewType::RGB);
     // Assumes the combobox index is in sync with the ControlPushButton
-    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<mixxx::OverviewType>()) {
+    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<OverviewType>()) {
         int cfgOverviewTypeIndex =
                 waveformOverviewComboBox->findData(QVariant::fromValue(cfgOverviewType));
         waveformOverviewComboBox->setCurrentIndex(cfgOverviewTypeIndex);
     }
+
+    auto* pWidgetFactory = WaveformWidgetFactory::instance();
+    const OverviewScaleMode mode = pWidgetFactory->getOverviewScaleMode();
+    switch (mode) {
+    case OverviewScaleMode::FileLevel:
+        overview_scale_fileLevel->setChecked(true);
+        break;
+    case OverviewScaleMode::Normalize:
+        overview_scale_normalize->setChecked(true);
+        break;
+    case OverviewScaleMode::AllGainReplayGain:
+        overview_scale_allReplayGain->setChecked(true);
+        break;
+    }
+
+    double customScaleFactor = pWidgetFactory->getOverviewCustomScaleFactor();
+    overview_scale_custom_spinbox->setValue(customScaleFactor);
 
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey("[Waveform]", "draw_overview_minute_markers"), true);
@@ -344,6 +365,7 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
+    // All other settings have already been applied instantly for preview purpose
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -388,13 +410,16 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
-            waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
-
-    // Don't normalize overview.
-    normalizeOverviewCheckBox->setChecked(false);
+            waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
 
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
+
+    // Use file gain
+    overview_scale_fileLevel->setChecked(false);
+
+    // load custom gain
+    overview_scale_custom_spinbox->setValue(1.0);
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
@@ -588,19 +613,19 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
 }
 
 void DlgPrefWaveform::updateWaveformGainEnabled() {
-    bool enabled = useWaveformCheckBox->isChecked() ||
-            !normalizeOverviewCheckBox->isChecked();
-    allVisualGain->setEnabled(enabled);
-    lowVisualGain->setEnabled(enabled);
-    midVisualGain->setEnabled(enabled);
-    highVisualGain->setEnabled(enabled);
+    bool waveformsEnabled = useWaveformCheckBox->isChecked();
+    bool allGainEnabled = waveformsEnabled || overview_scale_allReplayGain->isChecked();
+    allVisualGain->setEnabled(allGainEnabled);
+    lowVisualGain->setEnabled(waveformsEnabled);
+    midVisualGain->setEnabled(waveformsEnabled);
+    highVisualGain->setEnabled(waveformsEnabled);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType() {
     // Apply immediately
     QVariant comboboxData = waveformOverviewComboBox->currentData();
-    DEBUG_ASSERT(comboboxData.canConvert<mixxx::OverviewType>());
-    auto type = comboboxData.value<mixxx::OverviewType>();
+    DEBUG_ASSERT(comboboxData.canConvert<OverviewType>());
+    auto type = comboboxData.value<OverviewType>();
     m_pConfig->setValue(kOverviewTypeCfgKey, type);
     m_pTypeControl->forceSet(static_cast<double>(type));
 }
@@ -629,9 +654,22 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::High, gain);
 }
 
-void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
-    WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+void DlgPrefWaveform::slotSetOverviewScaling(QAbstractButton* b) {
+    auto* pWidgetFactory = WaveformWidgetFactory::instance();
+    if (b == overview_scale_fileLevel) {
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::FileLevel);
+    } else if (b == overview_scale_normalize) {
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::Normalize);
+    } else if (b == overview_scale_allReplayGain) {
+        pWidgetFactory->setOverviewScaleMode(OverviewScaleMode::AllGainReplayGain);
+    }
+    overview_scale_custom_spinbox->setEnabled(b == overview_scale_fileLevel);
     updateWaveformGainEnabled();
+}
+
+void DlgPrefWaveform::slotSetOverviewCustomFactor(double factor) {
+    // TODO validate 0.1 <= v <= 5 here or in WaveformWidgetFactory ?
+    WaveformWidgetFactory::instance()->setOverviewCustomScaleFactor(factor);
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
