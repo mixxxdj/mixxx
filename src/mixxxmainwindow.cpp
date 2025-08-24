@@ -297,13 +297,9 @@ void MixxxMainWindow::initialize() {
     // preferences.
     auto* pOverviewCache = OverviewCache::instance();
     connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::visualGainChanged,
+            &WaveformWidgetFactory::overviewScaleModeNormalizeChanged,
             pOverviewCache,
-            &OverviewCache::onNormalizeOrVisualGainChanged);
-    connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::overviewNormalizeChanged,
-            pOverviewCache,
-            &OverviewCache::onNormalizeOrVisualGainChanged);
+            &OverviewCache::onScaleModeNormalizeChanged);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,

@@ -5,6 +5,7 @@
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
+#include "waveform/overviewscalemode.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformwidgetfactory.h"
 
@@ -13,7 +14,7 @@ namespace waveformOverviewRenderer {
 QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        bool mono) {
+        bool mono) { /* bool normalize*/
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
         return QImage();
@@ -48,6 +49,12 @@ QImage render(ConstWaveformPointer pWaveform,
                 mono);
     }
 
+    // Only for explicit Normalized mode we apply normalization
+    if (WaveformWidgetFactory::instance()->getOverviewScaleMode() !=
+            mixxx::OverviewScaleMode::Normalize) {
+        return image;
+    }
+
     // Evaluate waveform ratio peak
     float peak = 1;
     for (int i = 0; i < dataSize; i += 2) {
@@ -57,15 +64,9 @@ QImage render(ConstWaveformPointer pWaveform,
                 static_cast<float>(pWaveform->getAll(i + 1)));
     }
     // Normalize
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
-    float diffGain = 0;
-    bool normalize = widgetFactory->isOverviewNormalized();
-    if (normalize && peak > 1) {
+    float diffGain = 1.0;
+    if (peak > 1) {
         diffGain = 255 - peak - 1;
-    } else {
-        const auto visualGain = static_cast<float>(
-                widgetFactory->getVisualGain(BandIndex::AllBand));
-        diffGain = 255.0f - (255.0f / visualGain);
     }
 
     const int topLeft = static_cast<int>(mono ? diffGain * 2 : diffGain);
