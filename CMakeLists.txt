@@ -1658,6 +1658,7 @@ add_library(
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
+  src/widget/wbpmeditor.cpp
   src/widget/wcollapsiblegroupbox.cpp
   src/widget/wcolorpicker.cpp
   src/widget/wcolorpickeraction.cpp

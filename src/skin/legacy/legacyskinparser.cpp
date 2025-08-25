@@ -36,6 +36,7 @@
 #include "widget/wbasewidget.h"
 #include "widget/wbattery.h"
 #include "widget/wbeatspinbox.h"
+#include "widget/wbpmeditor.h"
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
 #include "widget/wcuebutton.h"
@@ -575,6 +576,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
         result = wrapWidget(parseLabelWidget<WNumber>(node));
+    } else if (nodeName == "BpmEditor") {
+        result = wrapWidget(parseBpmEditor(node));
     } else if (nodeName == "NumberDb") {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
@@ -1033,6 +1036,24 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
 }
 #endif
 
+QWidget* LegacySkinParser::parseBpmEditor(const QDomElement& node) {
+    const QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+    WBpmEditor* pBpmEditor = new WBpmEditor(group, m_pParent);
+    pBpmEditor->setup(node, *m_pContext);
+    commonWidgetSetup(node, pBpmEditor);
+    // Set tooltips of child widgets for mode selection & editing
+    const QString tapTooltip = m_tooltips.tooltipForId("tempo_tap_bpm_tap");
+    const QString editTooltip = m_tooltips.tooltipForId("tempo_edit");
+    pBpmEditor->setTapButtonTooltip(tapTooltip);
+    pBpmEditor->setEditButtonTooltip(editTooltip);
+    return pBpmEditor;
+}
+
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
     if (CmdlineArgs::Instance().isQml()) {
@@ -1322,6 +1343,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     WNumberRate* p = new WNumberRate(group, m_pParent);
     setupLabelWidget(node, p);
 
+    // TODO check this and other BgColor/palette hacks
     // TODO(rryan): Let's look at removing this palette change in 1.12.0. I
     // don't think it's needed anymore.
     p->setPalette(palette);
