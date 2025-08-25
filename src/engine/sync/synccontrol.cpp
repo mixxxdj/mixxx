@@ -8,6 +8,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/playermanager.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -123,15 +124,18 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pSyncPhaseButton = new ControlProxy(getGroup(), "beatsync_phase", this);
 
 #ifdef __VINYLCONTROL__
-    m_pVCEnabled = new ControlProxy(
-            getGroup(), "vinylcontrol_enabled", this);
+    // Vinyl control COs are only created for main decks
+    if (PlayerManager::isDeckGroup(getGroup())) {
+        m_pVCEnabled = new ControlProxy(
+                getGroup(), "vinylcontrol_enabled", this);
+        // TODO Remove, ControlProxy asserts that the control exists
+        // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+        // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+        DEBUG_ASSERT(m_pVCEnabled->valid());
 
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    DEBUG_ASSERT(m_pVCEnabled->valid());
-
-    m_pVCEnabled->connectValueChanged(
-            this, &SyncControl::slotVinylControlChanged, Qt::DirectConnection);
+        m_pVCEnabled->connectValueChanged(
+                this, &SyncControl::slotVinylControlChanged, Qt::DirectConnection);
+    }
 #endif
 }
 
