@@ -55,6 +55,7 @@ class Delay
 			{
 				size = next_power_of_2 (n);
 				assert (size <= (1 << 20));
+				free (data);
 				data = (sample_t *) calloc (sizeof (sample_t), size);
 				--size; /* used as mask for confining access */
 				write = n;

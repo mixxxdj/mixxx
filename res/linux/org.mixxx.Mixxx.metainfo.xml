@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-06-29" timestamp="1751222636">
+    <release version="2.6.0" type="development" date="2025-08-22" timestamp="1755898268">
       <description>
  <p>
   STEM file support
@@ -1078,12 +1078,16 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.3" type="development" date="2025-06-29" timestamp="1751222636">
+    <release version="2.5.3" type="development" date="2025-08-22" timestamp="1755898268">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
+  <li>
+   Icon P1-Nano MIDI 1: new mapping
+   #14602
+  </li>
   <li>
    Traktor Kontrol S4 Mk3: tempo offset per deck
    #14882
@@ -1096,6 +1100,114 @@
    Traktor Kontrol S3: allow full library navigation
    #14980
   </li>
+  <li>
+   Traktor Kontrol S3: fix hotcue color output
+   #15185
+  </li>
+  <li>
+   Numark NS6II: map the shiftbutton messages to decks 1/3 and 2/4
+   #15229
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   Turn on deck quantize buttons by default
+   #15245
+  </li>
+  <li>
+   Avoid engine freeze when loading a new track while scratching with waveform or spinny
+   #15086
+   #15082
+  </li>
+  <li>
+   Prevent crash with null track pointer
+   #15114
+  </li>
+  <li>
+   Fix Metronom with 96 kHz engine sample rate
+   #15130
+  </li>
+  <li>
+   Waveforms: don't scratch on mousepress/move with empty waveform
+   #15143
+   #15088
+  </li>
+ </ul>
+ <p>
+  Vinyl Control
+ </p>
+ <ul>
+  <li>
+   Do not try to "correct" for drift in absolute mode.
+   #14960
+  </li>
+  <li>
+   Fix connection to "passthrough" and "scratch_position_enable" controls.
+   #15173
+   #15167
+   #15174
+  </li>
+  <li>
+   Fix getting sample rate
+   #15195
+   #13974
+  </li>
+  <li>
+   Remove track selection mode
+   #15189
+  </li>
+  <li>
+   Fix handling of "vinylcontrol_enabled" causes a frozen vinyl spinny mouse control
+   #15168
+   #15165
+  </li>
+  <li>
+   Pitch filter improvements
+   #15230
+  </li>
+  <li>
+   Add a quadrature phase tracker
+   #15217
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Windows: Update build environment to Visual Studio 2022
+   #15006
+  </li>
+  <li>
+   Retire Ubuntu Oracular 24.10
+   #15100
+  </li>
+  <li>
+   Add qt6-svg-plugins to Debian package
+   #15124
+   #15117
+  </li>
+  <li>
+   missing include cstdlib
+   #15132
+  </li>
+  <li>
+   Improve zsh compatibility for macos_buildenv.sh
+   #15097
+   #15091
+   #15092
+  </li>
+  <li>
+   CMake: Set PREFIX in ExternalProject_Add()
+   #15170
+  </li>
+  <li>
+   Allow to build with GCC 15 and LTO enabled
+   #15238
+  </li>
  </ul>
  <p>
   Misc
@@ -1104,14 +1216,16 @@
   <li>
    Broadcast preferences: make setting string translatable
    #15023
+   #15013
+  </li>
+  <li>
+   Add missing translation in Eject button tooltip
+   #15113
+   #15105
   </li>
   <li>
    Sound Hardware preference: add (?) linking to Sound APIs in the manual
    #14935
-  </li>
-  <li>
-   xwax: do not try to "correct" for drift in absolute mode.
-   #14960
   </li>
   <li>
    Fix column header text assignment
@@ -1120,10 +1234,6 @@
   <li>
    Remove runtime assert to not risk crashes
    #15000
-  </li>
-  <li>
-   Windows: Update build environment to Visual Studio 2022
-   #15006
   </li>
  </ul>
 </description>

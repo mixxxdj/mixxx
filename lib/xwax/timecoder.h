@@ -30,6 +30,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+
 #endif // __cplusplus
 
 typedef unsigned int bits_t;
@@ -43,6 +44,7 @@ struct timecode_def {
         taps; /* central LFSR taps, excluding end taps */
     unsigned int length, /* in cycles */
         safe; /* last 'safe' timecode number (for auto disconnect) */
+    signed int threshold; /* threshold for detection of zero-crossings */
     bool lookup; /* true if lut has been generated */
     struct lut lut;
 };
@@ -71,6 +73,8 @@ struct timecoder {
     bool use_legacy_pitch_filter;
     struct pitch pitch;
     struct pitch_kalman pitch_kalman;
+    unsigned quadrant, last_quadrant;
+    bool direction_changed;
 
     /* Numerical timecode */
 
