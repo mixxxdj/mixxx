@@ -197,6 +197,11 @@ EngineBuffer::EngineBuffer(const QString& group,
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlControl = new VinylControlControl(group, pConfig);
+    connect(m_pVinylControlControl,
+            &VinylControlControl::noVinylControlInputConfigured,
+            this,
+            // signal-to-signal
+            &EngineBuffer::noVinylControlInputConfigured);
     addControl(m_pVinylControlControl);
 #endif
 
@@ -627,13 +632,19 @@ void EngineBuffer::ejectTrack() {
 
     if (pOldTrack) {
         notifyTrackLoaded(TrackPointer(), pOldTrack);
+    } else {
+        // When not invoking notifyTrackLoaded() call this separately
+        m_pRateControl->resetPositionScratchController();
     }
+
     m_iTrackLoading = 0;
     m_pChannelToCloneFrom = nullptr;
 }
 
 void EngineBuffer::notifyTrackLoaded(
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    m_pRateControl->resetPositionScratchController();
+
     if (pOldTrack) {
         disconnect(
                 pOldTrack.get(),

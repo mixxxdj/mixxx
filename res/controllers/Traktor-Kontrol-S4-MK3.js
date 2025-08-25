@@ -71,6 +71,24 @@ const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor
 const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
 
+// Tempo fader center snap range
+// Transform user value (mm) into upper/lower values
+const TempoCenterRangeMm = engine.getSetting("tempoCenterRangeMm") || 1.0;
+// In theory we have an 80 mm fader. Though, the usable range appears to be only ~77 mm.
+// Value range is 0..4096, but we only get 510 steps with 8/9 ticks resolution
+// and therefore need to make sure the center zone can actually be reached.
+// A diff of 15 should be safe, this corresponds to .3 mm.
+const TempoFaderTicksPerMm = 4096 / 77; // 53.1948..
+const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
+// Value center may be off the labeled center.
+// Use this setting to compensate per device.
+const TempoCenterValueOffsetLeft = (engine.getSetting("tempoCenterOffsetMmLeft") || 0.0) * TempoFaderTicksPerMm;
+const TempoCenterValueOffsetRright = (engine.getSetting("tempoCenterOffsetMmRight") || 0.0) * TempoFaderTicksPerMm;
+const TempoCenterUpperLeft = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetLeft;
+const TempoCenterLowerLeft = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetLeft;
+const TempoCenterUpperRight = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetRright;
+const TempoCenterLowerRight = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetRright;
+
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const InactiveLightsAlwaysBacklit = !!engine.getSetting("inactiveLightsAlwaysBacklit");
@@ -410,7 +428,7 @@ class ComponentContainer extends Component {
 
 /* eslint no-redeclare: "off" */
 class Deck extends ComponentContainer {
-    constructor(decks, colors) {
+    constructor(decks, colors, settings) {
         super();
         if (typeof decks === "number") {
             this.group = Deck.groupForNumber(decks);
@@ -428,6 +446,7 @@ class Deck extends ComponentContainer {
             }
             this.color = colors[0];
         }
+        this.settings = settings;
         this.secondDeckModes = null;
     }
     toggleDeck() {
@@ -832,19 +851,6 @@ class BeatLoopRollButton extends TriggerButton {
                 throw Error(`BeatLoopRollButton ${options.number}'s size "${BeatLoopRolls[options.number]}" is invalid. Must be a float, or the literal 'half' or 'double'`);
             }
             options.key = `beatlooproll_${size}_activate`;
-            options.onShortPress = function() {
-                if (!this.deck.beatloopSize) {
-                    this.deck.beatloopSize = engine.getValue(this.group, "beatloop_size");
-                }
-                engine.setValue(this.group, this.inKey, true);
-            };
-            options.onShortRelease = function() {
-                engine.setValue(this.group, this.inKey, false);
-                if (this.deck.beatloopSize) {
-                    engine.setValue(this.group, "beatloop_size", this.deck.beatloopSize);
-                    this.deck.beatloopSize = undefined;
-                }
-            };
         }
         super(options);
         if (this.deck === undefined) {
@@ -1128,17 +1134,19 @@ class Mixer extends ComponentContainer {
                 switch (value) {
                 case 0x00:  // Picnic Bench / Fast Cut
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
                     break;
                 case 0x01:  // Constant Power
                     engine.setValue("[Mixer Profile]", "xFaderMode", 1);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
+                    // Constant power requires to set an appropriate calibration value
+                    // in order to get a smooth curve.
+                    // This is the output of EngineXfader::getPowerCalibration() for
+                    // the "xFaderCurve" 0.6 (pow(0.5, 1.0 / 0.6))
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.31498);
                     break;
                 case 0x02: // Additive
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
                 }
             },
@@ -1565,8 +1573,8 @@ class S4Mk3EffectUnit extends ComponentContainer {
 }
 
 class S4Mk3Deck extends Deck {
-    constructor(decks, colors, effectUnit, mixer, inReports, outReport, io) {
-        super(decks, colors);
+    constructor(decks, colors, settings, effectUnit, mixer, inReports, outReport, io) {
+        super(decks, colors, settings);
 
         this.playButton = new PlayButton({
             output: InactiveLightsAlwaysBacklit ? undefined : Button.prototype.uncoloredOutput
@@ -1626,33 +1634,53 @@ class S4Mk3Deck extends Deck {
             } : undefined,
         });
         this.tempoFader = new Pot({
+            deck: this,
             inKey: "rate",
-        });
-        this.tempoFaderLED = new Component({
             outKey: "rate",
-            centered: false,
-            toleranceWindow: 0.001,
-            tempoFader: this.tempoFader,
+            appliedValue: null,
+            tempoCenterUpper: this.settings.tempoCenterUpper,
+            tempoCenterLower: this.settings.tempoCenterLower,
+            input: function(value) {
+                const receivingFirstValue = this.appliedValue === null;
+
+                if (value < this.tempoCenterLower) {
+                    // scale input for lower range
+                    this.appliedValue = script.absoluteLin(value, -1, 0, 0, this.tempoCenterLower);
+                } else if (value > this.tempoCenterUpper) {
+                    // scale input for upper range
+                    this.appliedValue = script.absoluteLin(value, 0, 1, this.tempoCenterUpper, 4096);
+                } else {
+                    // reset rate in center region
+                    this.appliedValue = 0;
+                }
+                engine.setValue(this.group, this.inKey, this.appliedValue);
+
+                if (receivingFirstValue) {
+                    engine.softTakeover(this.group, this.inKey, true);
+                    // Forec-update LED.
+                    // Output connection is made and updated before input() can set this.appliedValue
+                    // (doesn't happen until getInputReport())
+                    this.outTrigger();
+                }
+            },
             output: function(value) {
-                if (this.tempoFader.hardwarePosition === null) {
+                if (this.appliedValue === null) {
                     return;
                 }
 
-                const parameterValue = engine.getParameter(this.group, this.outKey);
-                const diffFromHardware = parameterValue - this.tempoFader.hardwarePosition;
-                if (diffFromHardware > this.toleranceWindow) {
-                    this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
-                    return;
-                } else if (diffFromHardware < (-1 * this.toleranceWindow)) {
+                const hardwareOffset = this.appliedValue - value;
+                // Use LED to indicate softTakeover pickup position
+                if (hardwareOffset > 0) { // engine is faster
                     this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
                     return;
+                } else if (hardwareOffset < 0) { // engine is slower
+                    this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
+                    return;
                 }
 
-                const oldCentered = this.centered;
-                if (Math.abs(value) < 0.001) {
+                // Fader is in sync with engine, set center LED on/off
+                if (value === 0) {
                     this.send(this.color + Button.prototype.brightnessOn);
-                    // round to precisely 0
-                    engine.setValue(this.group, "rate", 0);
                 } else {
                     this.send(0);
                 }
@@ -2523,8 +2551,33 @@ class S4Mk3Deck extends Deck {
         this.wheelLED = new Component({
             deck: this,
             lastPos: 0,
-            outKey: "playposition",
-            output: function(fractionOfTrack) {
+            lastMode: null,
+            outConnect: function() {
+                if (this.group !== undefined) {
+                    const connection0 = engine.makeConnection(this.group, "playposition", (position) => this.output.bind(this)(position, true, true));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection0) {
+                        this.outConnections[0] = connection0;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.playposition' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection1 = engine.makeConnection(this.group, "play", (play) => this.output.bind(this)(engine.getValue(this.group, "playposition"), play, play || engine.getValue(this.group, "track_loaded")));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection1) {
+                        this.outConnections[1] = connection1;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection2 = engine.makeConnection(this.group, "track_loaded", (trackLoaded) => this.output.bind(this)(engine.getValue(this.group, "playposition"), !trackLoaded ? false : engine.getValue(this.group, "play"), trackLoaded));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection2) {
+                        this.outConnections[2] = connection2;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.track_loaded' to the controller output. The control appears to be unavailable.`);
+                    }
+                }
+            },
+            output: function(fractionOfTrack, playstate, trackLoaded) {
                 if (this.deck.wheelMode > wheelModes.motor) {
                     return;
                 }
@@ -2567,18 +2620,24 @@ class S4Mk3Deck extends Deck {
 
                 const wheelOutput = new Uint8Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
+                wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                if (engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
+                if (!trackLoaded) {
+                    wheelOutput[1] = wheelLEDmodes.off;
+                } else if (playstate && fractionOfTrack < 1 && engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd && !this.deck.wheelTouch.touched) {
                     wheelOutput[1] = wheelLEDmodes.ringFlash;
                 } else {
                     wheelOutput[1] = wheelLEDmodes.spot;
                     wheelOutput[2] = LEDposition & 0xff;
                     wheelOutput[3] = LEDposition >> 8;
+                    if (this.lastMode === wheelLEDmodes.ringFlash) {
+                        wheelOutput[4] = Button.prototype.brightnessOff;
+                        engine.beginTimer(200, () => this.output(fractionOfTrack, playstate, trackLoaded), true);
+                    }
                 }
-                wheelOutput[4] = this.color + Button.prototype.brightnessOn;
+                this.lastMode = wheelOutput[1];
 
                 controller.sendOutputReport(50, wheelOutput.buffer, true);
-
             }
         });
 
@@ -2877,6 +2936,9 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
 class S4MK3 {
     constructor() {
+        if (engine.getValue("[App]", "num_decks") < 4) {
+            engine.setValue("[App]", "num_decks", 4);
+        }
         if (engine.getValue("[App]", "num_samplers") < 16) {
             engine.setValue("[App]", "num_samplers", 16);
         }
@@ -2937,7 +2999,10 @@ class S4MK3 {
         // so every single components' IO needs to be specified individually
         // for both decks.
         this.leftDeck = new S4Mk3Deck(
-            [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
+            [1, 3], [DeckColors[0], DeckColors[2]], {
+                tempoCenterLower: TempoCenterLowerLeft,
+                tempoCenterUpper: TempoCenterUpperLeft,
+            }, this.effectUnit1, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 4, inBit: 0, outByte: 55},
@@ -2952,7 +3017,6 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 5, inBit: 2},
                 deckButtonRight: {inByte: 5, inBit: 3},
                 deckButtonOutputByteOffset: 12,
-                tempoFaderLED: {outByte: 11},
                 shiftButton: {inByte: 5, inBit: 1, outByte: 59},
                 leftEncoder: {inByte: 19, inBit: 0},
                 leftEncoderPress: {inByte: 6, inBit: 2},
@@ -2980,7 +3044,7 @@ class S4MK3 {
                     {inByte: 3, inBit: 1, outByte: 6},
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2], outByte: 11},
                 wheelRelative: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 4},
@@ -2988,7 +3052,10 @@ class S4MK3 {
         );
 
         this.rightDeck = new S4Mk3Deck(
-            [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2, this.mixer,
+            [2, 4], [DeckColors[1], DeckColors[3]], {
+                tempoCenterLower: TempoCenterLowerRight,
+                tempoCenterUpper: TempoCenterUpperRight,
+            }, this.effectUnit2, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 12, inBit: 0, outByte: 66},
@@ -3003,7 +3070,6 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 14, inBit: 2},
                 deckButtonRight: {inByte: 14, inBit: 3},
                 deckButtonOutputByteOffset: 35,
-                tempoFaderLED: {outByte: 34},
                 shiftButton: {inByte: 14, inBit: 1, outByte: 70},
                 leftEncoder: {inByte: 20, inBit: 4},
                 leftEncoderPress: {inByte: 15, inBit: 5},
@@ -3031,7 +3097,7 @@ class S4MK3 {
                     {inByte: 13, inBit: 1, outByte: 29},
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2], outByte: 34},
                 wheelRelative: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 5},

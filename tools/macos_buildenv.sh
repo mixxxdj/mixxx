@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Ignored in case of a source call, but needed for bash specific sourcing detection
+
 set -o pipefail
 
 # shellcheck disable=SC2091
@@ -15,27 +17,42 @@ realpath() {
     cd "${OLDPWD}" || exit 1
 }
 
-# some hackery is required to be compatible with both bash and zsh
-THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
-[ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
-
-if [ -n "${BUILDENV_ARM64}" ]; then
-    VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
-    BUILDENV_BRANCH="2.5-rel"
-    BUILDENV_NAME="mixxx-deps-2.5-arm64-osx-min1100-release-c616147"
-    BUILDENV_SHA256="0ebac7023f89220f63b9b42f91ca6fd84bccf7cf961796cc2165a982a53934f2"
+# Get script file location, compatible with bash and zsh
+if [ -n "$BASH_VERSION" ]; then
+  THIS_SCRIPT_NAME="${BASH_SOURCE[0]}"
+elif [ -n "$ZSH_VERSION" ]; then
+  # shellcheck disable=SC2296
+  THIS_SCRIPT_NAME="${(%):-%N}"
 else
-    if [ -n "${BUILDENV_RELEASE}" ]; then
-        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+  THIS_SCRIPT_NAME="$0"
+fi
+
+HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
+
+if [ "$HOST_ARCH" = "x86_64" ]; then
+    if [ -n "${BUILDENV_ARM64}" ]; then
+        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.5-rel"
-        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-release-c616147"
-        BUILDENV_SHA256="ca83e724f253e8538ad92613ea4d1ac0a827a43a3bf378788870e9c994438a2d"
+        BUILDENV_NAME="mixxx-deps-2.5-arm64-osx-min1100-release-40c29ff"
+        BUILDENV_SHA256="b76685e77f681baf8fdc5037297b0f16d323a405d09ce276d8844304530278e1"
     else
-        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
-        BUILDENV_BRANCH="2.5"
-        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-74ff6c7"
-        BUILDENV_SHA256="2d27b3d07ac63f6540b4b8ec57315c2984332cbb4188717ca906dceeb1a23421"
+        if [ -n "${BUILDENV_RELEASE}" ]; then
+            VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+            BUILDENV_BRANCH="2.5-rel"
+            BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-release-40c29ff"
+            BUILDENV_SHA256="a9b7dd2cb9ab00db6d05ac1f05aab933ed0ab2697f71db1a1bad70305befcf1b"
+        else
+            VCPKG_TARGET_TRIPLET="x64-osx-min1100"
+            BUILDENV_BRANCH="2.5"
+            BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-c15790e"
+            BUILDENV_SHA256="0252293436efed1b043d5c6ee384a9502ca0ade712eff95b2c0d2199d94598bb"
+        fi
     fi
+else
+    echo "ERROR: Unsupported architecture detected: $HOST_ARCH"
+    echo "Please refer to the following guide to manually build the vcpkg environment:"
+    echo "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    exit 1
 fi
 
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"

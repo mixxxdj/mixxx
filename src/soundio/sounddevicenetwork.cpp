@@ -304,7 +304,8 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         // kLogger.debug() << "workerWriteProcess: buffer full"
         //                 << "outChunkSize" << outChunkSize
         //                 << "readAvailable" << readAvailable
-        //                 << "writeExpected" << writeExpected << pWorker->getStreamTimeFrames();
+        //                 << "writeExpected" << writeExpected
+        //                 << "streamTime" << pWorker->getStreamTimeFrames();
         // catch up by skipping chunk
         m_pSoundManager->underflowHappened(25);
     }
@@ -313,7 +314,9 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     if (copyCount > 0) {
         if (writeExpected - copyCount > outChunkSize) {
             // Underflow
-            // kLogger.debug() << "workerWriteProcess: buffer empty";
+            // kLogger.debug() << "workerWriteProcess: buffer empty."
+            //                 << "Catch up with silence:" << writeExpected - copyCount
+            //                 << "streamTime" << pWorker->getStreamTimeFrames();;
             // catch up by filling buffer until we are synced
             workerWriteSilence(pWorker, writeExpected - copyCount);
             m_pSoundManager->underflowHappened(24);
@@ -497,7 +500,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     m_pSoundManager->readProcess(framesPerBuffer);
 
     {
-        ScopedTimer t(u"SoundDevicePortAudio::callbackProcess prepare %1",
+        ScopedTimer t(QStringLiteral("SoundDeviceNetwork::callbackProcess prepare %1"),
                 m_deviceId.name);
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }

@@ -14,8 +14,8 @@
 /// which display track lists.
 class TrackModel {
   public:
-    static const int kHeaderWidthRole = Qt::UserRole + 0;
-    static const int kHeaderNameRole = Qt::UserRole + 1;
+    static constexpr int kHeaderWidthRole = Qt::UserRole + 0;
+    static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
 
@@ -52,6 +52,7 @@ class TrackModel {
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
         Properties = 1u << 18u,
+        Sorting = 1u << 19u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 

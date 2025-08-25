@@ -3,8 +3,7 @@
 name: build-checks
 
 on:
-  push:
-  pull_request:
+  workflow_call:
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -25,7 +24,7 @@ jobs:
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Install build dependencies
         run: tools/debian_buildenv.sh setup
       - name: Create build directory
@@ -156,7 +155,7 @@ jobs:
       - name: "Upload Coverage Report to coveralls.io"
         if: matrix.name == 'coverage'
         continue-on-error: true
-        uses: coverallsapp/github-action@v2.3.4
+        uses: coverallsapp/github-action@v2.3.6
         with:
           flag-name: ubuntu-22.04
           path-to-lcov: build/lcov.info

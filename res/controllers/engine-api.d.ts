@@ -264,7 +264,7 @@ declare namespace engine {
     function softTakeoverIgnoreNextValue(group: string, name: string): void;
 
     /**
-     * To achieve a brake effect of the playback speed
+     * To achieve a brake effect of the playback speed.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
      *
      * @param deck The deck number to use, e.g: 1
@@ -272,24 +272,30 @@ declare namespace engine {
      * @param factor Defines how quickly the deck should come to a stop.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that brake called with low factors (about 0.5 and lower),
-     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.0]
-     * @param rate The initial speed of the deck when enabled. "1" (default) means 10x speed in forward.
+     *               would keep the deck running although the resulting very low sounds are not audible anymore.
+     *               Calling it with negative factor and negative rate will cause an infinite, accelerating spinback. [default = 1.0]
+     * @param rate The initial speed of the deck when enabled. Only values  smaller than "1" (default) are considered.
+     *             Value "1" and higher means the current tempo (rate) is used.
      *             Negative values like "-1" also work, though then it's spinning reverse obviously. [default = 1.0]
      */
     function brake(deck: number, activate: boolean, factor?: number, rate?: number): void;
 
     /**
-     * To achieve a spinback effect of the playback speed
+     * To achieve a spinback effect of the playback speed.
+     * This is a wrapper for brake(), which is called with 'factor' with reversed sign.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
      *
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
      *               Start with a value of 1 and increase to increase the acceleration.
-     *               Be aware that spinback called with low factors (about 0.5 and lower),
-     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.8]
-     * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x speed in reverse.
-     *             Positive values like "10" also work, though then it's spinning forward obviously. [default = -10.0]
+     *               Be aware that spinback called with low (positive) factors (about 0.5 and lower),
+     *               would keep the deck running although the resulting very low sounds are not audible anymore.
+     *               Be also aware that calling it with negative factor and negative rate will cause an infinite,
+     *               accelerating spinback that can only be stopped with brake()/spinback() (activate = false) or
+     *               softStart() (activate = true). [default = 1.8]
+     * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x the current speed in reverse.
+     *             With positive values lower than "1" and higher also work, though then it's spinning forward obviously. [default = -10.0]
      */
     function spinback(deck: number, activate: boolean, factor?: number, rate?: number): void;
 

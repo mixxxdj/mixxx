@@ -41,8 +41,10 @@ class BulkController : public Controller {
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -56,11 +58,10 @@ class BulkController : public Controller {
   protected:
     void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
+  private:
     int open() override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void sendBytes(const QByteArray& data) override;
@@ -84,5 +85,5 @@ class BulkController : public Controller {
 
     QString m_sUID;
     BulkReader* m_pReader;
-    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

@@ -283,22 +283,8 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     }
 
     double filePlayposition = 0;
-    bool shouldNotifySeek = false;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
         ReadLogEntry& entry = m_readAheadLog.front();
-
-        // Notify EngineControls that we have taken a seek.
-        // Every new entry start with a seek
-        // (Not looping control)
-        if (shouldNotifySeek) {
-            if (m_pRateControl) {
-                const auto seekPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePos(
-                                entry.virtualPlaypositionStart);
-                m_pRateControl->notifySeek(seekPosition);
-            }
-        }
-
         // Advance our idea of the current virtual playposition to this
         // ReadLogEntry's start position.
         filePlayposition = entry.advancePlayposition(&numConsumedSamples);
@@ -307,7 +293,6 @@ double ReadAheadManager::getFilePlaypositionFromLog(
             // This entry is empty now.
             m_readAheadLog.pop_front();
         }
-        shouldNotifySeek = true;
     }
 
     return filePlayposition;

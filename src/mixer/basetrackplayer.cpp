@@ -59,13 +59,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             defaultOrientation,
             primaryDeck);
 
-    m_pInputConfigured = make_parented<ControlProxy>(getGroup(), "input_configured", this);
-#ifdef __VINYLCONTROL__
-    m_pVinylControlEnabled = make_parented<ControlProxy>(getGroup(), "vinylcontrol_enabled", this);
-    m_pVinylControlEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotVinylControlEnabled);
-    m_pVinylControlStatus = make_parented<ControlProxy>(getGroup(), "vinylcontrol_status", this);
-#endif
-
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
 
@@ -81,6 +74,11 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &EngineBuffer::trackLoadFailed,
             this,
             &BaseTrackPlayerImpl::slotLoadFailed);
+    connect(pEngineBuffer,
+            &EngineBuffer::noVinylControlInputConfigured,
+            this,
+            // signal-to-signal
+            &BaseTrackPlayerImpl::noVinylControlInputConfigured);
 
     m_pEject = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "eject"));
     connect(m_pEject.get(),
@@ -285,7 +283,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
 }
 
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
-    TrackPointer pTrack(Track::newTemporary());
+    TrackPointer pTrack = Track::newTemporary();
     pTrack->setAudioProperties(
             mixxx::kEngineChannelCount,
             mixxx::audio::SampleRate(44100),
@@ -798,19 +796,26 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     }
 }
 
-void BaseTrackPlayerImpl::slotAdjustReplayGain(mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotAdjustReplayGain(
+        mixxx::ReplayGain replayGain, const QString& requestingPlayerGroup) {
     const double factor = m_pReplayGain->get() / replayGain.getRatio();
     const double newPregain = m_pPreGain->get() * factor;
 
     // There is a very slight chance that there will be a buffer call in between these sets.
     // Therefore, we first adjust the control that is being lowered before the control
     // that is being raised.  Worst case, the volume goes down briefly before rectifying.
+    // Only reset Gain if this player requested the change, ie. avoid Gain change
+    // in other players this track is loaded to.
     if (factor < 1.0) {
-        m_pPreGain->set(newPregain);
+        if (requestingPlayerGroup == m_group) {
+            m_pPreGain->set(newPregain);
+        }
         setReplayGain(replayGain.getRatio());
     } else {
         setReplayGain(replayGain.getRatio());
-        m_pPreGain->set(newPregain);
+        if (requestingPlayerGroup == m_group) {
+            m_pPreGain->set(newPregain);
+        }
     }
 }
 
@@ -896,23 +901,6 @@ void BaseTrackPlayerImpl::setupEqControls() {
             group, QStringLiteral("button_parameter3"), this);
 }
 
-void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
-#ifdef __VINYLCONTROL__
-    bool configured = m_pInputConfigured->toBool();
-    bool vinylcontrol_enabled = v > 0.0;
-
-    // Warn the user if they try to enable vinyl control on a player with no
-    // configured input.
-    if (!configured && vinylcontrol_enabled) {
-        m_pVinylControlEnabled->set(0.0);
-        m_pVinylControlStatus->set(VINYL_STATUS_DISABLED);
-        emit noVinylControlInputConfigured();
-    }
-#else
-    Q_UNUSED(v);
-#endif
-}
-
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
     if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
             && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
@@ -972,7 +960,7 @@ void BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain(double pressed) {
     if (gain == 1.0) {
         return;
     }
-    m_pLoadedTrack->adjustReplayGainFromPregain(gain);
+    m_pLoadedTrack->adjustReplayGainFromPregain(gain, m_group);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {

@@ -12,14 +12,24 @@ case "$1" in
     setup)
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
-            bionic) # Ubuntu 18.04 LTS
+            jammy|bullseye|victoria|vera|vanessa|virginia) # <= Ubuntu 22.04.5 LTS
                 PACKAGES_EXTRA=(
-                    libmp4v2-dev
+                    libqt6shadertools6-dev
                 )
                 ;;
-            *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
+            *)
                 PACKAGES_EXTRA=(
-                    libavformat-dev
+                    qt6-shadertools-dev
+                )
+        esac
+
+        case "${DISTRIB_CODENAME}" in
+            jammy|oracular|bullseye|trixie|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
+                # qt6-svg-plugins not available
+                ;;
+            *)
+                PACKAGES_EXTRA+=(
+                    qt6-svg-plugins
                 )
         esac
 
@@ -58,6 +68,7 @@ case "$1" in
             fonts-ubuntu \
             g++ \
             lcov \
+            libavformat-dev \
             libbenchmark-dev \
             libchromaprint-dev \
             libdistro-info-perl \
@@ -79,10 +90,8 @@ case "$1" in
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt6core5compat6-dev\
-            libqt6shadertools6-dev \
+            libqt6core5compat6-dev \
             libqt6opengl6-dev \
-            libqt6shadertools6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
             librubberband-dev \
