@@ -7,13 +7,11 @@
 
 class ControlObject;
 class ControlPushButton;
-class ControlProxy;
 
 class VinylControlControl : public EngineControl {
     Q_OBJECT
   public:
     VinylControlControl(const QString& group, UserSettingsPointer pConfig);
-    virtual ~VinylControlControl();
 
     // If the engine asks for a seek, we may need to disable absolute mode.
     void notifySeekQueued();
@@ -29,17 +27,17 @@ class VinylControlControl : public EngineControl {
     void slotControlVinylSeek(double fractionalPos);
 
   private:
-    ControlObject* m_pControlVinylRate;
-    ControlObject* m_pControlVinylSeek;
-    ControlObject* m_pControlVinylSpeedType;
-    ControlObject* m_pControlVinylStatus;
-    ControlPushButton* m_pControlVinylScratching;
-    ControlPushButton* m_pControlVinylMode;
-    ControlPushButton* m_pControlVinylEnabled;
-    ControlPushButton* m_pControlVinylWantEnabled;
-    ControlPushButton* m_pControlVinylCueing;
-    ControlPushButton* m_pControlVinylSignalEnabled;
-    ControlProxy* m_pPlayEnabled;
+    std::unique_ptr<ControlObject> m_pControlVinylRate;
+    std::unique_ptr<ControlObject> m_pControlVinylSeek;
+    std::unique_ptr<ControlObject> m_pControlVinylSpeedType;
+    std::unique_ptr<ControlObject> m_pControlVinylStatus;
+    std::unique_ptr<ControlPushButton> m_pControlVinylScratching;
+    std::unique_ptr<ControlPushButton> m_pControlVinylMode;
+    std::unique_ptr<ControlPushButton> m_pControlVinylEnabled;
+    std::unique_ptr<ControlPushButton> m_pControlVinylWantEnabled;
+    std::unique_ptr<ControlPushButton> m_pControlVinylCueing;
+    std::unique_ptr<ControlPushButton> m_pControlVinylSignalEnabled;
+    PollingControlProxy m_playEnabled;
     PollingControlProxy m_inputConfigured;
 
     TrackPointer m_pTrack; // is written from an engine worker thread

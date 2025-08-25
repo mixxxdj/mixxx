@@ -22,6 +22,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "mixer/playermanager.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -199,13 +200,15 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(group, pConfig);
-    connect(m_pVinylControlControl,
-            &VinylControlControl::noVinylControlInputConfigured,
-            this,
-            // signal-to-signal
-            &EngineBuffer::noVinylControlInputConfigured);
-    addControl(m_pVinylControlControl);
+    if (PlayerManager::isDeckGroup(group)) {
+        m_pVinylControlControl = new VinylControlControl(group, pConfig);
+        connect(m_pVinylControlControl,
+                &VinylControlControl::noVinylControlInputConfigured,
+                this,
+                // signal-to-signal
+                &EngineBuffer::noVinylControlInputConfigured);
+        addControl(m_pVinylControlControl);
+    }
 #endif
 
     // Create the Rate Controller

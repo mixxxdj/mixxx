@@ -384,7 +384,7 @@ de,it,nl,es*	Drive
 de,fr,it,pl	Passthrough
 de,it,nl	Glitch
 de,it	Beatgrids
-de,nl,pt_BR,pt_PT,ro,vi	Sampler
+de,nl,pt_BR,pt_PT,ro,vi,pl	Sampler
 de,es*,it,nl,pt_BR,ro,vi	Hotcue
 de	Loop-In Marker
 de	Loop-Out Marker
@@ -442,9 +442,9 @@ it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
 es,es_419,es_AR,es_CO,es_ES,es_MX	No
-nl,sq_AL,es,es_419,es_AR,es_CO,es_ES,es_MX	VID:
+es*,nl,sq_AL,pl	VID:
 nl	Product ID
-nl,sq_AL,es,es_419,es_AR,es_CO,es_ES,es_MX	PID:
+es*,nl,sq_AL,pl	PID:
 nl	Lossy
 nl	Lossless
 nl	Top
@@ -465,3 +465,4 @@ sv	Kill Mid
 sv	Kill High
 tr	Mount
 vi	Samplerate
+fr	Stem
