@@ -283,6 +283,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             m_pLinkColor,
                             tr("Mixxx DJ Hardware Guide"),
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
+
+    QString deckBusHintStr = deckBusHint->text();
+    deckBusHintStr += " " +
+            coloredLinkString(m_pLinkColor,
+                    tr("Find details in the Mixxx user manual"),
+                    MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES);
+    deckBusHint->setText(deckBusHintStr);
 }
 
 /// Slot called when the preferences dialog is opened.
