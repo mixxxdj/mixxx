@@ -37,10 +37,20 @@ class SignalInfo final {
 
     // Conversion: #samples / sample offset -> #frames / frame offset
     // Only works for integer sample offsets on frame boundaries!
+
+    // adjusted for PreMix + stems
+    // SINT samples2frames(SINT samples) const {
+    //    DEBUG_ASSERT(getChannelCount().isValid());
+    //    DEBUG_ASSERT(0 == (samples % getChannelCount()));
+    //    return samples / getChannelCount();
+    //}
     SINT samples2frames(SINT samples) const {
         DEBUG_ASSERT(getChannelCount().isValid());
-        DEBUG_ASSERT(0 == (samples % getChannelCount()));
-        return samples / getChannelCount();
+        // now 10
+        const SINT channels = getChannelCount().value();
+        // trim to multiple
+        samples -= samples % channels;
+        return samples / channels;
     }
 
     // Conversion: #samples / sample offset -> #frames / frame offset
