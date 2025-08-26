@@ -28,7 +28,7 @@
 #define HASH_BITS 16
 
 #define HASH(timecode) ((timecode) & ((1 << HASH_BITS) - 1))
-#define NO_SLOT ((unsigned)-1)
+#define NO_SLOT ((slot_no_t)-1)
 
 
 /* Initialise an empty hash lookup table to store the given number
@@ -74,7 +74,7 @@ void lut_clear(struct lut *lut)
 }
 
 
-void lut_push(struct lut *lut, unsigned int timecode)
+void lut_push(struct lut *lut, bits_t timecode)
 {
     unsigned int hash;
     slot_no_t slot_no;
@@ -91,7 +91,7 @@ void lut_push(struct lut *lut, unsigned int timecode)
 }
 
 
-unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
+slot_no_t lut_lookup(struct lut *lut, bits_t timecode)
 {
     unsigned int hash;
     slot_no_t slot_no;
@@ -107,5 +107,5 @@ unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
         slot_no = slot->next;
     }
 
-    return (unsigned)-1;
+    return (slot_no_t)-1;
 }

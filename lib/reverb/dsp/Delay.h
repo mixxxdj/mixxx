@@ -32,6 +32,7 @@
 #ifndef _DSP_DELAY_H_
 #define _DSP_DELAY_H_
 
+#include <cstdlib> // for free and calloc
 #include <cstring> // for memset
 
 #include "util.h"

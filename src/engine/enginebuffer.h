@@ -251,6 +251,7 @@ class EngineBuffer : public EngineObject {
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
+    void noVinylControlInputConfigured();
 
   private slots:
     void slotTrackLoading();

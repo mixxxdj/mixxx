@@ -53,15 +53,9 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
-          m_dDisplayPitch(0.0),
           m_pSteadySubtle(nullptr),
           m_pSteadyGross(nullptr),
           m_bCDControl(false),
-          m_bTrackSelectMode(false),
-          m_pControlTrackSelector(nullptr),
-          m_pControlTrackLoader(nullptr),
-          m_dLastTrackSelectPos(0.0),
-          m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
           m_initialRelativeDriftAmt(0.0),
           m_deltaRelativeDriftAmount(0.0),
@@ -77,6 +71,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         ConfigKey(group,"vinylcontrol_vinyl_type"));
     QString strVinylSpeed = m_pConfig->getValueString(
         ConfigKey(group,"vinylcontrol_speed_type"));
+    QString strPitchEstimator = m_pConfig->getValueString(
+            ConfigKey(group, "vinylcontrol_pitch_estimator_type"));
 
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
@@ -96,6 +92,12 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
         timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2CD_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
         timecode = MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBES7INCH) {
@@ -117,12 +119,22 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         m_pSteadyGross = new SteadyPitch(0.5, false);
     }
 
-    timecode_def* tc_def = timecoder_find_definition(timecode);
+    // Determine the config folder path
+    std::string lut_dir_string;
+    const char* lut_dir_path = nullptr;
+
+    if (!getLutDir().isEmpty()) {
+        lut_dir_string = getLutDir().toStdString();
+        lut_dir_path = lut_dir_string.c_str();
+    }
+
+    // Pass the config folder path to the timecoder
+    timecode_def* tc_def = timecoder_find_definition(timecode, lut_dir_path);
     if (tc_def == nullptr) {
         qDebug() << "Error finding timecode definition for " << timecode
                  << ", defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
         timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
-        tc_def = timecoder_find_definition(timecode);
+        tc_def = timecoder_find_definition(timecode, lut_dir_path);
     }
 
     double speed = 1.0;
@@ -139,9 +151,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         latency = 20;
     }
 
-    const auto sampleRate = mixxx::audio::SampleRate(
-            m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate"))
-                    .toUInt());
+    const auto sampleRate = static_cast<unsigned int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate"))));
 
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
@@ -155,7 +166,14 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, sampleRate.value(), /* phono */ false);
+    const bool use_legacy_pitch_filter = strPitchEstimator == MIXXX_VINYL_PITCH_FILTER_LEGACY;
+
+    timecoder_init(&timecoder,
+            tc_def,
+            speed,
+            sampleRate,
+            /* phono */ false,
+            use_legacy_pitch_filter);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -192,6 +210,18 @@ void VinylControlXwax::freeLUTs() {
     s_xwaxLUTMutex.unlock();
 }
 
+QString VinylControlXwax::getLutDir() {
+    QDir lutPath(m_pConfig->getSettingsPath().append("/lut/"));
+
+    if (!lutPath.exists()) {
+        if (!lutPath.mkpath(".")) {
+            qWarning() << "Failed to create LUT directory at" << lutPath;
+            return QString{};
+        }
+    }
+
+    return lutPath.absolutePath();
+}
 
 bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
     if (pReport) {
@@ -271,7 +301,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     double duration_inaccurate = duration->get();
     if (duration_inaccurate != m_dOldDurationInaccurate) {
         m_bForceResync = true;
-        m_bTrackSelectMode = false; //just in case
         m_dOldDurationInaccurate = duration_inaccurate;
         m_dOldDuration = trackSamples->get() / 2 / trackSampleRate->get();
 
@@ -370,61 +399,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 vinylStatus->set(VINYL_STATUS_WARNING);
             } else {
                 vinylStatus->set(VINYL_STATUS_DISABLED);
-            }
-        }
-    }
-
-    //check here for position > safe, and if no record end mode,
-    //then trigger track selection mode.  just pass position to it
-    //and ignore pitch
-
-    if (!m_bAtRecordEnd) {
-        if (m_iPosition != -1 && m_iPosition > static_cast<int>(m_uiSafeZone)) {
-            //only enable if pitch is steady, though.  Heavy scratching can
-            //produce crazy results and trigger this mode
-            if (m_bTrackSelectMode || checkSteadyPitch(dVinylPitch, filePosition) > 0.1) {
-                //until I can figure out how to detect "track 2" on serato CD,
-                //don't try track selection
-                if (!m_bCDControl) {
-                    if (!m_bTrackSelectMode) {
-                        qDebug() << "position greater than safe, select mode" << m_iPosition << m_uiSafeZone;
-                        m_bTrackSelectMode = true;
-                        togglePlayButton(false);
-                        resetSteadyPitch(0.0, 0.0);
-                        m_pVCRate->set(0.0);
-                    }
-                    doTrackSelection(true, dVinylPitch, m_iPosition);
-                }
-
-                //hm I wonder if track will keep playing while this happens?
-                //not sure what we want to do here...  probably enforce
-                //stopped deck.
-
-                //but if constant mode...  nah, force stop.
-                return;
-            }
-            //if it's not steady yet we process as normal
-        } else {
-            //so we're not unsafe.... but
-            //if no position, but we were in select mode, do select mode
-            if (m_iPosition == -1 && m_bTrackSelectMode) {
-                //qDebug() << "no position, but were in select mode";
-                doTrackSelection(false, dVinylPitch, m_iPosition);
-
-                //again, force stop?
-                return;
-            } else if (m_bTrackSelectMode) {
-                //qDebug() << "discontinuing select mode, selecting track";
-                if (m_pControlTrackLoader == nullptr) {
-                    m_pControlTrackLoader = new ControlProxy(
-                            m_group, "LoadSelectedTrack", this);
-                }
-
-                m_pControlTrackLoader->set(1.0);
-                m_pControlTrackLoader->set(0.0); // I think I have to do this...
-
-                // if position is known and safe then no track select mode
-                m_bTrackSelectMode = false;
             }
         }
     }
@@ -576,28 +550,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
 
         if (uiUpdateTime(filePosition)) {
-            double pitch_difference = averagePitch - m_dDisplayPitch;
-
-            // The true pitch can show a misleading amount of variance --
-            // differences of .1% or less can show up as 1 or 2 bpm changes.
-            // Therefore we react slowly to bpm changes to show a more steady
-            // number to the user.
-            if (fabs(pitch_difference) > 0.5) {
-                // For large changes in pitch (start/stop, usually), immediately
-                // update the display.
-                m_dDisplayPitch = averagePitch;
-            } else if (fabs(pitch_difference) > 0.005) {
-                // For medium changes in pitch, take 4 callback loops to
-                // converge on the correct amount.
-                m_dDisplayPitch += pitch_difference * .25;
-            } else {
-                // For extremely small changes, converge very slowly.
-                m_dDisplayPitch += pitch_difference * .01;
-            }
             // Don't show extremely high or low speeds in the UI.
             if (reportedPlayButton && !scratching->toBool() &&
-                    m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
-                m_pRateRatio->set(m_dDisplayPitch);
+                    dVinylPitch < 1.9 && dVinylPitch > 0.2) {
+                m_pRateRatio->set(dVinylPitch);
             } else {
                 m_pRateRatio->set(1.0);
             }
@@ -687,52 +643,6 @@ void VinylControlXwax::togglePlayButton(bool on) {
         playButton->set((float)on); //and we all float on all right
     }
 }
-
-void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double position) {
-    //compare positions, fabricating if we don't have position data, and
-    //move the selector every so often
-    //track will be selected when the needle is moved back to play area
-    //track selection can be cancelled by loading a track manually
-
-    constexpr int SELECT_INTERVAL = 150;
-    constexpr double NOPOS_SPEED = 0.50;
-
-    if (m_pControlTrackSelector == nullptr) {
-        // this isn't done in the constructor because this object
-        // doesn't seem to be created yet
-        m_pControlTrackSelector = new ControlProxy(
-                "[Playlist]","SelectTrackKnob", this);
-    }
-
-    if (!valid_pos) {
-        if (fabs(pitch) > 0.1) {
-            //how to estimate how far the record has moved when we don't have a valid
-            //position and no mp3 track to compare with???  just add a bullshit amount?
-            m_dCurTrackSelectPos += pitch * NOPOS_SPEED; //MADE UP CONSTANT, needs to be based on frames per second I think
-        } else {
-            // too slow, do nothing
-            return;
-        }
-    } else {
-        // if we have valid pos, use it
-        m_dCurTrackSelectPos = position;
-    }
-
-
-    //we have position or at least record is moving, so check if we should
-    //change location
-
-    if (fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos) > 10.0 * 1000) {
-        //yeah probably not a valid value
-        //qDebug() << "large change in track position, resetting";
-        m_dLastTrackSelectPos = m_dCurTrackSelectPos;
-    } else if (fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos) > SELECT_INTERVAL) {
-        //only adjust by one at a time.  It's no help jumping around
-        m_pControlTrackSelector->set((int)(m_dCurTrackSelectPos - m_dLastTrackSelectPos) / fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos));
-        m_dLastTrackSelectPos = m_dCurTrackSelectPos;
-    }
-}
-
 
 void VinylControlXwax::resetSteadyPitch(double pitch, double time) {
     m_pSteadySubtle->reset(pitch, time);
