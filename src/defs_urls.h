@@ -77,5 +77,7 @@
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#troubleshooting"
 #define MIXXX_MANUAL_SETTINGS_DIRECTORY_URL \
     MIXXX_MANUAL_URL "/chapters/appendix.html#settings-directory"
+#define MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES \
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware#output-and-input-devices"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 #define MIXXX_KBD_SHORTCUTS_FILENAME "Mixxx-Keyboard-Shortcuts.pdf"

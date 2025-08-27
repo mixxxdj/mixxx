@@ -346,6 +346,19 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="deckBusHint">
+        <property name="text">
+         <string>Deck and Bus outputs are for external mixers. They are post-fader and include effects and crossfader (for Auto DJ). For external mixing, make sure all Mixxx faders and EQ knobs are set to their default position (right- or double-click). </string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="underflowCounterHint">
         <property name="text">
          <string>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</string>
@@ -355,7 +368,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
+      <item row="2" column="0" colspan="2">
        <widget class="QLabel" name="audioBufferHint">
         <property name="text">
          <string>Downsize your audio buffer to improve Mixxx's responsiveness.</string>
