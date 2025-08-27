@@ -22,7 +22,7 @@
  *
  * Modes:
  *   stable  : Low Q and high R for stable playback
- *   medium  : Medium values for slight pitch changes
+ *   adjust  : Medium values for slight pitch changes
  *   reactive: High Q and low R for high reactivity (scratching)
  */
 
@@ -30,6 +30,7 @@
 #define PITCH_KALMAN_H
 
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 /* Struct for the Kalman filter coefficients R and Q */
@@ -56,25 +57,26 @@ struct pitch_kalman {
 
     double P[2][2];
 
-    /* Tresholds of the innovation quantity for the mode switches */
+    /* Thresholds of the innovation quantity for the mode switches */
 
-    double reactive_threshold, medium_threshold;
+    double scratch_threshold, reactive_threshold, adjust_threshold;
 
     /* Currently used coefficients*/
 
     struct kalman_coeffs* coeffs;
 
-    /* Stable, medium reactive coefficients for the mode switch */
+    /* Stable, adjust reactive coefficients for the mode switch */
 
     struct kalman_coeffs stable;
-    struct kalman_coeffs medium;
+    struct kalman_coeffs adjust;
     struct kalman_coeffs reactive;
+    struct kalman_coeffs scratch;
 };
 
-void pitch_kalman_init(struct pitch_kalman* p, double dt, struct kalman_coeffs stable,
-        struct kalman_coeffs medium, struct kalman_coeffs reactive,
-        double medium_threshold, double reactive_threshold);
-void pitch_kalman_update(struct pitch_kalman* p, double dx);
+void pitch_kalman_init(struct pitch_kalman *p, double dt, struct kalman_coeffs stable,
+                       struct kalman_coeffs adjust, struct kalman_coeffs reactive, struct kalman_coeffs scratch,
+                       double adjust_threshold, double reactive_threshold, double scratch_threshold, bool debug);
+void pitch_kalman_update(struct pitch_kalman *p, double dx);
 
 /*
  * Retune noise sensitivity without resetting state
