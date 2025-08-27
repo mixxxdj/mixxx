@@ -724,7 +724,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel || pTrackModel->isLocked() || event->mimeData()->hasUrls()) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
