@@ -3276,7 +3276,9 @@ QPlainTextEdit QMenu::item:disabled {
     image: url(skins:LateNight/palemoon/buttons/btn__menu_checkbox_checked.svg);
     }
     #MainMenu QMenu::indicator:unchecked,
-    #MainMenu QMenu::indicator:unchecked:selected {
+    #MainMenu QMenu::indicator:unchecked:selected,
+    WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
+    WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected {
       image: url(skins:LateNight/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
@@ -3311,8 +3313,6 @@ QPlainTextEdit QMenu::item:disabled {
   selected, unchecked items would have a checkmark */
 WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
-WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator:unchecked,
