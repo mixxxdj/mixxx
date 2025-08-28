@@ -506,6 +506,9 @@ void DlgPrefWaveform::updateWaveformAcceleration(
     useAccelerationCheckBox->setEnabled(supportAcceleration &&
             supportSoftware && type != WaveformWidgetType::Empty);
 
+    // Update backend
+    slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked());
+
     useAccelerationCheckBox->blockSignals(false);
 }
 
