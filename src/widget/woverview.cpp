@@ -746,68 +746,70 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    if (!m_waveformSourceImage.isNull()) {
-        float diffGain = 0.0f;
-        WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
-        OverviewScaleMode scaleMode = pWidgetFactory->getOverviewScaleMode();
-        switch (scaleMode) {
-        case OverviewScaleMode::FileLevel: {
-            // use original waveform image and maybe apply custom factor
-            const auto customScaleFactor = static_cast<float>(
-                    pWidgetFactory->getOverviewCustomScaleFactor());
-            diffGain = 255.0f - (255.0f / customScaleFactor);
-            break;
-        }
-        case OverviewScaleMode::Normalize: {
-            if (m_pixmapDone && m_waveformPeak > 1) {
-                diffGain = 255 - m_waveformPeak - 1;
-            }
-            break;
-        }
-        case OverviewScaleMode::AllGainReplayGain: {
-            // Try to get same visual gain like in the scrolling waveforms.
-            // Note: there the gain still varies per renderer :|
-            // This essentially repeats the calculations of EnginePregain::process(),
-            // just without `pregain`.
-            CSAMPLE_GAIN trackGainRatio = 1;
-            if (m_pReplayGainEnabled) {
-                auto replayGain = static_cast<CSAMPLE_GAIN>(m_pReplayGain->get());
-                if (replayGain == 0) {
-                    // Not analyzed yet or cleared manually. Use default boost
-                    trackGainRatio =
-                            static_cast<CSAMPLE_GAIN>(m_pReplayGainDefaultBoost->get());
-                } else {
-                    // ReplayGain boost
-                    trackGainRatio =
-                            replayGain * static_cast<CSAMPLE_GAIN>(m_pReplayGainBoost->get());
-                }
-            }
-            const auto visualGain = static_cast<float>(trackGainRatio *
-                    pWidgetFactory->getVisualGain(BandIndex::AllBand));
-            diffGain = 255.0f - (255.0f / visualGain);
-            break;
-        }
-        }
-
-        if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            const QRect sourceRect(0,
-                    static_cast<int>(diffGain),
-                    m_waveformSourceImage.width(),
-                    m_waveformSourceImage.height() -
-                            2 * static_cast<int>(diffGain));
-            QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
-            if (m_orientation == Qt::Vertical) {
-                // Rotate pixmap
-                croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
-            }
-            m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
-                    Qt::IgnoreAspectRatio,
-                    Qt::SmoothTransformation);
-            m_diffGain = diffGain;
-        }
-
-        pPainter->drawImage(rect(), m_waveformImageScaled);
+    if (m_waveformSourceImage.isNull()) {
+        return;
     }
+
+    float diffGain = 0.0f;
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
+    OverviewScaleMode scaleMode = pWidgetFactory->getOverviewScaleMode();
+    switch (scaleMode) {
+    case OverviewScaleMode::FileLevel: {
+        // use original waveform image and maybe apply custom factor
+        const auto customScaleFactor = static_cast<float>(
+                pWidgetFactory->getOverviewCustomScaleFactor());
+        diffGain = 255.0f - (255.0f / customScaleFactor);
+        break;
+    }
+    case OverviewScaleMode::Normalize: {
+        if (m_pixmapDone && m_waveformPeak > 1) {
+            diffGain = 255 - m_waveformPeak - 1;
+        }
+        break;
+    }
+    case OverviewScaleMode::AllGainReplayGain: {
+        // Try to get same visual gain like in the scrolling waveforms.
+        // Note: there the gain still varies per renderer :|
+        // This essentially repeats the calculations of EnginePregain::process(),
+        // just without `pregain`.
+        CSAMPLE_GAIN trackGainRatio = 1;
+        if (m_pReplayGainEnabled) {
+            auto replayGain = static_cast<CSAMPLE_GAIN>(m_pReplayGain->get());
+            if (replayGain == 0) {
+                // Not analyzed yet or cleared manually. Use default boost
+                trackGainRatio =
+                        static_cast<CSAMPLE_GAIN>(m_pReplayGainDefaultBoost->get());
+            } else {
+                // ReplayGain boost
+                trackGainRatio =
+                        replayGain * static_cast<CSAMPLE_GAIN>(m_pReplayGainBoost->get());
+            }
+        }
+        const auto visualGain = static_cast<float>(trackGainRatio *
+                pWidgetFactory->getVisualGain(BandIndex::AllBand));
+        diffGain = 255.0f - (255.0f / visualGain);
+        break;
+    }
+    }
+
+    if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
+        const QRect sourceRect(0,
+                static_cast<int>(diffGain),
+                m_waveformSourceImage.width(),
+                m_waveformSourceImage.height() -
+                        2 * static_cast<int>(diffGain));
+        QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
+        if (m_orientation == Qt::Vertical) {
+            // Rotate pixmap
+            croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
+        }
+        m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                Qt::IgnoreAspectRatio,
+                Qt::SmoothTransformation);
+        m_diffGain = diffGain;
+    }
+
+    pPainter->drawImage(rect(), m_waveformImageScaled);
 }
 
 void WOverview::drawMinuteMarkers(QPainter* pPainter) {
