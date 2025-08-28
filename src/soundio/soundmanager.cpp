@@ -145,27 +145,48 @@ QList<QString> SoundManager::getHostAPIList() const {
     return apiList;
 }
 
-void SoundManager::closeDevices(bool sleepAfterClosing) {
-    //qDebug() << "SoundManager::closeDevices()";
+void SoundManager::closeDevices(
+        [[maybe_unused]] bool sleepAfterClosing, [[maybe_unused]] bool async) {
+    // sleepAfterClosing and async maybe unused depending on platform support
+    // qDebug() << "SoundManager::closeDevices()";
 
+#ifdef __LINUX__
     bool closed = false;
+#endif
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
             pDevice->close();
+#ifdef __LINUX__
             closed = true;
+#endif
         }
     }
 
-    if (closed && sleepAfterClosing) {
 #ifdef __LINUX__
+    if (closed && sleepAfterClosing) {
         // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
         // its resources as well
+        if (async) {
+            // Async mode - the caller will wait for `devicesClosed` before
+            // trying to reconfigure or reopen audio devices
+            QTimer::singleShot(
+                    std::chrono::seconds(kSleepSecondsAfterClosingDevice),
+                    this,
+                    &SoundManager::completeDevicesClosing);
+            return;
+        }
+        // Sync mode, legacy - we sleep the current thread for 5 seconds
         QThread::sleep(kSleepSecondsAfterClosingDevice);
+    } else if (!closed)
 #endif
+    {
+        completeDevicesClosing();
     }
+}
 
+void SoundManager::completeDevicesClosing() {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
@@ -199,6 +220,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
+    emit devicesClosed();
 }
 
 void SoundManager::clearDeviceList(bool sleepAfterClosing) {
@@ -553,12 +575,12 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-void SoundManager::closeActiveConfig() {
+void SoundManager::closeActiveConfig(bool async) {
     // Close open devices. After this call we will not get any more
     // onDeviceOutputCallback() or pushBuffer() calls because all the
     // SoundDevices are closed. closeDevices() blocks and can take a while.
     const bool sleepAfterClosing = true;
-    closeDevices(sleepAfterClosing);
+    closeDevices(sleepAfterClosing, async);
 }
 
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
