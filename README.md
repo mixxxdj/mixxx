@@ -50,6 +50,9 @@ corresponding command for your operating system:
 
 To build Mixxx, run
 
+    $ cd tools
+    $ ./debian_buildenv.sh setup
+    $ cd ..
     $ mkdir build
     $ cd build
     $ cmake ..
