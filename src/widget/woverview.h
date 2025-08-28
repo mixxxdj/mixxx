@@ -69,7 +69,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void slotTypeControlChanged(double v);
     void slotMinuteMarkersChanged(bool v);
-    void slotNormalizeOrVisualGainChanged();
+    void slotScalingChanged();
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -196,7 +196,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
+    // Controls to trigger update of amplitude scaling
     parented_ptr<ControlProxy> m_pReplayGain;
+    parented_ptr<ControlProxy> m_pReplayGainEnabled;
+    parented_ptr<ControlProxy> m_pReplayGainBoost;
+    parented_ptr<ControlProxy> m_pReplayGainDefaultBoost;
 
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
