@@ -1,6 +1,13 @@
 #!/bin/bash
 # This script works with Debian, Ubuntu, and derivatives.
 # shellcheck disable=SC1091
+
+# Fail if not executed with bash
+if [ -z "$BASH_VERSION" ]; then
+    echo "Error: This script must be called as executable: ./debian_buildenv.sh setup" >&2
+    exit 1
+fi
+
 set -o pipefail
 
 case "$1" in
