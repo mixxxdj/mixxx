@@ -37,16 +37,16 @@ source code and navigate to it:
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies and set up the build environment by running the
+Download the required dependencies and set up the build environment by running the
 corresponding command for your operating system:
 
-| OS | Command |
-| -- | ------- |
-| Windows | `tools\windows_buildenv.bat` |
-| macOS | `source tools/macos_buildenv.sh setup` |
-| Debian/Ubuntu | `tools/debian_buildenv.sh setup` |
-| Fedora | `tools/rpm_buildenv.sh setup` |
-| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) |
+| OS | Command | Requirements |
+| -- | ------- | ------------ |
+| Windows | `tools\windows_buildenv.bat` | ~2.5 GB download, ~9 GB disk space |
+| macOS | `source tools/macos_buildenv.sh setup` | ~1.5 GB download, ~3 GB disk space |
+| Debian/Ubuntu | `tools/debian_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
+| Fedora | `tools/rpm_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
+| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) | |
 
 To build Mixxx, run
 
