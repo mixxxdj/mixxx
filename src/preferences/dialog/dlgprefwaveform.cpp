@@ -428,6 +428,11 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     auto type = static_cast<WaveformWidgetType::Type>(
             waveformTypeComboBox->itemData(index).toInt());
     auto* factory = WaveformWidgetFactory::instance();
+    // FIXME When setting the type, factory uses current 'use acceleration' state,
+    // which may currently be off. Though for the Simple type for example, factory
+    // can't load it and falls back to type Empty.
+    // However, below we update the acceleration checkbox according to the system's
+    // capabilities, for example auto-check it for Simple & Stacked types.
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
 
     auto backend = m_pConfig->getValue(
@@ -440,6 +445,11 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
             ConfigKey("[Waveform]", "waveform_options"),
             allshader::WaveformRendererSignalBase::Option::None);
     updateWaveformAcceleration(type, backend);
+    // FIXME This is a hack to fix the issue mentioned above. It potentially
+    // sets the type again, or switches back from Empty to actually selected type.
+    // Try to find a cleaner solution.
+    slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked());
+
     updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
 }
@@ -493,6 +503,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
         supportAcceleration = handle.supportAcceleration();
         supportSoftware = handle.supportSoftware();
     }
+
     useAccelerationCheckBox->blockSignals(true);
 
     if (type == WaveformWidgetType::Empty) {
@@ -505,9 +516,6 @@ void DlgPrefWaveform::updateWaveformAcceleration(
 
     useAccelerationCheckBox->setEnabled(supportAcceleration &&
             supportSoftware && type != WaveformWidgetType::Empty);
-
-    // Update backend
-    slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked());
 
     useAccelerationCheckBox->blockSignals(false);
 }
