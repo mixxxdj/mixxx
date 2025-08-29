@@ -424,14 +424,17 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         break;
     case QDialogButtonBox::ApplyRole:
         emit applyPreferences();
+        if (!pendingConfigValidOnAllPages()) {
+            return;
+        }
         break;
     case QDialogButtonBox::AcceptRole:
-        // Same as Apply but close the dialog
         emit applyPreferences();
-        // TODO Unfortunately this will accept() even if DlgPrefSound threw a warning
-        // due to inaccessible device(s) or inapplicable samplerate.
-        // https://github.com/mixxxdj/mixxx/issues/6077
+        if (!pendingConfigValidOnAllPages()) {
+            return;
+        }
         accept();
+        // Same as Apply but close the dialog
         break;
     case QDialogButtonBox::RejectRole:
         emit cancelPreferences();
@@ -447,6 +450,20 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     default:
         break;
     }
+}
+
+bool DlgPreferences::pendingConfigValidOnAllPages() {
+    for (const PreferencesPage& page : std::as_const(m_allPages)) {
+        if (page.pDlg && !page.pDlg->okayToClose()) {
+            // If any page is not okay to close, eg. with an invalid sound config,
+            // switch to it and don't accept.
+            // Fixes https://github.com/mixxxdj/mixxx/issues/6077
+            // and may help with other pages in the future.
+            contentsTreeWidget->setCurrentItem(page.pTreeItem);
+            return false;
+        }
+    }
+    return true;
 }
 
 void DlgPreferences::addPageWidget(PreferencesPage page,
