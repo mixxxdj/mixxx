@@ -108,5 +108,5 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QSize m_pageSizeHint;
 
     QDir m_iconsPath;
-    bool validateAllPages();
+    bool pendingConfigValidOnAllPages();
 };
