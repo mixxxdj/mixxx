@@ -435,10 +435,15 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     // When setting the type, factory uses current 'use acceleration' state,
     // which may currently be off. However, with QOpenGL there are Simple and Stacked
     // which require acceleration and auto-enable it if possible.
-    // FIXME Find a better solution
+    // FIXME Find a better solution?
     // See https://github.com/mixxxdj/mixxx/pull/15277 for details.
     updateWaveformAcceleration(type, backend);
-    slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked());
+    // Store the value so it's available in factory. Same as
+    // slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked()) just
+    // without the redundant actions
+    m_pConfig->setValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            backend);
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
 
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
