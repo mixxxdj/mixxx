@@ -29,21 +29,28 @@ class LibraryExporter : public QWidget {
   public slots:
     /// Begin the process of a library export.
     void slotRequestExport() {
-        requestExportWithOptionalInitialCrate(std::nullopt);
+        requestExportWithOptionalInitialSelection(std::nullopt, std::nullopt);
     }
 
     /// Begin the process of a library export, with an initial crate set.
-    void slotRequestExportWithInitialCrate(CrateId initialSelectedCrate) {
-        requestExportWithOptionalInitialCrate(
-                std::make_optional(initialSelectedCrate));
+    void slotRequestExportWithInitialCrate(CrateId initialSelectedCrateId) {
+        requestExportWithOptionalInitialSelection(
+                std::make_optional(initialSelectedCrateId), std::nullopt);
+    }
+
+    /// Begin the process of a library export, with an initial playlist set.
+    void slotRequestExportWithInitialPlaylist(int initialSelectedPlaylistId) {
+        requestExportWithOptionalInitialSelection(
+                std::nullopt, std::make_optional(initialSelectedPlaylistId));
     }
 
   private slots:
     void beginEnginePrimeExport(QSharedPointer<mixxx::EnginePrimeExportRequest> pRequest);
 
   private:
-    void requestExportWithOptionalInitialCrate(
-            std::optional<CrateId> initialSelectedCrate);
+    void requestExportWithOptionalInitialSelection(
+            std::optional<CrateId> initialSelectedCrateId,
+            std::optional<int> initialSelectedPlaylistId);
 
     UserSettingsPointer m_pConfig;
     TrackCollectionManager* m_pTrackCollectionManager;

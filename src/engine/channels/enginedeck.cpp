@@ -9,7 +9,6 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
-#include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
 #include "util/assert.h"

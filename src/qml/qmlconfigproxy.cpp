@@ -17,6 +17,12 @@ const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 const QString k3DHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 
+const QString kWaveformGroup = QStringLiteral("[Waveform]");
+const QString kWaveformZoomSynchronizationKey = QStringLiteral("ZoomSynchronization");
+const QString kWaveformDefaultZoomKey = QStringLiteral("DefaultZoom");
+const bool kWaveformZoomSynchronizationDefault = true;
+const double kWaveformDefaultZoomDefault = 3.0;
+
 } // namespace
 
 namespace mixxx {
@@ -51,6 +57,17 @@ bool QmlConfigProxy::useAcceleration() {
     }
     return m_pConfig->getValue<bool>(
             ConfigKey(kPreferencesGroup, k3DHardwareAccelerationKey));
+}
+
+bool QmlConfigProxy::waveformZoomSynchronization() {
+    return m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, kWaveformZoomSynchronizationKey),
+            kWaveformZoomSynchronizationDefault);
+}
+double QmlConfigProxy::waveformDefaultZoom() {
+    return m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, kWaveformDefaultZoomKey),
+            kWaveformDefaultZoomDefault);
 }
 
 // static

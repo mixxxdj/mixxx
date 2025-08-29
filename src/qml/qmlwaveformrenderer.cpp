@@ -6,8 +6,12 @@
 #include "util/assert.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
+#include "waveform/renderers/allshader/waveformrendererfiltered.h"
+#include "waveform/renderers/allshader/waveformrendererhsv.h"
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
 #include "waveform/renderers/allshader/waveformrendererrgb.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/allshader/waveformrenderersimple.h"
 #ifdef __STEM__
 #include "waveform/renderers/allshader/waveformrendererstem.h"
 #endif
@@ -18,7 +22,8 @@ namespace mixxx {
 namespace qml {
 
 QmlWaveformRendererMark::QmlWaveformRendererMark()
-        : m_defaultMark(nullptr),
+        : m_playMarkerPosition(0.5),
+          m_defaultMark(nullptr),
           m_untilMark(std::make_unique<QmlWaveformUntilMark>()) {
 }
 
@@ -51,52 +56,142 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererPreroll::create(
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 
-QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB::create(
-        WaveformWidgetRenderer* waveformWidget) const {
-    auto pRenderer = std::make_unique<allshader::WaveformRendererRGB>(
-            waveformWidget, m_position, m_options);
-
+void QmlWaveformRendererSignal::setup(
+        allshader::WaveformRendererSignalBase* pRenderer) const {
     pRenderer->setAxesColor(m_axesColor);
     pRenderer->setLowColor(m_lowColor);
     pRenderer->setMidColor(m_midColor);
     pRenderer->setHighColor(m_highColor);
     connect(this,
-            &QmlWaveformRendererRGB::axesColorChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setAxesColor);
+            &QmlWaveformRendererSignal::axesColorChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setAxesColor);
     connect(this,
-            &QmlWaveformRendererRGB::lowColorChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setLowColor);
+            &QmlWaveformRendererSignal::lowColorChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setLowColor);
     connect(this,
-            &QmlWaveformRendererRGB::midColorChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setMidColor);
+            &QmlWaveformRendererSignal::midColorChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setMidColor);
     connect(this,
-            &QmlWaveformRendererRGB::highColorChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setHighColor);
+            &QmlWaveformRendererSignal::highColorChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setHighColor);
 
     pRenderer->setAllChannelVisualGain(m_gainAll);
     pRenderer->setLowVisualGain(m_gainLow);
     pRenderer->setMidVisualGain(m_gainMid);
     pRenderer->setHighVisualGain(m_gainHigh);
     connect(this,
-            &QmlWaveformRendererRGB::gainAllChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setAllChannelVisualGain);
+            &QmlWaveformRendererSignal::gainAllChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setAllChannelVisualGain);
     connect(this,
-            &QmlWaveformRendererRGB::gainLowChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setLowVisualGain);
+            &QmlWaveformRendererSignal::gainLowChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setLowVisualGain);
     connect(this,
-            &QmlWaveformRendererRGB::gainMidChanged,
-            pRenderer.get(),
-            &allshader::WaveformRendererRGB::setMidVisualGain);
+            &QmlWaveformRendererSignal::gainMidChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setMidVisualGain);
     connect(this,
-            &QmlWaveformRendererRGB::gainHighChanged,
+            &QmlWaveformRendererSignal::gainHighChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setHighVisualGain);
+    pRenderer->setIgnoreStem(m_ignoreStem);
+    connect(this,
+            &QmlWaveformRendererSignal::ignoreStemChanged,
+            pRenderer,
+            &allshader::WaveformRendererSignalBase::setIgnoreStem);
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB::create(
+        WaveformWidgetRenderer* waveformWidget) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRendererRGB>(
+            waveformWidget, m_position, m_options);
+
+    setup(pRenderer.get());
+    return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererFiltered::create(
+        WaveformWidgetRenderer* waveformWidget) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRendererFiltered>(
+            waveformWidget, m_ignoreStem, m_options);
+
+    setup(pRenderer.get());
+    return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererHSV::create(
+        WaveformWidgetRenderer* waveformWidget) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRendererHSV>(
+            waveformWidget, m_options);
+
+    pRenderer->setAxesColor(m_axesColor);
+    pRenderer->setColor(m_color);
+    pRenderer->setIgnoreStem(m_ignoreStem);
+    pRenderer->setAllChannelVisualGain(m_gainAll);
+    pRenderer->setLowVisualGain(m_gainLow);
+    pRenderer->setMidVisualGain(m_gainMid);
+    pRenderer->setHighVisualGain(m_gainHigh);
+    connect(this,
+            &QmlWaveformRendererHSV::gainAllChanged,
             pRenderer.get(),
-            &allshader::WaveformRendererRGB::setHighVisualGain);
+            &allshader::WaveformRendererSignalBase::setAllChannelVisualGain);
+    connect(this,
+            &QmlWaveformRendererHSV::gainLowChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setLowVisualGain);
+    connect(this,
+            &QmlWaveformRendererHSV::gainMidChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setMidVisualGain);
+    connect(this,
+            &QmlWaveformRendererHSV::gainHighChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setHighVisualGain);
+    connect(this,
+            &QmlWaveformRendererHSV::axesColorChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setAxesColor);
+    connect(this,
+            &QmlWaveformRendererHSV::colorChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setColor);
+    connect(this,
+            &QmlWaveformRendererHSV::ignoreStemChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setIgnoreStem);
+    return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererSimple::create(
+        WaveformWidgetRenderer* waveformWidget) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRendererSimple>(
+            waveformWidget, m_options);
+
+    pRenderer->setAxesColor(m_axesColor);
+    pRenderer->setColor(m_color);
+    pRenderer->setAllChannelVisualGain(m_gain);
+    pRenderer->setIgnoreStem(m_ignoreStem);
+    connect(this,
+            &QmlWaveformRendererSimple::axesColorChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setAxesColor);
+    connect(this,
+            &QmlWaveformRendererSimple::colorChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setColor);
+    connect(this,
+            &QmlWaveformRendererSimple::gainChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setAllChannelVisualGain);
+    connect(this,
+            &QmlWaveformRendererSimple::ignoreStemChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererSignalBase::setIgnoreStem);
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 
@@ -104,11 +199,15 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
         WaveformWidgetRenderer* waveformWidget) const {
     auto pRenderer = std::make_unique<allshader::WaveformRenderBeat>(
             waveformWidget, m_position);
-    pRenderer->setColor(m_color);
+    waveformWidget->setDisplayBeatGridAlpha(m_color.alphaF() * 100);
+    pRenderer->setColor(m_color.rgb());
     connect(this,
             &QmlWaveformRendererBeat::colorChanged,
             pRenderer.get(),
-            &allshader::WaveformRenderBeat::setColor);
+            [waveformWidget, &pRenderer](const QColor& color) {
+                waveformWidget->setDisplayBeatGridAlpha(color.alphaF() * 100);
+                pRenderer->setColor(color.rgb());
+            });
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 
@@ -164,6 +263,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
 
     pRenderer->setPlayMarkerForegroundColor(m_playMarkerColor);
     pRenderer->setPlayMarkerBackgroundColor(m_playMarkerBackground);
+    waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
 
     pRenderer->setUntilMarkShowBeats(m_untilMark->showTime());
     pRenderer->setUntilMarkShowTime(m_untilMark->showBeats());
@@ -196,6 +296,12 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
             &QmlWaveformRendererMark::playMarkerBackgroundChanged,
             pRenderer.get(),
             &allshader::WaveformRenderMark::setPlayMarkerBackgroundColor);
+    connect(this,
+            &QmlWaveformRendererMark::playMarkerPositionChanged,
+            pRenderer.get(),
+            [waveformWidget](double value) {
+                waveformWidget->setPlayMarkerPosition(value);
+            });
 
     // The initialisation is closely inspired from WaveformMarkSet::setup
     int priority = 0;

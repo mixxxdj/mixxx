@@ -156,7 +156,7 @@ class Track : public QObject {
 
     void setReplayGain(const mixxx::ReplayGain&);
     // Adjust ReplayGain by multiplying the given gain amount.
-    void adjustReplayGainFromPregain(double);
+    void adjustReplayGainFromPregain(double gain, const QString& requestingPlayerGroup);
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
@@ -480,7 +480,7 @@ class Track : public QObject {
     void replayGainUpdated(mixxx::ReplayGain replayGain);
     // This signal indicates that ReplayGain is being adjusted, and pregains should be
     // adjusted in the opposite direction to compensate (no audible change).
-    void replayGainAdjusted(const mixxx::ReplayGain&);
+    void replayGainAdjusted(const mixxx::ReplayGain&, const QString& requestingPlayerGroup);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void ratingUpdated(int rating);
     void cuesUpdated();

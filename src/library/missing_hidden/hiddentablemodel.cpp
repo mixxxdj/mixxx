@@ -13,7 +13,7 @@ const QString kModelName = "hidden:";
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
+        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.hidden") {
     setTableModel();
 }
 
@@ -49,7 +49,7 @@ void HiddenTableModel::setTableModel() {
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
     setSearch("");
 }
 

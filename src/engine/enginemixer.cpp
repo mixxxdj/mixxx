@@ -120,7 +120,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pXFaderReverse(std::make_unique<ControlPushButton>(
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
           m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
-                  ConfigKey(group, "headSplit"))),
+                  ConfigKey(group, "headSplit"), true, 0.0)),
 
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),

@@ -83,6 +83,29 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 }
+#ifdef __LINUX__
+void WTrackTableView::currentChanged(
+        const QModelIndex& current,
+        const QModelIndex& previous) {
+    // This override fixes https://github.com/mixxxdj/mixxx/pull/14734
+    // On Ubuntu-based distros it may happen that the InputMethod management
+    // isn't working correctly for some reason. When the focused cell in the
+    // tracks view is changed, QAbstractItemView::currentChanged()
+    // https://github.com/qt/qtbase/blob/82015992c853b50dac167da26b8b858ac4794c66/src/widgets/itemviews/qabstractitemview.cpp#L3823
+    // enables Qt::WA_InputMethodEnabled for editable columns/cells.
+    // Then, special keys are interpreted as QInputMethodEvent instead of
+    // QKeyEvent, which are therefore not filtered by KeyboardEventFilter and
+    // some keys of built-in keyboard mappings don't work.
+    // (de_DE, fr_FR, fr_CH and probably others).
+    // Reset Qt::WA_InputMethodEnabled right away if no editor is open
+    QTableView::currentChanged(current, previous);
+    if (state() != QTableView::EditingState) {
+        // Does not interfere with hovered Star delegate, the only editor that
+        // is opened on hover.
+        setAttribute(Qt::WA_InputMethodEnabled, false);
+    }
+}
+#endif
 
 void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
@@ -679,7 +702,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 // Drag enter event, happens when a dragged item hovers over the track table view
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel || !event->mimeData()->hasUrls()) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
@@ -701,25 +724,22 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
+        event->ignore();
         return;
     }
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-    if (pTrackModel && event->mimeData()->hasUrls()) {
-        if (event->source() == this) {
-            if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
-                event->acceptProposedAction();
-            } else {
-                event->ignore();
-            }
-        } else {
+    if (event->source() == this) {
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             event->acceptProposedAction();
+        } else {
+            event->ignore();
         }
     } else {
-        event->ignore();
+        event->acceptProposedAction();
     }
 }
 
@@ -728,7 +748,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     TrackModel* pTrackModel = getTrackModel();
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
-    if (!pTrackModel) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
@@ -736,11 +756,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model available";
-        event->ignore();
-        return;
-    }
-
-    if (!event->mimeData()->hasUrls() || pTrackModel->isLocked()) {
         event->ignore();
         return;
     }
@@ -1061,6 +1076,11 @@ void WTrackTableView::moveRows(QList<int> selectedRowsIn, int destRow) {
 }
 
 void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel || pTrackModel->isLocked()) {
+        return;
+    }
+
     QList<int> selectedRows = getSelectedRowNumbers();
     if (selectedRows.isEmpty()) {
         return;
@@ -1180,23 +1200,25 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                 clearSelection();
                 setCurrentIndex(QModelIndex());
             }
+
+            if (event->modifiers().testFlag(Qt::AltModifier) &&
+                    (event->key() == Qt::Key_Up ||
+                            event->key() == Qt::Key_Down ||
+                            event->key() == Qt::Key_PageUp ||
+                            event->key() == Qt::Key_PageDown ||
+                            event->key() == Qt::Key_Home ||
+                            event->key() == Qt::Key_End) &&
+                    pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+                moveSelectedTracks(event);
+                return;
+            }
         }
 
         if (event->matches(QKeySequence::Copy)) {
             copySelectedTracks();
             return;
         }
-        if (event->modifiers().testFlag(Qt::AltModifier) &&
-                (event->key() == Qt::Key_Up ||
-                        event->key() == Qt::Key_Down ||
-                        event->key() == Qt::Key_PageUp ||
-                        event->key() == Qt::Key_PageDown ||
-                        event->key() == Qt::Key_Home ||
-                        event->key() == Qt::Key_End) &&
-                pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
-            moveSelectedTracks(event);
-            return;
-        }
+
         if (event->modifiers().testFlag(Qt::ControlModifier) &&
                 event->modifiers().testFlag(Qt::ShiftModifier) &&
                 event->key() == Qt::Key_C) {

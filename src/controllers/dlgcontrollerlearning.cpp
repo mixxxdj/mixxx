@@ -317,15 +317,19 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // We got a message, so we can cancel the taking-too-long timeout.
     m_firstMessageTimer.stop();
 
-    // Unless this is a MidiOpCode::ControlChange and the progress bar is full, restart the
-    // timer.  That way the user won't just push buttons forever and wonder
-    // why the wizard never advances.
+    // two conditions for letting the timer expire and map received control
+    // * The progress bar is full
+    // * It is a button (NoteOff/NoteOn) not a knob/slider (ControlChange)
+    // That way the user won't just push buttons forever and wonder why the
+    // wizard never advances.
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
-    if (opCode != MidiOpCode::ControlChange &&
-            progressBarWiggleFeedback->value() !=
-                    progressBarWiggleFeedback->maximum()) {
+    if (m_messages.length() == 1 ||
+            (opCode == MidiOpCode::ControlChange &&
+                    progressBarWiggleFeedback->value() !=
+                            progressBarWiggleFeedback->maximum())) {
         m_lastMessageTimer.start();
     }
+    // else: let timer expire
 }
 
 void DlgControllerLearning::slotCancelLearn() {

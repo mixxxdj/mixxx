@@ -353,6 +353,8 @@ WTrackProperty:hover[selected="false"],
 WTrackProperty:hover[selected="true"],
 WTrackProperty[selected="true"],
 #BpmTapContainer:hover,
+#BpmTapSelectButton,
+#BpmEditSelectButton,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
   }
@@ -360,10 +362,21 @@ WTrackProperty[selected="true"],
   WTrackProperty[selected="true"] {
     background-color: #181819;
   }
-  #BpmTap[pressed="true"],
-  WTrackProperty[selected="true"] {
+  WTrackProperty[selected="true"],
+  #BpmTapSelectButton,
+  #BpmEditSelectButton,
+  #BpmTapButton {
     border: 1px solid #7d350d;
-/*    border: 1px solid #888;*/
+  }
+  #BpmTapSelectButton {
+    border-right: 0px;
+    image: url(skins:LateNight/palemoon/buttons/btn__bpm_select_tap.svg) no-repeat center center;
+  }
+  #BpmEditSelectButton {
+    image: url(skins:LateNight/palemoon/buttons/btn__bpm_select_edit.svg) no-repeat left top;
+  }
+  #BpmTapButton:pressed {
+    border: 1px solid #257b82;
   }
 
 /* Disabled for now since the hover effect is stuck as soon as the
@@ -640,7 +653,7 @@ WTrackProperty[selected="true"],
 /************** RateControls ********************************************/
 
 #RateContainer {
-  padding: 4px 0px 0px 0px;
+  padding: 2px 0px 0px 0px;
   }
 
   #RateText {
@@ -648,8 +661,8 @@ WTrackProperty[selected="true"],
     margin: 0px 2px 0px 0px;
   }
 
-#SyncBox {
-  margin: 2px 1px 1px 2px;
+#BpmTapSyncContainer {
+  margin: 0px 2px 1px 2px;
 }
 
 #RateControls {
@@ -659,11 +672,13 @@ WTrackProperty[selected="true"],
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
 WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
 #spinBoxTransition {
   selection-color: #a7998b;
   selection-background-color: #111;
   }
   WBeatSpinBox:focus,
+  WBpmEditor QDoubleSpinBox:focus,
   #spinBoxTransition:focus,
   #LibraryBPMSpinBox:focus  {
     selection-color: #000;
@@ -675,6 +690,7 @@ WBeatSpinBox {
   border-width: 3px 19px 2px 3px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
+
 #spinBoxTransition {
   width: 24px;
   height: 19px;
@@ -682,11 +698,11 @@ WBeatSpinBox {
   margin: 0px 2px 3px 5px;
   border-width: 3px 19px 2px 3px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
-  }
-  WBeatSpinBox:focus,
-  #spinBoxTransition:focus {
-    border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
-  }
+}
+WBeatSpinBox:focus,
+#spinBoxTransition:focus {
+  border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
+}
 
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
@@ -694,34 +710,74 @@ WBeatSpinBox::down-button,
 #spinBoxTransition::down-button {
   subcontrol-origin: content;
   position: relative;
-  /* as with spinbox: border is added to size. */
-  width: 18px;
   padding: 0px;
+  width: 18px;
   }
+
   WBeatSpinBox::up-button,
   #spinBoxTransition::up-button {
-    height: 11px;
     subcontrol-position: top right;
     image: url(skins:LateNight/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
+    height: 11px;
     }
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
-      }
+    }
     #spinBoxTransition::up-button {
       margin: -2px -3px 0px 0px;
-      }
+    }
+
   WBeatSpinBox::down-button,
   #spinBoxTransition::down-button {
-    height: 11px;
     subcontrol-position: bottom right;
     image: url(skins:LateNight/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
+    height: 11px;
+    margin: 0px -1px -3px 0px;
     }
-    WBeatSpinBox::down-button {
-      margin: 0px -1px -3px 0px;
-      }
     #spinBoxTransition::down-button {
       margin: 0px -3px -1px 0px;
-      }
+    }
+
+WBpmEditor {
+  padding: 0px;
+  margin: 0px;
+  border: none;
+}
+WBpmEditor QDoubleSpinBox,
+WBpmEditor QDoubleSpinBox:focus {
+  border-image: none;
+  border: 1px solid #257b82;
+  border-radius: 2px;
+  margin: 0px;
+  /* top/bottom padding is required to make room for the buttons! */
+  padding: 2px 0px 16px 0px;
+  font-size: 14px/14px;
+}
+WBpmEditor QDoubleSpinBox QLineEdit {
+  text-align: center;
+}
+
+WBpmEditor QDoubleSpinBox::up-button,
+WBpmEditor QDoubleSpinBox::down-button {
+  subcontrol-origin: padding;
+  subcontrol-position: bottom;
+  position: absolute;
+  height: 16px;
+  width: 30px;
+  background-color: #171719;
+}
+WBpmEditor QDoubleSpinBox::up-button {
+  image: url(skins:LateNight/palemoon/buttons/btn__bpm_spinbox_plus.svg) no-repeat;
+  bottom: 0px;
+  left: 30px;
+  right: 0px;
+  }
+WBpmEditor QDoubleSpinBox::down-button {
+  bottom: 0px;
+  left: 0px;
+  right: 30px;
+  image: url(skins:LateNight/palemoon/buttons/btn__bpm_spinbox_minus.svg) no-repeat;
+}
 
 
 /************** Mixer ***************************************************/
@@ -1297,6 +1353,7 @@ WEffectChainPresetSelector:!editable:on,
   }
 
   WBeatSpinBox,
+  WBpmEditor QDoubleSpinBox,
   #spinBoxTransition {
     color: #a7998b;
   }
@@ -1493,8 +1550,6 @@ WEffectSelector:!editable,
   border-width: 2px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-  /*
-  WPushButton#BpmTap[displayValue="1"], */
   WPushButton#VinylStatus[displayValue="1"],
   WPushButton#VinylStatus[displayValue="2"],
   WPushButton#VinylStatus[displayValue="3"],
@@ -1607,7 +1662,8 @@ WPushButton#FxToggleButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
 WBeatSpinBox,
 WBeatSpinBox::up-button,
-WBeatSpinBox::down-button {
+WBeatSpinBox::down-button,
+WBpmEditor QDoubleSpinBox {
   background-color: #121213;
   }
   /* dim buttons in top-level containers */
@@ -1737,7 +1793,9 @@ WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"]
+#FxUnit4 #FxToggleButton[displayValue="1"],
+WBpmEditor QDoubleSpinBox::up-button:pressed,
+WBpmEditor QDoubleSpinBox::down-button:pressed,
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,

@@ -22,6 +22,14 @@ class WaveformMark {
         // To indicate that the image for the mark needs to be regenerated,
         // when the text, color, breadth or level are changed.
         bool m_obsolete{};
+        Graphics() = default;
+        virtual ~Graphics() = default;
+        // non-copyable
+        Graphics(const Graphics&) = delete;
+        Graphics& operator=(const Graphics&) = delete;
+        // non-movable
+        Graphics(Graphics&&) = delete;
+        Graphics& operator=(Graphics&&) = delete;
     };
 
     WaveformMark(
