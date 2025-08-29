@@ -105,13 +105,8 @@ bool mouseMoveInitiatesDragHelper(QMouseEvent* pEvent, bool isPress) {
     if (pEvent->buttons() != Qt::LeftButton) {
         return false;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     const qreal x = pEvent->position().x();
     const qreal y = pEvent->position().y();
-#else
-    const qreal x = pEvent->x();
-    const qreal y = pEvent->y();
-#endif
 
     static qreal pressX{};
     static qreal pressY{};
@@ -190,11 +185,7 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     }
 
     // forbid clone if shift is pressed
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     const auto modifiers = event.modifiers();
-#else
-    const auto modifiers = event.keyboardModifiers();
-#endif
     if (modifiers.testFlag(Qt::ShiftModifier)) {
         return false;
     }

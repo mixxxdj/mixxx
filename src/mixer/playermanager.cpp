@@ -20,7 +20,6 @@
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
 
@@ -247,7 +246,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
+    ControlProxy* pCOPNumDecks = m_pCOPNumDecks.loadRelaxed();
     if (pCOPNumDecks == nullptr) {
         pCOPNumDecks = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_decks")));
         if (!pCOPNumDecks->valid()) {
@@ -265,7 +264,7 @@ unsigned int PlayerManager::numDecks() {
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
+    ControlProxy* pCOPNumSamplers = m_pCOPNumSamplers.loadRelaxed();
     if (pCOPNumSamplers == nullptr) {
         pCOPNumSamplers = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
         if (!pCOPNumSamplers->valid()) {
@@ -283,7 +282,7 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
+    ControlProxy* pCOPNumPreviewDecks = m_pCOPNumPreviewDecks.loadRelaxed();
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")));

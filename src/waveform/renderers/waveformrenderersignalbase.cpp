@@ -2,7 +2,6 @@
 
 #include "control/controlproxy.h"
 #include "moc_waveformrenderersignalbase.cpp"
-#include "util/colorcomponents.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
@@ -129,33 +128,33 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
 
     const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
-    getRgbF(pColors->getLowColor(), &m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
-    getRgbF(pColors->getMidColor(), &m_midColor_r, &m_midColor_g, &m_midColor_b);
-    getRgbF(pColors->getHighColor(), &m_highColor_r, &m_highColor_g, &m_highColor_b);
-    getRgbF(pColors->getRgbLowColor(), &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
-    getRgbF(pColors->getRgbMidColor(), &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
-    getRgbF(pColors->getRgbHighColor(), &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
-    getRgbF(pColors->getRgbLowFilteredColor(),
+    pColors->getLowColor().getRgbF(&m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
+    pColors->getMidColor().getRgbF(&m_midColor_r, &m_midColor_g, &m_midColor_b);
+    pColors->getHighColor().getRgbF(&m_highColor_r, &m_highColor_g, &m_highColor_b);
+    pColors->getRgbLowColor().getRgbF(&m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
+    pColors->getRgbMidColor().getRgbF(&m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
+    pColors->getRgbHighColor().getRgbF(&m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
+    pColors->getRgbLowFilteredColor().getRgbF(
             &m_rgbLowFilteredColor_r,
             &m_rgbLowFilteredColor_g,
             &m_rgbLowFilteredColor_b);
 
-    getRgbF(pColors->getRgbMidFilteredColor(),
+    pColors->getRgbMidFilteredColor().getRgbF(
             &m_rgbMidFilteredColor_r,
             &m_rgbMidFilteredColor_g,
             &m_rgbMidFilteredColor_b);
 
-    getRgbF(pColors->getRgbHighFilteredColor(),
+    pColors->getRgbHighFilteredColor().getRgbF(
             &m_rgbHighFilteredColor_r,
             &m_rgbHighFilteredColor_g,
             &m_rgbHighFilteredColor_b);
 
-    getRgbF(pColors->getAxesColor(),
+    pColors->getAxesColor().getRgbF(
             &m_axesColor_r,
             &m_axesColor_g,
             &m_axesColor_b,
             &m_axesColor_a);
-    getRgbF(pColors->getSignalColor(), &m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
+    pColors->getSignalColor().getRgbF(&m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
     onSetup(node);
 
     auto* pWaveformFactory = WaveformWidgetFactory::instance();

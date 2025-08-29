@@ -2,7 +2,6 @@
 
 #include <QPainter>
 
-#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -107,9 +106,9 @@ void drawWaveformPartRGB(
           all = 0, low = 0, mid = 0, high = 0,
           red = 0, green = 0, blue = 0, max = 0;
 
-    getRgbF(lowColor, &lowColor_r, &lowColor_g, &lowColor_b);
-    getRgbF(midColor, &midColor_r, &midColor_g, &midColor_b);
-    getRgbF(highColor, &highColor_r, &highColor_g, &highColor_b);
+    lowColor.getRgbF(&lowColor_r, &lowColor_g, &lowColor_b);
+    midColor.getRgbF(&midColor_r, &midColor_g, &midColor_b);
+    highColor.getRgbF(&highColor_r, &highColor_g, &highColor_b);
 
     if (mono) {
         // Mono means we're going to paint from bottom to top with l+r.
@@ -266,7 +265,7 @@ void drawWaveformPartHSV(
     float h = 0, s = 0, v = 0, lo = 0, hi = 0, total = 0;
     // Get HSV of low color.
     const QColor lowColor = signalColors.getLowColor();
-    getHsvF(lowColor, &h, &s, &v);
+    lowColor.getHsvF(&h, &s, &v);
     QColor color;
 
     unsigned char low[2] = {0, 0};

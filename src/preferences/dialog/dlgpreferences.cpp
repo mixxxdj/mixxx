@@ -16,7 +16,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
-#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -352,7 +351,7 @@ void DlgPreferences::onShow() {
     int newWidth = m_geometry[2].toInt();
     int newHeight = m_geometry[3].toInt();
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen = screen();
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
@@ -554,7 +553,7 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 
 QRect DlgPreferences::getDefaultGeometry() {
     adjustSize();
-    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen = screen();
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }

@@ -22,13 +22,6 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent,
     document()->setDocumentMargin(0);
     setContentsMargins(0, 0, 0, 0);
     setCenterOnScroll(false);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // Paint the entire rectangle, i.e. expand document background in order to
-    // cover all underlying index text. Seems to be required for one-liners on macOS.
-    // Disabled for Qt6 since it does the exact opposite, i.e. the bottom margin
-    // is painted with the OS theme's background color
-    setBackgroundVisible(true);
-#endif
     // Add event filter to catch right-clicks and key presses, see eventFilter()
     installEventFilter(this);
 
