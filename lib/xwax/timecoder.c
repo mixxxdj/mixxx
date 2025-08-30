@@ -530,6 +530,8 @@ static double quantize_phase(struct timecoder *tc)
 {
     unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
     static unsigned long long direction_change_counter = 0;
+    const unsigned int forwards_diff = (tc->def->flags & SWITCH_PHASE) ? 1 : 3;
+    const unsigned int backwards_diff = (tc->def->flags & SWITCH_PHASE) ? 3 : 1;
 
     /* Check for a displacement of four quadrants */
     if (diff == 0 && !tc->direction_changed) {
@@ -537,7 +539,7 @@ static double quantize_phase(struct timecoder *tc)
     }
     
     /* Check for a displacement of three quadrants */
-    if ((tc->forwards && diff == 3) || (!tc->forwards && diff == 1)) {
+    if ((tc->forwards && diff == forwards_diff) || (!tc->forwards && diff == backwards_diff)) {
         return (3.0 / tc->def->resolution) / 4.0;
     }
     
