@@ -8,6 +8,24 @@
         <forums>https://mixxx.discourse.group/t/mixtrack-pro-3/15165</forums>
         <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
     </info>
+    <settings>
+        <group label="Library navigation">
+            <option
+                variable="libraryMode"
+                label="Navigation mode"
+                type="enum">
+                <value label="Focus" default="true">focus</value>
+                <value label="Classic">classic</value>
+                <description>
+                    In Focus mode the Browse encoder affects the library widget which currently has keyboard focus.
+                    This requires the Mixxx window to have focus and allows to control the searchbar, too.
+
+                    In Classic mode the Browse encoder can select items in the sidebar and tracks table only, but independent
+                    of keyboard focus.
+                </description>
+            </option>
+        </group>
+    </settings>
     <controller id="Mixtrack3">
         <scriptfiles>
             <file functionprefix="NumarkMixtrack3" filename="Numark-Mixtrack-3-scripts.js" />
