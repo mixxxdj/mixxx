@@ -5,6 +5,7 @@
 ### Controller Mappings
 
 * Icon P1-Nano MIDI 1: new mapping [#14602](https://github.com/mixxxdj/mixxx/pull/14602)
+* Traktor Kontrol S2 Mk1: Fix effect light on application start [#15102](https://github.com/mixxxdj/mixxx/pull/15102)
 * Traktor Kontrol S4 Mk3: tempo offset per deck [#14882](https://github.com/mixxxdj/mixxx/pull/14882)
 * Traktor Kontrol S4 Mk3: don`t duplicate beatloop_activate behaviour [#14992](https://github.com/mixxxdj/mixxx/pull/14992)
 * Traktor Kontrol S3: allow full library navigation [#14980](https://github.com/mixxxdj/mixxx/pull/14980)
@@ -22,6 +23,7 @@
 * Waveforms: don't scratch on mousepress/move with empty waveform
   [#15143](https://github.com/mixxxdj/mixxx/pull/15143)
   [#15088](https://github.com/mixxxdj/mixxx/issues/15088)
+* Reverb effect: Fix memory leak [#15262](https://github.com/mixxxdj/mixxx/pull/15262)
 
 ### Vinyl Control
 
@@ -39,7 +41,9 @@
   [#15168](https://github.com/mixxxdj/mixxx/pull/15168)
   [#15165](https://github.com/mixxxdj/mixxx/issues/15165)
 * Pitch filter improvements [#15230](https15054://github.com/mixxxdj/mixxx/pull/15230)
-* Add a quadrature phase tracker [#15217](https://github.com/mixxxdj/mixxx/pull/15217)
+* Add a quadrature phase tracker
+  [#15217](https://github.com/mixxxdj/mixxx/pull/15217)
+  [#15283](https://github.com/mixxxdj/mixxx/pull/15283)
 
 ### Target support
 
@@ -67,8 +71,10 @@
   [#15113](https://github.com/mixxxdj/mixxx/pull/15113)
   [#15105](https://github.com/mixxxdj/mixxx/issues/15105)
 * Sound Hardware preference: add (?) linking to Sound APIs in the manual [#14935](https://github.com/mixxxdj/mixxx/pull/14935)
+* Sound Hardware preference: add a hint regarding pick up position of deck and bus outputs [#15255](https://github.com/mixxxdj/mixxx/pull/15255)
 * Fix column header text assignment [#14944](https://github.com/mixxxdj/mixxx/pull/14944)
 * Remove runtime assert to not risk crashes [#15000](https://github.com/mixxxdj/mixxx/pull/15000)
+* Tracks: prevent reorder with Alt keys when model (playlist) is locked [#15135](https://github.com/mixxxdj/mixxx/pull/15135)
 
 ## [2.5.2](https://github.com/mixxxdj/mixxx/milestone/49) (2025-06-13)
 
