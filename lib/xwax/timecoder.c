@@ -562,9 +562,10 @@ static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
     tc->direction_changed = direction_changed;
 
     bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
+    pos ^= !(tc->def->flags & SWITCH_PHASE);
     bool add = tc->secondary.swapped ? 0b1 : 0b0;
 
-    tc->quadrant = (!pos << 1) | add;
+    tc->quadrant = (pos << 1) | add;
 }
 
 /*
