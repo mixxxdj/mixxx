@@ -33,6 +33,9 @@ constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
 } // anonymous namespace
 
+// for mixxx::OverviewType
+using namespace mixxx;
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -41,7 +44,7 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(mixxx::OverviewType::RGB),
+          m_type(OverviewType::RGB),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -443,8 +446,8 @@ void WOverview::onPassthroughChange(double v) {
 
 void WOverview::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
-    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
-    mixxx::OverviewType type = static_cast<mixxx::OverviewType>(static_cast<int>(v));
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<OverviewType>().keyCount());
+    OverviewType type = static_cast<OverviewType>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -1422,21 +1425,21 @@ bool WOverview::drawNextPixmapPart() {
                 static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
-    if (m_type == mixxx::OverviewType::Filtered) {
+    if (m_type == OverviewType::Filtered) {
         waveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else if (m_type == mixxx::OverviewType::HSV) {
+    } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else { // mixxx::OverviewType::RGB:
+    } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
