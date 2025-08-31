@@ -65,6 +65,8 @@ QImage render(ConstWaveformPointer pWaveform,
     } else {
         const auto visualGain = static_cast<float>(
                 widgetFactory->getVisualGain(BandIndex::AllBand));
+        // TODO Scale it like the decks' overviews, ie. consider
+        // ReplayGain config
         diffGain = 255.0f - (255.0f / visualGain);
     }
 
