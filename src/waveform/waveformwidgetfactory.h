@@ -120,7 +120,7 @@ class WaveformWidgetFactory : public QObject,
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
-//    bool getVSync() const { return m_vSyncType;}
+    // bool getVSync() const { return m_vSyncType;}
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
@@ -238,7 +238,7 @@ class WaveformWidgetFactory : public QObject,
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
-    void overviewNormalizeChanged();
+    void overviewScalingChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
 
     void untilMarkShowBeatsChanged(bool value);

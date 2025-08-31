@@ -108,16 +108,22 @@ WOverview::WOverview(
     // changed in the preferences.
     WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overviewNormalizeChanged,
+            &WaveformWidgetFactory::overviewScalingChanged,
             this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    connect(pWidgetFactory,
-            &WaveformWidgetFactory::visualGainChanged,
-            this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    // Also listen to ReplayGain changes to scale the waveform
-    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
-    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
+            &WOverview::slotScalingChanged);
+    // Also update when the ReplayGain and related options have been changed
+    m_pReplayGain = make_parented<ControlProxy>(m_group, QStringLiteral("replaygain"), this);
+    m_pReplayGainEnabled = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainEnabled"), this);
+    m_pReplayGainBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainBoost"), this);
+    m_pReplayGainDefaultBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("DefaultBoost"), this);
+
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainEnabled->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainDefaultBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -461,7 +467,7 @@ void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
 
-void WOverview::slotNormalizeOrVisualGainChanged() {
+void WOverview::slotScalingChanged() {
     update();
 }
 
@@ -746,13 +752,25 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
     if (normalize && m_pixmapDone && m_waveformPeak > 1) {
         diffGain = 255 - m_waveformPeak - 1;
     } else {
-        DEBUG_ASSERT(m_pCurrentTrack);
-        const auto replayGain = m_pCurrentTrack->getReplayGain();
-        const auto visualGain = static_cast<float>(
-                pWidgetFactory->getVisualGain(BandIndex::AllBand) *
-                (replayGain.hasRatio()
-                                ? replayGain.getRatio()
-                                : 1.0));
+        // Try to get same visual gain like in the scrolling waveforms.
+        // Note: there the gain still varies per renderer :|
+        // This essentially repeats the calculations of EnginePregain::process(),
+        // just without `pregain`.
+        CSAMPLE_GAIN trackGainRatio = 1;
+        if (m_pReplayGainEnabled->toBool()) {
+            auto replayGain = static_cast<CSAMPLE_GAIN>(m_pReplayGain->get());
+            if (replayGain == 0) {
+                // Not analyzed yet or cleared manually. Use default boost
+                trackGainRatio =
+                        static_cast<CSAMPLE_GAIN>(m_pReplayGainDefaultBoost->get());
+            } else {
+                // ReplayGain boost
+                trackGainRatio =
+                        replayGain * static_cast<CSAMPLE_GAIN>(m_pReplayGainBoost->get());
+            }
+        }
+        const auto visualGain = static_cast<float>(trackGainRatio *
+                pWidgetFactory->getVisualGain(BandIndex::AllBand));
         diffGain = 255.0f - (255.0f / visualGain);
     }
 

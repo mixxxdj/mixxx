@@ -716,6 +716,9 @@ void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
             m_visualGain[BandIndex::Low],
             m_visualGain[BandIndex::Mid],
             m_visualGain[BandIndex::High]);
+    if (index == BandIndex::AllBand && !m_overviewNormalized) {
+        emit overviewScalingChanged();
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(BandIndex index) const {
@@ -728,7 +731,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
         m_config->set(ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
                 ConfigValue(m_overviewNormalized));
     }
-    emit overviewNormalizeChanged();
+    emit overviewScalingChanged();
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {

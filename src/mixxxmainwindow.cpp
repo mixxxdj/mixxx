@@ -301,7 +301,7 @@ void MixxxMainWindow::initialize() {
             pOverviewCache,
             &OverviewCache::onNormalizeOrVisualGainChanged);
     connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::overviewNormalizeChanged,
+            &WaveformWidgetFactory::overviewScalingChanged,
             pOverviewCache,
             &OverviewCache::onNormalizeOrVisualGainChanged);
 
