@@ -736,42 +736,44 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    if (!m_waveformSourceImage.isNull()) {
-        WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
-        float diffGain;
-        bool normalize = pWidgetFactory->isOverviewNormalized();
-        if (normalize && m_pixmapDone && m_waveformPeak > 1) {
-            diffGain = 255 - m_waveformPeak - 1;
-        } else {
-            DEBUG_ASSERT(m_pCurrentTrack);
-            const auto replayGain = m_pCurrentTrack->getReplayGain();
-            const auto visualGain = static_cast<float>(
-                    pWidgetFactory->getVisualGain(BandIndex::AllBand) *
-                    (replayGain.hasRatio()
-                                    ? replayGain.getRatio()
-                                    : 1.0));
-            diffGain = 255.0f - (255.0f / visualGain);
-        }
-
-        if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            QRect sourceRect(0,
-                    static_cast<int>(diffGain),
-                    m_waveformSourceImage.width(),
-                    m_waveformSourceImage.height() -
-                            2 * static_cast<int>(diffGain));
-            QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
-            if (m_orientation == Qt::Vertical) {
-                // Rotate pixmap
-                croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
-            }
-            m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
-                    Qt::IgnoreAspectRatio,
-                    Qt::SmoothTransformation);
-            m_diffGain = diffGain;
-        }
-
-        pPainter->drawImage(rect(), m_waveformImageScaled);
+    if (m_waveformSourceImage.isNull()) {
+        return;
     }
+
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
+    float diffGain;
+    bool normalize = pWidgetFactory->isOverviewNormalized();
+    if (normalize && m_pixmapDone && m_waveformPeak > 1) {
+        diffGain = 255 - m_waveformPeak - 1;
+    } else {
+        DEBUG_ASSERT(m_pCurrentTrack);
+        const auto replayGain = m_pCurrentTrack->getReplayGain();
+        const auto visualGain = static_cast<float>(
+                pWidgetFactory->getVisualGain(BandIndex::AllBand) *
+                (replayGain.hasRatio()
+                                ? replayGain.getRatio()
+                                : 1.0));
+        diffGain = 255.0f - (255.0f / visualGain);
+    }
+
+    if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
+        const QRect sourceRect(0,
+                static_cast<int>(diffGain),
+                m_waveformSourceImage.width(),
+                m_waveformSourceImage.height() -
+                        2 * static_cast<int>(diffGain));
+        QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
+        if (m_orientation == Qt::Vertical) {
+            // Rotate pixmap
+            croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
+        }
+        m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                Qt::IgnoreAspectRatio,
+                Qt::SmoothTransformation);
+        m_diffGain = diffGain;
+    }
+
+    pPainter->drawImage(rect(), m_waveformImageScaled);
 }
 
 void WOverview::drawMinuteMarkers(QPainter* pPainter) {
