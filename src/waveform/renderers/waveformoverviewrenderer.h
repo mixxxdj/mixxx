@@ -9,9 +9,8 @@ class QPainter;
 class WaveformSignalColors;
 
 namespace waveformOverviewRenderer {
-/// This returns the normalized, fullsize, "mono" image
-/// for the library's overview column, scaled vertically
-/// depending on Normalized preference.
+/// This returns the normalized fullsize image
+/// for the library's overview column.
 QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
