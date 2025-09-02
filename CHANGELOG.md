@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (unreleased)
+## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 
 ### Controller Mappings
 
