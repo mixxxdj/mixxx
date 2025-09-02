@@ -121,7 +121,7 @@ class WaveformWidgetFactory : public QObject,
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
-//    bool getVSync() const { return m_vSyncType;}
+    // bool getVSync() const { return m_vSyncType;}
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
@@ -131,6 +131,7 @@ class WaveformWidgetFactory : public QObject,
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    WaveformWidgetBackend getBackendFromConfig() const;
     WaveformWidgetBackend preferredBackend() const;
     static WaveformWidgetType::Type defaultType() {
         return WaveformWidgetType::RGB;
@@ -229,6 +230,7 @@ class WaveformWidgetFactory : public QObject,
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
@@ -237,7 +239,7 @@ class WaveformWidgetFactory : public QObject,
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
-    void overviewNormalizeChanged();
+    void overviewScalingChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
 
     void untilMarkShowBeatsChanged(bool value);
