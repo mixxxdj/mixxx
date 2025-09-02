@@ -8,7 +8,7 @@ on:
       publish:
         type: boolean
         default: false
-      head_ref:
+      branch:
         type: string
         required: true
       ref:
@@ -254,9 +254,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.head_ref }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"

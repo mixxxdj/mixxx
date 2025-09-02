@@ -73,7 +73,7 @@ jobs:
       - stop-build
     uses: ./.github/workflows/build.yml
     with:
-      head_ref: ${{ github.head_ref }}
+      branch: ${{ github.head_ref || github.ref_name }}
       ref: ${{ github.ref }}
 
   # This task is used as a probe for auto merge
