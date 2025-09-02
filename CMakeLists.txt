@@ -1,7 +1,77 @@
+# Refactoring - Table of Contents
+
+# R1A - CMAKE
+# R1B - CMAKE_CXX_STANDARD
+# R0F - CMake policies
+# R1C - Windows build
+# R0C - Platform detection
+# R9A - File compilation options
+# R1D - WINDOWS and MACOS
+# R1E - ERRORS
+# R1F - VCPKG SETUP
+# R2A - BUILD TYPE
+# R2B - OPTIONS
+# R2C - OPTIONS: QT6 QML QOPENGL
+# R2D - Apple and Emscripten (WebAssembly)
+# R0E - CMake includes
+# R2E - Compilers and toolchains
+# R2F - OPTIONS
+# R3A - Microsoft MSVC
+# R3B - GNU_GCC LLVM_CLANG
+# R3C - CMAKE
+# R3D - WINDOWS
+# R3E - NOT MSVC
+# R3F - CMAKE
+# R4A - if(UNIX AND NOT APPLE)
+# R4B - (APPLE)
+# R4C - EMSCRIPTEN
+# R4D - Debug build - QML Debugging
+# R4E - OPTIONS
+# R4F - if(MSVC)
+# R5A - if(NOT MSVC)
+# R5B - OPTIONS
+# R5C - OPTIONS: MACOS
+# R5D - OPTIONS: WINDOWS (not options - definitions..)
+# R5E - INSTALL DIRECTORIES
+# R5F - IF WINDOWS
+# R6A - IF UNIX
+# R6B - INSIDE - UNIX AND NOT APPLE - OPTION
+# R6C - OPTION
+# R6D - OPTIONS
+# R6E - EMSCRIPTEN
+
 cmake_minimum_required(VERSION 3.21)
 # lint_cmake: -readability/wonkycase
 
-message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
+message(
+  STATUS
+  "CMAKE_VERSION: ${CMAKE_VERSION}"
+)
+
+# R1A - CMAKE
+
+# CMake project, also sets CMAKE_PROJECT_NAME, CMAKE_PROJECT_VERSION, etc.
+project(
+  mixxx
+  VERSION
+    2.7.0
+  DESCRIPTION
+    "Mixxx is Free DJ software that gives you everything you need to perform live mixes."
+  HOMEPAGE_URL
+    "https://www.mixxx.org"
+  LANGUAGES
+    C CXX
+)
+
+# Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
+# set to "alpha" "beta" or ""
+set(MIXXX_VERSION_PRERELEASE "alpha")
+
+# R1B - CMAKE_CXX_STANDARD
+
+set(CMAKE_CXX_STANDARD 20)
+
+# R0F - CMake policies
 
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
@@ -48,7 +118,150 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+# R1C - Windows build
+
+# CMake implicitly sets the variable MSVC to true for Microsoft
+# Visual C++ or another compiler simulating Visual C++.
+# https://cmake.org/cmake/help/latest/variable/MSVC.html
+if(MSVC)
+  # Ensure MSVC populates __cplusplus correctly.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+  # Remove unreferenced code and data
+  # Since c++11 they can safely be removed to speed up linking.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
+
+  if(NOT DEFINED MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION VERSION_LESS 143)
+    message(
+      FATAL_ERROR
+      "MSVC_TOOLSET_VERSION is ${MSVC_TOOLSET_VERSION}.\n"
+      "Mixxx requires the Microsoft Visual C++ Redistributable toolset of version 143 (VS2022) or greater, "
+      "as the VCPKG buildenv is built with this version.\n"
+      "Please use the Visual Studio 2022 toolset therefore!"
+    )
+  endif()
+endif()
+
+# R0C - Platform detection
+
+# Setting platform variables
+# NOTE: EX_UNIX is UNIX, but exclusive - not containing APPLE
+# NOTE: Each of the following can be EMSCRIPTEN impersonating other platform(s), thus use (AND) NOT EMSCRIPTEN where needed or\
+#       better if(EMSCRIPTEN) => status message(), else()/elseif() => statements for intended platform(s).
+#  UNIX       = UNIX OR APPLE OR MACOS OR IOS OR EX_UNIX OR LINUX OR BSD
+#    APPLE    = APPLE OR MACOS OR IOS
+#      MACOS  = MACOS
+#      IOS    = IOS
+#    EX_UNIX  = EX_UNIX OR LINUX OR BSD
+#      LINUX  = LINUX
+#      BSD    = BSD
+#  WIN32      = WIN32
+#  EMSCRIPTEN = EMSCRIPTEN
+if(UNIX)
+  if(APPLE)
+    if(IOS)
+      # ios - exclusive as is
+      message(
+        STATUS
+        "Detected operating system: APPLE -> IOS."
+      )
+    else()
+      set(MACOS)
+      # MACOS - exclusive as is
+      message(
+        STATUS
+        "Detected operating system: APPLE -> MACOS."
+      )
+    endif()
+  else()
+    set(EX_UNIX)
+
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+      set(LINUX)
+      message(
+        STATUS
+        "Detected operating system: LINUX."
+      )
+    elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
+      set(BSD)
+      message(
+        STATUS
+        "Detected operating system: BSD."
+    )
+
+    # BUG: This route is bad for cross-compilation - if CMAKE_SYSTEM_NAME is not defined, resolves to Linux or BSD depending which system is doing the cross-compilation
+    elseif(NOT DEFINED CMAKE_SYSTEM_NAME)
+      message(
+          WARNING
+          "CMAKE_SYSTEM_NAME is NOT set (define it for cross-compilation)."
+      )
+      execute_process(
+        COMMAND uname -o
+        OUTPUT_VARIABLE UNAME_O
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+
+      if(UNAME_O MATCHES "^.*Linux$")
+        set(LINUX)
+        message(
+          STATUS
+          "Detected operating system: LINUX."
+        )
+      elseif(UNAME_O MATCHES "^.*BSD$")
+        set(BSD)
+        message(
+          STATUS
+          "Detected operating system: BSD."
+        )
+      endif()
+    endif()
+  endif()
+endif()
+
+# Error if building on Windows Subsystem for Linux (WSL)
+if(EX_UNIX)
+  execute_process(
+    COMMAND uname -r
+    OUTPUT_VARIABLE UNAME_R
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(UNAME_R MATCHES ".*[Mm]icrosoft.*" OR UNAME_R MATCHES ".*WSL.*")
+    message(
+      FATAL_ERROR
+      "Building on Windows Subsystem for Linux (WSL) is not supported. If you want to build Mixxx from command line on Windows, you need to use the \"x64 Native Tools Command Prompt for VS 2022\"!"
+    )
+  endif()
+endif()
+
+# R9A - File compilation options
+
+# When using CUSTOM_COPTS - getting "predefined macro was enabled in PCH file but is currently disabled" error means in CUSTOM_COPTS_FILES .cpp was added but it's .h was not included.
+set(
+  CUSTOM_COPTS_FILES
+    ""
+  CACHE STRING
+    "List of source files (relative to $PWD (working directory) - f. e. ../src/file.cpp) separated by semicolons to compile with compiler command line options set in CUSTOM_COPTS."
+)
+
+set(
+  CUSTOM_COPTS
+    ""
+  CACHE STRING
+    "List of compiler command line options separated by semicolons to append for source files listed in CUSTOM_COPTS_FILES. Designed to append to the very end, check by enabling CMAKE_EXPORT_COMPILE_COMMANDS."
+)
+
+if(CUSTOM_COPTS AND CUSTOM_COPTS_FILES)
+  set_source_files_properties(
+    "${CUSTOM_COPTS_FILES}"
+    PROPERTIES
+      COMPILE_OPTIONS
+        "${CUSTOM_COPTS}"
+  )
+endif()
+
+# R1D - WINDOWS and MACOS
+
+# For tools/macos_buildenv.sh and tools/windows_buildenv.bat
+if((MACOS OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
       set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
@@ -140,6 +353,8 @@ else()
   set(_dummy "${BUILDENV_URL} ${BUILDENV_BASEPATH} ${BUILDENV_SHA256}")
 endif()
 
+# R1E - ERRORS
+
 # Use this function to throw an error because the build environment is not set
 # up correctly.
 function(fatal_error_missing_env)
@@ -155,7 +370,7 @@ function(fatal_error_missing_env)
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat` or `${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat`(includes Debug)?"
       )
     endif()
-  elseif(APPLE AND NOT IOS)
+  elseif(MACOS)
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
       message(
         FATAL_ERROR
@@ -172,7 +387,7 @@ function(fatal_error_missing_env)
         "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh` or `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`(includes Debug)?"
       )
     endif()
-  elseif(UNIX AND NOT APPLE)
+  elseif(EX_UNIX)
     # Linux, BSD, Solaris, Minix
     if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
@@ -203,19 +418,7 @@ function(fatal_error_missing_env)
   endif()
 endfunction()
 
-if(UNIX AND NOT APPLE)
-  execute_process(
-    COMMAND uname -r
-    OUTPUT_VARIABLE UNAME_R
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  if(UNAME_R MATCHES ".*[Mm]icrosoft.*" OR UNAME_R MATCHES ".*WSL.*")
-    message(
-      FATAL_ERROR
-      "Building on Windows Subsystem for Linux (WSL) is not supported. If you want to build Mixxx from command line on Windows, you need to use the \"x64 Native Tools Command Prompt for VS 2022\"!"
-    )
-  endif()
-endif()
+# R1F - VCPKG SETUP
 
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
@@ -281,10 +484,13 @@ set(
   FORCE
 )
 
+# R2A - BUILD TYPE
+
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
 set(default_build_type "RelWithDebInfo")
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND NOT WIN32)
+  # FIXME:
   # On Windows, Debug builds are linked to unoptimized libs
   # generating unusable slow Mixxx builds.
   set(default_build_type "Debug")
@@ -316,7 +522,9 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
-include(CMakeDependentOption)
+# R2B - OPTIONS
+
+# R2C - OPTIONS: QT6 QML QOPENGL
 
 option(QT6 "Build with Qt6" ON)
 
@@ -336,6 +544,8 @@ endif()
 if(QML)
   add_compile_definitions(MIXXX_USE_QML)
 endif()
+
+# R2D - Apple and Emscripten (WebAssembly)
 
 if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
   message(STATUS "Targeting Emscripten (${VCPKG_TARGET_TRIPLET})")
@@ -431,15 +641,7 @@ elseif(APPLE)
   endif()
 endif()
 
-project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
-# Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
-set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
-
-set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
-set(
-  CMAKE_PROJECT_DESCRIPTION
-  "Mixxx is Free DJ software that gives you everything you need to perform live mixes."
-)
+# R0E - CMake includes
 
 # Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
@@ -447,8 +649,19 @@ set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(CheckSymbolExists)
 include(CheckIncludeFileCXX)
+
+# CMake's cmake_dependent_option(<option> "<help_text>" <value> <depends> <force>)
+# cmake_dependent_option(USE_FOO "Use Foo" ON "USE_BAR;NOT USE_ZOT" OFF)
+#   In this case (USE_BAR) AND (NOT USE_ZOT) == TRUE => ON, else => OFF.
+# https://cmake.org/cmake/help/v3.21/module/CMakeDependentOption.html
+include(CMakeDependentOption)
 include(ExternalProject)
 include(GNUInstallDirs)
+
+# default_option(<option> "<help_text>" <depends>)
+# In contrast to ``cmake_dependent_option`` which disables the option completely
+# if the ``<depends>`` condition evaluates to false, ``default_option`` will only
+# set a default and the value may be overridden by the user.
 include(DefaultOption)
 include(IsStaticLibrary)
 
@@ -469,7 +682,7 @@ if(DEFINED _VCPKG_INSTALLED_DIR)
 endif()
 
 #######################################################################
-# Compilers and toolchains
+# R2E - Compilers and toolchains
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # GNU is GNU GCC
@@ -490,30 +703,14 @@ else()
   set(LLVM_CLANG false)
 endif()
 
-# CMake implicitly sets the variable MSVC to true for Microsoft
-# Visual C++ or another compiler simulating Visual C++.
-# https://cmake.org/cmake/help/latest/variable/MSVC.html
+# R2F - OPTIONS
 
-#######################################################################
-
-set(CMAKE_CXX_STANDARD 20)
-if(MSVC)
-  # Ensure MSVC populates __cplusplus correctly.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
-  # Remove unreferenced code and data
-  # Since c++11 they can safely be removed to speed up linking.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
-
-  if(NOT DEFINED MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION VERSION_LESS 143)
-    message(
-      FATAL_ERROR
-      "MSVC_TOOLSET_VERSION is ${MSVC_TOOLSET_VERSION}.\n"
-      "Mixxx requires the Microsoft Visual C++ Redistributable toolset of version 143 (VS2022) or greater, "
-      "as the VCPKG buildenv is built with this version.\n"
-      "Please use the Visual Studio 2022 toolset therefore!"
-    )
-  endif()
-endif()
+# When using cmake-gui: this one is hidden in Advanced
+option(
+  CMAKE_EXPORT_COMPILE_COMMANDS
+  "Prints all compiler command line options for each to-be-compiled file to compile_commands.json."
+  OFF
+)
 
 # Speed up builds on HDDs and prevent wearing of SDDs
 #
@@ -554,7 +751,7 @@ cmake_dependent_option(
   PROFILING
   "Profiling (e.g. gprof) support"
   OFF
-  "UNIX;NOT APPLE"
+  "EX_UNIX"
   OFF
 )
 if(PROFILING)
@@ -565,6 +762,34 @@ endif()
 #
 # Optimizations
 #
+
+
+# Global unsafe optimizations - NOT for general use, expect undefined behavior, broken functionality
+option(
+  UNSAFE_OPTIMIZATIONS
+  "Global unsafe optimizations: -ffast-math -funroll-loops."
+  OFF
+)
+
+if(UNSAFE_OPTIMIZATIONS)
+  if(MSVC)
+    # Use the fastest floating point math library
+    # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
+    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
+    add_compile_options(/fp:fast)
+  elseif(GNU_GCC OR LLVM_CLANG)
+    # -ffast-math will prevent a performance penalty by denormals
+    # (floating point values almost Zero are treated as Zero)
+    # unfortunately that work only on 64 bit CPUs or with sse2 enabled
+    # The following optimisation flags makes the engine code ~3 times
+    # faster, measured on a Atom CPU.
+    add_compile_options(-ffast-math -funroll-loops)
+  else()
+    message(
+      FATAL_ERROR
+      "UNSAFE_OPTIMIZATIONS=ON, but does not match MSVC OR GNU_GCC OR LLVM_CLANG.")
+  endif()
+endif()
 
 set(
   OPTIMIZE
@@ -593,6 +818,8 @@ message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 #    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 #  endif()
 #endif()
+
+# R3A - Microsoft MSVC
 
 if(MSVC)
   # Microsoft Visual Studio Compiler
@@ -634,12 +861,62 @@ if(MSVC)
     )
   endif()
 
-  if(NOT OPTIMIZE STREQUAL "off")
-    # Use the fastest floating point math library
-    # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
-    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
-    add_compile_options(/fp:fast)
-
+  if(OPTIMIZE STREQUAL "off")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+      # Remove optimize flags set by cmake defaults
+      string(
+        REPLACE
+        "/O2"
+        ""
+        CMAKE_CXX_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE}"
+      )
+      string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+      string(
+        REPLACE
+        "/Ob2"
+        ""
+        CMAKE_CXX_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE}"
+      )
+      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+      add_compile_options(/Od) # this implies /Ob0
+      add_compile_options(/RTC1)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # Remove optimize flags set by cmake defaults
+      string(
+        REPLACE
+        "/O2"
+        ""
+        CMAKE_CXX_FLAGS_RELWITHDEBINFO
+        "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+      )
+      string(
+        REPLACE
+        "/O2"
+        ""
+        CMAKE_C_FLAGS_RELWITHDEBINFO
+        "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
+      )
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      string(
+        REPLACE
+        "/Ob1"
+        ""
+        CMAKE_CXX_FLAGS_RELWITHDEBINFO
+        "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+      )
+      string(
+        REPLACE
+        "/Ob1"
+        ""
+        CMAKE_C_FLAGS_RELWITHDEBINFO
+        "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
+      )
+      add_compile_options(/Od) # this implies /Ob0
+      add_compile_options(/RTC1)
+    endif()
+  else()
     # Suggested for unused code removal
     # http://msdn.microsoft.com/en-us/library/ms235601.aspx
     # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
@@ -718,110 +995,52 @@ if(MSVC)
       # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
     endif()
+  endif()
 
-    if(OPTIMIZE STREQUAL "portable")
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-        # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-        # Define gcc/clang style defines for SSE and SSE2 for compatibility
-        add_compile_definitions("__SSE__" "__SSE2__")
-        # Set compiler option for SSE/SSE2
-        add_compile_options(/arch:SSE2)
-      endif()
-    elseif(OPTIMIZE STREQUAL "native")
-      message("Enabling optimizations for native system, specified by user")
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-        # Target architecture is x86 with SSE and SSE2
-        message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-        # Define gcc/clang style defines for SSE and SSE2 for compatibility
-        add_compile_definitions("__SSE__" "__SSE2__")
-      endif()
-      # Define the target processor instruction and other compiler optimization flags here:
-      # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
-      # add_compile_options(/arch:AVX512)
-      message(
-        FATAL_ERROR
-        "User need to set the MSVC compiler flags for the native processor here!"
-      )
-      add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
-    elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
-        message("Enabling pure x64 instruction set (without AVX etc.)")
-      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-        message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
-      endif()
-    else()
-      message(
-        FATAL_ERROR
-        "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}"
-      )
+  if(OPTIMIZE STREQUAL "portable")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+      # Target architecture is x86 with SSE and SSE2
+      message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
+      # Define gcc/clang style defines for SSE and SSE2 for compatibility
+      add_compile_definitions("__SSE__" "__SSE2__")
+      # Set compiler option for SSE/SSE2
+      add_compile_options(/arch:SSE2)
+    endif()
+  elseif(OPTIMIZE STREQUAL "native")
+    message("Enabling optimizations for native system, specified by user")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+      # Target architecture is x86 with SSE and SSE2
+      message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
+      # Define gcc/clang style defines for SSE and SSE2 for compatibility
+      add_compile_definitions("__SSE__" "__SSE2__")
+    endif()
+    # Define the target processor instruction and other compiler optimization flags here:
+    # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+    # add_compile_options(/arch:AVX512)
+    message(
+      FATAL_ERROR
+      "User need to set the MSVC compiler flags for the native processor here!"
+    )
+    add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
+  elseif(OPTIMIZE STREQUAL "legacy")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
+      message("Enabling pure x64 instruction set (without AVX etc.)")
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
+      message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
     endif()
   else()
-    # OPTIMIZE=off
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-      # Remove optimize flags set by cmake defaults
-      string(
-        REPLACE
-        "/O2"
-        ""
-        CMAKE_CXX_FLAGS_RELEASE
-        "${CMAKE_CXX_FLAGS_RELEASE}"
-      )
-      string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-      string(
-        REPLACE
-        "/Ob2"
-        ""
-        CMAKE_CXX_FLAGS_RELEASE
-        "${CMAKE_CXX_FLAGS_RELEASE}"
-      )
-      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-      add_compile_options(/Od) # this implies /Ob0
-      add_compile_options(/RTC1)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-      # Remove optimize flags set by cmake defaults
-      string(
-        REPLACE
-        "/O2"
-        ""
-        CMAKE_CXX_FLAGS_RELWITHDEBINFO
-        "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
-      )
-      string(
-        REPLACE
-        "/O2"
-        ""
-        CMAKE_C_FLAGS_RELWITHDEBINFO
-        "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
-      )
-      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
-      string(
-        REPLACE
-        "/Ob1"
-        ""
-        CMAKE_CXX_FLAGS_RELWITHDEBINFO
-        "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
-      )
-      string(
-        REPLACE
-        "/Ob1"
-        ""
-        CMAKE_C_FLAGS_RELWITHDEBINFO
-        "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
-      )
-      add_compile_options(/Od) # this implies /Ob0
-      add_compile_options(/RTC1)
-    endif()
+    message(
+      FATAL_ERROR
+      "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}"
+    )
   endif()
-elseif(GNU_GCC OR LLVM_CLANG)
-  if(NOT OPTIMIZE STREQUAL "off")
-    # Common flags to all optimizations.
-    # -ffast-math will prevent a performance penalty by denormals
-    # (floating point values almost Zero are treated as Zero)
-    # unfortunately that work only on 64 bit CPUs or with sse2 enabled
-    # The following optimisation flags makes the engine code ~3 times
-    # faster, measured on a Atom CPU.
-    add_compile_options(-ffast-math -funroll-loops)
+endif()
+
+# R3B - GNU_GCC LLVM_CLANG
+
+if(GNU_GCC OR LLVM_CLANG)
+  if(OPTIMIZE STREQUAL "off")
+  else()
     if(EMSCRIPTEN)
       # Optimize for size + speed when targeting Emscripten/WebAssembly
       # This is recommended as we use asyncify:
@@ -842,6 +1061,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
+
         if(NOT EMSCRIPTEN)
           add_compile_options(-mtune=generic)
         endif()
@@ -899,9 +1119,13 @@ elseif(GNU_GCC OR LLVM_CLANG)
   endif()
 endif()
 
+# R3C - CMAKE
+
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
+
+# R3D - WINDOWS
 
 if(WIN32)
   # Add support for lib prefix on Windows
@@ -939,7 +1163,11 @@ if(MSVC)
     set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}")
     set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}")
   endif()
-else()
+endif()
+
+# R3E - NOT MSVC
+
+if(NOT MSVC)
   # ccache support
   find_program(CCACHE_EXECUTABLE "ccache")
   if(CCACHE_EXECUTABLE)
@@ -1068,6 +1296,8 @@ if(NOT MSVC)
     endif()
   endif()
 endif()
+
+# R3F - CMAKE
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -1974,10 +2204,15 @@ target_include_directories(
   mixxx-lib
   PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src"
 )
-if(UNIX AND NOT APPLE)
+
+# R4A - if(UNIX AND NOT APPLE)
+
+if(EX_UNIX)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
+
+# R4B - (APPLE)
 
 if(APPLE)
   enable_language(OBJC OBJCXX)
@@ -2048,12 +2283,16 @@ if(APPLE)
   endif()
 endif()
 
+# R4C - EMSCRIPTEN
+
 if(EMSCRIPTEN)
   # We need asyncify to support asynchronous calls (e.g. QDialog::exec)
   # when targeting Emscripten/WebAssembly.
   # See https://doc.qt.io/qt-6/wasm.html#asyncify
   target_link_options(mixxx-lib PUBLIC -sASYNCIFY)
 endif()
+
+# R4D - Debug build - QML Debugging
 
 # QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -2064,7 +2303,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   )
 endif()
 
+# R4E - OPTIONS
+
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
+
+# R4F - if(MSVC)
+
 if(MSVC)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC /W4)
@@ -2083,7 +2327,11 @@ if(MSVC)
         _CRT_SECURE_NO_WARNINGS
     )
   endif()
-else()
+endif()
+
+# R5A - if(NOT MSVC)
+
+if(NOT MSVC)
   # TODO: Add -Wtrampolines, not yet supported by clazy
   target_compile_options(
     mixxx-lib
@@ -2102,6 +2350,8 @@ else()
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
 endif()
+
+# R5B - OPTIONS
 
 option(INFO_VECTORIZE "Let the compiler show vectorized loops" OFF)
 if(INFO_VECTORIZE)
@@ -2144,6 +2394,8 @@ target_compile_definitions(
     $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
 )
 
+# R5C - OPTIONS: MACOS
+
 # Mac-specific options
 #
 # These options are OFF by default, and since they are only available on macOS,
@@ -2166,6 +2418,8 @@ if(MACAPPSTORE)
   target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
 endif()
 
+# R5D - OPTIONS: WINDOWS (not options - definitions..)
+
 # Windows-specific options
 if(WIN32)
   # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
@@ -2176,6 +2430,8 @@ if(WIN32)
     target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
   endif()
 endif()
+
+# R5E - INSTALL DIRECTORIES
 
 #
 # Installation directories
@@ -2216,12 +2472,14 @@ elseif(APPLE AND IOS)
     CACHE STRING
     "The iOS app bundle identifier"
   )
-elseif(UNIX)
+elseif(EX_UNIX OR APPLE)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
   set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}")
   set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
   set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
+
+# R5F - IF WINDOWS
 
 if(WIN32)
   target_compile_definitions(mixxx-lib PUBLIC __WINDOWS__)
@@ -2245,7 +2503,11 @@ if(WIN32)
     # Force MSVS to generate a manifest (MSVC2010)
     target_link_options(mixxx-lib PUBLIC /manifest)
   endif()
-elseif(UNIX)
+endif()
+
+# R6A - IF UNIX
+
+if(EX_UNIX OR APPLE)
   if(APPLE)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
@@ -2434,7 +2696,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
 endif()
 
 # Additional Linux-only files
-if(UNIX AND NOT APPLE)
+if(EX_UNIX)
   # .desktop file for KDE/GNOME menu
   install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
@@ -2454,6 +2716,8 @@ if(UNIX AND NOT APPLE)
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
+
+# R6B - INSIDE - UNIX AND NOT APPLE - OPTION
 
   option(
     INSTALL_USER_UDEV_RULES
@@ -2760,6 +3024,8 @@ if(BUILD_TESTING)
   endif()
 endif() # BUILD_TESTING
 
+# R6C - OPTION
+
 #
 # Resources
 #
@@ -2821,18 +3087,12 @@ get_target_property(MIXXX_BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 # uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE MIXXX_BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
 
-if(
-  GIT_COMMIT_DATE
-  AND
-    NOT
-      GIT_COMMIT_DATE
-        MATCHES
-        "^[0-9]*-[0-9]*-[0-9]*T[0-9]*\\:[0-9]*\\:[0-9]*[+-][0-9]*\\:[0-9]*$"
-)
-  message(
-    FATAL_ERROR
-    "GIT_COMMIT_DATE requires strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ"
-  )
+if(GIT_COMMIT_DATE)
+  if(GIT_COMMIT_DATE MATCHES "^[0-9]*-[0-9]*-[0-9]*T[0-9]*\\:[0-9]*\\:[0-9]*[+-][0-9]*\\:[0-9]*$")
+    # Test passed - GIT_COMMIT_DATE follows strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ
+  else()
+    message(FATAL_ERROR "GIT_COMMIT_DATE requires strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ")
+  endif()
 endif()
 
 add_custom_target(
@@ -2933,6 +3193,8 @@ elseif(SQLite3_IS_STATIC)
   # in the static case we need to link SQLite3 uncoditionally
   target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
 endif()
+
+# R6D - OPTIONS
 
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
@@ -3337,7 +3599,7 @@ else()
       target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
     endif()
   endif()
-  if(UNIX AND QGLES2)
+  if((EX_UNIX OR APPLE) AND QGLES2)
     target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
   endif()
   if(APPLE)
@@ -3614,6 +3876,8 @@ if(DEBUG_ASSERTIONS_FATAL)
     )
   endif()
 endif()
+
+# R6E - EMSCRIPTEN
 
 if(EMSCRIPTEN)
   option(
@@ -3952,6 +4216,7 @@ else()
         )
       endif()
     endif()
+
     if(APPLE)
       install(
         IMPORTED_RUNTIME_ARTIFACTS
@@ -3973,6 +4238,40 @@ else()
 
     set(APPLOCAL_COMPONENT_DEFINED true)
   endif()
+endif()
+
+if(APPLE OR WIN32)
+  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
+  # there is no particular reason to look for this file versus any other one in the directory.
+  if(QT6)
+    find_file(
+      QT_TRANSLATION_FILE
+      qt_de.qm
+      PATHS "${Qt6_DIR}/../../translations/Qt6"
+      REQUIRED
+      NO_DEFAULT_PATH
+    )
+  else()
+    find_file(
+      QT_TRANSLATION_FILE
+      qt_de.qm
+      PATHS
+        "${Qt5_DIR}/../../../translations"
+        "${Qt5_DIR}/../../qt5/translations"
+      REQUIRED
+      NO_DEFAULT_PATH
+    )
+  endif()
+  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
+  install(
+    DIRECTORY "${QT_TRANSLATIONS}/"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}/translations"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING
+    REGEX
+    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
 endif()
 
 if(APPLE)
@@ -4005,22 +4304,9 @@ if(APPLE)
     # Used for battery measurements and controlling the screensaver on macOS.
     target_link_libraries(mixxx-lib PRIVATE "-weak_framework IOKit")
   endif()
-elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
-  if(QT6)
-    find_package(X11)
-  else()
-    find_package(X11 REQUIRED)
-    find_package(Qt5 COMPONENTS X11Extras REQUIRED)
-    target_link_libraries(mixxx-lib PUBLIC Qt5::X11Extras)
-  endif()
-  if(${X11_FOUND})
-    target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
-    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
-    target_compile_definitions(mixxx-lib PUBLIC __X11__)
-  endif()
-  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
-  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
-elseif(WIN32)
+endif()
+
+if(WIN32)
   if(Qt_IS_STATIC)
     target_link_libraries(
       mixxx-lib
@@ -4099,38 +4385,21 @@ elseif(WIN32)
   endif()
 endif()
 
-if(APPLE OR WIN32)
-  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
-  # there is no particular reason to look for this file versus any other one in the directory.
+if(EX_UNIX AND NOT EMSCRIPTEN)
   if(QT6)
-    find_file(
-      QT_TRANSLATION_FILE
-      qt_de.qm
-      PATHS "${Qt6_DIR}/../../translations/Qt6"
-      REQUIRED
-      NO_DEFAULT_PATH
-    )
+    find_package(X11)
   else()
-    find_file(
-      QT_TRANSLATION_FILE
-      qt_de.qm
-      PATHS
-        "${Qt5_DIR}/../../../translations"
-        "${Qt5_DIR}/../../qt5/translations"
-      REQUIRED
-      NO_DEFAULT_PATH
-    )
+    find_package(X11 REQUIRED)
+    find_package(Qt5 COMPONENTS X11Extras REQUIRED)
+    target_link_libraries(mixxx-lib PUBLIC Qt5::X11Extras)
   endif()
-  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
-  install(
-    DIRECTORY "${QT_TRANSLATIONS}/"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}/translations"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING
-    REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
+  if(${X11_FOUND})
+    target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
+    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
+    target_compile_definitions(mixxx-lib PUBLIC __X11__)
+  endif()
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
 endif()
 
 add_library(
@@ -4194,7 +4463,7 @@ add_library(
 )
 
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
-if(UNIX)
+if(EX_UNIX OR APPLE OR EMSCRIPTEN)
   target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
 elseif(MSVC)
   # Causes the cmath headers to declare M_PI and friends.
@@ -4281,19 +4550,21 @@ cmake_dependent_option(
   BATTERY
   "Battery meter support"
   ON
-  "WIN32 OR UNIX"
+  "WIN32 OR EX_UNIX OR MACOS; NOT EMSCRIPTEN"
   OFF
 )
 if(BATTERY)
   if(WIN32)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterywindows.cpp)
   elseif(APPLE)
+    # This if has been made unreachable
     if(IOS)
       message(FATAL_ERROR "Battery support is not implemented for iOS")
     else()
       target_sources(mixxx-lib PRIVATE src/util/battery/batterymac.cpp)
     endif()
-  elseif(UNIX)
+  elseif(EX_UNIX OR APPLE)
+    # This if has been made unreachable
     if(EMSCRIPTEN)
       message(
         FATAL_ERROR
@@ -4355,13 +4626,54 @@ option(SANITIZE_THREAD "Clang Thread Sanitizer" OFF)
 if(SANITIZE_THREAD)
   list(APPEND SANITIZERS "thread")
 endif()
+option(SANITIZE_FLOATDIVIDEBYZERO "Clang Floating Point Divizion By Zero Sanitizer" OFF)
+if(SANITIZE_FLOATDIVIDEBYZERO)
+  list(APPEND SANITIZERS "float-divide-by-zero")
+endif()
+
 if(NOT SANITIZERS STREQUAL "")
   if(NOT (LLVM_CLANG OR GNU_GCC))
     message(FATAL_ERROR "Sanitizers are only available on Clang or GCC")
   endif()
-  list(JOIN SANITIZERS "," SANITZERS_JOINED)
-  target_compile_options(mixxx-lib PUBLIC -fsanitize=${SANITZERS_JOINED})
-  target_link_options(mixxx-lib PUBLIC -fsanitize=${SANITZERS_JOINED})
+  list(JOIN SANITIZERS "," SANITIZERS_JOINED)
+  target_compile_options(mixxx-lib PUBLIC -fsanitize=${SANITIZERS_JOINED})
+  target_link_options(mixxx-lib PUBLIC -fsanitize=${SANITIZERS_JOINED})
+endif()
+
+# For Clang floating point debugging
+option(FROUNDINGMATH "Clang floating-point force honor dynamically-set\
+rounding mode to mixxx-lib target" OFF)
+if(FROUNDINGMATH)
+  target_compile_options(mixxx-lib PUBLIC -frounding-math)
+  target_link_options(mixxx-lib PUBLIC -frounding-math)
+endif()
+
+# Add typical debugging option
+option(OPTIMIZE_DEBUG "Optimizes for debugging by -Og or /Od" OFF)
+if(OPTIMIZE_DEBUG)
+  if(MSVC)
+    add_compile_options(/Od)
+  elseif(LLVM_CLANG OR GNU_GCC)
+    add_compile_options(-Og)
+  else()
+    message(
+      FATAL_ERROR
+      "OPTIMIZE_DEBUG is supported by MSVC OR LLVM_CLANG OR GNU_GCC."
+    )
+  endif()
+endif()
+
+# Append compiler comand line option to all files
+# It is unlikely to be overriden when placing here, by design CUSTOM_COMPILER_COMMAND_LINE_OPTIONS will.
+set(
+  CUSTOM_GLOBAL_APPEND
+  ""
+  CACHE STRING
+  "List of compiler command line options separated by semicolons to append for all source files."
+)
+
+if(CUSTOM_GLOBAL_APPEND)
+	add_compile_options("${CUSTOM_GLOBAL_APPEND}")
 endif()
 
 # CoreAudio MP3/AAC Decoder
@@ -4397,7 +4709,7 @@ find_package(MP4)
 find_package(MP4v2)
 # It is enabled by default on Linux only, because other targets have other
 # solutions. It requires MP4 or MP4v2.
-default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND")
+default_option(FAAD "FAAD AAC audio file decoder support" "EX_UNIX;MP4_FOUND OR MP4v2_FOUND")
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(
