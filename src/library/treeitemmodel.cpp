@@ -171,16 +171,28 @@ void TreeItemModel::insertTreeItemRows(
         std::vector<std::unique_ptr<TreeItem>>&& rows,
         int position,
         const QModelIndex& parent) {
+    qWarning() << "  ~~ insertTreeItemRows (" << rows.size()
+               << ") into" << parent
+               << "at pos" << position;
     if (rows.empty()) {
+        return;
+    }
+    if (!parent.isValid()) {
+        qWarning() << "  ~~! parent invalid, abort";
         return;
     }
 
     TreeItem* pParentItem = getItem(parent);
     DEBUG_ASSERT(pParentItem != nullptr);
+    qWarning() << "  ~~ parent label:" << pParentItem->getLabel();
 
+    qWarning() << "  ~~ beginInsertRows";
     beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
+    qWarning() << "  ~~ insertChildren";
     pParentItem->insertChildren(position, std::move(rows));
+    qWarning() << "  ~~ endInsertRows";
     endInsertRows();
+    qWarning() << "  ~~ insertTreeItemRows DONE";
 }
 
 bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent) {
