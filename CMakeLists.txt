@@ -43,24 +43,18 @@
 cmake_minimum_required(VERSION 3.21)
 # lint_cmake: -readability/wonkycase
 
-message(
-  STATUS
-  "CMAKE_VERSION: ${CMAKE_VERSION}"
-)
+message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
 
 # R1A - CMAKE
 
 # CMake project, also sets CMAKE_PROJECT_NAME, CMAKE_PROJECT_VERSION, etc.
 project(
   mixxx
-  VERSION
-    2.7.0
+  VERSION 2.7.0
   DESCRIPTION
     "Mixxx is Free DJ software that gives you everything you need to perform live mixes."
-  HOMEPAGE_URL
-    "https://www.mixxx.org"
-  LANGUAGES
-    C CXX
+  HOMEPAGE_URL "https://www.mixxx.org"
+  LANGUAGES C CXX
 )
 
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
@@ -160,39 +154,27 @@ if(UNIX)
   if(APPLE)
     if(IOS)
       # ios - exclusive as is
-      message(
-        STATUS
-        "Detected operating system: APPLE -> IOS."
-      )
+      message(STATUS "Detected operating system: APPLE -> IOS.")
     else()
-      set(MACOS)
+      set(MACOS true)
       # MACOS - exclusive as is
-      message(
-        STATUS
-        "Detected operating system: APPLE -> MACOS."
-      )
+      message(STATUS "Detected operating system: APPLE -> MACOS.")
     endif()
   else()
-    set(EX_UNIX)
+    set(EX_UNIX true)
 
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-      set(LINUX)
-      message(
-        STATUS
-        "Detected operating system: LINUX."
-      )
+      set(LINUX true)
+      message(STATUS "Detected operating system: LINUX.")
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
-      set(BSD)
-      message(
-        STATUS
-        "Detected operating system: BSD."
-    )
+      set(BSD true)
+      message(STATUS "Detected operating system: BSD.")
 
-    # BUG: This route is bad for cross-compilation - if CMAKE_SYSTEM_NAME is not defined, resolves to Linux or BSD depending which system is doing the cross-compilation
+      # BUG: This route is bad for cross-compilation - if CMAKE_SYSTEM_NAME is not defined, resolves to Linux or BSD depending which system is doing the cross-compilation
     elseif(NOT DEFINED CMAKE_SYSTEM_NAME)
       message(
-          WARNING
-          "CMAKE_SYSTEM_NAME is NOT set (define it for cross-compilation)."
+        WARNING
+        "CMAKE_SYSTEM_NAME is NOT set (define it for cross-compilation)."
       )
       execute_process(
         COMMAND uname -o
@@ -201,17 +183,11 @@ if(UNIX)
       )
 
       if(UNAME_O MATCHES "^.*Linux$")
-        set(LINUX)
-        message(
-          STATUS
-          "Detected operating system: LINUX."
-        )
+        set(LINUX true)
+        message(STATUS "Detected operating system: LINUX.")
       elseif(UNAME_O MATCHES "^.*BSD$")
-        set(BSD)
-        message(
-          STATUS
-          "Detected operating system: BSD."
-        )
+        set(BSD true)
+        message(STATUS "Detected operating system: BSD.")
       endif()
     endif()
   endif()
@@ -237,24 +213,22 @@ endif()
 # When using CUSTOM_COPTS - getting "predefined macro was enabled in PCH file but is currently disabled" error means in CUSTOM_COPTS_FILES .cpp was added but it's .h was not included.
 set(
   CUSTOM_COPTS_FILES
-    ""
+  ""
   CACHE STRING
-    "List of source files (relative to $PWD (working directory) - f. e. ../src/file.cpp) separated by semicolons to compile with compiler command line options set in CUSTOM_COPTS."
+  "List of source files (relative to $PWD (working directory) - f. e. ../src/file.cpp) separated by semicolons to compile with compiler command line options set in CUSTOM_COPTS."
 )
 
 set(
   CUSTOM_COPTS
-    ""
+  ""
   CACHE STRING
-    "List of compiler command line options separated by semicolons to append for source files listed in CUSTOM_COPTS_FILES. Designed to append to the very end, check by enabling CMAKE_EXPORT_COMPILE_COMMANDS."
+  "List of compiler command line options separated by semicolons to append for source files listed in CUSTOM_COPTS_FILES. Designed to append to the very end, check by enabling CMAKE_EXPORT_COMPILE_COMMANDS."
 )
 
 if(CUSTOM_COPTS AND CUSTOM_COPTS_FILES)
   set_source_files_properties(
     "${CUSTOM_COPTS_FILES}"
-    PROPERTIES
-      COMPILE_OPTIONS
-        "${CUSTOM_COPTS}"
+    PROPERTIES COMPILE_OPTIONS "${CUSTOM_COPTS}"
   )
 endif()
 
@@ -763,7 +737,6 @@ endif()
 # Optimizations
 #
 
-
 # Global unsafe optimizations - NOT for general use, expect undefined behavior, broken functionality
 option(
   UNSAFE_OPTIMIZATIONS
@@ -787,7 +760,8 @@ if(UNSAFE_OPTIMIZATIONS)
   else()
     message(
       FATAL_ERROR
-      "UNSAFE_OPTIMIZATIONS=ON, but does not match MSVC OR GNU_GCC OR LLVM_CLANG.")
+      "UNSAFE_OPTIMIZATIONS=ON, but does not match MSVC OR GNU_GCC OR LLVM_CLANG."
+    )
   endif()
 endif()
 
@@ -1029,10 +1003,7 @@ if(MSVC)
       message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
     endif()
   else()
-    message(
-      FATAL_ERROR
-      "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}"
-    )
+    message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
   endif()
 endif()
 
@@ -2717,7 +2688,7 @@ if(EX_UNIX)
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
 
-# R6B - INSIDE - UNIX AND NOT APPLE - OPTION
+  # R6B - INSIDE - UNIX AND NOT APPLE - OPTION
 
   option(
     INSTALL_USER_UDEV_RULES
@@ -3088,10 +3059,17 @@ get_target_property(MIXXX_BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 configure_file(src/version.h.in src/version.h @ONLY)
 
 if(GIT_COMMIT_DATE)
-  if(GIT_COMMIT_DATE MATCHES "^[0-9]*-[0-9]*-[0-9]*T[0-9]*\\:[0-9]*\\:[0-9]*[+-][0-9]*\\:[0-9]*$")
+  if(
+    GIT_COMMIT_DATE
+      MATCHES
+      "^[0-9]*-[0-9]*-[0-9]*T[0-9]*\\:[0-9]*\\:[0-9]*[+-][0-9]*\\:[0-9]*$"
+  )
     # Test passed - GIT_COMMIT_DATE follows strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ
   else()
-    message(FATAL_ERROR "GIT_COMMIT_DATE requires strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ")
+    message(
+      FATAL_ERROR
+      "GIT_COMMIT_DATE requires strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ"
+    )
   endif()
 endif()
 
@@ -4626,7 +4604,11 @@ option(SANITIZE_THREAD "Clang Thread Sanitizer" OFF)
 if(SANITIZE_THREAD)
   list(APPEND SANITIZERS "thread")
 endif()
-option(SANITIZE_FLOATDIVIDEBYZERO "Clang Floating Point Divizion By Zero Sanitizer" OFF)
+option(
+  SANITIZE_FLOATDIVIDEBYZERO
+  "Clang Floating Point Divizion By Zero Sanitizer"
+  OFF
+)
 if(SANITIZE_FLOATDIVIDEBYZERO)
   list(APPEND SANITIZERS "float-divide-by-zero")
 endif()
@@ -4641,8 +4623,12 @@ if(NOT SANITIZERS STREQUAL "")
 endif()
 
 # For Clang floating point debugging
-option(FROUNDINGMATH "Clang floating-point force honor dynamically-set\
-rounding mode to mixxx-lib target" OFF)
+option(
+  FROUNDINGMATH
+  "Clang floating-point force honor dynamically-set\
+rounding mode to mixxx-lib target"
+  OFF
+)
 if(FROUNDINGMATH)
   target_compile_options(mixxx-lib PUBLIC -frounding-math)
   target_link_options(mixxx-lib PUBLIC -frounding-math)
@@ -4663,8 +4649,8 @@ if(OPTIMIZE_DEBUG)
   endif()
 endif()
 
-# Append compiler comand line option to all files
-# It is unlikely to be overriden when placing here, by design CUSTOM_COMPILER_COMMAND_LINE_OPTIONS will.
+# Append compiler command line option to all files
+# It is unlikely to be overridden when placing here, by design CUSTOM_COMPILER_COMMAND_LINE_OPTIONS will.
 set(
   CUSTOM_GLOBAL_APPEND
   ""
@@ -4673,7 +4659,7 @@ set(
 )
 
 if(CUSTOM_GLOBAL_APPEND)
-	add_compile_options("${CUSTOM_GLOBAL_APPEND}")
+  add_compile_options("${CUSTOM_GLOBAL_APPEND}")
 endif()
 
 # CoreAudio MP3/AAC Decoder
