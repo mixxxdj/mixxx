@@ -126,6 +126,7 @@ EncoderPointer EncoderFactory::createEncoder(
         DEBUG_ASSERT(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);
     }
+    pEncoder->initResampler();
     return pEncoder;
 }
 
@@ -154,4 +155,21 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
         DEBUG_ASSERT(false);
         return std::make_shared<EncoderWaveSettings>(pConfig, ENCODING_WAVE);
     }
+}
+
+void Encoder::initResampler() {
+    m_pRecResampler = std::make_unique<EngineBufferScaleSRC>();
+}
+
+double Encoder::resampleBufferOneShot(
+        const CSAMPLE* pInputBuffer,
+        CSAMPLE* pOutputBuffer,
+        SINT iInputBufferSize, /*#samples*/
+        double baseRate) {
+    double outputFramesGenerated{};
+    outputFramesGenerated = m_pRecResampler->scaleBufferOneShot(pInputBuffer,
+            pOutputBuffer,
+            iInputBufferSize,
+            baseRate); // needs to consume all input frames.
+    return outputFramesGenerated;
 }
