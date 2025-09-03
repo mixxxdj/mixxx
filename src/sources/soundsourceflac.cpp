@@ -591,7 +591,7 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         error = "STREAM_DECODER_ERROR_STATUS_MISSING_FRAME";
         break;
     case FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS:
-        error = "STREAM_DECODER_ERROR_STATUS_MISSING_FRAME";
+        error = "FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS";
         break;
 #endif
     }
