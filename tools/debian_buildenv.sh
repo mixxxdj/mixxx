@@ -24,7 +24,7 @@ case "$1" in
         esac
 
         case "${DISTRIB_CODENAME}" in
-            jammy|noble|oracular|bullseye|trixie|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
+            jammy|noble|oracular|bullseye|bookworm|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
                 # qt6-svg-plugins not available
                 ;;
             *)
