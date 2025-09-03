@@ -10,8 +10,8 @@ case "$1" in
         ;;
 
     setup)
-        source /etc/lsb-release 2>/dev/null
-        case "${DISTRIB_CODENAME}" in
+        source /etc/os-release 2>/dev/null
+        case "${VERSION_CODENAME}" in
             jammy|bullseye|victoria|vera|vanessa|virginia) # <= Ubuntu 22.04.5 LTS
                 PACKAGES_EXTRA=(
                     libqt6shadertools6-dev
@@ -23,7 +23,7 @@ case "$1" in
                 )
         esac
 
-        case "${DISTRIB_CODENAME}" in
+        case "${VERSION_CODENAME}" in
             jammy|noble|oracular|bullseye|bookworm|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
                 # qt6-svg-plugins not available
                 ;;
