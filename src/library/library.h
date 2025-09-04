@@ -76,6 +76,7 @@ class Library: public QObject {
 
     /// Needed for exposing models to QML
     LibraryTableModel* trackTableModel() const;
+    SidebarModel* sidebarModel() const;
 
     bool isTrackIdInCurrentLibraryView(const TrackId& trackId);
 
