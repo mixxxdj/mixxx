@@ -1319,6 +1319,7 @@ add_library(
   src/library/dao/cuedao.cpp
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
+  src/library/dao/genredao.cpp
   src/library/dao/playlistdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
@@ -1332,6 +1333,8 @@ add_library(
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackinfomulti.cpp
   src/library/dlgtrackinfomulti.ui
+  src/library/dlgtrackinfomultiexperimental.cpp
+  src/library/dlgtrackinfomultiexperimental.ui
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
@@ -1384,6 +1387,8 @@ add_library(
   src/library/tabledelegates/checkboxdelegate.cpp
   src/library/tabledelegates/colordelegate.cpp
   src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/genredelegate.cpp
+  src/library/tabledelegates/genrelineeditor.cpp
   src/library/tabledelegates/keydelegate.cpp
   src/library/tabledelegates/locationdelegate.cpp
   src/library/tabledelegates/multilineeditdelegate.cpp
@@ -1404,6 +1409,10 @@ add_library(
   src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/genre/genrefeature.cpp
+  src/library/trackset/genre/genrefeaturehelper.cpp
+  src/library/trackset/genre/genrestorage.cpp
+  src/library/trackset/genre/genretablemodel.cpp
   src/library/trackset/playlistfeature.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp

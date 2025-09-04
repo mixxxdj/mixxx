@@ -14,12 +14,17 @@
 #include "util/tapfilter.h"
 #include "widget/wcolorpickeraction.h"
 
+class GenreDao;
 class TrackModel;
 class WColorPickerAction;
 class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
 class DlgTagFetcher;
+
+class QScrollArea;
+class QHBoxLayout;
+class QWidget;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -31,8 +36,12 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
             UserSettingsPointer pUserSettings,
+            GenreDao& genreDao,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
+
+    void setGenreData(const QVariantList& genreData);
+    void setupGenreCompleter();
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
@@ -94,6 +103,17 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void clear();
     void init();
 
+    // Inline Genre Tags UI
+    void genreTagsInitUi();
+    void genreSetTags(const QStringList& names);
+    QStringList genreTags() const {
+        return m_genreTagNames;
+    }
+    QWidget* genreCreateChip(const QString& name);
+    void genreRebuildChips();
+    void genreAddTag(const QString& name);
+    void genreRemoveTag(const QString& name);
+
     void updateKeyText();
     void displayKeyText();
 
@@ -112,7 +132,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateSpinBpmFromBeats();
 
     const UserSettingsPointer m_pUserSettings;
-
+    GenreDao& m_genreDao;
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
@@ -129,10 +149,19 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     QHash<QString, QWidget*> m_propertyWidgets;
 
+    // Genre tag UI state
+    QScrollArea* m_genreTagsArea = nullptr;
+    QWidget* m_genreTagsContainer = nullptr;
+    QHBoxLayout* m_genreTagsLayout = nullptr;
+    QStringList m_genreTagNames;
+    QSet<QString> m_genreSeenLower;
+
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+    QVariantList m_genreData;
+    QString m_rawGenreString;
 };
