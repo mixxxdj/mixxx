@@ -50,6 +50,9 @@ class CmdlineArgs final {
     bool isQml() const {
         return m_qml;
     }
+    bool isAwareOfRisk() const {
+        return m_awareOfRisk;
+    }
 #endif
     bool getSafeMode() const { return m_safeMode; }
     bool useColors() const {
@@ -106,6 +109,7 @@ class CmdlineArgs final {
     bool m_developer; // Developer Mode
 #ifdef MIXXX_USE_QML
     bool m_qml;
+    bool m_awareOfRisk;
 #endif
     bool m_safeMode;
     bool m_useLegacyVuMeter;
