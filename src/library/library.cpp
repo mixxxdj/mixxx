@@ -28,6 +28,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
+#include "library/trackset/genre/genrefeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
@@ -76,6 +77,7 @@ Library::Library(
           m_pAutoDJFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
+          m_pGenreFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
@@ -121,6 +123,9 @@ Library::Library(
 
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+
+    m_pGenreFeature = new GenreFeature(this, m_pConfig);
+    addFeature(m_pGenreFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
@@ -161,6 +166,10 @@ Library::Library(
             &AnalysisFeature::analyzeTracks);
     connect(m_pCrateFeature,
             &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
+    connect(m_pGenreFeature,
+            &GenreFeature::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
     connect(this,
@@ -604,6 +613,10 @@ void Library::slotCreatePlaylist() {
 
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
+}
+
+void Library::slotCreateGenre() {
+    m_pGenreFeature->slotCreateGenre();
 }
 
 void Library::onSkinLoadFinished() {

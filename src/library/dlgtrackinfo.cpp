@@ -1,12 +1,20 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QColor>
+#include <QCompleter>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QScrollArea>
 #include <QSignalBlocker>
 #include <QStyleFactory>
+#include <QToolButton>
 #include <QtDebug>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dao/genredao.h"
 #include "library/dlgtagfetcher.h"
 #include "library/library_prefs.h"
 #include "library/trackmodel.h"
@@ -38,11 +46,13 @@ const QString kBpmPropertyName = QStringLiteral("bpm");
 
 DlgTrackInfo::DlgTrackInfo(
         UserSettingsPointer pUserSettings,
+        GenreDao& genreDao,
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
           m_pUserSettings(std::move(pUserSettings)),
+          m_genreDao(genreDao),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
@@ -57,8 +67,48 @@ DlgTrackInfo::DlgTrackInfo(
     init();
 }
 
+void DlgTrackInfo::setGenreData(const QVariantList& genreData) {
+    m_genreData = genreData;
+    // qDebug() << "[DlgTrackInfo] -> setGenreData passing genreData contains:" << m_genreData;
+    setupGenreCompleter();
+}
+
+void DlgTrackInfo::setupGenreCompleter() {
+    QStringList genreNames = m_genreDao.getGenreNameList();
+
+    QCompleter* genreCompleter = new QCompleter(genreNames, this);
+    genreCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    genreCompleter->setFilterMode(Qt::MatchContains);
+    genreCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    genreSelectorEdit->setCompleter(genreCompleter);
+
+    connect(genreSelectorEdit,
+            &QLineEdit::textEdited,
+            this,
+            [this, genreCompleter](const QString& text) {
+                genreCompleter->setCompletionPrefix(text.trimmed());
+                genreCompleter->setWidget(genreSelectorEdit);
+
+                if (!text.trimmed().isEmpty()) {
+                    QTimer::singleShot(0, this, [genreCompleter]() {
+                        genreCompleter->complete();
+                    });
+                } else {
+                    genreCompleter->popup()->hide();
+                }
+            });
+
+    connect(genreCompleter,
+            QOverload<const QString&>::of(&QCompleter::activated),
+            this,
+            [this](const QString& selected) {
+                genreSelectorEdit->setText(selected.trimmed());
+            });
+}
+
 void DlgTrackInfo::init() {
     setupUi(this);
+    genreTagsInitUi();
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
     // Store tag edit widget pointers to allow focusing a specific widgets when
@@ -103,6 +153,40 @@ void DlgTrackInfo::init() {
         btnNext->hide();
         btnPrev->hide();
     }
+    // Genre-add button
+    connect(genreAddButton, &QPushButton::clicked, this, [this]() {
+        QString genreToAdd = genreSelectorEdit->text().trimmed();
+        if (genreToAdd.isEmpty()) {
+            return;
+        } else {
+            genreAddTag(genreToAdd);
+            genreSelectorEdit->clear();
+        }
+
+        //// Get current genres
+        // QStringList genreParts = txtGenre->text().split(';', Qt::SkipEmptyParts);
+        // QStringList cleanedGenres;
+        // QSet<QString> seen; // for duplicate tracking, case-insensitive
+        // for (const QString& genre : std::as_const(genreParts)) {
+        //     QString trimmed = genre.trimmed();
+        //     QString lowered = trimmed.toLower();
+        //     if (!seen.contains(lowered)) {
+        //         cleanedGenres << trimmed;
+        //         seen.insert(lowered);
+        //     }
+        // }
+        // genreParts = cleanedGenres;
+
+        //// Only add if not already there
+        // if (!genreParts.contains(genreToAdd, Qt::CaseInsensitive)) {
+        //     genreParts.append(genreToAdd);
+        //     QString updatedText = genreParts.join("; ");
+        //     txtGenre->setText(updatedText);
+        //     txtGenre->setCursorPosition(updatedText.length());
+        // }
+
+        // genreSelectorEdit->clear();
+    });
 
     // QDialog buttons
     connect(btnApply,
@@ -205,14 +289,15 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
-    connect(txtGenre,
-            &QLineEdit::editingFinished,
-            this,
-            [this]() {
-                txtGenre->setText(txtGenre->text().trimmed());
-                m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text());
-            });
+    // connect(txtGenre,
+    //         //&QLineEdit::editingFinished,
+    //         &QLineEdit::textChanged,
+    //         this,
+    //         [this]() {
+    //             const QString editedText = txtGenre->text().trimmed();
+    //             const QString genreWithIds = m_genreDao.getIdsForGenreNames(editedText);
+    //             m_trackRecord.refMetadata().refTrackInfo().setGenre(genreWithIds);
+    //         });
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -407,8 +492,20 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
+    m_rawGenreString =
+            m_trackRecord.getMetadata().getTrackInfo().getGenre();
+    const QString display = m_genreDao.getDisplayGenreNameForGenreID(m_rawGenreString);
+    QStringList names;
+    QStringList parts = display.split(';', Qt::SkipEmptyParts);
+    for (const auto& part : std::as_const(parts)) {
+        const QString t = part.trimmed();
+        if (!t.isEmpty()) {
+            names << t;
+        }
+    }
+    genreSetTags(names);
+    // txtGenre->setText(
+    //         m_genreDao.getDisplayGenreNameForGenreID(m_rawGenreString));
     txtComposer->setText(
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
     txtGrouping->setText(
@@ -907,4 +1004,192 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+}
+
+void DlgTrackInfo::genreTagsInitUi() {
+    auto* host = txtGenre;
+    auto* hostLayout = new QHBoxLayout(host);
+    hostLayout->setContentsMargins(0, 0, 0, 0);
+    hostLayout->setSpacing(0);
+
+    m_genreTagsArea = new QScrollArea(host);
+    m_genreTagsArea->setWidgetResizable(true);
+    m_genreTagsArea->setFrameShape(QFrame::NoFrame);
+    m_genreTagsArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_genreTagsArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_genreTagsArea->viewport()->setAutoFillBackground(false);
+    m_genreTagsArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    // Dark box + thin horizontal scrollbar
+    m_genreTagsArea->setStyleSheet(
+            "QScrollArea {"
+            //"  background-color: #1a1a1a;"
+            "  border: 1px solid #373737;"
+            "  border-radius: 8px;"
+            "}"
+            "QScrollArea > QWidget { background: transparent; }"
+            "QScrollArea > QWidget > QWidget { background: transparent; }"
+            "QScrollArea QScrollBar:horizontal {"
+            "  height: 6px; background: transparent; margin: 0 6px; border: none;"
+            "}"
+            "QScrollArea QScrollBar::handle:horizontal {"
+            "  background: #6a6a6a; border-radius: 3px; min-width: 24px;"
+            "}"
+            "QScrollArea QScrollBar::add-line:horizontal,"
+            "QScrollArea QScrollBar::sub-line:horizontal { width: 0; height: 0; }"
+            "QScrollArea QScrollBar::add-page:horizontal,"
+            "QScrollArea QScrollBar::sub-page:horizontal { background: transparent; }");
+
+    m_genreTagsContainer = new QWidget(m_genreTagsArea);
+    m_genreTagsLayout = new QHBoxLayout(m_genreTagsContainer);
+    m_genreTagsLayout->setContentsMargins(8, 8, 8, 8);
+    m_genreTagsLayout->setSpacing(8);
+    m_genreTagsLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+
+    m_genreTagsArea->setWidget(m_genreTagsContainer);
+    hostLayout->addWidget(m_genreTagsArea);
+    host->setLayout(hostLayout);
+}
+
+QWidget* DlgTrackInfo::genreCreateChip(const QString& name) {
+    auto* chip = new QFrame(m_genreTagsContainer);
+    chip->setObjectName(QStringLiteral("genreChip"));
+    chip->setFrameShape(QFrame::NoFrame);
+    chip->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+    auto* lay = new QHBoxLayout(chip);
+    lay->setContentsMargins(10, 3, 10, 3);
+    lay->setSpacing(6);
+
+    auto* lbl = new QLabel(name, chip);
+    lbl->setAlignment(Qt::AlignVCenter);
+    lbl->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+    auto* btn = new QToolButton(chip);
+    btn->setAutoRaise(true);
+    btn->setCursor(Qt::PointingHandCursor);
+    btn->setText(QString::fromUtf8("\u00D7")); // × symbol
+    btn->setFixedSize(QSize(16, 16));
+
+    btn->setFixedSize(QSize(18, 18));
+    btn->setStyleSheet(
+            "QToolButton {"
+            "  color: #FFFFFF;"
+            "  font-size: 14px;"
+            "  border: 0;"
+            "  padding: 0;"
+            "  margin-left: 4px;"
+            "}"
+            "QToolButton:hover {"
+            "  background: rgba(255,255,255,36);"
+            "  border-radius: 8px;"
+            "}"
+            "QToolButton:pressed {"
+            "  background: rgba(255,255,255,64);"
+            "  border-radius: 8px;"
+            "}");
+    connect(btn, &QToolButton::clicked, this, [this, name] {
+        genreRemoveTag(name);
+    });
+
+    lay->addWidget(lbl);
+    lay->addWidget(btn);
+    chip->setLayout(lay);
+
+    chip->setStyleSheet(
+            "QFrame#genreChip {"
+            "  background-color: #3b3b3b;"
+            "  color: #ffffff;"
+            "  border: 1px solid #5a5a5a;"
+            "  border-radius: 12px;"
+            "}"
+            "QFrame#genreChip QLabel { border: 0; color: #ffffff; }");
+
+    return chip;
+}
+
+void DlgTrackInfo::genreRebuildChips() {
+    QLayoutItem* it = nullptr;
+    while ((it = m_genreTagsLayout->takeAt(0))) {
+        if (QWidget* w = it->widget()) {
+            w->deleteLater();
+        }
+        delete it;
+    }
+
+    int maxH = 0;
+    for (const QString& t : std::as_const(m_genreTagNames)) {
+        QWidget* chip = genreCreateChip(t);
+        m_genreTagsLayout->addWidget(chip);
+        maxH = qMax(maxH, chip->sizeHint().height());
+    }
+    m_genreTagsLayout->addStretch();
+
+    const int vmarg = m_genreTagsLayout->contentsMargins().top() +
+            m_genreTagsLayout->contentsMargins().bottom();
+    const int scrollbarH = 6;
+    const int targetH = (maxH > 0 ? maxH : 0) + vmarg + scrollbarH + 2;
+    m_genreTagsArea->setFixedHeight(targetH > 0 ? targetH : 28);
+}
+
+void DlgTrackInfo::genreAddTag(const QString& name) {
+    const QString t = name.trimmed();
+    if (t.isEmpty()) {
+        return;
+    }
+    const QString low = t.toLower();
+    if (m_genreSeenLower.contains(low)) {
+        return;
+    }
+
+    m_genreSeenLower.insert(low);
+    m_genreTagNames << t;
+    genreRebuildChips();
+
+    const QString ids = m_genreDao.getIdsForGenreNames(m_genreTagNames.join("; "));
+    m_trackRecord.refMetadata().refTrackInfo().setGenre(ids);
+}
+
+void DlgTrackInfo::genreSetTags(const QStringList& names) {
+    m_genreTagNames.clear();
+    m_genreSeenLower.clear();
+    for (const QString& raw : names) {
+        QString t = raw.trimmed();
+        if (t.isEmpty()) {
+            continue;
+        }
+        const QString low = t.toLower();
+        if (m_genreSeenLower.contains(low)) {
+            continue;
+        }
+        m_genreSeenLower.insert(low);
+        m_genreTagNames.append(std::move(t));
+    }
+    genreRebuildChips();
+
+    // Update model (IDs via GenreDao)
+    const QString ids = m_genreDao.getIdsForGenreNames(m_genreTagNames.join("; "));
+    m_trackRecord.refMetadata().refTrackInfo().setGenre(ids);
+    const QList<GenreId> genreIds = m_genreDao.getGenreIdsFromIdString(ids);
+    m_genreDao.updateGenreTracksForTrack(m_trackRecord.getId(), genreIds);
+}
+
+void DlgTrackInfo::genreRemoveTag(const QString& name) {
+    const QString low = name.trimmed().toLower();
+    if (!m_genreSeenLower.contains(low)) {
+        return;
+    }
+
+    m_genreSeenLower.remove(low);
+    for (qsizetype i = 0; i < m_genreTagNames.size(); ++i) {
+        const QString tagLower = m_genreTagNames[i].trimmed().toLower();
+        if (tagLower == low) {
+            m_genreTagNames.removeAt(i);
+            break;
+        }
+    }
+    genreRebuildChips();
+
+    const QString ids = m_genreDao.getIdsForGenreNames(m_genreTagNames.join("; "));
+    m_trackRecord.refMetadata().refTrackInfo().setGenre(ids);
 }
