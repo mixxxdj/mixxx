@@ -214,7 +214,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     const SINT bufferSizeFrames = getOutputSignal().samples2frames(buf_size);
     const double rate_delta = rate_diff / bufferSizeFrames;
     // use Gaussian sum formula (n(n+1))/2 for
-    //for (int j = 0; j < bufferSizeFrames; ++j) {
+    // for (int j = 0; j < bufferSizeFrames; ++j) {
     //    frames += (j * rate_delta) + rate_old;
     //}
     frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
