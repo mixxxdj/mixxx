@@ -1175,6 +1175,8 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     case kHideRemoveShortcutKey: {
         if (event->modifiers() == kHideRemoveShortcutModifier) {
             hideOrRemoveSelectedTracks();
+        } else if (event->modifiers().testFlag(Qt::ShiftModifier)) {
+            slotDeleteTracksFromDisk();
         }
         return;
     }
