@@ -67,6 +67,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
+    void slotCommentEditModeChanged(QAbstractButton* pBtn);
+
     void slotOpenInFileBrowser();
 
   private:
