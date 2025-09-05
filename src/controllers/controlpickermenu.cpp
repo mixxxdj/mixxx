@@ -160,7 +160,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     }
     pMixerMenu->addSeparator();
     // Volume / Pfl controls
-    addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), pMixerMenu, true, true);
+    addDeckAndSamplerControl("volume",
+            tr("Volume"),
+            tr("Volume Fader"),
+            pMixerMenu,
+#ifdef __STEM__
+            true,
+#endif
+            true);
     addDeckAndSamplerControl("volume_set_one",
             tr("Full Volume"),
             tr("Set to full volume"),
@@ -175,7 +182,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Track Gain"),
             tr("Track Gain knob"),
             pMixerMenu,
+#ifdef __STEM__
             true,
+#endif
             true);
     addDeckAndSamplerControl("mute",
             tr("Mute"),
@@ -1633,7 +1642,9 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
         const QString& controlDescription,
         QMenu* pMenu,
         bool deckControls,
+#ifdef __STEM__
         bool deckStemControls,
+#endif
         bool samplerControls,
         bool previewdeckControls,
         bool addReset) {
@@ -1875,14 +1886,18 @@ void ControlPickerMenu::addDeckAndSamplerControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
         bool stemsControls,
+#endif
         bool addReset) {
     addPlayerControl(control,
             title,
             controlDescription,
             pMenu,
             true,
+#ifdef __STEM__
             stemsControls,
+#endif
             true,
             false,
             addReset);
@@ -1892,14 +1907,18 @@ void ControlPickerMenu::addDeckAndPreviewDeckControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
         bool stemsControls,
+#endif
         bool addReset) {
     addPlayerControl(control,
             title,
             controlDescription,
             pMenu,
             true,
+#ifdef __STEM__
             stemsControls,
+#endif
             false,
             true,
             addReset);
@@ -1909,14 +1928,18 @@ void ControlPickerMenu::addDeckAndSamplerAndPreviewDeckControl(const QString& co
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
         bool stemsControls,
+#endif
         bool addReset) {
     addPlayerControl(control,
             title,
             controlDescription,
             pMenu,
             true,
+#ifdef __STEM__
             stemsControls,
+#endif
             true,
             true,
             addReset);
@@ -1926,14 +1949,18 @@ void ControlPickerMenu::addDeckControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
         bool stemsControls,
+#endif
         bool addReset) {
     addPlayerControl(control,
             title,
             controlDescription,
             pMenu,
             true,
+#ifdef __STEM__
             stemsControls,
+#endif
             false,
             false,
             addReset);
@@ -1949,7 +1976,9 @@ void ControlPickerMenu::addSamplerControl(const QString& control,
             controlDescription,
             pMenu,
             false,
+#ifdef __STEM__
             false,
+#endif
             true,
             false,
             addReset);
@@ -1965,7 +1994,9 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
             controlDescription,
             pMenu,
             false,
+#ifdef __STEM__
             false,
+#endif
             false,
             true,
             addReset);
