@@ -31,43 +31,47 @@ TreeItemModel* RecordingFeature::sidebarModel() const {
 void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
-    DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
-                                                    m_pConfig,
-                                                    m_pLibrary,
-                                                    m_pRecordingManager,
-                                                    keyboard);
+    m_pRecordingView = make_parented<DlgRecording>(
+            pLibraryWidget,
+            m_pConfig,
+            m_pLibrary,
+            m_pRecordingManager,
+            keyboard);
 
-    pRecordingView->installEventFilter(keyboard);
-    pLibraryWidget->registerView(kViewName, pRecordingView);
-    connect(pRecordingView,
+    m_pRecordingView->installEventFilter(keyboard);
+    pLibraryWidget->registerView(kViewName, m_pRecordingView);
+    connect(m_pRecordingView,
             &DlgRecording::loadTrack,
             this,
             &RecordingFeature::loadTrack);
-    connect(pRecordingView,
+    connect(m_pRecordingView,
             &DlgRecording::loadTrackToPlayer,
             this,
             &RecordingFeature::loadTrackToPlayer);
     connect(this,
             &RecordingFeature::refreshBrowseModel,
-            pRecordingView,
+            m_pRecordingView,
             &DlgRecording::refreshBrowseModel);
     connect(this,
             &RecordingFeature::requestRestoreSearch,
-            pRecordingView,
+            m_pRecordingView,
             &DlgRecording::slotRestoreSearch);
-    connect(pRecordingView,
+    connect(m_pRecordingView,
             &DlgRecording::restoreSearch,
             this,
             &RecordingFeature::restoreSearch);
-    connect(pRecordingView,
+    connect(m_pRecordingView,
             &DlgRecording::restoreModelState,
             this,
             &RecordingFeature::restoreModelState);
 }
 
 void RecordingFeature::activate() {
-    emit refreshBrowseModel();
+    // TODO Do we actually have to call directly (instead of emit refreshBrowseModel())
+    // in order to have the view ready when we switch to it?
+    m_pRecordingView->refreshBrowseModel();
     emit switchToView(kViewName);
-    emit requestRestoreSearch();
+    // emit requestRestoreSearch();
+    //  TODO make this depend on used model (true for Library model)
     emit enableCoverArtDisplay(false);
 }

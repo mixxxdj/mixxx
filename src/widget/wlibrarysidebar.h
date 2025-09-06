@@ -8,12 +8,21 @@
 #include "widget/wbasewidget.h"
 
 class LibraryFeature;
+class SidebarItemDelegate;
+class SidebarModel;
 class QPoint;
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WLibrarySidebar(QWidget* parent = nullptr);
+
+    Q_PROPERTY(QColor watchedPathColor
+                    MEMBER m_watchedPathColor
+                            NOTIFY watchedPathColorChanged
+                                    DESIGNABLE true);
+
+    void setModel(QAbstractItemModel* pModel) override;
 
     void contextMenuEvent(QContextMenuEvent * event) override;
     void dragMoveEvent(QDragMoveEvent * event) override;
@@ -40,6 +49,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void deleteItem(const QModelIndex&);
     FocusWidget setLibraryFocus(FocusWidget newFocus,
             Qt::FocusReason focusReason = Qt::OtherFocusReason);
+    void watchedPathColorChanged(QColor m_watchedPathColor);
 
   protected:
     bool event(QEvent* pEvent) override;
@@ -48,6 +58,10 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void focusSelectedIndex();
     QModelIndex selectedIndex();
 
+    SidebarModel* m_pSidebarModel;
+    SidebarItemDelegate* m_pItemDelegate;
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
+
+    QColor m_watchedPathColor;
 };

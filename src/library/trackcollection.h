@@ -85,6 +85,10 @@ class TrackCollection : public QObject,
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
+    TrackPointer getOrAddTrack(
+            const TrackRef& trackRef,
+            bool* pAlreadyInLibrary = nullptr);
+
   signals:
     // Forwarded signals from LibraryScanner
     void scanTrackAdded(TrackPointer pTrack);
@@ -141,10 +145,6 @@ class TrackCollection : public QObject,
             TrackId trackId) const;
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
-
-    TrackPointer getOrAddTrack(
-            const TrackRef& trackRef,
-            bool* pAlreadyInLibrary = nullptr);
     FRIEND_TEST(DirectoryDAOTest, relocateDirectory);
     FRIEND_TEST(TrackDAOTest, detectMovedTracks);
     TrackId addTrack(

@@ -235,7 +235,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir() {
     if (fd != "") {
         // The user has picked a new directory via a file dialog. This means the
         // system sandboxer (if we are sandboxed) has granted us permission to
-        // this folder. Create a security bookmark while we have permission so
+        // access this folder. Create a security bookmark while we have permission so
         // that we can access the folder on future runs. We need to canonicalize
         // the path so we first wrap the directory string with a QDir.
         QDir directory(fd);
@@ -387,6 +387,7 @@ void DlgPrefRecord::loadMetaData() {
 void DlgPrefRecord::saveRecordingFolder() {
     QString newPath = LineEditRecordings->text();
     if (newPath != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
+        // TODO MOve these checks to slotBrowseRecordingsDir
         QFileInfo fileInfo(newPath);
         if (!fileInfo.exists()) {
             QMessageBox::warning(
@@ -411,7 +412,11 @@ void DlgPrefRecord::saveRecordingFolder() {
             return;
         }
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), newPath);
+        // TODO Show dialog or add action button to add the new directory to the
+        // library so the Recording view canuse the library rack model.
+        // TODO Show library rescan dialog (like when adding a new library directory)
     }
+    // TODO Emit signal so Recording feature instnatly switches to the new directory?
 }
 
 void DlgPrefRecord::saveMetaData() {
