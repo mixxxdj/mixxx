@@ -218,6 +218,17 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
                 /*signal-to-signal*/ Qt::DirectConnection);
         m_menu.addAction(pShuffleAction);
     }
+    // Only show the "adopt order" action in models that support reordering
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting) &&
+            pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+        auto pAdoptSortorderAction = make_parented<QAction>(tr("Adopt sort order"), &m_menu);
+        connect(pAdoptSortorderAction,
+                &QAction::triggered,
+                this,
+                &WTrackTableViewHeader::adoptSortOrder,
+                /*signal-to-signal*/ Qt::DirectConnection);
+        m_menu.addAction(pAdoptSortorderAction);
+    }
 
     // Safety check against someone getting stuck with all columns hidden
     // (produces an empty library table). Just re-show them all.
