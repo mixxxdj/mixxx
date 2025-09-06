@@ -592,6 +592,10 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     qWarning() << "     Scanner: slotAddNewTrack()" << trackPath;
+    if (!m_scannerGlobal || m_scannerGlobal->shouldCancel()) {
+        qWarning() << "     --> already canceled, return";
+        return;
+    }
     // kLogger.debug() << "slotAddNewTrack" << trackPath;
     ScopedTimer timer(u"LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
