@@ -2164,8 +2164,28 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton,
-#CueSavedLoopButton {
+#CueDeleteButton {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__delete.svg);
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  It's a tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  qproperty-iconSize: 18px;
+  /* has no effect
+  padding: 0px; */
+}
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+
+#CueStandardButton, #CueSavedLoopButton, #CueSavedJumpButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
@@ -2173,17 +2193,42 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   height: 42px;
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  /* has no effect
+  padding: 0px; */
 }
 #CueDeleteButton {
   image: url(skins:LateNight/classic/buttons/btn__delete.svg);
 }
+#CueStandardButton {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__beats_hotcues_later.svg);
+}
 #CueSavedLoopButton {
   image: url(skins:LateNight/classic/buttons/btn__loop.svg);
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__loop.svg);
 }
-#CueDeleteButton:pressed,
+#CueSavedJumpButton[direction="impossible"], #CueSavedJumpButton[direction="forward"] {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__beatjump_right.svg);
+}
+#CueSavedJumpButton[direction="backward"] {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__beatjump_left.svg);
+}
+
 #CueSavedLoopButton:pressed,
 #CueSavedLoopButton:checked {
   background-color: #db0000;
+  outline: none;
+  image: url(skins:LateNight/classic/buttons/btn__loop_active.svg);
+}
+
+#CueSavedJumpButton:pressed, WCueMenuPopup #CueSavedJumpButton:checked,
+  #CueStandardButton:pressed, WCueMenuPopup #CueStandardButton:checked {
+  background-color: #db0000;
+  outline: none;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
   outline: none;
 }
 

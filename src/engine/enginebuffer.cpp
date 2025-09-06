@@ -261,7 +261,8 @@ EngineBuffer::EngineBuffer(const QString& group,
             Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
-                                               m_pLoopingControl);
+            m_pLoopingControl,
+            m_pCueControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
     m_pKeylockEngine = new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);

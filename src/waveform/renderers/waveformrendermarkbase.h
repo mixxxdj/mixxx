@@ -60,6 +60,7 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
 
   private:
     virtual void updateMarkImage(WaveformMarkPointer pMark) = 0;
+    virtual void updateEndMarkImage(WaveformMarkPointer pMark) = 0;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMarkBase);
 };
