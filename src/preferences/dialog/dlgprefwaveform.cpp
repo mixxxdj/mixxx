@@ -13,9 +13,17 @@
 #include "waveform/waveformwidgetfactory.h"
 
 namespace {
-const ConfigKey kOverviewTypeCfgKey(QStringLiteral("[Waveform]"),
+const QString kWaveformGroup(QStringLiteral("[Waveform]"));
+const ConfigKey kOverviewTypeCfgKey(kWaveformGroup,
         QStringLiteral("WaveformOverviewType"));
+const ConfigKey kWaveformOptionsKey(kWaveformGroup,
+        QStringLiteral("waveform_options"));
+const ConfigKey kHardwareAccelerationKey(kWaveformGroup,
+        QStringLiteral("use_hardware_acceleration"));
 } // namespace
+
+// for OverviewType
+using namespace mixxx;
 
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
@@ -28,20 +36,20 @@ DlgPrefWaveform::DlgPrefWaveform(
 
     // Waveform overview init
     waveformOverviewComboBox->addItem(
-            tr("Filtered"), QVariant::fromValue(mixxx::OverviewType::Filtered));
-    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(mixxx::OverviewType::HSV));
-    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(mixxx::OverviewType::RGB));
+            tr("Filtered"), QVariant::fromValue(OverviewType::Filtered));
+    waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(OverviewType::HSV));
+    waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(OverviewType::RGB));
     m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
-    m_pTypeControl->setStates(QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+    m_pTypeControl->setStates(QMetaEnum::fromType<OverviewType>().keyCount());
     m_pTypeControl->setReadOnly();
     // Update the control with the config value
-    mixxx::OverviewType overviewType =
-            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
+    OverviewType overviewType =
+            m_pConfig->getValue<OverviewType>(kOverviewTypeCfgKey, OverviewType::RGB);
     int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
     if (cfgTypeIndex == -1) {
         // Invalid config value, set default type RGB and write it to config
         waveformOverviewComboBox->setCurrentIndex(
-                waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
+                waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
         m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
     } else {
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
@@ -72,8 +80,7 @@ DlgPrefWaveform::DlgPrefWaveform(
     }
 
     m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
-            ConfigKey(QStringLiteral("[Waveform]"),
-                    QStringLiteral("draw_overview_minute_markers")));
+            ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")));
     m_pOverviewMinuteMarkersControl->setReadOnly();
 
     // Populate untilMark options
@@ -173,14 +180,16 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &DlgPrefWaveform::slotSetVisualGainHigh);
-    connect(normalizeOverviewCheckBox,
-            &QCheckBox::toggled,
+
+    connect(overview_scale_options,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
-            &DlgPrefWaveform::slotSetNormalizeOverview);
+            &DlgPrefWaveform::slotSetOverviewScaling);
     connect(overviewMinuteMarkersCheckBox,
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
             this,
@@ -239,7 +248,7 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 void DlgPrefWaveform::slotSetWaveformOptions(
         allshader::WaveformRendererSignalBase::Option option, bool enabled) {
     allshader::WaveformRendererSignalBase::Options currentOption = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "waveform_options"),
+            kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
     m_pConfig->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
             enabled ? currentOption |
@@ -261,7 +270,7 @@ void DlgPrefWaveform::slotUpdate() {
         openGlStatusData->setText(factory->getOpenGLVersion());
         useAccelerationCheckBox->setEnabled(true);
         isAccelerationEnabled = m_pConfig->getValue(
-                                        ConfigKey("[Waveform]", "use_hardware_acceleration"),
+                                        kHardwareAccelerationKey,
                                         factory->preferredBackend()) !=
                 WaveformWidgetBackend::None;
         useAccelerationCheckBox->setChecked(isAccelerationEnabled);
@@ -281,10 +290,10 @@ void DlgPrefWaveform::slotUpdate() {
     useWaveformCheckBox->setChecked(useWaveform);
 
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "waveform_options"),
+            kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
     WaveformWidgetBackend backend = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            kHardwareAccelerationKey,
             factory->preferredBackend());
     updateWaveformAcceleration(factory->getType(), backend);
     updateWaveformTypeOptions(useWaveform, backend, currentOptions);
@@ -301,7 +310,6 @@ void DlgPrefWaveform::slotUpdate() {
     lowVisualGain->setValue(factory->getVisualGain(BandIndex::Low));
     midVisualGain->setValue(factory->getVisualGain(BandIndex::Mid));
     highVisualGain->setValue(factory->getVisualGain(BandIndex::High));
-    normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
@@ -322,17 +330,23 @@ void DlgPrefWaveform::slotUpdate() {
     stemOpacitySpinBox->setValue(factory->getStemOpacity());
     stemOutlineOpacitySpinBox->setValue(factory->getStemOutlineOpacity());
 
-    mixxx::OverviewType cfgOverviewType =
-            m_pConfig->getValue<mixxx::OverviewType>(kOverviewTypeCfgKey, mixxx::OverviewType::RGB);
+    OverviewType cfgOverviewType =
+            m_pConfig->getValue<OverviewType>(kOverviewTypeCfgKey, OverviewType::RGB);
     // Assumes the combobox index is in sync with the ControlPushButton
-    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<mixxx::OverviewType>()) {
+    if (cfgOverviewType != waveformOverviewComboBox->currentData().value<OverviewType>()) {
         int cfgOverviewTypeIndex =
                 waveformOverviewComboBox->findData(QVariant::fromValue(cfgOverviewType));
         waveformOverviewComboBox->setCurrentIndex(cfgOverviewTypeIndex);
     }
 
+    if (factory->isOverviewNormalized()) {
+        overview_scale_normalize->setChecked(true);
+    } else {
+        overview_scale_allReplayGain->setChecked(true);
+    }
+
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "draw_overview_minute_markers"), true);
+            ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
     m_pOverviewMinuteMarkersControl->forceSet(drawOverviewMinuteMarkers);
 
@@ -344,6 +358,7 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
+    // All other settings have already been applied instantly for preview purpose
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -367,10 +382,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
             allshader::WaveformRendererSignalBase::Option::None);
 
     // Restore waveform backend and option setting instantly
-    m_pConfig->setValue(ConfigKey("[Waveform]", "waveform_options"),
+    m_pConfig->setValue(kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
-    m_pConfig->setValue(ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            defaultBackend);
+    m_pConfig->setValue(kHardwareAccelerationKey, defaultBackend);
     factory->setWidgetTypeFromHandle(
             factory->findHandleIndexFromType(
                     WaveformWidgetFactory::defaultType()),
@@ -388,13 +402,13 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
-            waveformOverviewComboBox->findData(QVariant::fromValue(mixxx::OverviewType::RGB)));
-
-    // Don't normalize overview.
-    normalizeOverviewCheckBox->setChecked(false);
+            waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
 
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
+
+    // Use "Global" waveform gain + ReplayGain if enabled
+    overview_scale_allReplayGain->setChecked(true);
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
@@ -430,14 +444,12 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
 
-    auto backend = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            factory->preferredBackend());
+    auto backend = m_pConfig->getValue(kHardwareAccelerationKey, factory->preferredBackend());
     useAccelerationCheckBox->setChecked(backend !=
             WaveformWidgetBackend::None);
 
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "waveform_options"),
+            kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
     updateWaveformAcceleration(type, backend);
     updateWaveformTypeOptions(true, backend, currentOptions);
@@ -469,14 +481,12 @@ void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
 #endif
                 ;
     }
-    m_pConfig->setValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            backend);
+    m_pConfig->setValue(kHardwareAccelerationKey, backend);
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type), true);
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "waveform_options"),
+            kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
     updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
@@ -554,8 +564,7 @@ void DlgPrefWaveform::updateEnableUntilMark() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const bool enabled =
             WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark() &&
-            m_pConfig->getValue(
-                    ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            m_pConfig->getValue(kHardwareAccelerationKey,
                     factory->preferredBackend()) !=
                     WaveformWidgetBackend::None;
 #endif
@@ -588,19 +597,19 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
 }
 
 void DlgPrefWaveform::updateWaveformGainEnabled() {
-    bool enabled = useWaveformCheckBox->isChecked() ||
-            !normalizeOverviewCheckBox->isChecked();
-    allVisualGain->setEnabled(enabled);
-    lowVisualGain->setEnabled(enabled);
-    midVisualGain->setEnabled(enabled);
-    highVisualGain->setEnabled(enabled);
+    bool waveformsEnabled = useWaveformCheckBox->isChecked();
+    bool allGainEnabled = waveformsEnabled || overview_scale_allReplayGain->isChecked();
+    allVisualGain->setEnabled(allGainEnabled);
+    lowVisualGain->setEnabled(waveformsEnabled);
+    midVisualGain->setEnabled(waveformsEnabled);
+    highVisualGain->setEnabled(waveformsEnabled);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType() {
     // Apply immediately
     QVariant comboboxData = waveformOverviewComboBox->currentData();
-    DEBUG_ASSERT(comboboxData.canConvert<mixxx::OverviewType>());
-    auto type = comboboxData.value<mixxx::OverviewType>();
+    DEBUG_ASSERT(comboboxData.canConvert<OverviewType>());
+    auto type = comboboxData.value<OverviewType>();
     m_pConfig->setValue(kOverviewTypeCfgKey, type);
     m_pTypeControl->forceSet(static_cast<double>(type));
 }
@@ -629,13 +638,16 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::High, gain);
 }
 
-void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
-    WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+void DlgPrefWaveform::slotSetOverviewScaling() {
+    WaveformWidgetFactory::instance()->setOverviewNormalized(
+            overview_scale_normalize->isChecked());
     updateWaveformGainEnabled();
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
-    m_pConfig->setValue(ConfigKey("[Waveform]", "draw_overview_minute_markers"), draw);
+    m_pConfig->setValue(ConfigKey(kWaveformGroup,
+                                QStringLiteral("draw_overview_minute_markers")),
+            draw);
     m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
@@ -656,7 +668,7 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
     // TODO(xxx) For consistency set this in WaveformWidgetFactory like
     // the other waveform controls.
-    m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridAlpha"), alpha);
+    m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")), alpha);
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
 }
 
@@ -693,6 +705,7 @@ void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
 void DlgPrefWaveform::slotStemOpacity(float value) {
     WaveformWidgetFactory::instance()->setStemOpacity(value);
 }
+
 void DlgPrefWaveform::slotStemReorderOnChange(bool value) {
     WaveformWidgetFactory::instance()->setStemReorderOnChange(value);
 }

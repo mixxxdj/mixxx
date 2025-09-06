@@ -6,7 +6,6 @@
 #include "util/math.h"
 #include "util/timer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/waveformwidgetfactory.h"
 
 namespace waveformOverviewRenderer {
 
@@ -57,15 +56,9 @@ QImage render(ConstWaveformPointer pWaveform,
                 static_cast<float>(pWaveform->getAll(i + 1)));
     }
     // Normalize
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     float diffGain = 0;
-    bool normalize = widgetFactory->isOverviewNormalized();
-    if (normalize && peak > 1) {
+    if (peak > 1) {
         diffGain = 255 - peak - 1;
-    } else {
-        const auto visualGain = static_cast<float>(
-                widgetFactory->getVisualGain(BandIndex::AllBand));
-        diffGain = 255.0f - (255.0f / visualGain);
     }
 
     const int topLeft = static_cast<int>(mono ? diffGain * 2 : diffGain);
