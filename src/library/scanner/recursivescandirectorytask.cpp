@@ -21,6 +21,8 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
 
 void RecursiveScanDirectoryTask::run() {
     ScopedTimer timer(u"RecursiveScanDirectoryTask::run");
+    qWarning() << "     RecursiveScanDirectoryTask::run() shouldCancel():"
+               << m_scannerGlobal->shouldCancel();
     if (m_scannerGlobal->shouldCancel()) {
         setSuccess(false);
         return;

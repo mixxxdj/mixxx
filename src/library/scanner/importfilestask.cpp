@@ -24,6 +24,8 @@ void ImportFilesTask::run() {
     ScopedTimer timer(u"ImportFilesTask::run");
     for (const QFileInfo& fileInfo: m_filesToImport) {
         // If a flag was raised telling us to cancel the library scan then stop.
+        qWarning() << "     ImportFilesTask::run() shouldCancel()"
+                   << m_scannerGlobal->shouldCancel();
         if (m_scannerGlobal->shouldCancel()) {
             setSuccess(false);
             return;
@@ -40,6 +42,7 @@ void ImportFilesTask::run() {
             // If the track is in the database, mark it as existing. This code gets
             // executed when other files in the same directory have changed (the
             // directory hash has changed).
+            qWarning() << "     ImportFilesTask::run() emit trackExists" << trackLocation;
             emit trackExists(trackLocation);
         } else {
             if (!fileInfo.exists()) {
@@ -49,6 +52,7 @@ void ImportFilesTask::run() {
             }
             qDebug() << "Importing track" << trackLocation;
 
+            qWarning() << "     ImportFilesTask::run() emit addNewTrack" << trackLocation;
             emit addNewTrack(trackLocation);
         }
     }
