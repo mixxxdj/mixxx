@@ -68,6 +68,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
   signals:
     void shuffle();
+    void adoptSortOrder();
 
   private slots:
     void showOrHideColumn(int);
