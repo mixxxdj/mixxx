@@ -107,8 +107,7 @@ bool WaveformRendererRGB::preprocessInner() {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    // applyCompensation = false, as we scale to match filtered.all
-    getGains(&allGain, false, &lowGain, &midGain, &highGain);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
