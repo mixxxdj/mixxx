@@ -10,7 +10,7 @@ Item {
     required property string group
     property bool splitStemTracks: false
 
-    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization() ? "[Channel1]" : group
+    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
 
     enum MouseStatus {
         Normal,
@@ -194,7 +194,7 @@ Item {
 
         Component.onCompleted: {
             if (group == root.group) {
-                value = Mixxx.Config.waveformDefaultZoom()
+                value = Mixxx.Config.waveformDefaultZoom
             }
         }
     }
