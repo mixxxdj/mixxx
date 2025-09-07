@@ -59,6 +59,26 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 }
 
 const QRegularExpression openGLVersionRegex(QStringLiteral("^(\\d+)\\.(\\d+).*$"));
+
+const QString kWaveformGroup(QStringLiteral("[Waveform]"));
+const ConfigKey kWaveformTypeKey =
+        ConfigKey(kWaveformGroup, QStringLiteral("WaveformType"));
+const ConfigKey kHardwareAccelerationKey =
+        ConfigKey(kWaveformGroup, QStringLiteral("use_hardware_acceleration"));
+const ConfigKey kZoomSyncKey = ConfigKey(
+        kWaveformGroup, QStringLiteral("ZoomSynchronization"));
+const ConfigKey kEndOfTrackWarningKey = ConfigKey(
+        kWaveformGroup, QStringLiteral("EndOfTrackWarningTime"));
+const ConfigKey kDefaultZoomKey =
+        ConfigKey(kWaveformGroup, QStringLiteral("DefaultZoom"));
+const ConfigKey kFrameRateKey =
+        ConfigKey(kWaveformGroup, QStringLiteral("FrameRate"));
+const ConfigKey kVSyncKey = ConfigKey(kWaveformGroup, QStringLiteral("VSync"));
+
+ConfigKey visualGainKey(int index) {
+    return ConfigKey(kWaveformGroup, QStringLiteral("VisualGain_") + QString::number(index));
+}
+
 }  // anonymous namespace
 
 ///////////////////////////////////////////
@@ -341,33 +361,33 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     bool ok = false;
 
-    int frameRate = m_config->getValue(ConfigKey("[Waveform]","FrameRate"), m_frameRate);
+    int frameRate = m_config->getValue(kFrameRateKey, m_frameRate);
     m_frameRate = math_clamp(frameRate, 1, 120);
 
-
-    int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndOfTrackWarningTime")).toInt(&ok);
+    int endTime = m_config->getValueString(kEndOfTrackWarningKey).toInt(&ok);
     if (ok) {
         setEndOfTrackWarningTime(endTime);
     } else {
-        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"),
-                ConfigValue(m_endOfTrackWarningTime));
+        m_config->setValue(kEndOfTrackWarningKey, m_endOfTrackWarningTime);
     }
 
-    double defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toDouble(&ok);
+    double defaultZoom = m_config->getValueString(kDefaultZoomKey).toDouble(&ok);
     if (ok) {
         setDefaultZoom(defaultZoom);
     } else{
-        m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
+        m_config->setValue(kDefaultZoomKey, m_defaultZoom);
     }
 
-    bool zoomSync = m_config->getValue(ConfigKey("[Waveform]", "ZoomSynchronization"), m_zoomSync);
+    bool zoomSync = m_config->getValue(kZoomSyncKey, m_zoomSync);
     setZoomSync(zoomSync);
 
-    int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
+    int beatGridAlpha =
+            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")),
+                    m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
-            m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
+            m_config->getValueString(kWaveformTypeKey).toInt(&ok));
     // Store the widget type on m_configType for later initialization.
     // We will initialize the objects later because of a problem with GL on QT 5.14.2 on Windows
     if (!ok || !setWidgetType(type, &m_configType)) {
@@ -375,64 +395,70 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     }
 
     for (int i = 0; i < BandCount; i++) {
-        double visualGain = m_config->getValueString(
-                ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
-
+        double visualGain = m_config->getValueString(visualGainKey(i)).toDouble(&ok);
         if (ok) {
+            // TODO validate value? 0 < value < 5.0
             setVisualGain(BandIndex(i), visualGain);
         } else {
-            m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(i)),
-                          QString::number(m_visualGain[i]));
+            m_config->setValue(visualGainKey(i), m_visualGain[i]);
         }
     }
 
-    int overviewNormalized = m_config->getValueString(ConfigKey("[Waveform]","OverviewNormalized")).toInt(&ok);
+    int overviewNormalized =
+            m_config->getValueString(
+                            ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")))
+                    .toInt(&ok);
     if (ok) {
         setOverviewNormalized(static_cast<bool>(overviewNormalized));
     } else {
-        m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+        m_config->set(ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
+                ConfigValue(m_overviewNormalized));
     }
 
-    m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]", "PlayMarkerPosition"),
-            WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
+    m_playMarkerPosition =
+            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("PlayMarkerPosition")),
+                    WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
     setPlayMarkerPosition(m_playMarkerPosition);
 
     int untilMarkShowBeats =
             m_config->getValueString(
-                            ConfigKey("[Waveform]", "UntilMarkShowBeats"))
+                            ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowBeats")))
                     .toInt(&ok);
     if (ok) {
         setUntilMarkShowBeats(static_cast<bool>(untilMarkShowBeats));
     } else {
-        m_config->set(ConfigKey("[Waveform]", "UntilMarkShowBeats"),
-                ConfigValue(m_untilMarkShowBeats));
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowBeats")),
+                m_untilMarkShowBeats);
     }
     int untilMarkShowTime =
             m_config->getValueString(
-                            ConfigKey("[Waveform]", "UntilMarkShowTime"))
+                            ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")))
                     .toInt(&ok);
     if (ok) {
         setUntilMarkShowTime(static_cast<bool>(untilMarkShowTime));
     } else {
-        m_config->set(ConfigKey("[Waveform]", "UntilMarkShowTime"),
-                ConfigValue(m_untilMarkShowTime));
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")),
+                m_untilMarkShowTime);
     }
 
     setUntilMarkAlign(toUntilMarkAlign(
-            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkAlign"),
+            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkAlign")),
                     toUntilMarkAlignIndex(m_untilMarkAlign))));
-    setUntilMarkTextPointSize(
-            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
-                    m_untilMarkTextPointSize));
-    setUntilMarkTextHeightLimit(toUntilMarkTextHeightLimit(
-            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
-                    toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
+    setUntilMarkTextPointSize(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkTextPointSize")),
+            m_untilMarkTextPointSize));
+    setUntilMarkTextHeightLimit(toUntilMarkTextHeightLimit(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkTextHeightLimit")),
+            toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
     setStemReorderOnChange(m_config->getValue(
-            ConfigKey("[Waveform]", "stem_reorder_on_change"), true));
+            ConfigKey(kWaveformGroup, QStringLiteral("stem_reorder_on_change")),
+            true));
     setStemOpacity(static_cast<float>(
-            m_config->getValue(ConfigKey("[Waveform]", "stem_opacity"), 0.75)));
-    setStemOutlineOpacity(static_cast<float>(m_config->getValue(
-            ConfigKey("[Waveform]", "stem_outline_opacity"), 0.15)));
+            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_opacity")),
+                    0.75)));
+    setStemOutlineOpacity(static_cast<float>(
+            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_outline_opacity")),
+                    0.15)));
 
     return true;
 }
@@ -523,7 +549,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
     m_frameRate = math_clamp(frameRate, 1, 120);
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
+        m_config->setValue(kFrameRateKey, m_frameRate);
     }
     if (m_vsyncThread) {
         m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
@@ -533,7 +559,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
 void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
     m_endOfTrackWarningTime = endTime;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
+        m_config->setValue(kEndOfTrackWarningKey, m_endOfTrackWarningTime);
     }
 }
 
@@ -555,8 +581,7 @@ bool WaveformWidgetFactory::setWidgetType(
     if (m_config) {
         m_configType = *pCurrentType;
         // TODO do not set "Empty"?
-        m_config->setValue(
-                ConfigKey("[Waveform]", "WaveformType"), *pCurrentType);
+        m_config->setValue(kWaveformTypeKey, *pCurrentType);
     }
     return isAcceptable;
 }
@@ -646,7 +671,7 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
     m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom,
                                WaveformWidgetRenderer::s_waveformMaxZoom);
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
+        m_config->setValue(kDefaultZoomKey, m_defaultZoom);
     }
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
@@ -657,7 +682,7 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
 void WaveformWidgetFactory::setZoomSync(bool sync) {
     m_zoomSync = sync;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
+        m_config->setValue(kZoomSyncKey, m_zoomSync);
     }
 
     if (m_waveformWidgetHolders.size() == 0) {
@@ -684,13 +709,16 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
 void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
     m_visualGain[index] = gain;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
+        m_config->setValue(visualGainKey(index), m_visualGain[index]);
     }
     emit visualGainChanged(
             m_visualGain[BandIndex::AllBand],
             m_visualGain[BandIndex::Low],
             m_visualGain[BandIndex::Mid],
             m_visualGain[BandIndex::High]);
+    if (index == BandIndex::AllBand && !m_overviewNormalized) {
+        emit overviewScalingChanged();
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(BandIndex index) const {
@@ -700,15 +728,17 @@ double WaveformWidgetFactory::getVisualGain(BandIndex index) const {
 void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     m_overviewNormalized = normalize;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+        m_config->set(ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
+                ConfigValue(m_overviewNormalized));
     }
-    emit overviewNormalizeChanged();
+    emit overviewScalingChanged();
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
     m_playMarkerPosition = position;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "PlayMarkerPosition"), m_playMarkerPosition);
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("PlayMarkerPosition")),
+                m_playMarkerPosition);
     }
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
@@ -1017,14 +1047,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
         WWaveformViewer* viewer) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1038,14 +1061,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveformViewer* viewer) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1058,14 +1074,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveform
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveformViewer* viewer) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1080,14 +1089,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer) {
 #ifdef MIXXX_USE_QOPENGL
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
@@ -1098,14 +1100,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWaveformViewer* viewer) {
-    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
-    // => hardware acceleration), but in the setting, we keep the granularity so
-    // in case of issue when we release, we can communicate workaround on
-    // editing the INI file to target a specific rendering backend. If no
-    // complains come back, we can convert this safely to a backend eventually.
-    WaveformWidgetBackend backend = m_config->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            preferredBackend());
+    WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1186,8 +1181,7 @@ void WaveformWidgetFactory::startVSync(
         GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML) {
     const auto vSyncMode = useQML
             ? VSyncThread::ST_TIMER
-            : static_cast<VSyncThread::VSyncMode>(
-                      m_config->getValue(ConfigKey("[Waveform]", "VSync"), 0));
+            : static_cast<VSyncThread::VSyncMode>(m_config->getValue(kVSyncKey, 0));
 
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
@@ -1247,6 +1241,17 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
     return -1;
 }
 
+WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    return m_config->getValue(
+            ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("use_hardware_acceleration")),
+            preferredBackend());
+}
+
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
 #ifdef MIXXX_USE_QOPENGL
     if (m_openGlAvailable || m_openGlesAvailable) {
@@ -1287,7 +1292,7 @@ QString WaveformWidgetAbstractHandle::getDisplayName() const {
 QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer config) {
     // The first call should pass the config to set the vsync mode. Subsequent
     // calls will use the value as set on the first call.
-    static const auto vsyncMode = config->getValue(ConfigKey("[Waveform]", "VSync"), 0);
+    static const auto vsyncMode = config->getValue(kVSyncKey, 0);
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
@@ -1326,8 +1331,8 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
 void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
     m_untilMarkShowBeats = value;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "UntilMarkShowBeats"),
-                ConfigValue(m_untilMarkShowBeats));
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowBeats")),
+                m_untilMarkShowBeats);
     }
     emit untilMarkShowBeatsChanged(value);
 }
@@ -1335,8 +1340,8 @@ void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
 void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
     m_untilMarkShowTime = value;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "UntilMarkShowTime"),
-                ConfigValue(m_untilMarkShowTime));
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")),
+                m_untilMarkShowTime);
     }
     emit untilMarkShowTimeChanged(value);
 }
@@ -1344,7 +1349,7 @@ void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
 void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
     m_untilMarkAlign = align;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkAlign"),
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkAlign")),
                 toUntilMarkAlignIndex(m_untilMarkAlign));
     }
     emit untilMarkAlignChanged(align);
@@ -1353,7 +1358,7 @@ void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
 void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
     m_untilMarkTextPointSize = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkTextPointSize")),
                 m_untilMarkTextPointSize);
     }
     emit untilMarkTextPointSizeChanged(value);
@@ -1362,7 +1367,7 @@ void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
 void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
     m_untilMarkTextHeightLimit = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextHeightLimit"),
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkTextHeightLimit")),
                 toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit));
     }
     emit untilMarkTextHeightLimitChanged(value);
@@ -1371,7 +1376,7 @@ void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
 void WaveformWidgetFactory::setStemReorderOnChange(bool value) {
     m_stemReorderOnChange = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "stem_reorder_on_change"),
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_reorder_on_change")),
                 value);
     }
     emit stemReorderOnChangeChanged(value);
@@ -1380,7 +1385,7 @@ void WaveformWidgetFactory::setStemReorderOnChange(bool value) {
 void WaveformWidgetFactory::setStemOutlineOpacity(float value) {
     m_stemOutlineOpacity = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "stem_outline_opacity"),
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_outline_opacity")),
                 static_cast<double>(value));
     }
     emit stemOutlineOpacityChanged(value);
@@ -1389,7 +1394,7 @@ void WaveformWidgetFactory::setStemOutlineOpacity(float value) {
 void WaveformWidgetFactory::setStemOpacity(float value) {
     m_stemOpacity = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "stem_opacity"),
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_opacity")),
                 static_cast<double>(value));
     }
     emit stemOpacityChanged(value);
