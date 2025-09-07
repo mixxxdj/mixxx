@@ -24,7 +24,6 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
-#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 
 namespace {
@@ -989,7 +988,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return atomicLoadRelaxed(m_threadWaiting);
+    return m_threadWaiting.loadRelaxed();
 }
 
 void ShoutConnection::run() {

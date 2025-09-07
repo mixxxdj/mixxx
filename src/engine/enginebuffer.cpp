@@ -27,7 +27,6 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
 #include "util/sample.h"
@@ -427,7 +426,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(atomicLoadRelaxed(m_iEnableSyncQueued));
+            static_cast<SyncRequestQueued>(m_iEnableSyncQueued.loadRelaxed());
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -591,7 +590,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     // Check if we are cloning another channel before doing any seeking.
     // This replaces m_queuedSeek populated form CueControl
-    EngineChannel* pChannel = atomicLoadRelaxed(m_pChannelToCloneFrom);
+    EngineChannel* pChannel = m_pChannelToCloneFrom.loadRelaxed();
     if (pChannel) {
         m_queuedSeek.setValue(kCloneSeek);
         m_iSeekPhaseQueued = 0;
@@ -778,8 +777,8 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // asynchrony.
     bool playPossible = true;
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
-    if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
+    if ((!m_pCurrentTrack && m_iTrackLoading.loadRelaxed() == 0) ||
+            (m_pCurrentTrack && m_iTrackLoading.loadRelaxed() == 0 &&
                     m_playPos >= getTrackEndPosition() &&
                     queuedSeek.seekType == SEEK_NONE) ||
             m_pPassthroughEnabled->toBool()) {
@@ -1581,7 +1580,7 @@ void EngineBuffer::loadTrack(TrackPointer pTrack,
 #else
         m_pReader->newTrack(pTrack);
 #endif
-        atomicStoreRelaxed(m_pChannelToCloneFrom, pChannelToCloneFrom);
+        m_pChannelToCloneFrom.storeRelaxed(pChannelToCloneFrom);
     } else {
         // Loading a null track means "eject"
         ejectTrack();

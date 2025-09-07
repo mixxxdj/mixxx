@@ -283,16 +283,6 @@ void WTrackMenu::createMenus() {
                             !m_pFindOnWebMenu->isEmpty());
                 });
     }
-
-    if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        // Qt added QFile::MoveToTrash() in 5.15. If that's not available we
-        // permanently delete files, put the action into a submenu for safety
-        // reasons and display different messages in the delete dialogs.
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        m_pRemoveFromDiskMenu = make_parented<QMenu>(this);
-        m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
-#endif
-    }
 }
 
 void WTrackMenu::createActions() {
@@ -346,12 +336,7 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         m_pRemoveFromDiskAct = make_parented<QAction>(tr("Move Track File(s) to Trash"), this);
-#else
-        m_pRemoveFromDiskAct = make_parented<QAction>(
-                tr("Delete Files from Disk"), m_pRemoveFromDiskMenu);
-#endif
         connect(m_pRemoveFromDiskAct,
                 &QAction::triggered,
                 this,
@@ -767,12 +752,7 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         addAction(m_pRemoveFromDiskAct);
-#else
-        m_pRemoveFromDiskMenu->addAction(m_pRemoveFromDiskAct);
-        addMenu(m_pRemoveFromDiskMenu);
-#endif
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {
@@ -2426,11 +2406,7 @@ class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointer
         }
         QString location = pTrack->getLocation();
         QFile file(location);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        if (file.exists() && !file.remove()) {
-#else
         if (file.exists() && !file.moveToTrash()) {
-#endif
             // Deletion failed, log warning and queue location for the
             // Failed Deletions warning.
             qWarning()
@@ -2484,22 +2460,9 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         QString delWarningText;
         if (m_pTrackModel) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-            delWarningText = tr("Permanently delete these files from disk?") +
-                    QStringLiteral("<br><br><b>") +
-                    tr("This can not be undone!") + QStringLiteral("</b>");
-#else
             delWarningText = tr("Move these files to the trash bin?");
-#endif
         } else { // track menu of track labels
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-            delWarningText =
-                    tr("Permanently delete this track file from disk?") +
-                    QStringLiteral("<br><br><b>") +
-                    tr("This can not be undone!") + QStringLiteral("</b>");
-#else
             delWarningText = tr("Move this track file to the trash bin?");
-#endif
         }
         delWarningText.append(QStringLiteral("<br><br>"));
         if (m_pTrackModel) {
@@ -2524,11 +2487,7 @@ void WTrackMenu::slotRemoveFromDisk() {
                 tr("Cancel"),
                 QDialogButtonBox::RejectRole);
         QPushButton* deleteBtn = pDelButtons->addButton(
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                tr("Delete Files"),
-#else
                 tr("Okay"),
-#endif
                 QDialogButtonBox::AcceptRole);
         cancelBtn->setDefault(true);
 
@@ -2539,11 +2498,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         pDelLayout->addWidget(pDelButtons);
 
         dlgDelConfirm.setModal(true); // just to be sure
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        dlgDelConfirm.setWindowTitle(tr("Delete Track Files"));
-#else
         dlgDelConfirm.setWindowTitle(tr("Move Track File(s) to Trash?"));
-#endif
         // This is required after customizing the buttons, otherwise neither button
         // would close the dialog.
         connect(cancelBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::reject);
@@ -2573,11 +2528,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     // Set up and initiate the track batch operation
     const auto progressLabelText =
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-            tr("Removing %n track file(s) from disk...",
-#else
             tr("Moving %n track file(s) to trash...",
-#endif
                     "",
                     getTrackCount());
     const auto trackOperator =
@@ -2599,35 +2550,19 @@ void WTrackMenu::slotRemoveFromDisk() {
             QString msgTitle;
             QString msgText;
             if (m_pTrackModel) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                msgTitle = tr("Track Files Deleted");
-#else
                 msgTitle = tr("Track Files Moved To Trash");
-#endif
                 msgText =
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                        tr("%1 track files were deleted from disk and purged "
-                           "from the Mixxx database.")
-#else
                         tr("%1 track files were moved to trash and purged "
                            "from the Mixxx database.")
-#endif
                                 .arg(QString::number(tracksToPurge.length())) +
                         QStringLiteral("<br><br>") +
                         tr("Note: if you are in the Computer or Recording view you "
                            "need to click the current view again to see changes.");
             } else {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                msgTitle = tr("Track File Deleted");
-                msgText = tr(
-                        "Track file was deleted from disk and purged "
-                        "from the Mixxx database.");
-#else
                 msgTitle = tr("Track File Moved To Trash");
                 msgText = tr(
                         "Track file was moved to trash and purged "
                         "from the Mixxx database.");
-#endif
             }
             QCheckBox notAgainCB(tr("Don't show again during this session"));
             notAgainCB.setCheckState(Qt::Unchecked);
@@ -2660,19 +2595,11 @@ void WTrackMenu::slotRemoveFromDisk() {
     QString msgText;
     if (m_pTrackModel) {
         msgText =
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                tr("The following %1 file(s) could not be deleted from disk")
-#else
                 tr("The following %1 file(s) could not be moved to trash")
-#endif
                         .arg(QString::number(
                                 tracksToKeep.length()));
     } else {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        msgText = tr("This track file could not be deleted from disk");
-#else
         msgText = tr("This track file could not be moved to trash");
-#endif
     }
     pNotDeletedLabel->setText(msgText);
     pNotDeletedLabel->setTextFormat(Qt::RichText);

@@ -19,7 +19,6 @@
 #include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
-#include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -113,11 +112,7 @@ DlgPrefInterface::DlgPrefInterface(
         // "If country is not present, or is not a valid ISO 3166 code, the most
         // appropriate country is chosen for the specified language."
         if (localeNameFixed.contains('_')) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            territoryName = QLocale::countryToString(locale.country());
-#else
             territoryName = QLocale::territoryToString(locale.territory());
-#endif
             DEBUG_ASSERT(!territoryName.isEmpty());
         }
         QString displayName = languageName;
@@ -240,8 +235,7 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
+    auto* pScreen = screen();
     if (!pScreen) {
         // Obtain the primary screen. This is necessary if no window is
         // available before the widget is displayed.

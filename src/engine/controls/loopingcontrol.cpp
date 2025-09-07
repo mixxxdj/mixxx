@@ -11,7 +11,6 @@
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/compatibility/qatomic.h"
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 
@@ -1229,7 +1228,7 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
 
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->setAndConfirm(enabled ? 1.0 : 0.0);
-    BeatLoopingControl* pActiveBeatLoop = atomicLoadRelaxed(m_pActiveBeatLoop);
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop.loadRelaxed();
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
             pActiveBeatLoop->activate();

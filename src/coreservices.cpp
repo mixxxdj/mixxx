@@ -71,17 +71,6 @@
 #include <X11/XKBlib.h>
 #endif
 
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <X11/Xlibint.h>
-#include <QtX11Extras/QX11Info>
-
-#include "engine/channelhandle.h"
-// Xlibint.h predates C++ and defines macros which conflict
-// with references to std::max and std::min
-#undef max
-#undef min
-#endif
-
 namespace {
 const mixxx::Logger kLogger("CoreServices");
 constexpr int kMicrophoneCount = 4;
@@ -99,28 +88,6 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
         DEBUG_ASSERT(false);
     }
 }
-
-// hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
-// https://github.com/mixxxdj/mixxx/issues/9533
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
-
-constexpr int NUM_HANDLERS = 256;
-WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
-
-Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
-    // Call any previous handler first in case it needs to do real work.
-    auto code = static_cast<int>(event->error_code);
-    if (__oldHandlers[code] != nullptr) {
-        __oldHandlers[code](display, event, error);
-    }
-
-    // Always return false so the error does not get passed to the normal
-    // application defined handler.
-    return False;
-}
-
-#endif
 
 #if defined(Q_OS_LINUX)
 QLocale localeFromXkbSymbol(const QString& xkbLayout) {
@@ -455,7 +422,7 @@ void CoreServices::initializeLogging() {
             logFlags);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
+void CoreServices::initialize() {
     VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
         return;
     }
@@ -468,17 +435,6 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     VersionStore::logBuildDetails();
-
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // XESetWireToError will segfault if running as a Wayland client
-    if (pApp->platformName() == QLatin1String("xcb")) {
-        for (auto i = 0; i < NUM_HANDLERS; ++i) {
-            XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
-        }
-    }
-#else
-    Q_UNUSED(pApp);
-#endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
@@ -663,11 +619,7 @@ void CoreServices::initialize(QApplication* pApp) {
             pConfig->getValueString(
                            ConfigKey("[Library]", "SupportedFileExtensions"))
                     .split(',',
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                             Qt::SkipEmptyParts);
-#else
-                            QString::SkipEmptyParts);
-#endif
 
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
@@ -675,19 +627,11 @@ void CoreServices::initialize(QApplication* pApp) {
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
     QSet<QString> prev_plugins =
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             QSet<QString>(prev_plugins_list.begin(), prev_plugins_list.end());
-#else
-            QSet<QString>::fromList(prev_plugins_list);
-#endif
 
     const QList<QString> supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
     auto curr_plugins =
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             QSet<QString>(supportedFileSuffixes.begin(), supportedFileSuffixes.end());
-#else
-            QSet<QString>::fromList(supportedFileSuffixes);
-#endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),

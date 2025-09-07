@@ -12,7 +12,6 @@
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
 #include "track/track.h"
-#include "util/colorcomponents.h"
 #include "util/roundtopixel.h"
 #include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -244,8 +243,7 @@ void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
     const float posy4 = static_cast<float>(rect.y() + rect.height());
 
     float r, g, b, a;
-
-    getRgbF(color, &r, &g, &b, &a);
+    color.getRgbF(&r, &g, &b, &a);
 
     RGBAVertexUpdater vertexUpdater{pNode->geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
     vertexUpdater.addRectangleVGradient(

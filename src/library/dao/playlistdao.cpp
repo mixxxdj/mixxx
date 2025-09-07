@@ -200,11 +200,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
         // However, the proposed alternative has just been introduced in Qt
         // 5.14. Until the minimum required Qt version of Mixxx is increased,
         // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         playedTrackIds = QSet<TrackId>(trackIds.constBegin(), trackIds.constEnd());
-#else
-        playedTrackIds = QSet<TrackId>::fromList(trackIds);
-#endif
     }
 
     // Get the playlist id for this
@@ -1345,18 +1341,8 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
         trackPositionIds.insert(trackAPosition, trackBId);
         trackPositionIds.insert(trackBPosition, trackAId);
 
-// TODO: The following use of QList<T>::swap(int, int) is deprecated
-// and should be replaced with QList<T>::swapItemsAt(int, int)
-// However, the proposed alternative has just been introduced in Qt
-// 5.13. Until the minimum required Qt version of Mixxx is increased,
-// we need a version check here.
-#if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
-        newPositions.swap(newPositions.indexOf(trackAPosition),
-                newPositions.indexOf(trackBPosition));
-#else
         newPositions.swapItemsAt(newPositions.indexOf(trackAPosition),
                 newPositions.indexOf(trackBPosition));
-#endif
 
         QSqlQuery query(m_database);
         query.prepare(QStringLiteral(

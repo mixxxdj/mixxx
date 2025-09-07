@@ -8,7 +8,6 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
-#include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"

@@ -573,11 +573,7 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     double bpm = argument.toDouble(&isDouble);
     if (isDouble) {
         // Check if the arg has a decimal separator (even if no digits after that)
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         bool strictMatch = argument.split('.', Qt::SkipEmptyParts).length() > 1;
-#else
-        bool strictMatch = argument.split('.', QString::SkipEmptyParts).length() > 1;
-#endif
         if (fuzzy) {
             // fuzzy search +- n%
             m_matchMode = MatchMode::Fuzzy;

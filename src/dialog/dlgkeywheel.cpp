@@ -37,9 +37,7 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
     graphic->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     graphic->setMinimumSize(200, 200);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     graphic->renderer()->setAspectRatioMode(Qt::KeepAspectRatio);
-#endif
 
     connect(closeButton,
             &QAbstractButton::clicked,
@@ -156,11 +154,7 @@ void DlgKeywheel::updateSvg() {
 
             if (text.isText()) {
                 QDomText textNode = text.toText();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 const int keyInt = QStringView(id).sliced(2).toInt();
-#else
-                const int keyInt = id.midRef(2).toInt();
-#endif
                 ChromaticKey key = static_cast<ChromaticKey>(keyInt);
                 QString keyString = KeyUtils::keyToString(key, m_notation);
                 textNode.setData(keyString);

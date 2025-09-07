@@ -70,11 +70,7 @@ void WCoverArtLabel::setPixmapAndResize(const QPixmap& px) {
         m_fullSizeCover = px;
         setPixmap(m_loadedCover);
     }
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     QSize newSize = pixmap().size() / devicePixelRatioF();
-#else
-    QSize newSize = pixmap()->size() / devicePixelRatioF();
-#endif
     // add the frame so the entire pixmap is visible
     newSize += QSize(frameWidth() * 2, frameWidth() * 2);
     if (size() != newSize) {

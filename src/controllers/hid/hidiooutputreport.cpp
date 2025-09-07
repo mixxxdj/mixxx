@@ -3,7 +3,6 @@
 #include <hidapi.h>
 
 #include "util/cmdlineargs.h"
-#include "util/compatibility/qbytearray.h"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
@@ -66,7 +65,7 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
 
     // Deep copy with reusing the already allocated heap memory
     // The first byte with the ReportID is not overwritten
-    qByteArrayReplaceWithPositionAndSize(&m_cachedData,
+    m_cachedData.replace(
             kReportIdSize,
             m_cachedData.size(),
             data.constData(),

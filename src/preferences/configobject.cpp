@@ -199,11 +199,7 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         DEBUG_ASSERT(text.encoding() == QStringConverter::Utf8);
-#else
-        text.setCodec("UTF-8");
-#endif
 
         while (!text.atEnd()) {
             line = text.readLine().trimmed();
@@ -251,11 +247,7 @@ bool ConfigObject<ValueType>::save() {
     }
     QTextStream stream(&tmpFile);
     // UTF-8 is the default in Qt6.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     DEBUG_ASSERT(stream.encoding() == QStringConverter::Utf8);
-#else
-    stream.setCodec("UTF-8");
-#endif
 
     QString group = "";
 
