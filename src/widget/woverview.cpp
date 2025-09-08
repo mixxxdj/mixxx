@@ -33,6 +33,9 @@ constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
 } // anonymous namespace
 
+// for mixxx::OverviewType
+using namespace mixxx;
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -41,7 +44,8 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(mixxx::OverviewType::RGB),
+          m_type(OverviewType::RGB),
+          m_stereo(true),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -94,6 +98,13 @@ WOverview::WOverview(
     m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
     slotTypeControlChanged(m_pTypeControl->get());
 
+    m_pStereoControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("overview_stereo_mode"),
+            this);
+    m_pStereoControl->connectValueChanged(this, &WOverview::slotStereoControlChanged);
+    slotStereoControlChanged(m_pStereoControl->get());
+
     m_pMinuteMarkersControl = make_parented<ControlProxy>(
             QStringLiteral("[Waveform]"),
             QStringLiteral("draw_overview_minute_markers"),
@@ -105,16 +116,22 @@ WOverview::WOverview(
     // changed in the preferences.
     WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overviewNormalizeChanged,
+            &WaveformWidgetFactory::overviewScalingChanged,
             this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    connect(pWidgetFactory,
-            &WaveformWidgetFactory::visualGainChanged,
-            this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    // Also listen to ReplayGain changes to scale the waveform
-    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
-    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
+            &WOverview::slotScalingChanged);
+    // Also update when the ReplayGain and related options have been changed
+    m_pReplayGain = make_parented<ControlProxy>(m_group, QStringLiteral("replaygain"), this);
+    m_pReplayGainEnabled = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainEnabled"), this);
+    m_pReplayGainBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainBoost"), this);
+    m_pReplayGainDefaultBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("DefaultBoost"), this);
+
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainEnabled->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainDefaultBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -443,8 +460,8 @@ void WOverview::onPassthroughChange(double v) {
 
 void WOverview::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
-    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
-    mixxx::OverviewType type = static_cast<mixxx::OverviewType>(static_cast<int>(v));
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<OverviewType>().keyCount());
+    OverviewType type = static_cast<OverviewType>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -454,11 +471,23 @@ void WOverview::slotTypeControlChanged(double v) {
     slotWaveformSummaryUpdated();
 }
 
+void WOverview::slotStereoControlChanged(double v) {
+    bool stereo = v > 0;
+    if (stereo == m_stereo) {
+        return;
+    }
+
+    m_stereo = stereo;
+    // Enforce generation of the new stereo/mono source image
+    m_waveformSourceImage = QImage();
+    slotWaveformSummaryUpdated();
+}
+
 void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
 
-void WOverview::slotNormalizeOrVisualGainChanged() {
+void WOverview::slotScalingChanged() {
     update();
 }
 
@@ -723,6 +752,10 @@ void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
 }
 
 void WOverview::drawAxis(QPainter* pPainter) {
+    if (!m_stereo) {
+        return;
+    }
+
     PainterScope painterScope(pPainter);
     pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
     if (m_orientation == Qt::Horizontal) {
@@ -733,42 +766,56 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    if (!m_waveformSourceImage.isNull()) {
-        WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
-        float diffGain;
-        bool normalize = pWidgetFactory->isOverviewNormalized();
-        if (normalize && m_pixmapDone && m_waveformPeak > 1) {
-            diffGain = 255 - m_waveformPeak - 1;
-        } else {
-            DEBUG_ASSERT(m_pCurrentTrack);
-            const auto replayGain = m_pCurrentTrack->getReplayGain();
-            const auto visualGain = static_cast<float>(
-                    pWidgetFactory->getVisualGain(BandIndex::AllBand) *
-                    (replayGain.hasRatio()
-                                    ? replayGain.getRatio()
-                                    : 1.0));
-            diffGain = 255.0f - (255.0f / visualGain);
-        }
-
-        if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            QRect sourceRect(0,
-                    static_cast<int>(diffGain),
-                    m_waveformSourceImage.width(),
-                    m_waveformSourceImage.height() -
-                            2 * static_cast<int>(diffGain));
-            QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
-            if (m_orientation == Qt::Vertical) {
-                // Rotate pixmap
-                croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
-            }
-            m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
-                    Qt::IgnoreAspectRatio,
-                    Qt::SmoothTransformation);
-            m_diffGain = diffGain;
-        }
-
-        pPainter->drawImage(rect(), m_waveformImageScaled);
+    if (m_waveformSourceImage.isNull()) {
+        return;
     }
+
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
+    float diffGain;
+    bool normalize = pWidgetFactory->isOverviewNormalized();
+    if (normalize && m_pixmapDone && m_waveformPeak > 1) {
+        diffGain = 255 - m_waveformPeak - 1;
+    } else {
+        // Try to get same visual gain like in the scrolling waveforms.
+        // Note: there the gain still varies per renderer :|
+        // This essentially repeats the calculations of EnginePregain::process(),
+        // just without `pregain`.
+        CSAMPLE_GAIN trackGainRatio = 1;
+        if (m_pReplayGainEnabled->toBool()) {
+            auto replayGain = static_cast<CSAMPLE_GAIN>(m_pReplayGain->get());
+            if (replayGain == 0) {
+                // Not analyzed yet or cleared manually. Use default boost
+                trackGainRatio =
+                        static_cast<CSAMPLE_GAIN>(m_pReplayGainDefaultBoost->get());
+            } else {
+                // ReplayGain boost
+                trackGainRatio =
+                        replayGain * static_cast<CSAMPLE_GAIN>(m_pReplayGainBoost->get());
+            }
+        }
+        const auto visualGain = static_cast<float>(trackGainRatio *
+                pWidgetFactory->getVisualGain(BandIndex::AllBand));
+        diffGain = 255.0f - (255.0f / visualGain);
+    }
+
+    if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
+        const QRect sourceRect(0,
+                int(m_stereo ? 1 : 2) * static_cast<int>(diffGain),
+                m_waveformSourceImage.width(),
+                m_waveformSourceImage.height() -
+                        2 * static_cast<int>(diffGain));
+        QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
+        if (m_orientation == Qt::Vertical) {
+            // Rotate pixmap
+            croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
+        }
+        m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                Qt::IgnoreAspectRatio,
+                Qt::SmoothTransformation);
+        m_diffGain = diffGain;
+    }
+
+    pPainter->drawImage(rect(), m_waveformImageScaled);
 }
 
 void WOverview::drawMinuteMarkers(QPainter* pPainter) {
@@ -803,14 +850,20 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
         if (m_orientation == Qt::Horizontal) {
             line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
             pPainter->drawLine(line);
-            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
-            pPainter->drawLine(line);
+            // Draw bottom markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+                pPainter->drawLine(line);
+            }
         } else {
             // untested, best effort basis
             line.setLine(0.0, currentMarkerXPos, markerHeight, currentMarkerXPos);
             pPainter->drawLine(line);
-            line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
-            pPainter->drawLine(line);
+            // Draw right markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
+                pPainter->drawLine(line);
+            }
         }
     }
 }
@@ -866,18 +919,21 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
     if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
             (m_analyzerProgress < kAnalyzerProgressDone)) {
         PainterScope painterScope(pPainter);
-        pPainter->setPen(QPen(m_playPosColor, 3 * m_scaleFactor));
+        double penWidth = 3 * m_scaleFactor;
+        pPainter->setPen(QPen(m_playPosColor, penWidth));
 
         if (m_analyzerProgress > kAnalyzerProgressNone) {
             if (m_orientation == Qt::Horizontal) {
+                double y = m_stereo ? height() / 2 : height() - penWidth / 2;
                 pPainter->drawLine(QLineF(width() * m_analyzerProgress,
-                        height() / 2,
+                        y,
                         width(),
-                        height() / 2));
+                        y));
             } else {
-                pPainter->drawLine(QLineF(width() / 2,
+                double x = m_stereo ? width() / 2 : width() - penWidth / 2;
+                pPainter->drawLine(QLineF(x,
                         height() * m_analyzerProgress,
-                        width() / 2,
+                        x,
                         height()));
             }
         }
@@ -1422,27 +1478,30 @@ bool WOverview::drawNextPixmapPart() {
                 static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
-    if (m_type == mixxx::OverviewType::Filtered) {
+    if (m_type == OverviewType::Filtered) {
         waveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
-    } else if (m_type == mixxx::OverviewType::HSV) {
+                m_signalColors,
+                !m_stereo);
+    } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
-    } else { // mixxx::OverviewType::RGB:
+                m_signalColors,
+                !m_stereo);
+    } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     }
 
     m_waveformImageScaled = QImage();

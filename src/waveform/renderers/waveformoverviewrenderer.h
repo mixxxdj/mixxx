@@ -9,11 +9,15 @@ class QPainter;
 class WaveformSignalColors;
 
 namespace waveformOverviewRenderer {
+/// This returns the normalized fullsize image
+/// for the library's overview column.
 QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         bool mono = false);
-/// These paint methods allow "mono" rendering (mono-mixdown, bottom-aligned).
+
+/// These paint methods return the fullsize image
+/// They allow "mono" rendering (mono-mixdown, bottom-aligned).
 /// Note: Don't use mono = true with WOverview, it's not adjusted yet! It does some
 /// additional scaling for normalization which will atm cut off the bottom part.
 void drawWaveformPartRGB(
