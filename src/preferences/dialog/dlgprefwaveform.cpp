@@ -442,16 +442,34 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     auto type = static_cast<WaveformWidgetType::Type>(
             waveformTypeComboBox->itemData(index).toInt());
     auto* factory = WaveformWidgetFactory::instance();
-    factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
 
     auto backend = m_pConfig->getValue(kHardwareAccelerationKey, factory->preferredBackend());
-    useAccelerationCheckBox->setChecked(backend !=
-            WaveformWidgetBackend::None);
+    // When setting the type, factory uses current 'use acceleration' state,
+    // which may currently be off. However, with QOpenGL there are Simple and Stacked
+    // which require acceleration and auto-enable it if possible.
+    // FIXME Find a better solution?
+    // See https://github.com/mixxxdj/mixxx/pull/15277 for details.
+    updateWaveformAcceleration(type, backend);
+    // Store the value so it's available in factory. Same as
+    // slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked()) just
+    // without the redundant actions
+    if (useAccelerationCheckBox->isChecked()) {
+        backend =
+#ifdef MIXXX_USE_QOPENGL
+                WaveformWidgetBackend::AllShader
+#else
+                WaveformWidgetBackend::GL
+#endif
+                ;
+    }
+    m_pConfig->setValue(kHardwareAccelerationKey, backend);
+
+    // Now set the new type
+    factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
 
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
             kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
-    updateWaveformAcceleration(type, backend);
     updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
 }
@@ -503,6 +521,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(
         supportAcceleration = handle.supportAcceleration();
         supportSoftware = handle.supportSoftware();
     }
+
     useAccelerationCheckBox->blockSignals(true);
 
     if (type == WaveformWidgetType::Empty) {
