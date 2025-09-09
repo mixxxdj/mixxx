@@ -32,6 +32,13 @@ inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
 }
 } // namespace
 
+// EveOSC
+extern std::atomic<bool> s_oscEnabled;
+void oscChangedPlayState(
+        const QString& oscGroup,
+        float playstate);
+// EveOSC
+
 BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
         : BasePlayer(pParent, group) {
 }
@@ -969,6 +976,13 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }
+    //  EveOSC begin
+    if (s_oscEnabled.load()) {
+        oscChangedPlayState(
+                getGroup(),
+                (float)value);
+    }
+    // EveOSC end
 }
 
 EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
