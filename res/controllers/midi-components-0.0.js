@@ -766,7 +766,7 @@
     };
 
     JogWheelBasic.prototype = new Component({
-        vinylMode: true,
+        _vinylMode: true, // private, accessible via setters defined below
         isPress: Button.prototype.isPress,
         inValueScale: function(value) {
             // default implementation for converting signed ints
@@ -802,6 +802,19 @@
             Component.prototype.connect.call(this);
             this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
         }
+    });
+    Object.defineProperty(JogWheelBasic.prototype, "vinylMode", {
+        get() {
+            return this._vinylMode;
+        },
+        set(vinylMode) {
+            // Disable scratching immediately when disabling vinylMode in case
+            // the touch surface malfunctions
+            if (!vinylMode && engine.isScratching(this.deck)) {
+                engine.scratchDisable(this.deck);
+            }
+            this._vinylMode = vinylMode;
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
