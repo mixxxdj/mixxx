@@ -164,7 +164,8 @@ BrowseFeature::BrowseFeature(Library* pLibrary,
     for (const QString& quickLinkPath : std::as_const(m_quickLinkList)) {
         QString name = extractNameFromPath(quickLinkPath);
         qDebug() << "Appending Quick Link: " << name << "---" << quickLinkPath;
-        m_pQuickLinkItem->appendChild(name, quickLinkPath);
+        auto pItem = createPathTreeItem(name, quickLinkPath);
+        m_pQuickLinkItem->insertChild(m_pQuickLinkItem->childRows(), std::move(pItem));
     }
 
     // initialize the model
@@ -184,13 +185,14 @@ void BrowseFeature::slotAddQuickLink() {
         return;
     }
 
-    const QString name = extractNameFromPath(path);
-
     const QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     std::vector<std::unique_ptr<TreeItem>> rows;
     // TODO() Use here std::span to get around the heap allocation of
     // std::vector for a single element.
-    rows.push_back(std::make_unique<TreeItem>(name, path));
+    const QString name = extractNameFromPath(path);
+    qDebug() << "Appending Quick Link: " << name << "---" << path;
+    auto pItem = createPathTreeItem(name, path);
+    rows.emplace_back(std::move(pItem));
     m_pSidebarModel->insertTreeItemRows(std::move(rows), m_pQuickLinkItem->childRows(), parent);
 
     m_quickLinkList.append(path);
@@ -405,16 +407,15 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         menu.addAction(m_pAddQuickLinkAction);
     }
 
-    if (!isPathWatched(path)) {
+    if (!pItem->isWatchedLibraryPath()) {
         menu.addAction(m_pAddtoLibraryAction);
     }
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
 }
 
-namespace {
 // Get the list of devices (under "Removable Devices" section).
-std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
+std::vector<std::unique_ptr<TreeItem>> BrowseFeature::createRemovableDevices() const {
     std::vector<std::unique_ptr<TreeItem>> ret;
 #if defined(__WINDOWS__)
     // Repopulate drive list
@@ -451,14 +452,13 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
         if (removableDriveRootPaths().contains(device.absoluteFilePath())) {
             continue;
         }
-        ret.push_back(std::make_unique<TreeItem>(
-                device.fileName(),
-                QVariant(device.filePath() + QStringLiteral("/"))));
+        const QString path = device.filePath() + QStringLiteral("/");
+        auto pNewItem = createPathTreeItem(device.fileName(), path, false);
+        ret.emplace_back(std::move(pNewItem));
     }
 #endif
     return ret;
 }
-} // namespace
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
@@ -517,7 +517,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 #endif
         folders = createRemovableDevices();
     } else {
-        folders = getChildDirectoryItems(path);
+        bool isWatched = pItem->isWatchedLibraryPath();
+        folders = getChildDirectoryItems(path, isWatched);
     }
 
     if (!folders.empty()) {
@@ -526,7 +527,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 }
 
 std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
-        const QString& path) const {
+        const QString& path,
+        bool isWatched) const {
     std::vector<std::unique_ptr<TreeItem>> items;
 
     if (path.isEmpty()) {
@@ -534,37 +536,53 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
     }
     // we assume that the path refers to a folder in the file system
     // populate children
-    const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
-
-    QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
-            QDir::Dirs | QDir::NoDotAndDotDot);
+    const QDir dir(path);
+    const QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     // loop through all the item and construct the children
-    foreach (QFileInfo one, all) {
+    for (const auto& one : all) {
         // Skip folders that end with .app on OS X
 #if defined(__APPLE__)
         if (one.isDir() && one.fileName().endsWith(".app"))
             continue;
 #endif
-        // We here create new items for the sidebar models
-        // Once the items are added to the TreeItemModel,
-        // the models takes ownership of them and ensures their deletion
-        items.push_back(std::make_unique<TreeItem>(
-                one.fileName(),
-                QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
+        // We here create new items for the sidebar models.
+        // Once the items are added to the TreeItemModel, the model takes
+        // ownership of them and ensures their deletion.
+        // Note: use absolutePath(), not canonicalPath().
+        const QString chPath = one.absoluteFilePath() + QStringLiteral("/");
+        auto pNewItem = createPathTreeItem(one.fileName(), chPath, isWatched);
+        items.emplace_back(std::move(pNewItem));
     }
 
     return items;
 }
 
+std::unique_ptr<TreeItem> BrowseFeature::createPathTreeItem(
+        const QString& name,
+        const QString& path,
+        bool parentIsWatched) const {
+    auto pItem = std::make_unique<TreeItem>(name, path);
+    pItem->setIsWatchedLibraryPath(parentIsWatched
+                    ? true
+                    : isPathWatched(path));
+    return pItem;
+}
+
 bool BrowseFeature::isPathWatched(const QString& path) const {
+    // Here we check if a path is a (child of a) library root directory
+    if (path.isEmpty() || path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        return false;
+    }
+
     const auto dir = mixxx::FileInfo(path);
     VERIFY_OR_DEBUG_ASSERT(dir.exists() && dir.isDir()) {
         qWarning() << "Failed to check" << dir.location();
         qWarning() << "Directory does not exist, is inaccessible or is not a directory";
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(dir.isReadable()) {
+    // NOTE Don't assert dir.isreadable(), this may be the linux root directory
+    if (!dir.isReadable()) {
         qWarning() << "Aborting to check" << dir.location();
         qWarning() << "Directory can not be read";
         return false;
