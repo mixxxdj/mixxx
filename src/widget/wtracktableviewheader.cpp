@@ -22,8 +22,9 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers) {
         header_state->set_size(headers.sectionSize(li));
         header_state->set_logical_index(li);
         header_state->set_visual_index(vi);
-        QString column_name = model->headerData(
-                li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
+        const QString column_name = model->headerData(
+                                                 li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                                            .toString();
         // If there was some sort of error getting the column id,
         // we have to skip this one. (Happens with non-displayed columns)
         if (column_name.isEmpty()) {
@@ -61,9 +62,9 @@ QString HeaderViewState::saveState() const {
     return QString(array.toBase64());
 }
 
-void HeaderViewState::restoreState(QHeaderView* headers) {
+void HeaderViewState::restoreState(QHeaderView* pHeaders) {
     const int max_columns =
-            math_min(headers->count(), m_view_state.header_state_size());
+            math_min(pHeaders->count(), m_view_state.header_state_size());
 
     typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*> state_map;
     state_map map;
@@ -73,11 +74,11 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     }
 
     // First set all sections to be hidden and update logical indexes.
-    for (int li = 0; li < headers->count(); ++li) {
-        headers->setSectionHidden(li, true);
-        auto it = map.find(headers->model()->headerData(
-                                                   li, Qt::Horizontal, TrackModel::kHeaderNameRole)
-                                   .toString());
+    for (int li = 0; li < pHeaders->count(); ++li) {
+        pHeaders->setSectionHidden(li, true);
+        auto it = map.find(pHeaders->model()->headerData(
+                                                    li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                        .toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
@@ -88,12 +89,12 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
         const mixxx::library::HeaderViewState::HeaderState& header =
                 m_view_state.header_state(vi);
         const int li = header.logical_index();
-        headers->setSectionHidden(li, header.hidden());
-        headers->resizeSection(li, header.size());
-        headers->moveSection(headers->visualIndex(li), vi);
+        pHeaders->setSectionHidden(li, header.hidden());
+        pHeaders->resizeSection(li, header.size());
+        pHeaders->moveSection(pHeaders->visualIndex(li), vi);
     }
     if (m_view_state.sort_indicator_shown()) {
-        headers->setSortIndicator(
+        pHeaders->setSortIndicator(
                 m_view_state.sort_indicator_section(),
                 static_cast<Qt::SortOrder>(m_view_state.sort_order()));
     }
@@ -110,12 +111,12 @@ void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
     m_menu.popup(event->globalPos());
 }
 
-void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
+void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
     TrackModel* oldTrackModel = getTrackModel();
 
-    if (dynamic_cast<QAbstractItemModel*>(oldTrackModel) == model) {
+    if (dynamic_cast<QAbstractItemModel*>(oldTrackModel) == pModel) {
         // If the models are the same, do nothing but the redundant call.
-        QHeaderView::setModel(model);
+        QHeaderView::setModel(pModel);
         return;
     }
 
@@ -129,10 +130,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     clearActions();
 
     // Now set the header view to show the new model
-    QHeaderView::setModel(model);
+    QHeaderView::setModel(pModel);
 
     // Now build actions for the new TrackModel
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(pModel);
 
     if (!trackModel) {
         return;
@@ -157,13 +158,13 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // * toggle a box with mouse click or Space on a selected box (via keyboard,
     //   not just hovered by mouse pointer)
     // * toggle and close by pressing Return on a selected box
-    int columns = model->columnCount();
+    int columns = pModel->columnCount();
     for (int i = 0; i < columns; ++i) {
         if (trackModel->isColumnInternal(i)) {
             continue;
         }
 
-        QString title = model->headerData(i, orientation()).toString();
+        const QString title = pModel->headerData(i, orientation()).toString();
 
         // Custom QCheckBox with fixed hover behavior
         auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
@@ -251,10 +252,11 @@ void WTrackTableViewHeader::restoreHeaderState() {
 
 void WTrackTableViewHeader::loadDefaultHeaderState() {
     // TODO: isColumnHiddenByDefault logic probably belongs here now.
-    QAbstractItemModel* m = model();
+    QAbstractItemModel* pModel = model();
     for (int i = 0; i < count(); ++i) {
-        int header_size = m->headerData(
-                i, orientation(), TrackModel::kHeaderWidthRole).toInt();
+        int header_size = pModel->headerData(
+                                        i, orientation(), TrackModel::kHeaderWidthRole)
+                                  .toInt();
         if (header_size > 0) {
             resizeSection(i, header_size);
         }
@@ -262,11 +264,11 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
 }
 
 bool WTrackTableViewHeader::hasPersistedHeaderState() {
-    TrackModel* track_model = getTrackModel();
-    if (!track_model) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
     return !headerStateString.isNull();
 }
 
@@ -312,6 +314,6 @@ int WTrackTableViewHeader::hiddenCount() {
 }
 
 TrackModel* WTrackTableViewHeader::getTrackModel() {
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-    return trackModel;
+    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model());
+    return pTrackModel;
 }
