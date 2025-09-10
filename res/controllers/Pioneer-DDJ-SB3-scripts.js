@@ -277,7 +277,7 @@ PioneerDDJSB3.init = function() {
     PioneerDDJSB3.initDeck("[Channel4]");
 
     if (PioneerDDJSB3.twinkleVumeterAutodjOn) {
-        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle());
+        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle);
     }
 
     // request the positions of the knobs and faders from the controller
