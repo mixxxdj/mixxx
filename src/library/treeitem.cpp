@@ -84,6 +84,14 @@ void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
     }
 }
 
+void TreeItem::updateIsWatchedLibraryPathRecursively(bool watched) {
+    setIsWatchedLibraryPath(watched);
+    for (auto* pChild : std::as_const(m_children)) {
+        pChild->setIsWatchedLibraryPath(watched);
+        pChild->updateIsWatchedLibraryPathRecursively(watched);
+    }
+}
+
 TreeItem* TreeItem::appendChild(
         QString label,
         QVariant data) {

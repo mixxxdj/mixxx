@@ -412,7 +412,7 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
     scrollTo(translated, EnsureVisible);
 }
 
-QModelIndex WLibrarySidebar::selectedIndex() {
+QModelIndex WLibrarySidebar::selectedIndex() const {
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.isEmpty()) {
         return QModelIndex();

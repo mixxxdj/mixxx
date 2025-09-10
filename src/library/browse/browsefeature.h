@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QFuture>
+#include <QFutureWatcher>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -57,10 +59,20 @@ class BrowseFeature : public LibraryFeature {
     void requestAddDir(const QString&);
     void scanLibrary();
 
+  private slots:
+    void slotLibraryDirectoriesChanged();
+    void onSymLinkMapUpdated();
+
   private:
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
     bool isPathWatched(const QString& path) const;
+    QString maybeUnResolveSymlink(const QString& path) const;
+
+    QMap<QString, QString> updateSymlinkList(const QList<mixxx::FileInfo>& rootDirs);
+    void slotUpdateAllTreeItemsIsWatchedPath();
+    void updateItemIsWatchedPathRecursively(TreeItem* pItem);
+
     QStringList getDefaultQuickLinks() const;
     std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() const;
     std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(
@@ -93,4 +105,10 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+
+    QMap<QString, QString> m_trackDirSymlinksMap;
+
+    QFutureWatcher<QMap<QString, QString>> m_future_watcher;
+    QFuture<QMap<QString, QString>> m_future;
+    QMutex m_mutex;
 };
