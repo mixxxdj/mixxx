@@ -86,11 +86,13 @@ class SidebarModel : public QAbstractItemModel {
   private slots:
     void slotPressedUntilClickedTimeout();
 
+  protected:
+    QList<LibraryFeature*> m_sFeatures;
+
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     QModelIndex translateIndex(const QModelIndex& index, const QAbstractItemModel* model);
     void featureRenamed(LibraryFeature*);
-    QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 
     QTimer* const m_pressedUntilClickedTimer;
