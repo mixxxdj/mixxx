@@ -65,6 +65,8 @@ void BrowseLibraryTableModel::setPath(QString path) {
     // Note(ronso0) For now I'm using recursive mode since that is what almost
     // all my b2b DJs expected (coming from Serato or VDJ).
     // FIXME Default to strict mode and add strict/recursive toggle?
+    const QString newDirFilter = QStringLiteral("dir:\"%1\"").arg(path);
+    qWarning().noquote() << "--> new dirFilter:" << newDirFilter;
     setExtraFilter(QStringLiteral("dir:\"%1\"").arg(path));
 }
 
