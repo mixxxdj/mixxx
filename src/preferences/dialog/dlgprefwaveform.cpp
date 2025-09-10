@@ -390,10 +390,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
                     WaveformWidgetFactory::defaultType()),
             true);
 
-    allVisualGain->setValue(1.0);
-    lowVisualGain->setValue(1.0);
-    midVisualGain->setValue(1.0);
-    highVisualGain->setValue(1.0);
+    allVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::AllBand));
+    lowVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::Low));
+    midVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::Mid));
+    highVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::High));
 
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
@@ -408,7 +408,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     overviewMinuteMarkersCheckBox->setChecked(true);
 
     // Use "Global" waveform gain + ReplayGain if enabled
-    overview_scale_allReplayGain->setChecked(true);
+    overview_scale_allReplayGain->setChecked(!WaveformWidgetFactory::isOverviewNormalizedDefault());
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
