@@ -193,9 +193,8 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         connect(pAction,
                 &QAction::triggered,
                 this,
-                [this, pCheckBox{pCheckBox.get()}, i] {
+                [pCheckBox{pCheckBox.get()}] {
                     pCheckBox->toggle();
-                    showOrHideColumn(i);
                 });
         m_menu.addAction(pAction);
 
