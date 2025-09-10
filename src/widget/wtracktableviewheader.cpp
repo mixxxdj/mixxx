@@ -194,7 +194,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
                 &QAction::triggered,
                 this,
                 [this, pCheckBox{pCheckBox.get()}, i] {
+                    // Block signals, else we trigger it twice
+                    pCheckBox->blockSignals(true);
                     pCheckBox->toggle();
+                    pCheckBox->blockSignals(false);
                     showOrHideColumn(i);
                 });
         m_menu.addAction(pAction);
