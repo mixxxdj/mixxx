@@ -40,7 +40,8 @@ LibraryScannerDlg::~LibraryScannerDlg() {
 }
 
 void LibraryScannerDlg::slotUpdate(const QString& path) {
-    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed().formatMillisWithUnit() << path;
+    qWarning() << "LibraryScannerDlg slotUpdate(), elapsed:"
+               << m_timer.elapsed().formatMillisWithUnit() << path;
     if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
        setVisible(true);
     }
@@ -52,7 +53,7 @@ void LibraryScannerDlg::slotUpdate(const QString& path) {
 }
 
 void LibraryScannerDlg::slotUpdateCover(const QString& path) {
-    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
+    qWarning() << "LibraryScannerDlg slotUpdateCover" << m_timer.elapsed() << path;
     if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
        setVisible(true);
     }
@@ -64,9 +65,11 @@ void LibraryScannerDlg::slotUpdateCover(const QString& path) {
 }
 
 void LibraryScannerDlg::slotCancel() {
-    qDebug() << "Cancelling library scan...";
+    qWarning() << "     ScannerDlg::slotCancel()";
     m_bCancelled = true;
+    qWarning() << "     -> emit scanCancelled";
     emit scanCancelled();
+    qWarning() << "     -> hide";
     hide();
 }
 
