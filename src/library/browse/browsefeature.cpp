@@ -22,6 +22,7 @@
 #include "library/treeitem.h"
 #include "moc_browsefeature.cpp"
 #include "util/cmdlineargs.h"
+#include "util/performancetimer.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -314,21 +315,27 @@ void BrowseFeature::slotRefreshDirectoryTree() {
 }
 
 void BrowseFeature::slotLibraryDirectoriesChanged() {
+    qWarning() << "#";
+    qWarning() << "# slotLibraryDirectoriesChanged ##############################";
     // Let a worker thread update the symlink map
     if (m_future_watcher.isRunning()) {
         // Cancel the current run.
         // No need for m_future_watcher.waitForFinished(),
         // updateSymlinkMap() will abort/return early if
         // the auto-generated QPromise::isCanceled()
+        qWarning() << "# task already/still running, cancel it";
         m_future_watcher.cancel();
     }
+    qWarning() << "# set up QFuture";
     // Run
     const auto rootDirs =
             m_pTrackCollection->getDirectoryDAO().loadAllDirectories(true /* ignore missing */);
     m_future = QtConcurrent::run(&BrowseFeature::updateSymlinkMap,
             this,
             rootDirs);
+    qWarning() << "# run";
     m_future_watcher.setFuture(m_future);
+    qWarning() << "#";
 }
 
 void BrowseFeature::updateSymlinkMap(
@@ -383,17 +390,29 @@ void BrowseFeature::updateSymlinkMap(
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
+    qWarning() << "     .";
+    qWarning() << "     .";
+    qWarning() << "     .";
+    qWarning() << "     BrowseFeature::updateSymlinkList";
+    qWarning() << "     .";
+
+    PerformanceTimer timer;
+    timer.start();
+
     QMap<QString, QString> symLinksMap;
 
     for (const auto& rootDir : rootDirs) {
         if (promise.isCanceled()) {
             return;
         }
+        qWarning() << "     insert root dir" << rootDir.location();
         symLinksMap.insert(rootDir.location(), rootDir.location());
+        qWarning() << "              target" << rootDir.canonicalLocation();
         if (rootDir.location() != rootDir.canonicalLocation()) {
             // some path segment is a symlink
             symLinksMap.insert(rootDir.canonicalLocation(), rootDir.location());
         }
+        qWarning() << "       .";
         // Scan all subdirectories
         QDirIterator it(rootDir.location(),
                 QDir::Dirs | QDir::NoDotAndDotDot,
@@ -405,12 +424,25 @@ void BrowseFeature::updateSymlinkMap(
             it.next();
             mixxx::FileInfo dirInfo(it.fileInfo());
             if (dirInfo.canonicalLocation().isEmpty()) {
+                qWarning() << "     > skip invalid symlink (target empty)" << dirInfo.location();
                 continue;
             }
+            qWarning() << "     > insert" << dirInfo.location();
+            qWarning() << "       target" << dirInfo.canonicalLocation();
             symLinksMap.insert(dirInfo.location(), dirInfo.location());
             symLinksMap.insert(dirInfo.canonicalLocation(), dirInfo.location());
         }
     }
+    const auto elapsed = timer.elapsed();
+    // Takes ~800 ms for ~3000 directories on a decent SSD
+    int elapsedMs = elapsed.toIntegerMillis();
+    int elapsedNs = elapsed.toIntegerNanos();
+    qWarning() << "     .";
+    qWarning() << "     collecting" << symLinksMap.size() << "dirs";
+    qWarning() << "     took" << elapsedMs << "ms (" << elapsedNs << "ns)";
+    qWarning() << "     .";
+    qWarning() << "     .";
+    qWarning() << "     .";
     promise.addResult(symLinksMap);
 }
 
@@ -426,6 +458,9 @@ void BrowseFeature::onSymLinkMapUpdated() {
 void BrowseFeature::slotUpdateAllTreeItemsIsWatchedPath() {
     // Update ALL items
     // Iterate over top-level items and update each recursively
+    qWarning() << "     ~";
+    qWarning() << "     ~ slotUpdateAllTreeItemsIsWatchedPath";
+    qWarning() << "     ~ num rows:" << m_pSidebarModel->rowCount();
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         const QModelIndex index = m_pSidebarModel->index(row, 0);
         TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
@@ -435,30 +470,44 @@ void BrowseFeature::slotUpdateAllTreeItemsIsWatchedPath() {
         updateItemIsWatchedPathRecursively(pTreeItem);
     }
 
+    qWarning() << "     ~ items updated";
     VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
 
+    qWarning() << "     ~ maybe switch model of the currently selected item";
     m_pSidebarWidget->update();
     // If `isWatched` of the currently selected path doesn't match
     // the used model anymore, update it.
     const auto& selectedIndex = m_pSidebarWidget->selectedIndex();
+    qWarning() << "     ~ selectedIndex:" << selectedIndex;
+    qWarning() << "     ~ sidebar model:" << m_pSidebarModel.get();
     if (selectedIndex.model() != m_pSidebarModel.get()) {
         // Index does not belong to our sidebar model, ignore
+        qWarning() << "     ~ !! index does not belong to our sidebar model";
         return;
     }
     auto* pSelectedItem = m_pSidebarModel->getItem(selectedIndex);
     if (!pSelectedItem) {
+        qWarning() << "     ~ !! NO selected item found, return";
         return;
     }
     const QString path = pSelectedItem->getData().toString();
     if (path.isEmpty() || path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        qWarning() << "     ~ !! item is root/QuickLink/Devices item, return";
         return;
     }
+    qWarning() << "     ~ found selected item";
+    qWarning() << "     ~ selected item:" << pSelectedItem->getLabel();
     bool watched = pSelectedItem->isWatchedLibraryPath();
     bool usingLibraryView =
             static_cast<BrowseLibraryTableModel*>(m_pCurrentTrackModel) != nullptr;
     if (watched != usingLibraryView) {
+        if (watched) {
+            qWarning() << "     ~ switch to library model";
+        } else {
+            qWarning() << "     ~ switch to file model";
+        }
         activateChild(selectedIndex);
     }
 }
@@ -476,6 +525,7 @@ void BrowseFeature::updateItemIsWatchedPathRecursively(TreeItem* pItem) {
         return;
     }
 
+    qWarning() << "     ~ maybe update" << path;
     if (isPathWatched(path)) {
         pItem->updateIsWatchedLibraryPathRecursively(true);
     } else {
@@ -546,6 +596,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         return;
     }
 
+    qDebug() << "--> orig path:" << path;
 
     emit saveModelState();
 
@@ -558,13 +609,18 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         // filter tracks by directory (recursive)
         // Resolve path, ie. figure if it's symlink'ed in some library directory.
         // If yes, use the un-resolved path to set the directory filter
+        qWarning() << "--> use TRACK view";
+        qWarning() << "--> unresolve path";
         const QString unresolvedPath = maybeUnResolveSymlink(std::move(path));
+        qWarning() << "--> setPath" << unresolvedPath;
         m_pLibraryModel->setPath(std::move(unresolvedPath));
+        qWarning() << "--> setSearch" << currSearch;
         m_pLibraryModel->search(currSearch);
         m_pCurrentTrackModel = m_pLibraryModel;
         emit showTrackModel(m_pLibraryModel);
         emit enableCoverArtDisplay(true);
     } else {
+        qWarning() << "--> use FILE view";
         // use BrowseTableModel
         // Open a security token for this path and if we do not have access, ask
         // for it.
@@ -756,6 +812,7 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
         // Once the items are added to the TreeItemModel, the model takes
         // ownership of them and ensures their deletion.
         // Note: use absolutePath(), not canonicalPath().
+        // TODO Explain. See getDefaultQuickLinks() for explanation.
         const QString chPath = one.absoluteFilePath() + QStringLiteral("/");
         auto pNewItem = createPathTreeItem(one.fileName(), chPath, isWatched);
         items.emplace_back(std::move(pNewItem));
@@ -778,11 +835,13 @@ std::unique_ptr<TreeItem> BrowseFeature::createPathTreeItem(
 /// Check if the path is a (child of a) library root dir
 bool BrowseFeature::isPathWatched(const QString& path) const {
     if (path.isEmpty() || path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        qWarning() << "     ~ isPathWatched: false (is Quick Links or Devices)" << path;
         return false;
     }
 
     const auto dir = mixxx::FileInfo(path);
     if (!dir.exists() || !dir.isDir()) {
+        qWarning() << "     ~ isPathWatched" << path;
         qWarning() << "Failed to check" << dir.location();
         qWarning() << "Directory does not exist, is inaccessible or is not a directory";
         return false;
@@ -805,21 +864,32 @@ bool BrowseFeature::isPathWatched(const QString& path) const {
     const QMap<QString, QString>::const_iterator itcan =
             m_trackDirSymlinksMap.constFind(dirCanLoc);
     if (itcan != m_trackDirSymlinksMap.constEnd()) {
+        qWarning() << "     ~ isPathWatched YES" << path;
+        if (dir.location() != itcan.value()) {
+            qWarning() << "    resolved to" << itcan.value();
+        }
         return true;
     }
+
+    qWarning() << "     ~ isPathWatched NO " << path;
     return false;
 }
 
 QString BrowseFeature::maybeUnResolveSymlink(const QString& path) const {
     // Check if path is a resolved path of a library (sub)directory.
     // See updateSymlinkMap() for details.
+    qWarning() << "### maybeUnResolveSymlink" << path;
     mixxx::FileInfo dir(path);
+    qWarning() << "###     canonicalLocation" << dir.canonicalLocation();
+    qWarning() << "###     dir symlink list:" << m_trackDirSymlinksMap.size();
     const QMap<QString, QString>::const_iterator it =
             m_trackDirSymlinksMap.constFind(dir.canonicalLocation());
     if (it == m_trackDirSymlinksMap.constEnd()) {
+        qWarning() << "### path NOT found";
         return path;
     }
 
+    qWarning() << "### found, resolved to" << it.value();
     // location() misses the trailing '/' but we need it only for the file view
     return it.value();
 }
