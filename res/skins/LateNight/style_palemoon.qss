@@ -2759,6 +2759,8 @@ WTrackTableView {
   qproperty-trackPlayedColor: #555;
   /* This is the color used to paint the text of missing tracks. */
   qproperty-trackMissingColor: #f856e7; /* pink */
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #984015; /* orange like fader highlight */
 }
 
 /* Table cell in edit mode */
