@@ -55,15 +55,24 @@ BrowseFeature::BrowseFeature(
     connect(m_pSidebarModel,
             &QAbstractItemModel::rowsAboutToBeRemoved,
             this,
-            &BrowseFeature::invalidateRightClickIndex);
+            [this]() {
+                qWarning() << "--------- rowsAboutToBe REMOVED";
+                invalidateRightClickIndex();
+            });
     connect(m_pSidebarModel,
             &QAbstractItemModel::rowsAboutToBeInserted,
             this,
-            &BrowseFeature::invalidateRightClickIndex);
+            [this]() {
+                qWarning() << "--------- rowsAboutToBe INSERTED";
+                invalidateRightClickIndex();
+            });
     connect(m_pSidebarModel,
             &QAbstractItemModel::modelAboutToBeReset,
             this,
-            &BrowseFeature::invalidateRightClickIndex);
+            [this]() {
+                qWarning() << "--------- modelAboutToBe RESET";
+                invalidateRightClickIndex();
+            });
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction,
@@ -255,7 +264,8 @@ void BrowseFeature::slotRefreshDirectoryTree() {
     m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
 
     // Update child items
-    onLazyChildExpandation(m_lastRightClickedIndex);
+    const auto rcIdx = m_lastRightClickedIndex;
+    onLazyChildExpandation(rcIdx);
 }
 
 TreeItemModel* BrowseFeature::sidebarModel() const {
@@ -425,6 +435,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     qDebug() << "BrowseFeature::onLazyChildExpandation " << pItem->getLabel()
              << " " << pItem->getData();
+    qDebug() << "            index:" << index;
 
     QString path = pItem->getData().toString();
 
@@ -605,5 +616,23 @@ QString BrowseFeature::getLastRightClickedPath() const {
 }
 
 void BrowseFeature::invalidateRightClickIndex() {
+    qWarning() << "     invalidateRightClickIndex";
+    if (m_lastRightClickedIndex.isValid()) {
+        qWarning() << "     + index:" << m_lastRightClickedIndex;
+        TreeItem* pItem = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+        if (pItem) {
+            qWarning() << "     + label:" << pItem->getLabel();
+            if (pItem->getData().isValid()) {
+                qWarning() << "     + path: " << pItem->getData().toString();
+            } else {
+                qWarning() << "     +! item data invalid";
+            }
+        } else {
+            qWarning() << "     +! no item";
+        }
+    } else {
+        qWarning() << "     +! index already invalid";
+    }
+    qWarning() << "     + reset m_lastRightClickedIndex";
     m_lastRightClickedIndex = QModelIndex();
 }
