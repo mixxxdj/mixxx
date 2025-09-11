@@ -18,8 +18,6 @@ const ConfigKey kOverviewTypeCfgKey(kWaveformGroup,
         QStringLiteral("WaveformOverviewType"));
 const ConfigKey kWaveformOptionsKey(kWaveformGroup,
         QStringLiteral("waveform_options"));
-const ConfigKey kHardwareAccelerationKey(kWaveformGroup,
-        QStringLiteral("use_hardware_acceleration"));
 } // namespace
 
 // for OverviewType
@@ -270,10 +268,8 @@ void DlgPrefWaveform::slotUpdate() {
     if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
         openGlStatusData->setText(factory->getOpenGLVersion());
         useAccelerationCheckBox->setEnabled(true);
-        isAccelerationEnabled = m_pConfig->getValue(
-                                        kHardwareAccelerationKey,
-                                        factory->preferredBackend()) !=
-                WaveformWidgetBackend::None;
+        isAccelerationEnabled =
+                factory->getBackendFromConfig() != WaveformWidgetBackend::None;
         useAccelerationCheckBox->setChecked(isAccelerationEnabled);
     } else {
         openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
@@ -293,9 +289,7 @@ void DlgPrefWaveform::slotUpdate() {
     WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
             kWaveformOptionsKey,
             WaveformRendererSignalBase::Option::None);
-    WaveformWidgetBackend backend = m_pConfig->getValue(
-            kHardwareAccelerationKey,
-            factory->preferredBackend());
+    WaveformWidgetBackend backend = factory->getBackendFromConfig();
     updateWaveformAcceleration(factory->getType(), backend);
     updateWaveformTypeOptions(useWaveform, backend, currentOptions);
     waveformTypeComboBox->setEnabled(useWaveform);
@@ -386,7 +380,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Restore waveform backend and option setting instantly
     m_pConfig->setValue(kWaveformOptionsKey,
             WaveformRendererSignalBase::Option::None);
-    m_pConfig->setValue(kHardwareAccelerationKey, defaultBackend);
+    factory->setDefaultBackend();
     factory->setWidgetTypeFromHandle(
             factory->findHandleIndexFromType(
                     WaveformWidgetFactory::defaultType()),
@@ -445,7 +439,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
             waveformTypeComboBox->itemData(index).toInt());
     auto* factory = WaveformWidgetFactory::instance();
 
-    auto backend = m_pConfig->getValue(kHardwareAccelerationKey, factory->preferredBackend());
+    auto backend = factory->getBackendFromConfig();
     // When setting the type, factory uses current 'use acceleration' state,
     // which may currently be off. However, with QOpenGL there are Simple and Stacked
     // which require acceleration and auto-enable it if possible.
@@ -455,16 +449,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     // Store the value so it's available in factory. Same as
     // slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked()) just
     // without the redundant actions
-    if (useAccelerationCheckBox->isChecked()) {
-        backend =
-#ifdef MIXXX_USE_QOPENGL
-                WaveformWidgetBackend::AllShader
-#else
-                WaveformWidgetBackend::GL
-#endif
-                ;
-    }
-    m_pConfig->setValue(kHardwareAccelerationKey, backend);
+    factory->setAcceleration(useAccelerationCheckBox->isChecked());
 
     // Now set the new type
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
@@ -492,19 +477,9 @@ void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
-    WaveformWidgetBackend backend = WaveformWidgetBackend::None;
-    if (checked) {
-        backend =
-#ifdef MIXXX_USE_QOPENGL
-                WaveformWidgetBackend::AllShader
-#else
-                WaveformWidgetBackend::GL
-#endif
-                ;
-    }
-    m_pConfig->setValue(kHardwareAccelerationKey, backend);
-    auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     auto* factory = WaveformWidgetFactory::instance();
+    auto backend = factory->setAcceleration(checked);
+    auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type), true);
     WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
             kWaveformOptionsKey,
@@ -586,10 +561,8 @@ void DlgPrefWaveform::updateEnableUntilMark() {
 #else
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const bool enabled =
-            WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark() &&
-            m_pConfig->getValue(kHardwareAccelerationKey,
-                    factory->preferredBackend()) !=
-                    WaveformWidgetBackend::None;
+            factory->widgetTypeSupportsUntilMark() &&
+            factory->getBackendFromConfig() != WaveformWidgetBackend::None;
 #endif
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);

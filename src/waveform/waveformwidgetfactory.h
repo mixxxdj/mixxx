@@ -224,6 +224,8 @@ class WaveformWidgetFactory : public QObject,
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }

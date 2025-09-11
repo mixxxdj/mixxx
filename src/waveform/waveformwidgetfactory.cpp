@@ -696,6 +696,21 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
     return true;
 }
 
+WaveformWidgetBackend WaveformWidgetFactory::setAcceleration(bool enabled) {
+    WaveformWidgetBackend backend = WaveformWidgetBackend::None;
+    if (enabled) {
+        backend =
+#ifdef MIXXX_USE_QOPENGL
+                WaveformWidgetBackend::AllShader
+#else
+                WaveformWidgetBackend::GL
+#endif
+                ;
+    }
+    m_config->setValue(kHardwareAccelerationKey, backend);
+    return backend;
+}
+
 void WaveformWidgetFactory::setDefaultZoom(double zoom) {
     m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom,
                                WaveformWidgetRenderer::s_waveformMaxZoom);
@@ -1300,9 +1315,7 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     // in case of issue when we release, we can communicate workaround on
     // editing the INI file to target a specific rendering backend. If no
     // complains come back, we can convert this safely to a backend eventually.
-    return m_config->getValue(
-            ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("use_hardware_acceleration")),
-            preferredBackend());
+    return m_config->getValue(kHardwareAccelerationKey, preferredBackend());
 }
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
