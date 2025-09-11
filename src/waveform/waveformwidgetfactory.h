@@ -150,7 +150,11 @@ class WaveformWidgetFactory : public QObject,
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
@@ -213,6 +217,15 @@ class WaveformWidgetFactory : public QObject,
 
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
+
+    void setDefaultBackend();
+
+    allshader::WaveformRendererSignalBase::Options getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options getWaveformOptionsSupportedByType(
+            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void setWaveformOption(
+            allshader::WaveformRendererSignalBase::Option option, bool enabled);
+    void resetWaveformOptions();
 
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
