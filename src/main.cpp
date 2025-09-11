@@ -93,6 +93,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 
         pCoreServices->initialize(pApp);
 
+        if (pCoreServices->getSettings()->getValue(
+                    ConfigKey("[Config]", "did_run_with_unstable"), false)) {
+            qInfo() << "User previously ran the unstable version on this profile";
+        }
+
 #ifdef MIXXX_USE_QOPENGL
         // Will call initialize when the initial wglwidget's
         // qopenglwindow has been exposed
