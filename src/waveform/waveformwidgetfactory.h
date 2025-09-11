@@ -227,6 +227,8 @@ class WaveformWidgetFactory : public QObject,
     }
     static bool isOverviewNormalizedDefault();
 
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
