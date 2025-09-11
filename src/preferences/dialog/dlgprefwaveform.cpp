@@ -269,10 +269,8 @@ void DlgPrefWaveform::slotUpdate() {
     if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
         openGlStatusData->setText(factory->getOpenGLVersion());
         useAccelerationCheckBox->setEnabled(true);
-        isAccelerationEnabled = m_pConfig->getValue(
-                                        kHardwareAccelerationKey,
-                                        factory->preferredBackend()) !=
-                WaveformWidgetBackend::None;
+        isAccelerationEnabled =
+                factory->getBackendFromConfig() != WaveformWidgetBackend::None;
         useAccelerationCheckBox->setChecked(isAccelerationEnabled);
     } else {
         openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
@@ -292,9 +290,7 @@ void DlgPrefWaveform::slotUpdate() {
     allshader::WaveformRendererSignalBase::Options currentOptions = m_pConfig->getValue(
             kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
-    WaveformWidgetBackend backend = m_pConfig->getValue(
-            kHardwareAccelerationKey,
-            factory->preferredBackend());
+    WaveformWidgetBackend backend = factory->getBackendFromConfig();
     updateWaveformAcceleration(factory->getType(), backend);
     updateWaveformTypeOptions(useWaveform, backend, currentOptions);
     waveformTypeComboBox->setEnabled(useWaveform);
@@ -443,7 +439,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
             waveformTypeComboBox->itemData(index).toInt());
     auto* factory = WaveformWidgetFactory::instance();
 
-    auto backend = m_pConfig->getValue(kHardwareAccelerationKey, factory->preferredBackend());
+    auto backend = factory->getBackendFromConfig();
     // When setting the type, factory uses current 'use acceleration' state,
     // which may currently be off. However, with QOpenGL there are Simple and Stacked
     // which require acceleration and auto-enable it if possible.
@@ -582,10 +578,8 @@ void DlgPrefWaveform::updateEnableUntilMark() {
 #else
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const bool enabled =
-            WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark() &&
-            m_pConfig->getValue(kHardwareAccelerationKey,
-                    factory->preferredBackend()) !=
-                    WaveformWidgetBackend::None;
+            factory->widgetTypeSupportsUntilMark() &&
+            factory->getBackendFromConfig() != WaveformWidgetBackend::None;
 #endif
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
