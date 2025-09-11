@@ -217,6 +217,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #69a50f; /* green like fader highlight */
 }
 
   /* Table cell in edit mode */
