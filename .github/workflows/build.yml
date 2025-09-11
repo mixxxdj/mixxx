@@ -8,6 +8,12 @@ on:
       publish:
         type: boolean
         default: false
+      branch:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: true
     secrets:
       AZURE_CLIENT_ID:
         required: false
@@ -248,9 +254,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
@@ -375,11 +381,11 @@ jobs:
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 22.04'
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
-          elif [[ "${{ github.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ inputs.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          elif [[ "${{ inputs.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
           else
             # only build the source DEB, do not upload
@@ -424,7 +430,7 @@ jobs:
         if: inputs.publish && matrix.artifacts_path != null
         shell: bash
         run: >
-          if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+          if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
           then
             export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
           else
@@ -534,7 +540,7 @@ jobs:
         # single JSON document and then deploy to the server.
         if: inputs.publish && env.SSH_PASSWORD != null
         run: >
-          if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+          if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
           then
             export DEPLOY_PATH='releases/{git_describe}/manifest.json';
           else
