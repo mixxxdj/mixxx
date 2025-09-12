@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QDateTime>
+#include <QHash>
 #include <QMutex>
 #include <QString>
+#include <QTemporaryFile>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -12,6 +15,8 @@
 
 template<class DataType>
 class FIFO;
+
+struct RamTrackEntry;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -115,6 +120,20 @@ class CachingReaderWorker : public EngineWorker {
     void run() override;
 
     void quitWait();
+    static void cleanupSessionRamFiles();
+
+    struct RamTrackEntry {
+        QString group;    // the deck/sampler group using this track
+        QString filePath; // the RAM file path
+
+        // Optional: Add constructor for convenience
+        RamTrackEntry() = default;
+        RamTrackEntry(const QString& group, const QString& filePath)
+                : group(group),
+                  filePath(filePath) {
+        }
+    };
+    void setRamPlayConfig(bool enabled, const QString& ramDiskPath);
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
@@ -166,6 +185,16 @@ class CachingReaderWorker : public EngineWorker {
 #else
     void loadTrack(const TrackPointer& pTrack);
 #endif
+    // RAM-Play vars
+    bool m_ramPlayEnabled;
+    QString m_ramDiskPath;
+
+    void openAudioSource(const TrackPointer& trackToOpen
+#ifdef __STEM__
+            ,
+            mixxx::StemChannelSelection stemMask
+#endif
+    );
 
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
@@ -186,4 +215,20 @@ class CachingReaderWorker : public EngineWorker {
     mixxx::audio::ChannelCount m_maxSupportedChannel;
 
     QAtomicInt m_stop;
+
+    QTemporaryFile* m_tmpRamFile = nullptr;
+    QString m_currentTrackURL;
+    QSet<QString> m_ramFilesInUse;
+
+    static QHash<QString, RamTrackEntry> s_ramTracks;
+    static QMutex s_ramTracksMutex;
+    static QString gSessionPrefix;
+
+    // Add these private static helper methods
+    static bool isRamFileUsedByOtherGroups(const QString& filePath, const QString& currentGroup);
+    static void cleanupRamFileIfUnused(const QString& filePath);
+    // static void updateRamTrackUsage(const QString& group, const QString& filePath);
+    // static void removeRamTrackUsage(const QString& group);
+    static void cleanupAllRamFiles();
+    // QSet<QString> m_ramFilesInUse;
 };
