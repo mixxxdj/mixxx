@@ -1398,28 +1398,38 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    // Always show tooltips if Ctrl is held down
-    if (event->type() == QEvent::ToolTip &&
-            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+    if (event->type() == QEvent::ToolTip) {
+        // Always show tooltips if Ctrl is held down
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips for cue type buttons in the Cue menu
+        if (QLatin1String(obj->metaObject()->className()) == "CueMenuPushButton") {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips in Preferences
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
-                QLatin1String(activeWindow->metaObject()->className()) !=
+                QLatin1String(activeWindow->metaObject()->className()) ==
                         "DlgPreferences") {
-            // return true for no tool tips
-            switch (m_toolTipsCfg) {
-            case mixxx::preferences::Tooltips::OnlyInLibrary:
-                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
-                    return true;
-                }
-                break;
-            case mixxx::preferences::Tooltips::On:
-                break;
-            case mixxx::preferences::Tooltips::Off:
-                return true;
-            default:
-                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return QMainWindow::eventFilter(obj, event);
+        }
+
+        // For all other we follow the tooltip sett8ing.
+        // Return true for no tool tips
+        switch (m_toolTipsCfg) {
+        case mixxx::preferences::Tooltips::OnlyInLibrary:
+            if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                 return true;
             }
+            break;
+        case mixxx::preferences::Tooltips::On:
+            break;
+        case mixxx::preferences::Tooltips::Off:
+            return true;
+        default:
+            DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return true;
         }
     } else if (event->type() == QEvent::WindowStateChange) {
 #ifndef __APPLE__

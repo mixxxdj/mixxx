@@ -4,6 +4,7 @@
 struct buf
 {
     mat4 matrix;
+    float alpha;
 };
 
 uniform buf ubuf;
