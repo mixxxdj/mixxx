@@ -157,6 +157,7 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
     bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsStems() const;
     WaveformWidgetBackend setAcceleration(bool enabled);
 
     void setUntilMarkShowBeats(bool value);

@@ -606,6 +606,24 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     return false;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsStems() const {
+    switch (m_configType) {
+    case WaveformWidgetType::RGB:
+        return true;
+    case WaveformWidgetType::Filtered:
+        return true;
+    case WaveformWidgetType::Simple:
+        return true;
+    case WaveformWidgetType::HSV:
+        return true;
+    case WaveformWidgetType::Stacked:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
+
 WaveformWidgetBackend WaveformWidgetFactory::setAcceleration(bool enabled) {
     WaveformWidgetBackend backend = WaveformWidgetBackend::None;
     if (enabled) {

@@ -88,6 +88,9 @@ DlgPrefWaveform::DlgPrefWaveform(
     untilMarkTextHeightLimitComboBox->addItem(tr("1/3 of waveform viewer"));
     untilMarkTextHeightLimitComboBox->addItem(tr("Entire waveform viewer"));
 
+    // Adopt tr string from first GLSL hint
+    requiresGLSLLabel2->setText(requiresGLSLLabel->text());
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
@@ -278,6 +281,7 @@ void DlgPrefWaveform::slotUpdate() {
     waveformTypeComboBox->setEnabled(useWaveform);
     updateEnableUntilMark();
     updateWaveformGeneralOptionsEnabled();
+    updateStemOptionsEnabled();
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -433,6 +437,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 
     updateWaveformTypeOptions(true);
     updateEnableUntilMark();
+    updateStemOptionsEnabled();
 }
 
 void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
@@ -456,6 +461,7 @@ void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type), true);
     updateWaveformTypeOptions(true);
     updateEnableUntilMark();
+    updateStemOptionsEnabled();
 }
 
 void DlgPrefWaveform::updateWaveformAcceleration(WaveformWidgetType::Type type) {
@@ -548,6 +554,26 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
     defaultZoomComboBox->setEnabled(enabled);
     synchronizeZoomCheckBox->setEnabled(enabled);
     updateWaveformGainEnabled();
+    updateStemOptionsEnabled();
+}
+
+void DlgPrefWaveform::updateStemOptionsEnabled() {
+    bool enabled = useWaveformCheckBox->isChecked();
+#ifndef MIXXX_USE_QOPENGL
+    const bool stemsSupported = false;
+#else
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    const bool stemsSupported =
+            enabled &&
+            factory->widgetTypeSupportsStems() &&
+            factory->getBackendFromConfig() == WaveformWidgetBackend::AllShader;
+#endif
+    stemOpacityMainLabel->setEnabled(stemsSupported);
+    stemOpacityOutlineLabel->setEnabled(stemsSupported);
+    stemReorderLayerOnChangedCheckBox->setEnabled(stemsSupported);
+    stemOpacitySpinBox->setEnabled(stemsSupported);
+    stemOutlineOpacitySpinBox->setEnabled(stemsSupported);
+    requiresGLSLLabel2->setVisible(!stemsSupported);
 }
 
 void DlgPrefWaveform::updateWaveformGainEnabled() {
