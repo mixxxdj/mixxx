@@ -65,6 +65,8 @@ const ConfigKey kWaveformTypeKey =
         ConfigKey(kWaveformGroup, QStringLiteral("WaveformType"));
 const ConfigKey kHardwareAccelerationKey =
         ConfigKey(kWaveformGroup, QStringLiteral("use_hardware_acceleration"));
+const ConfigKey kWaveformOptionsKey(kWaveformGroup,
+        QStringLiteral("waveform_options"));
 const ConfigKey kZoomSyncKey = ConfigKey(
         kWaveformGroup, QStringLiteral("ZoomSynchronization"));
 const ConfigKey kEndOfTrackWarningKey = ConfigKey(
@@ -604,15 +606,67 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     return false;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsStems() const {
+    switch (m_configType) {
+    case WaveformWidgetType::RGB:
+        return true;
+    case WaveformWidgetType::Filtered:
+        return true;
+    case WaveformWidgetType::Simple:
+        return true;
+    case WaveformWidgetType::HSV:
+        return true;
+    case WaveformWidgetType::Stacked:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
+
+WaveformWidgetBackend WaveformWidgetFactory::setAcceleration(bool enabled) {
+    WaveformWidgetBackend backend = WaveformWidgetBackend::None;
+    if (enabled) {
+        backend =
+#ifdef MIXXX_USE_QOPENGL
+                WaveformWidgetBackend::AllShader
+#else
+                WaveformWidgetBackend::GL
+#endif
+                ;
+    }
+    m_config->setValue(kHardwareAccelerationKey, backend);
+    return backend;
+}
+
+/// Called by MixxxMainWindow after skin loaded via slotSkinLoaded
 bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     int empty = findHandleIndexFromType(WaveformWidgetType::Empty);
     int desired = findHandleIndexFromType(m_configType);
     if (desired == -1) {
         qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
-                 << " - configured type" << static_cast<int>(m_configType)
+                 << " - configured type"
+                 << WaveformWidgetAbstractHandle::getDisplayName(m_configType)
                  << "not found -- using 'EmptyWaveform'";
         desired = empty;
     }
+
+    // Because of a previous bug, "use_hardware_acceleration" may be 0
+    // which prevents loading the desired type.
+    // Fix: enable acceleration if available and if type requires it.
+    auto backend = getBackendFromConfig();
+    // True if type and available backends support acceleration
+    bool typeSupportsAcceleration = widgetTypeSupportsAcceleration(m_configType);
+    bool typeSupportsSoftware = widgetTypeSupportsSoftware(m_configType);
+    if (backend == WaveformWidgetBackend::None &&
+            typeSupportsAcceleration && !typeSupportsSoftware) {
+        qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
+                 << " - select accelerated backend because configured type"
+                 << WaveformWidgetAbstractHandle::getDisplayName(m_configType)
+                 << "requires it.";
+        setDefaultBackend();
+    }
+
     return setWidgetTypeFromHandle(desired, true);
 }
 
@@ -704,6 +758,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
+    m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")), alpha);
 }
 
 void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
@@ -1040,7 +1095,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
     allshader::WaveformRendererSignalBase::Options options =
-            m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
+            m_config->getValue(
+                    kWaveformOptionsKey,
                     allshader::WaveformRendererSignalBase::Option::None);
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
@@ -1241,15 +1297,31 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
     return -1;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsAcceleration(WaveformWidgetType::Type type) {
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
+        if (handle.m_type == type) {
+            return handle.supportAcceleration();
+        }
+    }
+    return false;
+}
+
+bool WaveformWidgetFactory::widgetTypeSupportsSoftware(WaveformWidgetType::Type type) {
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
+        if (handle.m_type == type) {
+            return handle.supportSoftware();
+        }
+    }
+    return false;
+}
+
 WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
     // in case of issue when we release, we can communicate workaround on
     // editing the INI file to target a specific rendering backend. If no
     // complains come back, we can convert this safely to a backend eventually.
-    return m_config->getValue(
-            ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("use_hardware_acceleration")),
-            preferredBackend());
+    return m_config->getValue(kHardwareAccelerationKey, preferredBackend());
 }
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
@@ -1266,9 +1338,53 @@ WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
     return WaveformWidgetBackend::None;
 }
 
-// Static
+void WaveformWidgetFactory::setDefaultBackend() {
+    m_config->setValue(kHardwareAccelerationKey, preferredBackend());
+}
+
+allshader::WaveformRendererSignalBase::Options WaveformWidgetFactory::getWaveformOptions() {
+    auto options = m_config->getValue(
+            kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
+    return options;
+}
+
+allshader::WaveformRendererSignalBase::Options
+WaveformWidgetFactory::getWaveformOptionsSupportedByType(
+        WaveformWidgetType::Type type, WaveformWidgetBackend backend) {
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            allshader::WaveformRendererSignalBase::Option::None;
+    int handleIdx = findHandleIndexFromType(type);
+    if (handleIdx != -1) {
+        supportedOptions = getAvailableTypes()[handleIdx].supportedOptions(backend);
+    }
+    return supportedOptions;
+}
+
+void WaveformWidgetFactory::setWaveformOption(
+        allshader::WaveformRendererSignalBase::Option option, bool enabled) {
+    allshader::WaveformRendererSignalBase::Options currentOption = m_config->getValue(
+            kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
+    m_config->setValue<int>(kWaveformOptionsKey,
+            enabled ? currentOption |
+                            option
+                    : currentOption ^
+                            option);
+}
+
+void WaveformWidgetFactory::resetWaveformOptions() {
+    m_config->setValue(kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
+}
+
 QString WaveformWidgetAbstractHandle::getDisplayName() const {
-    switch (m_type) {
+    return getDisplayName(m_type);
+}
+
+// Static
+QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type type) {
+    switch (type) {
     case WaveformWidgetType::Empty:
         return QObject::tr("Empty");
     case WaveformWidgetType::Simple:

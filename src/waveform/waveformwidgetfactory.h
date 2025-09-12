@@ -70,6 +70,7 @@ class WaveformWidgetAbstractHandle {
 #endif
 
     QString getDisplayName() const;
+    static QString getDisplayName(WaveformWidgetType::Type type);
 
   private:
     WaveformWidgetType::Type m_type;
@@ -146,11 +147,19 @@ class WaveformWidgetFactory : public QObject,
     /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
+    QString getTypeDisplayName() const {
+        return WaveformWidgetAbstractHandle::getDisplayName(m_type);
+    }
     int getHandleIndex() {
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsStems() const;
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
@@ -213,6 +222,15 @@ class WaveformWidgetFactory : public QObject,
 
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
+
+    void setDefaultBackend();
+
+    allshader::WaveformRendererSignalBase::Options getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options getWaveformOptionsSupportedByType(
+            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void setWaveformOption(
+            allshader::WaveformRendererSignalBase::Option option, bool enabled);
+    void resetWaveformOptions();
 
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
