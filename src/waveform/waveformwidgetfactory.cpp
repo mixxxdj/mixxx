@@ -632,6 +632,23 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
                  << "not found -- using 'EmptyWaveform'";
         desired = empty;
     }
+
+    // Because of a previous bug, "use_hardware_acceleration" may be 0
+    // which prevents loading the desired type.
+    // Fix: enable acceleration if available and if type requires it.
+    auto backend = getBackendFromConfig();
+    // True if type and available backends support acceleration
+    bool typeSupportsAcceleration = widgetTypeSupportsAcceleration(m_configType);
+    bool typeSupportsSoftware = widgetTypeSupportsSoftware(m_configType);
+    if (backend == WaveformWidgetBackend::None &&
+            typeSupportsAcceleration && !typeSupportsSoftware) {
+        qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
+                 << " - select accelerated backend because configured type"
+                 << WaveformWidgetAbstractHandle::getDisplayName(m_configType)
+                 << "requires it.";
+        setDefaultBackend();
+    }
+
     return setWidgetTypeFromHandle(desired, true);
 }
 
