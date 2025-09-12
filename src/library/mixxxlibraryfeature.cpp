@@ -32,7 +32,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
-          m_pHiddenView(nullptr) {
+          m_pHiddenView(nullptr),
+          m_pTracksTreeItem(nullptr),
+          m_trackCount{0} {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
@@ -114,7 +116,13 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             pLibrary->trackCollectionManager(),
             "mixxx.db.model.library");
 
+    connect(m_pLibraryTableModel,
+            &LibraryTableModel::updateTrackCount,
+            this,
+            &MixxxLibraryFeature::slotUpdateTrackCount);
+
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
+    m_pTracksTreeItem = pRootItem.get();
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
 
@@ -149,7 +157,8 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Tracks");
+    const QString title = tr("Tracks") + QStringLiteral(" (%1)").arg(m_trackCount);
+    return title;
 }
 
 TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
@@ -182,6 +191,17 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pSidebarWidget = pSidebarWidget;
 }
 #endif
+
+void MixxxLibraryFeature::slotUpdateTrackCount() {
+    m_trackCount = m_pLibraryTableModel->rowCount();
+
+    if (m_pTracksTreeItem && m_pSidebarModel) {
+        QModelIndex rootIndex = m_pSidebarModel->getRootIndex();
+        QModelIndex tracksIndex = m_pSidebarModel->index(
+                m_pTracksTreeItem->parentRow(), 0, rootIndex);
+        m_pSidebarModel->triggerRepaint(tracksIndex);
+    }
+}
 
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
