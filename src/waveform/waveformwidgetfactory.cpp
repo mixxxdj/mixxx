@@ -621,6 +621,7 @@ WaveformWidgetBackend WaveformWidgetFactory::setAcceleration(bool enabled) {
     return backend;
 }
 
+/// Called by MixxxMainWindow after skin loaded via slotSkinLoaded
 bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     int empty = findHandleIndexFromType(WaveformWidgetType::Empty);
     int desired = findHandleIndexFromType(m_configType);
