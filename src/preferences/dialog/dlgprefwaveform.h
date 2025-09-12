@@ -72,11 +72,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
-    void updateWaveformTypeOptions(bool useWaveform,
-            WaveformWidgetBackend backend,
-            allshader::WaveformRendererSignalBase::Options currentOption);
-    void updateWaveformAcceleration(
-            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void updateWaveformTypeOptions(bool useWaveform);
+    void updateWaveformAcceleration(WaveformWidgetType::Type type);
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
     void updateStemOptionsEnabled();
