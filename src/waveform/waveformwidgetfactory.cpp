@@ -627,7 +627,8 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     int desired = findHandleIndexFromType(m_configType);
     if (desired == -1) {
         qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
-                 << " - configured type" << static_cast<int>(m_configType)
+                 << " - configured type"
+                 << WaveformWidgetAbstractHandle::getDisplayName(m_configType)
                  << "not found -- using 'EmptyWaveform'";
         desired = empty;
     }
@@ -1342,9 +1343,13 @@ void WaveformWidgetFactory::resetWaveformOptions() {
             allshader::WaveformRendererSignalBase::Option::None);
 }
 
-// Static
 QString WaveformWidgetAbstractHandle::getDisplayName() const {
-    switch (m_type) {
+    return getDisplayName(m_type);
+}
+
+// Static
+QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type type) {
+    switch (type) {
     case WaveformWidgetType::Empty:
         return QObject::tr("Empty");
     case WaveformWidgetType::Simple:
