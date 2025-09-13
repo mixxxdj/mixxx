@@ -16,7 +16,6 @@ mixxx::Logger kLogger("CachingReader");
 // This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
 // Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
 // TODO() Do we suffer cache misses if we use an audio buffer of above 23 ms?
-// constexpr SINT kDefaultHintFrames = 1024;
 constexpr SINT kDefaultHintFrames = 1024;
 
 // With CachingReaderChunk::kFrames = 8192 each chunk consumes
@@ -35,14 +34,6 @@ constexpr SINT kDefaultHintFrames = 1024;
 // to verify that the MRU/LRU cache works as expected. Even though
 // massive drop outs are expected to occur Mixxx should run reliably!
 constexpr SINT kNumberOfCachedChunksInMemory = 80;
-
-// constexpr SINT kMaxPreloadMinutes = 5; // Preload up to 10-minute tracks
-////constexpr SINT kPreloadFrames = 44100 * 60 * kMaxPreloadMinutes; // 26.46M frames
-// constexpr SINT kPreloadFrames = 48000 * 60 * kMaxPreloadMinutes; // 26.46M frames
-// constexpr SINT kNumberOfCachedChunksInMemory =
-//         (kPreloadFrames / 8192) + 1; // Dynamic sizing
-
-// For 10-minute 44.1kHz track: ~322 chunks × 65KB = ~21MB cache
 
 } // anonymous namespace
 
@@ -73,50 +64,6 @@ CachingReader::CachingReader(const QString& group,
                   &m_chunkReadRequestFIFO,
                   &m_readerStatusUpdateFIFO,
                   maxSupportedChannel) {
-    // check if RAM-Play vars exist in config, else create them
-    initializeRamPlayConfigVars();
-    // Read config values for RAM-Play
-    bool ramPlayEnabled = true;
-    QString ramDiskPath;
-
-    if (m_pConfig) {
-        ramPlayEnabled = m_pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Enabled"), true);
-
-#ifdef Q_OS_WIN
-        ramDiskPath = m_pConfig->getValueString(ConfigKey("[RAM-Play]", "WindowsPath"));
-        if (ramDiskPath.isEmpty()) {
-            ramDiskPath = "R:/MixxxTmp/";
-        }
-#else
-        QString basePath = m_pConfig->getValueString(ConfigKey("RAM-Play]", "UnixPath"));
-        QString dirName = m_pConfig->getValueString(ConfigKey("[RAM-Play]", "DirectoryName"));
-
-        if (basePath.isEmpty()) {
-            basePath = QDir("/dev/shm").exists() ? "/dev/shm/" : QDir::tempPath() + "/";
-        }
-        if (dirName.isEmpty()) {
-            dirName = "MixxxTmp";
-        }
-        if (!basePath.endsWith('/')) {
-            basePath += '/';
-        }
-
-        ramDiskPath = basePath + dirName + "/";
-#endif
-    } else {
-        // Default values if no config
-#ifdef Q_OS_WIN
-        ramDiskPath = "R:/MixxxTmp/";
-#else
-        ramDiskPath = QDir("/dev/shm").exists()
-                ? "/dev/shm/MixxxTmp/"
-                : QDir::tempPath() + "/MixxxTmp/";
-#endif
-    }
-
-    // Pass config values directly to worker
-    m_worker.setRamPlayConfig(ramPlayEnabled, ramDiskPath);
-
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
@@ -133,14 +80,20 @@ CachingReader::CachingReader(const QString& group,
     }
 
     // Forward signals from worker
-    connect(&m_worker, &CachingReaderWorker::trackLoading,
-            this, &CachingReader::trackLoading,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoading,
+            this,
+            &CachingReader::trackLoading,
             Qt::DirectConnection);
-    connect(&m_worker, &CachingReaderWorker::trackLoaded,
-            this, &CachingReader::trackLoaded,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoaded,
+            this,
+            &CachingReader::trackLoaded,
             Qt::DirectConnection);
-    connect(&m_worker, &CachingReaderWorker::trackLoadFailed,
-            this, &CachingReader::trackLoadFailed,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoadFailed,
+            this,
+            &CachingReader::trackLoadFailed,
             Qt::DirectConnection);
 
     m_worker.start(QThread::HighPriority);
@@ -150,68 +103,6 @@ CachingReader::~CachingReader() {
     m_worker.quitWait();
     qDeleteAll(m_chunks);
 }
-
-void CachingReader::initializeRamPlayConfigVars() {
-    if (!m_pConfig) {
-        return;
-    }
-
-    ConfigKey enabledKey("[RAM-Play]", "Enabled");
-    if (!m_pConfig->exists(enabledKey)) {
-        m_pConfig->setValue(enabledKey, true);
-    }
-
-#ifdef Q_OS_WIN
-    ConfigKey pathKey("[RAM-Play]", "WindowsPath");
-    if (!m_pConfig->exists(pathKey)) {
-        m_pConfig->setValue(pathKey, QString("R:/MixxxTmp/"));
-    }
-#else
-    ConfigKey unixPathKey("[RAM-Play]", "UnixPath");
-    if (!m_pConfig->exists(unixPathKey)) {
-        m_pConfig->setValue(unixPathKey, QString(""));
-    }
-
-    ConfigKey dirNameKey("[RAM-Play]", "DirectoryName");
-    if (!m_pConfig->exists(dirNameKey)) {
-        m_pConfig->setValue(dirNameKey, QString("MixxxTmp"));
-    }
-#endif
-}
-
-// void CachingReader::initializeRamPlayConfigVars() {
-//     if (!m_pConfig) {
-//         kLogger.warning() << "No config available, cannot initialize RAM-Play config vars";
-//         return;
-//     }
-//
-//     // Check if config vars exist, if not set default values
-//     ConfigKey enabledKey("[RAM-Play]", "Enabled");
-//     if (!m_pConfig->exists(enabledKey)) {
-//         m_pConfig->setValue(enabledKey, true);
-//         kLogger.debug() << "Created default RAMPlay enabled config:" << true;
-//     }
-//
-// #ifdef Q_OS_WIN
-//     ConfigKey pathKey("[RAM-Play]", "WindowsPath");
-//     if (!m_pConfig->exists(pathKey)) {
-//         m_pConfig->setValue(pathKey, "R:/MixxxTmp/");
-//         kLogger.debug() << "Created default Windows RAM path config: R:/MixxxTmp/";
-//     }
-// #else
-//     ConfigKey unixPathKey("[RAM-lay]", "UnixPath");
-//     if (!m_pConfig->exists(unixPathKey)) {
-//         m_pConfig->setValue(unixPathKey, "");
-//         kLogger.debug() << "Created default Unix path config: (auto-detect)";
-//     }
-//
-//     ConfigKey dirNameKey("[RAM-Play]", "DirectoryName");
-//     if (!m_pConfig->exists(dirNameKey)) {
-//         m_pConfig->setValue(dirNameKey, "MixxxTmp");
-//         kLogger.debug() << "Created default directory name config: MixxxTmp";
-//     }
-// #endif
-// }
 
 void CachingReader::freeChunkFromList(CachingReaderChunkForOwner* pChunk) {
     pChunk->removeFromList(
@@ -533,7 +424,6 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
             for (SINT chunkIndex = firstChunkIndex;
                     chunkIndex <= lastChunkIndex;
                     ++chunkIndex) {
-
                 // Process new messages from the reader thread before looking up
                 // the next chunk
                 process();
@@ -661,18 +551,18 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // any are not, then wake.
     bool shouldWake = false;
 
-    for (const auto& hint: hintList) {
+    for (const auto& hint : hintList) {
         SINT hintFrame = hint.frame;
         SINT hintFrameCount = hint.frameCount;
 
         // Handle some special length values
         if (hintFrameCount == Hint::kFrameCountForward) {
-        	hintFrameCount = kDefaultHintFrames;
+            hintFrameCount = kDefaultHintFrames;
         } else if (hintFrameCount == Hint::kFrameCountBackward) {
-        	hintFrame -= kDefaultHintFrames;
-        	hintFrameCount = kDefaultHintFrames;
+            hintFrame -= kDefaultHintFrames;
+            hintFrameCount = kDefaultHintFrames;
             if (hintFrame < 0) {
-            	hintFrameCount += hintFrame;
+                hintFrameCount += hintFrame;
                 if (hintFrameCount <= 0) {
                     continue;
                 }

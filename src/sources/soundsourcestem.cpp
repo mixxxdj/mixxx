@@ -471,21 +471,23 @@ void SoundSourceSTEM::close() {
 void SoundSourceSTEM::processWithResampler(size_t streamIdx,
         const WritableSampleFrames& globalSampleFrames,
         CSAMPLE* pBuffer) {
-    //    //testCubicInterpolation();
     const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
     const int refSampleRate = premixInfo.getSampleRate();
     const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
     const int stemSampleRate = stemInfo.getSampleRate();
 
-    const double ratio = static_cast<double>(stemSampleRate) / refSampleRate;
+    // Use integer arithmetic for critical calculations to ensure cross-platform consistency
     const SINT outputFramesNeeded = globalSampleFrames.frameLength();
-
-    // Calculate the correct starting position in the STEM stream
     const SINT premixStartFrame = globalSampleFrames.frameIndexRange().start();
-    const SINT stemStartFrame = static_cast<SINT>(std::floor(premixStartFrame * ratio));
 
-    // Calculate how many input frames we need (with extra for interpolation)
-    const SINT inputFramesNeeded = static_cast<SINT>(std::ceil(outputFramesNeeded * ratio)) + 4;
+    // Integer-based position calculation (avoids floating-point differences)
+    const SINT stemStartFrame = (premixStartFrame * stemSampleRate) / refSampleRate;
+
+    // Calculate input frames needed with integer math
+    const SINT inputFramesNeeded =
+            ((outputFramesNeeded * stemSampleRate) + refSampleRate - 1) /
+                    refSampleRate +
+            4;
     const SINT inputSamplesNeeded = inputFramesNeeded * 2;
 
     // Ensure input buffer is large enough
@@ -493,21 +495,24 @@ void SoundSourceSTEM::processWithResampler(size_t streamIdx,
         m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
     }
 
-    // Read input data from the CORRECT position in the stem
+    // Read input data from the correct position in the stem
     WritableSampleFrames inputFrames(
             IndexRange::forward(stemStartFrame, inputFramesNeeded),
             SampleBuffer::WritableSlice(m_resampleInputBuffer.data(), inputSamplesNeeded));
 
-    m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+    auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
 
-    // Check if we got any audio data
-    bool hasAudio = false;
-    SINT checkLimit = inputSamplesNeeded;
-    if (checkLimit > 1000) {
-        checkLimit = 1000;
+    // Verify we read enough data
+    if (readResult.frameIndexRange().length() < inputFramesNeeded) {
+        // This can happen near the end of the file, it's normal
+        return;
     }
-    for (SINT i = 0; i < checkLimit; i++) {
-        if (std::abs(m_resampleInputBuffer[i]) > 0.0001f) {
+
+    // Simple audio detection (avoid complex floating-point checks)
+    bool hasAudio = false;
+    const SINT checkLimit = (inputSamplesNeeded < 1000) ? inputSamplesNeeded : 1000;
+    for (SINT i = 0; i < checkLimit; i += 4) { // Check every 4th sample
+        if (std::fabs(m_resampleInputBuffer[i]) > 0.001f) {
             hasAudio = true;
             break;
         }
@@ -517,61 +522,201 @@ void SoundSourceSTEM::processWithResampler(size_t streamIdx,
         return; // Silence is normal in STEM files
     }
 
-    // Perform cubic interpolation resampling
+    // Perform resampling - use a robust approach
     std::size_t stemCount = m_pStereoStreams.size();
 
     for (SINT i = 0; i < outputFramesNeeded; i++) {
-        double sourcePos = i * ratio;
-        SINT sourceIndex = static_cast<SINT>(sourcePos);
-        double fraction = sourcePos - sourceIndex;
+        // Calculate source position using precise integer math
+        const int64_t precisePos = static_cast<int64_t>(i) * stemSampleRate;
+        const SINT sourceIndex = static_cast<SINT>(precisePos / refSampleRate);
+        const CSAMPLE fraction = static_cast<CSAMPLE>(precisePos % refSampleRate) / refSampleRate;
 
-        // Ensure we have enough samples for cubic interpolation
-        if (sourceIndex >= 1 && (sourceIndex + 2) * 2 + 1 < inputSamplesNeeded) {
-            // Cubic interpolation for left channel
-            CSAMPLE left = cubicInterpolate(
-                    m_resampleInputBuffer[(sourceIndex - 1) * 2],
-                    m_resampleInputBuffer[sourceIndex * 2],
-                    m_resampleInputBuffer[(sourceIndex + 1) * 2],
-                    m_resampleInputBuffer[(sourceIndex + 2) * 2],
-                    static_cast<CSAMPLE>(fraction));
-
-            // Cubic interpolation for right channel
-            CSAMPLE right = cubicInterpolate(
-                    m_resampleInputBuffer[(sourceIndex - 1) * 2 + 1],
-                    m_resampleInputBuffer[sourceIndex * 2 + 1],
-                    m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1],
-                    m_resampleInputBuffer[(sourceIndex + 2) * 2 + 1],
-                    static_cast<CSAMPLE>(fraction));
-
-            if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
-                pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx)] = left;
-                pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx) + 1] = right;
-            } else {
-                pBuffer[2 * i] += left;
-                pBuffer[2 * i + 1] += right;
-            }
-        } else if (sourceIndex * 2 + 3 < inputSamplesNeeded) {
-            // Fallback to linear interpolation
-            CSAMPLE left = m_resampleInputBuffer[sourceIndex * 2] *
-                            (1.0f - static_cast<CSAMPLE>(fraction)) +
-                    m_resampleInputBuffer[(sourceIndex + 1) * 2] *
-                            static_cast<CSAMPLE>(fraction);
-
-            CSAMPLE right = m_resampleInputBuffer[sourceIndex * 2 + 1] *
-                            (1.0f - static_cast<CSAMPLE>(fraction)) +
-                    m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1] *
-                            static_cast<CSAMPLE>(fraction);
-
-            if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
-                pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx)] = left;
-                pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx) + 1] = right;
-            } else {
-                pBuffer[2 * i] += left;
-                pBuffer[2 * i + 1] += right;
-            }
+        // Safe bounds checking
+        if (sourceIndex >= 1 && sourceIndex + 2 < inputFramesNeeded) {
+            // Use a robust interpolation method
+            interpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+        } else if (sourceIndex + 1 < inputFramesNeeded) {
+            // Linear fallback
+            linearInterpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
         }
     }
 }
+
+// Separate interpolation functions for better maintainability
+void SoundSourceSTEM::interpolateAndMix(size_t streamIdx,
+        SINT outputIndex,
+        SINT sourceIndex,
+        CSAMPLE fraction,
+        CSAMPLE* pBuffer,
+        std::size_t stemCount) {
+    // Robust cubic interpolation that works across compilers
+    const CSAMPLE* in = m_resampleInputBuffer.data();
+    const SINT baseIdx = sourceIndex * 2;
+
+    // Left channel
+    CSAMPLE y0 = in[baseIdx - 2];
+    CSAMPLE y1 = in[baseIdx];
+    CSAMPLE y2 = in[baseIdx + 2];
+    CSAMPLE y3 = in[baseIdx + 4];
+    CSAMPLE left = robustCubicInterpolate(y0, y1, y2, y3, fraction);
+
+    // Right channel
+    y0 = in[baseIdx - 1];
+    y1 = in[baseIdx + 1];
+    y2 = in[baseIdx + 3];
+    y3 = in[baseIdx + 5];
+    CSAMPLE right = robustCubicInterpolate(y0, y1, y2, y3, fraction);
+
+    // Mix into output
+    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+}
+
+void SoundSourceSTEM::linearInterpolateAndMix(size_t streamIdx,
+        SINT outputIndex,
+        SINT sourceIndex,
+        CSAMPLE fraction,
+        CSAMPLE* pBuffer,
+        std::size_t stemCount) {
+    const CSAMPLE* in = m_resampleInputBuffer.data();
+    const SINT baseIdx = sourceIndex * 2;
+
+    CSAMPLE left = in[baseIdx] * (1.0f - fraction) + in[baseIdx + 2] * fraction;
+    CSAMPLE right = in[baseIdx + 1] * (1.0f - fraction) + in[baseIdx + 3] * fraction;
+
+    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+}
+
+void SoundSourceSTEM::mixToOutput(size_t streamIdx,
+        SINT outputIndex,
+        CSAMPLE left,
+        CSAMPLE right,
+        CSAMPLE* pBuffer,
+        std::size_t stemCount) {
+    if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx)] = left;
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+    } else {
+        pBuffer[2 * outputIndex] += left;
+        pBuffer[2 * outputIndex + 1] += right;
+    }
+}
+
+// More robust cubic interpolation implementation
+CSAMPLE SoundSourceSTEM::robustCubicInterpolate(
+        CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu) {
+    // This formulation is more numerically stable across different compilers
+    CSAMPLE a0 = y3 - y2 - y0 + y1;
+    CSAMPLE a1 = y0 - y1 - a0;
+    CSAMPLE a2 = y2 - y0;
+
+    // Carefully ordered operations to minimize precision issues
+    return (((a0 * mu) + a1) * mu + a2) * mu + y1;
+}
+
+// void SoundSourceSTEM::processWithResampler(size_t streamIdx,
+//         const WritableSampleFrames& globalSampleFrames,
+//         CSAMPLE* pBuffer) {
+//     //    //testCubicInterpolation();
+//     const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+//     const int refSampleRate = premixInfo.getSampleRate();
+//     const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//     const int stemSampleRate = stemInfo.getSampleRate();
+//
+//     const double ratio = static_cast<double>(stemSampleRate) / refSampleRate;
+//     const SINT outputFramesNeeded = globalSampleFrames.frameLength();
+//
+//     // Calculate the correct starting position in the STEM stream
+//     const SINT premixStartFrame = globalSampleFrames.frameIndexRange().start();
+//     const SINT stemStartFrame = static_cast<SINT>(std::floor(premixStartFrame * ratio));
+//
+//     // Calculate how many input frames we need (with extra for interpolation)
+//     const SINT inputFramesNeeded = static_cast<SINT>(std::ceil(outputFramesNeeded * ratio)) + 4;
+//     const SINT inputSamplesNeeded = inputFramesNeeded * 2;
+//
+//     // Ensure input buffer is large enough
+//     if (inputSamplesNeeded > m_resampleInputBuffer.size()) {
+//         m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
+//     }
+//
+//     // Read input data from the CORRECT position in the stem
+//     WritableSampleFrames inputFrames(
+//             IndexRange::forward(stemStartFrame, inputFramesNeeded),
+//             SampleBuffer::WritableSlice(m_resampleInputBuffer.data(), inputSamplesNeeded));
+//
+//     m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+//
+//     // Check if we got any audio data
+//     bool hasAudio = false;
+//     SINT checkLimit = inputSamplesNeeded;
+//     if (checkLimit > 1000) {
+//         checkLimit = 1000;
+//     }
+//     for (SINT i = 0; i < checkLimit; i++) {
+//         if (std::abs(m_resampleInputBuffer[i]) > 0.0001f) {
+//             hasAudio = true;
+//             break;
+//         }
+//     }
+//
+//     if (!hasAudio) {
+//         return; // Silence is normal in STEM files
+//     }
+//
+//     // Perform cubic interpolation resampling
+//     std::size_t stemCount = m_pStereoStreams.size();
+//
+//     for (SINT i = 0; i < outputFramesNeeded; i++) {
+//         double sourcePos = i * ratio;
+//         SINT sourceIndex = static_cast<SINT>(sourcePos);
+//         double fraction = sourcePos - sourceIndex;
+//
+//         // Ensure we have enough samples for cubic interpolation
+//         if (sourceIndex >= 1 && (sourceIndex + 2) * 2 + 1 < inputSamplesNeeded) {
+//             // Cubic interpolation for left channel
+//             CSAMPLE left = cubicInterpolate(
+//                     m_resampleInputBuffer[(sourceIndex - 1) * 2],
+//                     m_resampleInputBuffer[sourceIndex * 2],
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2],
+//                     m_resampleInputBuffer[(sourceIndex + 2) * 2],
+//                     static_cast<CSAMPLE>(fraction));
+//
+//             // Cubic interpolation for right channel
+//             CSAMPLE right = cubicInterpolate(
+//                     m_resampleInputBuffer[(sourceIndex - 1) * 2 + 1],
+//                     m_resampleInputBuffer[sourceIndex * 2 + 1],
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1],
+//                     m_resampleInputBuffer[(sourceIndex + 2) * 2 + 1],
+//                     static_cast<CSAMPLE>(fraction));
+//
+//             if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx)] = left;
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+//             } else {
+//                 pBuffer[2 * i] += left;
+//                 pBuffer[2 * i + 1] += right;
+//             }
+//         } else if (sourceIndex * 2 + 3 < inputSamplesNeeded) {
+//             // Fallback to linear interpolation
+//             CSAMPLE left = m_resampleInputBuffer[sourceIndex * 2] *
+//                             (1.0f - static_cast<CSAMPLE>(fraction)) +
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2] *
+//                             static_cast<CSAMPLE>(fraction);
+//
+//             CSAMPLE right = m_resampleInputBuffer[sourceIndex * 2 + 1] *
+//                             (1.0f - static_cast<CSAMPLE>(fraction)) +
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1] *
+//                             static_cast<CSAMPLE>(fraction);
+//
+//             if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx)] = left;
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+//             } else {
+//                 pBuffer[2 * i] += left;
+//                 pBuffer[2 * i + 1] += right;
+//             }
+//         }
+//     }
+// }
 
 // void SoundSourceSTEM::processWithResampler(size_t streamIdx,
 //         const WritableSampleFrames& globalSampleFrames,

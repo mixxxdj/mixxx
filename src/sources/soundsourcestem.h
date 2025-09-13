@@ -57,9 +57,9 @@ class SoundSourceSTEM : public SoundSource {
     CSAMPLE cubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, double mu);
 
     void initializeResamplers(int refSampleRate);
-    void processWithResampler(size_t streamIdx,
-            const WritableSampleFrames& globalSampleFrames,
-            CSAMPLE* pBuffer);
+    // void processWithResampler(size_t streamIdx,
+    //         const WritableSampleFrames& globalSampleFrames,
+    //         CSAMPLE* pBuffer);
     void processWithoutResampler(size_t streamIdx,
             const WritableSampleFrames& globalSampleFrames,
             CSAMPLE* pBuffer);
@@ -71,6 +71,29 @@ class SoundSourceSTEM : public SoundSource {
 
     ReadableSampleFrames readSampleFramesClamped(
             const WritableSampleFrames& sampleFrames) override;
+
+    void processWithResampler(size_t streamIdx,
+            const WritableSampleFrames& globalSampleFrames,
+            CSAMPLE* pBuffer);
+    void interpolateAndMix(size_t streamIdx,
+            SINT outputIndex,
+            SINT sourceIndex,
+            CSAMPLE fraction,
+            CSAMPLE* pBuffer,
+            std::size_t stemCount);
+    void linearInterpolateAndMix(size_t streamIdx,
+            SINT outputIndex,
+            SINT sourceIndex,
+            CSAMPLE fraction,
+            CSAMPLE* pBuffer,
+            std::size_t stemCount);
+    void mixToOutput(size_t streamIdx,
+            SINT outputIndex,
+            CSAMPLE left,
+            CSAMPLE right,
+            CSAMPLE* pBuffer,
+            std::size_t stemCount);
+    CSAMPLE robustCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu);
 };
 
 class SoundSourceProviderSTEM : public SoundSourceProvider {
