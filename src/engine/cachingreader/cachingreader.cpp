@@ -1,5 +1,5 @@
-#include "engine/cachingreader/cachingreader.h"
-
+#include <QDir>
+#include <QRegularExpression>
 #include <QtDebug>
 
 #include "moc_cachingreader.cpp"
@@ -12,6 +12,7 @@
 namespace {
 
 mixxx::Logger kLogger("CachingReader");
+static QRegularExpression s_trailingSlashesRegex("/+$");
 
 // This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
 // Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
@@ -36,6 +37,8 @@ constexpr SINT kDefaultHintFrames = 1024;
 constexpr SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
+CachingReader::RamPlayConfig CachingReader::s_ramPlayConfig;
+QMutex CachingReader::s_configMutex;
 
 CachingReader::CachingReader(const QString& group,
         UserSettingsPointer config,
@@ -64,6 +67,19 @@ CachingReader::CachingReader(const QString& group,
                   &m_chunkReadRequestFIFO,
                   &m_readerStatusUpdateFIFO,
                   maxSupportedChannel) {
+    // Initialize RAM play config (only once)
+    initializeRamPlayConfig(m_pConfig);
+
+    // Pass config values to worker
+    QMutexLocker locker(&s_configMutex);
+    m_worker.setRamPlayConfig(
+            s_ramPlayConfig.enabled,
+            s_ramPlayConfig.ramDiskPath,
+            s_ramPlayConfig.maxSizeMB,
+            s_ramPlayConfig.decksEnabled,
+            s_ramPlayConfig.samplersEnabled,
+            s_ramPlayConfig.previewEnabled);
+
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
@@ -80,14 +96,20 @@ CachingReader::CachingReader(const QString& group,
     }
 
     // Forward signals from worker
-    connect(&m_worker, &CachingReaderWorker::trackLoading,
-            this, &CachingReader::trackLoading,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoading,
+            this,
+            &CachingReader::trackLoading,
             Qt::DirectConnection);
-    connect(&m_worker, &CachingReaderWorker::trackLoaded,
-            this, &CachingReader::trackLoaded,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoaded,
+            this,
+            &CachingReader::trackLoaded,
             Qt::DirectConnection);
-    connect(&m_worker, &CachingReaderWorker::trackLoadFailed,
-            this, &CachingReader::trackLoadFailed,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoadFailed,
+            this,
+            &CachingReader::trackLoadFailed,
             Qt::DirectConnection);
 
     m_worker.start(QThread::HighPriority);
@@ -96,6 +118,116 @@ CachingReader::CachingReader(const QString& group,
 CachingReader::~CachingReader() {
     m_worker.quitWait();
     qDeleteAll(m_chunks);
+}
+
+void CachingReader::initializeRamPlayConfig(UserSettingsPointer pConfig) {
+    QMutexLocker locker(&s_configMutex);
+
+    if (s_ramPlayConfig.initialized) {
+        return; // Already initialized
+    }
+
+    if (!pConfig) {
+        // Set defaults
+#ifdef Q_OS_WIN
+        s_ramPlayConfig.ramDiskPath = "R:/MixxxTmp/";
+#else
+        s_ramPlayConfig.ramDiskPath = "/dev/shm/MixxxTmp/";
+#endif
+        s_ramPlayConfig.initialized = true;
+        return;
+    }
+
+    // Check if config vars exist else create
+    createRamPlayConfigVars(pConfig);
+
+    s_ramPlayConfig.enabled = pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Enabled"));
+    s_ramPlayConfig.maxSizeMB = pConfig->getValue<int>(ConfigKey("[RAM-Play]", "MaxSizeMB"));
+    s_ramPlayConfig.decksEnabled = pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Decks"));
+    s_ramPlayConfig.samplersEnabled = pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Samplers"));
+    s_ramPlayConfig.previewEnabled =
+            pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "PreviewDeck"));
+
+    QString dirName = pConfig->getValueString(ConfigKey("[RAM-Play]", "DirectoryName"));
+    if (dirName.isEmpty()) {
+        dirName = "MixxxTmp";
+    }
+
+#ifdef Q_OS_WIN
+    QString driveLetter = pConfig->getValueString(ConfigKey("[RAM-Play]", "WindowsDrive"));
+    driveLetter = driveLetter.replace(QRegularExpression("[^a-zA-Z]"), "").toUpper();
+    if (driveLetter.isEmpty()) {
+        driveLetter = "R";
+    }
+    s_ramPlayConfig.ramDiskPath = driveLetter + ":/" + dirName + "/";
+#else
+    QString basePath = pConfig->getValueString(ConfigKey("[RAM-Play]", "LinuxDrive"));
+    if (basePath.isEmpty()) {
+        basePath = "/dev/shm";
+    }
+    while (basePath.endsWith('/')) {
+        basePath.chop(1);
+    }
+    s_ramPlayConfig.ramDiskPath = basePath + "/" + dirName + "/";
+#endif
+
+    s_ramPlayConfig.initialized = true;
+
+    kLogger.debug() << "[RAM-PLAY] Config initialized: "
+                    << "RAM-Play Enabled : " << s_ramPlayConfig.enabled
+                    << "- Path:" << s_ramPlayConfig.ramDiskPath
+                    << "- MaxSize:" << s_ramPlayConfig.maxSizeMB << "MB "
+                    << "- Decks:" << s_ramPlayConfig.decksEnabled
+                    << "- Samplers:" << s_ramPlayConfig.samplersEnabled
+                    << "- PreviewDeck:" << s_ramPlayConfig.previewEnabled;
+}
+
+void CachingReader::createRamPlayConfigVars(UserSettingsPointer pConfig) {
+    if (!pConfig) {
+        return;
+    }
+
+    ConfigKey enabledKey("[RAM-Play]", "Enabled");
+    if (!m_pConfig->exists(enabledKey)) {
+        m_pConfig->setValue(enabledKey, false);
+    }
+
+    ConfigKey maxSizeKey("[RAM-Play]", "MaxSizeMB");
+    if (!m_pConfig->exists(maxSizeKey)) {
+        m_pConfig->setValue(maxSizeKey, 512);
+    }
+
+    ConfigKey dirNameKey("[RAM-Play]", "DirectoryName");
+    if (!m_pConfig->exists(dirNameKey)) {
+        m_pConfig->setValue(dirNameKey, QString("MixxxTmp"));
+    }
+
+    ConfigKey decksKey("[RAM-Play]", "Decks");
+    if (!m_pConfig->exists(decksKey)) {
+        m_pConfig->setValue(decksKey, true);
+    }
+
+    ConfigKey samplersKey("[RAM-Play]", "Samplers");
+    if (!m_pConfig->exists(samplersKey)) {
+        m_pConfig->setValue(samplersKey, true);
+    }
+
+    ConfigKey previewKey("[RAM-Play]", "PreviewDeck");
+    if (!m_pConfig->exists(previewKey)) {
+        m_pConfig->setValue(previewKey, false);
+    }
+
+#ifdef Q_OS_WIN
+    ConfigKey driveKey("[RAM-Play]", "WindowsDrive");
+    if (!m_pConfig->exists(driveKey)) {
+        m_pConfig->setValue(driveKey, QString("R"));
+    }
+#else
+    ConfigKey linuxDriveKey("[RAM-Play]", "LinuxDrive");
+    if (!m_pConfig->exists(linuxDriveKey)) {
+        m_pConfig->setValue(linuxDriveKey, QString("/dev/shm"));
+    }
+#endif
 }
 
 void CachingReader::freeChunkFromList(CachingReaderChunkForOwner* pChunk) {
@@ -418,7 +550,6 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
             for (SINT chunkIndex = firstChunkIndex;
                     chunkIndex <= lastChunkIndex;
                     ++chunkIndex) {
-
                 // Process new messages from the reader thread before looking up
                 // the next chunk
                 process();
@@ -546,18 +677,18 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // any are not, then wake.
     bool shouldWake = false;
 
-    for (const auto& hint: hintList) {
+    for (const auto& hint : hintList) {
         SINT hintFrame = hint.frame;
         SINT hintFrameCount = hint.frameCount;
 
         // Handle some special length values
         if (hintFrameCount == Hint::kFrameCountForward) {
-        	hintFrameCount = kDefaultHintFrames;
+            hintFrameCount = kDefaultHintFrames;
         } else if (hintFrameCount == Hint::kFrameCountBackward) {
-        	hintFrame -= kDefaultHintFrames;
-        	hintFrameCount = kDefaultHintFrames;
+            hintFrame -= kDefaultHintFrames;
+            hintFrameCount = kDefaultHintFrames;
             if (hintFrame < 0) {
-            	hintFrameCount += hintFrame;
+                hintFrameCount += hintFrame;
                 if (hintFrameCount <= 0) {
                     continue;
                 }
