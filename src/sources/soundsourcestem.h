@@ -94,6 +94,7 @@ class SoundSourceSTEM : public SoundSource {
             CSAMPLE* pBuffer,
             std::size_t stemCount);
     CSAMPLE robustCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu);
+    CSAMPLE safeCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu);
 };
 
 class SoundSourceProviderSTEM : public SoundSourceProvider {

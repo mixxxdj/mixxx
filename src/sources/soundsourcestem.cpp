@@ -18,6 +18,7 @@ extern "C" {
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/sample.h"
+#include "util/fpclassify.h"
 
 #if !defined(VERBOSE_DEBUG_LOG)
 #define VERBOSE_DEBUG_LOG false
@@ -467,6 +468,80 @@ void SoundSourceSTEM::close() {
     }
 }
 
+//void SoundSourceSTEM::processWithResampler(size_t streamIdx,
+//        const WritableSampleFrames& globalSampleFrames,
+//        CSAMPLE* pBuffer) {
+//    const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+//    const int refSampleRate = premixInfo.getSampleRate();
+//    const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//    const int stemSampleRate = stemInfo.getSampleRate();
+//
+//    // Use integer arithmetic for critical calculations to ensure cross-platform consistency
+//    const SINT outputFramesNeeded = globalSampleFrames.frameLength();
+//    const SINT premixStartFrame = globalSampleFrames.frameIndexRange().start();
+//
+//    // Integer-based position calculation (avoids floating-point differences)
+//    const SINT stemStartFrame = (premixStartFrame * stemSampleRate) / refSampleRate;
+//
+//    // Calculate input frames needed with integer math
+//    const SINT inputFramesNeeded =
+//            ((outputFramesNeeded * stemSampleRate) + refSampleRate - 1) /
+//                    refSampleRate +
+//            4;
+//    const SINT inputSamplesNeeded = inputFramesNeeded * 2;
+//
+//    // Ensure input buffer is large enough
+//    if (inputSamplesNeeded > m_resampleInputBuffer.size()) {
+//        m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
+//    }
+//
+//    // Read input data from the correct position in the stem
+//    WritableSampleFrames inputFrames(
+//            IndexRange::forward(stemStartFrame, inputFramesNeeded),
+//            SampleBuffer::WritableSlice(m_resampleInputBuffer.data(), inputSamplesNeeded));
+//
+//    auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+//
+//    // Verify we read enough data
+//    if (readResult.frameIndexRange().length() < inputFramesNeeded) {
+//        // This can happen near the end of the file, it's normal
+//        return;
+//    }
+//
+//    // Simple audio detection (avoid complex floating-point checks)
+//    bool hasAudio = false;
+//    const SINT checkLimit = (inputSamplesNeeded < 1000) ? inputSamplesNeeded : 1000;
+//    for (SINT i = 0; i < checkLimit; i += 4) { // Check every 4th sample
+//        if (std::fabs(m_resampleInputBuffer[i]) > 0.001f) {
+//            hasAudio = true;
+//            break;
+//        }
+//    }
+//
+//    if (!hasAudio) {
+//        return; // Silence is normal in STEM files
+//    }
+//
+//    // Perform resampling - use a robust approach
+//    std::size_t stemCount = m_pStereoStreams.size();
+//
+//    for (SINT i = 0; i < outputFramesNeeded; i++) {
+//        // Calculate source position using precise integer math
+//        const int64_t precisePos = static_cast<int64_t>(i) * stemSampleRate;
+//        const SINT sourceIndex = static_cast<SINT>(precisePos / refSampleRate);
+//        const CSAMPLE fraction = static_cast<CSAMPLE>(precisePos % refSampleRate) / refSampleRate;
+//
+//        // Safe bounds checking
+//        if (sourceIndex >= 1 && sourceIndex + 2 < inputFramesNeeded) {
+//            // Use a robust interpolation method
+//            interpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+//        } else if (sourceIndex + 1 < inputFramesNeeded) {
+//            // Linear fallback
+//            linearInterpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+//        }
+//    }
+//}
+
 void SoundSourceSTEM::processWithResampler(size_t streamIdx,
         const WritableSampleFrames& globalSampleFrames,
         CSAMPLE* pBuffer) {
@@ -541,49 +616,129 @@ void SoundSourceSTEM::processWithResampler(size_t streamIdx,
     }
 }
 
-// Separate interpolation functions for better maintainability
-void SoundSourceSTEM::interpolateAndMix(size_t streamIdx,
-        SINT outputIndex,
-        SINT sourceIndex,
-        CSAMPLE fraction,
-        CSAMPLE* pBuffer,
-        std::size_t stemCount) {
+//CSAMPLE SoundSourceSTEM::safeCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu) {
+//    // Use the safe math functions from FpClassify
+//    if (!util_isnormal(mu)) {
+//        mu = 0.0f; // Handle denormals/NaN
+//    }
+//
+//    // Conservative cubic interpolation that works across compilers
+//    CSAMPLE mu2 = mu * mu;
+//    CSAMPLE a0 = y3 - y2 - y0 + y1;
+//    CSAMPLE a1 = y0 - y1 - a0;
+//    CSAMPLE a2 = y2 - y0;
+//
+//    // Carefully ordered operations to minimize precision issues
+//    return ((a0 * mu + a1) * mu + a2) * mu + y1;
+//}
+
+CSAMPLE SoundSourceSTEM::safeCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu) {
+    // Handle denormals/NaN using the safe math functions
+    if (!util_isnormal(mu)) {
+        mu = 0.0f;
+    }
+
     // Robust cubic interpolation that works across compilers
-    const CSAMPLE* in = m_resampleInputBuffer.data();
-    const SINT baseIdx = sourceIndex * 2;
+    const CSAMPLE mu2 = mu * mu;
+    const CSAMPLE a0 = y3 - y2 - y0 + y1;
+    const CSAMPLE a1 = y0 - y1 - a0;
+    const CSAMPLE a2 = y2 - y0;
 
-    // Left channel
-    CSAMPLE y0 = in[baseIdx - 2];
-    CSAMPLE y1 = in[baseIdx];
-    CSAMPLE y2 = in[baseIdx + 2];
-    CSAMPLE y3 = in[baseIdx + 4];
-    CSAMPLE left = robustCubicInterpolate(y0, y1, y2, y3, fraction);
-
-    // Right channel
-    y0 = in[baseIdx - 1];
-    y1 = in[baseIdx + 1];
-    y2 = in[baseIdx + 3];
-    y3 = in[baseIdx + 5];
-    CSAMPLE right = robustCubicInterpolate(y0, y1, y2, y3, fraction);
-
-    // Mix into output
-    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+    // Carefully ordered operations to minimize precision issues
+    return ((a0 * mu + a1) * mu + a2) * mu + y1;
 }
 
-void SoundSourceSTEM::linearInterpolateAndMix(size_t streamIdx,
-        SINT outputIndex,
-        SINT sourceIndex,
-        CSAMPLE fraction,
-        CSAMPLE* pBuffer,
-        std::size_t stemCount) {
+void SoundSourceSTEM::interpolateAndMix(size_t streamIdx, SINT outputIndex, SINT sourceIndex, CSAMPLE fraction, CSAMPLE* pBuffer, std::size_t stemCount) {
     const CSAMPLE* in = m_resampleInputBuffer.data();
     const SINT baseIdx = sourceIndex * 2;
 
+    // Left channel - use safe interpolation
+    CSAMPLE left = safeCubicInterpolate(
+            in[baseIdx - 2],
+            in[baseIdx],
+            in[baseIdx + 2],
+            in[baseIdx + 4],
+            fraction);
+
+    // Right channel - use safe interpolation
+    CSAMPLE right = safeCubicInterpolate(
+            in[baseIdx - 1],
+            in[baseIdx + 1],
+            in[baseIdx + 3],
+            in[baseIdx + 5],
+            fraction);
+
+    // Mix into output
+    if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx)] = left;
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+    } else {
+        pBuffer[2 * outputIndex] += left;
+        pBuffer[2 * outputIndex + 1] += right;
+    }
+}
+
+void SoundSourceSTEM::linearInterpolateAndMix(size_t streamIdx, SINT outputIndex, SINT sourceIndex, CSAMPLE fraction, CSAMPLE* pBuffer, std::size_t stemCount) {
+    const CSAMPLE* in = m_resampleInputBuffer.data();
+    const SINT baseIdx = sourceIndex * 2;
+
+    // Simple linear interpolation (already safe)
     CSAMPLE left = in[baseIdx] * (1.0f - fraction) + in[baseIdx + 2] * fraction;
     CSAMPLE right = in[baseIdx + 1] * (1.0f - fraction) + in[baseIdx + 3] * fraction;
 
-    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+    // Mix into output
+    if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx)] = left;
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+    } else {
+        pBuffer[2 * outputIndex] += left;
+        pBuffer[2 * outputIndex + 1] += right;
+    }
 }
+
+//// Separate interpolation functions for better maintainability
+//void SoundSourceSTEM::interpolateAndMix(size_t streamIdx,
+//        SINT outputIndex,
+//        SINT sourceIndex,
+//        CSAMPLE fraction,
+//        CSAMPLE* pBuffer,
+//        std::size_t stemCount) {
+//    // Robust cubic interpolation that works across compilers
+//    const CSAMPLE* in = m_resampleInputBuffer.data();
+//    const SINT baseIdx = sourceIndex * 2;
+//
+//    // Left channel
+//    CSAMPLE y0 = in[baseIdx - 2];
+//    CSAMPLE y1 = in[baseIdx];
+//    CSAMPLE y2 = in[baseIdx + 2];
+//    CSAMPLE y3 = in[baseIdx + 4];
+//    CSAMPLE left = robustCubicInterpolate(y0, y1, y2, y3, fraction);
+//
+//    // Right channel
+//    y0 = in[baseIdx - 1];
+//    y1 = in[baseIdx + 1];
+//    y2 = in[baseIdx + 3];
+//    y3 = in[baseIdx + 5];
+//    CSAMPLE right = robustCubicInterpolate(y0, y1, y2, y3, fraction);
+//
+//    // Mix into output
+//    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+//}
+
+//void SoundSourceSTEM::linearInterpolateAndMix(size_t streamIdx,
+//        SINT outputIndex,
+//        SINT sourceIndex,
+//        CSAMPLE fraction,
+//        CSAMPLE* pBuffer,
+//        std::size_t stemCount) {
+//    const CSAMPLE* in = m_resampleInputBuffer.data();
+//    const SINT baseIdx = sourceIndex * 2;
+//
+//    CSAMPLE left = in[baseIdx] * (1.0f - fraction) + in[baseIdx + 2] * fraction;
+//    CSAMPLE right = in[baseIdx + 1] * (1.0f - fraction) + in[baseIdx + 3] * fraction;
+//
+//    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+//}
 
 void SoundSourceSTEM::mixToOutput(size_t streamIdx,
         SINT outputIndex,
@@ -917,6 +1072,14 @@ void SoundSourceSTEM::testCubicInterpolation() {
 }
 
 void SoundSourceSTEM::initializeResamplers(int refSampleRate) {
+// Debug output to check compilation flags
+#ifdef __FAST_MATH__
+    qWarning() << "STEM: WARNING! Compiled with fast-math - audio quality may suffer!";
+#else
+    qDebug() << "STEM: Compiled with precise math settings";
+#endif
+
+    // Your existing code
     std::size_t stemCount = m_pStereoStreams.size();
     m_needsResampling.resize(stemCount, false);
 
@@ -929,6 +1092,20 @@ void SoundSourceSTEM::initializeResamplers(int refSampleRate) {
         }
     }
 }
+
+//void SoundSourceSTEM::initializeResamplers(int refSampleRate) {
+//    std::size_t stemCount = m_pStereoStreams.size();
+//    m_needsResampling.resize(stemCount, false);
+//
+//    for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
+//        const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//        const int stemSampleRate = stemInfo.getSampleRate();
+//
+//        if (stemSampleRate != refSampleRate) {
+//            m_needsResampling[streamIdx] = true;
+//        }
+//    }
+//}
 
 ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
         const WritableSampleFrames& globalSampleFrames) {
