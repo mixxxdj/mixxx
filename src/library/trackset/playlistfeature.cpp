@@ -19,6 +19,16 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
+namespace {
+const QString kSetPrepPlaylistTitle = QObject::tr("Set as Quick Prep playlist");
+const QString kUnsetPrepPlaylistTitle = QObject::tr("Unset Quick Prep playlist");
+const QIcon kSetPrepPlaylistIcon(":/images/library/ic_heart_beige.svg");
+const QIcon kSetPrepPlaylistDisabledIcon(":/images/library/ic_heart_disabled.svg");
+const QIcon kUnsetPrepPlaylistIcon(":/images/library/ic_heart_beige_crossed.svg");
+
+const QString kPrepPlaylistModelKey(QStringLiteral("PrepPlaylistId"));
+} // anonymous namespace
+
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
@@ -52,10 +62,46 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
+
+    m_pTogglePrepPlaylistAction = make_parented<QAction>(kSetPrepPlaylistTitle, this);
+    m_pTogglePrepPlaylistAction->setIcon(kSetPrepPlaylistIcon);
+    connect(m_pTogglePrepPlaylistAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotTogglePrepPlaylist);
+
+    // Restore the Prep playlist
+    QString prepPlaylistIdStr = m_pPlaylistTableModel->getModelSetting(kPrepPlaylistModelKey);
+    bool okay = false;
+    int prepPlaylistId = prepPlaylistIdStr.toInt(&okay);
+    if (okay && prepPlaylistId != kInvalidPlaylistId) {
+        // Returns kInvalidPlaylistId on failure
+        prepPlaylistId = m_playlistDao.togglePrepPlaylist(prepPlaylistId);
+        if (prepPlaylistId != kInvalidPlaylistId) {
+            updateChildModel(QSet<int>{prepPlaylistId});
+        }
+    }
 }
 
 QVariant PlaylistFeature::title() {
     return tr("Playlists");
+}
+
+void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    BasePlaylistFeature::bindSidebarWidget(pSidebarWidget);
+    // Now we have a valid m_pSidebarWidget.
+    connect(m_pSidebarWidget,
+            &WLibrarySidebar::togglePrepPlaylist,
+            this,
+            [this]() {
+                // Check if the selected sidebar item is one of ours.
+                // If yes, adopt it as m_lastRightClickedIndex and
+                // toggle the prep playlist.
+                if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+                    m_lastRightClickedIndex = m_lastClickedIndex;
+                    slotTogglePrepPlaylist();
+                }
+            });
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -81,12 +127,30 @@ void PlaylistFeature::onRightClickChild(
     int playlistId = playlistIdFromIndex(index);
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    bool isPrepPlaylist = m_playlistDao.getPrepPlaylistId() == playlistId;
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+
+    m_pTogglePrepPlaylistAction->setEnabled(!locked);
+    m_pTogglePrepPlaylistAction->setText(
+            isPrepPlaylist ? kUnsetPrepPlaylistTitle : kSetPrepPlaylistTitle);
+    // PlaylistDAO prevents using a locked playlist as Prep playlist, so we use
+    // the greyed out 'Set' icon. If the icons were not constant we could use
+    // QIcon::addFile(path, QIcon::Disabled);
+    if (locked) {
+        // TODO For some reason the actual icon color (#494949) is not used,
+        // the icon is almost as bright as the 'Set' icon
+        m_pTogglePrepPlaylistAction->setIcon(QIcon());
+    } else {
+        m_pTogglePrepPlaylistAction->setIcon(
+                isPrepPlaylist ? kUnsetPrepPlaylistIcon : kSetPrepPlaylistIcon);
+    }
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pTogglePrepPlaylistAction);
+    menu.addSeparator();
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     // TODO If playlist is selected and has more than one track selected
@@ -297,6 +361,28 @@ void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
     m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
 }
 
+void PlaylistFeature::slotTogglePrepPlaylist() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        qDebug() << "Can't set locked playlist" << playlistId
+                 << m_playlistDao.getPlaylistName(playlistId)
+                 << "as 'Prep' plalyist";
+        return;
+    }
+
+    // TODO is toggle, ie. setting same pl again unsets it (plId = -1)
+    // Adjust action name accordingly + crossed heart
+    int prepPlaylistId = m_playlistDao.togglePrepPlaylist(playlistId);
+    QSet<int> allIds = m_playlistDao.getPlaylistIds(PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN);
+    updateChildModel(allIds);
+    // Store the id for the next session
+    m_pPlaylistTableModel->setModelSetting(kPrepPlaylistModelKey, prepPlaylistId);
+}
+
 /// Purpose: When inserting or removing playlists,
 /// we require the sidebar model not to reset.
 /// This method queries the database and does dynamic insertion
@@ -337,8 +423,9 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        item->setIcon(
-                QIcon(":/images/library/ic_library_locked_tracklist.svg"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));
+    } else if (m_playlistDao.getPrepPlaylistId() == playlistId) {
+        item->setIcon(QIcon(":/images/library/ic_heart_cyan.svg"));
     } else {
         item->setIcon(QIcon());
     }
