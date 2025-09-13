@@ -497,6 +497,8 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
     ScopedTimer timer(u"LibraryScanner::queueTask");
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
+        delete pTask;
+        m_pool.clear();
         return;
     }
     m_scannerGlobal->getTaskWatcher().watchTask();
