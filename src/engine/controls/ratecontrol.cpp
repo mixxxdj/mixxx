@@ -10,6 +10,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/positionscratchcontroller.h"
+#include "mixer/playermanager.h"
 #include "moc_ratecontrol.cpp"
 #include "util/rotary.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -99,13 +100,9 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
                   ConfigKey(group, QStringLiteral("jog")))),
           // FIXME: The filter length should be dependent on sample rate/block size or something
           m_pJogFilter(std::make_unique<Rotary>(25)),
-          // Vinyl control
-          m_pVCEnabled(ControlObject::getControl(ConfigKey(
-                  getGroup(), QStringLiteral("vinylcontrol_enabled")))),
-          m_pVCScratching(ControlObject::getControl(ConfigKey(
-                  getGroup(), QStringLiteral("vinylcontrol_scratching")))),
-          m_pVCMode(ControlObject::getControl(
-                  ConfigKey(getGroup(), QStringLiteral("vinylcontrol_mode")))),
+          m_pVCEnabled(nullptr),
+          m_pVCScratching(nullptr),
+          m_pVCMode(nullptr),
           m_syncMode(group, QStringLiteral("sync_mode")),
           m_slipEnabled(group, QStringLiteral("slip_enabled")),
           m_wrapAroundCount(0),
@@ -114,6 +111,18 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_bTempStarted(false),
           m_tempRateRatio(0.0),
           m_dRateTempRampChange(0.0) {
+    // Vinyl control COs are only created for main decks
+    if (PlayerManager::isDeckGroup(getGroup())) {
+        m_pVCEnabled = ControlObject::getControl(
+                ConfigKey(getGroup(), QStringLiteral("vinylcontrol_enabled")),
+                ControlFlag::NoAssertIfMissing);
+        m_pVCScratching = ControlObject::getControl(
+                ConfigKey(getGroup(), QStringLiteral("vinylcontrol_scratching")),
+                ControlFlag::NoAssertIfMissing);
+        m_pVCMode = ControlObject::getControl(
+                ConfigKey(getGroup(), QStringLiteral("vinylcontrol_mode")),
+                ControlFlag::NoAssertIfMissing);
+    }
     // This is the resulting rate ratio that can be used for display or calculations.
     // The track original rate ratio is 1.
     connect(m_pRateRatio.get(),
@@ -419,7 +428,7 @@ double RateControl::calculateSpeed(double baserate,
         }
 
         if (bVinylControlEnabled) {
-            if (m_pVCScratching->toBool()) {
+            if (m_pVCScratching && m_pVCScratching->toBool()) {
                 *pReportScratching = true;
             }
             rate = speed;

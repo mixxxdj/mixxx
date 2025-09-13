@@ -69,6 +69,7 @@ class WMainMenuBar : public QMenuBar {
 #endif
     void searchInCurrentView();
     void searchInAllTracks();
+    void showAutoDJ();
     void showAbout();
     void showKeywheel(bool visible);
     void showPreferences();

@@ -90,6 +90,7 @@ class EngineBuffer : public EngineObject {
         RubberBandFiner = 2,
 #endif
     };
+    Q_ENUM(KeylockEngine);
 
     // intended for iteration over the KeylockEngine enum
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
@@ -114,6 +115,9 @@ class EngineBuffer : public EngineObject {
     double getSpeed() const;
     mixxx::audio::ChannelCount getChannelCount() const {
         return m_channelCount;
+    }
+    mixxx::audio::FramePos getPlayPos() const {
+        return m_playPos;
     }
     bool getScratching() const;
     bool isReverse() const;

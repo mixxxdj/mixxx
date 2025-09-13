@@ -16,6 +16,7 @@
 #include "util/parented_ptr.h"
 
 class AnalysisFeature;
+class AutoDJFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
@@ -105,6 +106,9 @@ class Library: public QObject {
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
+    void showAutoDJ();
+
+    static const QString kAutoDJViewName;
 
     bool requestAddDir(const QString& directory);
     bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
@@ -190,9 +194,9 @@ class Library: public QObject {
 
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
-    const static QString m_sAutoDJViewName;
     WLibrary* m_pLibraryWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    AutoDJFeature* m_pAutoDJFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;

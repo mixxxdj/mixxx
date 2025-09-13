@@ -280,6 +280,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #006596; /* blue like the track selection color */
 }
 
 WTrackTableView:focus,
@@ -2437,6 +2439,18 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   outline: none;
 }
 
+#CueStandardButton {
+/* tall button, about the same height as cue number + label edit box */
+  width: 28px;
+  height: 46px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  qproperty-icon: url(skin:/../Deere/icon/ic_loop_in_48px.svg);
+  background-color: #3B3B3B;
+  border-radius: 2px;
+  outline: none;
+}
+
 #CueSavedLoopButton {
 /* tall button, about the same height as cue number + label edit box */
   width: 28px;
@@ -2449,11 +2463,23 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   outline: none;
 }
 
-#CueDeleteButton:hover, #CueSavedLoopButton:hover {
+#CueSavedJumpButton {
+/* tall button, about the same height as cue number + label edit box */
+  width: 28px;
+  height: 46px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  qproperty-icon: url(skin:/../Deere/icon/ic_beatjump_forward_48px.svg);
+  background-color: #3B3B3B;
+  border-radius: 2px;
+  outline: none;
+}
+
+#CueDeleteButton:hover, #CueStandardButton:hover, #CueSavedLoopButton:hover, #CueSavedJumpButton:hover {
   background-color: #4B4B4B;
 }
 
-#CueSavedLoopButton:checked {
+#CueDeleteButton:checked, #CueStandardButton:checked, #CueSavedLoopButton:checked, #CueSavedJumpButton:checked {
   background-color: #006596;
 }
 

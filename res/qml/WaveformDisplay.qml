@@ -100,6 +100,7 @@ Item {
                 color: "#00d9ff"
                 textColor: "#1a1a1a"
                 text: " %1 "
+                endIcon: Qt.resolvedUrl("images/jump_%1.svg")
             }
 
             untilMark.showTime: true

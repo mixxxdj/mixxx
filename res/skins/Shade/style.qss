@@ -426,7 +426,10 @@ WEffectSelector QAbstractScrollArea,
 WCueMenuPopup QLabel {
   color: #060613;
 }
-#CueDeleteButton {
+#CueDeleteButton,
+#CueStandardButton,
+#CueSavedLoopButton,
+#CueSavedJumpButton {
   /* set any border to allow styles for other properties as well */
   border: 1px solid #060613;
 /* To get the final size for the Delete button consider border width.
@@ -435,27 +438,35 @@ WCueMenuPopup QLabel {
   height: 43px;
   padding: 0px;
   background-color: #aab2b7;
-  qproperty-icon: url(skin:/btn/btn_delete.svg);
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
   outline: none;
+}
+#CueDeleteButton {
+  qproperty-icon: url(skin:/btn/btn_delete.svg);
+}
+#CueStandardButton {
+  qproperty-icon: url(skin:/btn/btn_vinylcontrol.png);
 }
 #CueSavedLoopButton {
-  /* set any border to allow styles for other properties as well */
-  border: 1px solid #060613;
-/* To get the final size for the Delete button consider border width.
-  tall button, about the same height as cue number + label edit box */
-  width: 24px;
-  height: 43px;
-  padding: 0px;
-  background-color: #aab2b7;
-  qproperty-icon: url(skin:/btn/btn_hotcue_loop.png);
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  outline: none;
+  qproperty-icon: url(skin:/btn/btn_repeat.png);
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueSavedJumpButton[direction="impossible"],
+#CueSavedJumpButton[direction="forward"] {
+  qproperty-icon: url(skin:/btn/btn_beatjump_forward.png);
+}
+#CueSavedJumpButton[direction="backward"] {
+  qproperty-icon: url(skin:/btn/btn_beatjump_backward.png);
+}
+#CueDeleteButton:pressed, #CueDeleteButton:checked, #CueDeleteButton:clicked,
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #F90562;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   border: 1px solid #060613;
@@ -579,6 +590,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #eb4123; /* orange like the faders */
 }
 
   /* Table cell in edit mode */

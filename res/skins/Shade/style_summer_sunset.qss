@@ -144,14 +144,27 @@ WEffectSelector::indicator:unchecked:selected,
 	border: 0px solid #f8ba54;
 }
 
-#CueDeleteButton {
+#CueDeleteButton,
+  #CueStandardButton,
+  #CueSavedLoopButton,
+  #CueSavedJumpButton {
   background-color: #cdbb5d;
 }
-#CueSavedLoopButton {
-  background-color: #cdbb5d;
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #54fd05;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   background-color: #706633;

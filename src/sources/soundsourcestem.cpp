@@ -410,7 +410,6 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         //    }
         stemCount++;
         //        }
-
         // StemIdx is equal to StreamIdx -1 (the main mix)
         // if (selectedStemMask && !(selectedStemMask & 1 << (streamIdx - 1))) {
         //    continue;

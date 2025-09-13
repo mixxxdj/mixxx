@@ -153,8 +153,21 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #8a8a8a;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #b79d00;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   background-color: #3F3041;
@@ -217,6 +230,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #69a50f; /* green like fader highlight */
 }
 
   /* Table cell in edit mode */
