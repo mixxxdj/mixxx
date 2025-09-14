@@ -16,20 +16,21 @@ Item {
     property color inactiveColor: Theme.darkGray2
     property real maxWidth: 0
     property alias metric: fontMetrics
-    property bool normalizedWidth: true
+    property bool normalizedWidth: false
     required property list<string> options
     property string selected: options.length ? options[0] : null
     property real spacing: 9
     property list<var> tooltips: []
 
     implicitHeight: (contentList.visible ? contentList.height : contentSpin.height)
-    width: {
-        if (root.maxWidth > root.cellSize * root.options.length) {
-            contentSpin.width;
-        } else if (root.normalizedWidth) {
-            root.cellSize * root.options.length + root.spacing;
+    implicitWidth: {
+        let minimumSize = options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing * 2, 0);
+        let normalizedSize = root.cellSize * root.options.length;
+        let size = root.normalizedWidth ? normalizedSize : minimumSize;
+        if (root.maxWidth > size) {
+            return size + root.spacing;
         } else {
-            options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing * 2, 0) + root.spacing;
+            return contentSpin.implicitWidth;
         }
     }
 

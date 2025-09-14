@@ -12,7 +12,7 @@ Rectangle {
     id: root
 
     property list<string> availableData: ["none", "title", "year", "remaining", "artist", "rating"]
-    readonly property var currentTrack: deckPlayer.currentTrack
+    readonly property var currentTrack: deckPlayer?.currentTrack
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property bool editMode: false
     required property string group
@@ -27,11 +27,11 @@ Rectangle {
 
         GradientStop {
             color: {
-                const trackColor = root.currentTrack.color;
+                const trackColor = root.currentTrack?.color;
                 if (!trackColor.valid)
                     return Theme.deckInfoBarBackgroundColor;
 
-                return Qt.darker(root.currentTrack.color, 2);
+                return Qt.darker(root.currentTrack?.color, 2);
             }
             position: 0
         }
@@ -48,7 +48,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
         asynchronous: true
-        source: root.currentTrack.coverArtUrl
+        source: root.currentTrack?.coverArtUrl
         visible: false
         width: height
     }
@@ -58,7 +58,7 @@ Rectangle {
         anchors.fill: coverArt
         color: Theme.deckEmptyCoverArt
         radius: 4
-        visible: !root.deckPlayer.isLoaded && !root.minimized
+        visible: !root.deckPlayer?.isLoaded && !root.minimized
     }
     OpacityMask {
         id: coverArtMask
@@ -66,7 +66,7 @@ Rectangle {
         anchors.fill: coverArt
         maskSource: coverArtCircle
         source: coverArt
-        visible: root.deckPlayer.isLoaded && !root.minimized
+        visible: root.deckPlayer?.isLoaded && !root.minimized
 
         Skin.FadeBehavior on visible {
             fadeTarget: coverArtMask
@@ -82,8 +82,8 @@ Rectangle {
 
             Cell {
                 item.font.bold: false
-                item.font.weight: root.deckPlayer.isLoaded ? Font.DemiBold : Font.Thin
-                item.text: root.deckPlayer.isLoaded ? root.currentTrack.title : "No track loaded"
+                item.font.weight: root.deckPlayer?.isLoaded ? Font.DemiBold : Font.Thin
+                item.text: root.deckPlayer?.isLoaded ? root.currentTrack?.title : "No track loaded"
                 item.visible: true
             }
         }
@@ -91,20 +91,22 @@ Rectangle {
             roleValue: "artist"
 
             Cell {
-                item.text: root.currentTrack.artist
+                item.text: root.currentTrack?.artist
             }
         }
         DelegateChoice {
             roleValue: "year"
 
             Cell {
-                item.text: root.currentTrack.year
+                visible: root.width > 500 && root.currentTrack?.year
+                item.text: root.currentTrack?.year
             }
         }
         DelegateChoice {
             roleValue: "remaining"
 
             Cell {
+                visible: root.width > 450
                 readonly property real remaining: durationControl.value * (1 - playPositionControl.value)
 
                 item.text: `-${parseInt(remaining / 60).toString().padStart(2, '0')}:${parseInt(remaining % 60).toString().padStart(2, '0')}.${(remaining % 1).toFixed(1)}`
@@ -131,11 +133,12 @@ Rectangle {
 
                 required property int index
                 property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
-                property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer.isLoaded
+                property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer?.isLoaded
 
                 Layout.fillHeight: true
                 Layout.fillWidth: index == 0
                 Layout.preferredWidth: index == 0 ? 0 : rightColumnWidth
+                visible: root.width > 400
 
                 Mixxx.ControlProxy {
                     id: rateRatioControl
@@ -148,7 +151,7 @@ Rectangle {
 
                     anchors.centerIn: parent
                     spacing: 0
-                    visible: root.deckPlayer.isLoaded
+                    visible: root.deckPlayer?.isLoaded
 
                     Repeater {
                         model: 5
@@ -220,12 +223,14 @@ Rectangle {
                     hoverEnabled: true
 
                     onClicked: event => {
+                        if (!root.currentTrack) {
+                            return;
+                        }
                         let selectedStars = Math.ceil((mouseX - stars.x) / 16);
                         if (event.button === Qt.RightButton) {
                             root.currentTrack.stars = 0;
                         } else if (selectedStars >= 0 && selectedStars <= 5) {
                             root.currentTrack.stars = selectedStars;
-                            console.warn(root.currentTrack.stars);
                         }
                     }
                 }
@@ -341,7 +346,7 @@ Rectangle {
         required property int index
         readonly property bool isTop: !!parent.isTop
         property alias item: data
-        property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer.isLoaded
+        property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer?.isLoaded
 
         Layout.fillHeight: true
         Layout.fillWidth: index == 0
@@ -356,7 +361,7 @@ Rectangle {
             font.bold: isTop
             font.pixelSize: isTop ? 18 : Theme.textFontPixelSize
             horizontalAlignment: index == 0 ? Text.AlignLeft : Text.AlignHCenter
-            visible: root.deckPlayer.isLoaded
+            visible: root.deckPlayer?.isLoaded
 
             Skin.FadeBehavior on visible {
                 fadeTarget: data

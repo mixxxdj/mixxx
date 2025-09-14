@@ -13,15 +13,27 @@ ApplicationWindow {
     property alias editDeck: editDeckButton.checked
     property var focusedDeck: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
-    property alias show4decks: show4DecksButton.checked
+    readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
 
     color: Theme.backgroundColor
-    height: 1080
+    height: 1008
+    minimumHeight: 300
+    minimumWidth: 680
     visible: true
-    width: 1920
+    width: 1792
 
+    Mixxx.ControlProxy {
+        id: numDecksControl
+
+        group: "[App]"
+        key: "num_decks"
+
+        Component.onCompleted: {
+            value = 4;
+        }
+    }
     Column {
         id: content
 
@@ -51,6 +63,7 @@ ApplicationWindow {
                     activeColor: Theme.white
                     checkable: true
                     text: "4 Decks"
+                    visible: root.height > 515
                 }
                 Skin.Button {
                     id: maximizeLibraryButton
@@ -308,13 +321,10 @@ ApplicationWindow {
                 Deck {
                     id: deck1
 
-                    anchors.right: mixer.left
-                    anchors.top: parent.top
                     editMode: root.editDeck
                     group: "[Channel1]"
                     height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
                     minimized: root.maximizeLibrary
-                    width: (root.width - mixer.width) / 2
 
                     Behavior on height {
                         SpringAnimation {
@@ -338,6 +348,10 @@ ApplicationWindow {
 
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
+                    }
+                    anchors {
+                        left: parent.left
+                        right: mixer.left
                     }
                 }
                 Mixer {
@@ -428,13 +442,10 @@ ApplicationWindow {
                 Deck {
                     id: deck2
 
-                    anchors.left: mixer.right
-                    anchors.top: parent.top
                     editMode: root.editDeck
                     group: "[Channel2]"
                     height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
                     minimized: root.maximizeLibrary
-                    width: (root.width - mixer.width) / 2
 
                     Behavior on height {
                         SpringAnimation {
@@ -458,6 +469,11 @@ ApplicationWindow {
 
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2;
+                    }
+
+                    anchors {
+                        left: mixer.right
+                        right: parent.right
                     }
                 }
                 Loader {
@@ -569,7 +585,6 @@ ApplicationWindow {
                     id: library
 
                     active: root.maximizeLibrary || root.height - mixer.height >= 400
-                    height: parent.height - y
                     width: parent.width
 
                     sourceComponent: Component {
@@ -593,6 +608,14 @@ ApplicationWindow {
                                 anchors.top: deck1.bottom
                                 target: library
                             }
+                        },
+                        State {
+                            when: !root.maximizeLibrary && root.height - mixer.height < 400
+
+                            PropertyChanges {
+                                target: library
+                                visible: false
+                            }
                         }
                     ]
 
@@ -607,9 +630,9 @@ ApplicationWindow {
     Skin.Settings {
         id: settingsPopup
 
-        height: Math.max(840, parent.height * 0.7)
+        height: Math.min(840, parent.height)
         modal: true
-        width: Math.max(1400, parent.width * 0.8)
+        width: Math.min(1400, parent.width)
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
 

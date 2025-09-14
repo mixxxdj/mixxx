@@ -22,6 +22,7 @@ AbstractButton {
 
             anchors.fill: parent
             color: '#2B2B2B'
+            radius: 2
         }
         DropShadow {
             id: effect1

@@ -99,10 +99,12 @@ Item {
                                                     "type": "row",
                                                     "items": [
                                                         {
-                                                            "type": "hotcueAndStem"
+                                                            "type": "hotcueAndStem",
+                                                            "minWidth": 520
                                                         },
                                                         {
-                                                            "type": "beatjump"
+                                                            "type": "beatjump",
+                                                            "minWidth": 650
                                                         },
                                                         {
                                                             "type": "loop"
@@ -117,6 +119,7 @@ Item {
                         },
                         {
                             "type": "column",
+                            "minWidth": 800,
                             "items": [
                                 {
                                     "type": "spinny"
@@ -127,7 +130,8 @@ Item {
                             ]
                         },
                         {
-                            "type": "tempo"
+                            "type": "tempo",
+                            "minWidth": 270
                         }
                     ]
                 }
@@ -188,6 +192,7 @@ Item {
     ListModel {
         id: itemModel
 
+        dynamicRoles: true
     }
     ListModel {
         id: minimizedItemModel
@@ -359,14 +364,14 @@ Item {
             roleValue: "spinny"
 
             LayoutItem {
-                Layout.alignment: Qt.AlignCenter
+                Layout.alignment: Qt.AlignTop
                 editLabel.color: Theme.midGray
                 editLabel.font.pixelSize: 14
                 editLabel.text: "Spinny"
                 editOverlay.color: "#BDBDBD"
                 editOverlay.radius: height
-                height: 130
-                width: 130
+                height: 140
+                width: 140
 
                 DeckComponent.Spinny {
                     anchors.fill: parent
@@ -662,8 +667,6 @@ Item {
         property var beginDrag: null
         property var disposition: GridLayout.TopToBottom
         property alias editOverlay: overlay
-        required property int index
-        required property var items
         property var move: null
         property bool selected: false
 
@@ -696,6 +699,7 @@ Item {
         Drag.active: mouseArea.drag.active
         Drag.hotSpot: Qt.point(width / 2, height / 2)
         columns: disposition == GridLayout.TopToBottom ? 1 : items.count
+        visible: typeof minWidth !== 'number' || root.width <= 0 || minWidth < root.width
 
         Behavior on x {
             SpringAnimation {
@@ -781,6 +785,7 @@ Item {
 
         Drag.active: mouseArea.drag.active
         Drag.hotSpot: Qt.point(width / 2, height / 2)
+        visible: typeof minWidth !== 'number' || root.width <= 0 || minWidth < root.width
 
         Behavior on x {
             SpringAnimation {
