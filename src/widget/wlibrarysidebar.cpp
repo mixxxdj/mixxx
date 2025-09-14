@@ -423,6 +423,31 @@ void WLibrarySidebar::focusSelectedIndex() {
 bool WLibrarySidebar::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
+    } else if (pEvent->type() == QEvent::LayoutRequest ||
+            pEvent->type() == QEvent::Resize) {
+        // Force-resize the header to expand the item's clickable area.
+        //
+        // Reason:
+        // Currently, the sidebar header expands to the width of the widest item.
+        // If the sidebar is wider than that, there's some space right next to
+        // items that does not respond to clicks. This is somewhat frustration as
+        // it is perceived inconsistent with the state when e.g. Playlist are
+        // expanded and the entire 'Tracks' row responds to clicks.
+        //
+        // Desired appearance & behavior:
+        // * full-width items (for click success)
+        // * full item text (no elide)
+        // * show horizontal scrollbars as needed
+        //
+        // Unfortunately, there's no combination of
+        //   header()->setStretchLastSection(bool);
+        //   header()->setSectionResizeMode(QHeaderView::ResizeMode);
+        // to achieve that.
+        //
+        // Though we can listen to LayoutRequest and adjust the headers minimum
+        // section size to viewport width (-1 for section separator?).
+        // This event occurs after Show, Resize or model data change.
+        header()->setMinimumSectionSize(viewport()->width() - 1);
     }
     return QTreeView::event(pEvent);
 }

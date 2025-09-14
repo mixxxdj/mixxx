@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-08-22" timestamp="1755898268">
+    <release version="2.6.0" type="development" date="2025-09-02" timestamp="1756791146">
       <description>
  <p>
   STEM file support
@@ -1078,7 +1078,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.3" type="development" date="2025-08-22" timestamp="1755898268">
+    <release version="2.5.3" type="stable" date="2025-09-02" timestamp="1756771200">
       <description>
  <p>
   Controller Mappings
@@ -1087,6 +1087,10 @@
   <li>
    Icon P1-Nano MIDI 1: new mapping
    #14602
+  </li>
+  <li>
+   Traktor Kontrol S2 Mk1: Fix effect light on application start
+   #15102
   </li>
   <li>
    Traktor Kontrol S4 Mk3: tempo offset per deck
@@ -1135,6 +1139,10 @@
    #15143
    #15088
   </li>
+  <li>
+   Reverb effect: Fix memory leak
+   #15262
+  </li>
  </ul>
  <p>
   Vinyl Control
@@ -1171,6 +1179,7 @@
   <li>
    Add a quadrature phase tracker
    #15217
+   #15283
   </li>
  </ul>
  <p>
@@ -1228,12 +1237,20 @@
    #14935
   </li>
   <li>
+   Sound Hardware preference: add a hint regarding pick up position of deck and bus outputs
+   #15255
+  </li>
+  <li>
    Fix column header text assignment
    #14944
   </li>
   <li>
    Remove runtime assert to not risk crashes
    #15000
+  </li>
+  <li>
+   Tracks: prevent reorder with Alt keys when model (playlist) is locked
+   #15135
   </li>
  </ul>
 </description>
