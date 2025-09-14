@@ -12,7 +12,7 @@ Column {
         NumModes // This always needs to be the last value
     }
 
-    Skin.ControlSlider {
+    Skin.ControlFader {
         width: 50
         height: 26
         orientation: Qt.Horizontal
