@@ -12,7 +12,7 @@ Column {
         NumModes // This always needs to be the last value
     }
 
-    Skin.ControlSlider {
+    Skin.ControlFader {
         width: 50
         height: 26
         orientation: Qt.Horizontal
@@ -40,7 +40,7 @@ Column {
                     case MicrophoneDuckingPanel.DuckingMode.Auto:
                         return "Auto";
                     case MicrophoneDuckingPanel.DuckingMode.Manual:
-                        return "Manual";
+                            return "Manual";
                     default:
                         return "Off";
                 }

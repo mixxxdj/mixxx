@@ -29,6 +29,9 @@ QtObject {
     property color knobBackgroundColor: "#262626"
     property color lightGray2: "#b0b0b0"
     property color lightGray: "#747474"
+    property color libraryPanelSplitterBackground: "#1e1e1e"
+    property color libraryPanelSplitterHandleActive: "#7a7a7a"
+    property color libraryPanelSplitterHandle: "#5f5f5f"
     property color midGray: "#696969"
     property color panelSplitterBackground: backgroundColor
     property color panelSplitterHandleActive: lightGray2
