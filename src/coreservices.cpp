@@ -865,6 +865,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
