@@ -7,7 +7,7 @@ AbstractButton {
     id: root
 
     property color normalColor: Theme.white
-    property color backgroundColor: "#3F3F3F"
+    property color backgroundColor: Theme.darkGray3
     property color activeColor: Theme.deckActiveColor
     property color pressedColor: activeColor
     property bool highlight: false
