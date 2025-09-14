@@ -101,3 +101,8 @@ TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
             Capability::Properties |
             Capability::Sorting;
 }
+
+void LibraryTableModel::select() {
+    BaseSqlTableModel::select();
+    emit updateTrackCount();
+}
