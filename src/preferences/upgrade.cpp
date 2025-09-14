@@ -628,7 +628,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     // If additional upgrades are added for later versions, they should go before
     // this block and cleanVersion should be bumped to the latest version.
     const QVersionNumber cleanVersion(2, 6, 0);
-    if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
+    if (QVersionNumber::fromString(configVersion) >= cleanVersion &&
+            configVersion != VersionStore::FUTURE_UNSTABLE) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
@@ -636,6 +637,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion == VersionStore::version()) {
         qDebug() << "Configuration file is now at the current version" << VersionStore::version();
+    } else if (configVersion == VersionStore::FUTURE_UNSTABLE) {
+        qDebug() << "Configuration file is now at the unstable version"
+                 << VersionStore::FUTURE_UNSTABLE;
     } else {
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << VersionStore::version();
