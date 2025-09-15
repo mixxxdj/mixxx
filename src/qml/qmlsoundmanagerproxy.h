@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qglobal.h>
-#include <qqmlintegration.h>
 #include <qtmetamacros.h>
 
 #include <QDialog>
