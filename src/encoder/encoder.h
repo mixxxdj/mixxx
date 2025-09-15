@@ -4,6 +4,7 @@
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encodersettings.h"
+#include "engine/bufferscalers/enginebufferscalesrc.h"
 #include "preferences/usersettings.h"
 #include "util/types.h"
 
@@ -24,7 +25,8 @@ class Encoder {
         QString fileExtension;
     };
 
-    Encoder() {}
+    Encoder()
+            : m_pRecResampler(nullptr) {};
     virtual ~Encoder() = default;
 
     virtual int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) = 0;
@@ -37,6 +39,18 @@ class Encoder {
     virtual void flush() = 0;
     // Setup the encoder with the specific settings
     virtual void setEncoderSettings(const EncoderSettings& settings) = 0;
+    // Create a bufferscaler object to resample the input buffer (at engine samplerate)
+    // to recording samplerate
+    virtual void initResampler();
+
+    double recResampleBuffer(
+            const CSAMPLE* pInputBuffer,
+            CSAMPLE* pOutputBuffer,
+            SINT iInputBufferSize, /*#samples*/
+            double baseRate);
+
+  private:
+    std::unique_ptr<EngineBufferScaleSRC> m_pRecResampler;
 };
 
 typedef std::shared_ptr<Encoder> EncoderPointer;
