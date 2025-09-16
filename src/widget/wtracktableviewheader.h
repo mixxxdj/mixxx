@@ -32,7 +32,7 @@ public:
     QString saveState() const;
     // Apply the state to the provided view.  The data in the object may be
     // changed if the header format has changed.
-    void restoreState(QHeaderView* headers);
+    void restoreState(QHeaderView* pHeaders);
 
     // returns false if no headers are listed to be shown.
     bool healthy() const {
@@ -55,7 +55,7 @@ private:
 class WTrackTableViewHeader : public QHeaderView {
     Q_OBJECT
   public:
-    explicit WTrackTableViewHeader(Qt::Orientation orientation, QWidget* parent = nullptr);
+    explicit WTrackTableViewHeader(Qt::Orientation orientation, QWidget* pParent = nullptr);
 
     void contextMenuEvent(QContextMenuEvent* event) override;
     void setModel(QAbstractItemModel* model) override;
