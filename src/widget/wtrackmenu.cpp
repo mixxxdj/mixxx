@@ -99,6 +99,7 @@ void storeActionTextAndScaleInProperties(QAction* pAction, const double scale) {
 } // namespace
 
 bool WTrackMenu::s_showPurgeSuccessPopup = true;
+bool WTrackMenu::s_confirmForAutoDjReplace = true;
 
 WTrackMenu::WTrackMenu(
         QWidget* parent,
@@ -2808,9 +2809,35 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
+    // If the "Replace" action was clicked and there are tracks in the
+    // AutoDJ queue, ask for confirmation.
     PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
+    const auto autoDjTracks = playlistDao.getAutoDJTrackIds();
+    if (loc == PlaylistDAO::AutoDJSendLoc::REPLACE &&
+            autoDjTracks.size() > 0 &&
+            s_confirmForAutoDjReplace) {
+        QMessageBox pReplaceMsg;
+        pReplaceMsg.setWindowTitle(tr("Replace current Auto DJ queue?"));
+        pReplaceMsg.setText(
+                tr("Do you want to replace the entire Auto DJ queue with the "
+                   "selected tracks?"));
+
+        QCheckBox notAgainCB(tr("Don't ask again during this session"));
+        notAgainCB.setCheckState(Qt::Unchecked);
+        pReplaceMsg.setCheckBox(&notAgainCB);
+        pReplaceMsg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        pReplaceMsg.setDefaultButton(QMessageBox::Cancel);
+
+        if (pReplaceMsg.exec() == QMessageBox::Cancel) {
+            return;
+        }
+
+        if (notAgainCB.isChecked()) {
+            s_confirmForAutoDjReplace = false;
+        }
+    }
 
     // TODO(XXX): Care whether the append succeeded.
     m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
