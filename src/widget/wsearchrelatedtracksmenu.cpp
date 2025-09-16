@@ -382,7 +382,8 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
 }
 
 bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
-    if (e->type() == QEvent::MouseButtonPress) {
+    if (e->type() == QEvent::MouseButtonRelease) {
+        // Note: QCheckBox/QAbstractButton and QMenu act on release, not on click.
         // Since we want tp provide a toggle function that allows to check multiple
         // criteria (ie. don't auto-close the menu on first click) we need to
         // figure the intended click target.

@@ -138,7 +138,8 @@ LibraryScanner::LibraryScanner(
     connect(m_pProgressDlg.data(),
             &LibraryScannerDlg::scanCancelled,
             this,
-            &LibraryScanner::slotCancel);
+            &LibraryScanner::slotCancel,
+            Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
             m_pProgressDlg.data(),
@@ -548,6 +549,8 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
     ScopedTimer timer(QStringLiteral("LibraryScanner::queueTask"));
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
+        delete pTask;
+        m_pool.clear();
         return;
     }
     m_scannerGlobal->getTaskWatcher().watchTask();
@@ -625,7 +628,18 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 
 // triggered by ScannerTask::addNewTrack / in ImportFilesTask::run()
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
-    //kLogger.debug() << "slotAddNewTrack" << trackPath;
+    // kLogger.debug() << "slotAddNewTrack" << trackPath;
+    if (!m_scannerGlobal || m_scannerGlobal->shouldCancel()) {
+        // Fix/workaround for Cancel not cancelling the entire scan process
+        // https://github.com/mixxxdj/mixxx/issues/14940
+        // Pretty quickly after starting the scan, many ImportFilesTask queue
+        // many addNewTrack() signals connected to this slot. When cancelling the
+        // scan via Cancel button in the progress dialog, all signals are usually
+        // already queued, hence Cancel has no effect on these calls and Mixxx
+        // keeps adding/analyzing tracks as if nothing happened.
+        // Simply abort here does the trick.
+        return;
+    }
     ScopedTimer timer(QStringLiteral("LibraryScanner::addNewTrack"));
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
