@@ -6,12 +6,23 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt5Compat.GraphicalEffects
 import "Theme"
+import "Settings" as Settings
 
 Popup {
     id: root
 
-    property int activeCategoryIndex: 0
-    property list<string> sections: ["SoundHardware", "Library", "Controller", "Interface", "MixerEffect", "AutoDJ", "Broadcast", "Recording", "Analyzer", "StatsPerformance"]
+    property alias activeCategoryIndex: categoryList.currentIndex
+    property alias sections: managerItem.data
+    property var activeCategory: null
+
+    function updateActiveCategory() {
+        root.activeCategory?.deactivated()
+        root.activeCategory = Object.values(managerItem.data)[categoryList.currentIndex] ?? null
+        root.activeCategory?.activated()
+    }
+
+    onSectionsChanged: updateActiveCategory()
+    onActiveCategoryIndexChanged: updateActiveCategory()
 
     readonly property var manager: managerItem
 
@@ -87,6 +98,7 @@ Popup {
                         focus: true
                         model: sectionProperties
                         visible: !searchSetting.active
+                        currentIndex: 0
 
                         delegate: Rectangle {
                             required property int index
@@ -193,9 +205,8 @@ Popup {
                 Rectangle {
                     id: tabBar
 
-                    readonly property var categoryItem: categoriesLoader.itemAt(categoryList.currentIndex) ? categoriesLoader.itemAt(categoryList.currentIndex).item : null
-                    readonly property int selectedIndex: categoryItem && categoryItem.selectedIndex !== undefined ? categoryItem.selectedIndex : 0
-                    readonly property var tabs: categoryItem ? categoryItem.tabs : []
+                    readonly property int selectedIndex: root.activeCategory?.selectedIndex ?? 0
+                    readonly property var tabs: activeCategory?.tabs ?? []
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: 30
@@ -220,7 +231,9 @@ Popup {
                                 text: modelData
 
                                 onPressed: {
-                                    categoriesLoader.itemAt(categoryList.currentIndex).item.selectedIndex = index;
+                                    if (root.activeCategory?.selectedIndex || root.activeCategory?.selectedIndex === 0) {
+                                        root.activeCategory.selectedIndex = index;
+                                    }
                                 }
                             }
                         }
@@ -233,41 +246,57 @@ Popup {
                     Layout.fillWidth: true
                     Layout.leftMargin: 20
 
-                    Repeater {
-                        id: categoriesLoader
-                        model: root.sections
+                    Settings.SoundHardware {
+                    }
+                    Settings.Library {
+                    }
+                    Settings.Controller {
+                    }
+                    Settings.Interface {
+                    }
+                    Settings.MixerEffect {
+                    }
+                    Settings.AutoDJ {
+                    }
+                    Settings.Broadcast {
+                    }
+                    Settings.Recording {
+                    }
+                    Settings.Analyzer {
+                    }
+                    Settings.StatsPerformance {
+                    }
 
-                        Loader {
-                            id: category
-
-                            required property int index
-                            required property var modelData
-
-                            anchors.fill: parent
-                            source: `Settings/${modelData}.qml`
-                            visible: categoryList.currentIndex == index
-
-                            // asynchronous: true // Unsupported
-                            onLoaded: {
-                                for (let i = sectionProperties.count; i < index; i++)
-                                    sectionProperties.append({});
-                                sectionProperties.set(index, {
-                                        "label": category.item.label
-                                });
-                            }
-
-                            Connections {
-                                function onActivated() {
-                                    categoryList.currentIndex = index;
-                                }
-
-                                target: category.item
-                            }
+                    Component.onCompleted: {
+                        print("onCompleted", data)
+                        let index = 0;
+                        let activateBuilder = (index) => function() {
+                            categoryList.currentIndex = index;
+                        };
+                        let visibleBuilder = (index) => function() {
+                            return categoryList.currentIndex == index
+                        };
+                        for (let child of Object.values(data)) {
+                            if (!child.label) continue;
+                            sectionProperties.append({label: child.label});
+                            child.visible = Qt.binding(visibleBuilder(index));
+                            child.activated.connect(activateBuilder(index))
+                            child.anchors.fill = this
+                            print("child", child.label, index, categoryList.currentIndex, child.anchors.fill)
+                            index++;
                         }
+                        // This is needed to ensure the right category is displayed.
+                        // It would seems there is a bug, where the component's layout appears out of date.
+                        // Setting the value to its current one seems to be triggering a component update which help fixing the layout
+                        root.activeCategoryIndex = root.activeCategoryIndex
                     }
                 }
             }
         }
+    }
+
+    Component.onCompleted: {
+        print("Settings", categoryList.currentIndex)
     }
 
     ListModel {
