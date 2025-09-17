@@ -453,6 +453,9 @@ void MixxxMainWindow::initialize() {
         // AutoDj is second from the top by default, all features collapsed).
         pLibrary->showAutoDJ();
     }
+
+    // Show xfader curve popup with current state (set by controller or loaded from config
+    emit m_pPrefDlg->showXfaderPopupPersist();
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
