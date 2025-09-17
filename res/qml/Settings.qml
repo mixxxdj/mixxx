@@ -268,7 +268,6 @@ Popup {
                     }
 
                     Component.onCompleted: {
-                        print("onCompleted", data)
                         let index = 0;
                         let activateBuilder = (index) => function() {
                             categoryList.currentIndex = index;
@@ -282,7 +281,6 @@ Popup {
                             child.visible = Qt.binding(visibleBuilder(index));
                             child.activated.connect(activateBuilder(index))
                             child.anchors.fill = this
-                            print("child", child.label, index, categoryList.currentIndex, child.anchors.fill)
                             index++;
                         }
                         // This is needed to ensure the right category is displayed.
@@ -293,10 +291,6 @@ Popup {
                 }
             }
         }
-    }
-
-    Component.onCompleted: {
-        print("Settings", categoryList.currentIndex)
     }
 
     ListModel {
