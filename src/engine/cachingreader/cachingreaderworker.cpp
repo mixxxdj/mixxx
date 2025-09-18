@@ -245,7 +245,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                    "channels, and only 1 to %3 are supported.")
                         .arg(QDir::toNativeSeparators(pTrack->getLocation()),
                                 QString::number(m_pAudioSource->getSignalInfo()
-                                                        .getChannelCount()),
+                                                .getChannelCount()),
                                 QString::number(m_maxSupportedChannel)));
         return;
     }

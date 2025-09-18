@@ -7,13 +7,18 @@ extern "C" {
 #include <libavutil/avutil.h>
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
 #include <libavutil/channel_layout.h>
+#include <libavutil/opt.h>
+#include <libavutil/samplefmt.h>
 #endif
+
+#include <libswresample/swresample.h>
 
 } // extern "C"
 
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/sample.h"
+#include "util/fpclassify.h"
 
 #if !defined(VERBOSE_DEBUG_LOG)
 #define VERBOSE_DEBUG_LOG false
@@ -25,7 +30,8 @@ namespace {
 
 // STEM constants
 constexpr int kNumStreams = 5;
-constexpr int kRequiredStreamCount = kNumStreams - 1; // Stem count doesn't include the main mix
+// constexpr int kRequiredStreamCount = kNumStreams - 1; // Stem count doesn't include the main mix
+constexpr int kRequiredStreamCount = kNumStreams;
 
 const Logger kLogger("SoundSourceSTEM");
 
@@ -304,6 +310,17 @@ SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
         : SoundSource(url) {
 }
 
+// SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
+//         : SoundSource(url),
+//           m_debugCounter(0) {
+// }
+
+// SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
+//         : SoundSource(url),
+//           m_stemsResampled(false),
+//           m_totalFrames(0) {
+// }
+
 SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& params) {
@@ -344,11 +361,10 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         return OpenResult::Failed;
     }
 
-    bool foundPremixedStream = false;
-    AVStream* firstStem = nullptr;
+    // AVStream* firstAudioStream = nullptr;
     int stemCount = 0;
     uint selectedStemMask = params.stemMask();
-    VERIFY_OR_DEBUG_ASSERT(selectedStemMask <= 2 << mixxx::kMaxSupportedStems) {
+    VERIFY_OR_DEBUG_ASSERT(selectedStemMask <= 1 << mixxx::kMaxSupportedStems) {
         kLogger.warning().noquote()
                 << "Invalid selected stem mask" << selectedStemMask;
         return OpenResult::Failed;
@@ -373,57 +389,42 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
             return OpenResult::Failed;
         }
 
-        if (!foundPremixedStream) {
-            // We can currently allow this, as we NEVER LOAD the pre-mastered
-            // track, as we do not have analyzer data for it.
-            // This is because we only support one set of metadata for the whole
-            // STEM file, where we determine the track parameters from an
-            // on-the-fly mix of all 4 stems. Especially the replaygain differs
-            // between the on-the-fly mix and the pre-mastered track, because we
-            // do not apply DSP (limiter, equalizer, compressor) to the
-            // on-the-fly mix. If this ever gets changed, we should set
-            // `initSampleRateOnce` and `initBitrateOnce` to match the stem
-            // sample rate and bit rate, such that
-            // SoundSourceFFmpeg::resampleDecodedAVFrame will take care to
-            // resample the main stream, in order to use the same time scale and
-            // keep a working grid/cue definition
-            foundPremixedStream = true;
-            continue;
-        }
+        // if (!firstAudioStream) {
+        //     firstAudioStream = pavInputFormatContext->streams[streamIdx];
+        //     // The main mix is only used to detect the stream parameters
+        //     continue;
+        // } else {
+        //     if (pavInputFormatContext->streams[streamIdx]->codecpar->codec_id !=
+        //             firstAudioStream->codecpar->codec_id) {
+        //         kLogger.warning().noquote()
+        //                 << "stream at position" << streamIdx << "is using a different codec";
+        //         return OpenResult::Failed;
+        //     }
 
+        //    if (pavInputFormatContext->streams[streamIdx]
+        //                    ->codecpar->sample_rate !=
+        //            firstAudioStream->codecpar->sample_rate) {
+        //        kLogger.warning().noquote()
+        //                << "stream at position" << streamIdx << "is using a
+        //                different sample rate";
+        //        return OpenResult::Failed;
+        //    }
         stemCount++;
-
-        if (!firstStem) {
-            // We always keep track of the stem to verify that stem stream properties are matching
-            firstStem = pavInputFormatContext->streams[streamIdx];
-        } else {
-            if (pavInputFormatContext->streams[streamIdx]->codecpar->codec_id !=
-                    firstStem->codecpar->codec_id) {
-                kLogger.warning().noquote()
-                        << "Stem at position" << streamIdx << "is using a different codec";
-                return OpenResult::Failed;
-            }
-
-            if (pavInputFormatContext->streams[streamIdx]
-                            ->codecpar->sample_rate !=
-                    firstStem->codecpar->sample_rate) {
-                kLogger.warning().noquote()
-                        << "Stem at position" << streamIdx << "is using a different sample rate";
-                return OpenResult::Failed;
-            }
-        }
-
+        //        }
         // StemIdx is equal to StreamIdx -1 (the main mix)
-        if (selectedStemMask && !(selectedStemMask & 1 << (streamIdx - 1))) {
-            continue;
-        }
+        // if (selectedStemMask && !(selectedStemMask & 1 << (streamIdx - 1))) {
+        //    continue;
+        //}
 
         m_pStereoStreams.emplace_back(std::make_unique<SoundSourceSingleSTEM>(getUrl(), streamIdx));
         if (m_pStereoStreams.back()->open(OpenMode::Strict /*Unused*/,
                     stemParam) != OpenResult::Succeeded) {
             return OpenResult::Failed;
         }
+        // qDebug() << "[SoundSourceSTEM] -> tryOpen -> streamIdx: " << streamIdx;
     }
+
+    // qDebug() << "[SoundSourceSTEM] -> tryOpen -> stemcount: " << stemCount;
 
     if (stemCount != kRequiredStreamCount) {
         kLogger.warning().noquote()
@@ -467,76 +468,730 @@ void SoundSourceSTEM::close() {
     }
 }
 
+//void SoundSourceSTEM::processWithResampler(size_t streamIdx,
+//        const WritableSampleFrames& globalSampleFrames,
+//        CSAMPLE* pBuffer) {
+//    const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+//    const int refSampleRate = premixInfo.getSampleRate();
+//    const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//    const int stemSampleRate = stemInfo.getSampleRate();
+//
+//    // Use integer arithmetic for critical calculations to ensure cross-platform consistency
+//    const SINT outputFramesNeeded = globalSampleFrames.frameLength();
+//    const SINT premixStartFrame = globalSampleFrames.frameIndexRange().start();
+//
+//    // Integer-based position calculation (avoids floating-point differences)
+//    const SINT stemStartFrame = (premixStartFrame * stemSampleRate) / refSampleRate;
+//
+//    // Calculate input frames needed with integer math
+//    const SINT inputFramesNeeded =
+//            ((outputFramesNeeded * stemSampleRate) + refSampleRate - 1) /
+//                    refSampleRate +
+//            4;
+//    const SINT inputSamplesNeeded = inputFramesNeeded * 2;
+//
+//    // Ensure input buffer is large enough
+//    if (inputSamplesNeeded > m_resampleInputBuffer.size()) {
+//        m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
+//    }
+//
+//    // Read input data from the correct position in the stem
+//    WritableSampleFrames inputFrames(
+//            IndexRange::forward(stemStartFrame, inputFramesNeeded),
+//            SampleBuffer::WritableSlice(m_resampleInputBuffer.data(), inputSamplesNeeded));
+//
+//    auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+//
+//    // Verify we read enough data
+//    if (readResult.frameIndexRange().length() < inputFramesNeeded) {
+//        // This can happen near the end of the file, it's normal
+//        return;
+//    }
+//
+//    // Simple audio detection (avoid complex floating-point checks)
+//    bool hasAudio = false;
+//    const SINT checkLimit = (inputSamplesNeeded < 1000) ? inputSamplesNeeded : 1000;
+//    for (SINT i = 0; i < checkLimit; i += 4) { // Check every 4th sample
+//        if (std::fabs(m_resampleInputBuffer[i]) > 0.001f) {
+//            hasAudio = true;
+//            break;
+//        }
+//    }
+//
+//    if (!hasAudio) {
+//        return; // Silence is normal in STEM files
+//    }
+//
+//    // Perform resampling - use a robust approach
+//    std::size_t stemCount = m_pStereoStreams.size();
+//
+//    for (SINT i = 0; i < outputFramesNeeded; i++) {
+//        // Calculate source position using precise integer math
+//        const int64_t precisePos = static_cast<int64_t>(i) * stemSampleRate;
+//        const SINT sourceIndex = static_cast<SINT>(precisePos / refSampleRate);
+//        const CSAMPLE fraction = static_cast<CSAMPLE>(precisePos % refSampleRate) / refSampleRate;
+//
+//        // Safe bounds checking
+//        if (sourceIndex >= 1 && sourceIndex + 2 < inputFramesNeeded) {
+//            // Use a robust interpolation method
+//            interpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+//        } else if (sourceIndex + 1 < inputFramesNeeded) {
+//            // Linear fallback
+//            linearInterpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+//        }
+//    }
+//}
+
+void SoundSourceSTEM::processWithResampler(size_t streamIdx,
+        const WritableSampleFrames& globalSampleFrames,
+        CSAMPLE* pBuffer) {
+    const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+    const int refSampleRate = premixInfo.getSampleRate();
+    const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+    const int stemSampleRate = stemInfo.getSampleRate();
+
+    // Use integer arithmetic for critical calculations to ensure cross-platform consistency
+    const SINT outputFramesNeeded = globalSampleFrames.frameLength();
+    const SINT premixStartFrame = globalSampleFrames.frameIndexRange().start();
+
+    // Integer-based position calculation (avoids floating-point differences)
+    const SINT stemStartFrame = (premixStartFrame * stemSampleRate) / refSampleRate;
+
+    // Calculate input frames needed with integer math
+    const SINT inputFramesNeeded =
+            ((outputFramesNeeded * stemSampleRate) + refSampleRate - 1) /
+                    refSampleRate +
+            4;
+    const SINT inputSamplesNeeded = inputFramesNeeded * 2;
+
+    // Ensure input buffer is large enough
+    if (inputSamplesNeeded > m_resampleInputBuffer.size()) {
+        m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
+    }
+
+    // Read input data from the correct position in the stem
+    WritableSampleFrames inputFrames(
+            IndexRange::forward(stemStartFrame, inputFramesNeeded),
+            SampleBuffer::WritableSlice(m_resampleInputBuffer.data(), inputSamplesNeeded));
+
+    auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+
+    // Verify we read enough data
+    if (readResult.frameIndexRange().length() < inputFramesNeeded) {
+        // This can happen near the end of the file, it's normal
+        return;
+    }
+
+    // Simple audio detection (avoid complex floating-point checks)
+    bool hasAudio = false;
+    const SINT checkLimit = (inputSamplesNeeded < 1000) ? inputSamplesNeeded : 1000;
+    for (SINT i = 0; i < checkLimit; i += 4) { // Check every 4th sample
+        if (std::fabs(m_resampleInputBuffer[i]) > 0.001f) {
+            hasAudio = true;
+            break;
+        }
+    }
+
+    if (!hasAudio) {
+        return; // Silence is normal in STEM files
+    }
+
+    // Perform resampling - use a robust approach
+    std::size_t stemCount = m_pStereoStreams.size();
+
+    for (SINT i = 0; i < outputFramesNeeded; i++) {
+        // Calculate source position using precise integer math
+        const int64_t precisePos = static_cast<int64_t>(i) * stemSampleRate;
+        const SINT sourceIndex = static_cast<SINT>(precisePos / refSampleRate);
+        const CSAMPLE fraction = static_cast<CSAMPLE>(precisePos % refSampleRate) / refSampleRate;
+
+        // Safe bounds checking
+        if (sourceIndex >= 1 && sourceIndex + 2 < inputFramesNeeded) {
+            // Use a robust interpolation method
+            interpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+        } else if (sourceIndex + 1 < inputFramesNeeded) {
+            // Linear fallback
+            linearInterpolateAndMix(streamIdx, i, sourceIndex, fraction, pBuffer, stemCount);
+        }
+    }
+}
+
+//CSAMPLE SoundSourceSTEM::safeCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu) {
+//    // Use the safe math functions from FpClassify
+//    if (!util_isnormal(mu)) {
+//        mu = 0.0f; // Handle denormals/NaN
+//    }
+//
+//    // Conservative cubic interpolation that works across compilers
+//    CSAMPLE mu2 = mu * mu;
+//    CSAMPLE a0 = y3 - y2 - y0 + y1;
+//    CSAMPLE a1 = y0 - y1 - a0;
+//    CSAMPLE a2 = y2 - y0;
+//
+//    // Carefully ordered operations to minimize precision issues
+//    return ((a0 * mu + a1) * mu + a2) * mu + y1;
+//}
+
+CSAMPLE SoundSourceSTEM::safeCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu) {
+    // Handle denormals/NaN using the safe math functions
+    if (!util_isnormal(mu)) {
+        mu = 0.0f;
+    }
+
+    // Robust cubic interpolation that works across compilers
+    const CSAMPLE mu2 = mu * mu;
+    const CSAMPLE a0 = y3 - y2 - y0 + y1;
+    const CSAMPLE a1 = y0 - y1 - a0;
+    const CSAMPLE a2 = y2 - y0;
+
+    // Carefully ordered operations to minimize precision issues
+    return ((a0 * mu + a1) * mu + a2) * mu + y1;
+}
+
+void SoundSourceSTEM::interpolateAndMix(size_t streamIdx, SINT outputIndex, SINT sourceIndex, CSAMPLE fraction, CSAMPLE* pBuffer, std::size_t stemCount) {
+    const CSAMPLE* in = m_resampleInputBuffer.data();
+    const SINT baseIdx = sourceIndex * 2;
+
+    // Left channel - use safe interpolation
+    CSAMPLE left = safeCubicInterpolate(
+            in[baseIdx - 2],
+            in[baseIdx],
+            in[baseIdx + 2],
+            in[baseIdx + 4],
+            fraction);
+
+    // Right channel - use safe interpolation
+    CSAMPLE right = safeCubicInterpolate(
+            in[baseIdx - 1],
+            in[baseIdx + 1],
+            in[baseIdx + 3],
+            in[baseIdx + 5],
+            fraction);
+
+    // Mix into output
+    if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx)] = left;
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+    } else {
+        pBuffer[2 * outputIndex] += left;
+        pBuffer[2 * outputIndex + 1] += right;
+    }
+}
+
+void SoundSourceSTEM::linearInterpolateAndMix(size_t streamIdx, SINT outputIndex, SINT sourceIndex, CSAMPLE fraction, CSAMPLE* pBuffer, std::size_t stemCount) {
+    const CSAMPLE* in = m_resampleInputBuffer.data();
+    const SINT baseIdx = sourceIndex * 2;
+
+    // Simple linear interpolation (already safe)
+    CSAMPLE left = in[baseIdx] * (1.0f - fraction) + in[baseIdx + 2] * fraction;
+    CSAMPLE right = in[baseIdx + 1] * (1.0f - fraction) + in[baseIdx + 3] * fraction;
+
+    // Mix into output
+    if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx)] = left;
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+    } else {
+        pBuffer[2 * outputIndex] += left;
+        pBuffer[2 * outputIndex + 1] += right;
+    }
+}
+
+//// Separate interpolation functions for better maintainability
+//void SoundSourceSTEM::interpolateAndMix(size_t streamIdx,
+//        SINT outputIndex,
+//        SINT sourceIndex,
+//        CSAMPLE fraction,
+//        CSAMPLE* pBuffer,
+//        std::size_t stemCount) {
+//    // Robust cubic interpolation that works across compilers
+//    const CSAMPLE* in = m_resampleInputBuffer.data();
+//    const SINT baseIdx = sourceIndex * 2;
+//
+//    // Left channel
+//    CSAMPLE y0 = in[baseIdx - 2];
+//    CSAMPLE y1 = in[baseIdx];
+//    CSAMPLE y2 = in[baseIdx + 2];
+//    CSAMPLE y3 = in[baseIdx + 4];
+//    CSAMPLE left = robustCubicInterpolate(y0, y1, y2, y3, fraction);
+//
+//    // Right channel
+//    y0 = in[baseIdx - 1];
+//    y1 = in[baseIdx + 1];
+//    y2 = in[baseIdx + 3];
+//    y3 = in[baseIdx + 5];
+//    CSAMPLE right = robustCubicInterpolate(y0, y1, y2, y3, fraction);
+//
+//    // Mix into output
+//    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+//}
+
+//void SoundSourceSTEM::linearInterpolateAndMix(size_t streamIdx,
+//        SINT outputIndex,
+//        SINT sourceIndex,
+//        CSAMPLE fraction,
+//        CSAMPLE* pBuffer,
+//        std::size_t stemCount) {
+//    const CSAMPLE* in = m_resampleInputBuffer.data();
+//    const SINT baseIdx = sourceIndex * 2;
+//
+//    CSAMPLE left = in[baseIdx] * (1.0f - fraction) + in[baseIdx + 2] * fraction;
+//    CSAMPLE right = in[baseIdx + 1] * (1.0f - fraction) + in[baseIdx + 3] * fraction;
+//
+//    mixToOutput(streamIdx, outputIndex, left, right, pBuffer, stemCount);
+//}
+
+void SoundSourceSTEM::mixToOutput(size_t streamIdx,
+        SINT outputIndex,
+        CSAMPLE left,
+        CSAMPLE right,
+        CSAMPLE* pBuffer,
+        std::size_t stemCount) {
+    if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx)] = left;
+        pBuffer[2 * stemCount * outputIndex + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+    } else {
+        pBuffer[2 * outputIndex] += left;
+        pBuffer[2 * outputIndex + 1] += right;
+    }
+}
+
+// More robust cubic interpolation implementation
+CSAMPLE SoundSourceSTEM::robustCubicInterpolate(
+        CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu) {
+    // This formulation is more numerically stable across different compilers
+    CSAMPLE a0 = y3 - y2 - y0 + y1;
+    CSAMPLE a1 = y0 - y1 - a0;
+    CSAMPLE a2 = y2 - y0;
+
+    // Carefully ordered operations to minimize precision issues
+    return (((a0 * mu) + a1) * mu + a2) * mu + y1;
+}
+
+// void SoundSourceSTEM::processWithResampler(size_t streamIdx,
+//         const WritableSampleFrames& globalSampleFrames,
+//         CSAMPLE* pBuffer) {
+//     //    //testCubicInterpolation();
+//     const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+//     const int refSampleRate = premixInfo.getSampleRate();
+//     const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//     const int stemSampleRate = stemInfo.getSampleRate();
+//
+//     const double ratio = static_cast<double>(stemSampleRate) / refSampleRate;
+//     const SINT outputFramesNeeded = globalSampleFrames.frameLength();
+//
+//     // Calculate the correct starting position in the STEM stream
+//     const SINT premixStartFrame = globalSampleFrames.frameIndexRange().start();
+//     const SINT stemStartFrame = static_cast<SINT>(std::floor(premixStartFrame * ratio));
+//
+//     // Calculate how many input frames we need (with extra for interpolation)
+//     const SINT inputFramesNeeded = static_cast<SINT>(std::ceil(outputFramesNeeded * ratio)) + 4;
+//     const SINT inputSamplesNeeded = inputFramesNeeded * 2;
+//
+//     // Ensure input buffer is large enough
+//     if (inputSamplesNeeded > m_resampleInputBuffer.size()) {
+//         m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
+//     }
+//
+//     // Read input data from the CORRECT position in the stem
+//     WritableSampleFrames inputFrames(
+//             IndexRange::forward(stemStartFrame, inputFramesNeeded),
+//             SampleBuffer::WritableSlice(m_resampleInputBuffer.data(), inputSamplesNeeded));
+//
+//     m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+//
+//     // Check if we got any audio data
+//     bool hasAudio = false;
+//     SINT checkLimit = inputSamplesNeeded;
+//     if (checkLimit > 1000) {
+//         checkLimit = 1000;
+//     }
+//     for (SINT i = 0; i < checkLimit; i++) {
+//         if (std::abs(m_resampleInputBuffer[i]) > 0.0001f) {
+//             hasAudio = true;
+//             break;
+//         }
+//     }
+//
+//     if (!hasAudio) {
+//         return; // Silence is normal in STEM files
+//     }
+//
+//     // Perform cubic interpolation resampling
+//     std::size_t stemCount = m_pStereoStreams.size();
+//
+//     for (SINT i = 0; i < outputFramesNeeded; i++) {
+//         double sourcePos = i * ratio;
+//         SINT sourceIndex = static_cast<SINT>(sourcePos);
+//         double fraction = sourcePos - sourceIndex;
+//
+//         // Ensure we have enough samples for cubic interpolation
+//         if (sourceIndex >= 1 && (sourceIndex + 2) * 2 + 1 < inputSamplesNeeded) {
+//             // Cubic interpolation for left channel
+//             CSAMPLE left = cubicInterpolate(
+//                     m_resampleInputBuffer[(sourceIndex - 1) * 2],
+//                     m_resampleInputBuffer[sourceIndex * 2],
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2],
+//                     m_resampleInputBuffer[(sourceIndex + 2) * 2],
+//                     static_cast<CSAMPLE>(fraction));
+//
+//             // Cubic interpolation for right channel
+//             CSAMPLE right = cubicInterpolate(
+//                     m_resampleInputBuffer[(sourceIndex - 1) * 2 + 1],
+//                     m_resampleInputBuffer[sourceIndex * 2 + 1],
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1],
+//                     m_resampleInputBuffer[(sourceIndex + 2) * 2 + 1],
+//                     static_cast<CSAMPLE>(fraction));
+//
+//             if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx)] = left;
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+//             } else {
+//                 pBuffer[2 * i] += left;
+//                 pBuffer[2 * i + 1] += right;
+//             }
+//         } else if (sourceIndex * 2 + 3 < inputSamplesNeeded) {
+//             // Fallback to linear interpolation
+//             CSAMPLE left = m_resampleInputBuffer[sourceIndex * 2] *
+//                             (1.0f - static_cast<CSAMPLE>(fraction)) +
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2] *
+//                             static_cast<CSAMPLE>(fraction);
+//
+//             CSAMPLE right = m_resampleInputBuffer[sourceIndex * 2 + 1] *
+//                             (1.0f - static_cast<CSAMPLE>(fraction)) +
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1] *
+//                             static_cast<CSAMPLE>(fraction);
+//
+//             if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx)] = left;
+//                 pBuffer[2 * stemCount * i + 2 * static_cast<SINT>(streamIdx) + 1] = right;
+//             } else {
+//                 pBuffer[2 * i] += left;
+//                 pBuffer[2 * i + 1] += right;
+//             }
+//         }
+//     }
+// }
+
+// void SoundSourceSTEM::processWithResampler(size_t streamIdx,
+//         const WritableSampleFrames& globalSampleFrames,
+//         CSAMPLE* pBuffer) {
+//     //testCubicInterpolation();
+//     m_resampleTimer.start();
+//
+//     const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+//     const int refSampleRate = premixInfo.getSampleRate();
+//     const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//     const int stemSampleRate = stemInfo.getSampleRate();
+//
+//     const double ratio = static_cast<double>(stemSampleRate) / refSampleRate;
+//     const SINT outputFramesNeeded = globalSampleFrames.frameLength();
+//
+//     // Calculate the correct starting position in the STEM stream
+//     const SINT premixStartFrame =
+//     globalSampleFrames.frameIndexRange().start(); const SINT stemStartFrame =
+//     std::floor(premixStartFrame * ratio);
+//
+//     // Calculate how many input frames we need (with extra for interpolation)
+//     const SINT inputFramesNeeded = std::ceil(outputFramesNeeded * ratio) + 4;
+//     const SINT inputSamplesNeeded = inputFramesNeeded * 2;
+//
+//     // Ensure input buffer is large enough
+//     if (inputSamplesNeeded > m_resampleInputBuffer.size()) {
+//         m_resampleInputBuffer = SampleBuffer(inputSamplesNeeded);
+//     }
+//
+//     // Read input data from the CORRECT position in the stem
+//     WritableSampleFrames inputFrames(
+//             IndexRange::forward(stemStartFrame, inputFramesNeeded),
+//             SampleBuffer::WritableSlice(m_resampleInputBuffer.data(),
+//             inputSamplesNeeded));
+//
+//     auto readResult =
+//     m_pStereoStreams[streamIdx]->readSampleFrames(inputFrames);
+//
+//     // Check if we got any audio data
+//     bool hasAudio = false;
+//     SINT checkLimit = inputSamplesNeeded;
+//     if (checkLimit > 1000)
+//         checkLimit = 1000;
+//     for (SINT i = 0; i < checkLimit; i++) {
+//         if (std::abs(m_resampleInputBuffer[i]) > 0.0001f) {
+//             hasAudio = true;
+//             break;
+//         }
+//     }
+//
+//     if (!hasAudio) {
+//         //qDebug() << "[SoundSourceStem] -> STEM RESAMPLE -> Silence detected
+//         in stream" << streamIdx << "at premix position"
+//         //           << premixStartFrame << "(stem position" <<
+//         stemStartFrame << " -> normal for stems)"; return;
+//     }
+//
+//     // Perform cubic interpolation resampling
+//     std::size_t stemCount = m_pStereoStreams.size();
+//     SINT framesProcessed = 0;
+//
+//     for (SINT i = 0; i < outputFramesNeeded; i++) {
+//         double sourcePos = i * ratio;
+//         SINT sourceIndex = static_cast<SINT>(sourcePos);
+//         double fraction = sourcePos - sourceIndex;
+//
+//         // Ensure we have enough samples for cubic interpolation
+//         if (sourceIndex >= 1 && (sourceIndex + 2) * 2 + 1 <
+//         inputSamplesNeeded) {
+//             CSAMPLE left = cubicInterpolate(
+//                     m_resampleInputBuffer[(sourceIndex - 1) * 2],
+//                     m_resampleInputBuffer[sourceIndex * 2],
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2],
+//                     m_resampleInputBuffer[(sourceIndex + 2) * 2],
+//                     fraction);
+//
+//             CSAMPLE right = cubicInterpolate(
+//                     m_resampleInputBuffer[(sourceIndex - 1) * 2 + 1],
+//                     m_resampleInputBuffer[sourceIndex * 2 + 1],
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1],
+//                     m_resampleInputBuffer[(sourceIndex + 2) * 2 + 1],
+//                     fraction);
+//
+//             // Mix into output buffer
+//             if (m_requestedChannelCount !=
+//             mixxx::audio::ChannelCount::stereo()) {
+//                 pBuffer[2 * stemCount * i + 2 * streamIdx] = left;
+//                 pBuffer[2 * stemCount * i + 2 * streamIdx + 1] = right;
+//             } else {
+//                 pBuffer[2 * i] += left;
+//                 pBuffer[2 * i + 1] += right;
+//             }
+//             framesProcessed++;
+//         } else if (sourceIndex * 2 + 3 < inputSamplesNeeded) {
+//             // Linear interpolation fallback
+//             CSAMPLE left = m_resampleInputBuffer[sourceIndex * 2] * (1.0f -
+//             fraction) +
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2] * fraction;
+//             CSAMPLE right = m_resampleInputBuffer[sourceIndex * 2 + 1] *
+//             (1.0f - fraction) +
+//                     m_resampleInputBuffer[(sourceIndex + 1) * 2 + 1] *
+//                     fraction;
+//
+//             if (m_requestedChannelCount !=
+//             mixxx::audio::ChannelCount::stereo()) {
+//                 pBuffer[2 * stemCount * i + 2 * streamIdx] = left;
+//                 pBuffer[2 * stemCount * i + 2 * streamIdx + 1] = right;
+//             } else {
+//                 pBuffer[2 * i] += left;
+//                 pBuffer[2 * i + 1] += right;
+//             }
+//             framesProcessed++;
+//         }
+//     }
+//
+//     // Update statistics
+//     //m_streamTotalFramesProcessed[streamIdx] += framesProcessed;
+//     //m_streamTotalResamplingTime[streamIdx] +=
+//     m_resampleTimer.nsecsElapsed();
+//
+//     m_streamTotalFramesProcessed[static_cast<int>(streamIdx)] +=
+//     framesProcessed; m_streamTotalResamplingTime[static_cast<int>(streamIdx)]
+//     += m_resampleTimer.nsecsElapsed();
+//
+// }
+
+void SoundSourceSTEM::showResamplingSummary() {
+    qDebug() << "=== STEM RESAMPLING FINAL SUMMARY ===";
+    for (auto it = m_streamTotalFramesProcessed.begin();
+            it != m_streamTotalFramesProcessed.end();
+            ++it) {
+        int streamIdx = it.key();
+        qint64 frames = it.value();
+        qint64 timeNs = m_streamTotalResamplingTime[streamIdx];
+
+        qDebug() << "Stream" << streamIdx << ":" << frames << "frames,"
+                 << (timeNs / 1000000.0) << "ms,"
+                 << (frames > 0 ? (timeNs / (frames * 1000000.0)) : 0) << "ms per frame";
+    }
+    qDebug() << "=====================================";
+}
+
+void SoundSourceSTEM::processWithoutResampler(size_t streamIdx,
+        const WritableSampleFrames& globalSampleFrames,
+        CSAMPLE* pBuffer) {
+    SINT outputSampleLength = m_pStereoStreams.front()->getSignalInfo().frames2samples(
+            globalSampleFrames.frameLength());
+
+    // qDebug() << "Processing stream" << streamIdx << "without resampling";
+    // qDebug() << "Frames:" << globalSampleFrames.frameLength();
+
+    // Read directly into temp buffer
+    WritableSampleFrames currentStemFrame(
+            globalSampleFrames.frameIndexRange(),
+            SampleBuffer::WritableSlice(m_buffer.data(), outputSampleLength));
+
+    // auto readResult = m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
+    m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
+    // qDebug() << "Read" << readResult.frameIndexRange().length() << "frames";
+
+    // Check audio data
+    // bool hasAudio = false;
+    SINT checkLimit = outputSampleLength;
+    if (checkLimit > 1000) {
+        checkLimit = 1000;
+    }
+    for (SINT i = 0; i < checkLimit; i++) {
+        if (std::abs(m_buffer[i]) > 0.0001f) {
+            // hasAudio = true;
+            break;
+        }
+    }
+    // qDebug() << "Audio detected:" << (hasAudio ? "YES" : "NO");
+    // Mix directly from temp buffer
+    std::size_t stemCount = m_pStereoStreams.size();
+
+    for (SINT i = 0; i < outputSampleLength / 2; i++) {
+        if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+            pBuffer[2 * stemCount * i + 2 * streamIdx] = m_buffer[2 * i];
+            pBuffer[2 * stemCount * i + 2 * streamIdx + 1] = m_buffer[2 * i + 1];
+        } else {
+            pBuffer[2 * i] += m_buffer[2 * i];
+            pBuffer[2 * i + 1] += m_buffer[2 * i + 1];
+        }
+    }
+}
+
+void SoundSourceSTEM::testCubicInterpolation() {
+    // Test cubic interpolation with known values
+    CSAMPLE result = cubicInterpolate(0.0f, 1.0f, 2.0f, 3.0f, 0.5f);
+    qDebug() << "Cubic interpolation test result:" << result << "(expected: ~1.5)";
+
+    // Test edge cases
+    result = cubicInterpolate(0.0f, 1.0f, 2.0f, 3.0f, 0.0f);
+    qDebug() << "Cubic interpolation at mu=0.0:" << result << "(expected: 1.0)";
+
+    result = cubicInterpolate(0.0f, 1.0f, 2.0f, 3.0f, 1.0f);
+    qDebug() << "Cubic interpolation at mu=1.0:" << result << "(expected: 2.0)";
+}
+
+void SoundSourceSTEM::initializeResamplers(int refSampleRate) {
+// Debug output to check compilation flags
+#ifdef __FAST_MATH__
+    qWarning() << "STEM: WARNING! Compiled with fast-math - audio quality may suffer!";
+#else
+    qDebug() << "STEM: Compiled with precise math settings";
+#endif
+
+    // Your existing code
+    std::size_t stemCount = m_pStereoStreams.size();
+    m_needsResampling.resize(stemCount, false);
+
+    for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
+        const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+        const int stemSampleRate = stemInfo.getSampleRate();
+
+        if (stemSampleRate != refSampleRate) {
+            m_needsResampling[streamIdx] = true;
+        }
+    }
+}
+
+//void SoundSourceSTEM::initializeResamplers(int refSampleRate) {
+//    std::size_t stemCount = m_pStereoStreams.size();
+//    m_needsResampling.resize(stemCount, false);
+//
+//    for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
+//        const auto& stemInfo = m_pStereoStreams[streamIdx]->getSignalInfo();
+//        const int stemSampleRate = stemInfo.getSampleRate();
+//
+//        if (stemSampleRate != refSampleRate) {
+//            m_needsResampling[streamIdx] = true;
+//        }
+//    }
+//}
+
 ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
         const WritableSampleFrames& globalSampleFrames) {
     VERIFY_OR_DEBUG_ASSERT(m_requestedChannelCount.isValid()) {
         return ReadableSampleFrames();
     }
-
     VERIFY_OR_DEBUG_ASSERT(globalSampleFrames.writableLength() %
                     m_requestedChannelCount ==
             0) {
         return ReadableSampleFrames();
     };
 
-    SINT stemSampleLength = m_pStereoStreams.front()->getSignalInfo().frames2samples(
-            globalSampleFrames.frameLength());
+    // --- Step 1: Determine reference sample rate from premix ---
+    const auto& premixInfo = m_pStereoStreams.front()->getSignalInfo();
+    const int refSampleRate = premixInfo.getSampleRate();
+    SINT outputSampleLength = premixInfo.frames2samples(globalSampleFrames.frameLength());
 
-    // The same buffer is reused between requests tp prevent reallocation, but
-    // it will be reallocated if a larger chunk is requested and will keep the
-    // new maximum size
-    if (stemSampleLength > m_buffer.size()) {
-        m_buffer = SampleBuffer(stemSampleLength);
+    // --- Step 2: Initialize resamplers on first call if needed ---
+    if (m_needsResampling.empty()) {
+        initializeResamplers(refSampleRate);
+    }
+
+    // --- Step 3: Reuse buffers if needed ---
+    if (outputSampleLength > m_buffer.size()) {
+        m_buffer = SampleBuffer(outputSampleLength);
+    }
+    // Make resample input buffer large enough for worst-case scenario
+    SINT maxInputSamplesNeeded = outputSampleLength * 5; // 5x for large ratio safety
+    if (maxInputSamplesNeeded > m_resampleInputBuffer.size()) {
+        m_resampleInputBuffer = SampleBuffer(maxInputSamplesNeeded);
     }
 
     ReadableSampleFrames read(globalSampleFrames.frameIndexRange(),
             SampleBuffer::ReadableSlice(
                     globalSampleFrames.writableData(),
                     globalSampleFrames.writableLength()));
+
     std::size_t stemCount = m_pStereoStreams.size();
     CSAMPLE* pBuffer = globalSampleFrames.writableData();
 
     if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo() && stemCount != 1) {
         SampleUtil::clear(pBuffer, globalSampleFrames.writableLength());
     } else {
-        DEBUG_ASSERT(stemSampleLength * static_cast<SINT>(stemCount) ==
+        DEBUG_ASSERT(outputSampleLength * static_cast<SINT>(stemCount) ==
                 globalSampleFrames.writableLength());
     }
 
     if (stemCount == 1) {
+        // Only one stem: just read into global buffer
         m_pStereoStreams[0]->readSampleFrames(globalSampleFrames);
         return read;
     }
 
+    // --- Step 4: Process each stem ---
     for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
-        WritableSampleFrames currentStemFrame = WritableSampleFrames(
-                globalSampleFrames.frameIndexRange(),
-                SampleBuffer::WritableSlice(
-                        m_buffer.data(),
-                        stemSampleLength));
-        m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
-
-        // TODO(XXX): currently, stem samples are interleaved and packed
-        // next to each other as such:
-        //    1L1R1L1R1L1R...2L2R2L2R2L2R2L2R......3L3R3L3R3L3R3L3R......4L4R4L4R4L4R4L4R....
-        //    Can FFmpeg decode as without having to use a decoder per
-        //    channel? 1LLLLLLLLLLLLLL....1RRRRRRRRR...2LLLLLLL...?
-        if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
-            // Change the sample layout to interleave all channels together
-            for (SINT i = 0; i < stemSampleLength / 2; i++) {
-                pBuffer[2 * stemCount * i + 2 * streamIdx] = m_buffer[2 * i];
-                pBuffer[2 * stemCount * i + 2 * streamIdx + 1] = m_buffer[2 * i + 1];
-            }
+        if (streamIdx == 0) {
+            // Premix stream - read directly (already at target sample rate)
+            processWithoutResampler(streamIdx, globalSampleFrames, pBuffer);
+        } else if (m_needsResampling[streamIdx]) {
+            // Stem needs resampling - use cubic interpolation
+            processWithResampler(streamIdx, globalSampleFrames, pBuffer);
         } else {
-            // Change the sample layout to mix all channels together
-            for (SINT i = 0; i < stemSampleLength / 2; i++) {
-                pBuffer[2 * i] += m_buffer[2 * i];
-                pBuffer[2 * i + 1] += m_buffer[2 * i + 1];
-            }
+            // Stem doesn't need resampling - read directly
+            processWithoutResampler(streamIdx, globalSampleFrames, pBuffer);
         }
     }
 
     return read;
+}
+
+CSAMPLE SoundSourceSTEM::cubicInterpolate(
+        CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, double mu) {
+    // Cubic interpolation formula
+    double mu2 = mu * mu;
+    double a0 = y3 - y2 - y0 + y1;
+    double a1 = y0 - y1 - a0;
+    double a2 = y2 - y0;
+    double a3 = y1;
+
+    return static_cast<CSAMPLE>(a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3);
+}
+
+SoundSourceSTEM::~SoundSourceSTEM() {
+    // clean up
+    m_needsResampling.clear();
+    // showResamplingSummary();
 }
 
 } // namespace mixxx
