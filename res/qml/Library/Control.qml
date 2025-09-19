@@ -1,3 +1,5 @@
+import ".." as Skin
+import "." as LibraryComponent
 import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 
@@ -10,17 +12,17 @@ Item {
     signal loadSelectedTrack(string group, bool play)
     signal loadSelectedTrackIntoNextAvailableDeck(bool play)
 
-    FocusedWidgetControl {
+    Skin.FocusedWidgetControl {
         id: focusedWidgetControl
 
-        Component.onCompleted: this.value = FocusedWidgetControl.WidgetKind.LibraryView
+        Component.onCompleted: this.value = Skin.FocusedWidgetControl.WidgetKind.LibraryView
     }
 
     Mixxx.ControlProxy {
         group: "[Library]"
         key: "GoToItem"
         onValueChanged: (value) => {
-            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
+            if (value != 0 && root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
         }
     }
@@ -29,7 +31,7 @@ Item {
         group: "[Playlist]"
         key: "LoadSelectedIntoFirstStopped"
         onValueChanged: (value) => {
-            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
+            if (value != 0 && root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
         }
     }
@@ -39,7 +41,7 @@ Item {
         key: "SelectTrackKnob"
         onValueChanged: (value) => {
             if (value != 0) {
-                root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
+                root.focusWidget = Skin.FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveVertical(value);
             }
         }
@@ -50,7 +52,7 @@ Item {
         key: "SelectPrevTrack"
         onValueChanged: (value) => {
             if (value != 0) {
-                root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
+                root.focusWidget = Skin.FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveVertical(-1);
             }
         }
@@ -61,7 +63,7 @@ Item {
         key: "SelectNextTrack"
         onValueChanged: (value) => {
             if (value != 0) {
-                root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
+                root.focusWidget = Skin.FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveVertical(1);
             }
         }
@@ -71,7 +73,7 @@ Item {
         group: "[Library]"
         key: "MoveVertical"
         onValueChanged: (value) => {
-            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
+            if (value != 0 && root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(value);
         }
     }
@@ -80,7 +82,7 @@ Item {
         group: "[Library]"
         key: "MoveUp"
         onValueChanged: (value) => {
-            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
+            if (value != 0 && root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(-1);
         }
     }
@@ -89,7 +91,7 @@ Item {
         group: "[Library]"
         key: "MoveDown"
         onValueChanged: (value) => {
-            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
+            if (value != 0 && root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(1);
         }
     }
@@ -104,11 +106,11 @@ Item {
     Instantiator {
         model: numDecksControl.value
 
-        delegate: LibraryControlLoadSelectedTrackHandler {
+        delegate: LibraryComponent.ControlLoadSelectedTrackHandler {
             required property int index
 
             group: "[Channel" + (index + 1) + "]"
-            enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
+            enabled: root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: (play) => {
                 root.loadSelectedTrack(this.group, play);
             }
@@ -125,11 +127,11 @@ Item {
     Instantiator {
         model: numPreviewDecksControl.value
 
-        delegate: LibraryControlLoadSelectedTrackHandler {
+        delegate: LibraryComponent.ControlLoadSelectedTrackHandler {
             required property int index
 
             group: "[PreviewDeck" + (index + 1) + "]"
-            enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
+            enabled: root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: (play) => {
                 root.loadSelectedTrack(this.group, play);
             }
@@ -146,11 +148,11 @@ Item {
     Instantiator {
         model: numSamplersControl.value
 
-        delegate: LibraryControlLoadSelectedTrackHandler {
+        delegate: LibraryComponent.ControlLoadSelectedTrackHandler {
             required property int index
 
             group: "[Sampler" + (index + 1) + "]"
-            enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
+            enabled: root.focusWidget == Skin.FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: (play) => {
                 root.loadSelectedTrack(this.group, play);
             }

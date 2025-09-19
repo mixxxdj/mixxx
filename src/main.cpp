@@ -62,6 +62,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     int exitCode;
 #ifdef MIXXX_USE_QML
     if (args.isQml()) {
+        // This is a workaround to support Qt 6.4.2, currently shipped on
+        // Ubuntu 24.04 See
+        // https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-2770811094
+        // for further details
+        qputenv("QT_QUICK_TABLEVIEW_COMPAT_VERSION", "6.4");
         mixxx::qml::QmlApplication qmlApplication(pApp, args);
         exitCode = pApp->exec();
     } else
