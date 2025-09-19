@@ -187,6 +187,7 @@ class TrackModel {
         Q_UNUSED(sourceIndex);
         Q_UNUSED(destIndex);
     }
+    virtual void orderTracksByCurrPos() {};
     virtual bool isLocked() {
         return false;
     }

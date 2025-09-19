@@ -22,6 +22,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
+    void orderTracksByCurrPos() override;
 
     bool isColumnInternal(int column) final;
     bool isColumnHiddenByDefault(int column) final;

@@ -1121,6 +1121,48 @@ int PlaylistDAO::tracksInPlaylist(const int playlistId) const {
     return count;
 }
 
+void PlaylistDAO::orderTracksByCurrPos(const int playlistId,
+        QList<std::pair<TrackId, int>>& newOrder) {
+    if (newOrder.isEmpty() || playlistId == kInvalidPlaylistId) {
+        return;
+    }
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "UPDATE PlaylistTracks "
+            "SET position=:new_pos "
+            "WHERE position=:old_pos AND "
+            "track_id=:track_id AND "
+            "playlist_id=:pl_id"));
+    int newPos = 1;
+    for (auto oldIdAndPos : newOrder) {
+        int oldPos = oldIdAndPos.second;
+        const TrackId trackId = oldIdAndPos.first;
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            return;
+        }
+        query.bindValue(":new_pos", newPos++);
+        query.bindValue(":old_pos", oldPos);
+        query.bindValue(":track_id", trackId.toVariant());
+        query.bindValue(":pl_id", playlistId);
+        if (!query.exec()) {
+            // We temporarily have duplicate positions, so abort the entire operation
+            // to not leave the playlist with an invalid state.
+            LOG_FAILED_QUERY(query);
+            return;
+        }
+    }
+
+    transaction.commit();
+
+    // Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+        qDebug() << query.lastError();
+    }
+
+    emit tracksMoved(QSet<int>{playlistId});
+}
+
 void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const int newPosition) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -1346,9 +1388,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
             }
         }
 
-        //qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
-        trackPositionIds.insert(trackAPosition, trackBId);
-        trackPositionIds.insert(trackBPosition, trackAId);
+        // qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
 
 // TODO: The following use of QList<T>::swap(int, int) is deprecated
 // and should be replaced with QList<T>::swapItemsAt(int, int)

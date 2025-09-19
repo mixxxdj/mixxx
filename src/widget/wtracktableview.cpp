@@ -310,6 +310,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
                 &WTrackTableViewHeader::shuffle,
                 this,
                 &WTrackTableView::slotRandomSorting);
+        connect(pHeader,
+                &WTrackTableViewHeader::adoptSortOrder,
+                this,
+                &WTrackTableView::slotAdoptSortOrderForPlaylist);
 
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
@@ -1898,6 +1902,24 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     if (sortingChanged) {
         applySortingIfVisible();
     }
+}
+
+void WTrackTableView::slotAdoptSortOrderForPlaylist() {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    if (!pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+        return;
+    }
+
+    int sortColumnId = static_cast<int>(m_pSortColumn->get());
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::Position)) {
+        // If already sorted by number there's noting to do
+        return;
+    }
+    pTrackModel->orderTracksByCurrPos();
+    // TODO should we resort by # ??
 }
 
 void WTrackTableView::slotRandomSorting() {

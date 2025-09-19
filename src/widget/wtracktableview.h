@@ -156,6 +156,7 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void slotRandomSorting();
+    void slotAdoptSortOrderForPlaylist();
     void keyNotationChanged();
 
   protected:
