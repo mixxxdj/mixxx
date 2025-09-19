@@ -688,15 +688,17 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         if (!m_pChannelToCloneFrom) {
             BaseTrackPlayer::TrackLoadReset reset = m_pConfig->getValue(
-                    ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
-            if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
+                    ConfigKey("[Controls]", "SpeedAutoReset"), TrackLoadReset::RESET_PITCH);
+            if (reset == TrackLoadReset::RESET_SPEED ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
                 // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMixer->getEngineSync()->otherSyncedPlaying(getGroup())) {
                     m_pRateRatio->set(1.0);
                 }
             }
-            if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
+            if (reset == TrackLoadReset::RESET_PITCH ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
                 m_pPitchAdjust->set(0.0);
             }
         } else {

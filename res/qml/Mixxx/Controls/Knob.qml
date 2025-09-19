@@ -27,7 +27,7 @@ Item {
             case Knob.ArcStart.Minimum:
                 return min;
             case Knob.ArcStart.Maximum:
-                return max;
+                    return max;
             default:
                 return valueCenter;
         }
@@ -67,7 +67,7 @@ Item {
         // by enabling multisampling, so we use 4xMSAA here.
         //
         // See https://www.qt.io/blog/2017/07/07/let-there-be-shapes for details.
-        property int multiSamplingLevel: Mixxx.Config.getMultiSamplingLevel()
+        property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
         layer.enabled: multiSamplingLevel > 1
         layer.samples: multiSamplingLevel
 

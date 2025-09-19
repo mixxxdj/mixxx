@@ -215,7 +215,7 @@ ApplicationWindow {
             id: overlayModal
             property real radius: 12
 
-            readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration()
+            readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration
 
             anchors.fill: parent
             color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
