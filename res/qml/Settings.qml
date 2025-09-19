@@ -11,13 +11,12 @@ Popup {
     id: root
 
     property int activeCategoryIndex: 0
-    property list<string> sections: ["SoundHardware", "Library", "Controller", "Interface", "MixerEffect", "AutoDJ", "Broadcast", "Recording", "Analyzer", "StatsPerformance"]
-
     readonly property var manager: managerItem
+    property list<string> sections: ["SoundHardware", "Library", "Controller", "Interface", "MixerEffect", "AutoDJ", "Broadcast", "Recording", "Analyzer", "StatsPerformance"]
 
     background: Rectangle {
         anchors.fill: parent
-        color: Theme.darkGray2
+        color: Theme.darkGray4
         opacity: parent.radius < 0 ? Math.max(0.1, 1 + parent.radius / 8) : 1
         radius: 8
     }
@@ -54,6 +53,7 @@ Popup {
 
                         Text {
                             id: searchInputPlaceholder
+
                             anchors.verticalCenter: parent.verticalCenter
                             color: Theme.white
                             text: 'Search...'
@@ -61,6 +61,7 @@ Popup {
                         }
                         TextInput {
                             id: searchInput
+
                             anchors.verticalCenter: parent.verticalCenter
                             visible: parent.active
                             width: parent.width
@@ -81,6 +82,7 @@ Popup {
                     }
                     ListView {
                         id: categoryList
+
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         clip: true
@@ -98,6 +100,7 @@ Popup {
 
                             Image {
                                 id: handleImage
+
                                 anchors.left: parent.left
                                 anchors.leftMargin: 8
                                 anchors.verticalCenter: parent.verticalCenter
@@ -129,6 +132,7 @@ Popup {
                     }
                     ListView {
                         id: settingResultList
+
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         clip: true
@@ -226,15 +230,16 @@ Popup {
                         }
                     }
                 }
-
                 Mixxx.SettingParameterManager {
                     id: managerItem
+
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Layout.leftMargin: 20
 
                     Repeater {
                         id: categoriesLoader
+
                         model: root.sections
 
                         Loader {
@@ -252,7 +257,7 @@ Popup {
                                 for (let i = sectionProperties.count; i < index; i++)
                                     sectionProperties.append({});
                                 sectionProperties.set(index, {
-                                        "label": category.item.label
+                                    "label": category.item.label
                                 });
                             }
 
@@ -272,5 +277,6 @@ Popup {
 
     ListModel {
         id: sectionProperties
+
     }
 }
