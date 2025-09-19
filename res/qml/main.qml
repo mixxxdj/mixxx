@@ -308,8 +308,8 @@ ApplicationWindow {
                 Deck {
                     id: deck1
 
-                    anchors.top: parent.top
                     anchors.right: mixer.left
+                    anchors.top: parent.top
                     editMode: root.editDeck
                     group: "[Channel1]"
                     height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
@@ -428,8 +428,8 @@ ApplicationWindow {
                 Deck {
                     id: deck2
 
-                    anchors.top: parent.top
                     anchors.left: mixer.right
+                    anchors.top: parent.top
                     editMode: root.editDeck
                     group: "[Channel2]"
                     height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
@@ -479,11 +479,11 @@ ApplicationWindow {
                     }
                     sourceComponent: Component {
                         Deck {
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
                             editMode: root.editDeck
                             group: deck3.group
                             minimized: root.maximizeLibrary
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
                         }
                     }
                     states: [
@@ -522,11 +522,11 @@ ApplicationWindow {
                     }
                     sourceComponent: Component {
                         Deck {
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
                             editMode: root.editDeck
                             group: deck4.group
                             minimized: root.maximizeLibrary
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
                         }
                     }
                     states: [
@@ -616,7 +616,7 @@ ApplicationWindow {
         Overlay.modal: Rectangle {
             id: overlayModal
 
-            readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration()
+            readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration
             property real radius: 12
 
             anchors.fill: parent
