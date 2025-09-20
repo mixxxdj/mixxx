@@ -1,4 +1,6 @@
 #pragma once
+#include <qtmetamacros.h>
+
 #include <QColor>
 #include <QObject>
 #include <QQmlEngine>
@@ -148,6 +150,65 @@ class QmlConfigProxy : public QObject {
                     bpmSyncLockAlgorithm WRITE set_bpmSyncLockAlgorithm NOTIFY
                             bpmSyncLockAlgorithmChanged);
 
+    // Library group
+    Q_PROPERTY(bool librarySyncTrackMetadataExport READ
+                    librarySyncTrackMetadataExport WRITE
+                            set_librarySyncTrackMetadataExport NOTIFY
+                                    librarySyncTrackMetadataExportChanged);
+    Q_PROPERTY(bool librarySeratoMetadataExport READ librarySeratoMetadataExport
+                    WRITE set_librarySeratoMetadataExport NOTIFY
+                            librarySeratoMetadataExportChanged);
+    Q_PROPERTY(bool libraryUseRelativePathOnExport READ
+                    libraryUseRelativePathOnExport WRITE
+                            set_libraryUseRelativePathOnExport NOTIFY
+                                    libraryUseRelativePathOnExportChanged);
+    // Count, 0..
+    Q_PROPERTY(
+            int libraryHistoryMinTracksToKeep READ libraryHistoryMinTracksToKeep
+                    WRITE set_libraryHistoryMinTracksToKeep NOTIFY
+                            libraryHistoryMinTracksToKeepChanged);
+    // Count, 0..
+    Q_PROPERTY(int libraryHistoryTrackDuplicateDistance READ
+                    libraryHistoryTrackDuplicateDistance WRITE
+                            set_libraryHistoryTrackDuplicateDistance NOTIFY
+                                    libraryHistoryTrackDuplicateDistanceChanged);
+    // Percent, 0..1.0
+    Q_PROPERTY(double librarySearchBpmFuzzyRange READ librarySearchBpmFuzzyRange
+                    WRITE set_librarySearchBpmFuzzyRange NOTIFY
+                            librarySearchBpmFuzzyRangeChanged);
+    // Duration (ms), 100..9999
+    Q_PROPERTY(int librarySearchDebouncingTimeout READ
+                    librarySearchDebouncingTimeout WRITE
+                            set_librarySearchDebouncingTimeout NOTIFY
+                                    librarySearchDebouncingTimeoutChanged);
+    Q_PROPERTY(bool librarySearchCompletionsEnable READ
+                    librarySearchCompletionsEnable WRITE
+                            set_librarySearchCompletionsEnable NOTIFY
+                                    librarySearchCompletionsEnableChanged);
+    Q_PROPERTY(bool librarySearchHistoryShortcutsEnable READ
+                    librarySearchHistoryShortcutsEnable WRITE
+                            set_librarySearchHistoryShortcutsEnable NOTIFY
+                                    librarySearchHistoryShortcutsEnableChanged);
+    // Integration
+    Q_PROPERTY(bool libraryRhythmboxEnabled READ libraryRhythmboxEnabled WRITE
+                    set_libraryRhythmboxEnabled NOTIFY
+                            libraryRhythmboxEnabledChanged);
+    Q_PROPERTY(bool libraryBansheeEnabled READ libraryBansheeEnabled WRITE
+                    set_libraryBansheeEnabled NOTIFY
+                            libraryBansheeEnabledChanged);
+    Q_PROPERTY(bool libraryITunesEnabled READ libraryITunesEnabled WRITE
+                    set_libraryITunesEnabled NOTIFY
+                            libraryITunesEnabledChanged);
+    Q_PROPERTY(bool libraryTraktorEnabled READ libraryTraktorEnabled WRITE
+                    set_libraryTraktorEnabled NOTIFY
+                            libraryTraktorEnabledChanged);
+    Q_PROPERTY(bool libraryRekordboxEnabled READ libraryRekordboxEnabled WRITE
+                    set_libraryRekordboxEnabled NOTIFY
+                            libraryRekordboxEnabledChanged);
+    Q_PROPERTY(bool librarySeratoEnabled READ librarySeratoEnabled WRITE
+                    set_librarySeratoEnabled NOTIFY
+                            librarySeratoEnabledChanged);
+
     // Colors
     Q_PROPERTY(QVariantList hotcueColorPalette READ hotcueColorPalette NOTIFY
                     hotcueColorPaletteChanged);
@@ -241,6 +302,28 @@ class QmlConfigProxy : public QObject {
     // BPM group
     PROPERTY_DECL_ACCESSOR(EngineSync::SyncLockAlgorithm, bpmSyncLockAlgorithm);
 
+    // Library group
+    PROPERTY_DECL_ACCESSOR(bool, librarySyncTrackMetadataExport);
+    PROPERTY_DECL_ACCESSOR(bool, librarySeratoMetadataExport);
+    PROPERTY_DECL_ACCESSOR(bool, libraryUseRelativePathOnExport);
+    // Count, 0..
+    PROPERTY_DECL_ACCESSOR(int, libraryHistoryMinTracksToKeep);
+    // Count, 0..
+    PROPERTY_DECL_ACCESSOR(int, libraryHistoryTrackDuplicateDistance);
+    // Percent, 0..1.0
+    PROPERTY_DECL_ACCESSOR(double, librarySearchBpmFuzzyRange);
+    // Duration (ms), 100..9999
+    PROPERTY_DECL_ACCESSOR(int, librarySearchDebouncingTimeout);
+    PROPERTY_DECL_ACCESSOR(bool, librarySearchCompletionsEnable);
+    PROPERTY_DECL_ACCESSOR(bool, librarySearchHistoryShortcutsEnable);
+    // Integration
+    PROPERTY_DECL_ACCESSOR(bool, libraryRhythmboxEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryBansheeEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryITunesEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryTraktorEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryRekordboxEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, librarySeratoEnabled);
+
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {
         s_pUserSettings = std::move(pConfig);
@@ -286,6 +369,21 @@ class QmlConfigProxy : public QObject {
     void configKeyColorsEnabledChanged();
     void configStartInFullscreenKeyChanged();
     void bpmSyncLockAlgorithmChanged();
+    void librarySyncTrackMetadataExportChanged();
+    void librarySeratoMetadataExportChanged();
+    void libraryUseRelativePathOnExportChanged();
+    void libraryHistoryMinTracksToKeepChanged();
+    void libraryHistoryTrackDuplicateDistanceChanged();
+    void librarySearchBpmFuzzyRangeChanged();
+    void librarySearchDebouncingTimeoutChanged();
+    void librarySearchCompletionsEnableChanged();
+    void librarySearchHistoryShortcutsEnableChanged();
+    void libraryRhythmboxEnabledChanged();
+    void libraryBansheeEnabledChanged();
+    void libraryITunesEnabledChanged();
+    void libraryTraktorEnabledChanged();
+    void libraryRekordboxEnabledChanged();
+    void librarySeratoEnabledChanged();
 
   private:
     static inline UserSettingsPointer s_pUserSettings = nullptr;

@@ -17,7 +17,7 @@
 namespace mixxx {
 namespace qml {
 
-class QmlLibrarySource;
+class QmlLibraryAbstractSource;
 
 class QmlSidebarModelProxy : public SidebarModel {
     Q_OBJECT
@@ -37,7 +37,7 @@ class QmlSidebarModelProxy : public SidebarModel {
         return m_tracklist.get();
     }
 
-    void update(const QList<QmlLibrarySource*>& sources);
+    void update(const QList<QmlLibraryAbstractSource*>& sources);
     QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE QVariant get(int row) const;
     Q_INVOKABLE void activate(const QModelIndex& index);

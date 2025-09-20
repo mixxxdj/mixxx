@@ -118,36 +118,40 @@ LibraryScanner::LibraryScanner(
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
 
-    m_pProgressDlg.reset(new LibraryScannerDlg());
-    connect(this,
-            &LibraryScanner::progressLoading,
-            m_pProgressDlg.data(),
-            &LibraryScannerDlg::slotUpdate);
-    connect(this,
-            &LibraryScanner::progressHashing,
-            m_pProgressDlg.data(),
-            &LibraryScannerDlg::slotUpdate);
-    connect(this,
-            &LibraryScanner::scanStarted,
-            m_pProgressDlg.data(),
-            &LibraryScannerDlg::slotScanStarted);
-    connect(this,
-            &LibraryScanner::scanFinished,
-            m_pProgressDlg.data(),
-            &LibraryScannerDlg::slotScanFinished);
-    connect(m_pProgressDlg.data(),
-            &LibraryScannerDlg::scanCancelled,
-            this,
-            &LibraryScanner::slotCancel,
-            Qt::DirectConnection);
-    connect(&m_trackDao,
-            &TrackDAO::progressVerifyTracksOutside,
-            m_pProgressDlg.data(),
-            &LibraryScannerDlg::slotUpdate);
-    connect(&m_trackDao,
-            &TrackDAO::progressCoverArt,
-            m_pProgressDlg.data(),
-            &LibraryScannerDlg::slotUpdateCover);
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        m_pProgressDlg.reset(new LibraryScannerDlg());
+        connect(this,
+                &LibraryScanner::progressLoading,
+                m_pProgressDlg.data(),
+                &LibraryScannerDlg::slotUpdate);
+        connect(this,
+                &LibraryScanner::progressHashing,
+                m_pProgressDlg.data(),
+                &LibraryScannerDlg::slotUpdate);
+        connect(this,
+                &LibraryScanner::scanStarted,
+                m_pProgressDlg.data(),
+                &LibraryScannerDlg::slotScanStarted);
+        connect(this,
+                &LibraryScanner::scanFinished,
+                m_pProgressDlg.data(),
+                &LibraryScannerDlg::slotScanFinished);
+        connect(m_pProgressDlg.data(),
+                &LibraryScannerDlg::scanCancelled,
+                this,
+                &LibraryScanner::slotCancel);
+        connect(&m_trackDao,
+                &TrackDAO::progressVerifyTracksOutside,
+                m_pProgressDlg.data(),
+                &LibraryScannerDlg::slotUpdate);
+        connect(&m_trackDao,
+                &TrackDAO::progressCoverArt,
+                m_pProgressDlg.data(),
+                &LibraryScannerDlg::slotUpdateCover);
+    }
 }
 
 LibraryScanner::~LibraryScanner() {
@@ -195,6 +199,7 @@ void LibraryScanner::slotStartScan() {
     // finish the scan immediately.
     if (m_libraryRootDirs.isEmpty()) {
         changeScannerState(IDLE);
+        emit scanFinished();
         return;
     }
     changeScannerState(SCANNING);
