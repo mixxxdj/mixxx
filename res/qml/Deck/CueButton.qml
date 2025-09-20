@@ -1,7 +1,4 @@
 import ".." as Skin
-import QtQuick 2.12
-import QtQuick.Shapes
-import QtQuick.Controls 2.12
 import "../Theme"
 
 Skin.ControlButton {

@@ -1,6 +1,5 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
 import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Layouts
@@ -26,8 +25,8 @@ Item {
             left: parent.left
             top: parent.top
             bottom: parent.bottom
-            right: tabs.left
-            rightMargin: 6
+            right: stemCountControl.value > 0 ? tabs.left : parent.right
+            rightMargin: stemCountControl.value > 0 ? 6 : 0
         }
 
         color: '#0E0E0E'

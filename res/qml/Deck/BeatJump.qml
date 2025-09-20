@@ -11,13 +11,22 @@ Rectangle {
 
     required property string group
 
-    color: '#626262'
+    property color buttonColor: trackLoadedControl.value > 0 ? Theme.buttonActiveColor : Theme.buttonDisableColor
+
+    color: Theme.deckBeatjumpBackgroundColor
 
     Label {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Beatjump"
-        color: '#3F3F3F'
+        color: Theme.deckBeatjumpLabelColor
+    }
+
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
     }
 
     Skin.ControlButton {
@@ -44,7 +53,8 @@ Rectangle {
                 layer.enabled: true
                 layer.samples: 4
                 ShapePath {
-                    fillColor: '#D9D9D9'
+                    fillColor: root.buttonColor
+                    strokeColor: 'transparent'
                     startX: 0; startY: 1
                     PathLine { x: 1; y: 1 }
                     PathLine { x: 1; y: 7 }
@@ -89,7 +99,8 @@ Rectangle {
                 layer.enabled: true
                 layer.samples: 4
                 ShapePath {
-                    fillColor: '#D9D9D9'
+                    fillColor: root.buttonColor
+                    strokeColor: 'transparent'
                     startX: 0; startY: 1
                     PathLine { x: 10; y: 7 }
                     PathLine { x: 10; y: 1 }
@@ -132,7 +143,7 @@ Rectangle {
                 layer.enabled: true
                 layer.samples: 4
                 ShapePath {
-                    fillColor: '#626262'
+                    fillColor: root.buttonColor
                     strokeColor: 'transparent'
                     startX: 0; startY: 5
                     PathLine { x: 12; y: 0 }
@@ -141,7 +152,6 @@ Rectangle {
                 }
             }
         }
-        activeColor: Theme.deckActiveColor
     }
     Item {
         anchors {
@@ -187,7 +197,29 @@ Rectangle {
         TextInput {
             anchors.centerIn: backgroundImage
             text: beatjumpSize.value < 1 ? `1/${1/beatjumpSize.value}` : beatjumpSize.value
-            color: "#626262"
+            color: root.buttonColor
+
+            function update() {
+                this.text = Qt.bindind(function() { return beatjumpSize.value < 1 ? `1/${1/beatjumpSize.value}` : beatjumpSize.value; })
+            }
+
+            onAccepted: {
+                this.focus = false
+                let [num, denum] = this.text.split("/")
+                if (denum !== undefined) {
+                    denum = parseInt(denum)
+                    if (Number.isNaN(denum)) {
+                        return update()
+                    }
+                } else {
+                    denum = 1
+                }
+                num = parseInt(num)
+                if (Number.isNaN(num)) {
+                    return update()
+                }
+                beatjumpSize.value = num / denum
+            }
         }
     }
 
@@ -215,7 +247,7 @@ Rectangle {
                 layer.enabled: true
                 layer.samples: 4
                 ShapePath {
-                    fillColor: '#626262'
+                    fillColor: root.buttonColor
                     strokeColor: 'transparent'
                     startX: 0; startY: 0
                     fillRule: ShapePath.WindingFill
@@ -226,6 +258,5 @@ Rectangle {
                 }
             }
         }
-        activeColor: Theme.deckActiveColor
     }
 }

@@ -1,7 +1,8 @@
-import ".." as Skin
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Shapes
 import QtQuick.Controls 2.12
+import ".." as Skin
 import "../Theme"
 
 Skin.ControlButton {
@@ -9,8 +10,15 @@ Skin.ControlButton {
 
     property bool minimized: false
 
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
+    }
+
     key: "play"
-    toggleable: true
+    toggleable: trackLoadedControl.value == 1
     contentItem: Item {
         id: content
         Shape {
@@ -24,7 +32,8 @@ Skin.ControlButton {
             width: 30
             height: 32
             ShapePath {
-                fillColor: '#D9D9D9'
+                strokeColor: 'transparent'
+                fillColor: trackLoadedControl.value > 0 ? Theme.buttonActiveColor : Theme.buttonDisableColor
                 startX: 5; startY: 0
                 fillRule: ShapePath.WindingFill
                 capStyle: ShapePath.RoundCap

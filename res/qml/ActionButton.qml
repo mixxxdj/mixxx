@@ -19,7 +19,7 @@ AbstractButton {
         Rectangle {
             id: content
             anchors.fill: parent
-            color: root.category == ActionButton.Category.Action ? '#2D4EA1' : root.category == ActionButton.Category.Danger ? '#7D3B3B' : '#3F3F3F'
+            color: root.category == ActionButton.Category.Action ? '#2D4EA1' : root.category == ActionButton.Category.Danger ? '#7D3B3B' : Theme.darkGray3
             radius: 4
         }
         DropShadow {

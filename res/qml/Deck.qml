@@ -52,14 +52,8 @@ Item {
                         "items": [{
                                 "type": "column",
                                 "items": [{
-                                        "type": "spinny"
+                                        "type": "waveformOverview"
                                     }, {
-                                        "type": "fxAssign"
-                                    }
-                                ]
-                            }, {
-                                "type": "column",
-                                "items": [{
                                         "type": "row",
                                         "items": [{
                                                 "type": "column",
@@ -76,19 +70,25 @@ Item {
                                                     }, {
                                                         "type": "row",
                                                         "items": [{
-                                                                "type": "loop"
-                                                            }, {
                                                                 "type": "hotcueAndStem"
                                                             }, {
                                                                 "type": "beatjump"
+                                                            }, {
+                                                                "type": "loop"
                                                             }
                                                         ]
                                                     }
                                                 ]
                                             }
                                         ]
+                                    }
+                                ]
+                            }, {
+                                "type": "column",
+                                "items": [{
+                                        "type": "spinny"
                                     }, {
-                                        "type": "waveformOverview"
+                                        "type": "fxAssign"
                                     }
                                 ]
                             }, {
@@ -121,6 +121,10 @@ Item {
                 ]
             }
         )
+    }
+
+    Skin.SectionBackground {
+        anchors.fill: parent
     }
 
     Drag.active: dragArea.drag.active
@@ -639,6 +643,7 @@ Item {
         id: grid
 
         anchors.fill: parent
+        anchors.margins: 4
 
         visible: !root.minimized
 
@@ -656,6 +661,7 @@ Item {
         id: minimizedGrid
 
         anchors.fill: parent
+        anchors.margins: 4
 
         visible: root.minimized
 
@@ -688,7 +694,7 @@ Item {
             }
 
             if (!drag.source.parent.items) {
-                console.error("No items list onm the parent")
+                console.error(`No items list on the parent of ${drag.source}`)
                 candidate = null
                 return
             }

@@ -132,7 +132,7 @@ ApplicationWindow {
             handle: Rectangle {
                 id: handleDelegate
                 implicitWidth: 8
-                implicitHeight: 8
+                implicitHeight: 4
                 color: Theme.libraryPanelSplitterBackground
                 clip: true
                 property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.libraryPanelSplitterHandleActive : Theme.libraryPanelSplitterHandle
@@ -221,12 +221,12 @@ ApplicationWindow {
 
                         GradientStop {
                             position: 0
-                            color: '#000000'
+                            color: Theme.darkGray
                         }
 
                         GradientStop {
                             position: 1
-                            color: '#00000000'
+                            color: 'transparent'
                         }
                     }
                 }
@@ -242,12 +242,12 @@ ApplicationWindow {
 
                         GradientStop {
                             position: 0
-                            color: '#00000000'
+                            color: 'transparent'
                         }
 
                         GradientStop {
                             position: 1
-                            color: '#000000'
+                            color: Theme.darkGray
                         }
                     }
                 }

@@ -22,7 +22,7 @@ Item {
         anchors.fill: parent
         group: root.group
         zoom: zoomControl.value
-        backgroundColor: "#5e000000"
+        backgroundColor: "transparent"
 
         Behavior on zoom {
             SmoothedAnimation {

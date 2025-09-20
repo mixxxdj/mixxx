@@ -98,7 +98,7 @@ Item {
 
             readonly property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
 
-            color: '#3F3F3F'
+            color: Theme.darkGray3
             text: ((ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)) + "%"
             anchors {
                 bottom: parent.bottom

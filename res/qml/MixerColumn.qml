@@ -41,7 +41,7 @@ Item {
             x: 15
             y: (parent.height - height) / 2
             width: 4
-            height: parent.height - 40
+            height: parent.height - 22
             group: root.group
             key: "vu_meter_left"
         }
@@ -50,7 +50,7 @@ Item {
             x: parent.width - width - 15
             y: (parent.height - height) / 2
             width: 4
-            height: parent.height - 40
+            height: parent.height - 22
             group: root.group
             key: "vu_meter_right"
         }

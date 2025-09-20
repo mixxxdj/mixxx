@@ -1,6 +1,5 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
 import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Shapes
@@ -21,8 +20,6 @@ Rectangle {
 
     property bool editMode: false
 
-    border.width: 2
-    border.color: Theme.deckBackgroundColor
     radius: 5
 
     Image {
@@ -31,7 +28,6 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.margins: 5
         width: height
         source: root.currentTrack.coverArtUrl
         visible: false
@@ -43,7 +39,8 @@ Rectangle {
 
         anchors.fill: coverArt
         radius: 4
-        visible: false
+        visible: !root.deckPlayer.isLoaded && !root.minimized
+        color: Theme.deckEmptyCoverArt
     }
 
     OpacityMask {
@@ -180,8 +177,6 @@ Rectangle {
                             antialiasing: true
                             layer.enabled: true
                             layer.samples: 4
-                            // Layout.preferredWidth: 16
-                            // Layout.preferredHeight: 14
                             width: 16
                             height: 14
                             ShapePath {
@@ -336,7 +331,7 @@ Rectangle {
             color: {
                 const trackColor = root.currentTrack.color;
                 if (!trackColor.valid)
-                    return Theme.deckBackgroundColor;
+                    return Theme.deckInfoBarBackgroundColor;
 
                 return Qt.darker(root.currentTrack.color, 2);
             }
@@ -344,7 +339,7 @@ Rectangle {
 
         GradientStop {
             position: 1
-            color: Theme.deckBackgroundColor
+            color: Theme.deckInfoBarBackgroundColor
         }
     }
 }

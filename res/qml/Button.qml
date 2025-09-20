@@ -7,7 +7,7 @@ AbstractButton {
     id: root
 
     property color normalColor: Theme.buttonNormalColor
-    required property color activeColor
+    property color activeColor: Theme.buttonActiveColor
     property color pressedColor: activeColor
     property bool highlight: false
 
@@ -20,7 +20,7 @@ AbstractButton {
 
             PropertyChanges {
                 target: backgroundImage
-                color: root.checked ? "#3a60be" : "#3F3F3F"
+                color: root.checked ? "#3a60be" : Theme.darkGray3
             }
 
             PropertyChanges {
@@ -57,11 +57,6 @@ AbstractButton {
         State {
             name: "inactive"
             when: !root.checked && !root.highlight && !root.pressed
-
-            // PropertyChanges {
-            //     target: backgroundImage
-            //     source: Theme.imgButton
-            // }
 
             PropertyChanges {
                 target: label

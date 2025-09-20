@@ -1,7 +1,5 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Layouts
 import QtQuick.Shapes
@@ -13,13 +11,22 @@ Rectangle {
 
     required property string group
 
-    color: '#626262'
+    property color buttonColor: trackLoadedControl.value > 0 ? Theme.buttonActiveColor : Theme.buttonDisableColor
+
+    color: Theme.deckLoopBackgroundColor
 
     Label {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Loop"
-        color: '#3F3F3F'
+        color: Theme.deckLoopLabelColor
+    }
+
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
     }
 
     Mixxx.ControlProxy {
@@ -85,6 +92,8 @@ Rectangle {
             implicitHeight: 26
 
             group: root.group
+            normalColor: root.buttonColor
+            activeColor: root.buttonColor
             key: "loop_in"
             text: "In"
         }
@@ -97,6 +106,8 @@ Rectangle {
             implicitHeight: 26
 
             group: root.group
+            normalColor: root.buttonColor
+            activeColor: root.buttonColor
             key: "loop_out"
             text: "Out"
         }
@@ -109,6 +120,8 @@ Rectangle {
             implicitHeight: 26
 
             group: root.group
+            normalColor: root.buttonColor
+            activeColor: root.buttonColor
             toggleable: loopEnabled.value
             key: loopEnabled.value ? "loop_enabled" : "reloop_toggle"
             text: loopEnabled.value ? "exit" : "Recall"
@@ -139,7 +152,7 @@ Rectangle {
                     layer.enabled: true
                     layer.samples: 4
                     ShapePath {
-                        fillColor: '#626262'
+                        fillColor: root.buttonColor
                         strokeColor: 'transparent'
                         startX: 0; startY: 5
                         PathLine { x: 12; y: 0 }
@@ -148,7 +161,7 @@ Rectangle {
                     }
                 }
             }
-            activeColor: Theme.deckActiveColor
+            activeColor: root.buttonColor
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
@@ -205,7 +218,6 @@ Rectangle {
             Connections {
                 target: beatloopSize
                 function onValueChanged() {
-                    print("onValueChanged", beatloopSize.value)
                     if (loopEnabled.value) {
                         parent.selectedIndex = parent.values.indexOf(beatloopSize.value)
                     }
@@ -221,10 +233,11 @@ Rectangle {
 
                 property double currentSize: modelData
 
-                highlight: currentSize == beatloopSize.value
+                highlight: currentSize == beatloopSize.value && trackLoadedControl.value > 0
 
                 implicitHeight: 28
                 implicitWidth: 33
+                activeColor: root.buttonColor
 
                 Mixxx.ControlProxy {
                     id: sizedBeatloopActivate
@@ -239,7 +252,6 @@ Rectangle {
                 }
 
                 text: currentSize < 1 ? `1/${1/currentSize}` : currentSize
-                activeColor: Theme.deckActiveColor
 
                 onPressed: {
                     if (loopEnabled.value) {
@@ -267,7 +279,7 @@ Rectangle {
                     layer.enabled: true
                     layer.samples: 4
                     ShapePath {
-                        fillColor: '#626262'
+                        fillColor: root.buttonColor
                         strokeColor: 'transparent'
                         startX: 0; startY: 0
                         fillRule: ShapePath.WindingFill
@@ -278,7 +290,7 @@ Rectangle {
                     }
                 }
             }
-            activeColor: Theme.deckActiveColor
+            activeColor: root.buttonColor
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton

@@ -1,17 +1,22 @@
-import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
-import Qt5Compat.GraphicalEffects
-import QtQuick 2.12
-import QtQuick.Layouts
 import QtQuick.Shapes
-import QtQuick.Controls 2.12
+import QtQuick 2.12
+import ".." as Skin
 import "../Theme"
 
 Item {
     id: root
 
     required property string group
+
+    property color buttonColor: trackLoadedControl.value > 0 ? Theme.buttonActiveColor : Theme.buttonDisableColor
+
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
+    }
 
     Skin.ControlButton {
         id: reverseButton
@@ -27,7 +32,8 @@ Item {
             layer.enabled: true
             layer.samples: 4
             ShapePath {
-                fillColor: '#D9D9D9'
+                fillColor: root.buttonColor
+                strokeColor: 'transparent'
                 startX: 5; startY: 11
                 PathLine { x: 20; y: 4 }
                 PathLine { x: 20; y: 18 }
@@ -78,7 +84,8 @@ Item {
                 layer.enabled: true
                 layer.samples: 4
                 ShapePath {
-                    fillColor: '#D9D9D9'
+                    fillColor: root.buttonColor
+                    strokeColor: 'transparent'
                     startX: 7.5; startY: 0
                     PathLine { x: 15; y: 10 }
                     PathLine { x: 0; y: 10 }
@@ -88,7 +95,7 @@ Item {
             Rectangle {
                 width: 15
                 height: 2
-                color: '#D9D9D9'
+                color: root.buttonColor
                 anchors {
                     bottom: parent.bottom
                     bottomMargin: 3
