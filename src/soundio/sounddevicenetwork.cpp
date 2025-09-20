@@ -318,8 +318,16 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         // kLogger.debug() << "workerWriteProcess: buffer empty."
         //                 << "Catch up with silence:" << writeExpected - copyCount
         //                 << "streamTime" << pWorker->getStreamTimeFrames();;
-        // catch up by filling buffer until we are synced
-        workerWriteSilence(pWorker, (writeExpected - readAvailable) / m_numOutputChannels);
+
+        // Catch up by filling buffer until the worker buffer is in sync with
+        // the network clock. Worker buffers are by a magnitude bigger than
+        // engine buffers and can consume these samples. But remove one chunk
+        // to not add the normal sleep after this call.
+        int silenceFrames = (writeExpected - readAvailable - outChunkSize) / m_numOutputChannels;
+        workerWriteSilence(pWorker, silenceFrames);
+        // Inform the engine cycle about the extra frames written to avoid
+        // underflows in other code paths.
+        m_targetTime += static_cast<qint64>(silenceFrames / m_sampleRate.toDouble() * 1000000);
         m_pSoundManager->underflowHappened(24);
     } else if (writeExpected - readAvailable > outChunkSize / 2) {
         // try to keep PAs buffer filled up to 0.5 chunks
@@ -535,12 +543,16 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
 
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     unsigned long sleepUs = 0;
-    if (currentTime > m_targetTime) {
-        m_pSoundManager->underflowHappened(22);
-        //qDebug() << "underflow" << currentTime << m_targetTime;
-        m_targetTime = currentTime;
+    qint64 remain = m_targetTime - currentTime;
+    if (remain < 0) {
+        // qDebug() << "delayed" << remain << m_targetTime;
+        if (remain + static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000) < 0) {
+            // No remaining time, so we don't sleep to catch up.
+            // m_targetTime is adjusted in workerWriteProcess()
+            m_pSoundManager->underflowHappened(22);
+        }
     } else {
-        sleepUs = m_targetTime - currentTime;
+        sleepUs = static_cast<unsigned long>(remain);
     }
 
     //qDebug() << "sleep" << sleepUs;
