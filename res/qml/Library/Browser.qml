@@ -49,7 +49,9 @@ Rectangle {
 
                     delegate: FocusScope {
                         required property string label
+                        required property string itemName
                         required property var icon
+                        required property bool creatable
 
                         readonly property real indentation: 40
                         readonly property real padding: 5
@@ -151,7 +153,7 @@ Rectangle {
                                     color: Theme.textColor
                                 }
                                 Item {
-                                    visible: rowMouseArea.containsMouse && isTreeNode && hasChildren
+                                    visible: (rowMouseArea.containsMouse || popup.opened) && isTreeNode && hasChildren && creatable
                                     id: newItem
                                     height: parent.height
                                     anchors {
@@ -209,6 +211,60 @@ Rectangle {
                                                 startY: 6
                                                 PathLine { y: 6; x: 12 }
                                                 PathLine { y: 6; x: 8 }
+                                            }
+                                        }
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            onPressed: {
+                                                popup.x = parent.width
+                                                popup.y = parent.height / 2 - popup.height / 2
+                                                popup.open()
+                                                popup.forceActiveFocus(Qt.PopupFocusReason)
+                                            }
+                                            cursorShape: Qt.PointingHandCursor
+                                        }
+                                        Skin.ActionPopup {
+                                            id: popup
+                                            padding: 6
+                                            focus: true
+                                            Text {
+                                                Layout.alignment: Qt.AlignHCenter
+                                                text: qsTr("New %1").arg(itemName)
+                                                font.weight: Font.Bold
+                                                font.pixelSize: 14
+                                                color: Theme.white
+                                            }
+                                            Skin.InputField {
+                                                Layout.fillWidth: true
+                                                Layout.preferredHeight: 36
+                                                Layout.margins: 4
+                                                focus: true
+                                                id: newItemName
+                                                input.onAccepted: {
+                                                    if (input.text)
+                                                        popup.close()
+                                                }
+                                            }
+                                            RowLayout {
+                                                Layout.fillWidth: true
+                                                Skin.ActionButton {
+                                                    Layout.fillWidth: true
+                                                    label.text: qsTr("Cancel")
+                                                    onPressed: {
+                                                        popup.close()
+                                                    }
+                                                }
+                                                Skin.ActionButton {
+                                                    Layout.fillWidth: true
+                                                    opacity: newItemName.text || newItemName.input.text ? 1 : 0.4
+                                                    category: Skin.ActionButton.Action
+                                                    label.text: qsTr("Create")
+                                                    onPressed: {
+                                                        if (!newItemName.text)
+                                                            return;
+                                                        popup.close()
+                                                    }
+                                                }
                                             }
                                         }
                                     }
