@@ -14,9 +14,22 @@ Item {
     property real spacing: 9
     property real maxWidth: 0
     property bool normalizedWidth: true
+    property color inactiveColor: Theme.darkGray2
+    property alias metric: fontMetrics
+    property alias content: contentList
 
     onTooltipsChanged: {
         popup.close()
+    }
+
+    width: {
+        if (root.maxWidth > root.cellSize * root.options.length) {
+            contentSpin.width
+        } else if (root.normalizedWidth) {
+            root.cellSize * root.options.length + root.spacing
+        } else {
+            options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing*2, 0) + root.spacing
+        }
     }
 
     FontMetrics {
@@ -25,8 +38,8 @@ Item {
         font.capitalization: Font.AllUppercase
     }
 
-    implicitHeight: (contentList.visible ? contentList.height : contentSpin.height) + dropRatio.radius * 2
-    implicitWidth: (contentList.visible ? contentList.width : contentSpin.width) + dropRatio.radius * 2
+    implicitHeight: (contentList.visible ? contentList.height : contentSpin.height)
+
     readonly property real cellSize: {
         Math.max.apply(null, options.map((option) => fontMetrics.advanceWidth(option))) + root.spacing*2
     }
@@ -43,16 +56,16 @@ Item {
                 options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing*2, 0) + root.spacing
             }
         }
-        color: '#2B2B2B'
+        color: root.inactiveColor
         radius: height / 2
         RowLayout {
-            anchors.fill: parent
+            anchors.centerIn: parent
             Repeater {
                 model: options
                 Item {
                     required property int index
                     required property var modelData
-                    width: root.normalizedWidth ? root.cellSize : fontMetrics.advanceWidth(modelData) + root.spacing*2
+                    implicitWidth: root.normalizedWidth ? root.cellSize : fontMetrics.advanceWidth(modelData) + root.spacing*2
                     height: contentList.height
                     Rectangle {
                         anchors.fill: parent
@@ -173,7 +186,7 @@ Item {
             implicitWidth: 24
             implicitHeight: 24
             radius: parent.height / 2
-            color: '#2B2B2B'
+            color: root.inactiveColor
             border.width: 0
 
             Text {
@@ -200,7 +213,7 @@ Item {
         background: Rectangle {
             implicitWidth: contentSpin.textWidth + 2 * contentSpin.spacing + 48
             radius: parent.height / 2
-            color: '#2B2B2B'
+            color: root.inactiveColor
         }
 
         textFromValue: function(value) {
@@ -239,8 +252,8 @@ Item {
     }
     DropShadow {
         id: dropRatio
-        anchors.margins: dropRatio.radius
-        anchors.fill: root
+        anchors.margins: 0
+        anchors.fill: contentList.visible ? contentList : contentSpin
         horizontalOffset: 0
         verticalOffset: 0
         radius: 4.0
