@@ -3936,6 +3936,22 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
         COMPONENT applocal
       )
+
+      # install qml6-module-qtquick-dialogs
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Dialogs"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # install qml6-module-qt-labs-folderlistmodel
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/folderlistmodel"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
+        COMPONENT applocal
+      )
     endif()
 
     if(WIN32)
@@ -5053,7 +5069,13 @@ if(QT6)
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-nativestyle")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-dialogs")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
+    list(
+      APPEND
+      CPACK_DEBIAN_PACKAGE_DEPENDS
+      "qml6-module-qt-labs-folderlistmodel"
+    )
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
   endif()
