@@ -793,6 +793,30 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // than two buffers an tries to catch up, or if big jitter happens just
     // after an regular overtake.
 
+    // Debug code for printing the buffer levels
+    // if (m_inputParams.channelCount) {
+    //     int writeAvailable = m_inputFifo->writeAvailable();
+    //     // Normally 3 available
+    //     qDebug() << "input buff" << static_cast<float>(writeAvailable) /
+    //     m_inputParams.channelCount / framesPerBuffer;
+    //  }
+    //
+    // if (m_outputParams.channelCount) {
+    //     // Normally 2 available
+    // 	   int readAvailable = m_outputFifo->readAvailable();
+    //     qDebug() << "output buff" << static_cast<float>(readAvailable) /
+    //     m_outputParams.channelCount / framesPerBuffer;
+    // }
+
+    // In case of delayed engine calls we do not immediately write audible
+    // silence. Instead we sleep a bit, but return always before the time
+    // of a whole cunk expires. It turns out that a real hw underflow has a
+    // bigger impact than silence padding in Mixxx
+    // sound API has its own measure to deal with the second.
+    constexpr double kMaxSleepchunks = 0.5;
+    constexpr int kMaxSleepSteps = 2;
+    int sleepSteps = kMaxSleepSteps;
+
     if (m_inputParams.channelCount) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
@@ -828,15 +852,32 @@ int SoundDevicePortAudio::callbackProcessDrift(
                 m_inputDrift = true;
                 //qDebug() << "callbackProcessDrift write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
-        } else if (writeAvailable) {
-            // Fifo Overflow
-            m_inputFifo->write(in, writeAvailable);
-            m_pSoundManager->underflowHappened(8);
-            //qDebug() << "callbackProcessDrift write:" << (float) readAvailable / inChunkSize << "Overflow";
         } else {
-            // Buffer full
-            m_pSoundManager->underflowHappened(9);
-            //qDebug() << "callbackProcessDrift write:" << (float) readAvailable / inChunkSize << "Buffer full";
+            // This may happen if the engine is delayed.
+            const unsigned long sleepMs = static_cast<unsigned long>(
+                    framesPerBuffer / m_sampleRate.toDouble() * 1000 *
+                    kMaxSleepchunks / kMaxSleepSteps);
+            for (; sleepSteps > 0; --sleepSteps) {
+                QThread::msleep(sleepMs);
+                writeAvailable = m_inputFifo->readAvailable();
+                if (writeAvailable >= inChunkSize) {
+                    break;
+                }
+            }
+            if (writeAvailable >= inChunkSize) {
+                m_inputFifo->write(in, inChunkSize);
+            } else if (writeAvailable) {
+                // Fifo Overflow
+                m_inputFifo->write(in, writeAvailable);
+                m_pSoundManager->underflowHappened(8);
+                // qDebug() << "callbackProcessDrift write:"
+                //          << static_cast<float>(readAvailable) / inChunkSize << "Overflow";
+            } else {
+                // Buffer full
+                m_pSoundManager->underflowHappened(9);
+                // qDebug() << "callbackProcessDrift write:"
+                //          << static_cast<float>(readAvailable) / inChunkSize << "Buffer full";
+            }
         }
     }
 
@@ -875,19 +916,37 @@ int SoundDevicePortAudio::callbackProcessDrift(
                 m_outputDrift = true;
                 //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Jitter Save";
             }
-        } else if (readAvailable) {
-            m_outputFifo->read(out,
-                    readAvailable);
-            // underflow
-            SampleUtil::clear(&out[readAvailable],
-                    outChunkSize - readAvailable);
-            m_pSoundManager->underflowHappened(10);
-            //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Underflow";
         } else {
-            // underflow
-            SampleUtil::clear(out, outChunkSize);
-            m_pSoundManager->underflowHappened(11);
-            //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Buffer empty";
+            // This may happen if the engine is delayed.
+            const unsigned long sleepMs = static_cast<unsigned long>(
+                    framesPerBuffer / m_sampleRate.toDouble() * 1000 *
+                    kMaxSleepchunks / kMaxSleepSteps);
+            for (; sleepSteps > 0; --sleepSteps) {
+                QThread::msleep(sleepMs);
+                readAvailable = m_outputFifo->readAvailable();
+                if (readAvailable >= outChunkSize) {
+                    break;
+                }
+            }
+            if (readAvailable >= outChunkSize) {
+                m_outputFifo->read(out, outChunkSize);
+            } else if (readAvailable) {
+                m_outputFifo->read(out,
+                        readAvailable);
+                // underflow: read what we have left in the buffer from the
+                // engine than output silence
+                SampleUtil::clear(&out[readAvailable],
+                        outChunkSize - readAvailable);
+                m_pSoundManager->underflowHappened(10);
+                // qDebug() << "callbackProcessDrift read:"
+                //          << static_cast<float>(readAvailable) / outChunkSize << "Underflow";
+            } else {
+                // underflow: output silence
+                SampleUtil::clear(out, outChunkSize);
+                m_pSoundManager->underflowHappened(11);
+                // qDebug() << "callbackProcess read:" <<
+                //          << static_cast<float>(readAvailable) / outChunkSize << "Buffer empty";
+            }
         }
     }
     return m_callbackResult.load(std::memory_order_acquire);
