@@ -33,6 +33,7 @@ namespace {
 constexpr int kDriftReserve = 1;
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
+// Is rounded up to the next power of 2 (4 in this case)
 constexpr int kFifoSize = 2 * kDriftReserve + 1;
 
 constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
@@ -604,6 +605,8 @@ void SoundDevicePortAudio::readProcess(SINT framesPerBuffer) {
         int readAvailable = m_inputFifo->readAvailable();
         int readCount = inChunkSize;
         if (inChunkSize > readAvailable) {
+            // We read only the remaining samples from the soundcard's m_inputFifo
+            // and fill the rest with silence, see below.
             readCount = readAvailable;
             m_pSoundManager->underflowHappened(15);
             //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
@@ -758,28 +761,37 @@ int SoundDevicePortAudio::callbackProcessDrift(
     }
 
     // Since we are on the non Clock reference device and may have an independent
-    // Crystal clock, a drift correction is required
+    // crystal clock, a jitter compensation and drift correction is required.
     //
-    // There is a delay of up to one latency between composing a chunk in the Clock
-    // Reference callback and write it to the device. So we need at lest one buffer.
-    // Unfortunately this delay is somehow random, an WILL produce a delay slow
-    // shift without we can avoid it. (That's the price for using a cheap USB soundcard).
+    // Depending in the underlying API, sound hardware and CPU load, there is a
+    // jitter (delayed call) by up to two buffer sizes compared to the engine
+    // call running Clock Reference callback. It happens that the second one
+    // fires two times and then the first one fires two time as well to catch
+    // up. This function is usually called immediately after the previous
+    // buffer has been passed to the soundcard so we have the time of one
+    // buffer to return timely but still need one buffer chunk for compensation.
     //
-    // Additional we need an filled chunk and an empty chunk. These are used when on
-    // sound card overtakes the other. This always happens, if they are driven form
-    // two crystals. In a test case every 30 s @ 23 ms. After they are consumed,
-    // the drift correction takes place and fills or clears the reserve buffers.
-    // If this is finished before another overtake happens, we do not face any
+    // Additional we need an filled chunk and an empty chunk. These are used
+    // when on soundcard overtakes. This always happens sooner or later due to
+    // small crystals clock differences. In a test case every 30 s @ 23 ms.
+    // After they are consumed, the drift correction takes place and fills or
+    // clears the reserve buffers frame by frame which is inaudible. If this
+    // is finished before another overtake happens, we do not face any audible
     // dropouts or clicks.
-    // So that's why we need a Fifo of 3 chunks.
     //
-    // In addition there is a jitter effect. It happens that one callback is delayed,
-    // in this case the second one fires two times and then the first one fires two
-    // time as well to catch up. This is also fixed by the additional buffers. If this
-    // happens just after an regular overtake, we will have clicks again.
+    // So that's why we need a Fifo of 3 chunks (kFifoSize = 3)
+    // The buffer however is 4 chunks, because it is rounded up to pwer of 2
     //
-    // I the tests it turns out that it only happens in the opposite direction, so
-    // 3 chunks are just fine.
+    // Normal buffer situation when entering this function:
+    // Input buffer:
+    // |xxxx|0000|0000|0000|
+    // Output buffer:
+    // |xxxx|xxxx|0000|0000|
+    //
+    // There are exceptional cases where we see three calls in a row without
+    // engine calls in between. This happens if the API + Soundcard has more
+    // than two buffers an tries to catch up, or if big jitter happens just
+    // after an regular overtake.
 
     if (m_inputParams.channelCount) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
@@ -795,7 +807,8 @@ int SoundDevicePortAudio::callbackProcessDrift(
                 m_inputFifo->write(
                         &in[inChunkSize - m_inputParams.channelCount],
                         m_inputParams.channelCount);
-                //qDebug() << "callbackProcessDrift write:" << (float)readAvailable / inChunkSize << "Skip";
+                // qDebug() << "callbackProcessDrift write:"
+                //          << static_cast<float>(readAvailable) / inChunkSize << "Duplicate";
             } else {
                 m_inputDrift = true;
                 //qDebug() << "callbackProcessDrift write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
@@ -842,6 +855,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
                 //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Jitter Skip";
             }
         } else if (readAvailable == outChunkSize * (kDriftReserve + 1)) {
+            // Everything Ok
             m_outputFifo->read(out, outChunkSize);
             m_outputDrift = false;
             //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Normal";
@@ -854,7 +868,8 @@ int SoundDevicePortAudio::callbackProcessDrift(
                         &out[outChunkSize - m_outputParams.channelCount],
                         &out[outChunkSize - (2 * m_outputParams.channelCount)],
                         m_outputParams.channelCount);
-                //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Save";
+                // qDebug() << "callbackProcessDrift read:"
+                //          << static_cast<float>(readAvailable) / outChunkSize << "Duplicate";
             } else {
                 m_outputFifo->read(out, outChunkSize);
                 m_outputDrift = true;
