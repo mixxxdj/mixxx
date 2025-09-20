@@ -95,6 +95,10 @@ class TrackCollectionManager: public QObject,
     // Same as startLibraryScan() but don't emit the scan summary.
     void startLibraryAutoScan();
 
+    LibraryScanner* scanner() const {
+        return m_pScanner.get();
+    }
+
   signals:
     void libraryScanStarted();
     void libraryScanFinished();

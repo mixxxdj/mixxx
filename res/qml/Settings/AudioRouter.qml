@@ -433,13 +433,14 @@ Rectangle {
                 }
                 RatioChoice {
                     id: modeChoice
+                    maxWidth: mainCanvas.width * 0.35
                     options: [
                               "simple",
                               !root.hiddenConnections ? "advanced" : "advanced (!)",
                               "legacy"
                     ]
                     onOptionsChanged: {
-                        if (modeChoice.selected.startsWith("advanced")) {
+                        if (modeChoice.selected?.startsWith("advanced")) {
                             modeChoice.selected = options[1]
                         }
                     }

@@ -2,21 +2,21 @@ import QtQuick 2.12
 pragma Singleton
 
 QtObject {
-    property color accent: "#2D4EA1"
     property color accentColor: "#3a60be"
-    property color backgroundColor: "#2E2E2E"
+    property color backgroundColor: "#1e1e20"
     property color blue: "#01dcfc"
     property color bpmSliderBarColor: green
     property color buttonNormalColor: midGray
     property color crossfaderBarColor: red
     property color crossfaderOrientationColor: lightGray
     property color darkGray: "#0f0f0f"
-    property color darkGray2: "#242424"
-    property color darkGray3: "#202020"
+    property color darkGray2: "#2e2e2e"
+    property color darkGray3: "#3F3F3F"
+    property color darkGray4: "#202020"
     property color deckActiveColor: green
     property color deckBackgroundColor: darkGray
     property color deckLineColor: darkGray2
-    property color deckTextColor: white
+    property color deckTextColor: lightGray2
     property color effectColor: yellow
     property color effectUnitColor: red
     property color embeddedBackgroundColor: "#a0000000"
@@ -27,8 +27,11 @@ QtObject {
     property color gainKnobColor: blue
     property color green: "#85c85b"
     property color knobBackgroundColor: "#262626"
-    property color lightGray2: "#b0b0b0"
     property color lightGray: "#747474"
+    property color lightGray2: "#b0b0b0"
+    property color libraryPanelSplitterBackground: "#1e1e1e"
+    property color libraryPanelSplitterHandleActive: "#7a7a7a"
+    property color libraryPanelSplitterHandle: "#5f5f5f"
     property color midGray: "#696969"
     property color panelSplitterBackground: backgroundColor
     property color panelSplitterHandleActive: lightGray2
@@ -37,7 +40,7 @@ QtObject {
     property color red: "#ea2a4e"
     property color samplerColor: blue
     property color sunkenBackgroundColor: "#0C0C0C"
-    property color textColor: white
+    property color textColor: lightGray2
     property color toolbarActiveColor: white
     property color toolbarBackgroundColor: darkGray2
     property color volumeSliderBarColor: blue
