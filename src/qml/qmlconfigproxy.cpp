@@ -8,6 +8,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 #define PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT) \
     TYPE QmlConfigProxy::NAME() const {                       \
@@ -41,17 +42,30 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
 const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlGroup = QStringLiteral("[Control]");
+const QString kWaveformGroup = QStringLiteral("[Waveform]");
 const QString kLibraryGroup = QStringLiteral("[Library]");
 const QString kBpmGroup = QStringLiteral("[BPM]");
 
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 const QString k3DHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 
-const QString kWaveformGroup = QStringLiteral("[Waveform]");
-const QString kWaveformZoomSynchronizationKey = QStringLiteral("ZoomSynchronization");
-const QString kWaveformDefaultZoomKey = QStringLiteral("DefaultZoom");
-const bool kWaveformZoomSynchronizationDefault = true;
-const double kWaveformDefaultZoomDefault = 3.0;
+// Waveform group
+const QString kZoomSynchronizationKey = QStringLiteral("ZoomSynchronization");
+const QString kOverviewNormalizedKey = QStringLiteral("OverviewNormalized");
+const QString kDefaultZoomKey = QStringLiteral("DefaultZoom");
+const QString kPlayMarkerPositionKey = QStringLiteral("PlayMarkerPosition");
+const QString kUntilMarkShowBeatsKey = QStringLiteral("UntilMarkShowBeats");
+const QString kUntilMarkShowTimeKey = QStringLiteral("UntilMarkShowTime");
+const QString kUntilMarkAlignKey = QStringLiteral("UntilMarkAlign");
+const QString kUntilMarkTextPointSizeKey = QStringLiteral("UntilMarkTextPointSize");
+const QString kVisualGainAllKey = QStringLiteral("VisualGain_0");
+const QString kVisualGainLowKey = QStringLiteral("VisualGain_1");
+const QString kVisualGainMediumKey = QStringLiteral("VisualGain_2");
+const QString kVisualGainHighKey = QStringLiteral("VisualGain_3");
+const QString kBeatGridAlphaKey = QStringLiteral("beatGridAlpha");
+const QString kEndOfTrackWarningTimeKey = QStringLiteral("EndOfTrackWarningTime");
+const QString kWaveformTypeKey = QStringLiteral("WaveformType");
+const QString kWaveformOptionsKey = QStringLiteral("waveform_options");
 
 // Library group
 const QString kTooltipsKey = QStringLiteral("Tooltips");
@@ -192,17 +206,36 @@ void QmlConfigProxy::set_useAcceleration(bool value) {
     emit useAccelerationChanged();
 }
 
-bool QmlConfigProxy::waveformZoomSynchronization() {
-    return m_pConfig->getValue(
-            ConfigKey(kWaveformGroup, kWaveformZoomSynchronizationKey),
-            kWaveformZoomSynchronizationDefault);
-}
-double QmlConfigProxy::waveformDefaultZoom() {
-    return m_pConfig->getValue(
-            ConfigKey(kWaveformGroup, kWaveformDefaultZoomKey),
-            kWaveformDefaultZoomDefault);
+PROPERTY_IMPL(kWaveformGroup, kZoomSynchronizationKey, bool, waveformZoomSynchronization, true);
+PROPERTY_IMPL(kWaveformGroup, kOverviewNormalizedKey, bool, waveformOverviewNormalized, true);
+PROPERTY_IMPL(kWaveformGroup, kDefaultZoomKey, double, waveformDefaultZoom, 3);
+PROPERTY_IMPL(kWaveformGroup, kPlayMarkerPositionKey, double, waveformPlayMarkerPosition, 0.5);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkShowBeatsKey, bool, waveformUntilMarkShowBeats, false);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkShowTimeKey, bool, waveformUntilMarkShowTime, false);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkAlignKey, double, waveformUntilMarkAlign, 1);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkTextPointSizeKey, int, waveformUntilMarkTextPointSize, 24);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainAllKey, double, waveformVisualGainAll, 1);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainLowKey, double, waveformVisualGainLow, 1);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainMediumKey, double, waveformVisualGainMedium, 1);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainHighKey, double, waveformVisualGainHigh, 1);
+PROPERTY_IMPL(kWaveformGroup, kEndOfTrackWarningTimeKey, int, waveformEndOfTrackWarningTime, 30);
+PROPERTY_IMPL(kWaveformGroup,
+        kWaveformTypeKey,
+        QmlWaveformDisplay::Type,
+        waveformType,
+        QmlWaveformDisplay::Type::RGB);
+PROPERTY_IMPL_GETTER(kWaveformGroup,
+        kWaveformOptionsKey,
+        QmlWaveformDisplay::Options,
+        waveformOptions,
+        QmlWaveformDisplay::Option::None);
+
+void QmlConfigProxy ::set_waveformOptions(QmlWaveformDisplay ::Options value) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup, kWaveformOptionsKey), static_cast<int>(value));
+    waveformOptionsChanged();
 }
 
+PROPERTY_IMPL(kWaveformGroup, kBeatGridAlphaKey, double, waveformBeatGridAlpha, 90);
 PROPERTY_IMPL(kLibraryGroup,
         kTooltipsKey,
         mixxx::preferences::Tooltips,

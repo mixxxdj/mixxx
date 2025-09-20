@@ -11,6 +11,7 @@
 #include "preferences/constants.h"
 #include "preferences/interface.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlwaveformdisplay.h"
 
 #define PROPERTY_DECL(TYPE, NAME)                                          \
   public:                                                                  \
@@ -63,8 +64,31 @@ class QmlConfigProxy : public QObject {
     PROPERTY_DECL(bool, useAcceleration);
 
     // Waveform settings
-    Q_INVOKABLE bool waveformZoomSynchronization();
-    Q_INVOKABLE double waveformDefaultZoom();
+    PROPERTY_DECL(bool, waveformZoomSynchronization);
+    PROPERTY_DECL(bool, waveformOverviewNormalized);
+    // 1..10
+    PROPERTY_DECL(double, waveformDefaultZoom);
+    // [0..1]
+    PROPERTY_DECL(double, waveformPlayMarkerPosition);
+    PROPERTY_DECL(bool, waveformUntilMarkShowBeats);
+    PROPERTY_DECL(bool, waveformUntilMarkShowTime);
+    // {1,2,3}, Qt::AlignTop, Qt::AlignVCenter, Qt::AlignBottom
+    PROPERTY_DECL(double, waveformUntilMarkAlign);
+    PROPERTY_DECL(int, waveformUntilMarkTextPointSize);
+    // [0..1..]
+    PROPERTY_DECL(double, waveformVisualGainAll);
+    // [0..1..]
+    PROPERTY_DECL(double, waveformVisualGainLow);
+    // [0..1..]
+    PROPERTY_DECL(double, waveformVisualGainMedium);
+    // [0..1..]
+    PROPERTY_DECL(double, waveformVisualGainHigh);
+    // Seconds
+    PROPERTY_DECL(int, waveformEndOfTrackWarningTime);
+    PROPERTY_DECL(QmlWaveformDisplay::Type, waveformType);
+    PROPERTY_DECL(QmlWaveformDisplay::Options, waveformOptions);
+    // Percent, 0..100
+    PROPERTY_DECL(double, waveformBeatGridAlpha);
 
     // Library group
     PROPERTY_DECL(mixxx::preferences::Tooltips, libraryTooltips);

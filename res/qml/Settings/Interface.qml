@@ -21,6 +21,10 @@ Category {
         root.load()
     }
 
+    onActivated: {
+        waveformDropdown.track = waveformDropdown.player.isLoaded ? waveformDropdown.player.currentTrack : Mixxx.Library.model.getTrack(Mixxx.Library.model.length * Math.random())
+    }
+
     Mixxx.ControlProxy {
         id: numDecks
         group: "[App]"
@@ -693,6 +697,880 @@ Category {
 
             onActivated: {
                 root.selectedIndex = 1;
+            }
+
+            readonly property real playMarkerPosition: playMarkerPositionInput.value / 100
+            readonly property real defaultZoom: defaultZoomInput.value / 10
+            readonly property real beatgridOpacity: beatGridAlphaInput.value / 100
+            property alias untilMarkShowTime: untilMarkShowTimeInput.enabled
+            property alias untilMarkShowBeats: untilMarkShowBeatsInput.enabled
+            readonly property var playMarkerAlign: untilMarkAlignInput.selected == "center" ? Qt.AlignHCenter : untilMarkAlignInput.selected == "top" ? Qt.AlignTop : Qt.AlignBottom
+            readonly property double playMarkerTextSize: untilMarkTextPointSizeInput.value
+
+            readonly property double globalGain: visualGainAllInput.value / 100
+            readonly property double lowGain: visualGainLowInput.value / 100
+            readonly property double middleGain: visualGainMediumInput.value / 100
+            readonly property double highGain: visualGainHighInput.value / 100
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.topMargin: 20
+                RowLayout {
+                    Layout.leftMargin: 14
+                    Layout.rightMargin: 14
+                    ColumnLayout {
+                        Layout.preferredWidth: root.width * 0.5
+                        spacing: 15
+                        GridLayout {
+                            columns: 2
+                            rowSpacing: 10
+                            Mixxx.SettingParameter {
+                                Layout.fillWidth: true
+                                label: "End of track warning"
+                                height: 14
+                                Text {
+                                    text: parent.label
+                                    color: Theme.white
+                                    font.pixelSize: 14
+                                }
+                            }
+                            SettingComponents.Slider {
+                                onValueChanged: waveformTab.dirty = true
+                                id: endOfTrackWarningInput
+                                Layout.preferredWidth: waveformTab.width * 0.35
+                                markers: [0, 10, 30, 60, 120]
+                                suffix: "sec"
+                                value: 30
+                                max: 120
+                            }
+                            Mixxx.SettingParameter {
+                                Layout.fillWidth: true
+                                label: "Beat grid opacity"
+                                height: 14
+                                Text {
+                                    text: parent.label
+                                    color: Theme.white
+                                    font.pixelSize: 14
+                                }
+                            }
+                            SettingComponents.Slider {
+                                onValueChanged: waveformTab.dirty = true
+                                id: beatGridAlphaInput
+                                Layout.preferredWidth: waveformTab.width * 0.35
+                                markers: [0, 50, 100]
+                                suffix: "%"
+                                value: 50
+                            }
+                            Mixxx.SettingParameter {
+                                Layout.fillWidth: true
+                                label: "Default zoom level"
+                                height: 14
+                                Text {
+                                    text: parent.label
+                                    color: Theme.white
+                                    font.pixelSize: 14
+                                }
+                            }
+                            SettingComponents.Slider {
+                                onValueChanged: waveformTab.dirty = true
+                                id: defaultZoomInput
+                                Layout.preferredWidth: waveformTab.width * 0.35
+                                markers: [0, 50, 100]
+                                suffix: "%"
+                                value: 60
+                            }
+                        }
+                        ColumnLayout {
+                            RowLayout {
+                                Mixxx.SettingParameter {
+                                    Layout.fillWidth: true
+                                    label: "Synchronise zoom level across waveform"
+                                    height: 14
+                                    Text {
+                                        text: parent.label
+                                        color: Theme.white
+                                        font.pixelSize: 14
+                                    }
+                                }
+                                RatioChoice {
+                                    onSelectedChanged: waveformTab.dirty = true
+                                    id: synchronizeAllZoomLevelInput
+                                    options: [
+                                              "on",
+                                              "off"
+                                    ]
+                                }
+                            }
+                            RowLayout {
+                                Mixxx.SettingParameter {
+                                    Layout.fillWidth: true
+                                    label: "Normalise waveform overview"
+                                    height: 14
+                                    Text {
+                                        text: parent.label
+                                        color: Theme.white
+                                        font.pixelSize: 14
+                                    }
+                                }
+                                RatioChoice {
+                                    onSelectedChanged: waveformTab.dirty = true
+                                    id: normaliseWaveformOverviewLevelInput
+                                    options: [
+                                              "on",
+                                              "off"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                    ColumnLayout {
+                        Layout.preferredWidth: root.width * 0.5
+                        ComboBox {
+                            onCurrentIndexChanged: waveformTab.dirty = true
+                            id: waveformDropdown
+
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 102
+
+                            readonly property list<var> indices: [
+                                Mixxx.WaveformDisplay.Filtered,
+                                Mixxx.WaveformDisplay.HSV,
+                                Mixxx.WaveformDisplay.RGB,
+                                Mixxx.WaveformDisplay.Simple,
+                                Mixxx.WaveformDisplay.Stacked,
+                            ]
+                            readonly property var currentType: indices[currentIndex]
+                            property int options: Mixxx.WaveformDisplay.Options.None
+
+                            model: ["Filtered", "HSV", "RGB", "Simple", "Stacked"]
+
+                            readonly property var currentSignalRender: (currentIndex == 0 ? filteredRenderer :
+                                currentIndex == 1 ? hsvRenderer :
+                                currentIndex == 2 ? rgbRenderer :
+                                currentIndex == 3 ? simpleRenderer :
+                                    stackedRenderer)
+
+                            property var track: null
+                            property double playbackProgress: 0.2
+
+                            property var backgroundColor: "#0F0F0E"
+                            property var axesColor: '#a1a1a1a1'
+                            property var lowColor: '#2154D7'
+                            property var midColor: '#97632D'
+                            property var highColor: '#D5C2A2'
+
+                            property var filteredRenderer: Mixxx.WaveformRendererFiltered {
+                                axesColor: waveformDropdown.axesColor
+                                lowColor: waveformDropdown.lowColor
+                                midColor: waveformDropdown.midColor
+                                highColor: waveformDropdown.highColor
+
+                                gainAll: waveformTab.globalGain
+                                gainLow: waveformTab.lowGain
+                                gainMid: waveformTab.middleGain
+                                gainHigh: waveformTab.highGain
+
+                                ignoreStem: true
+                            }
+                            property var hsvRenderer: Mixxx.WaveformRendererHSV {
+                                axesColor: waveformDropdown.axesColor
+                                color: waveformDropdown.lowColor
+
+                                gainAll: waveformTab.globalGain
+                                gainLow: waveformTab.lowGain
+                                gainMid: waveformTab.middleGain
+                                gainHigh: waveformTab.highGain
+
+                                ignoreStem: true
+                            }
+                            property var rgbRenderer: Mixxx.WaveformRendererRGB {
+                                axesColor: waveformDropdown.axesColor
+                                lowColor: waveformDropdown.lowColor
+                                midColor: waveformDropdown.midColor
+                                highColor: waveformDropdown.highColor
+
+                                gainAll: waveformTab.globalGain
+                                gainLow: waveformTab.lowGain
+                                gainMid: waveformTab.middleGain
+                                gainHigh: waveformTab.highGain
+
+                                ignoreStem: true
+                            }
+                            property var simpleRenderer: Mixxx.WaveformRendererSimple {
+                                axesColor: waveformDropdown.axesColor
+                                color: waveformDropdown.lowColor
+                                gain: waveformTab.globalGain
+                                ignoreStem: true
+                            }
+                            property var stackedRenderer: Mixxx.WaveformRendererFiltered {
+                                stacked: true
+                                axesColor: waveformDropdown.axesColor
+                                lowColor: waveformDropdown.lowColor
+                                midColor: waveformDropdown.midColor
+                                highColor: waveformDropdown.highColor
+
+                                gainAll: waveformTab.globalGain
+                                gainLow: waveformTab.lowGain
+                                gainMid: waveformTab.middleGain
+                                gainHigh: waveformTab.highGain
+
+                                ignoreStem: true
+                            }
+                            property var beatsRenderer: Mixxx.WaveformRendererBeat {
+                                color: Qt.alpha('#a1a1a1', waveformTab.beatgridOpacity)
+                            }
+
+                            readonly property var player: Mixxx.PlayerManager.getPlayer("[Channel1]")
+
+                            Timer {
+                                interval: 25; running: !waveformDropdown.player?.isLoaded && waveformDropdown.track !== null; repeat : true
+                                onTriggered: {
+                                    waveformDropdown.playbackProgress += interval / 1000 / waveformDropdown.track.duration
+                                    if (waveformDropdown.playbackProgress > 0.8) {
+                                        waveformDropdown.playbackProgress = 0.2
+                                    }
+                                }
+                            }
+
+                            delegate: ItemDelegate {
+                                id: control
+
+                                required property int index
+                                width: parent.width
+                                height: 99
+                                highlighted: waveformDropdown.highlightedIndex === this.index
+
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    Item {
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+
+                                        Mixxx.WaveformDisplay {
+                                            id: waveform
+                                            visible: false
+                                            anchors.fill: parent
+                                            zoom: waveformTab.defaultZoom
+                                            backgroundColor: "#0F0F0E"
+
+                                            player: waveformDropdown.player.isLoaded ? waveformDropdown.player : null
+                                            track: waveformDropdown.player.isLoaded ? null : waveformDropdown.track
+                                            position: waveformDropdown.playbackProgress
+
+                                            renderers: [
+                                                        (index == 0 ? waveformDropdown.filteredRenderer :
+                                                        index == 1 ? waveformDropdown.hsvRenderer :
+                                                        index == 2 ? waveformDropdown.rgbRenderer :
+                                                        index == 3 ? waveformDropdown.simpleRenderer :
+                                                            waveformDropdown.stackedRenderer),
+                                                        waveformDropdown.beatsRenderer
+                                            ]
+                                            options: (waveformOptionHighDetailsInput.enabled ? Mixxx.WaveformDisplay.Options.HighDetail : 0) + (waveformOptionStereoInput.enabled ? Mixxx.WaveformDisplay.Options.SplitStereoSignal : 0)
+                                        }
+                                        InnerShadow {
+                                            id: effect1
+                                            anchors.fill: parent
+                                            source: waveform
+                                            spread: 0.2
+                                            radius: 24
+                                            samples: 24
+                                            horizontalOffset: 4
+                                            verticalOffset: 4
+                                            color: control.highlighted ? "#575757" : "#000000"
+                                        }
+                                        InnerShadow {
+                                            anchors.fill: parent
+                                            source: effect1
+                                            spread: 0.2
+                                            radius: 24
+                                            samples: 24
+                                            horizontalOffset: -4
+                                            verticalOffset: -4
+                                            color: control.highlighted ? "#575757" : "#000000"
+                                        }
+                                    }
+                                    Text {
+                                        Layout.bottomMargin: 5
+                                        Layout.leftMargin: 5
+                                        text: waveformDropdown.model[index]
+                                        color: "#FFFFFF"
+                                    }
+                                }
+
+                                background: Rectangle {
+                                    radius: 5
+                                    color: control.pressed || control.highlighted ? "#575757" : "#000000"
+                                }
+                            }
+
+                            onActivated: (selectedIndex) => {
+                                currentIndex = selectedIndex
+                            }
+
+                            contentItem: Rectangle {
+                                color: '#00000000'
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    Item {
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                        property var markRenderer: Mixxx.WaveformRendererMark {
+                                            playMarkerColor: '#D9D9D9'
+                                            playMarkerBackground: '#D9D9D9'
+                                            playMarkerPosition: waveformTab.playMarkerPosition
+                                            defaultMark: Mixxx.WaveformMark {
+                                                align: "bottom|right"
+                                                color: "#00d9ff"
+                                                textColor: "#1a1a1a"
+                                                text: " %1 "
+                                            }
+
+                                            untilMark.showTime: waveformTab.untilMarkShowTime
+                                            untilMark.showBeats: waveformTab.untilMarkShowBeats
+                                            untilMark.align: waveformTab.playMarkerAlign
+                                            untilMark.textSize: waveformTab.playMarkerTextSize
+                                            untilMark.defaultNextMarkPosition: waveformDropdown.player.isLoaded || waveformDropdown.track == null ? -1 : waveformDropdown.track.duration * waveformDropdown.track.sampleRate * 2
+                                        }
+                                        Mixxx.WaveformDisplay {
+                                            id: waveform
+                                            visible: false
+                                            anchors.fill: parent
+                                            zoom: waveformTab.defaultZoom
+                                            backgroundColor: "#0F0F0E"
+
+                                            player: waveformDropdown.player.isLoaded ? waveformDropdown.player : null
+                                            track: waveformDropdown.player.isLoaded ? null : waveformDropdown.track
+                                            position: waveformDropdown.playbackProgress
+
+                                            options: (waveformOptionHighDetailsInput.enabled ? Mixxx.WaveformDisplay.Options.HighDetail : 0) + (waveformOptionStereoInput.enabled ? Mixxx.WaveformDisplay.Options.SplitStereoSignal : 0)
+
+                                            renderers: [
+                                                        waveformDropdown.currentSignalRender,
+                                                        waveformDropdown.beatsRenderer,
+                                                        parent.markRenderer
+                                            ]
+                                        }
+                                        InnerShadow {
+                                            id: effect1
+                                            anchors.fill: parent
+                                            source: waveform
+                                            spread: 0.2
+                                            radius: 24
+                                            samples: 24
+                                            horizontalOffset: 2
+                                            verticalOffset: 4
+                                            color: "#000000"
+                                        }
+                                        InnerShadow {
+                                            anchors.fill: parent
+                                            source: effect1
+                                            spread: 0.2
+                                            radius: 24
+                                            samples: 24
+                                            horizontalOffset: -2
+                                            verticalOffset: -4
+                                            color: "#000000"
+                                        }
+                                    }
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        Text {
+                                            Layout.fillWidth: true
+                                            Layout.margins: 5
+                                            text: waveformDropdown.currentText
+                                            color: "#FFFFFF"
+                                            font.weight: Font.DemiBold
+                                        }
+                                        Text {
+                                            visible: waveformDropdown.currentSignalRender.supportedOptions & Mixxx.WaveformDisplay.Options.SplitStereoSignal
+                                            Layout.margins: 5
+                                            text: "Stereo split"
+                                            font.pixelSize: 11
+                                            color: "#FFFFFF"
+                                        }
+                                        RatioChoice {
+                                            visible: waveformDropdown.currentSignalRender.supportedOptions & Mixxx.WaveformDisplay.Options.SplitStereoSignal
+                                            onSelectedChanged: waveformTab.dirty = true
+                                            id: waveformOptionStereoInput
+                                            inactiveColor: Theme.darkGray4
+                                            metric.font.pixelSize: 11
+                                            content.height: 18
+
+                                            readonly property bool enabled: selected == "on"
+                                            options: [
+                                                      "on",
+                                                      "off"
+                                            ]
+                                        }
+                                        Text {
+                                            visible: waveformDropdown.currentSignalRender.supportedOptions & Mixxx.WaveformDisplay.Options.HighDetail
+                                            Layout.leftMargin: 10
+                                            Layout.margins: 5
+                                            text: "High details"
+                                            font.pixelSize: 11
+                                            color: "#FFFFFF"
+                                        }
+                                        RatioChoice {
+                                            visible: waveformDropdown.currentSignalRender.supportedOptions & Mixxx.WaveformDisplay.Options.HighDetail
+                                            onSelectedChanged: waveformTab.dirty = true
+                                            id: waveformOptionHighDetailsInput
+                                            inactiveColor: Theme.darkGray4
+                                            metric.font.pixelSize: 11
+                                            content.height: 18
+
+                                            readonly property bool enabled: selected == "on"
+
+                                            options: [
+                                                      "on",
+                                                      "off"
+                                            ]
+                                        }
+                                        Text {
+                                            Layout.leftMargin: 50
+                                            Layout.margins: 5
+                                            text: "Color"
+                                            font.pixelSize: 11
+                                            color: "#FFFFFF"
+                                        }
+                                        Repeater {
+                                            model: waveformDropdown.currentIndex != 3 ? [waveformDropdown.lowColor, waveformDropdown.midColor, waveformDropdown.highColor] : [waveformDropdown.lowColor]
+                                            Rectangle {
+                                                required property color modelData
+                                                required property int index
+
+                                                Layout.margins: 1
+                                                Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                                                width: 15
+                                                height: 15
+                                                radius: 2
+                                                color: modelData
+
+                                                ColorDialog {
+                                                    id: colorDialog
+                                                    title: "Please choose a color"
+                                                    options: ColorDialog.ShowAlphaChannel
+                                                    onAccepted: {
+                                                        if (index == 0) {
+                                                            waveformDropdown.lowColor = Qt.color(selectedColor);
+                                                        } else if (index == 1) {
+                                                            waveformDropdown.midColor = Qt.color(selectedColor);
+                                                        } else {
+                                                            waveformDropdown.highColor = Qt.color(selectedColor);
+                                                        }
+                                                    }
+                                                    selectedColor: modelData
+                                                }
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onPressed: {
+                                                        console.log("PICKING",colorDialog, colorDialog.visible)
+                                                        colorDialog.open()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                // leftPadding: 5
+                                // rightPadding: waveformDropdown.indicator.width + waveformDropdown.spacing
+                            }
+
+                            background: Rectangle {
+                                radius: 5
+                                // border.width: control.highlighted ?  1 : 0
+                                // border.color: Theme.deckLineColor
+                                color: "#000000"
+                            }
+
+                            // Text {
+                            //     leftPadding: 5
+                            //     rightPadding: waveformDropdown.indicator.width + waveformDropdown.spacing
+                            //     text: waveformDropdown.displayText
+                            //     font: waveformDropdown.font
+                            //     color: Theme.deckTextColor
+                            //     verticalAlignment: Text.AlignVCenter
+                            //     elide: waveformDropdown.clip ? Text.ElideNone : Text.ElideRight
+                            //     clip: waveformDropdown.clip
+                            // }
+
+                            popup: Popup {
+                                id: popup
+                                x: waveformDropdown.x + 27
+                                y: waveformDropdown.height + 13
+                                width: waveformDropdown.width - 27
+                                implicitHeight: contentItem.implicitHeight
+
+                                contentItem: ListView {
+                                    clip: true
+                                    anchors.fill: parent
+                                    implicitHeight: contentHeight
+                                    model: waveformDropdown.popup.visible ? waveformDropdown.delegateModel : null
+                                    currentIndex: waveformDropdown.highlightedIndex
+
+                                    ScrollIndicator.vertical: ScrollIndicator {
+                                    }
+                                }
+
+                                background: Rectangle {
+                                    border.width: 0
+                                    radius: 8
+                                    color: '#000000'
+                                }
+                            }
+                        }
+                        SettingComponents.Slider {
+                            onValueChanged: waveformTab.dirty = true
+                            id: playMarkerPositionInput
+                            Layout.fillWidth: true
+                            Layout.topMargin: 15
+                            Layout.preferredHeight: 23
+
+                            markers: [0, 50, 100]
+                            suffix: "%"
+                            value: 50
+                        }
+                        Text {
+                            Layout.topMargin: 10
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                            text: "Play marker position"
+                            color: "#D9D9D9"
+                            font.pixelSize: 14
+                        }
+                    }
+                }
+
+                Mixxx.SettingGroup {
+                    Layout.topMargin: 40
+                    Layout.bottomMargin: 6
+                    label: "Play marker hints"
+                    implicitHeight: playMarkerColumn.height
+                    Layout.fillWidth: true
+                    Column {
+                        id: playMarkerColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        Text {
+                            text: "Play marker hints"
+                            color: Theme.white
+                            font.pixelSize: 14
+                            font.weight: Font.DemiBold
+                        }
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 10
+                        }
+                        Rectangle {
+                            color: Theme.darkGray2
+                            implicitHeight: playMarkerHintsPane.implicitHeight + 20
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            GridLayout {
+                                id: playMarkerHintsPane
+                                anchors.fill: parent
+                                anchors.topMargin: 10
+                                anchors.bottomMargin: 10
+                                anchors.leftMargin: 17
+                                anchors.rightMargin: 17
+                                rowSpacing: 8
+                                columnSpacing: 20
+                                columns: 2
+
+                                RowLayout {
+                                    Layout.preferredWidth: (playMarkerHintsPane.width - 34) * 0.5
+                                    Mixxx.SettingParameter {
+                                        label: "Beats until next marker"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignLeft
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    RatioChoice {
+                                        onSelectedChanged: waveformTab.dirty = true
+                                        id: untilMarkShowBeatsInput
+                                        inactiveColor: Theme.darkGray4
+                                        readonly property bool enabled: selected == "on"
+                                        options: [
+                                                  "on",
+                                                  "off"
+                                        ]
+                                        function load(value) {
+                                            untilMarkShowBeatsInput.selected = value ? "on" : "off"
+                                        }
+                                    }
+                                }
+
+                                RowLayout {
+                                    Layout.preferredWidth: (playMarkerHintsPane.width - 34) * 0.5
+                                    Mixxx.SettingParameter {
+                                        label: "Placement"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignLeft
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    RatioChoice {
+                                        onSelectedChanged: waveformTab.dirty = true
+                                        id: untilMarkAlignInput
+                                        options: [
+                                                  "top",
+                                                  "center",
+                                                  "bottom"
+                                        ]
+                                        selected: "center"
+
+                                        function load(value) {
+                                            switch (value) {
+                                                case 1:
+                                                    untilMarkAlignInput.selected = "top"
+                                                    break;
+                                                case 3:
+                                                    untilMarkAlignInput.selected = "bottom"
+                                                    break;
+                                                default:
+                                                    console.warn(`unrecognised value '${value}' for Waveform,UntilMarkAlign. Defaulting to center (2).`)
+                                                case 2:
+                                                        untilMarkAlignInput.selected = "center"
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                RowLayout {
+                                    Layout.preferredWidth: (playMarkerHintsPane.width - 34) * 0.5
+                                    Mixxx.SettingParameter {
+                                        label: "Time until next marker"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignLeft
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    RatioChoice {
+                                        onSelectedChanged: waveformTab.dirty = true
+                                        id: untilMarkShowTimeInput
+                                        inactiveColor: Theme.darkGray4
+                                        readonly property bool enabled: selected == "on"
+                                        options: [
+                                                  "on",
+                                                  "off"
+                                        ]
+                                        function load(value) {
+                                            untilMarkShowTimeInput.selected = value ? "on" : "off"
+                                        }
+                                    }
+                                }
+                                RowLayout {
+                                    Layout.preferredWidth: (playMarkerHintsPane.width - 34) * 0.5
+                                    Mixxx.SettingParameter {
+                                        label: "Font size"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignLeft
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    Skin.ComboBox {
+                                        readonly property list<int> fontSizes: [
+                                            10,
+                                            12,
+                                            15,
+                                            18,
+                                            24,
+                                            32,
+                                            48
+                                        ]
+                                        readonly property int value: fontSizes[currentIndex] ?? 10
+                                        onCurrentIndexChanged: waveformTab.dirty = true
+                                        id: untilMarkTextPointSizeInput
+                                        model: fontSizes.map(i => `${i} pt`)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Mixxx.SettingGroup {
+                    Layout.topMargin: 40
+                    Layout.bottomMargin: 6
+                    label: "Visual gain"
+                    implicitHeight: visualGainColumn.height
+                    Layout.fillWidth: true
+                    Column {
+                        id: visualGainColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        RowLayout {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Visual gain"
+                                color: Theme.white
+                                font.pixelSize: 14
+                                font.weight: Font.DemiBold
+                            }
+                            Text {
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+
+                                text: "Global"
+                                color: Theme.white
+                                font.pixelSize: 14
+                                font.weight: Font.Medium
+                            }
+                            SettingComponents.Slider {
+                                onValueChanged: waveformTab.dirty = true
+                                id: visualGainAllInput
+                                width: 400
+                                value: 100
+                                markers: [0, 50, 100, 150]
+                                suffix: "%"
+                                max: 200
+                            }
+                        }
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 10
+                        }
+                        Rectangle {
+                            color: Theme.darkGray2
+                            implicitHeight: visualGainPane.implicitHeight + 56
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            RowLayout {
+                                id: visualGainPane
+                                anchors.fill: parent
+                                anchors.topMargin: 28
+                                anchors.bottomMargin: 28
+                                anchors.leftMargin: 17
+                                anchors.rightMargin: 17
+                                spacing: 50
+                                ColumnLayout {
+                                    Layout.preferredWidth: visualGainPane.width * 0.33
+                                    Mixxx.SettingParameter {
+                                        label: "Low"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignVCenter
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    SettingComponents.Slider {
+                                        onValueChanged: waveformTab.dirty = true
+                                        Layout.fillWidth: true
+                                        id: visualGainLowInput
+                                        value: 100
+                                        markers: [0, 50, 100, 150]
+                                        suffix: "%"
+                                        max: 200
+                                    }
+                                }
+                                ColumnLayout {
+                                    Layout.preferredWidth: visualGainPane.width * 0.33
+                                    Mixxx.SettingParameter {
+                                        label: "Middle"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    SettingComponents.Slider {
+                                        onValueChanged: waveformTab.dirty = true
+                                        Layout.fillWidth: true
+                                        id: visualGainMediumInput
+                                        value: 100
+                                        markers: [0, 50, 100, 150]
+                                        suffix: "%"
+                                        max: 200
+                                    }
+                                }
+                                ColumnLayout {
+                                    Layout.preferredWidth: visualGainPane.width * 0.33
+                                    Mixxx.SettingParameter {
+                                        label: "High"
+                                        Layout.fillWidth: true
+                                        Text {
+                                            anchors.fill: parent
+
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            text: parent.label
+                                            color: Theme.white
+                                            font.pixelSize: 14
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                    SettingComponents.Slider {
+                                        onValueChanged: waveformTab.dirty = true
+                                        Layout.fillWidth: true
+                                        id: visualGainHighInput
+                                        value: 100
+                                        markers: [0, 50, 100, 150]
+                                        suffix: "%"
+                                        max: 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
             }
         }
         Mixxx.SettingGroup {
@@ -1526,6 +2404,24 @@ Category {
         themeColorTab.dirty = false
     }
     function loadWaveform() {
+        endOfTrackWarningInput.value = Mixxx.Config.waveformEndOfTrackWarningTime
+        beatGridAlphaInput.value = Mixxx.Config.waveformBeatGridAlpha
+        defaultZoomInput.value = Mixxx.Config.waveformDefaultZoom * 10
+        synchronizeAllZoomLevelInput.selected = Mixxx.Config.waveformZoomSynchronization ? "on" : "off"
+        normaliseWaveformOverviewLevelInput.selected = Mixxx.Config.waveformOverviewNormalized ? "on" : "off"
+        playMarkerPositionInput.value = Mixxx.Config.waveformPlayMarkerPosition * 100
+        untilMarkShowTimeInput.load(Mixxx.Config.waveformUntilMarkShowTime)
+        untilMarkShowBeatsInput.load( Mixxx.Config.waveformUntilMarkShowBeats)
+        untilMarkAlignInput.load(Mixxx.Config.waveformUntilMarkAlign)
+        untilMarkTextPointSizeInput.currentIndex = untilMarkTextPointSizeInput.fontSizes.includes(Mixxx.Config.waveformUntilMarkTextPointSize) ? untilMarkTextPointSizeInput.fontSizes.indexOf(Mixxx.Config.waveformUntilMarkTextPointSize) : 0
+        visualGainAllInput.value = Mixxx.Config.waveformVisualGainAll * 100
+        visualGainLowInput.value = Mixxx.Config.waveformVisualGainLow * 100
+        visualGainMediumInput.value = Mixxx.Config.waveformVisualGainMedium * 100
+        visualGainHighInput.value = Mixxx.Config.waveformVisualGainHigh * 100
+        waveformDropdown.currentIndex = waveformDropdown.indices.indexOf(Mixxx.Config.waveformType)
+        waveformOptionHighDetailsInput.selected = Mixxx.Config.waveformOptions & Mixxx.WaveformDisplay.Options.SplitStereoSignal ? "on" : "off"
+        waveformOptionStereoInput.selected = Mixxx.Config.waveformOptions & Mixxx.WaveformDisplay.Options.HighDetail ? "on" : "off"
+        waveformTab.dirty = false
     }
     function loadDeck() {
         // Decks tab
@@ -1587,6 +2483,21 @@ Category {
     }
 
     function saveWaveform() {
+        Mixxx.Config.waveformPlayMarkerPosition = waveformTab.playMarkerPosition
+        Mixxx.Config.waveformDefaultZoom = waveformTab.defaultZoom
+        Mixxx.Config.waveformBeatGridAlpha = waveformTab.beatgridOpacity
+        Mixxx.Config.waveformUntilMarkShowTime = waveformTab.untilMarkShowTime
+        Mixxx.Config.waveformUntilMarkShowBeats = waveformTab.untilMarkShowBeats
+        Mixxx.Config.waveformUntilMarkAlign = waveformTab.playMarkerAlign
+        Mixxx.Config.waveformUntilMarkTextPointSize = waveformTab.playMarkerTextSize
+
+        Mixxx.Config.waveformVisualGainAll = visualGainAllInput.value / 100
+        Mixxx.Config.waveformVisualGainLow = visualGainLowInput.value / 100
+        Mixxx.Config.waveformVisualGainMedium = visualGainMediumInput.value / 100
+        Mixxx.Config.waveformVisualGainHigh = visualGainHighInput.value / 100
+
+        Mixxx.Config.waveformType = waveformDropdown.indices[waveformDropdown.currentIndex]
+        Mixxx.Config.waveformOptions = (waveformOptionHighDetailsInput.enabled ? Mixxx.WaveformDisplay.Options.HighDetail : 0) + (waveformOptionStereoInput.enabled ? Mixxx.WaveformDisplay.Options.SplitStereoSignal : 0)
         loadWaveform()
     }
 
