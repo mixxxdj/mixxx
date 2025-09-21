@@ -5,7 +5,9 @@
 
 #include <QMutex>
 #include <QtGlobal>
+
 #include <algorithm>
+#include <limits>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -183,7 +185,8 @@ void AudioUnitEffectProcessor::syncParameters() {
     int i = 0;
     for (auto parameter : m_parameters) {
         if (m_lastValues.size() < i) {
-            m_lastValues.push_back(NAN);
+            m_lastValues.push_back(
+                    std::numeric_limits<AudioUnitParameterValue>::quiet_NaN());
         }
         DEBUG_ASSERT(m_lastValues.size() >= i);
 
