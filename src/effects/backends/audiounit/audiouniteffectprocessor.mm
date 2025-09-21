@@ -13,6 +13,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/assert.h"
+#include "util/fpclassify.h"
 
 AudioUnitEffectGroupState::AudioUnitEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
@@ -185,8 +186,8 @@ void AudioUnitEffectProcessor::syncParameters() {
     int i = 0;
     for (auto parameter : m_parameters) {
         if (m_lastValues.size() < i) {
-            m_lastValues.push_back(
-                    std::numeric_limits<AudioUnitParameterValue>::quiet_NaN());
+            static_assert(sizeof(AudioUnitParameterValue) == sizeof(float));
+            m_lastValues.push_back(util_float_nan());
         }
         DEBUG_ASSERT(m_lastValues.size() >= i);
 
