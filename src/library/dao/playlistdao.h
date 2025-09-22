@@ -110,6 +110,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(const int playlistId) const;
+    // This receives a track list that represents the current order (sorted by BPM for example)
+    // and adopts this order for `position` in the playlist.
+    // Returns true on success.
+    void orderTracksByCurrPos(const int playlistId, QList<std::pair<TrackId, int>>& newOrder);
     // moved Track to a new position
     void moveTrack(const int playlistId,
             const int oldPosition, const int newPosition);
