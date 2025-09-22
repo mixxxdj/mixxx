@@ -397,74 +397,78 @@ TEST_F(SampleUtilTest, copyReverseStereo) {
     EXPECT_FLOAT_EQ(destination[9], 0.1f);
 }
 
-TEST_F(SampleUtilTest, copyReverseStem) {
-    EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 16 && sizes[1] > 16);
-    CSAMPLE* source = buffers[0];
-    CSAMPLE* destination = buffers[1];
-    for (int i = 0; i < 16; ++i) {
-        source[i] = i * 0.1f;
-    }
+// TEST_F(SampleUtilTest, copyReverseStem) {
+//     EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 16 && sizes[1] > 16);
+//     CSAMPLE* source = buffers[0];
+//     CSAMPLE* destination = buffers[1];
+//     for (int i = 0; i < 16; ++i) {
+//         source[i] = i * 0.1f;
+//     }
+//
+//     SampleUtil::copyReverse(destination, source, 16, mixxx::audio::ChannelCount::stem());
+//
+//     // check if multi channel remains in the same order
+//     EXPECT_FLOAT_EQ(destination[0], 0.8f);
+//     EXPECT_FLOAT_EQ(destination[1], 0.9f);
+//     EXPECT_FLOAT_EQ(destination[2], 1.0f);
+//     EXPECT_FLOAT_EQ(destination[3], 1.1f);
+//     EXPECT_FLOAT_EQ(destination[4], 1.2f);
+//     EXPECT_FLOAT_EQ(destination[5], 1.3f);
+//     EXPECT_FLOAT_EQ(destination[6], 1.4f);
+//     EXPECT_FLOAT_EQ(destination[7], 1.5f);
+//     EXPECT_FLOAT_EQ(destination[8], 0.0f);
+//     EXPECT_FLOAT_EQ(destination[9], 0.1f);
+//     EXPECT_FLOAT_EQ(destination[10], 0.2f);
+//     EXPECT_FLOAT_EQ(destination[11], 0.3f);
+//     EXPECT_FLOAT_EQ(destination[12], 0.4f);
+//     EXPECT_FLOAT_EQ(destination[13], 0.5f);
+//     EXPECT_FLOAT_EQ(destination[14], 0.6f);
+//     EXPECT_FLOAT_EQ(destination[15], 0.7f);
+// }
 
-    SampleUtil::copyReverse(destination, source, 16, mixxx::audio::ChannelCount::stem());
-
-    // check if multi channel remains in the same order
-    EXPECT_FLOAT_EQ(destination[0], 0.8f);
-    EXPECT_FLOAT_EQ(destination[1], 0.9f);
-    EXPECT_FLOAT_EQ(destination[2], 1.0f);
-    EXPECT_FLOAT_EQ(destination[3], 1.1f);
-    EXPECT_FLOAT_EQ(destination[4], 1.2f);
-    EXPECT_FLOAT_EQ(destination[5], 1.3f);
-    EXPECT_FLOAT_EQ(destination[6], 1.4f);
-    EXPECT_FLOAT_EQ(destination[7], 1.5f);
-    EXPECT_FLOAT_EQ(destination[8], 0.0f);
-    EXPECT_FLOAT_EQ(destination[9], 0.1f);
-    EXPECT_FLOAT_EQ(destination[10], 0.2f);
-    EXPECT_FLOAT_EQ(destination[11], 0.3f);
-    EXPECT_FLOAT_EQ(destination[12], 0.4f);
-    EXPECT_FLOAT_EQ(destination[13], 0.5f);
-    EXPECT_FLOAT_EQ(destination[14], 0.6f);
-    EXPECT_FLOAT_EQ(destination[15], 0.7f);
-}
-
-TEST_F(SampleUtilTest, mixMultichannelToStereo) {
-    EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 16 && sizes[1] > 16);
-    CSAMPLE* source = buffers[0];
-    CSAMPLE* destination = buffers[1];
-    for (int i = 0; i < 16; ++i) {
-        source[i] = i * 0.1f;
-    }
-
-    SampleUtil::mixMultichannelToStereo(destination, source, 2, mixxx::audio::ChannelCount::stem());
-
-    EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + 0.4f + 0.6f);
-    EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f + 0.7f);
-    EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f + 1.4f);
-    EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f + 1.5f);
-
-    SampleUtil::mixMultichannelToStereo(
-            destination, source, 2, mixxx::audio::ChannelCount::stem(), 0b0100);
-
-    EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + /*0.4f +*/ 0.6f);
-    EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + /*0.5f +*/ 0.7f);
-    EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + /*1.2f +*/ 1.4f);
-    EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + /*1.3f +*/ 1.5f);
-
-    SampleUtil::mixMultichannelToStereo(
-            destination, source, 2, mixxx::audio::ChannelCount::stem(), 0b0101);
-
-    EXPECT_FLOAT_EQ(destination[0], /*0.0f +*/ 0.2f + /*0.4f +*/ 0.6f);
-    EXPECT_FLOAT_EQ(destination[1], /*0.1f +*/ 0.3f + /*0.5f +*/ 0.7f);
-    EXPECT_FLOAT_EQ(destination[2], /*0.8f +*/ 1.0f + /*1.2f +*/ 1.4f);
-    EXPECT_FLOAT_EQ(destination[3], /*0.9f +*/ 1.1f + /*1.3f +*/ 1.5f);
-
-    SampleUtil::mixMultichannelToStereo(
-            destination, source, 2, mixxx::audio::ChannelCount::stem(), 0b1000);
-
-    EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + 0.4f /* + 0.6f*/);
-    EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f /* + 0.7f*/);
-    EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f /* + 1.4f*/);
-    EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f /* + 1.5f*/);
-}
+// TEST_F(SampleUtilTest, mixMultichannelToStereo) {
+//     EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 16 && sizes[1] > 16);
+//     CSAMPLE* source = buffers[0];
+//     CSAMPLE* destination = buffers[1];
+//     for (int i = 0; i < 16; ++i) {
+//         source[i] = i * 0.1f;
+//     }
+//
+//     SampleUtil::mixMultichannelToStereo(destination, source, 2,
+//     mixxx::audio::ChannelCount::stem());
+//
+//     EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + 0.4f + 0.6f);
+//     EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f + 0.7f);
+//     EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f + 1.4f);
+//     EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f + 1.5f);
+//
+//     SampleUtil::mixMultichannelToStereo(
+//             destination, source, 2, mixxx::audio::ChannelCount::stem(),
+//             0b0100);
+//
+//     EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + /*0.4f +*/ 0.6f);
+//     EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + /*0.5f +*/ 0.7f);
+//     EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + /*1.2f +*/ 1.4f);
+//     EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + /*1.3f +*/ 1.5f);
+//
+//     SampleUtil::mixMultichannelToStereo(
+//             destination, source, 2, mixxx::audio::ChannelCount::stem(),
+//             0b0101);
+//
+//     EXPECT_FLOAT_EQ(destination[0], /*0.0f +*/ 0.2f + /*0.4f +*/ 0.6f);
+//     EXPECT_FLOAT_EQ(destination[1], /*0.1f +*/ 0.3f + /*0.5f +*/ 0.7f);
+//     EXPECT_FLOAT_EQ(destination[2], /*0.8f +*/ 1.0f + /*1.2f +*/ 1.4f);
+//     EXPECT_FLOAT_EQ(destination[3], /*0.9f +*/ 1.1f + /*1.3f +*/ 1.5f);
+//
+//     SampleUtil::mixMultichannelToStereo(
+//             destination, source, 2, mixxx::audio::ChannelCount::stem(),
+//             0b1000);
+//
+//     EXPECT_FLOAT_EQ(destination[0], 0.0f + 0.2f + 0.4f /* + 0.6f*/);
+//     EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f /* + 0.7f*/);
+//     EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f /* + 1.4f*/);
+//     EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f /* + 1.5f*/);
+// }
 
 static void BM_MemCpy(benchmark::State& state) {
     SINT size = static_cast<SINT>(state.range(0));

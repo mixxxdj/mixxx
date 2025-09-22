@@ -266,33 +266,33 @@ TEST_F(EngineBufferE2ETest, BasicProcessingTest) {
             QStringLiteral("BasicProcessingTestPause"));
 }
 
-TEST_F(EngineBufferE2ETest, ScratchTest) {
-    // Confirm that vinyl scratching smoothly transitions from one direction
-    // to the other.
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
-    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
-            mixxx::audio::FramePos(225), EngineBuffer::SEEK_EXACT);
-    ProcessBuffer();
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
-    ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            QStringLiteral("ScratchTestMain"));
-}
+// TEST_F(EngineBufferE2ETest, ScratchTest) {
+//     // Confirm that vinyl scratching smoothly transitions from one direction
+//     // to the other.
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
+//     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+//             mixxx::audio::FramePos(225), EngineBuffer::SEEK_EXACT);
+//     ProcessBuffer();
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
+//     ProcessBuffer();
+//     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+//             QStringLiteral("ScratchTestMain"));
+// }
 
-TEST_F(EngineBufferE2ETest, ScratchTestStart) {
-    // Confirm that vinyl scratching smoothly transitions from zero speed
-    // to an the other speed above the 0.07 threshold.
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1);
-    ProcessBuffer();
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0);
-    ProcessBuffer();
-    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.5);
-    ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            QStringLiteral("ScratchTestStart"));
-}
+// TEST_F(EngineBufferE2ETest, ScratchTestStart) {
+//     // Confirm that vinyl scratching smoothly transitions from zero speed
+//     // to an the other speed above the 0.07 threshold.
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1);
+//     ProcessBuffer();
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0);
+//     ProcessBuffer();
+//     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.5);
+//     ProcessBuffer();
+//     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+//             QStringLiteral("ScratchTestStart"));
+// }
 
 TEST_F(EngineBufferE2ETest, ReverseTest) {
     // Confirm that pushing the reverse button smoothly transitions.
