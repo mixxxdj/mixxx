@@ -718,7 +718,7 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                        copyCount = qMin(readAvailable, copyCount + m_numOutputChannels);
+                        copyCount = qMin(readAvailable, copyCount + m_outputParams.channelCount);
                     } else {
                         m_outputDrift = true;
                     }
