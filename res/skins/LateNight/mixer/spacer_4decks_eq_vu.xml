@@ -1,0 +1,27 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>0f,min</Size>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>0f,<Variable name="Height"/></Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>0f,<Variable name="Height"/></Size>
+        <Children/>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
