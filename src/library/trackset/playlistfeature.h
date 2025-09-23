@@ -38,6 +38,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
     void slotShufflePlaylist();
     void slotOrderTracksByCurrentPosition();
+    void slotRemoveDuplicateTracks();
     void slotUnlockAllPlaylists();
     void slotDeleteAllUnlockedPlaylists();
 
@@ -51,6 +52,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     parented_ptr<QAction> m_pShufflePlaylistAction;
     parented_ptr<QAction> m_pOrderByCurrentPosAction;
+    parented_ptr<QAction> m_pRemoveDuplicateTracksAction;
     parented_ptr<QAction> m_pUnlockPlaylistsAction;
     parented_ptr<QAction> m_pDeleteAllUnlockedPlaylistsAction;
 };
