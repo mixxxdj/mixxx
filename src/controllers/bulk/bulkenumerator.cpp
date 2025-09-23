@@ -1,15 +1,37 @@
 #include "controllers/bulk/bulkenumerator.h"
 
+#include <QtCore/private/qandroidextras_p.h>
 #include <libusb.h>
+#include <qglobal.h>
+
+#include <QJniObject>
+#include <QtJniTypes>
 
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
 #include "moc_bulkenumerator.cpp"
+#include "util/assert.h"
 
 BulkEnumerator::BulkEnumerator()
         : ControllerEnumerator(),
           m_context(nullptr) {
-    libusb_init(&m_context);
+    int r;
+#ifdef __ANDROID__
+    r = libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY);
+    VERIFY_OR_DEBUG_ASSERT(r == 0) {
+        qCritical()
+                << "libusb_set_option LIBUSB_OPTION_NO_DEVICE_DISCOVERY failed"
+                << libusb_error_name(r);
+        m_context = nullptr;
+        return;
+    }
+#else
+#endif
+    r = libusb_init(&m_context);
+    VERIFY_OR_DEBUG_ASSERT(r == 0) {
+        qCritical() << "libusb_init failed" << libusb_error_name(r);
+        m_context = nullptr;
+    }
 }
 
 BulkEnumerator::~BulkEnumerator() {
@@ -17,7 +39,9 @@ BulkEnumerator::~BulkEnumerator() {
     while (m_devices.size() > 0) {
         delete m_devices.takeLast();
     }
-    libusb_exit(m_context);
+    if (m_context) {
+        libusb_exit(m_context);
+    }
 }
 
 static bool is_interesting(const libusb_device_descriptor& desc) {
@@ -30,6 +54,22 @@ static bool is_interesting(const libusb_device_descriptor& desc) {
 
 QList<Controller*> BulkEnumerator::queryDevices() {
     qDebug() << "Scanning USB Bulk devices:";
+    VERIFY_OR_DEBUG_ASSERT(m_context) {
+        return {};
+    }
+
+#ifdef __ANDROID__
+    return {};
+
+    // QJniObject javaNotification = QJniObject::fromString(m_notification);
+    // QJniObject::callStaticMethod<void>(
+    //                 "org/qtproject/example/androidnotifier/NotificationClient",
+    //                 "notify",
+    //                 "(Landroid/content/Context;Ljava/lang/String;)V",
+    //                 QNativeInterface::QAndroidApplication::context(),
+    //                 javaNotification.object<jstring>());
+
+#else
     libusb_device **list;
     ssize_t cnt = libusb_get_device_list(m_context, &list);
     ssize_t i = 0;
@@ -54,5 +94,6 @@ QList<Controller*> BulkEnumerator::queryDevices() {
         }
     }
     libusb_free_device_list(list, 1);
+#endif
     return m_devices;
 }

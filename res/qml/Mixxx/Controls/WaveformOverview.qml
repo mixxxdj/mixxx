@@ -8,7 +8,7 @@ Mixxx.WaveformOverview {
     required property string group
     readonly property var player: Mixxx.PlayerManager.getPlayer(root.group)
 
-    track: player.currentTrack
+    track: player?.currentTrack
 
     Mixxx.ControlProxy {
         id: trackLoadedControl

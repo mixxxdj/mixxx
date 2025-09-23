@@ -7,7 +7,7 @@
 #include <QUrl>
 #include <QProcess>
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QFileInfo>
@@ -24,7 +24,7 @@ QString getSelectInFileBrowserCommand() {
     return "open -R";
 #elif defined(Q_OS_WIN)
     return "explorer.exe /select,";
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     QProcess proc;
     QString output;
     // if xdg-mime is not installed, it uses the else branch below.
@@ -49,6 +49,7 @@ QString getSelectInFileBrowserCommand() {
         return kSelectInFreedesktop; // no special command, try Freedesktop and fallback to QDesktopServices";
     }
 #else
+    // TODO emit android intent?
     return ""; // no special command use QDesktopServices";
 #endif
 }
@@ -58,7 +59,7 @@ QString removeChildDir(const QString& path) {
     return path.left(index);
 }
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 bool selectInFreedesktop(const QString& path) {
     const QUrl fileurl = QUrl::fromLocalFile(path);
     const QStringList args(fileurl.toString());
@@ -125,7 +126,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 
         if (fileInfo.exists()) {
             // Tryto select the file
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
             if (sSelectInFileBrowserCommand == kSelectInFreedesktop) {
                 if (selectInFreedesktop(path)) {
                     openedDirs.insert(dirPath);

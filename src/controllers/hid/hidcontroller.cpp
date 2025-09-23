@@ -1,6 +1,11 @@
 #include "controllers/hid/hidcontroller.h"
 
+#ifdef __ANDROID__
+#include <hidapi_libusb.h>
+#include <libusb.h>
+#else
 #include <hidapi.h>
+#endif
 
 #include "controllers/defs_controllers.h"
 #include "moc_hidcontroller.cpp"
@@ -88,6 +93,17 @@ int HidController::open(const QString& resourcePath) {
         return -1;
     }
 
+#ifdef __ANDROID__
+    // Open device by file descriptor
+    qCInfo(m_logBase) << "Opening HID device" << getName()
+                      << "by file descriptor"
+                      << m_deviceInfo.getFileDescriptor() << "and interface"
+                      << m_deviceInfo.getInterface();
+
+    libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, LIBUSB_OPTION_LOG_LEVEL);
+    hid_device* pHidDevice = hid_libusb_wrap_sys_device(
+            m_deviceInfo.getFileDescriptor(), m_deviceInfo.getInterface());
+#else
     // Open device by path
     qCInfo(m_logBase) << "Opening HID device" << getName() << "by HID path"
                       << m_deviceInfo.pathRaw();
@@ -154,6 +170,7 @@ int HidController::open(const QString& resourcePath) {
                                                         kMaxHidErrorMessageSize));
         return -1;
     }
+#endif
 
     // Set hid controller to non-blocking
     if (hid_set_nonblocking(pHidDevice, 1) != 0) {

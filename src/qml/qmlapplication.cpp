@@ -13,6 +13,7 @@
 #include "qml/qmldlgpreferencesproxy.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
+#include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
@@ -95,16 +96,6 @@ QmlApplication::QmlApplication(
     // follows a strict singleton pattern design
     QmlDlgPreferencesProxy::s_pInstance =
             std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
-    loadQml(m_mainFilePath);
-
-    m_pCoreServices->getControllerManager()->setUpDevices();
-
-    connect(&m_autoReload,
-            &QmlAutoReload::triggered,
-            this,
-            [this]() {
-                loadQml(m_mainFilePath);
-            });
 
     const QStringList visualGroups =
             m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
@@ -121,6 +112,16 @@ QmlApplication::QmlApplication(
                     QString group = PlayerManager::groupForDeck(i);
                     m_visualsManager->addDeckIfNotExist(group);
                 }
+            });
+    loadQml(m_mainFilePath);
+
+    m_pCoreServices->getControllerManager()->setUpDevices();
+
+    connect(&m_autoReload,
+            &QmlAutoReload::triggered,
+            this,
+            [this]() {
+                loadQml(m_mainFilePath);
             });
 }
 

@@ -351,10 +351,10 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
             qmlEngine(this)->throwError(tr("Cannot find the marker icon") + " \"" + icon + '"');
         }
 
-        if (!endIcon.isEmpty() && !QFileInfo::exists(endIcon)) {
-            qmlEngine(this)->throwError(tr("Cannot find the marker endIcon") +
-                    " \"" + endIcon + '"');
-        }
+        // if (!endIcon.isEmpty() && !QFileInfo::exists(endIcon)) {
+        //     qmlEngine(this)->throwError(tr("Cannot find the marker endIcon") +
+        //             " \"" + endIcon + '"');
+        // }
         pRenderer->setDefaultMark(
                 waveformWidget->getGroup(),
                 WaveformMarkSet::DefaultMarkerStyle{

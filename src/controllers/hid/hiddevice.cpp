@@ -32,12 +32,14 @@ namespace mixxx {
 
 namespace hid {
 
-DeviceInfo::DeviceInfo(const hid_device_info& device_info)
+DeviceInfo::DeviceInfo(const hid_device_info& device_info, intptr_t file_descriptor, int interface)
         : vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
           release_number(device_info.release_number),
           usage_page(device_info.usage_page),
           usage(device_info.usage),
+          file_descriptor(file_descriptor),
+          interfaceIdx(interface),
           m_physicalTransportProtocol(hidapiBusType2PhysicalTransportProtocol(
                   device_info.bus_type)),
           m_usbInterfaceNumber(device_info.interface_number),

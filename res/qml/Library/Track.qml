@@ -3,26 +3,35 @@ import QtQuick
 import QtQuick.Controls 2.15
 import "../Theme"
 
-MouseArea {
-    id: dragArea
+Item {
+    id: root
 
     required property var capabilities
 
     readonly property var library: Mixxx.Library
 
-    drag.target: value
-    acceptedButtons: Qt.LeftButton | Qt.RightButton
-    onClicked: (mouse) => {
-        if (mouse.button === Qt.RightButton)
-            contextMenu.popup()
+    property alias drag: dragHandler
+    property alias tap: tapHandler
+
+    DragHandler {
+        id: dragHandler
+        target: value
     }
-    onPressAndHold: (mouse) => {
-        if (mouse.source === Qt.MouseEventNotSynthesized)
+
+    TapHandler {
+        id: tapHandler
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onTapped: (eventPoint, button) => {
+            if (button === Qt.RightButton)
+                contextMenu.popup()
+        }
+        onLongPressed: (mouse) => {
             contextMenu.popup()
+        }
     }
 
     function hasCapabilities(caps) {
-        return (dragArea.capabilities & caps) == caps;
+        return (root.capabilities & caps) == caps;
     }
 
     Menu {

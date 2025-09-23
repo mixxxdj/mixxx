@@ -1,10 +1,12 @@
 #include "soundio/sounddeviceportaudio.h"
 
 #include <float.h>
+#include <pa_oboe.h>
 
 #include <QRegularExpression>
 #include <QThread>
 #include <QtDebug>
+#include <cstddef>
 
 #include "control/controlobject.h"
 #include "sounddevicenetwork.h"
@@ -25,6 +27,11 @@
 #include <pa_linux_alsa.h>
 // for sched_getscheduler
 #include <sched.h>
+#endif
+
+#ifdef PA_USE_OBOE
+// for PaOboe_InitializeStreamInfo
+#include <pa_oboe.h>
 #endif
 
 namespace {
@@ -238,10 +245,21 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
              << m_inputParams.channelCount;
 
     // Fill out the rest of the info.
+
+    // TODO if obep
+    PaOboeStreamInfo obeoStreamInfo;
+    PaOboe_InitializeStreamInfo(&obeoStreamInfo);
+    obeoStreamInfo.androidOutputUsage = PaOboe_Usage::Media,
+    obeoStreamInfo.androidInputPreset = PaOboe_InputPreset::Generic,
+    obeoStreamInfo.performanceMode = PaOboe_PerformanceMode::LowLatency,
+    obeoStreamInfo.sharingMode = PaOboe_SharingMode::Exclusive,
+    obeoStreamInfo.contentType = PaOboe_ContentType::Music,
+    obeoStreamInfo.packageName = "org.mixxx";
+
     m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_outputParams.hostApiSpecificStreamInfo = nullptr;
+    m_outputParams.hostApiSpecificStreamInfo = (void*)&obeoStreamInfo;
 
     m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;

@@ -160,9 +160,11 @@ Rectangle {
 
         function loadSelectedTrackIntoNextAvailableDeck(play) {
             const urls = this.selectionModel.selectedTrackUrls();
+            console.log("TableView.loadSelectedTrackIntoNextAvailableDeck::urls", urls)
             if (urls.length == 0)
                 return ;
 
+            console.log("TableView.loadSelectedTrackIntoNextAvailableDeck::urls[0]", urls[0])
             Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(urls[0], play);
         }
 
@@ -171,7 +173,7 @@ Rectangle {
             if (urls.length == 0)
                 return ;
 
-            player.loadTrackFromLocationUrl(urls[0], play);
+            Mixxx.PlayerManager.getPlayer(group).loadTrackFromLocationUrl(urls[0], play);
         }
 
         ScrollBar.vertical: ScrollBar {
@@ -253,7 +255,9 @@ Rectangle {
             }
 
             function selectedTrackUrls() {
+                console.log("TableView.selectedTrackUrls::selectedIndexes", this.selectedIndexes)
                 return this.selectedIndexes.map((index) => {
+                        console.log("TableView.selectedTrackUrls::getUrl", index.row, this.model.getUrl(index.row))
                         return this.model.getUrl(index.row);
                 });
             }

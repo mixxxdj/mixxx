@@ -1,6 +1,12 @@
 #include "controllers/hid/hidenumerator.h"
 
+#ifdef __ANDROID__
+#include <hidapi_libusb.h>
+
+#include "controllers/android.h"
+#else
 #include <hidapi.h>
+#endif
 
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
@@ -94,17 +100,16 @@ QList<Controller*> HidEnumerator::queryDevices() {
     qInfo() << "Scanning USB HID devices";
 
     QStringList enumeratedDevices;
-    hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
-    for (const auto* device_info = device_info_list;
-            device_info;
-            device_info = device_info->next) {
-        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
+
+    auto process = [this, &enumeratedDevices](
+                           const hid_device_info* device_info,
+                           mixxx::hid::DeviceInfo deviceInfo) {
         // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
         // so filter them out.
         // https://github.com/libusb/hidapi/issues/298
         if (enumeratedDevices.contains(deviceInfo.pathRaw())) {
             qInfo() << "Duplicate HID device, excluding" << deviceInfo;
-            continue;
+            return;
         }
         enumeratedDevices.append(QString(deviceInfo.pathRaw()));
 
@@ -112,7 +117,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
             qInfo()
                     << "Excluding HID device"
                     << deviceInfo;
-            continue;
+            return;
         }
         qInfo() << "Found HID device:"
                 << deviceInfo;
@@ -120,13 +125,49 @@ QList<Controller*> HidEnumerator::queryDevices() {
         if (!deviceInfo.isValid()) {
             qWarning() << "HID device permissions problem or device error."
                        << "Your account needs write access to HID controllers.";
-            continue;
+            return;
         }
 
         HidController* newDevice = new HidController(std::move(deviceInfo));
         m_devices.push_back(newDevice);
+    };
+
+#ifdef __ANDROID__
+    qInfo() << "Android - Waiting for device to be ready";
+    mixxx::android::wait_for_ready();
+    qInfo() << "Android - Device are ready to query";
+
+    for (const auto& device : mixxx::android::devices) {
+        if (device.type != mixxx::android::DeviceType::HID) {
+            continue;
+        }
+        qInfo() << "Android - Proceed with" << device.fd;
+
+        hid_device* hid_device = hid_libusb_wrap_sys_device(device.fd, device.num);
+        if (!hid_device) {
+            qWarning() << "Android - hid_libusb_wrap_sys_device failed on "
+                       << device.fd << hid_error(nullptr);
+            continue;
+        }
+
+        auto* device_info = hid_get_device_info(hid_device);
+        if (!device_info) {
+            qWarning() << "Android - hid_get_device_info failed on "
+                       << device.fd << hid_error(hid_device);
+            continue;
+        }
+        qDebug() << "Android - processing HID device";
+        process(device_info, mixxx::hid::DeviceInfo(*device_info, device.fd, device.num));
+    }
+#else
+    hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
+    for (const auto* device_info = device_info_list;
+            device_info;
+            device_info = device_info->next) {
+        process(device_info, mixxx::hid::DeviceInfo(*device_info));
     }
     hid_free_enumeration(device_info_list);
+#endif
 
     return m_devices;
 }

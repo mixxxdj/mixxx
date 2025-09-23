@@ -75,6 +75,11 @@ QString computeResourcePathImpl() {
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
+#elif defined(__ANDROID__)
+        // On Android, use the QRC.
+        else {
+            qResourcePath = "assets:/";
+        }
 #elif defined(Q_OS_IOS)
         // On iOS the bundle contains the resources directly.
         else {

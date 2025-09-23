@@ -29,7 +29,7 @@ namespace hid {
 class DeviceInfo final {
   public:
     explicit DeviceInfo(
-            const hid_device_info& device_info);
+            const hid_device_info& device_info, intptr_t file_descriptor = -1, int interface = -1);
 
     // The VID.
     uint16_t getVendorId() const {
@@ -38,6 +38,14 @@ class DeviceInfo final {
     // The PID.
     uint16_t getProductId() const {
         return product_id;
+    }
+    // The File Descriptor.
+    intptr_t getFileDescriptor() const {
+        return file_descriptor;
+    }
+    // The Interface.
+    intptr_t getInterface() const {
+        return interfaceIdx;
     }
 
     /// The releaseNumberBCD returns the version of the USB specification to
@@ -121,6 +129,8 @@ class DeviceInfo final {
     unsigned short release_number;
     unsigned short usage_page;
     unsigned short usage;
+    intptr_t file_descriptor;
+    int interfaceIdx;
 
     PhysicalTransportProtocol m_physicalTransportProtocol;
     int m_usbInterfaceNumber;

@@ -43,6 +43,7 @@ Item {
     }
 
     Component.onCompleted: {
+        // TODO initiate the layer based on the screensize
         itemModel.append({
                 "type": "column",
                 "items": [{
@@ -66,7 +67,7 @@ Item {
                                             }, {
                                                 "type": "column",
                                                 "items": [{
-                                                        "type": "toolbar"
+                                                        "type": "toolbar" // My also act as tab to pick component that don't fit on the screen
                                                     }, {
                                                         "type": "row",
                                                         "items": [{

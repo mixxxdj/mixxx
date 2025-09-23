@@ -204,6 +204,10 @@ void ControllerManager::updateControllerList() {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
+    qDebug() << "ControllerManager::updateControllerList - Updating device "
+                "list. Device count:"
+             << newDeviceList.count();
+
     locker.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
@@ -234,6 +238,8 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
             filteredDeviceList.push_back(device);
         }
     }
+    qDebug() << "ControllerManager::getControllerList - Filtered list size:"
+             << filteredDeviceList.size();
     return filteredDeviceList;
 }
 
@@ -248,6 +254,8 @@ void ControllerManager::slotSetUpDevices() {
     const QList<Controller*> deviceList = getControllerList(false, true);
     QStringList mappingPaths(getMappingPaths(m_pConfig));
 
+    qDebug() << "ControllerManager: Mapping paths: " << mappingPaths;
+
     for (Controller* pController : deviceList) {
         QString name = pController->getName();
 
@@ -257,17 +265,24 @@ void ControllerManager::slotSetUpDevices() {
 
         // The filename for this device name.
         QString deviceName = sanitizeDeviceName(name);
+        qDebug() << "ControllerManager: Controller name: " << name << deviceName;
 
         // Check if device is enabled
-        if (!m_pConfig->getValue(ConfigKey("[Controller]", deviceName), 0)) {
-            continue;
-        }
+        // FIXME settings not working?
+        // if (!m_pConfig->getValue(ConfigKey("[Controller]", deviceName), 0)) {
+        //     qDebug() << "ControllerManager: Controller " << name << "is not enabled";
+        //     continue;
+        // }
 
         // Check if device has a configured mapping
-        QString mappingFilePath = getConfiguredMappingFileForDevice(deviceName);
-        if (mappingFilePath.isEmpty()) {
-            continue;
-        }
+        // FIXME settings not working?
+        // QString mappingFilePath = getConfiguredMappingFileForDevice(deviceName);
+        // if (mappingFilePath.isEmpty()) {
+        //     qDebug() << "ControllerManager: Controller " << name << "has no mapping";
+        //     continue;
+        // }
+        QString mappingFilePath = "assets:/controllers/Traktor Kontrol S4 MK3.hid.xml";
+        qDebug() << "ControllerManager: Controller " << name << "using mapping" << mappingFilePath;
 
         qDebug() << "Searching for controller mapping" << mappingFilePath
                  << "in paths:" << mappingPaths.join(",");

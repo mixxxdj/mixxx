@@ -3736,6 +3736,7 @@ class S4MK3 {
     incomingData(data) {
         const reportId = data[0];
         if (reportId in this.inReports && reportId !== 3) {
+            console.warn(`Handling repord with ID ${reportId}. Contains: ${data}`);
             this.inReports[reportId].handleInput(data.buffer.slice(1));
         } else if (reportId === 3) {
             // The 32 bit unsigned ints at bytes 8 and 36 always have exactly the same value,

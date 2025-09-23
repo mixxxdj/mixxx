@@ -42,6 +42,11 @@ ApplicationWindow {
         }
     }
 
+    Component.onCompleted: {
+        // android: 6.258039579468151 873 389
+        print(`Main Mixxx window: ${Screen.pixelDensity} ${root.width} ${root.height}`)
+    }
+
     Column {
         id: content
         anchors.fill: parent
@@ -154,7 +159,7 @@ ApplicationWindow {
             handle: Rectangle {
                 id: handleDelegate
                 implicitWidth: 8
-                implicitHeight: 4
+                implicitHeight: 6
                 color: Theme.libraryPanelSplitterBackground
                 clip: true
                 property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.libraryPanelSplitterHandleActive : Theme.libraryPanelSplitterHandle

@@ -22,15 +22,17 @@ Mixxx.LibrarySourceTree {
             anchors.fill: parent
             capabilities: cell.caps
 
-            onPressed: {
-                if (pressedButtons == Qt.LeftButton) {
+            tap.onTapped: (eventPoint, button) => {
+                console.log("LibraryComponent.Track::onTapped", button)
+                if (button == Qt.LeftButton) {
                     tableView.selectionModel.selectRow(row);
                     parent.dragImage.grabToImage((result) => {
                             parent.Drag.imageSource = result.url;
                         }, Qt.size(parent.dragImage.width, parent.dragImage.height));
                 }
             }
-            onDoubleClicked: {
+            tap.onDoubleTapped: {
+                console.log("LibraryComponent.Track::onDoubleTapped")
                 tableView.selectionModel.selectRow(row);
                 tableView.loadSelectedTrackIntoNextAvailableDeck(false);
             }
