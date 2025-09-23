@@ -783,6 +783,7 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 
 #ifndef __APPLE__
 void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
+    qWarning() << "WMainMenuBar: connectMenuToSlotShowMenuBar, menu:" << pMenu->title();
     // If a menu hotkey like Alt+F(ile) is pressed while the menubar is hidden,
     // show the menubar and open the requested menu. See showMenuBar() for details.
 
@@ -797,7 +798,8 @@ void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
     connect(pMenu,
             &QMenu::aboutToShow,
             this,
-            [this]() {
+            [this, pMenu]() {
+                qWarning() << "WMainMenuBar: aboutToShow, menu:" << pMenu->title();
                 if (!isNativeMenuBar() && height() <= 0) {
                     showMenuBar();
                 }
@@ -805,6 +807,7 @@ void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
 }
 
 void WMainMenuBar::slotToggleMenuBar() {
+    qWarning() << "WMainMenuBar: slotToggleMenuBar()";
     if (isNativeMenuBar()) {
         return;
     }
@@ -817,6 +820,7 @@ void WMainMenuBar::slotToggleMenuBar() {
 }
 
 void WMainMenuBar::showMenuBar() {
+    qWarning() << "WMainMenuBar: show";
     if (isNativeMenuBar()) {
         return;
     }
@@ -841,6 +845,7 @@ void WMainMenuBar::showMenuBar() {
 }
 
 void WMainMenuBar::hideMenuBar() {
+    qWarning() << "WMainMenuBar: hide";
     if (isNativeMenuBar()) {
         return;
     }
@@ -851,11 +856,14 @@ void WMainMenuBar::hideMenuBar() {
 }
 
 void WMainMenuBar::slotAutoHideMenuBarToggled(bool autoHide) {
+    qWarning() << "WMainMenuBar: slotAutoHideMenuBarToggled, enable:" << autoHide;
+    qWarning() << "-- set cfg value, emit changed signal";
     m_pConfig->setValue(ConfigKey("[Config]", "hide_menubar"), autoHide ? 1 : 0);
     // Trigger slotUpdateMenuBarAltKeyConnection() inorder to get Alt work immediately
     emit menubarAutoHideChanged(autoHide);
     // Just in case it was hidden after toggling the menu action
     if (!autoHide) {
+        qWarning() << "-- disabled, show menubar";
         showMenuBar();
     }
 }
