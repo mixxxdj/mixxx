@@ -727,7 +727,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     emit tracksRemoved(QSet<int>{playlistId});
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& positions) {
+void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, const QList<int>& positions) {
     // get positions in reversed order
     auto sortedPositons = positions;
     std::sort(sortedPositons.begin(), sortedPositons.end(), std::greater<int>());
@@ -1431,6 +1431,70 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
     transaction.commit();
     emit tracksMoved(QSet<int>{playlistId});
+}
+
+void PlaylistDAO::removeDuplicateTracks(const int playlistId, RemoveDuplicateTracksKeep keep) {
+    QString column, order;
+    switch (keep) {
+    case RemoveDuplicateTracksKeep::FIRST: {
+        column = PLAYLISTTRACKSTABLE_POSITION;
+        order = QStringLiteral("ASC");
+        break;
+    }
+    case RemoveDuplicateTracksKeep::LAST: {
+        column = PLAYLISTTRACKSTABLE_POSITION;
+        order = QStringLiteral("DESC");
+        break;
+    }
+    case RemoveDuplicateTracksKeep::FIRST_ADDED: {
+        column = PLAYLISTTRACKSTABLE_DATETIMEADDED;
+        order = QStringLiteral("ASC");
+        break;
+    }
+    case RemoveDuplicateTracksKeep::LAST_ADDED: {
+        column = PLAYLISTTRACKSTABLE_DATETIMEADDED;
+        order = QStringLiteral("DESC");
+        break;
+    }
+    }
+
+    const QString queryStr = QStringLiteral(
+            "SELECT %1, %2, %3 "
+            "FROM PlaylistTracks "
+            "WHERE playlist_id = :id "
+            "ORDER BY %4 %5")
+                                     .arg(PLAYLISTTRACKSTABLE_TRACKID,
+                                             PLAYLISTTRACKSTABLE_POSITION,
+                                             PLAYLISTTRACKSTABLE_DATETIMEADDED,
+                                             column,
+                                             order);
+
+    QSqlQuery query(m_database);
+    query.prepare(queryStr);
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    QList<TrackId> trackIds;
+    QList<int> positionsToRemove;
+
+    const int trackIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_TRACKID);
+    const int positionColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_POSITION);
+    while (query.next()) {
+        TrackId trackId(query.value(trackIdColumn));
+        if (trackIds.contains(trackId)) {
+            positionsToRemove.append(query.value(positionColumn).toInt());
+        } else {
+            trackIds.append(trackId);
+        }
+    }
+
+    if (!positionsToRemove.isEmpty()) {
+        removeTracksFromPlaylist(playlistId, positionsToRemove);
+    }
 }
 
 bool PlaylistDAO::isTrackInPlaylist(TrackId trackId, const int playlistId) const {
