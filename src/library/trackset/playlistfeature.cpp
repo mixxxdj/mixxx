@@ -1,7 +1,14 @@
 #include "library/trackset/playlistfeature.h"
 
+#include <QButtonGroup>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLabel>
 #include <QMenu>
+#include <QPushButton>
+#include <QRadioButton>
 #include <QSqlTableModel>
+#include <QVBoxLayout>
 #include <QtDebug>
 
 #include "library/library.h"
@@ -15,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
+#include "util/parented_ptr.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -38,6 +46,12 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotShufflePlaylist);
+
+    m_pRemoveDuplicateTracksAction = make_parented<QAction>(tr("Remove duplicate tracks"), this);
+    connect(m_pRemoveDuplicateTracksAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotRemoveDuplicateTracks);
 
     m_pUnlockPlaylistsAction =
             make_parented<QAction>(tr("Unlock all playlists"), this);
@@ -83,6 +97,7 @@ void PlaylistFeature::onRightClickChild(
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pRemoveDuplicateTracksAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
@@ -92,6 +107,7 @@ void PlaylistFeature::onRightClickChild(
     // TODO If playlist is selected and has more than one track selected
     // show "Shuffle selected tracks", else show "Shuffle playlist"?
     menu.addAction(m_pShufflePlaylistAction);
+    menu.addAction(m_pRemoveDuplicateTracksAction);
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDuplicatePlaylistAction);
@@ -255,6 +271,92 @@ void PlaylistFeature::slotShufflePlaylist() {
 
         pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
     }
+}
+
+void PlaylistFeature::slotRemoveDuplicateTracks() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        qDebug() << "Can't remove duplicate tracks from locked playlist"
+                 << playlistId << m_playlistDao.getPlaylistName(playlistId);
+        return;
+    }
+    if (m_playlistDao.tracksInPlaylist(playlistId) < 2) {
+        return;
+    }
+
+    // Right now we keep the first (position) track that occurs
+    // multiple times in a playlist.
+    // TODO Add dialog where we select which track to keep:
+    // FIRST, LAST, FIRST_ADDED or LAST_ADDED (enum in PlaylistDAO)
+
+    QDialog dlgSelectTracksToKeep;
+    dlgSelectTracksToKeep.setWindowTitle(tr("Remove Duplicate Tracks"));
+    auto pDescriptionLabel = make_parented<QLabel>(
+            tr("Select which each duplicate track you want to keep."),
+            &dlgSelectTracksToKeep);
+    pDescriptionLabel->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+            QSizePolicy::Minimum));
+
+    auto pFirstPosButton = make_parented<QRadioButton>(
+            tr("First position"), &dlgSelectTracksToKeep);
+    auto pLastPosButton = make_parented<QRadioButton>(
+            tr("Last position"), &dlgSelectTracksToKeep);
+    auto pFirstAddedButton = make_parented<QRadioButton>(
+            tr("First added"), &dlgSelectTracksToKeep);
+    auto pLastAddedButton = make_parented<QRadioButton>(
+            tr("Last added"), &dlgSelectTracksToKeep);
+
+    auto pButtonGroup = make_parented<QButtonGroup>(&dlgSelectTracksToKeep);
+    pButtonGroup->setExclusive(true);
+    pButtonGroup->addButton(pFirstPosButton);
+    pButtonGroup->addButton(pLastPosButton);
+    pButtonGroup->addButton(pFirstAddedButton);
+    pButtonGroup->addButton(pLastAddedButton);
+    pFirstPosButton->setChecked(true);
+
+    auto pButtons = make_parented<QDialogButtonBox>(&dlgSelectTracksToKeep);
+    QPushButton* pCancelBtn = pButtons->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
+    QPushButton* pOkayBtn = pButtons->addButton(tr("Okay"), QDialogButtonBox::AcceptRole);
+    pCancelBtn->setDefault(true);
+    // This is required after customizing the buttons, otherwise neither button
+    // would close the dialog.
+    connect(pCancelBtn, &QPushButton::clicked, &dlgSelectTracksToKeep, &QDialog::reject);
+    connect(pOkayBtn, &QPushButton::clicked, &dlgSelectTracksToKeep, &QDialog::accept);
+
+    auto pLayout = make_parented<QVBoxLayout>(&dlgSelectTracksToKeep);
+    pLayout->addWidget(pDescriptionLabel);
+    pLayout->addWidget(pFirstPosButton);
+    pLayout->addWidget(pLastPosButton);
+    pLayout->addWidget(pFirstAddedButton);
+    pLayout->addWidget(pLastAddedButton);
+    pLayout->addWidget(pButtons);
+
+    dlgSelectTracksToKeep.setLayout(pLayout);
+
+    if (dlgSelectTracksToKeep.exec() == QDialog::Rejected) {
+        return;
+    }
+
+    auto pCheckedButton = pButtonGroup->checkedButton();
+    VERIFY_OR_DEBUG_ASSERT(pCheckedButton != nullptr) {
+        return;
+    }
+    PlaylistDAO::RemoveDuplicateTracksKeep keep;
+    if (pCheckedButton == pFirstPosButton.get()) {
+        keep = PlaylistDAO::RemoveDuplicateTracksKeep::FIRST;
+    } else if (pCheckedButton == pFirstPosButton.get()) {
+        keep = PlaylistDAO::RemoveDuplicateTracksKeep::LAST;
+    } else if (pCheckedButton == pFirstPosButton.get()) {
+        keep = PlaylistDAO::RemoveDuplicateTracksKeep::FIRST_ADDED;
+    } else {
+        keep = PlaylistDAO::RemoveDuplicateTracksKeep::LAST_ADDED;
+    }
+
+    m_playlistDao.removeDuplicateTracks(playlistId, keep);
 }
 
 void PlaylistFeature::slotUnlockAllPlaylists() {

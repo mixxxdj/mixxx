@@ -37,6 +37,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
     void slotShufflePlaylist();
+    void slotRemoveDuplicateTracks();
     void slotUnlockAllPlaylists();
     void slotDeleteAllUnlockedPlaylists();
 
@@ -49,6 +50,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     QString getRootViewHtml() const override;
 
     parented_ptr<QAction> m_pShufflePlaylistAction;
+    parented_ptr<QAction> m_pRemoveDuplicateTracksAction;
     parented_ptr<QAction> m_pUnlockPlaylistsAction;
     parented_ptr<QAction> m_pDeleteAllUnlockedPlaylistsAction;
 };

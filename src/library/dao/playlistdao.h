@@ -29,6 +29,13 @@ class PlaylistDAO : public QObject, public virtual DAO {
         REPLACE,
     };
 
+    enum class RemoveDuplicateTracksKeep {
+        FIRST,
+        LAST,
+        FIRST_ADDED,
+        LAST_ADDED,
+    };
+
     PlaylistDAO();
     ~PlaylistDAO() override = default;
 
@@ -116,6 +123,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
             const int oldPosition, const int newPosition);
     // shuffles all tracks in the position List
     void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,TrackId>& allIds);
+    void removeDuplicateTracks(const int playlistId, PlaylistDAO::RemoveDuplicateTracksKeep keep);
     bool isTrackInPlaylist(TrackId trackId, const int playlistId) const;
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
