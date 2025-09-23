@@ -318,7 +318,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             //                 << "Catch up with silence:" << writeExpected - copyCount
             //                 << "streamTime" << pWorker->getStreamTimeFrames();;
             // catch up by filling buffer until we are synced
-            workerWriteSilence(pWorker, writeExpected - copyCount);
+            workerWriteSilence(pWorker, (writeExpected - copyCount) / m_numOutputChannels);
             m_pSoundManager->underflowHappened(24);
         } else if (writeExpected - copyCount > outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
