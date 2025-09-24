@@ -201,9 +201,6 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
     const theDeck = this;
 
-    // set Pioneer CDJ cue mode for all decks
-    engine.setValue(this.currentDeck, "cue_cdj", true);
-
     this.jogWheel = new components.JogWheelBasic({
         wheelResolution: 128, // how many ticks per revolution the jogwheel has
         alpha: 1/8, // alpha-filter
