@@ -59,11 +59,6 @@ DDJ200.init = function() {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
 
-    engine.setValue("[Channel3]", "volume", 0);
-    engine.setValue("[Channel4]", "volume", 0);
-    for (let i = 1; i <= 8; i++) {
-        engine.setValue(`[Sampler${i}]`, "pregain", 0.2);
-    };
 
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
