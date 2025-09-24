@@ -12,6 +12,11 @@
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
+namespace {
+static const QString kHeaderStateKey = QStringLiteral("header_state_pb");
+static const QString kHeaderSyncKey = QStringLiteral("sync_with_custom_header");
+} // namespace
+
 HeaderViewState::HeaderViewState(const QHeaderView& headers) {
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
@@ -61,7 +66,7 @@ QString HeaderViewState::saveState() const {
     return QString(array.toBase64());
 }
 
-void HeaderViewState::restoreState(QHeaderView* headers) {
+void HeaderViewState::restoreState(QHeaderView* headers, bool sort) {
     const int max_columns =
             math_min(headers->count(), m_view_state.header_state_size());
 
@@ -92,7 +97,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
         headers->resizeSection(li, header.size());
         headers->moveSection(headers->visualIndex(li), vi);
     }
-    if (m_view_state.sort_indicator_shown()) {
+    if (sort && m_view_state.sort_indicator_shown()) {
         headers->setSortIndicator(
                 m_view_state.sort_indicator_section(),
                 static_cast<Qt::SortOrder>(m_view_state.sort_order()));
@@ -125,9 +130,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     //     saveHeaderState();
     // }
 
-    // First clear all the context menu actions for the old model.
-    clearActions();
-
     // Now set the header view to show the new model
     QHeaderView::setModel(model);
 
@@ -149,6 +151,34 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
 
+    updateMenu();
+
+    // Safety check against someone getting stuck with all columns hidden
+    // (produces an empty library table). Just re-show them all.
+    int columns = model->columnCount();
+    if (hiddenCount() == columns) {
+        for (int i = 0; i < columns; ++i) {
+            showSection(i);
+        }
+    }
+}
+
+void WTrackTableViewHeader::updateMenu() {
+    // The QActions are parented to the menu, so clearing deletes them. Since
+    // they are deleted we don't have to disconnect their signals from the
+    // mapper.
+    m_columnCheckBoxes.clear();
+    m_menu.clear();
+
+    QAbstractItemModel* pModel = QHeaderView::model();
+    VERIFY_OR_DEBUG_ASSERT(dynamic_cast<TrackModel*>(pModel)) {
+        return;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
     // Create a checkbox for each column.
     // We want to keep the menu open after un/ticking a box because that allows
     // to toggle multiple columns in one go, i.e. without having to open the
@@ -157,13 +187,12 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // * toggle a box with mouse click or Space on a selected box (via keyboard,
     //   not just hovered by mouse pointer)
     // * toggle and close by pressing Return on a selected box
-    int columns = model->columnCount();
-    for (int i = 0; i < columns; ++i) {
+    for (int i = 0; i < pModel->columnCount(); ++i) {
         if (pTrackModel->isColumnInternal(i)) {
             continue;
         }
 
-        QString title = model->headerData(i, orientation()).toString();
+        const QString title = pModel->headerData(i, orientation()).toString();
 
         // Custom QCheckBox with fixed hover behavior
         auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
@@ -206,10 +235,62 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         }
     }
 
-    m_menu.addSeparator();
+    // Only show this if the track model allows.
+    // TODO Move to "Columns layout (management)"?
+    // TODO Ideally this would be a default ON TrackModel::Capability
+    // which we remove for incompatible track models.
+    if (pTrackModel->canLoadTrackSetColumns()) {
+        m_menu.addSeparator();
+
+        auto pStoreAsDefaultHeaderAction =
+                make_parented<QAction>(tr("Save columns layout"), &m_menu);
+        connect(pStoreAsDefaultHeaderAction,
+                &QAction::triggered,
+                this,
+                &WTrackTableViewHeader::storeAsCustomHeaderState);
+        m_menu.addAction(pStoreAsDefaultHeaderAction);
+
+        auto pLoadTracksViewHeaderAction =
+                make_parented<QAction>(tr("Load saved columns layout"), &m_menu);
+        connect(pLoadTracksViewHeaderAction,
+                &QAction::triggered,
+                this,
+                &WTrackTableViewHeader::loadCustomHeaderState);
+        m_menu.addAction(pLoadTracksViewHeaderAction);
+
+        // Custom QCheckBox with fixed hover behavior
+        auto pSyncCheckBox = make_parented<WMenuCheckBox>(
+                tr("Sync with saved columns layout"), &m_menu);
+        bool viewIsSyncedToCustomHeaderState =
+                pTrackModel->getModelSetting(kHeaderSyncKey) == QStringLiteral("true");
+        pSyncCheckBox->setChecked(viewIsSyncedToCustomHeaderState);
+
+        connect(pSyncCheckBox.get(),
+                &QCheckBox::toggled,
+                this,
+                [this, pSyncCheckBox{pSyncCheckBox.get()}]() {
+                    m_menu.hide();
+                    toggleSyncCustomHeaderState(pSyncCheckBox->isChecked());
+                });
+
+        auto pSyncAction = make_parented<QWidgetAction>(this);
+        pSyncAction->setDefaultWidget(pSyncCheckBox.get());
+        // Pressing Return triggers the action but that would not toggle the
+        // checkbox, we need to do this ourselves while the menu is being closed.
+        connect(pSyncAction,
+                &QAction::triggered,
+                this,
+                [this, pSyncCheckBox{pSyncCheckBox.get()}] {
+                    pSyncCheckBox->toggle();
+                    toggleSyncCustomHeaderState(pSyncCheckBox->isChecked());
+                });
+        m_menu.addAction(pSyncAction);
+    }
 
     // Only show the shuffle action in models that allow sorting.
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting)) {
+        m_menu.addSeparator();
+
         auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), &m_menu);
         connect(pShuffleAction,
                 &QAction::triggered,
@@ -218,14 +299,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
                 /*signal-to-signal*/ Qt::DirectConnection);
         m_menu.addAction(pShuffleAction);
     }
-
-    // Safety check against someone getting stuck with all columns hidden
-    // (produces an empty library table). Just re-show them all.
-    if (hiddenCount() == columns) {
-        for (int i = 0; i < columns; ++i) {
-            showSection(i);
-        }
-    }
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
@@ -233,20 +306,36 @@ void WTrackTableViewHeader::saveHeaderState() {
     if (!pTrackModel) {
         return;
     }
+
+    bool viewIsSyncedToCustomHeaderState =
+            pTrackModel->getModelSetting(kHeaderSyncKey) == QStringLiteral("true");
+    if (viewIsSyncedToCustomHeaderState) {
+        storeAsCustomHeaderState();
+        return;
+    }
+
+    // Store header for this model
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    pTrackModel->setModelSetting("header_state_pb", view_state.saveState());
+    pTrackModel->setModelSetting(kHeaderStateKey, view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
     TrackModel* pTrackModel = getTrackModel();
-
     if (!pTrackModel) {
         return;
     }
 
-    QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
+    QString headerStateString;
+    bool viewIsSyncedToCustomHeaderState =
+            pTrackModel->getModelSetting(kHeaderSyncKey) == QStringLiteral("true");
+    if (viewIsSyncedToCustomHeaderState) {
+        headerStateString = pTrackModel->getCustomHeaderState();
+    } else {
+        headerStateString = pTrackModel->getModelSetting(kHeaderStateKey);
+    }
+
     if (headerStateString.isNull()) {
         loadDefaultHeaderState();
     } else {
@@ -274,21 +363,55 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
     }
 }
 
+void WTrackTableViewHeader::loadCustomHeaderState() {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QString headerStateString = pTrackModel->getCustomHeaderState();
+    if (headerStateString.isNull()) {
+        return;
+    }
+    HeaderViewState view_state(headerStateString);
+    if (!view_state.healthy()) {
+        return;
+    }
+    view_state.restoreState(this, false);
+
+    updateMenu();
+}
+
+void WTrackTableViewHeader::toggleSyncCustomHeaderState(bool checked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    pTrackModel->setModelSetting(kHeaderSyncKey, checked ? "true" : "false");
+
+    if (checked) {
+        loadCustomHeaderState();
+    }
+    // TODO Else try to reload the model's stored header?
+}
+
+void WTrackTableViewHeader::storeAsCustomHeaderState() {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    // Convert the QByteArray to a Base64 string and save it.
+    HeaderViewState view_state(*this);
+    pTrackModel->setCustomHeaderState(view_state.saveState());
+}
+
 bool WTrackTableViewHeader::hasPersistedHeaderState() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return false;
     }
-    QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
+    QString headerStateString = pTrackModel->getModelSetting(kHeaderStateKey);
     return !headerStateString.isNull();
-}
-
-void WTrackTableViewHeader::clearActions() {
-    // The QActions are parented to the menu, so clearing deletes them. Since
-    // they are deleted we don't have to disconnect their signals from the
-    // mapper.
-    m_columnCheckBoxes.clear();
-    m_menu.clear();
 }
 
 void WTrackTableViewHeader::showOrHideColumn(int column) {
