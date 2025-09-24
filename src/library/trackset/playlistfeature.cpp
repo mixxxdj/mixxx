@@ -73,6 +73,8 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pDeleteAllUnlockedPlaylistsAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pCreateImportPlaylistFindTracksAction);
 #ifdef __ENGINEPRIME__
     menu.addSeparator();
     menu.addAction(m_pExportAllPlaylistsToEngineAction);
