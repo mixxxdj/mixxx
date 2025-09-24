@@ -45,6 +45,7 @@ Deck n = 0/1:                                   Midi in         Midi out
     PAD 8           press                       9p  07  hh      [midi in]       OFF=0x00, ON=0x7F
 */
 
+// eslint-disable-next-line no-var
 var DDJ200 = { };
 
 DDJ200.init = function() {
