@@ -46,6 +46,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void previous();
 
   protected:
+    // used to make the dialog fit the screen (height)
+    void showEvent(QShowEvent* pEvent) override;
     // used to set the maximum size of the cover label
     void resizeEvent(QResizeEvent* pEvent) override;
 
