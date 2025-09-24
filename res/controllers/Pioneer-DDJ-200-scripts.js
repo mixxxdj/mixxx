@@ -243,27 +243,31 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
     });
 
     this.playButton = new components.PlayButton({
+        midi: [0x8F + midiChannel, 0x0B],
+        sendShifted: true,
+        shiftControl: 1,
+        shiftOffset: 0x3C,
         outKey: "play_indicator",
         shift: function() {
             this.inKey = "reverse";
-            this.midi = [0x8F + midiChannel, 0x47];
         },
         inputFaderStart: function(channel, control, value, status, _g) {
             this.inKey = "play";
             this.input(channel, control, value, status, _g);
-            this.inKey = "reverse";
         },
         unshift: function() {
             this.inKey = "play";
-            this.midi = [0x8F + midiChannel, 0x0B];
         },
     });
 
     this.cueButton = new components.CueButton({
+        midi: [0x8F + midiChannel, 0x0C],
+        sendShifted: true,
+        shiftControl: 1,
+        shiftOffset: 0x3C,
         outKey: "cue_indicator",
         shift: function() {
             this.inKey = "cue_gotoandstop";
-            this.midi = [0x8F + midiChannel, 0x48];
         },
         inputFaderStop: function(channel, control, value, status, _g) {
             this.inKey = "cue_set";
@@ -273,7 +277,6 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         },
         unshift: function() {
             this.inKey = "cue_default";
-            this.midi = [0x8F + midiChannel, 0x0C];
         },
     });
 
