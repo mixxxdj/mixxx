@@ -75,13 +75,26 @@ void HeaderViewState::restoreState(QHeaderView* pHeaders) {
 
     // First set all sections to be hidden and update logical indexes.
     for (int li = 0; li < pHeaders->count(); ++li) {
-        pHeaders->setSectionHidden(li, true);
+        bool hidden = true;
         auto it = map.find(pHeaders->model()->headerData(
                                                     li, Qt::Horizontal, TrackModel::kHeaderNameRole)
                         .toString());
-        if (it != map.end()) {
+        if (it == map.end()) {
+            // This is a column for which the stored state doesn't have a record,
+            // so this is likely a new column, added by last update.
+            // Enforce visible so it can be discovered.
+            qDebug() << "Header view: enforce visibility of new/unknown column"
+                     << pHeaders->model()->headerData(
+                                                 li, Qt::Horizontal)
+                                .toString() // translated name
+                     << pHeaders->model()->headerData(
+                                                 li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                                .toString(); // internal name
+            hidden = false;
+        } else {
             it.value()->set_logical_index(li);
         }
+        pHeaders->setSectionHidden(li, hidden);
     }
 
     // Now restore
