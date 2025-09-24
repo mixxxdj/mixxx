@@ -15,7 +15,7 @@
     <controls>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.shiftButton.input</key>
+        <key>DDJ200.leftDeck.shiftButton.input</key>
         <description>Deck 1: Shift pressed</description>
         <status>0x90</status>
         <midino>0x3F</midino>
@@ -25,7 +25,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.shiftButton.input</key>
+        <key>DDJ200.rightDeck.shiftButton.input</key>
         <description>Deck 2: Shift pressed</description>
         <status>0x91</status>
         <midino>0x3F</midino>

@@ -99,7 +99,7 @@ DDJ200.init = function() {
                 if (DDJ200.padModeIndex === (DDJ200.padModes.length - 1)) {
                     DDJ200.padModeIndex = 0;
                 } else {
-                    if (DDJ200.leftDeck.shiftPressed || DDJ200.rightDeck.shiftPressed) {
+                    if (DDJ200.leftDeck.shiftButton.pressed || DDJ200.rightDeck.shiftButton.pressed) {
                         DDJ200.padModeIndex = DDJ200.padModes.length - 1;
                     } else {
                         DDJ200.padModeIndex = (DDJ200.padModeIndex + 1) % (DDJ200.padModes.length - 1);
@@ -148,24 +148,6 @@ DDJ200.init = function() {
             };
         },
     });
-
-    DDJ200.shiftButton = new components.Button({
-        input: function(_channel, _control, value, status, _g) {
-            DDJ200.leftDeck.shiftPressed = value && (status === 0x90);
-            DDJ200.rightDeck.shiftPressed = value && (status === 0x91);
-            if (value) {
-                DDJ200.leftDeck.shift();
-                DDJ200.rightDeck.shift();
-            } else {
-                DDJ200.leftDeck.unshift();
-                DDJ200.rightDeck.unshift();
-            };
-            DDJ200.leftDeck.reconnectComponents();
-            DDJ200.rightDeck.reconnectComponents();
-        },
-    });
-
-
 };
 
 DDJ200.shutdown = function() {
@@ -188,7 +170,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         inKey: "jog",
         jogCounter: 0,
         inputSeek: function(_channel, _control, value, _status, group) {
-            if (DDJ200.leftDeck.shiftPressed) {
+            if (DDJ200.leftDeck.shiftButton.pressed) {
                 this.jogCounter += this.inValueScale(value);
                 if (this.jogCounter > 9) {
                     engine.setValue("[Library]", "MoveDown", true);
@@ -206,6 +188,20 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
                 const newPos = Math.max(0, oldPos + (this.inValueScale(value) * 0.2 / duration));
 
                 engine.setValue(group, "playposition", newPos); // Strip search
+            };
+        },
+    });
+
+    this.shiftButton = new components.Button({
+        pressed: 0,
+        input: function(_channel, _control, value, _status, _g) {
+            this.pressed = value;
+            if (value) {
+                DDJ200.leftDeck.shift();
+                DDJ200.rightDeck.shift();
+            } else {
+                DDJ200.leftDeck.unshift();
+                DDJ200.rightDeck.unshift();
             };
         },
     });
@@ -294,14 +290,10 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
             output: function(value, g, control) {
                 this[`output${DDJ200.padModes[DDJ200.padModeIndex]}`](value, g, control);
             },
-            midiNormal: [0x97 + (midiChannel - 1)*2, 0x00 + i],
-            midiShift: [0x98 + (midiChannel - 1)*2, 0x00 + i],
-            shift: function() {
-                this.midi = this.midiShift;
-            },
-            unshift: function() {
-                this.midi = this.midiNormal;
-            },
+            midi: [0x97 + (midiChannel - 1)*2, 0x00 + i],
+            sendShifted: true,
+            shiftChannel: 1,
+            shiftOffset: 1,
             outKey: this[`outKey${DDJ200.padModes[DDJ200.padModeIndex]}`],
             connect: function() {
                 if (DDJ200.padModes[DDJ200.padModeIndex] !== "effect") {
