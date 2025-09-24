@@ -27,7 +27,7 @@ Item {
             case Knob.ArcStart.Minimum:
                 return min;
             case Knob.ArcStart.Maximum:
-                return max;
+                    return max;
             default:
                 return valueCenter;
         }
