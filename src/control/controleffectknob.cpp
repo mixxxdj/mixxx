@@ -5,7 +5,9 @@
 #include "util/math.h"
 
 ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, double dMaxValue)
-        : ControlPotmeter(key, dMinValue, dMaxValue) {
+        // Set `ingnoreNoOps` false so clicking a WEffectParameterKnobComposed
+        // triggers the associated WEffectParameterNameBase to show the value.
+        : ControlPotmeter(key, dMinValue, dMaxValue, false, false) {
 }
 
 void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
