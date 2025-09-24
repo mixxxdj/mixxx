@@ -48,6 +48,9 @@ Deck n = 0/1:                                   Midi in         Midi out
 // eslint-disable-next-line no-var
 var DDJ200 = { };
 
+DDJ200.padModes = ["Hotcue", "Loop", "Effect", "Jump"];
+DDJ200.padModeIndex = 0;
+
 DDJ200.init = function() {
     DDJ200.leftDeck = new DDJ200.Deck([1, 3], 1);
     DDJ200.rightDeck = new DDJ200.Deck([2, 4], 2);
@@ -60,115 +63,115 @@ DDJ200.init = function() {
 
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
+
+    DDJ200.headMixButton = new components.Button({
+        midi: [0x96, 0x63],
+        key: "headMix",
+        type: components.Button.prototype.types.toggle,
+        input: function(_channel, _control, value, _status, _g) {
+            if (value) { // only if button pressed
+                const masterMixEnabled = (engine.getValue("[Master]", "headMix") >= 0);
+                engine.setValue("[Master]", "headMix", masterMixEnabled ? -1 : 0);
+                this.send(masterMixEnabled?0:0x7F); // set LED
+            };
+        },
+        shiftedInput: function(_channel, _control, value, _status, _g) {
+            if (value) { // only if button pressed
+                engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
+                if (!engine.getValue("[Skin]", "show_4decks")) {
+                    DDJ200.leftDeck.setCurrentDeck("[Channel1]");
+                    DDJ200.rightDeck.setCurrentDeck("[Channel2]");
+                    if (DDJ200.leftDeck.syncButton.blinkConnection) {
+                        DDJ200.leftDeck.syncButton.blinkConnection.disconnect();
+                    };
+                    if (DDJ200.rightDeck.syncButton.blinkConnection) {
+                        DDJ200.rightDeck.syncButton.blinkConnection.disconnect();
+                    };
+                };
+            };
+        },
+    });
+
+    DDJ200.transFxButton = new components.Button({
+        blinkConnection: undefined,
+        input: function(_channel, _control, value, _status, _g) {
+            if (value) { // only if button pressed
+                if (DDJ200.padModeIndex === (DDJ200.padModes.length - 1)) {
+                    DDJ200.padModeIndex = 0;
+                } else {
+                    if (DDJ200.leftDeck.shiftPressed || DDJ200.rightDeck.shiftPressed) {
+                        DDJ200.padModeIndex = DDJ200.padModes.length - 1;
+                    } else {
+                        DDJ200.padModeIndex = (DDJ200.padModeIndex + 1) % (DDJ200.padModes.length - 1);
+                    };
+                };
+                DDJ200.leftDeck.pads.forEach(function(e) {
+                    e.updateOutKey();
+                });
+                DDJ200.rightDeck.pads.forEach(function(e) {
+                    e.updateOutKey();
+                });
+                this.output();
+            };
+        },
+        output: function(_value, _g, _control) {
+            if (this.blinkConnection) {
+                this.blinkConnection.disconnect();
+                this.blinkConnection = undefined;
+            };
+            switch (DDJ200.padModes[DDJ200.padModeIndex]) {
+            case "Hotcue":
+                midi.sendShortMsg(0x96, 0x59, 0x00);
+                midi.sendShortMsg(0x96, 0x5A, 0x00);
+                break;
+            case "Loop":
+                midi.sendShortMsg(0x96, 0x59, 0x7F);
+                midi.sendShortMsg(0x96, 0x5A, 0x7F);
+                break;
+            case "Effect":
+                this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
+                    midi.sendShortMsg(0x96, 0x59, 0x7F * value);
+                    midi.sendShortMsg(0x96, 0x5A, 0x7F * value);
+                });
+                break;
+            case "Jump":
+                this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
+                    midi.sendShortMsg(0x96, 0x59, 0x7F * value);
+                    midi.sendShortMsg(0x96, 0x5A, 0x7F * value);
+                    for (let midiChannel = 0; midiChannel < 4; midiChannel++) {
+                        for (let i = 0; i < 8; i++) {
+                            midi.sendShortMsg(0x97 + midiChannel, i, 0x7F * value);
+                        };
+                    };
+                });
+                break;
+            };
+        },
+    });
+
+    DDJ200.shiftButton = new components.Button({
+        input: function(_channel, _control, value, status, _g) {
+            DDJ200.leftDeck.shiftPressed = value && (status === 0x90);
+            DDJ200.rightDeck.shiftPressed = value && (status === 0x91);
+            if (value) {
+                DDJ200.leftDeck.shift();
+                DDJ200.rightDeck.shift();
+            } else {
+                DDJ200.leftDeck.unshift();
+                DDJ200.rightDeck.unshift();
+            };
+            DDJ200.leftDeck.reconnectComponents();
+            DDJ200.rightDeck.reconnectComponents();
+        },
+    });
+
+
 };
 
 DDJ200.shutdown = function() {
     DDJ200.leftDeck.shutdown();
     DDJ200.rightDeck.shutdown();
 };
-
-DDJ200.padModes = ["Hotcue", "Loop", "Effect", "Jump"];
-DDJ200.padModeIndex = 0;
-DDJ200.transFxButton = new components.Button({
-    blinkConnection: undefined,
-    input: function(_channel, _control, value, _status, _g) {
-        if (value) { // only if button pressed
-            if (DDJ200.padModeIndex === (DDJ200.padModes.length - 1)) {
-                DDJ200.padModeIndex = 0;
-            } else {
-                if (DDJ200.leftDeck.shiftPressed || DDJ200.rightDeck.shiftPressed) {
-                    DDJ200.padModeIndex = DDJ200.padModes.length - 1;
-                } else {
-                    DDJ200.padModeIndex = (DDJ200.padModeIndex + 1) % (DDJ200.padModes.length - 1);
-                };
-            };
-            DDJ200.leftDeck.pads.forEach(function(e) {
-                e.updateOutKey();
-            });
-            DDJ200.rightDeck.pads.forEach(function(e) {
-                e.updateOutKey();
-            });
-            this.output();
-        };
-    },
-    output: function(_value, _g, _control) {
-        if (this.blinkConnection) {
-            this.blinkConnection.disconnect();
-            this.blinkConnection = undefined;
-        };
-        switch (DDJ200.padModes[DDJ200.padModeIndex]) {
-        case "Hotcue":
-            midi.sendShortMsg(0x96, 0x59, 0x00);
-            midi.sendShortMsg(0x96, 0x5A, 0x00);
-            break;
-        case "Loop":
-            midi.sendShortMsg(0x96, 0x59, 0x7F);
-            midi.sendShortMsg(0x96, 0x5A, 0x7F);
-            break;
-        case "Effect":
-            this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
-                midi.sendShortMsg(0x96, 0x59, 0x7F * value);
-                midi.sendShortMsg(0x96, 0x5A, 0x7F * value);
-            });
-            break;
-        case "Jump":
-            this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
-                midi.sendShortMsg(0x96, 0x59, 0x7F * value);
-                midi.sendShortMsg(0x96, 0x5A, 0x7F * value);
-                for (let midiChannel = 0; midiChannel < 4; midiChannel++) {
-                    for (let i = 0; i < 8; i++) {
-                        midi.sendShortMsg(0x97 + midiChannel, i, 0x7F * value);
-                    };
-                };
-            });
-            break;
-        };
-    },
-});
-
-DDJ200.headMixButton = new components.Button({
-    midi: [0x96, 0x63],
-    key: "headMix",
-    type: components.Button.prototype.types.toggle,
-    input: function(_channel, _control, value, _status, _g) {
-        if (value) { // only if button pressed
-            const masterMixEnabled = (engine.getValue("[Master]", "headMix") >= 0);
-            engine.setValue("[Master]", "headMix", masterMixEnabled ? -1 : 0);
-            this.send(masterMixEnabled?0:0x7F); // set LED
-        };
-    },
-    shiftedInput: function(_channel, _control, value, _status, _g) {
-        if (value) { // only if button pressed
-            engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
-            if (!engine.getValue("[Skin]", "show_4decks")) {
-                DDJ200.leftDeck.setCurrentDeck("[Channel1]");
-                DDJ200.rightDeck.setCurrentDeck("[Channel2]");
-                if (DDJ200.leftDeck.syncButton.blinkConnection) {
-                    DDJ200.leftDeck.syncButton.blinkConnection.disconnect();
-                };
-                if (DDJ200.rightDeck.syncButton.blinkConnection) {
-                    DDJ200.rightDeck.syncButton.blinkConnection.disconnect();
-                };
-            };
-        };
-    },
-});
-
-DDJ200.shiftButton = new components.Button({
-    input: function(_channel, _control, value, status, _g) {
-        DDJ200.leftDeck.shiftPressed = value && (status === 0x90);
-        DDJ200.rightDeck.shiftPressed = value && (status === 0x91);
-        if (value) {
-            DDJ200.leftDeck.shift();
-            DDJ200.rightDeck.shift();
-        } else {
-            DDJ200.leftDeck.unshift();
-            DDJ200.rightDeck.unshift();
-        };
-        DDJ200.leftDeck.reconnectComponents();
-        DDJ200.rightDeck.reconnectComponents();
-    },
-});
 
 DDJ200.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
