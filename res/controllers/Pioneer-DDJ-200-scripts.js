@@ -52,8 +52,6 @@ DDJ200.init = function() {
     DDJ200.leftDeck = new DDJ200.Deck([1, 3], 1);
     DDJ200.rightDeck = new DDJ200.Deck([2, 4], 2);
 
-    DDJ200.LEDsOff();
-
     // start with focus on library for selecting tracks (delay seems required)
     engine.beginTimer(500, function() {
         engine.setValue("[Library]", "MoveFocus", 1);
@@ -65,33 +63,8 @@ DDJ200.init = function() {
 };
 
 DDJ200.shutdown = function() {
-    DDJ200.LEDsOff();
-};
-
-DDJ200.LEDsOff = function() {                         // turn off LED buttons:
-    for (let i = 0; i <= 1; i++) {
-        midi.sendShortMsg(0x96 + i, 0x63, 0x00);      // set headphone master
-        midi.sendShortMsg(0x90 + i, 0x54, 0x00);      // pfl headphone
-        midi.sendShortMsg(0x90 + i, 0x58, 0x00);      // beat sync
-        midi.sendShortMsg(0x90 + i, 0x0B, 0x00);      // play
-        midi.sendShortMsg(0x90 + i, 0x0C, 0x00);      // cue
-        for (let j = 0; j <= 8; j++) {
-            midi.sendShortMsg(0x97 + 2 * i, j, 0x00); // hotcue
-        };
-    };
-};
-
-DDJ200.padLEDsOff = function() {                         // turn off LED buttons:
-    for (let i = 0; i <= 1; i++) {
-        midi.sendShortMsg(0x96 + i, 0x63, 0x00);      // set headphone master
-        midi.sendShortMsg(0x90 + i, 0x54, 0x00);      // pfl headphone
-        midi.sendShortMsg(0x90 + i, 0x58, 0x00);      // beat sync
-        midi.sendShortMsg(0x90 + i, 0x0B, 0x00);      // play
-        midi.sendShortMsg(0x90 + i, 0x0C, 0x00);      // cue
-        for (let j = 0; j <= 8; j++) {
-            midi.sendShortMsg(0x97 + 2 * i, j, 0x00); // hotcue
-        };
-    };
+    DDJ200.leftDeck.shutdown();
+    DDJ200.rightDeck.shutdown();
 };
 
 DDJ200.padModes = ["Hotcue", "Loop", "Effect", "Jump"];
