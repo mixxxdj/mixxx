@@ -311,8 +311,8 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
                 };
             },
             updateOutKey: function() {
-                this.outKey = this[`outKey${  DDJ200.padModes[DDJ200.padModeIndex]}`];
                 this.disconnect();
+                this.outKey = this[`outKey${  DDJ200.padModes[DDJ200.padModeIndex]}`];
                 this.connect();
                 this.trigger();
             },
