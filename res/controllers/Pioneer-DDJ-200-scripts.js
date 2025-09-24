@@ -438,12 +438,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
 
     this.loadTrack = new components.Button({
         midi: [0x8F + midiChannel, 0x68],
-        type: components.Button.prototype.types.toggle,
-        input: function(_channel, _control, value, _status, _g) {
-            if (value) { // only if button pressed
-                script.triggerControl(this.group, "LoadSelectedTrack", true);
-            };
-        },
+        inKey: "LoadSelectedTrack",
     });
 
     this.volume = new components.Pot({
