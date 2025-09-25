@@ -121,6 +121,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
           m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
                   ConfigKey(group, "headSplit"), true, 0.0)),
+          m_pMainPfl(std::make_unique<ControlPushButton>(
+                  ConfigKey(kMainGroup, "pfl"))),
 
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
@@ -190,6 +192,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
 
     m_pHeadSplitEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pHeadSplitEnabled->set(0.0);
+    m_pMainPfl->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pMainPfl->set(0.0);
 
     // zero out otherwise uninitialized buffers
     m_head.clear();
@@ -394,45 +398,6 @@ void EngineMixer::process(const std::size_t bufferSize) {
         mainMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
         // qDebug() << "head val " << cf_val << ", head " << chead_gain
         //          << ", main " << mainGain;
-    }
-
-    // Mix all the PFL enabled channels together.
-    m_headphoneGain.setGain(pflMixGainInHeadphones);
-
-    if (headphoneEnabled) {
-        // Process effects and mix PFL channels together for the headphones.
-        // Effects will be reprocessed post-fader for the crossfader buses
-        // and main mix, so the channel input buffers cannot be modified here.
-        ChannelMixer::applyEffectsAndMixChannels(
-                m_headphoneGain,
-                m_activeHeadphoneChannels,
-                &m_channelHeadphoneGainCache,
-                m_head.data(),
-                m_headphoneHandle.handle(),
-                bufferSize,
-                m_sampleRate,
-                m_pEngineEffectsManager);
-
-        // Process headphone channel effects
-        if (m_pEngineEffectsManager) {
-            GroupFeatureState headphoneFeatures;
-            // If there is only one channel in the headphone mix, use its features
-            // for effects processing. This allows for previewing how an effect will
-            // sound on a playing deck before turning up the dry/wet knob to make it
-            // audible on the main mix. Without this, the effect would sound different
-            // in headphones than how it would sound if it was enabled on the deck,
-            // for example with tempo synced effects.
-            if (m_activeHeadphoneChannels.size() == 1) {
-                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
-            }
-            m_pEngineEffectsManager->processPostFaderInPlace(
-                    m_headphoneHandle.handle(),
-                    m_headphoneHandle.handle(),
-                    m_head.data(),
-                    bufferSize,
-                    m_sampleRate,
-                    headphoneFeatures);
-        }
     }
 
     // Mix all the talkover enabled channels together.
@@ -772,6 +737,50 @@ void EngineMixer::process(const std::size_t bufferSize) {
         // main balance and talkover is reflected in the VU meter.
         if (m_pVumeter != nullptr) {
             m_pVumeter->process(m_main.data(), bufferSize);
+        }
+    }
+
+    // Mix all the PFL enabled channels together.
+    m_headphoneGain.setGain(pflMixGainInHeadphones);
+
+    if (headphoneEnabled) {
+        // Process effects and mix PFL channels together for the headphones.
+        // Effects will be reprocessed post-fader for the crossfader buses
+        // and main mix, so the channel input buffers cannot be modified here.
+        ChannelMixer::applyEffectsAndMixChannels(
+                m_headphoneGain,
+                m_activeHeadphoneChannels,
+                &m_channelHeadphoneGainCache,
+                m_head.data(),
+                m_headphoneHandle.handle(),
+                bufferSize,
+                m_sampleRate,
+                m_pEngineEffectsManager);
+
+        // Process headphone channel effects
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState headphoneFeatures;
+            // If there is only one channel in the headphone mix, use its features
+            // for effects processing. This allows for previewing how an effect will
+            // sound on a playing deck before turning up the dry/wet knob to make it
+            // audible on the main mix. Without this, the effect would sound different
+            // in headphones than how it would sound if it was enabled on the deck,
+            // for example with tempo synced effects.
+            if (m_activeHeadphoneChannels.size() == 1) {
+                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
+            }
+            m_pEngineEffectsManager->processPostFaderInPlace(
+                    m_headphoneHandle.handle(),
+                    m_headphoneHandle.handle(),
+                    m_head.data(),
+                    bufferSize,
+                    m_sampleRate,
+                    headphoneFeatures);
+        }
+
+        // Also add Main signal on top if main pfl is active
+        if (mainEnabled && m_pMainPfl->toBool()) {
+            SampleUtil::add(m_head.data(), m_main.data(), bufferSize);
         }
     }
 
