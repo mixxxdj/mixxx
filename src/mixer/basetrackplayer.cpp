@@ -267,6 +267,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pVisualBpm = std::make_unique<ControlObject>(ConfigKey(getGroup(), "visual_bpm"));
     m_pKey = make_parented<ControlProxy>(getGroup(), "file_key", this);
     m_pVisualKey = std::make_unique<ControlObject>(ConfigKey(getGroup(), "visual_key"));
+    m_pVisualKeyDistance = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "visual_key_distance"));
 
     m_pTimeElapsed = std::make_unique<ControlObject>(ConfigKey(getGroup(), "time_elapsed"));
     m_pTimeRemaining = std::make_unique<ControlObject>(ConfigKey(getGroup(), "time_remaining"));

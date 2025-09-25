@@ -44,6 +44,9 @@ class DeckVisuals {
     std::unique_ptr<ControlProxy> m_pEngineKey;
     std::unique_ptr<ControlProxy> m_pVisualKey;
 
+    std::unique_ptr<ControlProxy> m_pEngineKeyDistance;
+    std::unique_ptr<ControlProxy> m_pVisualKeyDistance;
+
     std::unique_ptr<ControlProxy> m_pTimeElapsed;
     std::unique_ptr<ControlProxy> m_pTimeRemaining;
     std::unique_ptr<ControlProxy> m_pEndOfTrack;
