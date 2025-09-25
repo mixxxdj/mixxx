@@ -209,18 +209,14 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
     this.syncButton = new components.Button({
         midi: [0x8F + midiChannel, 0x58],
         key: "sync_enabled",
-        input: function(_channel, _control, value, _status, _g) {
+        inputLongPress: function(_channel, _control, value, _status, _g) {
             if (value) {
                 if (engine.getValue(this.group, "sync_enabled") === 0) {
                     engine.setValue(this.group, "beatsync", 1);
+                    engine.setValue(this.group, "sync_enabled", 1);
                 } else {
                     engine.setValue(this.group, "sync_enabled", 0);
-                };
-            };
-        },
-        inputLongPress: function(_channel, _control, value, _status, _g) {
-            if (value) {
-                engine.setValue(this.group, "sync_enabled", 1);
+                }
             };
         },
         shiftedInput: function(_channel, _control, value, _status, _g) {
@@ -247,16 +243,10 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         sendShifted: true,
         shiftControl: 1,
         shiftOffset: 0x3C,
-        outKey: "play_indicator",
-        shift: function() {
-            this.inKey = "reverse";
-        },
         inputFaderStart: function(channel, control, value, status, _g) {
+            // will trigger "reverse" if not handled separately
             this.inKey = "play";
             this.input(channel, control, value, status, _g);
-        },
-        unshift: function() {
-            this.inKey = "play";
         },
     });
 
@@ -265,18 +255,11 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         sendShifted: true,
         shiftControl: 1,
         shiftOffset: 0x3C,
-        outKey: "cue_indicator",
-        shift: function() {
-            this.inKey = "cue_gotoandstop";
-        },
         inputFaderStop: function(channel, control, value, status, _g) {
             this.inKey = "cue_set";
             this.input(channel, control, value, status, _g);
             this.inKey = "cue_gotoandstop";
             this.input(channel, control, value, status, _g);
-        },
-        unshift: function() {
-            this.inKey = "cue_default";
         },
     });
 
