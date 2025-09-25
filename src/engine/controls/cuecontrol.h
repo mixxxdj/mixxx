@@ -18,6 +18,7 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 class ControlProxy;
+class ControlString;
 
 enum class CueMode {
     Mixxx,
@@ -98,6 +99,9 @@ class HotcueControl : public QObject {
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
+    QString getLabelText() const;
+    void setLabelText(const QString& labelText);
+
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.
     mixxx::CueType getPreviewingType() const {
@@ -139,6 +143,7 @@ class HotcueControl : public QObject {
     void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcueColorChangeRequest(double newColor);
+    void slotHotcueLabelTextChanged(const QString& newLabelText);
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v, HotcueSetMode mode);
@@ -184,6 +189,9 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
     std::unique_ptr<ControlPushButton> m_hotcueClear;
     std::unique_ptr<ControlPushButton> m_hotcueSwap;
+
+    // UTF-8 string control for hotcue labels
+    std::unique_ptr<ControlString> m_hotcueLabelText;
 
     ControlValueAtomic<mixxx::CueType> m_previewingType;
     ControlValueAtomic<mixxx::audio::FramePos> m_previewingPosition;

@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "control/controlpotmeter.h"
+#include "control/controlstring.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
@@ -171,6 +172,29 @@ void ControllerScriptInterfaceLegacy::setValue(
             coScript->set(newValue);
         }
     }
+}
+
+QString ControllerScriptInterfaceLegacy::getStringValue(const QString& group, const QString& name) {
+    ConfigKey key(group, name);
+    if (!ControlString::exists(key)) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried getting string value of non-existent control (%1, %2)")
+                                                       .arg(group, name));
+        return QString();
+    }
+    return ControlString::get(key);
+}
+
+void ControllerScriptInterfaceLegacy::setStringValue(
+        const QString& group, const QString& name, const QString& newValue) {
+    ConfigKey key(group, name);
+    if (!ControlString::exists(key)) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried setting string value of non-existent control (%1, %2)")
+                                                       .arg(group, name));
+        return;
+    }
+    ControlString::set(key, newValue);
 }
 
 double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
