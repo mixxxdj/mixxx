@@ -25,6 +25,7 @@ class EffectManifest {
   public:
     EffectManifest()
             : m_backendType(EffectBackendType::Unknown),
+              m_hasUI(false),
               m_isMixingEQ(false),
               m_isMainEQ(false),
               m_effectRampsFromDry(false),
@@ -93,6 +94,14 @@ class EffectManifest {
 
     const QString& description() const {
         return m_description;
+    }
+
+    const bool& hasUI() const {
+        return m_hasUI;
+    }
+
+    void setHasUI(const bool value) {
+        m_hasUI = value;
     }
 
     const bool& isMixingEQ() const {
@@ -180,6 +189,7 @@ class EffectManifest {
     QString m_author;
     QString m_version;
     QString m_description;
+    bool m_hasUI;
     /// This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMainEQ;

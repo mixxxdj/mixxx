@@ -1,13 +1,20 @@
 #import <AVFAudio/AVFAudio.h>
+#import <AppKit/AppKit.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <CoreAudioKit/CoreAudioKit.h>
 #import <CoreAudioTypes/CoreAudioBaseTypes.h>
-#include <CoreAudioTypes/CoreAudioTypes.h>
+#import <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QLabel>
 #include <QMutex>
+#include <QVBoxLayout>
 #include <QtGlobal>
 #include <algorithm>
+#include <memory>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
+#include "effects/backends/audiounit/audiounitmanager.h"
+#include "effects/backends/audiounit/dlgaudiounit.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/assert.h"
@@ -250,4 +257,8 @@ void AudioUnitEffectProcessor::syncStreamFormat(
             }
         }
     }
+}
+
+std::unique_ptr<DlgEffect> AudioUnitEffectProcessor::createUI() {
+    return std::make_unique<DlgAudioUnit>(m_pManager);
 }

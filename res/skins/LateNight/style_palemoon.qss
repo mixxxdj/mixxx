@@ -1663,6 +1663,7 @@ WPushButton#LoopActivate[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
 WPushButton#StemMuteButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
+WPushButton#FxUiButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
 #MicDuckingContainer WPushButton[displayValue="0"],
@@ -1790,6 +1791,8 @@ QPushButton#pushButtonRecording:checked,
 }
 
 /* Green for Fx toggles, QuickEffect + Fx12 */
+#FxUnit1 #FxUiButton[displayValue="1"],
+#FxUnit2 #FxUiButton[displayValue="1"],
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
 WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
@@ -1803,6 +1806,8 @@ WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
     background-color: #236b00;
   }
 /* Blue for Fx buttons 3/4 */
+#FxUnit3 #FxUiButton[displayValue="1"],
+#FxUnit4 #FxUiButton[displayValue="1"],
 #FxUnit3 #FxToggleButton[displayValue="1"],
 #FxUnit4 #FxToggleButton[displayValue="1"],
 WBpmEditor QDoubleSpinBox::up-button:pressed,
@@ -2556,6 +2561,13 @@ WPushButton#PlayDeck[value="0"] {
   }
   #MixModeButton[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
+  }
+
+#FxUiButton[value="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__fx_ui.svg) no-repeat center center;
+  }
+  #FxUiButton[value="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__fx_ui_active.svg) no-repeat center center;
   }
 
 #FxToggleButton[value="0"] {

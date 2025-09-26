@@ -13,6 +13,8 @@
 #include "engine/effects/message.h"
 #include "util/types.h"
 
+class DlgEffect;
+
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
 /// between an EffectSlot and the EffectProcessor. It implements the logic to handle
 /// changes of state (enable switch, chain routing switches, parameters' state) so
@@ -58,6 +60,8 @@ class EngineEffect final : public EffectsRequestHandler {
     SINT getGroupDelayFrames() {
         return m_pProcessor->getGroupDelayFrames();
     }
+
+    std::unique_ptr<DlgEffect> createUI();
 
   private:
     QString debugString() const {

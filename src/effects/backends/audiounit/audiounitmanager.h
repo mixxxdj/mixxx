@@ -45,6 +45,9 @@ class AudioUnitManager {
     /// the timeout was reached instead.
     bool waitForAudioUnit(int timeoutMs) const;
 
+    /// Fetches the audio unit's name.
+    QString getName() const;
+
   private:
     QString m_name;
     std::atomic<bool> m_isInstantiated;

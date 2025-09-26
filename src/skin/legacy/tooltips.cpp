@@ -1142,6 +1142,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Clear")
             << tr("Clear the current effect.");
 
+    add("EffectSlot_ui_shown")
+            << tr("Show Effect UI")
+            << tr("Displays the UI for the given effect if available");
+
     add("EffectSlot_enabled")
             << tr("Enable Effect")
             << tr("The effect unit must also be assigned to a deck or other sound source to hear the effect.");
