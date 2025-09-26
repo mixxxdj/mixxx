@@ -191,7 +191,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueSwap;
 
     // UTF-8 string control for hotcue labels
-    std::unique_ptr<ControlString> m_hotcueLabelText;
+    std::unique_ptr<mixxx::ControlString> m_hotcueLabelText;
 
     ControlValueAtomic<mixxx::CueType> m_previewingType;
     ControlValueAtomic<mixxx::audio::FramePos> m_previewingPosition;

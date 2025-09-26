@@ -9,10 +9,13 @@
 #include "control/control.h"
 #include "preferences/usersettings.h"
 
+namespace mixxx {
+
 class ControlString;
 
-// ControlStringPrivate is the thread-safe implementation backing ControlString
-// Similar to ControlDoublePrivate but for UTF-8 strings
+/// ControlStringPrivate is the thread-safe implementation backing ControlString.
+/// Similar to ControlDoublePrivate but for UTF-8 strings. Provides persistence,
+/// thread-safety with QMutex, and signal/slot integration for real-time audio.
 class ControlStringPrivate : public QObject {
     Q_OBJECT
   public:
@@ -125,6 +128,10 @@ class ControlStringPrivate : public QObject {
     friend class ControlString;
 };
 
+/// ControlString provides UTF-8 string control functionality parallel to ControlObject.
+/// Supports unlimited length UTF-8 strings, persistence via UserSettings, and
+/// JavaScript controller integration via engine.setStringValue/getStringValue.
+/// Thread-safe for real-time audio usage with proper signal/slot connections.
 class ControlString : public QObject {
     Q_OBJECT
   public:
@@ -260,3 +267,5 @@ class ControlString : public QObject {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
 };
+
+} // namespace mixxx

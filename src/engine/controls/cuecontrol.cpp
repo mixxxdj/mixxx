@@ -2785,12 +2785,12 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             Qt::DirectConnection);
 
     // UTF-8 string control for hotcue labels
-    m_hotcueLabelText = std::make_unique<ControlString>(
+    m_hotcueLabelText = std::make_unique<mixxx::ControlString>(
             keyForControl(QStringLiteral("label_text")),
             false, // bIgnoreNops
             true); // bPersist
     connect(m_hotcueLabelText.get(),
-            &ControlString::valueChanged,
+            &mixxx::ControlString::valueChanged,
             this,
             &HotcueControl::slotHotcueLabelTextChanged,
             Qt::DirectConnection);

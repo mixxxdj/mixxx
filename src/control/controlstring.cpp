@@ -1,9 +1,11 @@
 #include "control/controlstring.h"
 
-#include <QtDebug>
+#include <QMutexLocker>
 
 #include "moc_controlstring.cpp"
 #include "util/assert.h"
+
+namespace mixxx {
 
 // Static member definitions
 QHash<ConfigKey, QWeakPointer<ControlStringPrivate>> ControlStringPrivate::s_controlHash;
@@ -288,3 +290,5 @@ void ControlString::readOnlyHandler(const QString& v) {
     // Ignore all value change requests
     Q_UNUSED(v);
 }
+
+} // namespace mixxx

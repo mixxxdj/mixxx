@@ -176,25 +176,25 @@ void ControllerScriptInterfaceLegacy::setValue(
 
 QString ControllerScriptInterfaceLegacy::getStringValue(const QString& group, const QString& name) {
     ConfigKey key(group, name);
-    if (!ControlString::exists(key)) {
+    if (!mixxx::ControlString::exists(key)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried getting string value of non-existent control (%1, %2)")
                 .arg(group, name));
         return QString();
     }
-    return ControlString::get(key);
+    return mixxx::ControlString::get(key);
 }
 
 void ControllerScriptInterfaceLegacy::setStringValue(
         const QString& group, const QString& name, const QString& newValue) {
     ConfigKey key(group, name);
-    if (!ControlString::exists(key)) {
+    if (!mixxx::ControlString::exists(key)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried setting string value of non-existent control (%1, %2)")
                 .arg(group, name));
         return;
     }
-    ControlString::set(key, newValue);
+    mixxx::ControlString::set(key, newValue);
 }
 
 double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
