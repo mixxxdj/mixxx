@@ -14,10 +14,10 @@ QSharedPointer<ControlStringPrivate> ControlStringPrivate::s_pDefaultControl;
 // ControlStringPrivate Implementation
 
 ControlStringPrivate::ControlStringPrivate(const ConfigKey& key,
-                                           ControlString* pCreatorCO,
-                                           bool bIgnoreNops,
-                                           bool bPersist,
-                                           const QString& defaultValue)
+        ControlString* pCreatorCO,
+        bool bIgnoreNops,
+        bool bPersist,
+        const QString& defaultValue)
         : m_key(key),
           m_bIgnoreNops(bIgnoreNops),
           m_bPersist(bPersist),
@@ -48,9 +48,7 @@ void ControlStringPrivate::initialize(const QString& defaultValue) {
         }
     }
 
-    connect(this, &ControlStringPrivate::valueChangeRequest,
-            this, &ControlStringPrivate::slotValueChangeRequest,
-            Qt::DirectConnection);
+    connect(this, &ControlStringPrivate::valueChangeRequest, this, &ControlStringPrivate::slotValueChangeRequest, Qt::DirectConnection);
 }
 
 // static
@@ -66,7 +64,6 @@ QSharedPointer<ControlStringPrivate> ControlStringPrivate::getControl(
         bool bIgnoreNops,
         bool bPersist,
         const QString& defaultValue) {
-    
     if (!key.isValid()) {
         if (flags & ControlFlag::AllowInvalidKey) {
             return getDefaultControl();
@@ -76,7 +73,7 @@ QSharedPointer<ControlStringPrivate> ControlStringPrivate::getControl(
     }
 
     QSharedPointer<ControlStringPrivate> pControl;
-    
+
     {
         QMutexLocker locker(&s_controlHashMutex);
         auto it = s_controlHash.find(key);
@@ -92,8 +89,7 @@ QSharedPointer<ControlStringPrivate> ControlStringPrivate::getControl(
     if (!pControl && pCreatorCO) {
         // Create new control
         pControl = QSharedPointer<ControlStringPrivate>(
-            new ControlStringPrivate(key, pCreatorCO, bIgnoreNops, bPersist, defaultValue));
-        
+                new ControlStringPrivate(key, pCreatorCO, bIgnoreNops, bPersist, defaultValue));
         QMutexLocker locker(&s_controlHashMutex);
         s_controlHash.insert(key, pControl);
     }
@@ -116,7 +112,7 @@ QSharedPointer<ControlStringPrivate> ControlStringPrivate::getDefaultControl() {
     if (!s_pDefaultControl) {
         ConfigKey key;
         s_pDefaultControl = QSharedPointer<ControlStringPrivate>(
-            new ControlStringPrivate(key, nullptr, true, false, QString()));
+                new ControlStringPrivate(key, nullptr, true, false, QString()));
     }
     return s_pDefaultControl;
 }
@@ -125,14 +121,14 @@ QSharedPointer<ControlStringPrivate> ControlStringPrivate::getDefaultControl() {
 QList<QSharedPointer<ControlStringPrivate>> ControlStringPrivate::getAllInstances() {
     QMutexLocker locker(&s_controlHashMutex);
     QList<QSharedPointer<ControlStringPrivate>> result;
-    
+
     for (auto it = s_controlHash.begin(); it != s_controlHash.end(); ++it) {
         auto pControl = it.value().toStrongRef();
         if (pControl) {
             result.append(pControl);
         }
     }
-    
+
     return result;
 }
 
@@ -140,14 +136,14 @@ QList<QSharedPointer<ControlStringPrivate>> ControlStringPrivate::getAllInstance
 QList<QSharedPointer<ControlStringPrivate>> ControlStringPrivate::takeAllInstances() {
     QMutexLocker locker(&s_controlHashMutex);
     QList<QSharedPointer<ControlStringPrivate>> result;
-    
+
     for (auto it = s_controlHash.begin(); it != s_controlHash.end(); ++it) {
         auto pControl = it.value().toStrongRef();
         if (pControl) {
             result.append(pControl);
         }
     }
-    
+
     s_controlHash.clear();
     return result;
 }
@@ -157,7 +153,7 @@ void ControlStringPrivate::set(const QString& value, QObject* pSender) {
     if (m_bIgnoreNops && value == get()) {
         return;
     }
-    
+
     emit valueChangeRequest(value);
 }
 
@@ -169,7 +165,7 @@ void ControlStringPrivate::setAndConfirm(const QString& value, QObject* pSender)
         }
         m_value = value;
     }
-    
+
     emit valueChanged(value, pSender);
 }
 
@@ -216,9 +212,9 @@ ControlString::ControlString()
 }
 
 ControlString::ControlString(const ConfigKey& key,
-                             bool bIgnoreNops,
-                             bool bPersist,
-                             const QString& defaultValue)
+        bool bIgnoreNops,
+        bool bPersist,
+        const QString& defaultValue)
         : m_key(key) {
     // Don't bother looking up the control if key is invalid. Prevents log spew.
     if (m_key.isValid()) {

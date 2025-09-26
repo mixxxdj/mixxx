@@ -2787,14 +2787,14 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     // UTF-8 string control for hotcue labels
     m_hotcueLabelText = std::make_unique<ControlString>(
             keyForControl(QStringLiteral("label_text")),
-            false,  // bIgnoreNops
-            true);  // bPersist
+            false, // bIgnoreNops
+            true); // bPersist
     connect(m_hotcueLabelText.get(),
             &ControlString::valueChanged,
             this,
             &HotcueControl::slotHotcueLabelTextChanged,
             Qt::DirectConnection);
-
+{{ ... }}
     m_previewingType.setValue(mixxx::CueType::Invalid);
     m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }

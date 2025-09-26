@@ -1,13 +1,13 @@
 #pragma once
 
+#include <QHash>
 #include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
-#include <QHash>
 
-#include "preferences/usersettings.h"
 #include "control/control.h"
+#include "preferences/usersettings.h"
 
 class ControlString;
 
@@ -83,11 +83,9 @@ class ControlStringPrivate : public QObject {
     }
 
     // Connects a slot to the ValueChange request for CO validation.
-    template <typename Receiver, typename Slot>
-    bool connectValueChangeRequest(Receiver receiver, Slot func,
-                                   Qt::ConnectionType type = Qt::AutoConnection) {
-        return connect(this, &ControlStringPrivate::valueChangeRequest,
-                       receiver, func, type);
+    template<typename Receiver, typename Slot>
+    bool connectValueChangeRequest(Receiver receiver, Slot func, Qt::ConnectionType type = Qt::AutoConnection) {
+        return connect(this, &ControlStringPrivate::valueChangeRequest, receiver, func, type);
     }
 
   signals:
@@ -99,10 +97,10 @@ class ControlStringPrivate : public QObject {
 
   private:
     ControlStringPrivate(const ConfigKey& key,
-                         ControlString* pCreatorCO,
-                         bool bIgnoreNops,
-                         bool bPersist,
-                         const QString& defaultValue);
+            ControlString* pCreatorCO,
+            bool bIgnoreNops,
+            bool bPersist,
+            const QString& defaultValue);
 
     void initialize(const QString& defaultValue);
 
@@ -121,7 +119,7 @@ class ControlStringPrivate : public QObject {
     QString m_defaultValue;
     bool m_bIgnoreNops;
     bool m_bPersist;
-    
+
     QAtomicPointer<ControlString> m_pCreatorCO;
 
     friend class ControlString;
@@ -137,16 +135,16 @@ class ControlString : public QObject {
     // defaultValue: default value of CO. If CO is persistent and there is no valid
     //               value found in the config, this is also the initial value.
     ControlString(const ConfigKey& key,
-                  bool bIgnoreNops = true,
-                  bool bPersist = false,
-                  const QString& defaultValue = QString());
+            bool bIgnoreNops = true,
+            bool bPersist = false,
+            const QString& defaultValue = QString());
     virtual ~ControlString();
 
     // Returns a pointer to the ControlString matching the given ConfigKey
     static ControlString* getControl(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
     static ControlString* getControl(const QString& group,
-                                     const QString& item,
-                                     ControlFlags flags = ControlFlag::None) {
+            const QString& item,
+            ControlFlags flags = ControlFlag::None) {
         ConfigKey key(group, item);
         return getControl(key, flags);
     }
@@ -228,9 +226,8 @@ class ControlString : public QObject {
 
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.
-    template <typename Receiver, typename Slot>
-    bool connectValueChangeRequest(Receiver receiver, Slot func,
-                                   Qt::ConnectionType type = Qt::AutoConnection) {
+    template<typename Receiver, typename Slot>
+    bool connectValueChangeRequest(Receiver receiver, Slot func, Qt::ConnectionType type = Qt::AutoConnection) {
         bool ret = false;
         if (m_pControl) {
             ret = m_pControl->connectValueChangeRequest(receiver, func, type);

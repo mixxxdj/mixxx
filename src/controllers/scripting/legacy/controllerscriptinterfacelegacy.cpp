@@ -179,7 +179,7 @@ QString ControllerScriptInterfaceLegacy::getStringValue(const QString& group, co
     if (!ControlString::exists(key)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried getting string value of non-existent control (%1, %2)")
-                                                       .arg(group, name));
+                .arg(group, name));
         return QString();
     }
     return ControlString::get(key);
@@ -191,7 +191,7 @@ void ControllerScriptInterfaceLegacy::setStringValue(
     if (!ControlString::exists(key)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried setting string value of non-existent control (%1, %2)")
-                                                       .arg(group, name));
+                .arg(group, name));
         return;
     }
     ControlString::set(key, newValue);
