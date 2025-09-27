@@ -246,9 +246,6 @@ DlgPrefWaveform::DlgPrefWaveform(
     setScrollSafeGuardForAllInputWidgets(this);
 }
 
-DlgPrefWaveform::~DlgPrefWaveform() {
-}
-
 void DlgPrefWaveform::slotSetWaveformOptions(
         WaveformRendererSignalBase::Option option, bool enabled) {
     WaveformRendererSignalBase::Options currentOption = m_pConfig->getValue(
