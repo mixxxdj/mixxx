@@ -158,6 +158,8 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
     bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsStems() const;
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);

@@ -589,13 +589,23 @@ bool WaveformWidgetFactory::setWidgetType(
 bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     switch (m_configType) {
     case WaveformWidgetType::RGB:
-        return true;
     case WaveformWidgetType::Filtered:
-        return true;
     case WaveformWidgetType::Simple:
-        return true;
     case WaveformWidgetType::HSV:
+    case WaveformWidgetType::Stacked:
         return true;
+    default:
+        break;
+    }
+    return false;
+}
+
+bool WaveformWidgetFactory::widgetTypeSupportsStems() const {
+    switch (m_configType) {
+    case WaveformWidgetType::RGB:
+    case WaveformWidgetType::Filtered:
+    case WaveformWidgetType::Simple:
+    case WaveformWidgetType::HSV:
     case WaveformWidgetType::Stacked:
         return true;
     default:
