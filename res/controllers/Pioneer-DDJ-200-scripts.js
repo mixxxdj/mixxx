@@ -154,13 +154,14 @@ DDJ200.PadModeContainers.Effect = function(deckOffset) {
         } else if (i < 7) {
             return new DDJ200.Pad(i, deckOffset, {
                 midi: [0x97 + deckOffset, i],
-                effect: `[EffectRack1_EffectUnit${  deckOffset / 2 + 1  }_Effect${  i - 3  }]`,
                 input: function(_channel, _control, value, _status, _g) {
-                    engine.setValue(this.effect, "enabled", value);
+                    const effect = `[EffectRack1_EffectUnit${ script.deckFromGroup(this.group) }_Effect${ i - 3 }]`;
+                    engine.setValue(effect, "enabled", value);
                     this.send(this.outValueScale(value));
                 },
                 outValueScale: function(_value) {
-                    return engine.getValue(this.effect, "loaded")?0x7F:0x00;
+                    const effect = `[EffectRack1_EffectUnit${ script.deckFromGroup(this.group) }_Effect${ i - 3 }]`;
+                    return engine.getValue(effect, "loaded")?0x7F:0x00;
                 }
             });
         } else {
