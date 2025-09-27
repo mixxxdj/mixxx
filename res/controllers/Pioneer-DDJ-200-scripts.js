@@ -405,9 +405,12 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
     this.jogWheel = new components.JogWheelBasic({
         wheelResolution: 128,   // how many ticks per revolution the jogwheel has
         alpha: 1/8,             // alpha-filter
+        beta: 1/8/32,
+        rpm: 33 + 1/3,
         inValueScale: function(value) {
             return value - 64;
         },
+        inKey: "jog",
         jogCounter: 0,
         inputSeek: function(_channel, _control, value, _status, group) {
             if (DDJ200.Decks.left.shiftButton.pressed) {
