@@ -1241,6 +1241,24 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
     return -1;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsAcceleration(WaveformWidgetType::Type type) {
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
+        if (handle.m_type == type) {
+            return handle.supportAcceleration();
+        }
+    }
+    return false;
+}
+
+bool WaveformWidgetFactory::widgetTypeSupportsSoftware(WaveformWidgetType::Type type) {
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
+        if (handle.m_type == type) {
+            return handle.supportSoftware();
+        }
+    }
+    return false;
+}
+
 WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
@@ -1266,9 +1284,17 @@ WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
     return WaveformWidgetBackend::None;
 }
 
-// Static
+void WaveformWidgetFactory::setDefaultBackend() {
+    m_config->setValue(kHardwareAccelerationKey, preferredBackend());
+}
+
 QString WaveformWidgetAbstractHandle::getDisplayName() const {
-    switch (m_type) {
+    return getDisplayName(m_type);
+}
+
+// Static
+QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type type) {
+    switch (type) {
     case WaveformWidgetType::Empty:
         return QObject::tr("Empty");
     case WaveformWidgetType::Simple:
