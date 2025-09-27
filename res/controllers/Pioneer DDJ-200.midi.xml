@@ -7,6 +7,48 @@
     <forum>https://mixxx.discourse.group/t/new-mapping-for-pioneer-ddj-200/31164</forum>
     <manual>pioneer_ddj_200</manual>
   </info>
+  <settings>
+    <option
+      variable="defaultLoopRootSize"
+      type="enum"
+      label="Loop size of the smallest Pad in Loop Padmode">
+      <!-- values are actually exponents 2**n-->
+      <value label="1/32">-5</value>
+      <value label="1/16">-4</value>
+      <value label="1/8" default="true">-3</value>
+      <value label="1/4">-2</value>
+      <value label="1/2">-1</value>
+      <value label="1">0</value>
+      <value label="2">1</value>
+      <value label="4">2</value>
+      <value label="8">3</value>
+      <value label="16">4</value>
+      <value label="32">5</value>
+      <value label="64">6</value>
+      <value label="128">7</value>
+      <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads. This can also be changed on the fly using :hwbtn:SHIFT + "parameter adjust"</description>
+    </option>
+    <option
+      variable="defaultBeatJumpRootSize"
+      type="enum"
+      label="Loop size of the smallest Pad in BeatJump Padmode">
+      <!-- values are actually exponents 2**n-->
+      <value label="1/32">-5</value>
+      <value label="1/16">-4</value>
+      <value label="1/8">-3</value>
+      <value label="1/4">-2</value>
+      <value label="1/2">-1</value>
+      <value label="1" default="true">0</value>
+      <value label="2">1</value>
+      <value label="4">2</value>
+      <value label="8">3</value>
+      <value label="16">4</value>
+      <value label="32">5</value>
+      <value label="64">6</value>
+      <value label="128">7</value>
+      <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads. This can also be changed on the fly using :hwbtn:SHIFT + "parameter adjust"</description>
+    </option>
+  </settings>
   <controller id="DDJ-200 ALT">
     <scriptfiles>
       <file filename="midi-components-0.0.js" />
@@ -15,7 +57,7 @@
     <controls>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.shiftButton.input</key>
+        <key>DDJ200.Decks.left.shiftButton.input</key>
         <description>Deck 1: Shift pressed</description>
         <status>0x90</status>
         <midino>0x3F</midino>
@@ -25,7 +67,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.shiftButton.input</key>
+        <key>DDJ200.Decks.right.shiftButton.input</key>
         <description>Deck 2: Shift pressed</description>
         <status>0x91</status>
         <midino>0x3F</midino>
@@ -77,7 +119,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pflButton.input</key>
+        <key>DDJ200.Decks.left.pflButton.input</key>
         <description>Deck 1: Headphone listen (pfl) button</description>
         <status>0x90</status>
         <midino>0x54</midino>
@@ -87,7 +129,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.loadTrack.input</key>
+        <key>DDJ200.Decks.left.loadTrack.input</key>
         <description>Deck 1: Headphone (pfl) + shift</description>
         <status>0x90</status>
         <midino>0x68</midino>
@@ -97,7 +139,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pflButton.input</key>
+        <key>DDJ200.Decks.right.pflButton.input</key>
         <description>Deck 2: Headphone listen (pfl) button</description>
         <status>0x91</status>
         <midino>0x54</midino>
@@ -107,7 +149,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.loadTrack.input</key>
+        <key>DDJ200.Decks.right.loadTrack.input</key>
         <description>Deck 2: Headphone (pfl) + shift</description>
         <status>0x91</status>
         <midino>0x68</midino>
@@ -117,7 +159,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.syncButton.input</key>
+        <key>DDJ200.Decks.left.syncButton.input</key>
         <description>Deck 1: Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
         <status>0x90</status>
         <midino>0x58</midino>
@@ -127,7 +169,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.syncButton.input</key>
+        <key>DDJ200.Decks.right.syncButton.input</key>
         <description>Deck 2: Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
         <status>0x91</status>
         <midino>0x58</midino>
@@ -137,7 +179,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.syncButton.inputLongPress</key>
+        <key>DDJ200.Decks.left.syncButton.inputLongPress</key>
         <description>Deck 1: Long Press to enable permanent sync</description>
         <status>0x90</status>
         <midino>0x5C</midino>
@@ -147,7 +189,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.syncButton.inputLongPress</key>
+        <key>DDJ200.Decks.right.syncButton.inputLongPress</key>
         <description>Deck 2: Long Press to enable permanent sync</description>
         <status>0x91</status>
         <midino>0x5C</midino>
@@ -157,7 +199,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.syncButton.shiftedInput</key>
+        <key>DDJ200.Decks.left.syncButton.shiftedInput</key>
         <description>Deck 1: Shift Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
         <status>0x90</status>
         <midino>0x60</midino>
@@ -167,7 +209,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.syncButton.shiftedInput</key>
+        <key>DDJ200.Decks.right.syncButton.shiftedInput</key>
         <description>Deck 2: Shift Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
         <status>0x91</status>
         <midino>0x60</midino>
@@ -177,7 +219,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.jogWheel.inputSeek</key>
+        <key>DDJ200.Decks.left.jogWheel.inputSeek</key>
         <description>Deck 1: Seek</description>
         <status>0xB0</status>
         <midino>0x29</midino>
@@ -187,7 +229,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.jogWheel.inputSeek</key>
+        <key>DDJ200.Decks.right.jogWheel.inputSeek</key>
         <description>Deck 2: Seek</description>
         <status>0xB1</status>
         <midino>0x29</midino>
@@ -207,7 +249,7 @@
       </control>
       <control>
         <group>[AutoDJ]</group>
-        <key>DDJ200.transFxButton.input</key>
+        <key>DDJ200.transFxButton.shiftedInput</key>
         <description>Change Pad mode</description>
         <status>0x96</status>
         <midino>0x5A</midino>
@@ -217,7 +259,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.jogWheel.inputTouch</key>
+        <key>DDJ200.Decks.left.jogWheel.inputTouch</key>
         <description>Deck 1: Touch</description>
         <status>0x90</status>
         <midino>0x36</midino>
@@ -227,7 +269,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.jogWheel.inputTouch</key>
+        <key>DDJ200.Decks.right.jogWheel.inputTouch</key>
         <description>Deck 2: Touch</description>
         <status>0x91</status>
         <midino>0x36</midino>
@@ -237,7 +279,7 @@
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>DDJ200.leftDeck.eqKnob[0].input</key>
+        <key>DDJ200.Decks.left.eqKnob[0].input</key>
         <description>Deck 1: Adjust Low EQ</description>
         <status>0xB0</status>
         <midino>0x0F</midino>
@@ -247,7 +289,7 @@
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>DDJ200.leftDeck.eqKnob[1].input</key>
+        <key>DDJ200.Decks.left.eqKnob[1].input</key>
         <description>Deck 1: Adjust Mid EQ</description>
         <status>0xB0</status>
         <midino>0x0B</midino>
@@ -257,7 +299,7 @@
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-        <key>DDJ200.leftDeck.eqKnob[2].input</key>
+        <key>DDJ200.Decks.left.eqKnob[2].input</key>
         <description>Deck 1: Adjust High EQ</description>
         <status>0xB0</status>
         <midino>0x07</midino>
@@ -267,7 +309,7 @@
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel1]]</group>
-        <key>DDJ200.leftDeck.super1.input</key>
+        <key>DDJ200.Decks.left.super1.input</key>
         <description>Super Knob (msb): control linked effect</description>
         <status>0xB6</status>
         <midino>0x17</midino>
@@ -277,7 +319,7 @@
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>DDJ200.rightDeck.eqKnob[0].input</key>
+        <key>DDJ200.Decks.right.eqKnob[0].input</key>
         <description>Deck 2: Adjust Low EQ</description>
         <status>0xB1</status>
         <midino>0x0F</midino>
@@ -287,7 +329,7 @@
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>DDJ200.rightDeck.eqKnob[1].input</key>
+        <key>DDJ200.Decks.right.eqKnob[1].input</key>
         <description>Deck 2: Adjust Mid EQ</description>
         <status>0xB1</status>
         <midino>0x0B</midino>
@@ -297,7 +339,7 @@
       </control>
       <control>
         <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-        <key>DDJ200.rightDeck.eqKnob[2].input</key>
+        <key>DDJ200.Decks.right.eqKnob[2].input</key>
         <description>Deck 2: Adjust High EQ</description>
         <status>0xB1</status>
         <midino>0x07</midino>
@@ -307,7 +349,7 @@
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel2]]</group>
-        <key>DDJ200.rightDeck.super1.input</key>
+        <key>DDJ200.Decks.right.super1.input</key>
         <description>Quick Effect: Quick Effect Super Knob (control linked effect parameters)</description>
         <status>0xB6</status>
         <midino>0x18</midino>
@@ -317,7 +359,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.volume.inputMSB</key>
+        <key>DDJ200.Decks.left.volume.inputMSB</key>
         <description>Deck 1: Volume Fader</description>
         <status>0xB0</status>
         <midino>0x13</midino>
@@ -327,7 +369,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.volume.inputLSB</key>
+        <key>DDJ200.Decks.left.volume.inputLSB</key>
         <description>Deck 1: Volume Fader</description>
         <status>0xB0</status>
         <midino>0x33</midino>
@@ -337,7 +379,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.volume.inputMSB</key>
+        <key>DDJ200.Decks.right.volume.inputMSB</key>
         <description>Deck 2: Volume Fader</description>
         <status>0xB1</status>
         <midino>0x13</midino>
@@ -347,7 +389,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.volume.inputLSB</key>
+        <key>DDJ200.Decks.right.volume.inputLSB</key>
         <description>Deck 2: Volume Fader</description>
         <status>0xB1</status>
         <midino>0x33</midino>
@@ -357,7 +399,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.playButton.input</key>
+        <key>DDJ200.Decks.left.playButton.input</key>
         <description>Deck 1: Play button</description>
         <status>0x90</status>
         <midino>0x0B</midino>
@@ -367,7 +409,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.playButton.input</key>
+        <key>DDJ200.Decks.right.playButton.input</key>
         <description>Deck 2: Play button</description>
         <status>0x91</status>
         <midino>0x0B</midino>
@@ -377,7 +419,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.playButton.inputFaderStart</key>
+        <key>DDJ200.Decks.left.playButton.inputFaderStart</key>
         <description>Deck 1: Shift and Fader start</description>
         <status>0x90</status>
         <midino>0x66</midino>
@@ -387,7 +429,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.playButton.inputFaderStart</key>
+        <key>DDJ200.Decks.right.playButton.inputFaderStart</key>
         <description>Deck 2: Shift and Fader start</description>
         <status>0x91</status>
         <midino>0x66</midino>
@@ -397,7 +439,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.cueButton.input</key>
+        <key>DDJ200.Decks.left.cueButton.input</key>
         <description>Deck 1: Cue button</description>
         <status>0x90</status>
         <midino>0x0C</midino>
@@ -407,7 +449,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.cueButton.input</key>
+        <key>DDJ200.Decks.right.cueButton.input</key>
         <description>Deck 2: Cue button</description>
         <status>0x91</status>
         <midino>0x0C</midino>
@@ -417,7 +459,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.cueButton.inputFaderStop</key>
+        <key>DDJ200.Decks.left.cueButton.inputFaderStop</key>
         <description>Deck 1: Shift and Fader stop</description>
         <status>0x90</status>
         <midino>0x52</midino>
@@ -427,7 +469,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.cueButton.inputFaderStop</key>
+        <key>DDJ200.Decks.right.cueButton.inputFaderStop</key>
         <description>Deck 2: Shift and Fader stop</description>
         <status>0x91</status>
         <midino>0x52</midino>
@@ -437,7 +479,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.cueButton.input</key>
+        <key>DDJ200.Decks.left.cueButton.input</key>
         <description>Deck 1: Go to cue point and stop</description>
         <status>0x90</status>
         <midino>0x48</midino>
@@ -447,7 +489,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.cueButton.input</key>
+        <key>DDJ200.Decks.right.cueButton.input</key>
         <description>Deck 2: Go to cue point and stop</description>
         <status>0x91</status>
         <midino>0x48</midino>
@@ -457,7 +499,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.rate.inputMSB</key>
+        <key>DDJ200.Decks.left.rate.inputMSB</key>
         <description>Deck 1: Playback speed control</description>
         <status>0xB0</status>
         <midino>0x00</midino>
@@ -468,7 +510,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.rate.inputLSB</key>
+        <key>DDJ200.Decks.left.rate.inputLSB</key>
         <description>Deck 1: Playback speed control</description>
         <status>0xB0</status>
         <midino>0x20</midino>
@@ -479,7 +521,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.rate.inputMSB</key>
+        <key>DDJ200.Decks.right.rate.inputMSB</key>
         <description>Deck 2: Playback speed control</description>
         <status>0xB1</status>
         <midino>0x00</midino>
@@ -489,7 +531,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.rate.inputLSB</key>
+        <key>DDJ200.Decks.right.rate.inputLSB</key>
         <description>Deck 2: Playback speed control</description>
         <status>0xB1</status>
         <midino>0x20</midino>
@@ -499,7 +541,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.jogWheel.inputWheel</key>
+        <key>DDJ200.Decks.left.jogWheel.inputWheel</key>
         <description>Deck 1: Jog</description>
         <status>0xB0</status>
         <midino>0x21</midino>
@@ -509,7 +551,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.jogWheel.inputWheel</key>
+        <key>DDJ200.Decks.right.jogWheel.inputWheel</key>
         <description>Deck 2: Jog</description>
         <status>0xB1</status>
         <midino>0x21</midino>
@@ -519,7 +561,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.jogWheel.inputWheel</key>
+        <key>DDJ200.Decks.right.jogWheel.inputWheel</key>
         <description>Deck 2: Scratch</description>
         <status>0xB1</status>
         <midino>0x22</midino>
@@ -529,7 +571,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.jogWheel.inputWheel</key>
+        <key>DDJ200.Decks.left.jogWheel.inputWheel</key>
         <description>Deck 1: Scratch</description>
         <status>0xB0</status>
         <midino>0x22</midino>
@@ -539,7 +581,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.jogWheel.inputWheel</key>
+        <key>DDJ200.Decks.right.jogWheel.inputWheel</key>
         <description>Deck 2: Scratch</description>
         <status>0xB1</status>
         <midino>0x23</midino>
@@ -549,7 +591,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.jogWheel.inputWheel</key>
+        <key>DDJ200.Decks.left.jogWheel.inputWheel</key>
         <description>Deck 1: Scratch</description>
         <status>0xB0</status>
         <midino>0x23</midino>
@@ -559,7 +601,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.playButton.input</key>
+        <key>DDJ200.Decks.left.playButton.input</key>
         <description>Deck 1: Shift Play</description>
         <status>0x90</status>
         <midino>0x47</midino>
@@ -569,7 +611,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.playButton.input</key>
+        <key>DDJ200.Decks.right.playButton.input</key>
         <description>Deck 2: Shift Play</description>
         <status>0x91</status>
         <midino>0x47</midino>
@@ -580,7 +622,7 @@
       <!-- ##### Hotcues ##### -->
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[0].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[0].input</key>
         <description>Hotcue 1, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x00</midino>
@@ -590,7 +632,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[1].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[1].input</key>
         <description>Hotcue 2, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x01</midino>
@@ -600,7 +642,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[2].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[2].input</key>
         <description>Hotcue 3, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x02</midino>
@@ -610,7 +652,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[3].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[3].input</key>
         <description>Hotcue 4, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x03</midino>
@@ -620,7 +662,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[4].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[4].input</key>
         <description>Hotcue 5, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x04</midino>
@@ -630,7 +672,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[5].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[5].input</key>
         <description>Hotcue 6, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x05</midino>
@@ -640,7 +682,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[6].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[6].input</key>
         <description>Hotcue 7, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x06</midino>
@@ -650,7 +692,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[7].input</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[7].input</key>
         <description>Hotcue 8, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x07</midino>
@@ -660,7 +702,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[0].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[0].input</key>
         <description>Hotcue 1, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x00</midino>
@@ -670,7 +712,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[1].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[1].input</key>
         <description>Hotcue 2, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x01</midino>
@@ -680,7 +722,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[2].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[2].input</key>
         <description>Hotcue 3, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x02</midino>
@@ -690,7 +732,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[3].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[3].input</key>
         <description>Hotcue 4, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x03</midino>
@@ -700,7 +742,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[4].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[4].input</key>
         <description>Hotcue 5, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x04</midino>
@@ -710,7 +752,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[5].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[5].input</key>
         <description>Hotcue 6, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x05</midino>
@@ -720,7 +762,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[6].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[6].input</key>
         <description>Hotcue 7, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x06</midino>
@@ -730,7 +772,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[7].input</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[7].input</key>
         <description>Hotcue 8, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x07</midino>
@@ -740,7 +782,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[0].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[0].input</key>
         <description>Hotcue 1, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x00</midino>
@@ -750,7 +792,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[1].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[1].input</key>
         <description>Hotcue 2, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x01</midino>
@@ -760,7 +802,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[2].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[2].input</key>
         <description>Hotcue 3, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x02</midino>
@@ -770,7 +812,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[3].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[3].input</key>
         <description>Hotcue 4, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x03</midino>
@@ -780,7 +822,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[4].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[4].input</key>
         <description>Hotcue 5, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x04</midino>
@@ -790,7 +832,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[5].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[5].input</key>
         <description>Hotcue 6, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x05</midino>
@@ -800,7 +842,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[6].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[6].input</key>
         <description>Hotcue 7, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x06</midino>
@@ -810,7 +852,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.leftDeck.pads[7].shiftedInput</key>
+        <key>DDJ200.Decks.left.padUnit.choosenPadInstance.pads[7].input</key>
         <description>Hotcue 8, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x07</midino>
@@ -820,7 +862,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[0].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[0].input</key>
         <description>Hotcue 1, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x00</midino>
@@ -830,7 +872,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[1].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[1].input</key>
         <description>Hotcue 2, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x01</midino>
@@ -840,7 +882,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[2].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[2].input</key>
         <description>Hotcue 3, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x02</midino>
@@ -850,7 +892,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[3].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[3].input</key>
         <description>Hotcue 4, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x03</midino>
@@ -860,7 +902,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[4].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[4].input</key>
         <description>Hotcue 5, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x04</midino>
@@ -870,7 +912,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[5].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[5].input</key>
         <description>Hotcue 6, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x05</midino>
@@ -880,7 +922,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[6].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[6].input</key>
         <description>Hotcue 7, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x06</midino>
@@ -890,7 +932,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.rightDeck.pads[7].shiftedInput</key>
+        <key>DDJ200.Decks.right.padUnit.choosenPadInstance.pads[7].input</key>
         <description>Hotcue 8, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x07</midino>
