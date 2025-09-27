@@ -31,6 +31,8 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       publish: true
+      branch: ${{ github.head_ref || github.ref_name }}
+      ref: ${{ github.ref }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

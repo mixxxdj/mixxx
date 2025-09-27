@@ -71,6 +71,7 @@ class WaveformWidgetAbstractHandle {
 #endif
 
     QString getDisplayName() const;
+    static QString getDisplayName(WaveformWidgetType::Type type);
 
   private:
     WaveformWidgetType::Type m_type;
@@ -136,6 +137,7 @@ class WaveformWidgetFactory : public QObject,
     static WaveformWidgetType::Type defaultType() {
         return WaveformWidgetType::RGB;
     }
+    void setDefaultBackend();
 
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid
@@ -147,11 +149,18 @@ class WaveformWidgetFactory : public QObject,
     /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
+    QString getTypeDisplayName() const {
+        return WaveformWidgetAbstractHandle::getDisplayName(m_type);
+    }
     int getHandleIndex() {
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsStems() const;
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);

@@ -532,8 +532,13 @@ inline std::pair<double, double> rangeFromTrailingDecimal(double bpm) {
 
 } // namespace
 
-BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
-        : m_matchMode(MatchMode::Invalid),
+BpmFilterNode::BpmFilterNode(
+        QString& argument,
+        bool fuzzy,
+        bool negate,
+        const QSqlDatabase& database)
+        : m_database(database),
+          m_matchMode(MatchMode::Invalid),
           m_operator("="),
           m_bpm(0.0),
           m_rangeLower(0.0),
@@ -552,6 +557,17 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
 
     if (argument == QStringLiteral("locked")) {
         m_matchMode = MatchMode::Locked;
+        return;
+    }
+
+    if (argument == QStringLiteral("const") || argument == QStringLiteral("constant")) {
+        VERIFY_OR_DEBUG_ASSERT(database.isValid()) {
+            qWarning() << "BpmFilterNode constructed with 'const' arg"
+                          "but no valid database provided!";
+            m_matchMode = MatchMode::Invalid;
+            return;
+        }
+        m_matchMode = MatchMode::Constant;
         return;
     }
 
@@ -697,6 +713,10 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
         return pTrack->isBpmLocked();
     }
 
+    if (m_matchMode == MatchMode::Constant) {
+        return pTrack->getBeats()->hasConstantTempo();
+    }
+
     double value = pTrack->getBpm();
 
     switch (m_matchMode) {
@@ -739,6 +759,15 @@ QString BpmFilterNode::toSql() const {
     switch (m_matchMode) {
     case MatchMode::Locked: {
         return QStringLiteral("%1 IS 1").arg(LIBRARYTABLE_BPM_LOCK);
+    }
+    case MatchMode::Constant: {
+        FieldEscaper escaper(m_database);
+        // 'BeatGrid-[version]' means we have constant BPM
+        // 'BeatMap-[version]' means (likely) variable BPM
+        const QString beatGridEscaped = escaper.escapeString(
+                kSqlLikeMatchAll + "BeatGrid" + kSqlLikeMatchAll);
+        return QStringLiteral("%1 LIKE %2")
+                .arg(LIBRARYTABLE_BEATS_VERSION, beatGridEscaped);
     }
     case MatchMode::Null: {
         return QStringLiteral("bpm IS 0");
