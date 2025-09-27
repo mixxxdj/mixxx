@@ -40,8 +40,9 @@ DlgPrefWaveform::DlgPrefWaveform(
     int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
     if (cfgTypeIndex == -1) {
         // Invalid config value, set default type RGB and write it to config
-        waveformOverviewComboBox->setCurrentIndex(
-                waveformOverviewComboBox->findData(QVariant::fromValue(WOverview::Type::RGB)));
+        cfgTypeIndex = waveformOverviewComboBox->findData(
+                QVariant::fromValue(WOverview::Type::RGB));
+        waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
         m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
     } else {
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
