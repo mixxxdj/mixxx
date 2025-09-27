@@ -653,9 +653,6 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 }
 
 void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
-    // TODO(xxx) For consistency set this in WaveformWidgetFactory like
-    // the other waveform controls.
-    m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")), alpha);
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
 }
 
