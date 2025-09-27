@@ -589,13 +589,9 @@ bool WaveformWidgetFactory::setWidgetType(
 bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     switch (m_configType) {
     case WaveformWidgetType::RGB:
-        return true;
     case WaveformWidgetType::Filtered:
-        return true;
     case WaveformWidgetType::Simple:
-        return true;
     case WaveformWidgetType::HSV:
-        return true;
     case WaveformWidgetType::Stacked:
         return true;
     default:
@@ -604,6 +600,21 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     return false;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsStems() const {
+    switch (m_configType) {
+    case WaveformWidgetType::RGB:
+    case WaveformWidgetType::Filtered:
+    case WaveformWidgetType::Simple:
+    case WaveformWidgetType::HSV:
+    case WaveformWidgetType::Stacked:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
+
+/// Called by MixxxMainWindow after skin loaded via slotSkinLoaded
 bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     int empty = findHandleIndexFromType(WaveformWidgetType::Empty);
     int desired = findHandleIndexFromType(m_configType);
@@ -613,6 +624,23 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
                  << "not found -- using 'EmptyWaveform'";
         desired = empty;
     }
+
+    // Because of a previous bug, "use_hardware_acceleration" may be 0
+    // which prevents loading the desired type.
+    // Fix: enable acceleration if available and if type requires it.
+    auto backend = getBackendFromConfig();
+    // True if type and available backends support acceleration
+    bool typeSupportsAcceleration = widgetTypeSupportsAcceleration(m_configType);
+    bool typeSupportsSoftware = widgetTypeSupportsSoftware(m_configType);
+    if (backend == WaveformWidgetBackend::None &&
+            typeSupportsAcceleration && !typeSupportsSoftware) {
+        qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
+                 << " - select accelerated backend because configured type"
+                 << WaveformWidgetAbstractHandle::getDisplayName(m_configType)
+                 << "requires it.";
+        setDefaultBackend();
+    }
+
     return setWidgetTypeFromHandle(desired, true);
 }
 
@@ -1241,6 +1269,24 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
     return -1;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsAcceleration(WaveformWidgetType::Type type) {
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
+        if (handle.m_type == type) {
+            return handle.supportAcceleration();
+        }
+    }
+    return false;
+}
+
+bool WaveformWidgetFactory::widgetTypeSupportsSoftware(WaveformWidgetType::Type type) {
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
+        if (handle.m_type == type) {
+            return handle.supportSoftware();
+        }
+    }
+    return false;
+}
+
 WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
     // => hardware acceleration), but in the setting, we keep the granularity so
@@ -1266,9 +1312,17 @@ WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
     return WaveformWidgetBackend::None;
 }
 
-// Static
+void WaveformWidgetFactory::setDefaultBackend() {
+    m_config->setValue(kHardwareAccelerationKey, preferredBackend());
+}
+
 QString WaveformWidgetAbstractHandle::getDisplayName() const {
-    switch (m_type) {
+    return getDisplayName(m_type);
+}
+
+// Static
+QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type type) {
+    switch (type) {
     case WaveformWidgetType::Empty:
         return QObject::tr("Empty");
     case WaveformWidgetType::Simple:

@@ -679,6 +679,14 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
+     <item row="15" column="1" colspan="4">
+      <widget class="QLabel" name="requiresGLSLLabel2">
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+
     </layout>
    </widget>
   </item><!-- waveform groupbox -->
