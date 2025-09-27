@@ -66,6 +66,8 @@ const ConfigKey kWaveformTypeKey =
         ConfigKey(kWaveformGroup, QStringLiteral("WaveformType"));
 const ConfigKey kHardwareAccelerationKey =
         ConfigKey(kWaveformGroup, QStringLiteral("use_hardware_acceleration"));
+const ConfigKey kWaveformOptionsKey(kWaveformGroup,
+        QStringLiteral("waveform_options"));
 const ConfigKey kZoomSyncKey = ConfigKey(
         kWaveformGroup, QStringLiteral("ZoomSynchronization"));
 const ConfigKey kEndOfTrackWarningKey = ConfigKey(
@@ -1334,6 +1336,42 @@ WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
 
 void WaveformWidgetFactory::setDefaultBackend() {
     m_config->setValue(kHardwareAccelerationKey, preferredBackend());
+}
+
+allshader::WaveformRendererSignalBase::Options WaveformWidgetFactory::getWaveformOptions() {
+    auto options = m_config->getValue(
+            kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
+    return options;
+}
+
+allshader::WaveformRendererSignalBase::Options
+WaveformWidgetFactory::getWaveformOptionsSupportedByType(
+        WaveformWidgetType::Type type, WaveformWidgetBackend backend) {
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            allshader::WaveformRendererSignalBase::Option::None;
+    int handleIdx = findHandleIndexFromType(type);
+    if (handleIdx != -1) {
+        supportedOptions = getAvailableTypes()[handleIdx].supportedOptions(backend);
+    }
+    return supportedOptions;
+}
+
+void WaveformWidgetFactory::setWaveformOption(
+        allshader::WaveformRendererSignalBase::Option option, bool enabled) {
+    allshader::WaveformRendererSignalBase::Options currentOption = m_config->getValue(
+            kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
+    m_config->setValue<int>(kWaveformOptionsKey,
+            enabled ? currentOption |
+                            option
+                    : currentOption ^
+                            option);
+}
+
+void WaveformWidgetFactory::resetWaveformOptions() {
+    m_config->setValue(kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
 }
 
 QString WaveformWidgetAbstractHandle::getDisplayName() const {
