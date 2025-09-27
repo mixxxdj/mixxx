@@ -1,36 +1,42 @@
 import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import "Theme"
+import "../Theme"
 
 AbstractButton {
     id: root
 
-    property color normalColor: Theme.buttonNormalColor
-    required property color activeColor
+    property color normalColor: Theme.white
+    property color backgroundColor: "#3F3F3F"
+    property color activeColor: Theme.deckActiveColor
     property color pressedColor: activeColor
     property bool highlight: false
 
-    implicitWidth: 52
-    implicitHeight: 26
+    implicitWidth: 98
+    implicitHeight: 20
     states: [
         State {
             name: "pressed"
             when: root.pressed
 
             PropertyChanges {
-                target: backgroundImage
-                color: root.checked ? "#3a60be" : "#3F3F3F"
+                backgroundImage.color: root.checked ? "#3a60be" : root.backgroundColor
             }
 
             PropertyChanges {
-                target: label
-                color: root.pressedColor
+                label.color: root.pressedColor
             }
 
             PropertyChanges {
-                target: labelGlow
-                visible: true
+                bottomInnerEffect.color: '#353535'
+            }
+
+            PropertyChanges {
+                topInnerEffect.color: '#353535'
+            }
+
+            PropertyChanges {
+                labelGlow.visible: true
             }
 
         },
@@ -39,18 +45,23 @@ AbstractButton {
             when: (root.highlight || root.checked) && !root.pressed
 
             PropertyChanges {
-                target: backgroundImage
-                color: "#2D4EA1"
+                backgroundImage.color: "#2D4EA1"
             }
 
             PropertyChanges {
-                target: label
-                color: root.activeColor
+                label.color: root.activeColor
             }
 
             PropertyChanges {
-                target: labelGlow
-                visible: true
+                bottomInnerEffect.color: '#353535'
+            }
+
+            PropertyChanges {
+                topInnerEffect.color: '#353535'
+            }
+
+            PropertyChanges {
+                labelGlow.visible: true
             }
 
         },
@@ -58,19 +69,12 @@ AbstractButton {
             name: "inactive"
             when: !root.checked && !root.highlight && !root.pressed
 
-            // PropertyChanges {
-            //     target: backgroundImage
-            //     source: Theme.imgButton
-            // }
-
             PropertyChanges {
-                target: label
-                color: root.normalColor
+                label.color: root.normalColor
             }
 
             PropertyChanges {
-                target: labelGlow
-                visible: false
+                labelGlow.visible: false
             }
         }
     ]
@@ -80,39 +84,43 @@ AbstractButton {
 
         Rectangle {
             id: backgroundImage
+            visible: false
 
             anchors.fill: parent
-            color: '#2B2B2B'
-            radius: 2
+            color: root.backgroundColor
+            radius: 4
         }
-
-        DropShadow {
-            id: effect1
-            anchors.fill: backgroundImage
-            horizontalOffset: 0
-            verticalOffset: 0
-            radius: 1.0
-            color: "#80000000"
+        InnerShadow {
+            id: bottomInnerEffect
+            anchors.fill: parent
+            radius: 8
+            samples: 16
+            spread: 0.3
+            horizontalOffset: -1
+            verticalOffset: -1
+            color: "transparent"
             source: backgroundImage
         }
         InnerShadow {
-            id: effect2
-            anchors.fill: backgroundImage
-            radius: 1
+            id: topInnerEffect
+            anchors.fill: parent
+            radius: 8
             samples: 16
+            spread: 0.3
             horizontalOffset: 1
             verticalOffset: 1
-            color: "#353535"
-            source: effect1
+            color: "transparent"
+            source: bottomInnerEffect
         }
-        InnerShadow {
-            anchors.fill: backgroundImage
-            radius: 1
-            samples: 16
-            horizontalOffset: -1
-            verticalOffset: -1
-            color: "#353535"
-            source: effect2
+
+        DropShadow {
+            id: dropEffect
+            anchors.fill: parent
+            horizontalOffset: 0
+            verticalOffset: 0
+            radius: 4.0
+            color: "#0E0E0E"
+            source: topInnerEffect
         }
     }
 
