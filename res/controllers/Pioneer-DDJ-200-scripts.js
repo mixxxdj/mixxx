@@ -146,7 +146,7 @@ DDJ200.PadModeContainers.Loop.prototype = new DDJ200.PadMode({
     indicatorStyle: 1,
 });
 
-DDJ200.PadModeContainers.Effect = function(deckOffset) {
+DDJ200.PadModeContainers.Effect = function(deckOffset, group) {
     DDJ200.PadMode.call(this);
 
     this.constructPads(i => {
@@ -156,17 +156,11 @@ DDJ200.PadModeContainers.Effect = function(deckOffset) {
                 number: deckOffset * 2 + i + 1,
             });
         } else if (i < 7) {
-            return new DDJ200.Pad(i, deckOffset, {
+            return new components.Component({
                 midi: [0x97 + deckOffset, i],
-                input: function(_channel, _control, value, _status, _g) {
-                    const effect = `[EffectRack1_EffectUnit${ script.deckFromGroup(this.group) }_Effect${ i - 3 }]`;
-                    engine.setValue(effect, "enabled", value);
-                    this.send(this.outValueScale(value));
-                },
-                outValueScale: function(_value) {
-                    const effect = `[EffectRack1_EffectUnit${ script.deckFromGroup(this.group) }_Effect${ i - 3 }]`;
-                    return engine.getValue(effect, "loaded")?0x7F:0x00;
-                }
+                group: `[EffectRack1_EffectUnit${ script.deckFromGroup(group) }_Effect${ i - 3 }]`,
+                inKey: "enabled",
+                outKey: "loaded",
             });
         } else {
             return new components.Button({
@@ -282,7 +276,7 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
 
     this.startupModeInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset);
     this.loopInstance = new DDJ200.PadModeContainers.Loop(deckOffset);
-    this.effectInstance = new DDJ200.PadModeContainers.Effect(deckOffset);
+    this.effectInstance = new DDJ200.PadModeContainers.Effect(deckOffset, group);
     this.jumpInstance = new DDJ200.PadModeContainers.Jump(deckOffset);
 
     this.padInstancesBuffer = new DDJ200.DoubleRingBuffer(
