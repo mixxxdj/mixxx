@@ -31,6 +31,8 @@ namespace {
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 constexpr int kDriftReserve = 1;
+// APIs like ASIO may have 3 buffers early or delayed calls.
+constexpr int kDriftCompensationStart = 3;
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 // Is rounded up to the next power of 2 (4 in this case)
@@ -88,17 +90,16 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_pStream(nullptr),
           m_deviceInfo(deviceInfo),
           m_deviceTypeId(deviceTypeId),
-          m_outputFifo(nullptr),
-          m_inputFifo(nullptr),
-          m_outputDrift(false),
-          m_inputDrift(false),
+          m_outputDrift(0),
+          m_inputDrift(0),
           m_bSetThreadPriority(false),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
           m_lastCallbackEntrytoDacSecs(0),
-          m_callbackResult(paAbort) {
+          m_callbackResult(paAbort),
+          m_bFinished(false) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
@@ -824,7 +825,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
         if (readAvailable < inChunkSize * kDriftReserve) {
             // risk of an underflow, duplicate one frame
             m_inputFifo->write(in, inChunkSize);
-            if (m_inputDrift) {
+            if (m_inputDrift > kDriftCompensationStart) {
                 // Do not compensate the first delay, because it is likely a jitter
                 // corrected in the next cycle
                 // Duplicate one frame
@@ -834,22 +835,23 @@ int SoundDevicePortAudio::callbackProcessDrift(
                 // qDebug() << "callbackProcessDrift write:"
                 //          << static_cast<float>(readAvailable) / inChunkSize << "Duplicate";
             } else {
-                m_inputDrift = true;
+                m_inputDrift++;
                 //qDebug() << "callbackProcessDrift write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
         } else if (readAvailable == inChunkSize * kDriftReserve) {
             // Everything Ok
             m_inputFifo->write(in, inChunkSize);
-            m_inputDrift = false;
+            m_inputDrift = 0;
             //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
         } else if (writeAvailable >= inChunkSize) {
             // Risk of overflow, skip one frame
-            if (m_inputDrift) {
+            if (m_inputDrift < -kDriftCompensationStart) {
                 m_inputFifo->write(in, inChunkSize - m_inputParams.channelCount);
-                //qDebug() << "callbackProcessDrift write:" << (float)readAvailable / inChunkSize << "Skip";
+                // qDebug() << "callbackProcessDrift write:"
+                //          << static_cast<float>(readAvailable) / inChunkSize << "Skip";
             } else {
                 m_inputFifo->write(in, inChunkSize);
-                m_inputDrift = true;
+                m_inputDrift--;
                 //qDebug() << "callbackProcessDrift write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
         } else {
@@ -893,21 +895,22 @@ int SoundDevicePortAudio::callbackProcessDrift(
             m_pSoundManager->underflowHappened(26);
         } else if (readAvailable > outChunkSize * (kDriftReserve + 1)) {
             m_outputFifo->read(out, outChunkSize);
-            if (m_outputDrift) {
+            if (m_outputDrift < -kDriftCompensationStart) {
                 // Risk of overflow, skip one frame
                 m_outputFifo->releaseReadRegions(m_outputParams.channelCount);
-                //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Skip";
+                // qDebug() << "callbackProcessDrift read:"
+                //          << (float)readAvailable / outChunkSize << "Skip";
             } else {
-                m_outputDrift = true;
+                m_outputDrift--;
                 //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Jitter Skip";
             }
         } else if (readAvailable == outChunkSize * (kDriftReserve + 1)) {
             // Everything Ok
             m_outputFifo->read(out, outChunkSize);
-            m_outputDrift = false;
+            m_outputDrift = 0;
             //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Normal";
         } else if (readAvailable >= outChunkSize) {
-            if (m_outputDrift) {
+            if (m_outputDrift > kDriftCompensationStart) {
                 // Risk of underflow, duplicate one frame
                 m_outputFifo->read(out,
                         outChunkSize - m_outputParams.channelCount);
@@ -919,7 +922,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
                 //          << static_cast<float>(readAvailable) / outChunkSize << "Duplicate";
             } else {
                 m_outputFifo->read(out, outChunkSize);
-                m_outputDrift = true;
+                m_outputDrift++;
                 //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Jitter Save";
             }
         } else {
