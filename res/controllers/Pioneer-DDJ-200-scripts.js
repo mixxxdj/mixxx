@@ -442,16 +442,16 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         shiftOffset: 8,
         input: function(_channel, _control, value, _status, _g) {
             if (value) {
-                if (engine.getValue(this.group, "sync_enabled") === 0) {
+                if (this.inGetValue() === 0) {
                     engine.setValue(this.group, "beatsync", 1);
                 } else {
-                    engine.setValue(this.group, "sync_enabled", 0);
+                    this.inSetValue(0);
                 };
             };
         },
         inputLongPress: function(_channel, _control, value, _status, _g) {
             if (value) {
-                engine.setValue(this.group, "sync_enabled", 1);
+                this.inSetValue(1);
             };
         },
         shiftedInput: function(_channel, _control, value, _status, _g) {
@@ -460,7 +460,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
                     theDeck.toggle();
                     if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
                         this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
-                            theDeck.syncButton.send(0x7F * value);
+                            theDeck.syncButton.send(theDeck.syncButton.on * value);
                         });
                     } else if (this.blinkConnection) {
                         this.blinkConnection.disconnect();
