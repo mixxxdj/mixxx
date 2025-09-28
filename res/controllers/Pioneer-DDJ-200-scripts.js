@@ -371,7 +371,6 @@ DDJ200.init = function() {
         engine.setValue("[Channel3]", "volume", 0);
         engine.setValue("[Channel4]", "volume", 0);
     };
-    this.shutdown();
 
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
