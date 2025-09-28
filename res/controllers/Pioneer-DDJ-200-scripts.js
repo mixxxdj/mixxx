@@ -195,7 +195,7 @@ DDJ200.PadModeContainers.Jump = function(deckOffset) {
     this.currentBaseBeatJumpSize = parseInt(engine.getSetting("defaultBeatJumpRootSize"));
 
     this.constructPads(i =>
-        new components.Button({
+        new components.Component({
             midi: [0x97 + deckOffset, i],
             unshift: function() {
                 this.inKey = "beatjump_forward";
@@ -203,17 +203,25 @@ DDJ200.PadModeContainers.Jump = function(deckOffset) {
             shift: function() {
                 this.inKey = "beatjump_backward";
             },
+            on: 0x7F,
+            off: 0x00,
             beatJumpSize: Math.pow(2, theContainer.currentBaseBeatJumpSize + i),
-            input: function(channel, control, value, _status, _g) {
-                if (value) {
-                    engine.setValue(this.group, "beatjump_size", this.beatJumpSize);
-                    engine.setValue(this.group, this.inKey, true);
-                };
-                this.send(this.outValueScale(value));
+            input: function(_channel, _control, value, _status, _mode) {
+                engine.setValue(this.group, "beatjump_size", this.beatJumpSize);
+                engine.setValue(this.group, this.inKey, value);
             },
-            trigger: function(_value) {
-                this.send(0x00);
-            }
+            outKey: null, // hack to get Component constructor to call connect()
+            connect: function() {
+                this.connections[0] = engine.makeConnection(this.group, "beatjump_forward", this.output.bind(this));
+                this.connections[1] = engine.makeConnection(this.group, "beatjump_backward", this.output.bind(this));
+            },
+            outValueScale: function(value) {
+                if (value) {
+                    const matchingJumpSize = (engine.getValue(this.group, "beatjump_size") === this.beatJumpSize);
+                    return (matchingJumpSize) ? this.on : this.off;
+                }
+                return this.off;
+            },
         })
     );
 };
