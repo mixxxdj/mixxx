@@ -290,10 +290,10 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
 DDJ200.PadModeContainers.ModeSelector.prototype = new components.ComponentContainer();
 
 DDJ200.init = function() {
-    this.Decks = {
+    this.decks = new components.ComponentContainer({
         left: new DDJ200.Deck([1, 3], 1),
         right: new DDJ200.Deck([2, 4], 2),
-    };
+    });
 
     this.headMixButton = new components.Component({
         midi: [0x96, 0x63],
@@ -314,9 +314,9 @@ DDJ200.init = function() {
             if (value) {
                 engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
                 if (!engine.getValue("[Skin]", "show_4decks")) {
-                    DDJ200.Decks.left.setCurrentDeck("[Channel1]");
-                    DDJ200.Decks.right.setCurrentDeck("[Channel2]");
-                    Object.values(DDJ200.Decks).forEach(deck => {
+                    DDJ200.decks.left.setCurrentDeck("[Channel1]");
+                    DDJ200.decks.right.setCurrentDeck("[Channel2]");
+                    Object.values(DDJ200.decks).forEach(deck => {
                         if (deck.syncButton.blinkConnection) {
                             deck.syncButton.blinkConnection.disconnect();
                         };
@@ -337,7 +337,7 @@ DDJ200.init = function() {
 
         input: function(_channel, control, value, _status, _g) {
             if (value) {
-                Object.values(DDJ200.Decks).forEach(deck => {
+                Object.values(DDJ200.decks).forEach(deck => {
                     deck.padUnit.input((control === 0x5A));
                 });
                 this.indicatePadMode();
@@ -345,7 +345,7 @@ DDJ200.init = function() {
         },
         indicatorStyle: function() {
             // use left Deck as reference for selected padInstance
-            return DDJ200.Decks.left.padUnit.choosenPadInstance.indicatorStyle;
+            return DDJ200.decks.left.padUnit.choosenPadInstance.indicatorStyle;
         },
         blinkConnection: undefined,
         indicatePadMode: function() {
@@ -365,7 +365,7 @@ DDJ200.init = function() {
     this.shutdown = function() {
         DDJ200.headMixButton.shutdown();
         DDJ200.transFxButton.shutdown();
-        Object.values(DDJ200.Decks).forEach(deck => {
+        Object.values(DDJ200.decks).forEach(deck => {
             deck.shutdown();
         });
         engine.setValue("[Channel3]", "volume", 0);
@@ -397,7 +397,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         inKey: "jog",
         jogCounter: 0,
         inputSeek: function(_channel, _control, value, _status, group) {
-            if (DDJ200.Decks.left.shiftButton.pressed) {
+            if (DDJ200.decks.left.shiftButton.pressed) {
                 this.jogCounter += this.inValueScale(value);
                 if (this.jogCounter > 9) {
                     engine.setValue("[Library]", "MoveDown", true);
@@ -423,7 +423,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         pressed: 0,
         input: function(_channel, _control, value, _status, _g) {
             this.pressed = value;
-            Object.values(DDJ200.Decks).forEach(deck => {
+            Object.values(DDJ200.decks).forEach(deck => {
                 if (value) {
                     deck.shift();
                 } else {
