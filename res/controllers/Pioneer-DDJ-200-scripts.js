@@ -295,16 +295,20 @@ DDJ200.init = function() {
         right: new DDJ200.Deck([2, 4], 2),
     };
 
-    this.headMixButton = new components.Button({
+    this.headMixButton = new components.Component({
         midi: [0x96, 0x63],
         key: "headMix",
-        type: components.Button.prototype.types.toggle,
-        input: function(_channel, _control, value, _status, _g) {
+        group: "[Master]",
+        on: 0x7F,
+        off: 0x00,
+        inValueScale: function(value) {
             if (value) {
-                const masterMixEnabled = (engine.getValue("[Master]", "headMix") >= 0);
-                engine.setValue("[Master]", "headMix", masterMixEnabled ? -1 : 0);
-                this.send(masterMixEnabled?0:0x7F); // set LED
-            };
+                return (this.inGetValue() >= 0) ? -1 : 1;
+            }
+            return this.inGetValue();
+        },
+        outValueScale: function(value) {
+            return value >= 0 ? this.on : this.off;
         },
         shiftedInput: function(_channel, _control, value, _status, _g) {
             if (value) {
@@ -320,6 +324,9 @@ DDJ200.init = function() {
                 };
             };
         },
+        shutdown: function() {
+            this.send(this.off);
+        }
     });
 
     this.transFxButton = new components.Button({
