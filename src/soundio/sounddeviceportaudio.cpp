@@ -885,7 +885,13 @@ int SoundDevicePortAudio::callbackProcessDrift(
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int readAvailable = m_outputFifo->readAvailable();
 
-        if (readAvailable > outChunkSize * (kDriftReserve + 1)) {
+        if (readAvailable >= outChunkSize * (kDriftReserve + 3)) {
+            // we are here after working again after a more than one missing callbacks
+            // just discard the buffer and continue normally
+            m_outputFifo->releaseReadRegions(readAvailable - (outChunkSize * (kDriftReserve + 1)));
+            m_outputFifo->read(out, outChunkSize);
+            m_pSoundManager->underflowHappened(26);
+        } else if (readAvailable > outChunkSize * (kDriftReserve + 1)) {
             m_outputFifo->read(out, outChunkSize);
             if (m_outputDrift) {
                 // Risk of overflow, skip one frame
