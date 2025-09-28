@@ -493,16 +493,9 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         shiftChannel: false,
         shiftControl: true,
         shiftOffset: 0x3C,
-        outKey: "play_indicator",
-        shift: function() {
-            this.inKey = "reverse";
-        },
         inputFaderStart: function(channel, control, value, status, _g) {
             this.inKey = "play";
             this.input(channel, control, value, status, _g);
-        },
-        unshift: function() {
-            this.inKey = "play";
         },
     });
 
@@ -512,17 +505,11 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         shiftControl: true,
         shiftOffset: 0x3C,
         outKey: "cue_indicator",
-        shift: function() {
-            this.inKey = "cue_gotoandstop";
-        },
         inputFaderStop: function(channel, control, value, status, _g) {
             this.inKey = "cue_set";
             this.input(channel, control, value, status, _g);
             this.inKey = "cue_gotoandstop";
             this.input(channel, control, value, status, _g);
-        },
-        unshift: function() {
-            this.inKey = "cue_default";
         },
     });
 
