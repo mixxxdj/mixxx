@@ -105,35 +105,39 @@ DDJ200.PadModeContainers.Loop = function(deckOffset) {
     this.currentBaseLoopSize = parseInt(engine.getSetting("defaultLoopRootSize"));
 
     this.constructPads(i =>
-        new DDJ200.Pad(i, deckOffset, {
+        new components.Component({
+            midi: [0x97 + deckOffset, i],
             unshift: function() {
                 this.inKey = "beatloop_activate";
             },
             shift: function() {
                 this.inKey = "beatlooproll_activate";
             },
+            on: 0x7F,
+            off: 0x00,
             loopSize: Math.pow(2, theContainer.currentBaseLoopSize + i),
-            input: function(channel, _control, value, _status, _mode) {
+            input: function(_channel, _control, value, _status, _mode) {
                 if (value) {
                     const loopEnabled = engine.getValue(this.group, "loop_enabled");
                     const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
-                    engine.setValue(this.group, "beatloop_size", this.loopSize); // this should trigger output and switch all buttons off
+                    engine.setValue(this.group, "beatloop_size", this.loopSize);
                     if (matchingLoopSize || !loopEnabled) {
                         engine.setValue(this.group, this.inKey, true);
                     };
-                } else {
-                    const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                    this.send(loopEnabled?0x7F:0x00);
                 };
             },
-            outKey: "beatloop_size",
+            outKey: null, // hack to get Component constructor to call connect()
+            connect: function() {
+                this.connections[0] = engine.makeConnection(this.group, "beatloop_size", this.output.bind(this));
+                this.connections[1] = engine.makeConnection(this.group, "loop_enabled", this.output.bind(this));
+            },
             outValueScale: function(value) {
                 if (value) {
                     const loopEnabled = engine.getValue(this.group, "loop_enabled");
                     const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
-                    return matchingLoopSize?loopEnabled*0x7F:0x00;
+                    return (matchingLoopSize && loopEnabled) ? this.on : this.off;
                 }
-                return 0x00;
+                return this.off;
             },
         })
     );
