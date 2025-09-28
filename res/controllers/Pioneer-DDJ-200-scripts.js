@@ -95,7 +95,7 @@ DDJ200.PadModeContainers.Hotcue = function(deckOffset) {
     );
 };
 DDJ200.PadModeContainers.Hotcue.prototype = new DDJ200.PadMode({
-    indicatorStyle: 0x00,
+    indicatorStyle: 0,
 });
 
 DDJ200.PadModeContainers.Loop = function(deckOffset) {
@@ -139,7 +139,7 @@ DDJ200.PadModeContainers.Loop = function(deckOffset) {
     );
 };
 DDJ200.PadModeContainers.Loop.prototype = new DDJ200.PadMode({
-    indicatorStyle: 0x7F,
+    indicatorStyle: 1,
 });
 
 DDJ200.PadModeContainers.Effect = function(deckOffset) {
