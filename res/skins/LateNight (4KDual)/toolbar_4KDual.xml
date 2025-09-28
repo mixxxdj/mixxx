@@ -1,3 +1,4 @@
+<!-- Comment to get commit & CI-->
 <Template>
   <WidgetGroup>
     <ObjectName>ToolBar</ObjectName>
