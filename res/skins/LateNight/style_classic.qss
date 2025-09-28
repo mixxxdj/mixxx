@@ -2600,10 +2600,12 @@ WSearchLineEdit {
     image: url(skins:LateNight/classic/style/splitter_handle_horizontal.png);
   }
   #WaveformSplitter::handle:pressed,
+  #WaveformSplitter_Swapped:handle:pressed,
   #SidebarCoverSplitter::handle:pressed {
     image: url(skins:LateNight/classic/style/splitter_handle_horizontal_pressed.png);
   }
   #WaveformSplitter::handle:vertical,
+  #WaveformSplitter_Swapped:handle:pressed,
   #SidebarCoverSplitter::handle:vertical {
     height: 9px;
   }

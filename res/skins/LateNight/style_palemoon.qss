@@ -3237,7 +3237,7 @@ WSearchLineEdit {
   - Waveforms / Decks/FX/etc
   - Library sidebar / Lib Coverart */
 #WaveformSplitter,
-WaveformSplitter_Swapped,
+#WaveformSplitter_Swapped,
 #SidebarCoverSplitter {
   padding: 0px;
   margin: 0px;
