@@ -219,28 +219,19 @@ DDJ200.PadModeContainers.Jump.prototype = new DDJ200.PadMode({
 
 DDJ200.DoubleRingBuffer = class {
     constructor(indexableUnshifted, indexableShifted) {
-        this.indexableUnshifted = indexableUnshifted;
-        this.indexableShifted = indexableShifted;
-        this.indexable = this.indexableUnshifted;
+        this.indexable = [indexableUnshifted, indexableShifted];
         this.index = 0;
         this.isShifted = false;
     };
-    shift() {
-        this.indexable = this.indexableShifted;
+    swapIndexable() {
+        this.isShifted = !this.isShifted;
         this.index = 0;
-        this.isShifted = true;
-    };
-    unshift() {
-        this.indexable = this.indexableUnshifted;
-        this.index = 0;
-        this.isShifted = false;
-    };
+    }
     current() {
-        return this.indexable[this.index];
+        return this.indexable[this.isShifted?1:0][this.index];
     };
     next() {
-        this.index = script.posMod(this.index + 1, this.indexable.length);
-        return this.current();
+        this.index = script.posMod(this.index + 1, this.indexable[this.isShifted?1:0].length);
     };
 };
 
@@ -268,22 +259,13 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
         });
     };
 
-    this.input = () => {
-        if (this.padInstancesBuffer.isShifted) {
-            this.padInstancesBuffer.unshift();
-            setPads(this.padInstancesBuffer.current());
+    this.input = (isShifted) => {
+        if (isShifted !== this.padInstancesBuffer.isShifted) {
+            this.padInstancesBuffer.swapIndexable();
         } else {
-            setPads(this.padInstancesBuffer.next());
-        }
-    };
-
-    this.shiftedInput = () => {
-        if (!this.padInstancesBuffer.isShifted) {
-            this.padInstancesBuffer.shift();
-            setPads(this.padInstancesBuffer.current());
-        } else {
-            setPads(this.padInstancesBuffer.next());
-        }
+            this.padInstancesBuffer.next();
+        };
+        setPads(this.padInstancesBuffer.current());
     };
 
     this.startupModeInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset);
@@ -340,39 +322,29 @@ DDJ200.init = function() {
         shiftControl: true,
         shiftOffset: 1,
 
-        input: function(_channel, _control, value, _status, _g) {
+        input: function(_channel, control, value, _status, _g) {
             if (value) {
                 Object.values(DDJ200.Decks).forEach(deck => {
-                    deck.padUnit.input();
+                    deck.padUnit.input((control === 0x5A));
                 });
-                this.output(value);
+                this.indicatePadMode();
             };
         },
-        shiftedInput: function(_channel, _control, value, _status, _g) {
-            if (value) {
-                Object.values(DDJ200.Decks).forEach(deck => {
-                    deck.padUnit.shiftedInput();
-                });
-                this.output(value);
-            };
+        indicatorStyle: function() {
+            // use left Deck as reference for selected padInstance
+            return DDJ200.Decks.left.padUnit.choosenPadInstance.indicatorStyle;
         },
         blinkConnection: undefined,
-        output: function(active) {
-            if (!active) {
-                this.send(0x00);
+        indicatePadMode: function() {
+            if (this.blinkConnection) {
+                this.blinkConnection.disconnect();
+            };
+            if (this.indicatorStyle() === "indicator_250ms" || this.indicatorStyle() === "indicator_500ms") {
+                this.blinkConnection = engine.makeConnection("[App]", this.indicatorStyle(), function(value, _group, _control) {
+                    DDJ200.transFxButton.send(DDJ200.transFxButton.on * value);
+                });
             } else {
-                if (this.blinkConnection) {
-                    this.blinkConnection.disconnect();
-                };
-                // use left Deck as reference for current padInstance
-                const indicatorValue = DDJ200.Decks.left.padUnit.choosenPadInstance.indicatorStyle;
-                if (indicatorValue === "indicator_250ms" || indicatorValue === "indicator_500ms") {
-                    this.blinkConnection = engine.makeConnection("[App]", indicatorValue, function(value, _group, _control) {
-                        DDJ200.transFxButton.send(0x7F * value);
-                    });
-                } else {
-                    this.send(indicatorValue);
-                };
+                this.send(this.on * this.indicatorStyle());
             };
         },
     });
