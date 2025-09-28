@@ -64,6 +64,7 @@
 #MainControls,
 #HeadphoneControls,
 #VuMeterDeck1_Compact,
+#VuMeterDeck1_Compact,
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
@@ -76,6 +77,8 @@
 #SidebarBox,
 #PreviewDeck,
 #SidebarCoverSplitter,
+#4KDualScreenSplitter::handle,
+#4KDualScreenSplitter_Swapped::handle,
 #SidebarCoverSplitter:handle,
 #LibrarySplitter::handle,
 #LibraryFeatureControls,
@@ -3234,11 +3237,13 @@ WSearchLineEdit {
   - Waveforms / Decks/FX/etc
   - Library sidebar / Lib Coverart */
 #WaveformSplitter,
+WaveformSplitter_Swapped,
 #SidebarCoverSplitter {
   padding: 0px;
   margin: 0px;
   }
   #WaveformSplitter::handle,
+  #WaveformSplitter_Swapped::handle,
   #SidebarCoverSplitter::handle {
       image: url(skins:LateNight/palemoon/style/splitter_handle_horizontal.svg);
       height: 9px;
