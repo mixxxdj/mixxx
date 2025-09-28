@@ -249,7 +249,7 @@
       </control>
       <control>
         <group>[AutoDJ]</group>
-        <key>DDJ200.transFxButton.shiftedInput</key>
+        <key>DDJ200.transFxButton.input</key>
         <description>Change Pad mode</description>
         <status>0x96</status>
         <midino>0x5A</midino>
