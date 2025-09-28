@@ -680,7 +680,7 @@
                               </Children>
                             </Splitter>
 
-                            <!-- RIGHT Part: Preparation Window & Library -->
+                            <!-- RIGHT Part: Library Pane -->
                             <WidgetStack currentpage="[Skin],show_maximized_library">
                               <Children>
                                 <SingletonContainer>

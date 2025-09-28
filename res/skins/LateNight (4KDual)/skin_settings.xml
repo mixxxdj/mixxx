@@ -496,13 +496,6 @@ Description:
                 <SetVariable name="Text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>
               </Template>
-
-              <!-- PrepWin -->
-              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-                <SetVariable name="Text">Preparation Window</SetVariable>
-                <SetVariable name="Setting">[Skin],show_preparation_window</SetVariable>
-              </Template>
             </Children>
           </WidgetGroup>
           <!-- /Library -->
