@@ -165,14 +165,14 @@ DDJ200.PadModeContainers.Effect = function(deckOffset, group) {
         } else {
             return new components.Button({
                 midi: [0x97 + deckOffset, i],
-                input: function(_channel, _control, value, _status, _g) {
+                indicateButtonPress: function(value) {
+                    this.output(value, null, null);
+                },
+                inSetValue: function(value) {
                     if (value) {
                         bpm.tapButton(script.deckFromGroup(this.group));
                     };
-                    this.send(this.outValueScale(value));
-                },
-                trigger: function(_value) {
-                    this.send(0x00);
+                    this.indicateButtonPress(value);
                 },
             });
         };
