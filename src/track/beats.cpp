@@ -615,6 +615,59 @@ mixxx::Bpm Beats::getBpmAroundPosition(audio::FramePos position, int n) const {
     return BeatUtils::calculateAverageBpm(2 * n, m_sampleRate, startPosition, endPosition);
 }
 
+bool Beats::getContext(
+        mixxx::audio::FramePos position,
+        mixxx::audio::FramePos* pPrevBeatPosition,
+        mixxx::audio::FramePos* pNextBeatPosition,
+        mixxx::audio::FrameDiff_t* pBeatLengthFrames,
+        double* pBeatPercentage) const {
+    mixxx::audio::FramePos prevBeatPosition;
+    mixxx::audio::FramePos nextBeatPosition;
+    if (!findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
+        return false;
+    }
+
+    if (pPrevBeatPosition != nullptr) {
+        *pPrevBeatPosition = prevBeatPosition;
+    }
+
+    if (pNextBeatPosition != nullptr) {
+        *pNextBeatPosition = nextBeatPosition;
+    }
+
+    return getContextNoLookup(
+            position,
+            prevBeatPosition,
+            nextBeatPosition,
+            pBeatLengthFrames,
+            pBeatPercentage);
+}
+
+// static
+bool Beats::getContextNoLookup(
+        mixxx::audio::FramePos position,
+        mixxx::audio::FramePos prevBeatPosition,
+        mixxx::audio::FramePos nextBeatPosition,
+        mixxx::audio::FrameDiff_t* pBeatLengthFrames,
+        double* pBeatPercentage) {
+    if (!prevBeatPosition.isValid() || !nextBeatPosition.isValid()) {
+        return false;
+    }
+
+    const mixxx::audio::FrameDiff_t beatLengthFrames = nextBeatPosition - prevBeatPosition;
+    if (pBeatLengthFrames != nullptr) {
+        *pBeatLengthFrames = beatLengthFrames;
+    }
+
+    if (pBeatPercentage != nullptr) {
+        *pBeatPercentage = (beatLengthFrames == 0.0)
+                ? 0.0
+                : (position - prevBeatPosition) / beatLengthFrames;
+    }
+
+    return true;
+}
+
 std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames) const {
     std::vector<BeatMarker> markers;
     std::transform(m_markers.cbegin(),
@@ -753,6 +806,29 @@ int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPos
     }
     return i - 2;
 };
+
+double Beats::numFractionalBeatsInRange(audio::FramePos startPos, audio::FramePos endPos) const {
+    double pBeatPercentage;
+    // get the ratio of first beat / position:
+    // 1 - ((startPos - beat before range) / first beat length)
+    if (!getContext(startPos, nullptr, nullptr, nullptr, &pBeatPercentage)) {
+        return -1;
+    }
+    double numBeats = 1 - pBeatPercentage;
+
+    // get the last beat ratio:
+    // (endPos - last beat in range) / last beat length
+    if (!getContext(endPos, nullptr, nullptr, nullptr, &pBeatPercentage)) {
+        return -1;
+    }
+    numBeats += pBeatPercentage;
+
+    // get the beats inside the range
+    // subtract 1 because we already counted the first beat
+    numBeats += numBeatsInRange(findNextBeat(startPos), endPos) - 1;
+
+    return numBeats;
+}
 
 audio::FramePos Beats::findNextBeat(audio::FramePos position) const {
     return findNthBeat(position, 1);
