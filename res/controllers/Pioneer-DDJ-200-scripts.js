@@ -375,8 +375,8 @@ DDJ200.init = function() {
 
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
-    // start with focus on library for selecting tracks (delay seems required)
 
+    // start with focus on library for selecting tracks (delay seems required)
     engine.beginTimer(500, function() {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
@@ -536,7 +536,6 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
             c.group = this.currentDeck;
         };
     });
-
 };
 
 DDJ200.Deck.prototype = new components.Deck();
