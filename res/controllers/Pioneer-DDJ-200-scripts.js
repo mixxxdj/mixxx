@@ -584,5 +584,4 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         };
     });
 };
-
-DDJ200.Deck.prototype = new components.Deck();
+DDJ200.Deck.prototype = new components.Deck(2);
