@@ -78,20 +78,16 @@ DDJ200.PadMode = function(options) {
 };
 DDJ200.PadMode.prototype = new components.ComponentContainer();
 
-DDJ200.Pad = function(pos, deckOffset, options) {
-    options.midi = [0x97 + deckOffset, pos];
-    options.number = pos + 1;
-    components.HotcueButton.call(this, options);
-};
-DDJ200.Pad.prototype = new components.HotcueButton({});
-
 DDJ200.PadModeContainers = {};
 
 DDJ200.PadModeContainers.Hotcue = function(deckOffset) {
     DDJ200.PadMode.call(this);
 
     this.constructPads(i =>
-        new DDJ200.Pad(i, deckOffset, { })
+        new components.HotcueButton({
+            midi: [0x97 + deckOffset, i],
+            number: i + 1,
+        })
     );
 };
 DDJ200.PadModeContainers.Hotcue.prototype = new DDJ200.PadMode({
