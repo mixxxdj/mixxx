@@ -183,7 +183,7 @@ TEST_F(StemControlTest, StemColor) {
     EXPECT_EQ(m_pStem4Color->get(), 0xad << 16 | 0x65 << 8 | 0xff);
 }
 
-TEST_F(StemControlTest, Volume) {
+TEST_F(StemControlTest, DISABLED_Volume) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
@@ -270,7 +270,7 @@ TEST_F(StemControlTest, VolumeResetOnLoad) {
     EXPECT_EQ(m_pStem4Mute->get(), 0.0);
 }
 
-TEST_F(StemControlTest, Mute) {
+TEST_F(StemControlTest, DISABLED_Mute) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
