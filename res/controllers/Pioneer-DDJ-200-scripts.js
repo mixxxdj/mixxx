@@ -316,11 +316,11 @@ DDJ200.init = function() {
                 if (!engine.getValue("[Skin]", "show_4decks")) {
                     DDJ200.decks.left.setCurrentDeck("[Channel1]");
                     DDJ200.decks.right.setCurrentDeck("[Channel2]");
-                    Object.values(DDJ200.decks).forEach(deck => {
+                    DDJ200.decks.forEachComponentContainer(deck => {
                         if (deck.syncButton.blinkConnection) {
                             deck.syncButton.blinkConnection.disconnect();
                         };
-                    });
+                    }, false);
                 };
             };
         },
@@ -337,9 +337,9 @@ DDJ200.init = function() {
 
         input: function(_channel, control, value, _status, _g) {
             if (value) {
-                Object.values(DDJ200.decks).forEach(deck => {
+                DDJ200.decks.forEachComponentContainer(deck => {
                     deck.padUnit.input((control === 0x5A));
-                });
+                }, false);
                 this.indicatePadMode();
             };
         },
@@ -365,9 +365,9 @@ DDJ200.init = function() {
     this.shutdown = function() {
         DDJ200.headMixButton.shutdown();
         DDJ200.transFxButton.shutdown();
-        Object.values(DDJ200.decks).forEach(deck => {
+        DDJ200.decks.forEachComponentContainer(deck => {
             deck.shutdown();
-        });
+        }, false);
         engine.setValue("[Channel3]", "volume", 0);
         engine.setValue("[Channel4]", "volume", 0);
     };
@@ -423,13 +423,13 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         pressed: 0,
         input: function(_channel, _control, value, _status, _g) {
             this.pressed = value;
-            Object.values(DDJ200.decks).forEach(deck => {
+            DDJ200.decks.forEachComponentContainer(deck => {
                 if (value) {
                     deck.shift();
                 } else {
                     deck.unshift();
                 };
-            });
+            }, false);
         },
     });
 
