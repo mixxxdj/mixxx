@@ -15,8 +15,8 @@
       <!-- values are actually exponents 2**n-->
       <value label="1/32">-5</value>
       <value label="1/16">-4</value>
-      <value label="1/8" default="true">-3</value>
-      <value label="1/4">-2</value>
+      <value label="1/8">-3</value>
+      <value label="1/4" default="true">-2</value>
       <value label="1/2">-1</value>
       <value label="1">0</value>
       <value label="2">1</value>
@@ -26,12 +26,12 @@
       <value label="32">5</value>
       <value label="64">6</value>
       <value label="128">7</value>
-      <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads. This can also be changed on the fly using :hwbtn:SHIFT + "parameter adjust"</description>
+      <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads.</description>
     </option>
     <option
       variable="defaultBeatJumpRootSize"
       type="enum"
-      label="Loop size of the smallest Pad in BeatJump Padmode">
+      label="Jump size of the smallest Pad in BeatJump Padmode">
       <!-- values are actually exponents 2**n-->
       <value label="1/32">-5</value>
       <value label="1/16">-4</value>
@@ -46,7 +46,7 @@
       <value label="32">5</value>
       <value label="64">6</value>
       <value label="128">7</value>
-      <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads. This can also be changed on the fly using :hwbtn:SHIFT + "parameter adjust"</description>
+      <description>This specifies the smallest jump size, the larger jumpsizes are automatically available on the other pads.</description>
     </option>
   </settings>
   <controller id="DDJ-200 ALT">
