@@ -401,6 +401,7 @@ DDJ200.init = function() {
                     DDJ200.transFxButton.send(DDJ200.transFxButton.on * value);
                 });
             } else {
+                this.blinkConnection = undefined;
                 this.send(this.on * this.indicatorStyle());
             };
         },
