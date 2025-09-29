@@ -2,11 +2,15 @@
 
 #include <QCheckBox>
 #include <QContextMenuEvent>
+#include <QPainter>
+#include <QStyleOptionHeader>
+#include <QTextOption>
 #include <QWidgetAction>
 
 #include "library/trackmodel.h"
 #include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
+#include "util/painterscope.h"
 #include "util/parented_ptr.h"
 #include "widget/wmenucheckbox.h"
 
@@ -116,7 +120,8 @@ void HeaderViewState::restoreState(QHeaderView* pHeaders) {
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         QWidget* pParent)
         : QHeaderView(orientation, pParent),
-          m_menu(tr("Show or hide columns."), this) {
+          m_menu(tr("Show or hide columns."), this),
+          m_preferredHeight(-1) {
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -341,4 +346,136 @@ int WTrackTableViewHeader::hiddenCount() {
 TrackModel* WTrackTableViewHeader::getTrackModel() {
     TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model());
     return pTrackModel;
+}
+
+void WTrackTableViewHeader::setFont(const QFont& font) {
+    // Note:
+    // This does not necessarily set the "font" -- QStylesheetStyle seems to be
+    // so dominant/persistent that setFont() only adopts font properties which
+    // we did NOT set in qss.
+    // So, for
+    // WTrackTableViewHeader, WTrackTableViewHeader::section {
+    //   font-family: "Open Sans Semibold", "Open Sans";
+    //   font-weight: 500; /* semi-bold */
+    //   font-style: normal;
+    //   text-transform: none;
+    //   but not font-size; }
+    // setFont() does only set font-size.
+    QHeaderView::setFont(font);
+
+    // When we set a new font, QHeaderView's QStyle kind of adopts the stylesheet
+    // we applied (border and padding are intact), but apparently adds some content
+    // margin in QStyle::SE_HeaderLabel which changes the effective text padding.
+    // Since we can't re-apply the stylesheet, we need to calculate the original
+    // text padding (border + padding) in order to get the new preferred height.
+    // This is then used by sizeHint() to return the preferred size.
+    // Note: we don't touch the column width.
+    setHeightForFont();
+
+    // In order to update the view instantly we need to make some update calls.
+    // Note: order of these seems to be crucial. Otherwise we wouldn't get
+    // the new size until we switch the track model (create a new header)
+    updateGeometry(); // Tells layout to re-query sizeHint()
+    adjustSize();     // Resizes to sizeHint()
+    update();         // Repaints the widget
+}
+
+void WTrackTableViewHeader::setHeightForFont() {
+    // Re-calculate the fixed height used by sizeHint().
+    // Subtract content height from frame height to get the
+    // vertical padding, and add that to the font height to get the new ttotal height.
+    QStyleOptionHeader opt;
+    initStyleOption(&opt);
+    const QRect baseRect(QPoint(0, 0), QHeaderView::sizeHint());
+    opt.rect = baseRect;
+    const QRect contentRect = style()->subElementRect(QStyle::SE_HeaderLabel, &opt, this);
+    int vPadding = baseRect.height() - contentRect.height();
+    // This gives the desired result (capital height + ascent + descent).
+    // font().pixelSize() / QFontInfo(font()).pixelSize() will apparently return
+    // something like font(),capHeight() which is not adequate here.
+    QFontMetrics fm(font());
+    m_preferredHeight = fm.height() + vPadding;
+}
+
+QSize WTrackTableViewHeader::sizeHint() const {
+    if (m_preferredHeight == -1) { // no font set by us, yet
+        return QHeaderView::sizeHint();
+    }
+    return QSize(QHeaderView::sizeHint().width(), m_preferredHeight);
+}
+
+void WTrackTableViewHeader::paintSection(
+        QPainter* pPainter,
+        const QRect& rect,
+        int logicalIndex) const {
+    // Work around a Qt bug that occurs when we set sort icons in qss (and we need to
+    // because setting any QHeaderView::section style property clears the default icons):
+    // the style would reserve space for the sort indicator, even in header sections
+    // where it's not visible, and thereby truncate the text.
+    //
+    // Probably this one:
+    // https://bugreports.qt.io/browse/QTBUG-27038
+    // Previous Mixxx workaround which is not applicable anymore since we are now
+    // applying the library font to the header at runtime:
+    // https://github.com/mixxxdj/mixxx/pull/13535
+    //
+    // Fix: draw background & border, then text, then sort indicator.
+    // This is a stripped and fixed adaption of QHeaderView::paintSection()
+    QStyleOptionHeader opt;
+    initStyleOption(&opt);
+    opt.rect = rect;
+    opt.section = logicalIndex;
+
+    // Draw background & border only
+    opt.text = QString(); // prevent style from drawing the text
+    opt.icon = QIcon();   // prevent icon overlap
+    style()->drawControl(QStyle::CE_HeaderSection, &opt, pPainter, this);
+
+    const QRect contentRect = style()->subElementRect(QStyle::SE_HeaderLabel, &opt, this);
+    // Note: contentRect.height() is now actually equal to m_preferredHeight
+
+    { // Draw text. Use PainterScope, just in case...
+        PainterScope painterScope(pPainter);
+
+        // BaseTrackTableModel::headerData(section, orientation, Qt::TextAlignmentRole)
+        // replaces the vertical component of the default alignment flags with VCenter.
+        const Qt::Alignment alignment = model()->headerData(logicalIndex,
+                                                       Qt::Horizontal,
+                                                       Qt::TextAlignmentRole)
+                                                .value<Qt::Alignment>();
+        QTextOption textOption(alignment);
+        textOption.setWrapMode(QTextOption::NoWrap);
+        const QString title =
+                model()->headerData(logicalIndex, orientation(), Qt::DisplayRole).toString();
+        // QPainter still has the old font (size)
+        pPainter->setFont(font());
+        pPainter->setPen(opt.palette.color(QPalette::ButtonText));
+        pPainter->drawText(contentRect, title, textOption);
+    }
+
+    // Draw sort indicator if needed
+    if (isSortIndicatorShown() && sortIndicatorSection() == logicalIndex) {
+        // Use the style's original indicator rect but make width = height
+        const QRect origIndiRect = style()->subElementRect(QStyle::SE_HeaderArrow, &opt, this);
+        int indiWH = origIndiRect.height();
+        int indiRectLeft = layoutDirection() == Qt::LeftToRight
+                ? origIndiRect.right() - indiWH
+                : origIndiRect.left();
+        opt.rect = QRect(indiRectLeft, origIndiRect.top(), indiWH, indiWH);
+
+        // NOTE: Don't use drawPrimitive(PE_IndicatorHeaderArrow) because of its
+        // platform-specific arrow flipping logic in QFusionStyle::drawPrimitive
+        // (ascending = up on Linux, down on Windows/macOS) which is not used by
+        // QHeaderView's default painting via
+        // QStyleSheetStyle::drawControl(CE_Header|CE_HeaderLabel).
+        // Instead, we use the fail-safe method of drawing up/down arrows explicitly
+        // with drawPrimitive(PE_IndicatorArrowUp|Down) for consistent appearance.
+        // This also updates the widget so qss icons are applied immediately.
+        style()->drawPrimitive((sortIndicatorOrder() == Qt::AscendingOrder)
+                        ? QStyle::PE_IndicatorArrowUp
+                        : QStyle::PE_IndicatorArrowDown,
+                &opt,
+                pPainter,
+                this);
+    }
 }

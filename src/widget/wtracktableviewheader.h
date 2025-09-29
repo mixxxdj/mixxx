@@ -63,8 +63,20 @@ class WTrackTableViewHeader : public QHeaderView {
     void saveHeaderState();
     void restoreHeaderState();
     void loadDefaultHeaderState();
-     /** returns false if the header state is stored in the database (on first time usgae) **/
+    // Returns false if the header state is not stored in the database (on first time usage)
     bool hasPersistedHeaderState();
+
+    // Sets the font and ensures the height is adjusted immediately.
+    // From other units this has to be called via WTrackTableViewHeader, not horizontalHeader()
+    // because it does not (and can not) override QWidget::setFont()
+    void setFont(const QFont& font);
+    // We could also catch font change via changeEvent() -> QEvent::FontChange
+    // but that's called way too often with no-ops and causes hilarious effects.
+
+    // Required to set the preferred height with custom padding
+    QSize sizeHint() const override;
+    // Work around Qt6 paint bug with sort indicator
+    void paintSection(QPainter* pPainter, const QRect& rect, int logicalIndex) const override;
 
   signals:
     void shuffle();
@@ -77,6 +89,10 @@ class WTrackTableViewHeader : public QHeaderView {
     void clearActions();
     TrackModel* getTrackModel();
 
+    void setHeightForFont();
+
     QMenu m_menu;
     QMap<int, QCheckBox*> m_columnCheckBoxes;
+
+    int m_preferredHeight;
 };

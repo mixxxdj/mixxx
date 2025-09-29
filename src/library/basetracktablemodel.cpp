@@ -240,6 +240,14 @@ QVariant BaseTrackTableModel::headerData(
             }
             break;
         }
+        case Qt::TextAlignmentRole: {
+            // Get the headers default alignment and replace any potential v-align
+            // flags with AlignVCenter (it just looks better with latin fonts)
+            QVariant alignVar = QAbstractTableModel::headerData(section, orientation, role);
+            Qt::Alignment alignment = alignVar.value<Qt::Alignment>();
+            alignment = (alignment & ~Qt::AlignVertical_Mask) | Qt::AlignVCenter;
+            return QVariant::fromValue(alignment);
+        }
         default:
             break;
         }
