@@ -48,6 +48,14 @@
       <value label="128">7</value>
       <description>This specifies the smallest jump size, the larger jumpsizes are automatically available on the other pads.</description>
     </option>
+    <option variable="useSuperAsGain"
+      type="boolean"
+      label="Use Quick Effect Controller Button as Gain Knob"
+      default="false">
+      <description>
+        There is no hardware "Gain" knob on the Pioneer DDJ-200. When enabled, the "Quick Effect" knob can be used to control the gain of the respective deck instead.
+      </description>
+    </option>
   </settings>
   <controller id="DDJ-200 ALT">
     <scriptfiles>

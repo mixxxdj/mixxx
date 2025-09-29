@@ -522,8 +522,8 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
     };
 
     this.super1 = new components.Pot({
-        group: `[QuickEffectRack1_${this.currentDeck}]`,
-        inKey: "super1",
+        group: (engine.getSetting("useSuperAsGain"))?theDeck.currentDeck:`[QuickEffectRack1_${this.currentDeck}]`,
+        inKey: (engine.getSetting("useSuperAsGain"))?"pregain":"super1",
     });
 
     this.reconnectComponents(function(c) {
