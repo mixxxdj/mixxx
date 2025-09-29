@@ -152,11 +152,26 @@ DDJ200.PadModeContainers.Effect = function(deckOffset, group) {
                 number: deckOffset * 2 + i + 1,
             });
         } else if (i < 7) {
-            return new components.Component({
+            return new components.Button({
                 midi: [0x97 + deckOffset, i],
                 group: `[EffectRack1_EffectUnit${ script.deckFromGroup(group) }_Effect${ i - 3 }]`,
                 inKey: "enabled",
                 outKey: "loaded",
+                type: components.Button.prototype.types.toggle,
+                unshift: function() {
+                    if (this.connections) {
+                        this.disconnect();
+                        this.group = this.group.replace("EffectUnit3", "EffectUnit1").replace("EffectUnit4", "EffectUnit2");
+                        this.connect();
+                        this.trigger();
+                    }
+                },
+                shift: function() {
+                    this.disconnect();
+                    this.group = this.group.replace("EffectUnit1", "EffectUnit3").replace("EffectUnit2", "EffectUnit4");
+                    this.connect();
+                    this.trigger();
+                },
             });
         } else {
             return new components.Button({
