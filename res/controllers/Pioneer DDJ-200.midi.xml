@@ -630,7 +630,7 @@
       <!-- ##### Hotcues ##### -->
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[0].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 1, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x00</midino>
@@ -640,7 +640,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[1].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 2, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x01</midino>
@@ -650,7 +650,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[2].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 3, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x02</midino>
@@ -660,7 +660,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[3].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 4, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x03</midino>
@@ -670,7 +670,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[4].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 5, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x04</midino>
@@ -680,7 +680,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[5].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 6, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x05</midino>
@@ -690,7 +690,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[6].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 7, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x06</midino>
@@ -700,7 +700,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[7].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 8, Deck 1: Set, preview, jump to</description>
         <status>0x97</status>
         <midino>0x07</midino>
@@ -710,7 +710,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[0].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 1, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x00</midino>
@@ -720,7 +720,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[1].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 2, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x01</midino>
@@ -730,7 +730,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[2].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 3, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x02</midino>
@@ -740,7 +740,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[3].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 4, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x03</midino>
@@ -750,7 +750,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[4].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 5, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x04</midino>
@@ -760,7 +760,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[5].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 6, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x05</midino>
@@ -770,7 +770,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[6].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 7, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x06</midino>
@@ -780,7 +780,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[7].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 8, Deck 2: Set, preview, jump to</description>
         <status>0x99</status>
         <midino>0x07</midino>
@@ -790,7 +790,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[0].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 1, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x00</midino>
@@ -800,7 +800,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[1].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 2, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x01</midino>
@@ -810,7 +810,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[2].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 3, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x02</midino>
@@ -820,7 +820,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[3].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 4, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x03</midino>
@@ -830,7 +830,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[4].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 5, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x04</midino>
@@ -840,7 +840,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[5].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 6, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x05</midino>
@@ -850,7 +850,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[6].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 7, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x06</midino>
@@ -860,7 +860,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.padUnit.choosenPadInstance.pads[7].input</key>
+        <key>DDJ200.decks.left.padUnit.input</key>
         <description>Hotcue 8, Deck 1: Clear</description>
         <status>0x98</status>
         <midino>0x07</midino>
@@ -870,7 +870,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[0].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 1, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x00</midino>
@@ -880,7 +880,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[1].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 2, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x01</midino>
@@ -890,7 +890,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[2].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 3, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x02</midino>
@@ -900,7 +900,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[3].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 4, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x03</midino>
@@ -910,7 +910,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[4].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 5, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x04</midino>
@@ -920,7 +920,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[5].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 6, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x05</midino>
@@ -930,7 +930,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[6].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 7, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x06</midino>
@@ -940,7 +940,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.padUnit.choosenPadInstance.pads[7].input</key>
+        <key>DDJ200.decks.right.padUnit.input</key>
         <description>Hotcue 8, Deck 2: Clear</description>
         <status>0x9A</status>
         <midino>0x07</midino>
