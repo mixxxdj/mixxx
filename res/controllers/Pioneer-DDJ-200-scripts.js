@@ -337,6 +337,16 @@ DDJ200.init = function() {
     this.decks = new components.ComponentContainer({
         left: new DDJ200.Deck([1, 3], 1),
         right: new DDJ200.Deck([2, 4], 2),
+        shift: function() {
+            this.left.padUnit.choosenPadInstance().shift();
+            this.right.padUnit.choosenPadInstance().shift();
+            components.ComponentContainer.prototype.shift();
+        },
+        unshift: function() {
+            (this.left.padUnit.choosenPadInstance()).unshift();
+            this.right.padUnit.choosenPadInstance().unshift();
+            components.ComponentContainer.prototype.unshift();
+        }
     });
 
     this.headMixButton = new components.Component({
@@ -411,6 +421,8 @@ DDJ200.init = function() {
         DDJ200.headMixButton.shutdown();
         DDJ200.transFxButton.shutdown();
         DDJ200.decks.shutdown();
+        DDJ200.decks.left.padUnit.choosenPadInstance().shutdown();
+        DDJ200.decks.right.padUnit.choosenPadInstance().shutdown();
         engine.setValue("[Channel3]", "volume", 0);
         engine.setValue("[Channel4]", "volume", 0);
     };
