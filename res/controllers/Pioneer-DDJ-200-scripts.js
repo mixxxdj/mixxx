@@ -468,13 +468,11 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         pressed: 0,
         input: function(_channel, _control, value, _status, _g) {
             this.pressed = value;
-            DDJ200.decks.forEachComponentContainer(deck => {
-                if (value) {
-                    deck.shift();
-                } else {
-                    deck.unshift();
-                };
-            }, false);
+            if (value) {
+                DDJ200.decks.shift();
+            } else {
+                DDJ200.decks.unshift();
+            }
         },
     });
 
