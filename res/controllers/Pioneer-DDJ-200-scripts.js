@@ -410,9 +410,7 @@ DDJ200.init = function() {
     this.shutdown = function() {
         DDJ200.headMixButton.shutdown();
         DDJ200.transFxButton.shutdown();
-        DDJ200.decks.forEachComponentContainer(deck => {
-            deck.shutdown();
-        }, false);
+        DDJ200.decks.shutdown();
         engine.setValue("[Channel3]", "volume", 0);
         engine.setValue("[Channel4]", "volume", 0);
     };
