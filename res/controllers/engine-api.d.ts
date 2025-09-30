@@ -1,5 +1,3 @@
-import { MixxxGroup, MixxxControlName } from './mixxx-controls';
-
 declare interface QtSlot<F extends (...args: any[]) => void> {
     connect(callback: F): void
 }

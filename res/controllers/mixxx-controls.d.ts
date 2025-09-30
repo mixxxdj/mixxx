@@ -1,4 +1,4 @@
-export type MixxxControlName = {
+declare type MixxxControlName = {
   '[App]': MixxxAppControl;
   '[Master]': MixxxMasterControl;
   '[Microphone]': MixxxMicrophoneControl;
@@ -37,15 +37,15 @@ export type MixxxControlName = {
   ]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
 };
 
-export type MixxxChannelGroup = `[Channel${number}]`;
+type MixxxChannelGroup = `[Channel${number}]`;
 
-export type MixxxGroup = keyof MixxxControlName;
+declare type MixxxGroup = keyof MixxxControlName;
 
 /*
  * Values
  */
 
-export type MixxxPotMeterControls =
+type MixxxPotMeterControls =
   | '_up'
   | '_down'
   | '_up_small'
@@ -57,7 +57,7 @@ export type MixxxPotMeterControls =
   | '_toggle'
   | '_minus_toggle';
 
-export type MixxxAppControl =
+type MixxxAppControl =
   | 'gui_tick_50ms_period_s'
   | 'indicator_250ms'
   | 'indicator_500ms'
@@ -68,7 +68,7 @@ export type MixxxAppControl =
   | 'num_auxiliaries'
   | 'samplerate';
 
-export type MixxxMasterControl =
+type MixxxMasterControl =
   | 'audio_latency_usage'
   | 'audio_latency_overload'
   | 'audio_latency_overload_count'
@@ -97,7 +97,7 @@ export type MixxxMasterControl =
   | 'VuMeterL'
   | 'VuMeterR';
 
-export type MixxxChannelDeckSamplerControl =
+type MixxxChannelDeckSamplerControl =
   | 'back'
   | 'bpmlock'
   | 'beat_active'
@@ -296,14 +296,14 @@ export type MixxxChannelDeckSamplerControl =
   | 'waveform_zoom_set_default'
   | 'wheel';
 
-export type MixxxDeckControl = MixxxChannelDeckSamplerControl;
+type MixxxDeckControl = MixxxChannelDeckSamplerControl;
 
-export type MixxxSamplerControl =
+type MixxxSamplerControl =
   | MixxxChannelDeckSamplerControl
   | 'SaveSamplerBank'
   | 'LoadSamplerBank';
 
-export type MixxxMicrophoneAuxiliaryControl =
+type MixxxMicrophoneAuxiliaryControl =
   | 'input_configured'
   | 'main_mix'
   | 'PeakIndicator'
@@ -318,30 +318,30 @@ export type MixxxMicrophoneAuxiliaryControl =
   | 'VuMeterL'
   | 'VuMeterR';
 
-export type MixxxChannelControl =
+type MixxxChannelControl =
   | MixxxChannelDeckSamplerControl
   | MixxxMicrophoneAuxiliaryControl
   | 'input_configured';
 
-export type MixxxMicrophoneControl = MixxxMicrophoneAuxiliaryControl;
+type MixxxMicrophoneControl = MixxxMicrophoneAuxiliaryControl;
 
-export type MixxxAuxiliaryControl =
+type MixxxAuxiliaryControl =
   | MixxxMicrophoneAuxiliaryControl
   | 'orientation';
 
-export type MixxxVinylControl = 'Toggle' | 'gain';
+type MixxxVinylControl = 'Toggle' | 'gain';
 
-export type MixxxRecordingControl = 'toggle_recording' | 'status';
+type MixxxRecordingControl = 'toggle_recording' | 'status';
 
-export type MixxxAutoDJControl =
+type MixxxAutoDJControl =
   | 'enabled'
   | 'shuffle_playlist'
   | 'skip_next'
   | 'fade_now'
   | 'add_random_track';
 
-export type MixxxLibraryPlaylistControl = 'AutoDjAddBottom' | 'AutoDjAddTop';
-export type MixxxLibraryControl =
+type MixxxLibraryPlaylistControl = 'AutoDjAddBottom' | 'AutoDjAddTop';
+type MixxxLibraryControl =
   | MixxxLibraryPlaylistControl
   | 'MoveUp'
   | 'MoveDown'
@@ -372,20 +372,20 @@ export type MixxxLibraryControl =
   | 'search_history_selector'
   | 'clear_search';
 
-export type MixxxShoutcastControl = 'enabled' | 'status';
+type MixxxShoutcastControl = 'enabled' | 'status';
 
-export type MixxxPlaylistControl =
+type MixxxPlaylistControl =
   | MixxxLibraryPlaylistControl
   | 'SelectPlaylist'
   | 'SelectTrackKnob';
 
-export type MixxxControlsControl =
+type MixxxControlsControl =
   | 'touch_shift'
   | 'AutoHotcueColors'
   | 'ShowDurationRemaining';
 
-export type MixxxEffectEqualizerQuickEffectRack1Control = 'num_effectunits';
-export type EffectEqualizerQuickEffectRack1Control =
+type MixxxEffectEqualizerQuickEffectRack1Control = 'num_effectunits';
+type EffectEqualizerQuickEffectRack1Control =
   | 'num_effectunits'
   | 'chain_preset_selector'
   | 'clear'
@@ -403,13 +403,13 @@ export type EffectEqualizerQuickEffectRack1Control =
   | 'show_parameters'
   | 'super1';
 
-export type MixxxEffectRack1UnitControl =
+type MixxxEffectRack1UnitControl =
   | EffectEqualizerQuickEffectRack1Control
   | 'group_[Headphone]_enable'
   | 'group_[Master]_enable'
   | `group_[Sampler${number}]_enable`;
 
-export type MixxxEffectEqualizerQuickEffectRack1EffectControl =
+type MixxxEffectEqualizerQuickEffectRack1EffectControl =
   | 'clear'
   | 'effect_selector'
   | 'enabled'
@@ -431,7 +431,7 @@ export type MixxxEffectEqualizerQuickEffectRack1EffectControl =
   | `button_parameter${number}_loaded`
   | `button_parameter${number}_type`;
 
-export type MixxxSkinControl =
+type MixxxSkinControl =
   | 'show_effectrack'
   | 'show_library_coverart'
   | 'show_maximized_library'
