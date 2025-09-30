@@ -19,4 +19,8 @@ class SkinControls {
     ControlPushButton m_showSettings;
     ControlPushButton m_showSpinnies;
     ControlPushButton m_showVinylControl;
+    ControlPushButton m_hightlightChannel1;
+    ControlPushButton m_hightlightChannel2;
+    ControlPushButton m_hightlightChannel3;
+    ControlPushButton m_hightlightChannel4;
 };

@@ -10,6 +10,10 @@
         <ObjectName>DeckMini<Variable name="ChanNum" /></ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
+        <Connection>
+          <ConfigKey>[Skin],highlight_deck<Variable name="ChanNum"/></ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
         <Children>
 
           <WidgetGroup>

@@ -84,6 +84,17 @@ WLibrary,
     border-radius: 0px;
   }
 
+/* borders of highlighted containers */
+#Deck1, #Deck2, #Deck3, #Deck4 {
+  border-width: 1px 1px 1px 5px;
+  border-style: solid;
+}
+#Deck1[highlight="1"], #DeckCompact1[highlight="1"], #DeckMini1[highlight="1"],
+#Deck2[highlight="1"], #DeckCompact2[highlight="1"], #DeckMini2[highlight="1"],
+#Deck3[highlight="1"], #DeckCompact3[highlight="1"], #DeckMini3[highlight="1"],
+#Deck4[highlight="1"], #DeckCompact4[highlight="1"], #DeckMini4[highlight="1"] {
+    border-color: #cf9200;
+}
 
 WTrackProperty:hover,
 WTrackProperty:hover[selected="false"],
@@ -424,28 +435,17 @@ WLibrary {
   padding-bottom: 1px;
 }
 
+
 #WaveformBox1,
 #WaveformBox2,
 #WaveformBox3,
 #WaveformBox4 {
-  border-left: 0px;
-  }
-  #WaveformBox1,
-  #WaveformBox3 {
-    border-bottom: 0px;
-  }
-  #WaveformBox2,
-  #WaveformBox4 {
-    border-top: 0px;
-  }
-  /* Hide some borders when 4 decks are visible */
-  #WaveformBox1[highlight="1"] {
-    border-top: 0px;
-  }
-  #WaveformBox2[highlight="1"] {
-    border-bottom: 0px;
-  }
-
+  border-width: 1px 1px 1px 5px;
+  border-style: solid;
+}
+#WaveformBox1[highlight="1"], #WaveformBox2[highlight="1"], #WaveformBox3[highlight="1"], #WaveformBox4[highlight="1"] {
+    border-color: #cf9200;
+}
 
 /************** Decks *********************************************************/
 
@@ -701,6 +701,14 @@ WLibrary {
   #MixerChannel_2Decks_Right {
     margin: 0px 2px;
   }
+  #MixerChannel_4Decks {
+    border-width: 5px 1px 1px 1px;
+    border-style: solid;
+  }
+  #MixerChannel_4Decks[highlight="1"] {
+    border-color: #cf9200;
+  }
+
   #VolumeGain2Decks {
     margin: 0px 2px;
   }

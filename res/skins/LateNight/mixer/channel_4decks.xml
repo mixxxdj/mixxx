@@ -12,6 +12,10 @@
     <ObjectName>MixerChannel_4Decks</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
+    <Connection>
+      <ConfigKey>[Skin],highlight_deck<Variable name="ChanNum"/></ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
     <Children>
 
       <WidgetGroup>

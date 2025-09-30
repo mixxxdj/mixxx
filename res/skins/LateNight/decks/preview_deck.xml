@@ -13,6 +13,10 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <MinimumSize>100,</MinimumSize>
+        <Connection>
+          <ConfigKey>[Skin],highlight_deck<Variable name="ChanNum"/></ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
         <Children>
 
           <WidgetGroup>

@@ -42,6 +42,18 @@ SkinControls::SkinControls()
                   true),
           m_showVinylControl(ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
                   true,
+                  false),
+          m_hightlightChannel1(ConfigKey(kSkinGroup, QStringLiteral("highlight_deck1")),
+                  false,
+                  false),
+          m_hightlightChannel2(ConfigKey(kSkinGroup, QStringLiteral("highlight_deck2")),
+                  false,
+                  false),
+          m_hightlightChannel3(ConfigKey(kSkinGroup, QStringLiteral("highlight_deck3")),
+                  false,
+                  false),
+          m_hightlightChannel4(ConfigKey(kSkinGroup, QStringLiteral("highlight_deck4")),
+                  false,
                   false) {
     m_showEffectRack.setButtonMode(ControlPushButton::TOGGLE);
     m_showLibraryCoverArt.setButtonMode(ControlPushButton::TOGGLE);
@@ -55,6 +67,10 @@ SkinControls::SkinControls()
     m_showSettings.setButtonMode(ControlPushButton::TOGGLE);
     m_showSpinnies.setButtonMode(ControlPushButton::TOGGLE);
     m_showVinylControl.setButtonMode(ControlPushButton::TOGGLE);
+    m_hightlightChannel1.setButtonMode(ControlPushButton::TOGGLE);
+    m_hightlightChannel2.setButtonMode(ControlPushButton::TOGGLE);
+    m_hightlightChannel3.setButtonMode(ControlPushButton::TOGGLE);
+    m_hightlightChannel4.setButtonMode(ControlPushButton::TOGGLE);
 
     m_showEffectRack.addAlias(ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")));
     m_showLibraryCoverArt.addAlias(ConfigKey(
