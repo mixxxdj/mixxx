@@ -20,8 +20,11 @@ TrackCollection::TrackCollection(
         const UserSettingsPointer& pConfig)
         : QObject(parent),
           m_analysisDao(pConfig),
-          m_trackDao(m_cueDao, m_playlistDao,
-                     m_analysisDao, m_libraryHashDao, pConfig) {
+          m_trackDao(m_cueDao,
+                  m_playlistDao,
+                  m_analysisDao,
+                  m_libraryHashDao,
+                  pConfig) {
     // Forward signals from TrackDAO
     connect(&m_trackDao,
             &TrackDAO::trackDirty,

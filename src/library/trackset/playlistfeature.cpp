@@ -24,6 +24,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
                   pConfig,
                   new PlaylistTableModel(nullptr,
                           pLibrary->trackCollectionManager(),
+                          pConfig,
                           "mixxx.db.model.playlist"),
                   QStringLiteral("PLAYLISTHOME"),
                   QStringLiteral("playlist"),
@@ -254,6 +255,7 @@ void PlaylistFeature::slotShufflePlaylist() {
         std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
                 std::make_unique<PlaylistTableModel>(this,
                         m_pLibrary->trackCollectionManager(),
+                        m_pConfig,
                         "mixxx.db.model.playlist_shuffle");
         pPlaylistTableModel->selectPlaylist(playlistId);
         pPlaylistTableModel->setSort(

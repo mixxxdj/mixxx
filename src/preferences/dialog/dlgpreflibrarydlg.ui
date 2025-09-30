@@ -14,14 +14,12 @@
    <string notr="true">Library Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-
    <item>
     <widget class="QGroupBox" name="groupBox_MusicDirectories">
      <property name="title">
       <string>Music Directories</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_music_directories">
-
       <item row="0" column="0" rowspan="3">
        <widget class="QListView" name="dirList">
         <property name="editTriggers">
@@ -38,7 +36,6 @@
         </property>
        </widget>
       </item>
-
       <item row="0" column="1">
        <widget class="QPushButton" name="pushButton_add_dir">
         <property name="font">
@@ -52,7 +49,6 @@
         </property>
        </widget>
       </item>
-
       <item row="1" column="1">
        <widget class="QPushButton" name="pushButton_relocate_dir">
         <property name="toolTip">
@@ -63,7 +59,6 @@
         </property>
        </widget>
       </item>
-
       <item row="2" column="1">
        <widget class="QPushButton" name="pushButton_remove_dir">
         <property name="font">
@@ -77,7 +72,6 @@
         </property>
        </widget>
       </item>
-
       <item row="3" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_library_scan">
         <property name="text">
@@ -88,7 +82,6 @@
         </property>
        </widget>
       </item>
-
       <item row="4" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_library_scan_summary">
         <property name="text">
@@ -99,11 +92,9 @@
         </property>
        </widget>
       </item>
-
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileFormats">
      <property name="title">
@@ -126,7 +117,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileTags">
      <property name="title">
@@ -143,7 +133,6 @@
         </property>
        </widget>
       </item>
-
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBox_serato_metadata_export">
         <property name="toolTip">
@@ -154,7 +143,6 @@
         </property>
        </widget>
       </item>
-
       <item row="2" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_use_relative_path">
         <property name="text">
@@ -165,14 +153,12 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_TrackTableView">
      <property name="title">
       <string>Track Table View</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_track_table_view">
-
       <item row="1" column="0" colspan="3">
        <widget class="QCheckBox" name="checkBox_edit_metadata_selected_clicked">
         <property name="text">
@@ -180,18 +166,16 @@
         </property>
        </widget>
       </item>
-
       <item row="2" column="0" colspan="3">
        <widget class="QLabel" name="label_doubeClickAction">
         <property name="text">
          <string>Track Double-Click Action:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-
       <item row="3" column="0" colspan="3">
        <widget class="QRadioButton" name="radioButton_dbclick_deck">
         <property name="text">
@@ -223,14 +207,13 @@
         </property>
        </widget>
       </item>
-
       <item row="7" column="0">
        <widget class="QLabel" name="label_rowHeight">
         <property name="text">
          <string>Library Row Height:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -250,14 +233,13 @@
         </property>
        </widget>
       </item>
-
       <item row="8" column="0">
        <widget class="QLabel" name="label_libraryFont">
         <property name="text">
          <string>Library Font:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -275,21 +257,19 @@
         </property>
        </widget>
       </item>
-
       <item row="9" column="0">
        <widget class="QLabel" name="label_bpm_precision">
         <property name="text">
          <string>BPM display precision:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item row="9" column="1" colspan="2">
        <widget class="QSpinBox" name="spinbox_bpm_precision"/>
       </item>
-
       <item row="10" column="0" colspan="3">
        <widget class="QCheckBox" name="checkbox_played_track_color">
         <property name="text">
@@ -297,25 +277,22 @@
         </property>
        </widget>
       </item>
-
      </layout>
     </widget>
-   </item><!-- Track Table View -->
-
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox_Search">
      <property name="title">
       <string>Track Search</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_search">
-
       <item row="0" column="0">
        <widget class="QLabel" name="label_searchDebouncingTimeout">
         <property name="text">
          <string>Search-as-you-type timeout:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -326,7 +303,6 @@
         </property>
        </widget>
       </item>
-
       <item row="1" column="0" colspan="3">
        <widget class="QCheckBox" name="checkBox_enable_search_completions">
         <property name="text">
@@ -334,7 +310,6 @@
         </property>
        </widget>
       </item>
-
       <item row="2" column="0" colspan="3">
        <widget class="QCheckBox" name="checkBox_enable_search_history_shortcuts">
         <property name="text">
@@ -342,14 +317,13 @@
         </property>
        </widget>
       </item>
-
       <item row="3" column="0">
        <widget class="QLabel" name="label_searchBpmFuzzyRange">
         <property name="text">
          <string>Percentage of pitch slider range for 'fuzzy' BPM search:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
         <property name="buddy">
          <cstring>comboBox_search_bpm_fuzzy_range</cstring>
@@ -369,25 +343,22 @@
         </property>
        </widget>
       </item>
-
      </layout>
     </widget>
-   </item><!-- Search box -->
-
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox_History">
      <property name="title">
       <string>Session History</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_history">
-
       <item row="1" column="0">
        <widget class="QLabel" name="label_history_track_duplicate_distance">
         <property name="text">
          <string>Track duplicate distance</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -410,7 +381,6 @@
         </property>
        </widget>
       </item>
-
       <item row="2" column="0">
        <widget class="QLabel" name="label_history_cleanup">
         <property name="toolTip">
@@ -420,7 +390,7 @@
          <string>Delete history playlist with less than N tracks</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -437,11 +407,152 @@
         </property>
        </widget>
       </item>
-
      </layout>
     </widget>
-   </item><!-- History -->
-
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_GroupedPlaylists">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>140</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Grouped Playlists</string>
+     </property>
+     <widget class="QCheckBox" name="checkBox_grouped_playlists_enable">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>300</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Enable Grouped Playlists</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_grouped_playlists_fixed_length">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>60</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Fixed length: 1 level of grouping: Group = #Characters</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton_grouped_playlists_var_mask">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>90</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Variable length, multilevel: grouping: Groups are delimited with a mask: </string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBox_grouped_playlists_fixed_length">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>60</y>
+        <width>40</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximum">
+       <number>20</number>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_grouped_playlists_var_mask">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>90</y>
+        <width>100</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_grouped_playlists_restart_remark">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>400</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Every change in this section requires a restart of Mixxx to get processed</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_grouped_playlists_replace">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>350</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Use Grouped Playlists instead of Playlists</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox_external_libraries">
      <property name="title">
@@ -534,7 +645,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_cover_art_fetcher">
      <property name="title">
@@ -604,7 +714,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_settingsDir">
      <property name="title">
