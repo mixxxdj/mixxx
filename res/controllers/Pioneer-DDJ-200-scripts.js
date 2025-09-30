@@ -439,6 +439,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         },
         inKey: "jog",
         jogCounter: 0,
+        deck: deckNumbers[0],
         inputSeek: function(_channel, _control, value, _status, group) {
             if (DDJ200.decks.left.shiftButton.pressed) {
                 this.jogCounter += this.inValueScale(value);
