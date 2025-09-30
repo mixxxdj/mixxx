@@ -405,21 +405,21 @@ declare namespace engine {
      * @param deck The deck number to use, e.g: 1
      * @returns Returns true if the deck is currently braking.
      */
-    function isBrakeActive(deck: number): bool;
+    function isBrakeActive(deck: number): boolean;
 
     /**
      * Returns true if the deck is currently performing a spinback.
      * @param deck The deck number to use, e.g: 1
      * @returns Returns true if the deck is currently performing a spinback.
      */
-    function isSpinbackActive(deck: number): bool;
+    function isSpinbackActive(deck: number): boolean;
 
     /**
      * Returns true if the deck is currently soft-starting.
      * @param deck The deck number to use, e.g: 1
      * @returns Returns true if the deck is currently soft-starting.
      */
-    function isSoftStartActive(deck: number): bool;
+    function isSoftStartActive(deck: number): boolean;
 
     enum Charset {
         ASCII,          // American Standard Code for Information Interchange (7-Bit)
