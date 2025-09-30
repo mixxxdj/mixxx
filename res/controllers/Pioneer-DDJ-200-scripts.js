@@ -498,9 +498,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
             if (value) {
                 if (engine.getValue("[Skin]", "show_4decks")) {
                     theDeck.toggle();
-                    DDJ200.decks.forEachComponentContainer(deck => {
-                        deck.padUnit.updateDeck(deck.currentDeck);
-                    }, false);
+                    theDeck.padUnit.updateDeck(theDeck.currentDeck);
                     if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
                         this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
                             theDeck.syncButton.send(theDeck.syncButton.on * value);
