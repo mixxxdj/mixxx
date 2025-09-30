@@ -1,3 +1,5 @@
+import { MixxxGroup, MixxxControlName } from './mixxx-controls';
+
 declare interface QtSlot<F extends (...args: any[]) => void> {
     connect(callback: F): void
 }
@@ -122,7 +124,7 @@ declare namespace engine {
      * @returns The player providing track information and signals, or undefined
      *          if not player associated with this group was found.
      */
-    function getPlayer(group: string): Player | undefined
+    function getPlayer(group: MixxxGroup): Player | undefined
 
     type SettingValue = string | number | boolean;
     /**
@@ -132,7 +134,7 @@ declare namespace engine {
      * @param name Name of the setting (as specified in the XML file of the mapping)
      * @returns Value of the setting, or undefined in failure case
      */
-    function getSetting(name: string): SettingValue | undefined;
+    function getSetting(name: MixxxGroup): SettingValue | undefined;
 
     /**
      * Gets the control value
@@ -142,7 +144,7 @@ declare namespace engine {
      * @returns Value of the control (within it's range according Mixxx Controls manual page:
      *          https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
-    function getValue(group: string, name: string): number;
+    function getValue<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): number;
 
     /**
      * Sets a control value
@@ -152,7 +154,7 @@ declare namespace engine {
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page:
      *                 https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
-    function setValue(group: string, name: string, newValue: number): void;
+    function setValue<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup], newValue: number): void;
 
     /**
      * Gets the control value normalized to a range of 0..1
@@ -161,7 +163,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control normalized to range of 0..1
      */
-    function getParameter(group: string, name: string): number;
+    function getParameter<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): number;
 
     /**
      * Sets the control value specified with normalized range of 0..1
@@ -170,7 +172,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set, normalized to a range of 0..1
      */
-    function setParameter(group: string, name: string, newValue: number): void;
+    function setParameter<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup], newValue: number): void;
 
     /**
      * Normalizes a specified value using the range of the given control,
@@ -182,7 +184,7 @@ declare namespace engine {
      *              https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      * @returns Value normalized to range of 0..1
      */
-    function getParameterForValue(group: string, name: string, value: number): number;
+    function getParameterForValue<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup], value: number): number;
 
     /**
      * Resets the control to its default value
@@ -190,7 +192,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    function reset(group: string, name: string): void;
+    function reset<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): void;
 
     /**
      * Returns the default value of a control
@@ -200,7 +202,7 @@ declare namespace engine {
      * @returns Default value with the controls range according Mixxx Controls manual page:
      *          https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      */
-    function getDefaultValue(group: string, name: string): number;
+    function getDefaultValue<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): number;
 
     /**
      * Returns the default value of a control, normalized to a range of 0..1
@@ -209,9 +211,9 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value of the specified control normalized to range of 0..1
      */
-    function getDefaultParameter(group: string, name: string): number;
+    function getDefaultParameter<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): number;
 
-    type CoCallback = (value: number, group: string, name: string) => void
+    type CoCallback<TGroup extends MixxxGroup> = (value: number, group: TGroup, name: MixxxControlName[TGroup]) => void
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -223,7 +225,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
-    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
+    function makeConnection<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup], callback: CoCallback<TGroup>): ScriptConnection | undefined;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -236,7 +238,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
-    function makeUnbufferedConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
+    function makeUnbufferedConnection<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup], callback: CoCallback<TGroup>): ScriptConnection | undefined;
 
     /**
      * This function is a legacy version of makeConnection with several alternate
@@ -250,7 +252,7 @@ declare namespace engine {
      * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.
      * @deprecated Use {@link engine.makeConnection} instead
      */
-    function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
+    function connectControl<TGroup extends MixxxGroup>(group: MixxxGroup, name: MixxxControlName[TGroup], callback: CoCallback<TGroup>, disconnect?: boolean): ScriptConnection | boolean | undefined;
 
 
     /**
@@ -260,7 +262,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    function trigger(group: string, name: string): void;
+    function trigger<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): void;
 
     /**
      * @param message string to be logged
@@ -340,7 +342,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "pregain"
      * @param enable Set true to enable soft-takeover for the specified control
      */
-    function softTakeover(group: string, name: string, enable: boolean): void;
+    function softTakeover<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup], enable: boolean): void;
 
     /**
      * Inhibits a sudden value change from the hardware control.
@@ -350,7 +352,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "pregain"
      */
-    function softTakeoverIgnoreNextValue(group: string, name: string): void;
+    function softTakeoverIgnoreNextValue<TGroup extends MixxxGroup>(group: TGroup, name: MixxxControlName[TGroup]): void;
 
     /**
      * To achieve a brake effect of the playback speed.
