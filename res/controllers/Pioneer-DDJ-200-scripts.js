@@ -592,7 +592,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         });
     } else {
         this.super1 = new components.Pot({
-            group: `[QuickEffectRack1_${this.currentDeck}]`;
+            group: `[QuickEffectRack1_${this.currentDeck}]`,
             inKey: "super1",
         });
     }
