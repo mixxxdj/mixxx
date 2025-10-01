@@ -42,30 +42,56 @@ namespace {
 ///  | 7        | 1      | 2    |
 ///  | 8        | 1      | 1    |
 
-mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
-    RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
+// changed for PreMix
+// mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
+//    RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
+//
+//    // There should always be a pool set, even if multi threading isn't enabled.
+//    // This is because multi threading will always be used for stem when
+//    // possible.
+//    VERIFY_OR_DEBUG_ASSERT(pPool) {
+//        return mixxx::kMaxEngineChannelInputCount;
+//    }
+//    auto channelPerWorker = pPool->channelPerWorker();
+//    // The task count includes all the thread in the pool + the engine thread
+//    auto maxThreadCount = pPool->maxThreadCount() + 1;
+//    VERIFY_OR_DEBUG_ASSERT(chCount % channelPerWorker == 0) {
+//        return mixxx::kEngineChannelOutputCount;
+//    }
+//    auto numTasks = chCount / channelPerWorker;
+//    if (numTasks > maxThreadCount) {
+//        VERIFY_OR_DEBUG_ASSERT(numTasks % maxThreadCount == 0) {
+//            return mixxx::kEngineChannelOutputCount;
+//        }
+//        return mixxx::audio::ChannelCount(chCount / maxThreadCount);
+//    }
+//    return channelPerWorker;
+//}
 
-    // There should always be a pool set, even if multi threading isn't enabled.
-    // This is because multi threading will always be used for stem when
-    // possible.
-    VERIFY_OR_DEBUG_ASSERT(pPool) {
-        return mixxx::kMaxEngineChannelInputCount;
-    }
-    auto channelPerWorker = pPool->channelPerWorker();
-    // The task count includes all the thread in the pool + the engine thread
-    auto maxThreadCount = pPool->maxThreadCount() + 1;
-    VERIFY_OR_DEBUG_ASSERT(chCount % channelPerWorker == 0) {
-        return mixxx::kEngineChannelOutputCount;
-    }
-    auto numTasks = chCount / channelPerWorker;
-    if (numTasks > maxThreadCount) {
-        VERIFY_OR_DEBUG_ASSERT(numTasks % maxThreadCount == 0) {
-            return mixxx::kEngineChannelOutputCount;
-        }
-        return mixxx::audio::ChannelCount(chCount / maxThreadCount);
-    }
-    return channelPerWorker;
-}
+// mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
+//     RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
+//
+//     // There should always be a pool set, even if multi threading isn't enabled.
+//     // This is because multi threading will always be used for stem when
+//     // possible.
+//     VERIFY_OR_DEBUG_ASSERT(pPool) {
+//         return mixxx::kMaxEngineChannelInputCount;
+//     }
+//     auto channelPerWorker = pPool->channelPerWorker();
+//     // The task count includes all the thread in the pool + the engine thread
+//     auto maxThreadCount = pPool->maxThreadCount() + 1;
+//     VERIFY_OR_DEBUG_ASSERT(chCount % channelPerWorker == 0) {
+//         return mixxx::kEngineChannelOutputCount;
+//     }
+//     auto numTasks = chCount / channelPerWorker;
+//     if (numTasks > maxThreadCount) {
+//         VERIFY_OR_DEBUG_ASSERT(numTasks % maxThreadCount == 0) {
+//             return mixxx::kEngineChannelOutputCount;
+//         }
+//         return mixxx::audio::ChannelCount(chCount / maxThreadCount);
+//     }
+//     return channelPerWorker;
+// }
 } // namespace
 
 int RubberBandWrapper::getEngineVersion() const {
@@ -215,7 +241,10 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
         m_pInstances.clear();
     };
 
-    m_channelPerWorker = getChannelPerWorker(chCount);
+    // Premix: test to override getChannelPerWorker(chCount)
+    // m_channelPerWorker = getChannelPerWorker(chCount);
+    m_channelPerWorker = mixxx::audio::ChannelCount(2);
+
     qDebug() << "RubberBandWrapper::setup - using" << m_channelPerWorker << "channel(s) per task";
     VERIFY_OR_DEBUG_ASSERT(0 == chCount % m_channelPerWorker) {
         // If we have an uneven number of channel, which we can't evenly

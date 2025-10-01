@@ -13,6 +13,9 @@ class SoundSourceSingleSTEM : public SoundSourceFFmpeg {
     // because STEM may contain other non audio stream
     explicit SoundSourceSingleSTEM(const QUrl& url, unsigned int streamIdx);
 
+    // SINT readSampleFramesResampled(
+    //         const WritableSampleFrames& outFrames,
+    //         SINT targetSampleRate);
   protected:
     OpenResult tryOpen(
             OpenMode mode,
@@ -29,6 +32,7 @@ class SoundSourceSingleSTEM : public SoundSourceFFmpeg {
 class SoundSourceSTEM : public SoundSource {
   public:
     explicit SoundSourceSTEM(const QUrl& url);
+    ~SoundSourceSTEM();
 
     void close() override;
 
@@ -38,14 +42,59 @@ class SoundSourceSTEM : public SoundSource {
     SampleBuffer m_buffer;
 
     mixxx::audio::ChannelCount m_requestedChannelCount;
+    /// // working
+    std::vector<bool> m_needsResampling;
+    SampleBuffer m_resampleInputBuffer;
+    SampleBuffer m_resampleOutputBuffer;
+
+    QMap<int, qint64> m_streamTotalFramesProcessed;
+    QMap<int, qint64> m_streamTotalResamplingTime;
+    // QElapsedTimer m_resampleTimer;
+    // int m_debugCounter;
 
   protected:
+    // Cubic interpolation function
+    CSAMPLE cubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, double mu);
+
+    void initializeResamplers(int refSampleRate);
+    // void processWithResampler(size_t streamIdx,
+    //         const WritableSampleFrames& globalSampleFrames,
+    //         CSAMPLE* pBuffer);
+    void processWithoutResampler(size_t streamIdx,
+            const WritableSampleFrames& globalSampleFrames,
+            CSAMPLE* pBuffer);
+    void testCubicInterpolation();
+    void showResamplingSummary();
     OpenResult tryOpen(
             OpenMode mode,
             const OpenParams& params) override;
 
     ReadableSampleFrames readSampleFramesClamped(
             const WritableSampleFrames& sampleFrames) override;
+
+    void processWithResampler(size_t streamIdx,
+            const WritableSampleFrames& globalSampleFrames,
+            CSAMPLE* pBuffer);
+    void interpolateAndMix(size_t streamIdx,
+            SINT outputIndex,
+            SINT sourceIndex,
+            CSAMPLE fraction,
+            CSAMPLE* pBuffer,
+            std::size_t stemCount);
+    void linearInterpolateAndMix(size_t streamIdx,
+            SINT outputIndex,
+            SINT sourceIndex,
+            CSAMPLE fraction,
+            CSAMPLE* pBuffer,
+            std::size_t stemCount);
+    void mixToOutput(size_t streamIdx,
+            SINT outputIndex,
+            CSAMPLE left,
+            CSAMPLE right,
+            CSAMPLE* pBuffer,
+            std::size_t stemCount);
+    CSAMPLE robustCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu);
+    CSAMPLE safeCubicInterpolate(CSAMPLE y0, CSAMPLE y1, CSAMPLE y2, CSAMPLE y3, CSAMPLE mu);
 };
 
 class SoundSourceProviderSTEM : public SoundSourceProvider {

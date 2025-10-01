@@ -50,7 +50,7 @@
                       <WidgetGroup>
                         <Size>1min,2me</Size>
                       </WidgetGroup>
-                      <Template src="skins:LateNight/stem_channel.xml">
+                      <Template src="skins:LateNight/stem_premix.xml">
                         <SetVariable name="StemNum">1</SetVariable>
                       </Template>
                       <WidgetGroup>
@@ -103,6 +103,22 @@
                       </WidgetGroup>
                     </Children>
                   </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh5 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">5</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
                 </Children>
               </WidgetGroup>
               <!-- /StemControls 4ch -->

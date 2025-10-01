@@ -65,6 +65,7 @@ EngineDeck::EngineDeck(
 
     m_stemGain.reserve(mixxx::kMaxSupportedStems);
     m_stemMute.reserve(mixxx::kMaxSupportedStems);
+
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
                 ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
@@ -78,8 +79,25 @@ EngineDeck::EngineDeck(
         pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
         m_stemMute.push_back(std::move(pMuteButton));
     }
+    connect(m_stemMute[0].get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &EngineDeck::slotStem1MuteToggled);
 #endif
 }
+
+#ifdef __STEM__
+void EngineDeck::slotStem1MuteToggled(int value) {
+    // 0 = unmuted, 1 = muted
+    bool stem1Unmuted = value == 0;
+
+    // Toggle all other stems to the opposite state of stem 1
+    for (std::size_t i = 1; i < m_stemMute.size(); ++i) {
+        m_stemMute[i]->set(stem1Unmuted ? 1 : 0);
+        m_stemGain[i]->set(1);
+    }
+}
+#endif
 
 #ifdef __STEM__
 void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
@@ -92,7 +110,15 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
         for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
-            ;
+
+            // set audio on for pre-mixxx // off for stems
+            if (stemIdx == 0) {
+                // First stem: unmuted
+                m_stemMute[stemIdx]->set(0.0);
+            } else {
+                // All others: muted
+                m_stemMute[stemIdx]->set(1.0);
+            }
         }
     }
     if (pNewTrack) {
@@ -356,8 +382,13 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
 
 #ifdef __STEM__
 // static
+// QString EngineDeck::getGroupForStem(QStringView deckGroup, int stemIdx) {
+//    DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx < 4);
+//    return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+//}
+
 QString EngineDeck::getGroupForStem(QStringView deckGroup, int stemIdx) {
-    DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx < 4);
+    DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx <= 4);
     return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
 }
 #endif

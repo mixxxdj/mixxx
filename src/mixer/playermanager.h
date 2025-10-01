@@ -157,7 +157,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 #ifdef __STEM__
     // Returns the group for the deck and stem where deckIndex and stemInde are zero based
     static QString groupForDeckStem(int deckIdx, int stemIdx) {
-        DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 4);
+        // Removed hardoded 4 -> 5
+        // DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 4);
+        DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 5);
         return QStringLiteral("[Channel") + QString::number(deckIdx + 1) +
                 QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
     }

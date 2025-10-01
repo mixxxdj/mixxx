@@ -43,14 +43,26 @@ void WStemLabel::slotTrackLoaded(TrackPointer pTrack) {
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_stemNo <= stemInfo.size()) {
+    VERIFY_OR_DEBUG_ASSERT(m_stemNo <= stemInfo.size() + 1) {
         kLogger.warning() << "Stem number out of range. m_stemNo: " << m_stemNo
                           << ", stemInfo size: " << stemInfo.size();
         return;
     }
 
-    m_stemInfo = stemInfo[m_stemNo - 1];
-    updateLabel();
+    //    qDebug() << "EVE -> m_stemInfo: " << m_stemInfo;
+    if (m_stemNo == 1) {
+        // QColor color = "#FFFFFF";
+        QColor color(0xFFFFFF);
+        QString text = "Pre-Mix";
+        setTextColor(color);
+        setLabelText(text);
+    } else {
+        // m_stemInfo = stemInfo[m_stemNo - 1];
+        m_stemInfo = stemInfo[m_stemNo - 2];
+        // qDebug() << "EVE -> m_stemNo: " << m_stemNo;
+        // qDebug() << "EVE -> stemInfo [m_stemNo]: " << stemInfo[m_stemNo - 2];
+        updateLabel();
+    }
 }
 
 void WStemLabel::updateLabel() {
