@@ -452,7 +452,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         inKey: "jog",
         jogCounter: 0,
         deck: deckNumbers[0],
-        inputSeek: function(_channel, _control, value, _status, group) {
+        inputSeek: function(_channel, _control, value, _status, _group) {
             if (DDJ200.decks.left.shiftButton.pressed) {
                 this.jogCounter += this.inValueScale(value);
                 if (this.jogCounter > 9) {
@@ -463,6 +463,7 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
                     this.jogCounter = 0;
                 };
             } else {
+                const group = `[Channel${  this.deck  }]`; // fix for wrong group
                 const oldPos = engine.getValue(group, "playposition");
                 // Since ‘playposition’ is normalized to unity, we need to scale by
                 // song duration in order for the jog wheel to cover the same amount
