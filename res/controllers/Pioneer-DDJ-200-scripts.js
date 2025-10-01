@@ -347,7 +347,7 @@ DDJ200.init = function() {
             components.ComponentContainer.prototype.shift();
         },
         unshift: function() {
-            (this.left.padUnit.choosenPadInstance()).unshift();
+            this.left.padUnit.choosenPadInstance().unshift();
             this.right.padUnit.choosenPadInstance().unshift();
             components.ComponentContainer.prototype.unshift();
         }
