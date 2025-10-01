@@ -387,6 +387,8 @@ jobs:
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
           elif [[ "${{ inputs.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
+          elif [[ "${{ inputs.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxpatches"
           else
             # only build the source DEB, do not upload
             CPACK_ARGS="-D DEB_SOURCEPKG=ON"
