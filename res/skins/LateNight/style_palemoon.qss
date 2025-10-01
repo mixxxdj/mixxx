@@ -2775,7 +2775,6 @@ WTrackPropertyEditor {
 WTrackTableViewHeader {
   border-bottom-right-radius: 1px solid #000;
   outline: none;
-  /*qproperty-fontToHeightFactor: 1.1;*/
 }
 
 WTrackTableViewHeader::section {

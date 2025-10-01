@@ -2323,17 +2323,18 @@ WTrackTableViewHeader {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #222,
       stop:1 #111);
+    border: 0px;
   }
   WTrackTableViewHeader::section {
-    /* Workaround Qt bug that causes space being reserved for invisible sort indicators.
-       For details see style-plaemon.qss */
-    padding-right: -0.95em;
+    padding: 2px 1px 4px 2px;
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
-    border-right: 1px solid #000;
+    outline: none;
+    padding: 0px;
+    margin-bottom: 2px;
     /* gradient colors should match those of QHeaderView gradient,
       with a little transparency added to not cut off the header label */
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
