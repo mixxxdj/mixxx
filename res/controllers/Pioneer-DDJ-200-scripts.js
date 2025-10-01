@@ -43,6 +43,10 @@ Deck n = 0/1:                                   Midi in         Midi out
     PAD 6           press                       9p  05  hh      [midi in]       OFF=0x00, ON=0x7F
     PAD 7           press                       9p  06  hh      [midi in]       OFF=0x00, ON=0x7F
     PAD 8           press                       9p  07  hh      [midi in]       OFF=0x00, ON=0x7F
+
+    Loaded Deck1                                none            9F 00 7F        blinking PADs 1-4 followed by PADs 5-8
+    Loaded Deck2                                none            9F 01 7F        blinking PADs 1-4 followed by PADs 5-8
+    Viny Mode on/off                            none            9n 17 hh        OFF=0x00, ON=0x7F (default ON)
 */
 
 /*
