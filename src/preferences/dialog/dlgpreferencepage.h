@@ -35,6 +35,9 @@ class DlgPreferencePage : public QWidget {
     /// * forward wheel events to the top-level layout
     void setScrollSafeGuard(QWidget* pWidget);
     bool eventFilter(QObject* pObj, QEvent* pEvent);
+    virtual bool okayToClose() const {
+        return true;
+    }
 
     QColor m_pLinkColor;
 
