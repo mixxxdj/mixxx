@@ -1,5 +1,6 @@
 declare type MixxxControlName = {
   '[App]': MixxxAppControl;
+  '[Main]': MixxxMainControl;
   '[Master]': MixxxMasterControl;
   '[Microphone]': MixxxMicrophoneControl;
   '[VinylControl]': MixxxVinylControl;
@@ -68,6 +69,14 @@ type MixxxAppControl =
   | 'num_auxiliaries'
   | 'samplerate';
 
+type MixxxMainControl = 
+  | 'peak_indicator'
+  | 'peak_indicator_l'
+  | 'peak_indicator_r'
+  | 'vu_meter'
+  | 'vu_meter_l'
+  | 'vu_meter_r';
+
 type MixxxMasterControl =
   | 'audio_latency_usage'
   | 'audio_latency_overload'
@@ -89,13 +98,8 @@ type MixxxMasterControl =
   | 'headSplit'
   | 'latency'
   | 'num_effectsavailable'
-  | 'PeakIndicator'
-  | 'PeakIndicatorL'
-  | 'PeakIndicatorR'
   | 'talkoverDucking'
-  | 'VuMeter'
-  | 'VuMeterL'
-  | 'VuMeterR';
+  ;
 
 type MixxxChannelDeckSamplerControl =
   | 'back'
@@ -225,9 +229,9 @@ type MixxxChannelDeckSamplerControl =
   | 'outro_start_position'
   | 'outro_start_set'
   | 'passthrough'
-  | 'PeakIndicator'
-  | 'PeakIndicatorL'
-  | 'PeakIndicatorR'
+  | 'peak_indicator'
+  | 'peak_indicator_l'
+  | 'peak_indicator_r'
   | 'pfl'
   | 'pitch'
   | 'pitch_up'
@@ -287,9 +291,9 @@ type MixxxChannelDeckSamplerControl =
   | 'visual_bpm'
   | 'visual_key'
   | 'visual_key_distance'
-  | 'VuMeter'
-  | 'VuMeterL'
-  | 'VuMeterR'
+  | 'vu_meter'
+  | 'vu_meter_l'
+  | 'vu_meter_r'
   | 'waveform_zoom'
   | 'waveform_zoom_up'
   | 'waveform_zoom_down'
@@ -306,17 +310,17 @@ type MixxxSamplerControl =
 type MixxxMicrophoneAuxiliaryControl =
   | 'input_configured'
   | 'main_mix'
-  | 'PeakIndicator'
-  | 'PeakIndicatorL'
-  | 'PeakIndicatorR'
+  | 'peak_indicator'
+  | 'peak_indicator_l'
+  | 'peak_indicator_r'
   | 'pfl'
   | 'talkover'
   | 'volume'
   | 'pregain'
   | 'mute'
-  | 'VuMeter'
-  | 'VuMeterL'
-  | 'VuMeterR';
+  | 'vu_meter'
+  | 'vu_meter_l'
+  | 'vu_meter_r';
 
 type MixxxChannelControl =
   | MixxxChannelDeckSamplerControl
