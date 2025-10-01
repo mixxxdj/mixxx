@@ -49,19 +49,6 @@ Deck n = 0/1:                                   Midi in         Midi out
     Viny Mode on/off                            none            9n 17 hh        OFF=0x00, ON=0x7F (default ON)
 */
 
-/*
-    Disabling Demo Mode according to the user manual:
-    1 - Disconnect the USB cable / power supply
-    2 - Hold both the [SHIFT] and [PLAY/PAUSE] buttons and connect USB cable / power supply
-    3 - Use performance pads to change the settings
-        Pad 1 - Demo mode is switched off
-        Pad 2 - Demo mode starts when you don’t use the unit for 1 minute
-        Pad 3 - Demo mode starts when you don’t use the unit for 5 minutes
-        Pad 4 - Demo mode starts when you don’t use the unit for 10 minutes
-        While saving bottom row of Performance Pads is flashing. Wait till it stops.
-    4 - Disconnect the USB cable / power supply
-*/
-
 // eslint-disable-next-line no-var
 var DDJ200 = { };
 
