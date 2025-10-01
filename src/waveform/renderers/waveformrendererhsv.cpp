@@ -79,7 +79,7 @@ void WaveformRendererHSV::draw(
     const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
     float allGain(1.0);
-    getGains(&allGain, false, nullptr, nullptr, nullptr);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
