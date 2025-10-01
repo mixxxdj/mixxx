@@ -2,6 +2,9 @@
 
 #include "library/basetrackcache.h"
 #include "library/trackset/crate/crate.h"
+// EVE
+#include "library/trackset/searchcrate/searchcrate.h"
+// EVE
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
@@ -63,6 +66,9 @@ void TrackCollection::repairDatabase(const QSqlDatabase& database) {
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
+    // EVE
+    m_searchCrates.repairDatabase(database);
+    // EVE
 }
 
 void TrackCollection::connectDatabase(const QSqlDatabase& database) {
@@ -78,6 +84,9 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     m_analysisDao.initialize(database);
     m_libraryHashDao.initialize(database);
     m_crates.connectDatabase(database);
+    // EVE
+    m_searchCrates.connectDatabase(database);
+    // EVE
 }
 
 void TrackCollection::disconnectDatabase() {
@@ -87,6 +96,9 @@ void TrackCollection::disconnectDatabase() {
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
+    // EVE
+    m_searchCrates.disconnectDatabase();
+    // EVE
 }
 
 void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
@@ -324,10 +336,14 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     m_trackDao.afterHidingTracks(trackIds);
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
-
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
     emit crateSummaryChanged(modifiedCrateSummaries);
+    // EVE
+    QSet<SearchCrateId> modifiedSearchCrateSummaries(
+            m_searchCrates.collectSearchCrateIdsOfTracks(trackIds));
+    emit searchCrateSummaryChanged(modifiedSearchCrateSummaries);
+    // EVE
 
     return true;
 }
@@ -357,6 +373,11 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     QSet<CrateId> modifiedCrateSummaries =
             m_crates.collectCrateIdsOfTracks(trackIds);
     emit crateSummaryChanged(modifiedCrateSummaries);
+    // EVE
+    QSet<SearchCrateId> modifiedSearchCrateSummaries(
+            m_searchCrates.collectSearchCrateIdsOfTracks(trackIds));
+    emit searchCrateSummaryChanged(modifiedSearchCrateSummaries);
+    // EVE
 
     return true;
 }
@@ -378,9 +399,19 @@ bool TrackCollection::purgeTracks(
     // all crates on purging.
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
+    // EVE
+    QSet<SearchCrateId> modifiedSearchCrateSummaries(
+            m_searchCrates.collectSearchCrateIdsOfTracks(trackIds));
+    // EVE
+
     VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
         return false;
     }
+    // EVE
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onPurgingTracks(trackIds)) {
+        return false;
+    }
+    // EVE
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
         return false;
     }
@@ -396,7 +427,9 @@ bool TrackCollection::purgeTracks(
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
     emit crateSummaryChanged(modifiedCrateSummaries);
-
+    // EVE
+    emit searchCrateSummaryChanged(modifiedSearchCrateSummaries);
+    // EVE
     return true;
 }
 
@@ -442,6 +475,36 @@ bool TrackCollection::insertCrate(
     return true;
 }
 
+// Eve
+bool TrackCollection::insertSearchCrate(
+        const SearchCrate& searchCrate,
+        SearchCrateId* pSearchCrateId) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    SearchCrateId searchCrateId;
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onInsertingSearchCrate(searchCrate, &searchCrateId)) {
+        return false;
+    }
+    DEBUG_ASSERT(searchCrateId.isValid());
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit searchCrateInserted(searchCrateId);
+
+    if (pSearchCrateId != nullptr) {
+        *pSearchCrateId = searchCrateId;
+    }
+    return true;
+}
+// Eve
+
 bool TrackCollection::updateCrate(
         const Crate& crate) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -464,6 +527,30 @@ bool TrackCollection::updateCrate(
     return true;
 }
 
+// Eve
+bool TrackCollection::updateSearchCrate(
+        const SearchCrate& searchCrate) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onUpdatingSearchCrate(searchCrate)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit searchCrateUpdated(searchCrate.getId());
+
+    return true;
+}
+// Eve
+
 bool TrackCollection::deleteCrate(
         CrateId crateId) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -485,6 +572,30 @@ bool TrackCollection::deleteCrate(
 
     return true;
 }
+
+// Eve
+bool TrackCollection::deleteSearchCrate(
+        SearchCrateId searchCrateId) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onDeletingSearchCrate(searchCrateId)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit searchCrateDeleted(searchCrateId);
+
+    return true;
+}
+// Eve
 
 bool TrackCollection::addCrateTracks(
         CrateId crateId,
@@ -509,6 +620,31 @@ bool TrackCollection::addCrateTracks(
     return true;
 }
 
+// Eve
+bool TrackCollection::addSearchCrateTracks(
+        SearchCrateId searchCrateId,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_searchCrates.onAddingSearchCrateTracks(searchCrateId, trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit searchCrateTracksChanged(searchCrateId, trackIds, QList<TrackId>());
+
+    return true;
+}
+// Eve
+
 bool TrackCollection::removeCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
@@ -532,6 +668,31 @@ bool TrackCollection::removeCrateTracks(
     return true;
 }
 
+// Eve
+// bool TrackCollection::removeSearchCrateTracks(
+//        SearchCrateId searchCrateId,
+//        const QList<TrackId>& trackIds) {
+//    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+//    // Transactional
+//    SqlTransaction transaction(m_database);
+//    VERIFY_OR_DEBUG_ASSERT(transaction) {
+//        return false;
+//    }
+//    VERIFY_OR_DEBUG_ASSERT(m_searchCrate.onRemovingSearchCrateTracks(searchCrateId, trackIds)) {
+//        return false;
+//    }
+//    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+//        return false;
+//    }
+
+//    // Emit signals
+//    emit searchCrateTracksChanged(searchCrateId, QList<TrackId>(), trackIds);
+
+//    return true;
+//}
+// Eve
+
 bool TrackCollection::updateAutoDjCrate(
         CrateId crateId,
         bool isAutoDjSource) {
@@ -547,6 +708,24 @@ bool TrackCollection::updateAutoDjCrate(
     crate.setAutoDjSource(isAutoDjSource);
     return updateCrate(crate);
 }
+
+// Eve
+// bool TrackCollection::updateAutoDjSearchCrate(
+//        SearchCrateId searchCrateId,
+//        bool isAutoDjSource) {
+//    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+//    SearchCrate searchCrate;
+//    VERIFY_OR_DEBUG_ASSERT(searchCrate().readSearchCrateById(searchCrateId, &searchCrate)) {
+//        return false; // inexistent or failure
+//    }
+//    if (searchCrate.isAutoDjSource() == isAutoDjSource) {
+//        return false; // nothing to do
+//    }
+//    searchCrate.setAutoDjSource(isAutoDjSource);
+//    return updateSearchCrate(searchCrate);
+//}
+// Eve
 
 bool TrackCollection::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);

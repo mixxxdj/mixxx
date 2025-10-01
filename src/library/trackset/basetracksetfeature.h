@@ -15,8 +15,13 @@ class BaseTrackSetFeature : public LibraryFeature {
             const QString& iconName);
 
     void pasteChild(const QModelIndex& index) override;
+
   signals:
     void analyzeTracks(const QList<AnalyzerScheduledTrack>&);
+
+    // Used in searchCrate to send signal to dlg
+    // New signal for updating searchCrate data
+    void updateSearchCrateData(const QVariantList& data);
 
   public slots:
     void activate() override;
