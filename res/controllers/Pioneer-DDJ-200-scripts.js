@@ -325,7 +325,7 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
         padInstancesBuffer.indexable[0].forEach(function(padInstance) {
             updateDeckHelper(padInstance, currentDeck);
         });
-        padInstancesBuffer.indexable[0].forEach(function(padInstance) {
+        padInstancesBuffer.indexable[1].forEach(function(padInstance) {
             updateDeckHelper(padInstance, currentDeck);
         });
     };
