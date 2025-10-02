@@ -516,10 +516,6 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         shiftChannel: false,
         shiftControl: true,
         shiftOffset: 0x3C,
-        inputFaderStart: function(channel, control, value, status, _g) {
-            this.inKey = "play";
-            this.input(channel, control, value, status, _g);
-        },
     });
 
     this.cueButton = new components.CueButton({
@@ -527,13 +523,26 @@ DDJ200.Deck = function(deckNumbers, midiChannel) {
         shiftChannel: false,
         shiftControl: true,
         shiftOffset: 0x3C,
-        outKey: "cue_indicator",
-        inputFaderStop: function(channel, control, value, status, _g) {
-            this.inKey = "cue_set";
-            this.input(channel, control, value, status, _g);
-            this.inKey = "cue_gotoandstop";
-            this.input(channel, control, value, status, _g);
+    });
+
+    this.faderStartButton = new components.Button({
+        midi: [0x8F + midiChannel, 0x66],
+        key: "cue_gotoandplay",
+        // type: components.Button.prototype.types.toggle,
+        input: function(channel, control, value, status, _g) {
+            console.warn("faderStart");
+            // according the manual:
+            // Playback starts from the cue point
+            // When no cue point is set, playback starts from the beginning of the track.
+            components.Button.prototype.input.call(this, channel, control, value, status, _g);
         },
+    });
+
+    this.faderStopButton = new components.Button({
+        midi: [0x8F + midiChannel, 0x52],
+        // according the manual:
+        // the track instantly jumps back to the cue point and playback pauses
+        key: "cue_gotoandstop",
     });
 
     this.pflButton = new components.Button({

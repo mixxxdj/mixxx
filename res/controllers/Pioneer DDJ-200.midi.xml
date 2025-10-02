@@ -427,7 +427,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.playButton.inputFaderStart</key>
+        <key>DDJ200.decks.left.faderStartButton.input</key>
         <description>Deck 1: Shift and Fader start</description>
         <status>0x90</status>
         <midino>0x66</midino>
@@ -437,7 +437,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.playButton.inputFaderStart</key>
+        <key>DDJ200.decks.right.faderStartButton.input</key>
         <description>Deck 2: Shift and Fader start</description>
         <status>0x91</status>
         <midino>0x66</midino>
@@ -467,7 +467,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DDJ200.decks.left.cueButton.inputFaderStop</key>
+        <key>DDJ200.decks.left.faderStopButton.input</key>
         <description>Deck 1: Shift and Fader stop</description>
         <status>0x90</status>
         <midino>0x52</midino>
@@ -477,7 +477,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DDJ200.decks.right.cueButton.inputFaderStop</key>
+        <key>DDJ200.decks.right.faderStopButton.input</key>
         <description>Deck 2: Shift and Fader stop</description>
         <status>0x91</status>
         <midino>0x52</midino>
