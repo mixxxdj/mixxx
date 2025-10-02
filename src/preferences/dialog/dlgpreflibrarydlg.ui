@@ -375,6 +375,50 @@
    </item><!-- Search box -->
 
    <item>
+    <widget class="QGroupBox" name="groupBox_sidebar">
+     <property name="title">
+      <string>Sidebar</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_sidebar">
+
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_sidebar_hover_expand_delay">
+        <property name="text">
+         <string>Hover expand delay:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>spinBox_sidebar_hover_expand_delay</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QSpinBox" name="spinBox_sidebar_hover_expand_delay">
+        <property name="suffix">
+         <string> ms</string>
+        </property>
+        <property name="toolTip">
+         <string>The delay until sidebar items are expanded or collapsed hovered during drag'n'drop. -1 disables auto-expand.</string>
+        </property>
+        <property name="minimum">
+         <number>-1</number>
+        </property>
+        <property name="maximum">
+         <number>5000</number>
+        </property>
+        <property name="singleStep">
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <item>
     <widget class="QGroupBox" name="groupBox_History">
      <property name="title">
       <string>Session History</string>
@@ -699,6 +743,7 @@
   <tabstop>checkBox_enable_search_completions</tabstop>
   <tabstop>checkBox_enable_search_history_shortcuts</tabstop>
   <tabstop>comboBox_search_bpm_fuzzy_range</tabstop>
+  <tabstop>spinBox_sidebar_hover_expand_delay</tabstop>
   <tabstop>spinbox_history_track_duplicate_distance</tabstop>
   <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
