@@ -22,6 +22,8 @@ constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
 constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
+constexpr double kDefaultPositionDisplayType =
+        static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING);
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
 const QString kAppGroup = QStringLiteral("[App]");
@@ -82,7 +84,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
+            kDefaultPositionDisplayType);
     if (positionDisplayType ==
             static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
@@ -508,7 +510,7 @@ void DlgPrefDeck::slotUpdate() {
 
 void DlgPrefDeck::slotResetToDefaults() {
     // Track time display mode
-    radioButtonRemaining->setChecked(true);
+    slotSetTrackTimeDisplay(kDefaultPositionDisplayType);
 
     // Up increases speed.
     checkBoxInvertSpeedSlider->setChecked(false);
