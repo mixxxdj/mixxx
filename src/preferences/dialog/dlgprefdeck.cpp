@@ -16,6 +16,7 @@
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
 constexpr double kRateDirectionInverted = -1;
+constexpr bool kDefaultRateDirectionInverted = true;
 constexpr RateControl::RampMode kDefaultRampingMode = RateControl::RampMode::Stepping;
 constexpr double kDefaultTemporaryRateChangeCoarse = 4.00; // percent
 constexpr double kDefaultTemporaryRateChangeFine = 2.00;
@@ -221,7 +222,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox);
 
-    m_bRateDownIncreasesSpeed = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), true);
+    m_bRateDownIncreasesSpeed = m_pConfig->getValue(
+            ConfigKey("[Controls]", "RateDir"), kDefaultRateDirectionInverted);
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     checkBoxInvertSpeedSlider->setChecked(m_bRateDownIncreasesSpeed);
     connect(checkBoxInvertSpeedSlider,
@@ -513,7 +515,7 @@ void DlgPrefDeck::slotResetToDefaults() {
     slotSetTrackTimeDisplay(kDefaultPositionDisplayType);
 
     // Up increases speed.
-    checkBoxInvertSpeedSlider->setChecked(false);
+    checkBoxInvertSpeedSlider->setChecked(kDefaultRateDirectionInverted);
 
     // 8% Rate Range
     ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(kDefaultRateRangePercent));
