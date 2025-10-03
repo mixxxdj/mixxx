@@ -42,15 +42,13 @@ BasePlaylistFeature::BasePlaylistFeature(
         PlaylistTableModel* pModel,
         const QString& rootViewName,
         const QString& iconName,
-        const QString& countsDurationTableName,
-        bool keepHiddenTracks)
+        const QString& countsDurationTableName)
         : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
-                                ->internalCollection()
-                                ->getPlaylistDAO()),
+                          ->internalCollection()
+                          ->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel),
-          m_countsDurationTableName(countsDurationTableName),
-          m_keepHiddenTracks(keepHiddenTracks) {
+          m_countsDurationTableName(countsDurationTableName) {
     pModel->setParent(this);
 
     initActions();
@@ -590,8 +588,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
             std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export",
-                    m_keepHiddenTracks);
+                    "mixxx.db.model.playlist_export");
 
     emit saveModelState();
     pPlaylistTableModel->selectPlaylist(playlistId);

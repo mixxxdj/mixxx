@@ -27,7 +27,8 @@
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
-          m_bRescanLibrary(false) {
+          m_bRescanLibrary(false),
+          m_upgradedFrom21OrEarlier(false) {
 }
 
 Upgrade::~Upgrade() {
@@ -136,6 +137,9 @@ upgradeToAllShaders(int unsafeWaveformType,
     }
     return {waveformType, waveformBackend, waveformOption};
 }
+
+const ConfigKey kVersionCfgKey = ConfigKey(QStringLiteral("[Config]"),
+        QStringLiteral("Version"));
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
     using VT = VSyncThread;
@@ -316,10 +320,14 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     UserSettingsPointer config(new ConfigObject<ConfigValue>(
             QDir(settingsPath).filePath(MIXXX_SETTINGS_FILE)));
 
-    QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+    QString configVersion = config->getValueString(kVersionCfgKey);
+
+    const auto oldConfigFileVersion = QVersionNumber::fromString(configVersion);
+    if (oldConfigFileVersion < QVersionNumber(2, 1, 0)) {
+        m_upgradedFrom21OrEarlier = true;
+    }
 
     if (configVersion.isEmpty()) {
-
 #ifdef __APPLE__
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
         // Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
@@ -334,7 +342,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
             // to QDir::filePath elsewhere in the code. This is candidate for removal.
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/.mixxx/"));
-            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+            configVersion = config->getValueString(kVersionCfgKey);
         }
         else {
 #elif defined(__WINDOWS__)
@@ -352,7 +360,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
             // to QDir::filePath elsewhere in the code. This is candidate for removal.
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/Local Settings/Application Data/Mixxx/"));
-            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+            configVersion = config->getValueString(kVersionCfgKey);
         }
         else {
 #endif
@@ -369,7 +377,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             {
                 qDebug() << "No version number in configuration file. Setting to"
                          << VersionStore::version();
-                config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+                config->set(kVersionCfgKey, ConfigValue(VersionStore::version()));
             }
             m_bFirstRun = true;
             return config;
@@ -398,13 +406,13 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         qDebug() << "Upgrading from v1.6.0 to 1.6.1...";
         // Upgrade tasks go here
         configVersion = "1.6.1";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.6.1"));
+        config->set(kVersionCfgKey, ConfigValue("1.6.1"));
     }
     if (configVersion.startsWith("1.6.1")) {
         qDebug() << "Upgrading from v1.6.1 to 1.7.0...";
         // Upgrade tasks go here
         configVersion = "1.7.0";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.7.0"));
+        config->set(kVersionCfgKey, ConfigValue("1.7.0"));
     }
     */
 
@@ -418,7 +426,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // Upgrade tasks go here
         // Nothing to change, really
         configVersion = "1.8.0";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
+        config->set(kVersionCfgKey, ConfigValue("1.8.0"));
     }
 
     if (configVersion.startsWith("1.8.0~beta1") ||
@@ -426,7 +434,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         qDebug() << "Upgrading from v1.8.0~beta...";
         // Upgrade tasks go here
         configVersion = "1.8.0";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
+        config->set(kVersionCfgKey, ConfigValue("1.8.0"));
     }
     if (configVersion.startsWith("1.8") || configVersion.startsWith("1.9.0beta1")) {
         qDebug() << "Upgrading from" << configVersion << "...";
@@ -477,7 +485,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                 QDir(settingsPath).filePath(MIXXX_SETTINGS_FILE)));
 #endif
         configVersion = "1.9.0";
-        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
+        config->set(kVersionCfgKey, ConfigValue("1.9.0"));
     }
     if (configVersion.startsWith("1.9") || configVersion.startsWith("1.10")) {
         qDebug() << "Upgrading from v1.9.x/1.10.x...";
@@ -518,8 +526,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (successful) {
             qDebug() << "Upgrade Successful";
             configVersion = "1.11.0";
-            config->set(ConfigKey("[Config]","Version"),
-                        ConfigValue(configVersion));
+            config->set(kVersionCfgKey, ConfigValue(configVersion));
         } else {
             qDebug() << "Upgrade Failed";
         }
@@ -579,8 +586,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // updated
         if (successful) {
             configVersion = "1.12.0";
-            config->set(ConfigKey("[Config]", "Version"),
-                    ConfigValue(configVersion));
+            config->set(kVersionCfgKey, ConfigValue(configVersion));
         }
         else {
             qDebug() << "Upgrade failed!\n";
@@ -620,8 +626,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                 correctedWaveformOption);
         // mark the configuration as updated
         configVersion = "2.6.0";
-        config->set(ConfigKey("[Config]", "Version"),
-                ConfigValue(configVersion));
+        config->set(kVersionCfgKey, ConfigValue(configVersion));
     }
 
     // This variable indicates the first known version that requires no changes.
@@ -631,7 +636,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
-        config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+        config->set(kVersionCfgKey, ConfigValue(VersionStore::version()));
     }
 
     if (configVersion == VersionStore::version()) {

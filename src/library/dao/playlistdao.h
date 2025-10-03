@@ -66,6 +66,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Get all playlist ids and names of a specific type
     QList<QPair<int, QString>> getPlaylists(const HiddenType hidden) const;
     QList<QPair<int, QString>> getUnlockedPlaylists(const HiddenType hidden) const;
+    QList<int> getPlaylistIdsByType(const HiddenType hidden) const;
     // Find out the name of the playlist at the given Id
     QString getPlaylistName(const int playlistId) const;
     // Get the playlist id by its name
@@ -85,6 +86,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int getMaxPosition(const int playlistId) const;
     // Remove a track from all playlists
     void removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool purged = false);
+    // removes all hidden Tracks from ALL playlists
+    void removeHiddenTracksFromPlaylists();
     // removes all hidden and purged Tracks from the playlist
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist

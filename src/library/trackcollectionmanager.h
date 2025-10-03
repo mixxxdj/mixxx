@@ -67,6 +67,8 @@ class TrackCollectionManager: public QObject,
             const QString& mood) const;
 #endif // __EXTRA_METADATA__
 
+    void removeHiddenTracksFromPlaylists();
+
     bool hideTracks(const QList<TrackId>& trackIds) const;
     bool unhideTracks(const QList<TrackId>& trackIds) const;
     void hideAllTracks(const QDir& rootDir) const;

@@ -15,11 +15,9 @@ const QString kModelName = "playlist:";
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        const char* settingsNamespace,
-        bool keepHiddenTracks)
+        const char* settingsNamespace)
         : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
-          m_iPlaylistId(kInvalidPlaylistId),
-          m_keepHiddenTracks(keepHiddenTracks) {
+          m_iPlaylistId(kInvalidPlaylistId) {
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
             &PlaylistDAO::tracksAdded,
             this,
@@ -146,15 +144,6 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
     }
 
     m_iPlaylistId = playlistId;
-
-    if (!m_keepHiddenTracks) {
-        // From Mixxx 2.1 we drop tracks that have been explicitly deleted
-        // in the library (mixxx_deleted = 0) from playlists.
-        // These invisible tracks, consuming a playlist position number were
-        // a source user of confusion in the past.
-        m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
-    }
-
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);

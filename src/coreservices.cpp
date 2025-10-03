@@ -702,6 +702,12 @@ void CoreServices::initialize(QApplication* pApp) {
         m_pTrackCollectionManager->startLibraryAutoScan();
     }
 
+    // Check if we upgrade from before Mixxx 2.1
+    // If yes, remove hidden tracks from ALL playlists.
+    if (m_pSettingsManager->upgradedFrom21OrEarlier()) {
+        m_pTrackCollectionManager->removeHiddenTracksFromPlaylists();
+    }
+
     // This has to be done before m_pSoundManager->setupDevices()
     // https://github.com/mixxxdj/mixxx/issues/9188
     m_pPlayerManager->loadSamplers();

@@ -9,8 +9,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
   public:
     PlaylistTableModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
-            const char* settingsNamespace,
-            bool keepHiddenTracks = false);
+            const char* settingsNamespace);
     ~PlaylistTableModel() final = default;
 
     void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
@@ -53,6 +52,5 @@ class PlaylistTableModel final : public TrackSetTableModel {
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
-    bool m_keepHiddenTracks;
     QHash<int, QString> m_searchTexts;
 };
