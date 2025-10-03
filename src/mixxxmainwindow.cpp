@@ -821,6 +821,14 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotShowKeywheel,
             Qt::UniqueConnection);
+#ifndef __APPLE__
+    // Menubar auto-hide
+    connect(m_pMenuBar,
+            &WMainMenuBar::menubarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::UniqueConnection);
+#endif
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -962,11 +970,14 @@ void MixxxMainWindow::connectMenuBar() {
 /// Enable/disable listening to Alt key press for toggling the menubar.
 #ifndef __APPLE__
 void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
+    qWarning() << "MixxxMainWindow: slotUpdateMenuBarAltKeyConnection";
     if (!m_pCoreServices->getKeyboardEventFilter() || !m_pMenuBar) {
         return;
     }
 
     if (m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false)) {
+        qWarning() << "-- auto-hide enabled, connect to KeyboardEventFilter Alt signal";
+        qWarning() << "-- hide menubar";
         // with Qt::UniqueConnection we don't need to check whether we're already connected
         connect(m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
@@ -975,6 +986,8 @@ void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
                 Qt::UniqueConnection);
         m_pMenuBar->hideMenuBar();
     } else {
+        qWarning() << "-- auto-hide disabled, disconnect KeyboardEventFilter Alt signal";
+        qWarning() << "-- show menubar";
         disconnect(m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
                 m_pMenuBar,
