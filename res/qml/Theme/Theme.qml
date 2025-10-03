@@ -12,7 +12,8 @@ QtObject {
     property color crossfaderOrientationColor: lightGray
     property color darkGray: "#0f0f0f"
     property color darkGray2: "#242424"
-    property color darkGray3: "#202020"
+    property color darkGray3: "#3F3F3F"
+    property color darkGray4: "#202020"
     property color deckActiveColor: green
     property color deckBackgroundColor: darkGray
     property color deckLineColor: darkGray2

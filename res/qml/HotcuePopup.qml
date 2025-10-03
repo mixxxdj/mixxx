@@ -23,7 +23,7 @@ Popup {
         spacing: 2
 
         Repeater {
-            model: Mixxx.Config.getHotcueColorPalette()
+            model: Mixxx.Config.hotcueColorPalette
 
             Rectangle {
                 required property color modelData

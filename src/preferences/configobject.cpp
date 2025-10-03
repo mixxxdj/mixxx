@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QtDebug>
 
+#include "mixer/basetrackplayer.h"
 #include "util/cmdlineargs.h"
 #include "util/color/rgbcolor.h"
 #include "util/xml.h"

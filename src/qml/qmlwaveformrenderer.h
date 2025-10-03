@@ -8,6 +8,7 @@
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/widgets/allshader/waveformwidget.h"
 
 class WaveformWidgetRenderer;
 
@@ -22,6 +23,7 @@ namespace mixxx {
 namespace qml {
 
 using WaveformRendererPositionSource = ::WaveformRendererAbstract::PositionSource;
+using WaveformRendererSignalBaseOptions = WaveformRendererSignalBase::Options;
 
 class QmlWaveformRendererFactory : public QObject {
     Q_OBJECT
@@ -38,7 +40,8 @@ class QmlWaveformRendererFactory : public QObject {
         return true;
     }
 
-    virtual Renderer create(WaveformWidgetRenderer* waveformWidget) const = 0;
+    virtual Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options) const = 0;
 
   signals:
 #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
@@ -60,7 +63,9 @@ class QmlWaveformRendererEndOfTrack
     QML_NAMED_ELEMENT(WaveformRendererEndOfTrack)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
 
   signals:
     void colorChanged(const QColor&);
@@ -78,7 +83,9 @@ class QmlWaveformRendererPreroll
     QML_NAMED_ELEMENT(WaveformRendererPreroll)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
   signals:
     void colorChanged(const QColor&);
 
@@ -87,7 +94,6 @@ class QmlWaveformRendererPreroll
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
-typedef WaveformRendererSignalBase::Options WaveformRendererSignalBaseOptions;
 class QmlWaveformRendererSignal
         : public QmlWaveformRendererFactory {
     Q_OBJECT
@@ -100,15 +106,19 @@ class QmlWaveformRendererSignal
     Q_PROPERTY(double gainLow MEMBER m_gainLow NOTIFY gainLowChanged REQUIRED)
     Q_PROPERTY(double gainMid MEMBER m_gainMid NOTIFY gainMidChanged REQUIRED)
     Q_PROPERTY(double gainHigh MEMBER m_gainHigh NOTIFY gainHighChanged REQUIRED)
-    Q_PROPERTY(WaveformRendererSignalBaseOptions options MEMBER
-                    m_options NOTIFY optionsChanged)
+    Q_PROPERTY(WaveformRendererSignalBaseOptions supportedOptions MEMBER
+                    m_supportedOption CONSTANT)
     QML_ANONYMOUS
 
   public:
-    Q_ENUM(WaveformRendererSignalBaseOptions)
+    QmlWaveformRendererSignal(WaveformWidgetType::Type type)
+            : m_supportedOption(allshader::WaveformWidget::supportedOptions(type)) {
+    }
 
   protected:
     void setup(allshader::WaveformRendererSignalBase* renderer) const;
+
+    WaveformRendererSignalBaseOptions m_supportedOption;
 
   signals:
     void axesColorChanged(const QColor&);
@@ -120,11 +130,6 @@ class QmlWaveformRendererSignal
     void gainMidChanged(double);
     void gainHighChanged(double);
     void ignoreStemChanged(bool);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void optionsChanged(WaveformRendererSignalBaseOptions);
-#else
-    void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
-#endif
 
   protected:
     QColor m_axesColor;
@@ -140,8 +145,6 @@ class QmlWaveformRendererSignal
     bool m_ignoreStem{false};
 
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
-    WaveformRendererSignalBaseOptions m_options{
-            WaveformRendererSignalBase::Option::None};
 };
 
 class QmlWaveformRendererRGB
@@ -150,7 +153,12 @@ class QmlWaveformRendererRGB
     QML_NAMED_ELEMENT(WaveformRendererRGB)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    QmlWaveformRendererRGB()
+            : QmlWaveformRendererSignal(WaveformWidgetType::RGB) {
+    }
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
 };
 
 class QmlWaveformRendererFiltered
@@ -161,7 +169,12 @@ class QmlWaveformRendererFiltered
     QML_NAMED_ELEMENT(WaveformRendererFiltered)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    QmlWaveformRendererFiltered()
+            : QmlWaveformRendererSignal(WaveformWidgetType::Filtered) {
+    }
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
 
   private:
     bool m_stacked{false};
@@ -177,12 +190,18 @@ class QmlWaveformRendererHSV
     Q_PROPERTY(double gainLow MEMBER m_gainLow NOTIFY gainLowChanged REQUIRED)
     Q_PROPERTY(double gainMid MEMBER m_gainMid NOTIFY gainMidChanged REQUIRED)
     Q_PROPERTY(double gainHigh MEMBER m_gainHigh NOTIFY gainHighChanged REQUIRED)
-    Q_PROPERTY(WaveformRendererSignalBaseOptions options MEMBER
-                    m_options NOTIFY optionsChanged)
+    Q_PROPERTY(WaveformRendererSignalBaseOptions supportedOptions MEMBER
+                    m_supportedOption CONSTANT)
     QML_NAMED_ELEMENT(WaveformRendererHSV)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    QmlWaveformRendererHSV()
+            : m_supportedOption(allshader::WaveformWidget::supportedOptions(
+                      WaveformWidgetType::HSV)) {
+    }
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
   signals:
     void axesColorChanged(const QColor&);
     void colorChanged(const QColor&);
@@ -207,8 +226,8 @@ class QmlWaveformRendererHSV
     double m_gainHigh;
 
     bool m_ignoreStem{false};
-    WaveformRendererSignalBaseOptions m_options{
-            WaveformRendererSignalBase::Option::None};
+
+    WaveformRendererSignalBaseOptions m_supportedOption;
 };
 
 class QmlWaveformRendererSimple
@@ -218,12 +237,18 @@ class QmlWaveformRendererSimple
     Q_PROPERTY(QColor axesColor MEMBER m_axesColor NOTIFY axesColorChanged REQUIRED)
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged REQUIRED)
     Q_PROPERTY(double gain MEMBER m_gain NOTIFY gainChanged REQUIRED)
-    Q_PROPERTY(WaveformRendererSignalBaseOptions options MEMBER
-                    m_options NOTIFY optionsChanged)
+    Q_PROPERTY(WaveformRendererSignalBaseOptions supportedOptions MEMBER
+                    m_supportedOption CONSTANT)
     QML_NAMED_ELEMENT(WaveformRendererSimple)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    QmlWaveformRendererSimple()
+            : m_supportedOption(allshader::WaveformWidget::supportedOptions(
+                      WaveformWidgetType::Simple)) {
+    }
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
   signals:
     void axesColorChanged(const QColor&);
     void colorChanged(const QColor&);
@@ -240,8 +265,8 @@ class QmlWaveformRendererSimple
     QColor m_color;
     double m_gain;
     bool m_ignoreStem{false};
-    WaveformRendererSignalBaseOptions m_options{
-            WaveformRendererSignalBase::Option::None};
+
+    WaveformRendererSignalBaseOptions m_supportedOption;
 };
 
 class QmlWaveformRendererBeat
@@ -251,7 +276,9 @@ class QmlWaveformRendererBeat
     QML_NAMED_ELEMENT(WaveformRendererBeat)
 
   public:
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
   signals:
     void colorChanged(const QColor&);
 
@@ -427,6 +454,8 @@ class QmlWaveformUntilMark : public QObject {
     Q_PROPERTY(bool showBeats MEMBER m_showBeats NOTIFY showBeatsChanged)
     Q_PROPERTY(Qt::Alignment align MEMBER m_align NOTIFY alignChanged)
     Q_PROPERTY(int textSize MEMBER m_textSize NOTIFY textSizeChanged)
+    Q_PROPERTY(double defaultNextMarkPosition MEMBER m_defaultNextMarkPosition
+                    NOTIFY defaultNextMarkPositionChanged)
 
     QML_NAMED_ELEMENT(WaveformUntilMark)
   public:
@@ -452,11 +481,17 @@ class QmlWaveformUntilMark : public QObject {
         return m_textSize;
     }
 
+    double defaultNextMarkPosition() const {
+        return m_defaultNextMarkPosition;
+    }
+
   signals:
     void showTimeChanged(bool);
     void showBeatsChanged(bool);
     void alignChanged(Qt::Alignment);
     void textSizeChanged(int);
+    void textHeightLimitChanged(int);
+    void defaultNextMarkPositionChanged(double);
 
   private:
     bool m_showTime;
@@ -464,6 +499,7 @@ class QmlWaveformUntilMark : public QObject {
     Qt::Alignment m_align;
     int m_textSize;
     int m_textHeightLimit;
+    double m_defaultNextMarkPosition;
 };
 
 class QmlWaveformRendererMarkRange
@@ -478,7 +514,9 @@ class QmlWaveformRendererMarkRange
         return {this, &m_ranges};
     }
 
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
 
   private:
     QList<QmlWaveformMarkRange*> m_ranges;
@@ -493,13 +531,17 @@ class QmlWaveformRendererStem
 
   public:
 #ifdef __STEM__
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
 
     bool isSupported() const override {
         return true;
     }
 #else
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override {
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override {
         return Renderer{};
     }
 
@@ -544,7 +586,9 @@ class QmlWaveformRendererMark
         return m_untilMark.get();
     }
 
-    Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
 
     QQmlListProperty<QmlWaveformMark> marks() {
         return {this, &m_marks};

@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QWheelEvent>
 
+#include "rendergraph/engine.h"
+#include "rendergraph/opacitynode.h"
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
@@ -193,31 +195,6 @@ void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
 void WaveformWidget::leaveEvent(QEvent* pEvent) {
     QApplication::sendEvent(parentWidget(), pEvent);
     pEvent->accept();
-}
-
-/* static */
-WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
-        WaveformWidgetType::Type type) {
-    ::WaveformRendererSignalBase::Options options = ::WaveformRendererSignalBase::Option::None;
-    switch (type) {
-    case WaveformWidgetType::Type::RGB:
-        options = ::WaveformRendererSignalBase::Option::AllOptionsCombined;
-        break;
-    case WaveformWidgetType::Type::Filtered:
-        options = ::WaveformRendererSignalBase::Option::HighDetail;
-        break;
-    case WaveformWidgetType::Type::Stacked:
-        options = ::WaveformRendererSignalBase::Option::HighDetail;
-        break;
-    default:
-        break;
-    }
-#ifdef QT_OPENGL_ES_2
-    // High detail (textured) waveforms are not supported on OpenGL ES.
-    // See https://github.com/mixxxdj/mixxx/issues/13385
-    options &= ~WaveformRendererSignalBase::Options(WaveformRendererSignalBase::Option::HighDetail);
-#endif
-    return options;
 }
 
 /* static */

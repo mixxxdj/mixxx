@@ -59,6 +59,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     void setUntilMarkTextHeightLimit(float untilMarkTextHeightLimit) {
         m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
     }
+    void setDefaultNextMarkPosition(double nextMarkPosition);
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
@@ -104,6 +105,8 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextSize;
     float m_untilMarkTextHeightLimit;
+
+    double m_defaultNextMarkPosition;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
