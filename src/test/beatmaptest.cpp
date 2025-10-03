@@ -57,13 +57,9 @@ TEST_F(BeatMapTest, Scale) {
     EXPECT_DOUBLE_EQ(bpm.value(),
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
-    pMap = *pMap->tryScale(Beats::BpmScale::Double);
-    EXPECT_DOUBLE_EQ(2 * bpm.value(),
-            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
-                    .value());
 
     pMap = *pMap->tryScale(Beats::BpmScale::Halve);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    EXPECT_DOUBLE_EQ(bpm.value() / 2,
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
@@ -72,8 +68,8 @@ TEST_F(BeatMapTest, Scale) {
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
-    pMap = *pMap->tryScale(Beats::BpmScale::ThreeHalves);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    pMap = *pMap->tryScale(Beats::BpmScale::FourThirds);
+    EXPECT_DOUBLE_EQ(bpm.value() * 4 / 3,
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
@@ -82,8 +78,18 @@ TEST_F(BeatMapTest, Scale) {
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
-    pMap = *pMap->tryScale(Beats::BpmScale::FourThirds);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    pMap = *pMap->tryScale(Beats::BpmScale::FiveFourths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 5 / 4,
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pMap = *pMap->tryScale(Beats::BpmScale::ThreeHalves);
+    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 2,
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pMap = *pMap->tryScale(Beats::BpmScale::Double);
+    EXPECT_DOUBLE_EQ(bpm.value() * 2,
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 }
