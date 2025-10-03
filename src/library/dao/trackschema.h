@@ -42,6 +42,7 @@ const QString LIBRARYTABLE_RATING = QStringLiteral("rating");
 const QString LIBRARYTABLE_KEY = QStringLiteral("key");
 const QString LIBRARYTABLE_KEY_ID = QStringLiteral("key_id");
 const QString LIBRARYTABLE_BPM_LOCK = QStringLiteral("bpm_lock");
+const QString LIBRARYTABLE_BEATS_VERSION = QStringLiteral("beats_version");
 const QString LIBRARYTABLE_PREVIEW = QStringLiteral("preview");
 const QString LIBRARYTABLE_COLOR = QStringLiteral("color");
 const QString LIBRARYTABLE_COVERART = QStringLiteral("coverart");

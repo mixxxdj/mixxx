@@ -284,7 +284,7 @@ void ScreenSaverHelper::uninhibitInternal()
     }
 }
 
-#elif HAS_XWINDOW_SCREENSAVER
+#elif defined(HAS_XWINDOW_SCREENSAVER) && HAS_XWINDOW_SCREENSAVER
 // This is untested.
 struct LibXtst : public library {
   function<int (Display*, unsigned int, Bool, unsigned long)> XTestFakeKeyEvent;
