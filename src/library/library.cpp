@@ -391,6 +391,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
+    connect(this,
+            &Library::setSidebarHoverExpandDelay,
+            pSidebarWidget,
+            &WLibrarySidebar::slotSetExpandOnHoverDelay);
+
     for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }

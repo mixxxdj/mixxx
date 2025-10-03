@@ -58,6 +58,10 @@ extern const ConfigKey kTagFetcherApplyTagsConfigKey;
 
 extern const ConfigKey kTagFetcherApplyCoverConfigKey;
 
+const int kSidebarHoverExpandDelayDefault = 250; // ms
+
+extern const ConfigKey kSidebarHoverExpandDelayConfigKey;
+
 } // namespace prefs
 
 } // namespace library
