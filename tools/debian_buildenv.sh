@@ -124,7 +124,6 @@ case "$1" in
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
             qml6-module-qtquick-layouts \
-            qml6-module-qtquick-nativestyle \
             qml6-module-qtquick-shapes \
             qml6-module-qtquick-templates \
             qml6-module-qtquick-window \
