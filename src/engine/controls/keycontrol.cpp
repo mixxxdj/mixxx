@@ -38,7 +38,7 @@ KeyControl::KeyControl(const QString& group,
           m_pFileKey(std::make_unique<ControlObject>(ConfigKey(group, "file_key"))),
           m_pEngineKey(std::make_unique<ControlObject>(ConfigKey(group, "key"))),
           m_pEngineKeyDistance(std::make_unique<ControlPotmeter>(
-                  ConfigKey(group, "visual_key_distance"), -0.5, 0.5)) {
+                  ConfigKey(group, "key_distance"), -0.5, 0.5)) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
     m_pitchRateInfo.pitchTweakRatio = 1.0;
@@ -462,7 +462,7 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     mixxx::track::io::key::ChromaticKey otherKey =
             KeyUtils::keyFromNumericValue(dKey);
     double otherDistance = ControlObject::get(
-            ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+            ConfigKey(pOtherEngineBuffer->getGroup(), "key_distance"));
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {
