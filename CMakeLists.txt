@@ -2712,6 +2712,7 @@ if(BUILD_TESTING)
       PRIVATE
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
+        src/test/qmlcontrolproxytest.cpp
     )
   endif()
 
