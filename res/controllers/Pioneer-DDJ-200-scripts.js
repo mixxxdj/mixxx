@@ -354,7 +354,9 @@ DDJ200.init = function() {
                 engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
                 if (!engine.getValue("[Skin]", "show_4decks")) {
                     DDJ200.decks.left.setCurrentDeck("[Channel1]");
+                    DDJ200.decks.left.padUnit.updateDeck("[Channel1]");
                     DDJ200.decks.right.setCurrentDeck("[Channel2]");
+                    DDJ200.decks.right.padUnit.updateDeck("[Channel2]");
                     DDJ200.decks.forEachComponentContainer(deck => {
                         if (deck.syncButton.blinkConnection) {
                             deck.syncButton.blinkConnection.disconnect();
