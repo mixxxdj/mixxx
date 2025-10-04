@@ -538,16 +538,16 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
     }
 
     splitLeftRightCheckBox->setEnabled(useWaveform &&
-            supportedOption &
-                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal);
+            (supportedOption &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setEnabled(useWaveform &&
-            supportedOption &
-                    allshader::WaveformRendererSignalBase::Option::HighDetail);
+            (supportedOption &
+                    allshader::WaveformRendererSignalBase::Option::HighDetail));
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
-            currentOptions &
-                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal);
+            (currentOptions &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
-            currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail);
+            (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
 #else
     splitLeftRightCheckBox->setVisible(false);
     highDetailCheckBox->setVisible(false);
