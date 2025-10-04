@@ -327,7 +327,11 @@ option(QT6 "Build with Qt6" ON)
 # Once this is fixed we can revert the commit introducing this.
 option(QML "Build with QML" OFF)
 
-option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+if(QT6)
+  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+else()
+  option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+endif()
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
