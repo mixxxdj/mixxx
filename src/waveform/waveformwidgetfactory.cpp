@@ -33,6 +33,7 @@
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/simplesignalwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wvumeterbase.h"
@@ -988,6 +989,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #endif
+            addHandle(collectedHandles, type, waveformWidgetVars<SimpleSignalWaveformWidget>());
             break;
         case WaveformWidgetType::Filtered:
 #ifdef MIXXX_USE_QOPENGL
@@ -1009,11 +1011,11 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
         case WaveformWidgetType::HSV:
-            addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #endif
+            addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
             break;
         case WaveformWidgetType::Stacked:
 #ifdef MIXXX_USE_QOPENGL
@@ -1117,7 +1119,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
 #endif
     default:
-        return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+        return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
 }
 
