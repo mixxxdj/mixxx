@@ -247,28 +247,14 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
     const deckOffset = (((script.deckFromGroup(group) - 1) % 2) * 2);
 
     const startupModeInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset);
-    const loopInstance = new DDJ200.PadModeContainers.Loop(deckOffset);
-    const effectInstance = new DDJ200.PadModeContainers.Effect(deckOffset, group);
-    const jumpInstance = new DDJ200.PadModeContainers.Jump(deckOffset);
 
     const padInstancesBuffer = new DDJ200.DoubleRingBuffer(
-        [startupModeInstance, loopInstance, effectInstance],
-        [jumpInstance]
+        [startupModeInstance, new DDJ200.PadModeContainers.Loop(deckOffset), new DDJ200.PadModeContainers.Effect(deckOffset, group)],
+        [new DDJ200.PadModeContainers.Jump(deckOffset)]
     );
 
-    let choosenPadInstance = startupModeInstance;
-
-    let startup = true;
-    const setPads = newPadInstance => {
-        if (!startup && newPadInstance === choosenPadInstance) {
-            return;
-        }
-        startup = false;
-        choosenPadInstance.forEachComponent(function(component) {
-            component.disconnect();
-        });
-        choosenPadInstance = newPadInstance;
-        choosenPadInstance.forEachComponent(function(component) {
+    const connectPadInstance = function(padInstance) {
+        padInstance.forEachComponent(function(component) {
             if (component.group === undefined) {
                 component.group = group;
             }
@@ -277,11 +263,21 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
         });
     };
 
-    this.input = function(channel, control, value, status, group) {
-        choosenPadInstance.pads[control].input(channel, control, value, status, group);
+    let choosenPadInstance = startupModeInstance;
+    connectPadInstance(choosenPadInstance);
+
+    const setPads = newPadInstance => {
+        if (newPadInstance === choosenPadInstance) {
+            return;
+        }
+        choosenPadInstance.forEachComponent(function(component) {
+            component.disconnect();
+        });
+        choosenPadInstance = newPadInstance;
+        connectPadInstance(choosenPadInstance);
     };
 
-    this.changeMode = (isShifted) => {
+    this.changePadMode = (isShifted) => {
         if (isShifted !== padInstancesBuffer.isShifted) {
             padInstancesBuffer.swapIndexable();
         } else {
@@ -320,11 +316,10 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
     this.shift = () => choosenPadInstance.shift();
     this.unshift = () => choosenPadInstance.unshift();
     this.shutdown = () => choosenPadInstance.shutdown();
-
-    this.choosenPadInstance = function() {
-        return choosenPadInstance;
+    this.choosenPadInstance = () => choosenPadInstance;
+    this.input = function(channel, control, value, status, group) {
+        choosenPadInstance.pads[control].input(channel, control, value, status, group);
     };
-    setPads(startupModeInstance);
 };
 DDJ200.PadModeContainers.ModeSelector.prototype = new components.ComponentContainer();
 
@@ -379,7 +374,7 @@ DDJ200.init = function() {
         input: function(_channel, control, value, _status, _g) {
             if (value) {
                 DDJ200.decks.forEachComponentContainer(deck => {
-                    deck.padUnit.changeMode((control === 0x5A));
+                    deck.padUnit.changePadMode((control === 0x5A));
                 }, false);
                 this.indicatePadMode();
             };
