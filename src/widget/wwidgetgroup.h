@@ -51,6 +51,12 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     // support color schemes for images, a workaround is to set the background
     // image via <BackPath> and <BackPathHighlighted> from the skin.
     Q_PROPERTY(int highlight READ getHighlight WRITE setHighlight NOTIFY highlightChanged)
+    // Similar to the property above the following properties can be used to highlight
+    // deck control groups.
+    Q_PROPERTY(int highlight_input_allow READ getHighlightInputAllow WRITE
+                    setHighlightInputAllow NOTIFY highlightInputAllowChanged)
+    Q_PROPERTY(int highlight_deck READ getHighlightDeck WRITE setHighlightDeck
+                    NOTIFY highlightDeckChanged)
 
     int layoutSpacing() const;
     void setLayoutSpacing(int spacing);
@@ -60,6 +66,10 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     void setLayoutAlignment(Qt::Alignment alignment);
     int getHighlight() const;
     void setHighlight(int highlight);
+    int getHighlightInputAllow() const;
+    void setHighlightInputAllow(int highlight_input_allow);
+    int getHighlightDeck() const;
+    void setHighlightDeck(int highlight_deck);
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
@@ -74,6 +84,8 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
 
   signals:
     void highlightChanged(int highlight);
+    void highlightInputAllowChanged(int highlight);
+    void highlightDeckChanged(int highlight);
 
   protected:
     void paintEvent(QPaintEvent* pe) override;
@@ -86,4 +98,6 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pPixmapBackHighlighted;
     int m_highlight;
+    int m_highlight_input_allow;
+    int m_highlight_deck;
 };
