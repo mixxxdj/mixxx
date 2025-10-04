@@ -1240,6 +1240,26 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         }
         return;
     }
+    case Qt::Key_Space: {
+        if (event->modifiers() & Qt::ShiftModifier) {
+            // Sort by focused column
+            TrackModel::SortColumnId sortColumnId = getColumnIdFromCurrentIndex();
+            if (sortColumnId == TrackModel::SortColumnId::Invalid) {
+                return;
+            }
+
+            if (static_cast<int>(sortColumnId) != static_cast<int>(m_pSortColumn->get())) {
+                m_pSortColumn->set(static_cast<int>(sortColumnId));
+            } else {
+                // Already sorted by this column, invert sort order
+                m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
+            }
+
+            applySortingIfVisible();
+            return;
+        }
+        break;
+    }
     default:
         break;
     }
