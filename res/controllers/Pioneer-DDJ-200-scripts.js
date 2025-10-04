@@ -238,52 +238,53 @@ DDJ200.DoubleRingBuffer = class {
     };
 };
 
-DDJ200.PadModeContainers.ModeSelector = function(group) {
-    const deckOffset = (((script.deckFromGroup(group) - 1) % 2) * 2);
+DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContainer {
+    constructor(group) {
+        super();
+        const deckOffset = (((script.deckFromGroup(group) - 1) % 2) * 2);
 
-    const startupModeInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset);
+        this.choosenPadInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset);
 
-    const padInstancesBuffer = new DDJ200.DoubleRingBuffer(
-        [startupModeInstance, new DDJ200.PadModeContainers.Loop(deckOffset), new DDJ200.PadModeContainers.Effect(deckOffset, group)],
-        [new DDJ200.PadModeContainers.Jump(deckOffset)]
-    );
+        this.padInstancesBuffer = new DDJ200.DoubleRingBuffer(
+            [this.choosenPadInstance, new DDJ200.PadModeContainers.Loop(deckOffset), new DDJ200.PadModeContainers.Effect(deckOffset, group)],
+            [new DDJ200.PadModeContainers.Jump(deckOffset)]
+        );
 
-    const connectPadInstance = function(padInstance) {
-        padInstance.forEachComponent(function(component) {
-            if (component.group === undefined) {
-                component.group = group;
-            }
-            component.connect();
-            component.trigger();
-        });
-    };
+        this.connectPadInstance = padInstance => {
+            padInstance.forEachComponent(function(component) {
+                if (component.group === undefined) {
+                    component.group = group;
+                }
+                component.connect();
+                component.trigger();
+            });
+        };
+        this.connectPadInstance(this.choosenPadInstance);
+    }
 
-    let choosenPadInstance = startupModeInstance;
-    connectPadInstance(choosenPadInstance);
-
-    const setPads = newPadInstance => {
-        if (newPadInstance === choosenPadInstance) {
+    setPads(newPadInstance) {
+        if (newPadInstance === this.choosenPadInstance) {
             return;
         }
-        choosenPadInstance.forEachComponent(function(component) {
+        this.choosenPadInstance.forEachComponent(function(component) {
             component.disconnect();
         });
-        choosenPadInstance = newPadInstance;
-        connectPadInstance(choosenPadInstance);
-    };
+        this.choosenPadInstance = newPadInstance;
+        this.connectPadInstance(this.choosenPadInstance);
+    }
 
-    this.changePadMode = (isShifted) => {
-        if (isShifted !== padInstancesBuffer.isShifted) {
-            padInstancesBuffer.swapIndexable();
+    changePadMode(isShifted) {
+        if (isShifted !== this.padInstancesBuffer.isShifted) {
+            this.padInstancesBuffer.swapIndexable();
         } else {
-            padInstancesBuffer.next();
+            this.padInstancesBuffer.next();
         };
-        setPads(padInstancesBuffer.current());
-    };
+        this.setPads(this.padInstancesBuffer.current());
+    }
 
-    const updateDeckHelper = function(padInstance, newGroup) {
+    updateDeckHelper(padInstance, newGroup) {
         padInstance.forEachComponent(function(component) {
-            if (padInstance === choosenPadInstance) {
+            if (padInstance === this.choosenPadInstance) {
                 component.disconnect();
             }
             if (component.group === undefined) {
@@ -292,31 +293,26 @@ DDJ200.PadModeContainers.ModeSelector = function(group) {
                 const anyChannelRegEx = /\[Channel\d+([\]_])/;
                 component.group = component.group.replace(anyChannelRegEx, `${newGroup.slice(0, -1)}$1`);
             }
-            if (padInstance === choosenPadInstance) {
+            if (padInstance === this.choosenPadInstance) {
                 component.connect();
                 component.trigger();
             }
         });
-    };
+    }
 
-    this.updateDeck = function(currentDeck) {
-        padInstancesBuffer.indexable[0].forEach(function(padInstance) {
-            updateDeckHelper(padInstance, currentDeck);
+    updateDeck(currentDeck) {
+        this.padInstancesBuffer.indexable[0].forEach(padInstance => {
+            this.updateDeckHelper(padInstance, currentDeck);
         });
-        padInstancesBuffer.indexable[1].forEach(function(padInstance) {
-            updateDeckHelper(padInstance, currentDeck);
+        this.padInstancesBuffer.indexable[1].forEach(padInstance => {
+            this.updateDeckHelper(padInstance, currentDeck);
         });
-    };
+    }
 
-    this.shift = () => choosenPadInstance.shift();
-    this.unshift = () => choosenPadInstance.unshift();
-    this.shutdown = () => choosenPadInstance.shutdown();
-    this.choosenPadInstance = () => choosenPadInstance;
-    this.input = function(channel, control, value, status, group) {
-        choosenPadInstance.pads[control].input(channel, control, value, status, group);
-    };
+    input(channel, control, value, status, group) {
+        this.choosenPadInstance.pads[control].input(channel, control, value, status, group);
+    }
 };
-DDJ200.PadModeContainers.ModeSelector.prototype = new components.ComponentContainer();
 
 DDJ200.init = function() {
     this.decks = new components.ComponentContainer({
@@ -376,7 +372,7 @@ DDJ200.init = function() {
         },
         indicatorStyle: function() {
             // use left Deck as reference for selected padInstance
-            return DDJ200.decks.left.padUnit.choosenPadInstance().indicatorStyle;
+            return DDJ200.decks.left.padUnit.choosenPadInstance.indicatorStyle;
         },
         blinkConnection: undefined,
         indicatePadMode: function() {
