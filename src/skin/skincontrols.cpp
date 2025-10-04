@@ -43,6 +43,9 @@ SkinControls::SkinControls()
           m_showVinylControl(ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
                   true,
                   false),
+          m_hightlightInputAllow(ConfigKey(kSkinGroup, QStringLiteral("highlight_input_allow")),
+                  true,
+                  false),
           m_hightlightChannel1(ConfigKey(kSkinGroup, QStringLiteral("highlight_deck1")),
                   false,
                   false),
@@ -67,6 +70,7 @@ SkinControls::SkinControls()
     m_showSettings.setButtonMode(ControlPushButton::TOGGLE);
     m_showSpinnies.setButtonMode(ControlPushButton::TOGGLE);
     m_showVinylControl.setButtonMode(ControlPushButton::TOGGLE);
+    m_hightlightInputAllow.setButtonMode(ControlPushButton::TOGGLE);
     m_hightlightChannel1.setButtonMode(ControlPushButton::TOGGLE);
     m_hightlightChannel2.setButtonMode(ControlPushButton::TOGGLE);
     m_hightlightChannel3.setButtonMode(ControlPushButton::TOGGLE);

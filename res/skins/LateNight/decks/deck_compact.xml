@@ -10,7 +10,11 @@
         <SizePolicy>me,min</SizePolicy>
         <Connection>
           <ConfigKey>[Skin],highlight_deck<Variable name="ChanNum"/></ConfigKey>
-          <BindProperty>highlight</BindProperty>
+          <BindProperty>highlight_deck</BindProperty>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+          <BindProperty>highlight_input_allow</BindProperty>
         </Connection>
         <Children>
 
