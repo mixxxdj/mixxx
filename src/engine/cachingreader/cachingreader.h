@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QAtomicInt>
 #include <QHash>
 #include <QList>
@@ -137,6 +136,29 @@ class CachingReader : public QObject {
 
   private:
     const UserSettingsPointer m_pConfig;
+    struct RamPlayConfig {
+        bool enabled;
+        QString ramDiskPath;
+        int maxSizeMB;
+        bool decksEnabled;
+        bool samplersEnabled;
+        bool previewEnabled;
+        bool initialized;
+
+        RamPlayConfig()
+                : enabled(true),
+                  maxSizeMB(512),
+                  decksEnabled(true),
+                  samplersEnabled(true),
+                  previewEnabled(false),
+                  initialized(false) {
+        }
+    };
+
+    static RamPlayConfig s_ramPlayConfig;
+    static QMutex s_configMutex;
+    void initializeRamPlayConfig(UserSettingsPointer pConfig);
+    void createRamPlayConfigVars(UserSettingsPointer pConfig);
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
