@@ -254,6 +254,7 @@ void WWidgetGroup::setHighlightInputAllow(int highlight_input_allow) {
     style()->polish(this);
     update();
     emit highlightInputAllowChanged(m_highlight_input_allow);
+    event(new QEvent(QEvent::StyleChange));
 }
 void WWidgetGroup::setHighlightDeck(int highlight_deck) {
     if (m_highlight_deck == highlight_deck) {
@@ -263,4 +264,5 @@ void WWidgetGroup::setHighlightDeck(int highlight_deck) {
     style()->polish(this);
     update();
     emit highlightDeckChanged(m_highlight_deck);
+    event(new QEvent(QEvent::StyleChange));
 }
