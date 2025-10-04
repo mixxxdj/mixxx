@@ -24,6 +24,54 @@ Description:
         <Layout>vertical</Layout>
         <Size>240f,1me</Size>
         <Children>
+          <!-- Horizontal / Original Layout -->
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- translucent cover when Library is maximized -->
+              <Template src="skins:LateNight/helpers/skin_settings_cover.xml">
+                <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skins:LateNight/helpers/skin_settings_labelbutton_2state.xml">
+                    <SetVariable name="Text">Horizontal Layout</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_horizontal_layout</SetVariable>
+                    <SetVariable name="TooltipId">toggle_horizontal_layout</SetVariable>
+                    <SetVariable name="Width">190me</SetVariable>
+                  </Template>
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,f</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <!-- translucent cover when Horizontal layout is not active -->
+                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Skin],show_horizontal_layout</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="Text">Library left</SetVariable>
+                            <SetVariable name="Setting">[Skin],horizontal_layout_library_left</SetVariable>
+                            <SetVariable name="TooltipId">toggle_horizontal_layout_library_left</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- Horizontal / Original Layout -->
 
           <!-- Decks -->
           <WidgetGroup>
@@ -49,17 +97,21 @@ Description:
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="Width">25f</SetVariable>
               </Template>
-              <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
+              <WidgetGroup>
+                <Size>0me,0f</Size>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
 
-<!-- Deck size selector -->
+          <!-- Deck size selector -->
           <WidgetGroup>
             <ObjectName>DeckSizeSettings</ObjectName>
             <Size>225me,20f</Size>
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+              <WidgetGroup>
+                <Size>5f,0min</Size>
+              </WidgetGroup>
 
               <Label>
                 <ObjectName>SkinSettingsText</ObjectName>
@@ -108,7 +160,9 @@ Description:
                     </State>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
@@ -138,17 +192,22 @@ Description:
                         <SetVariable name="Size">mini</SetVariable>
                         <SetVariable name="Width">40f</SetVariable>
                       </Template>
-                      <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                      <WidgetGroup>
+                        <Size>0me,0min</Size>
+                      </WidgetGroup>
                     </Children>
-                  </WidgetGroup><!-- DeckSizeToggles -->
+                  </WidgetGroup>
+                  <!-- DeckSizeToggles -->
                 </Children>
-              </WidgetGroup><!-- Deck size toggles + stacked show_mixer hint/toggle -->
+              </WidgetGroup>
+              <!-- Deck size toggles + stacked show_mixer hint/toggle -->
             </Children>
-          </WidgetGroup><!-- DeckSizeSettings -->
-<!-- Deck size selectors -->
+          </WidgetGroup>
+          <!-- DeckSizeSettings -->
+          <!-- Deck size selectors -->
 
 
-<!-- Deck Options FULL / Compact / mini -->
+          <!-- Deck Options FULL / Compact / mini -->
           <WidgetGroup>
             <SizePolicy>me,f</SizePolicy>
             <!-- Horizontal layout to reduce graphic glitches in the sections below
@@ -157,10 +216,10 @@ Description:
             <Children>
               <WidgetStack currentpage="[Skin],show_maximized_library">
                 <Children>
-              <!-- regular library -->
+                  <!-- regular library -->
                   <WidgetStack currentpage="[Skin],show_mixer" persist="true" on_hide_select="0">
                     <Children>
-                  <!-- no mixer -->
+                      <!-- no mixer -->
                       <WidgetStack currentpage="[LateNight],deck_size_without_mixer" persist="true">
                         <Layout>horizontal</Layout>
                         <Children>
@@ -187,7 +246,7 @@ Description:
                           </WidgetGroup>
                         </Children>
                       </WidgetStack>
-                  <!-- mixer shown = full deck -->
+                      <!-- mixer shown = full deck -->
                       <WidgetGroup trigger="[Skin],show_mixer" on_hide_select="0">
                         <Layout>horizontal</Layout>
                         <Children>
@@ -196,7 +255,7 @@ Description:
                       </WidgetGroup>
                     </Children>
                   </WidgetStack>
-              <!-- maximized library -->
+                  <!-- maximized library -->
                   <WidgetGroup trigger="[Skin],show_maximized_library" on_hide_select="0">
                     <Layout>stacked</Layout>
                     <Children>
@@ -211,11 +270,9 @@ Description:
               </WidgetStack>
             </Children>
           </WidgetGroup>
-<!-- Deck Options FULL / Compact / mini -->
+          <!-- Deck Options FULL / Compact / mini -->
 
-
-
-<!-- Other skin options -->
+          <!-- Other skin options -->
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
             <Size>1min,12f</Size>
@@ -269,7 +326,8 @@ Description:
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- Waveforms -->
+          </WidgetGroup>
+          <!-- Waveforms -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
@@ -323,7 +381,8 @@ Description:
                             <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
                           </Template>
 
-                          <WidgetGroup><!-- EQ Kill -->
+                          <WidgetGroup>
+                            <!-- EQ Kill -->
                             <ObjectName>SkinSettingsSubMenu</ObjectName>
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
@@ -337,7 +396,8 @@ Description:
                                 <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
                               </Template>
                             </Children>
-                          </WidgetGroup><!-- /EQ Kill -->
+                          </WidgetGroup>
+                          <!-- /EQ Kill -->
 
                           <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Crossfader</SetVariable>
@@ -351,7 +411,8 @@ Description:
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /Mixer -->
+          </WidgetGroup>
+          <!-- /Mixer -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
@@ -409,7 +470,9 @@ Description:
                                 <SetVariable name="IsEqual">1</SetVariable>
                                 <SetVariable name="Width">25f</SetVariable>
                               </Template>
-                              <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
+                              <WidgetGroup>
+                                <Size>0me,0f</Size>
+                              </WidgetGroup>
                             </Children>
                           </WidgetGroup>
                         </Children>
@@ -437,7 +500,8 @@ Description:
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /Effects -->
+          </WidgetGroup>
+          <!-- /Effects -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
@@ -453,6 +517,7 @@ Description:
             <ObjectName>SkinSettingsSeparator</ObjectName>
             <Size>1min,12f</Size>
           </WidgetGroup>
+
 
           <!-- Library -->
           <Label>
@@ -480,15 +545,21 @@ Description:
                 <SetVariable name="Text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>
               </Template>
-
             </Children>
-          </WidgetGroup><!-- /Library -->
-
+          </WidgetGroup>
+          <!-- /Library -->
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,12f</Size>
+          </WidgetGroup>
           <!-- push the settings up, required with Qt6 -->
-          <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
+          <WidgetGroup>
+            <Size>0me,0me</Size>
+          </WidgetGroup>
 
         </Children>
-      </WidgetGroup><!-- /SkinSettings -->
+      </WidgetGroup>
+      <!-- /SkinSettings -->
     </Children>
     <Connection>
       <ConfigKey>[Skin],show_settings</ConfigKey>

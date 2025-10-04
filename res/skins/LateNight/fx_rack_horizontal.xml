@@ -6,34 +6,6 @@
 <!--
 Eve: All singletons are defined in the regular fx_rack.xml so they don't get inserted more than once
 -->
-  <!-- Let's create Singletons for widgets we use multiple times
-      at different places in each effect unit:
-      * Meta knob
-      * Effect selector
-      * Effect toggle
-      * Fx unit label
-      * expand/collapse button
-      -->
-  <!-- <Template src="skins:LateNight/fx/singletons.xml">
-    <SetVariable name="FxUnit">1</SetVariable>
-    <SetVariable name="ArcColorSuper"><Variable name="ArcColorFx12Quick"/></SetVariable>
-    <SetVariable name="KnobColor"><Variable name="KnobColorFx12"/></SetVariable>
-  </Template>
-  <Template src="skins:LateNight/fx/singletons.xml">
-    <SetVariable name="FxUnit">2</SetVariable>
-    <SetVariable name="ArcColorSuper"><Variable name="ArcColorFx12Quick"/></SetVariable>
-    <SetVariable name="KnobColor"><Variable name="KnobColorFx12"/></SetVariable>
-  </Template>
-  <Template src="skins:LateNight/fx/singletons.xml">
-    <SetVariable name="FxUnit">3</SetVariable>
-    <SetVariable name="ArcColorSuper"><Variable name="ArcColorFx34"/></SetVariable>
-    <SetVariable name="KnobColor"><Variable name="KnobColorFx34"/></SetVariable>
-  </Template>
-  <Template src="skins:LateNight/fx/singletons.xml">
-    <SetVariable name="FxUnit">4</SetVariable>
-    <SetVariable name="ArcColorSuper"><Variable name="ArcColorFx34"/></SetVariable>
-    <SetVariable name="KnobColor"><Variable name="KnobColorFx34"/></SetVariable>
-  </Template> -->
 
   <WidgetGroup>
     <ObjectName>AlignTop</ObjectName>

@@ -1,17 +1,19 @@
+<!-- Comment to get commit & CI-->
 <Template>
   <WidgetGroup>
     <ObjectName>ToolBar</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>e,min</SizePolicy>
     <Children>
-
+      <!--The library is always big in Horizontal layout, so the toggle is removed-->
+      <!--and the control/button is linked to the horizontal/vertical button-->
       <Template src="skins:LateNight/controls/button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
         <SetVariable name="Size">80f,20f</SetVariable>
         <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
         <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
-        <SetVariable name="ConfigKey">[Skin],show_4KDual_layout</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],show_horizontal_layout</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -19,8 +21,6 @@
         <Size>12f,9min</Size>
       </WidgetGroup>
 
-      <!--The library is always big in 4KDual layout, so the toggle is removed-->
-      <!--and the control/button is linked to the 4KDual button-->
       <Template src="skins:LateNight/controls/button_2state.xml">
         <SetVariable name="TooltipId">show_waveforms</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -76,12 +76,12 @@
       </Template>
 
       <Template src="skins:LateNight/controls/button_2state_persist.xml">
-        <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+        <SetVariable name="TooltipId">toggle_horizontal_layout</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-        <SetVariable name="Size">52f,20f</SetVariable>
-        <SetVariable name="state_0_text">4K</SetVariable>
-        <SetVariable name="state_1_text">4K</SetVariable>
-        <SetVariable name="ConfigKey">[Skin],show_4KDual_layout</SetVariable>
+        <SetVariable name="Size">71f,20f</SetVariable>
+        <SetVariable name="state_0_text">HORIZONTAL</SetVariable>
+        <SetVariable name="state_1_text">HORIZONTAL</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],show_horizontal_layout</SetVariable>
       </Template>
 
       <!-- ADJUSTED SPACER TO COMPENSATE FOR ADDED BUTTON -->

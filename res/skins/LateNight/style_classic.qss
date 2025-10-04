@@ -72,8 +72,8 @@ WLibrary,
 #PreviewDeck,
 #LibExpandBox,
 #LibrarySplitter::handle,
-#4KDualScreenSplitter::handle,
-#4KDualScreenSplitter_Swapped::handle,
+#HorizontalScreenSplitter::handle,
+#HorizontalScreenSplitter_Swapped::handle,
 #SearchLineBox {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
