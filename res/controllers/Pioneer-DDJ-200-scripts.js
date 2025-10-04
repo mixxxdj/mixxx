@@ -56,174 +56,169 @@ components.Component.prototype.shiftOffset = 1;
 components.Component.prototype.shiftChannel = true;
 components.Component.prototype.sendShifted = true;
 
-DDJ200.PadMode = function(options) {
-    components.ComponentContainer.call(this, options);
-
-    this.constructPads = constructPad => {
+DDJ200.PadMode = class extends components.ComponentContainer {
+    constructor(options) {
+        super(options);
+        // this is a workaround for components, forEachComponent only iterates
+        // over ownProperties, so these have to constructed by the constructor here
+        // instead of being merged by the ComponentContainer constructor
+        this.pads = Array(8).fill(undefined);
+    }
+    constructPads(constructPad) {
         this.pads = this.pads.map((_, padIndex) => constructPad(padIndex));
-    };
-    // this is a workaround for components, forEachComponent only iterates
-    // over ownProperties, so these have to constructed by the constructor here
-    // instead of being merged by the ComponentContainer constructor
-    this.pads = Array(8).fill(undefined);
+    }
 };
-DDJ200.PadMode.prototype = new components.ComponentContainer();
 
-DDJ200.PadModeContainers = {};
+DDJ200.PadModeContainers = {
+    Hotcue: class extends DDJ200.PadMode {
+        constructor(deckOffset) {
+            super();
 
-DDJ200.PadModeContainers.Hotcue = function(deckOffset) {
-    DDJ200.PadMode.call(this);
-
-    this.constructPads(i =>
-        new components.HotcueButton({
-            midi: [0x97 + deckOffset, i],
-            number: i + 1,
-        })
-    );
-};
-DDJ200.PadModeContainers.Hotcue.prototype = new DDJ200.PadMode({
-    indicatorStyle: 0,
-});
-
-DDJ200.PadModeContainers.Loop = function(deckOffset) {
-    DDJ200.PadMode.call(this);
-
-    const theContainer = this;
-    this.currentBaseLoopSize = parseInt(engine.getSetting("defaultLoopRootSize"));
-
-    this.constructPads(i =>
-        new components.Component({
-            midi: [0x97 + deckOffset, i],
-            unshift: function() {
-                this.inKey = "beatloop_activate";
-            },
-            shift: function() {
-                this.inKey = "beatlooproll_activate";
-            },
-            on: 0x7F,
-            off: 0x00,
-            loopSize: Math.pow(2, theContainer.currentBaseLoopSize + i),
-            input: function(_channel, _control, value, _status, _mode) {
-                if (value) {
-                    const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                    const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
-                    engine.setValue(this.group, "beatloop_size", this.loopSize);
-                    if (matchingLoopSize || !loopEnabled) {
-                        engine.setValue(this.group, this.inKey, true);
-                    };
-                };
-            },
-            outKey: null, // hack to get Component constructor to call connect()
-            connect: function() {
-                this.connections[0] = engine.makeConnection(this.group, "beatloop_size", this.output.bind(this));
-                this.connections[1] = engine.makeConnection(this.group, "loop_enabled", this.output.bind(this));
-            },
-            outValueScale: function(value) {
-                if (value) {
-                    const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                    const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
-                    return (matchingLoopSize && loopEnabled) ? this.on : this.off;
-                }
-                return this.off;
-            },
-        })
-    );
-};
-DDJ200.PadModeContainers.Loop.prototype = new DDJ200.PadMode({
-    indicatorStyle: 1,
-});
-
-DDJ200.PadModeContainers.Effect = function(deckOffset, group) {
-    DDJ200.PadMode.call(this);
-
-    this.constructPads(i => {
-        if (i < 4) {
-            return new components.SamplerButton({
+            super.constructPads(i => new components.HotcueButton({
                 midi: [0x97 + deckOffset, i],
-                number: deckOffset * 2 + i + 1,
-            });
-        } else if (i < 7) {
-            return new components.Button({
+                number: i + 1,
+            })
+            );
+
+            this.indicatorStyle = 0;
+        }
+    },
+    Loop: class extends DDJ200.PadMode {
+        constructor(deckOffset) {
+            super();
+
+            const theContainer = this;
+            this.currentBaseLoopSize = parseInt(engine.getSetting("defaultLoopRootSize"));
+
+            super.constructPads(i => new components.Component({
                 midi: [0x97 + deckOffset, i],
-                group: `[EffectRack1_EffectUnit${ script.deckFromGroup(group) }_Effect${ i - 3 }]`,
-                inKey: "enabled",
-                outKey: "loaded",
-                type: components.Button.prototype.types.toggle,
                 unshift: function() {
-                    if (this.connections) {
-                        this.disconnect();
-                        this.group = this.group.replace("EffectUnit3", "EffectUnit1").replace("EffectUnit4", "EffectUnit2");
-                        this.connect();
-                        this.trigger();
-                    }
+                    this.inKey = "beatloop_activate";
                 },
                 shift: function() {
-                    this.disconnect();
-                    this.group = this.group.replace("EffectUnit1", "EffectUnit3").replace("EffectUnit2", "EffectUnit4");
-                    this.connect();
-                    this.trigger();
+                    this.inKey = "beatlooproll_activate";
                 },
-            });
-        } else {
-            return new components.Button({
-                midi: [0x97 + deckOffset, i],
-                indicateButtonPress: function(value) {
-                    this.output(value, null, null);
-                },
-                inSetValue: function(value) {
+                on: 0x7F,
+                off: 0x00,
+                loopSize: Math.pow(2, theContainer.currentBaseLoopSize + i),
+                input: function(_channel, _control, value, _status, _mode) {
                     if (value) {
-                        bpm.tapButton(script.deckFromGroup(this.group));
+                        const loopEnabled = engine.getValue(this.group, "loop_enabled");
+                        const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
+                        engine.setValue(this.group, "beatloop_size", this.loopSize);
+                        if (matchingLoopSize || !loopEnabled) {
+                            engine.setValue(this.group, this.inKey, true);
+                        };
                     };
-                    this.indicateButtonPress(value);
                 },
+                outKey: null, // hack to get Component constructor to call connect()
+                connect: function() {
+                    this.connections[0] = engine.makeConnection(this.group, "beatloop_size", this.output.bind(this));
+                    this.connections[1] = engine.makeConnection(this.group, "loop_enabled", this.output.bind(this));
+                },
+                outValueScale: function(value) {
+                    if (value) {
+                        const loopEnabled = engine.getValue(this.group, "loop_enabled");
+                        const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
+                        return (matchingLoopSize && loopEnabled) ? this.on : this.off;
+                    }
+                    return this.off;
+                },
+            })
+            );
+            this.indicatorStyle = 1;
+        }
+    },
+    Effect: class extends DDJ200.PadMode {
+        constructor(deckOffset, group) {
+            super();
+
+            super.constructPads(i => {
+                if (i < 4) {
+                    return new components.SamplerButton({
+                        midi: [0x97 + deckOffset, i],
+                        number: deckOffset * 2 + i + 1,
+                    });
+                } else if (i < 7) {
+                    return new components.Button({
+                        midi: [0x97 + deckOffset, i],
+                        group: `[EffectRack1_EffectUnit${script.deckFromGroup(group)}_Effect${i - 3}]`,
+                        inKey: "enabled",
+                        outKey: "loaded",
+                        type: components.Button.prototype.types.toggle,
+                        unshift: function() {
+                            if (this.connections) {
+                                this.disconnect();
+                                this.group = this.group.replace("EffectUnit3", "EffectUnit1").replace("EffectUnit4", "EffectUnit2");
+                                this.connect();
+                                this.trigger();
+                            }
+                        },
+                        shift: function() {
+                            this.disconnect();
+                            this.group = this.group.replace("EffectUnit1", "EffectUnit3").replace("EffectUnit2", "EffectUnit4");
+                            this.connect();
+                            this.trigger();
+                        },
+                    });
+                } else {
+                    return new components.Button({
+                        midi: [0x97 + deckOffset, i],
+                        indicateButtonPress: function(value) {
+                            this.output(value, null, null);
+                        },
+                        inSetValue: function(value) {
+                            if (value) {
+                                bpm.tapButton(script.deckFromGroup(this.group));
+                            };
+                            this.indicateButtonPress(value);
+                        },
+                    });
+                };
             });
-        };
-    });
+            this.indicatorStyle = "indicator_500ms";
+        }
+    },
+    Jump: class extends DDJ200.PadMode {
+        constructor(deckOffset) {
+            super();
+
+            const theContainer = this;
+            this.currentBaseBeatJumpSize = parseInt(engine.getSetting("defaultBeatJumpRootSize"));
+
+            super.constructPads(i => new components.Component({
+                midi: [0x97 + deckOffset, i],
+                unshift: function() {
+                    this.inKey = "beatjump_forward";
+                },
+                shift: function() {
+                    this.inKey = "beatjump_backward";
+                },
+                on: 0x7F,
+                off: 0x00,
+                beatJumpSize: Math.pow(2, theContainer.currentBaseBeatJumpSize + i),
+                input: function(_channel, _control, value, _status, _mode) {
+                    engine.setValue(this.group, "beatjump_size", this.beatJumpSize);
+                    engine.setValue(this.group, this.inKey, value);
+                },
+                outKey: null, // hack to get Component constructor to call connect()
+                connect: function() {
+                    this.connections[0] = engine.makeConnection(this.group, "beatjump_forward", this.output.bind(this));
+                    this.connections[1] = engine.makeConnection(this.group, "beatjump_backward", this.output.bind(this));
+                },
+                outValueScale: function(value) {
+                    if (value) {
+                        const matchingJumpSize = (engine.getValue(this.group, "beatjump_size") === this.beatJumpSize);
+                        return (matchingJumpSize) ? this.on : this.off;
+                    }
+                    return this.off;
+                },
+            })
+            );
+            this.indicatorStyle = "indicator_250ms";
+        }
+    },
 };
-DDJ200.PadModeContainers.Effect.prototype = new DDJ200.PadMode({
-    indicatorStyle: "indicator_500ms",
-});
-
-DDJ200.PadModeContainers.Jump = function(deckOffset) {
-    DDJ200.PadMode.call(this);
-
-    const theContainer = this;
-    this.currentBaseBeatJumpSize = parseInt(engine.getSetting("defaultBeatJumpRootSize"));
-
-    this.constructPads(i =>
-        new components.Component({
-            midi: [0x97 + deckOffset, i],
-            unshift: function() {
-                this.inKey = "beatjump_forward";
-            },
-            shift: function() {
-                this.inKey = "beatjump_backward";
-            },
-            on: 0x7F,
-            off: 0x00,
-            beatJumpSize: Math.pow(2, theContainer.currentBaseBeatJumpSize + i),
-            input: function(_channel, _control, value, _status, _mode) {
-                engine.setValue(this.group, "beatjump_size", this.beatJumpSize);
-                engine.setValue(this.group, this.inKey, value);
-            },
-            outKey: null, // hack to get Component constructor to call connect()
-            connect: function() {
-                this.connections[0] = engine.makeConnection(this.group, "beatjump_forward", this.output.bind(this));
-                this.connections[1] = engine.makeConnection(this.group, "beatjump_backward", this.output.bind(this));
-            },
-            outValueScale: function(value) {
-                if (value) {
-                    const matchingJumpSize = (engine.getValue(this.group, "beatjump_size") === this.beatJumpSize);
-                    return (matchingJumpSize) ? this.on : this.off;
-                }
-                return this.off;
-            },
-        })
-    );
-};
-DDJ200.PadModeContainers.Jump.prototype = new DDJ200.PadMode({
-    indicatorStyle: "indicator_250ms",
-});
 
 DDJ200.DoubleRingBuffer = class {
     constructor(indexableUnshifted, indexableShifted) {
@@ -416,176 +411,179 @@ DDJ200.init = function() {
     }, true);
 };
 
-DDJ200.Deck = function(deckNumbers, midiChannel) {
-    components.Deck.call(this, deckNumbers);
-    const theDeck = this;
-    this.padUnit = new DDJ200.PadModeContainers.ModeSelector(this.currentDeck);
+DDJ200.Deck = class extends components.Deck {
+    constructor(deckNumbers, midiChannel) {
+        super(deckNumbers);
 
-    this.jogWheel = new components.JogWheelBasic({
-        wheelResolution: 128,   // how many ticks per revolution the jogwheel has
-        alpha: 1/8,             // alpha-filter
-        beta: 1/8/32,
-        rpm: 33 + 1/3,
-        inValueScale: function(value) {
-            return value - 64;
-        },
-        inKey: "jog",
-        jogCounter: 0,
-        deck: deckNumbers[0],
-        inputSeek: function(_channel, _control, value, _status, _group) {
-            if (DDJ200.decks.left.shiftButton.pressed) {
-                this.jogCounter += this.inValueScale(value);
-                if (this.jogCounter > 9) {
-                    engine.setValue("[Library]", "MoveDown", true);
-                    this.jogCounter = 0;
-                } else if (this.jogCounter < -9) {
-                    engine.setValue("[Library]", "MoveUp", true);
-                    this.jogCounter = 0;
-                };
-            } else {
-                const group = `[Channel${  this.deck  }]`; // fix for wrong group
-                const oldPos = engine.getValue(group, "playposition");
-                // Since ‘playposition’ is normalized to unity, we need to scale by
-                // song duration in order for the jog wheel to cover the same amount
-                // of time given a constant turning angle.
-                const duration = engine.getValue(group, "duration");
-                const newPos = Math.max(0, oldPos + (this.inValueScale(value) * 0.2 / duration));
+        const theDeck = this;
+        this.padUnit = new DDJ200.PadModeContainers.ModeSelector(this.currentDeck);
 
-                engine.setValue(group, "playposition", newPos); // Strip search
-            };
-        },
-    });
-
-    this.shiftButton = new components.Button({
-        pressed: 0,
-        input: function(_channel, _control, value, _status, _g) {
-            this.pressed = value;
-            if (value) {
-                DDJ200.decks.shift();
-            } else {
-                DDJ200.decks.unshift();
-            }
-        },
-    });
-
-    this.syncButton = new components.Button({
-        midi: [0x8F + midiChannel, 0x58],
-        key: "sync_enabled",
-        shiftChannel: false,
-        shiftControl: true,
-        shiftOffset: 8,
-        input: function(_channel, _control, value, _status, _g) {
-            if (value) {
-                if (this.inGetValue() === 0) {
-                    engine.setValue(this.group, "beatsync", 1);
-                } else {
-                    this.inSetValue(0);
-                };
-            };
-        },
-        inputLongPress: function(_channel, _control, value, _status, _g) {
-            if (value) {
-                this.inSetValue(1);
-            };
-        },
-        shiftedInput: function(_channel, _control, value, _status, _g) {
-            if (value) {
-                if (engine.getValue("[Skin]", "show_4decks")) {
-                    theDeck.toggle();
-                    theDeck.padUnit.updateDeck(theDeck.currentDeck);
-                    if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
-                        this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
-                            theDeck.syncButton.send(theDeck.syncButton.on * value);
-                        });
-                    } else if (this.blinkConnection) {
-                        this.blinkConnection.disconnect();
+        this.jogWheel = new components.JogWheelBasic({
+            wheelResolution: 128, // how many ticks per revolution the jogwheel has
+            alpha: 1 / 8, // alpha-filter
+            beta: 1 / 8 / 32,
+            rpm: 33 + 1 / 3,
+            inValueScale: function(value) {
+                return value - 64;
+            },
+            inKey: "jog",
+            jogCounter: 0,
+            deck: deckNumbers[0],
+            inputSeek: function(_channel, _control, value, _status, _group) {
+                if (DDJ200.decks.left.shiftButton.pressed) {
+                    this.jogCounter += this.inValueScale(value);
+                    if (this.jogCounter > 9) {
+                        engine.setValue("[Library]", "MoveDown", true);
+                        this.jogCounter = 0;
+                    } else if (this.jogCounter < -9) {
+                        engine.setValue("[Library]", "MoveUp", true);
+                        this.jogCounter = 0;
                     };
                 } else {
-                    const currentRange = engine.getValue(this.group, "rateRange");
-                    engine.setValue(this.group, "rateRange", (currentRange>0.9)?0.1:currentRange+0.1);
+                    const group = `[Channel${this.deck}]`; // fix for wrong group
+                    const oldPos = engine.getValue(group, "playposition");
+                    // Since ‘playposition’ is normalized to unity, we need to scale by
+                    // song duration in order for the jog wheel to cover the same amount
+                    // of time given a constant turning angle.
+                    const duration = engine.getValue(group, "duration");
+                    const newPos = Math.max(0, oldPos + (this.inValueScale(value) * 0.2 / duration));
+
+                    engine.setValue(group, "playposition", newPos); // Strip search
                 };
-            };
-        },
-    });
+            },
+        });
 
-    this.playButton = new components.PlayButton({
-        midi: [0x8F + midiChannel, 0x0B],
-        shiftChannel: false,
-        shiftControl: true,
-        shiftOffset: 0x3C,
-    });
+        this.shiftButton = new components.Button({
+            pressed: 0,
+            input: function(_channel, _control, value, _status, _g) {
+                this.pressed = value;
+                if (value) {
+                    DDJ200.decks.shift();
+                } else {
+                    DDJ200.decks.unshift();
+                }
+            },
+        });
 
-    this.cueButton = new components.CueButton({
-        midi: [0x8F + midiChannel, 0x0C],
-        shiftChannel: false,
-        shiftControl: true,
-        shiftOffset: 0x3C,
-    });
+        this.syncButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x58],
+            key: "sync_enabled",
+            shiftChannel: false,
+            shiftControl: true,
+            shiftOffset: 8,
+            input: function(_channel, _control, value, _status, _g) {
+                if (value) {
+                    if (this.inGetValue() === 0) {
+                        engine.setValue(this.group, "beatsync", 1);
+                    } else {
+                        this.inSetValue(0);
+                    };
+                };
+            },
+            inputLongPress: function(_channel, _control, value, _status, _g) {
+                if (value) {
+                    this.inSetValue(1);
+                };
+            },
+            shiftedInput: function(_channel, _control, value, _status, _g) {
+                if (value) {
+                    midi.sendShortMsg(0x9F, (script.deckFromGroup(theDeck.currentDeck) - 1) % 2, 0x7F);
 
-    this.faderStartButton = new components.Button({
-        midi: [0x8F + midiChannel, 0x66],
-        key: "cue_gotoandplay",
-        // type: components.Button.prototype.types.toggle,
-        input: function(channel, control, value, status, _g) {
-            console.warn("faderStart");
+                    if (engine.getValue("[Skin]", "show_4decks")) {
+                        theDeck.toggle();
+                        theDeck.padUnit.updateDeck(theDeck.currentDeck);
+                        if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
+                            this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
+                                theDeck.syncButton.send(theDeck.syncButton.on * value);
+                            });
+                        } else if (this.blinkConnection) {
+                            this.blinkConnection.disconnect();
+                        };
+                    } else {
+                        const currentRange = engine.getValue(this.group, "rateRange");
+                        engine.setValue(this.group, "rateRange", (currentRange > 0.9) ? 0.1 : currentRange + 0.1);
+                    };
+                };
+            },
+        });
+
+        this.playButton = new components.PlayButton({
+            midi: [0x8F + midiChannel, 0x0B],
+            shiftChannel: false,
+            shiftControl: true,
+            shiftOffset: 0x3C,
+        });
+
+        this.cueButton = new components.CueButton({
+            midi: [0x8F + midiChannel, 0x0C],
+            shiftChannel: false,
+            shiftControl: true,
+            shiftOffset: 0x3C,
+        });
+
+        this.faderStartButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x66],
+            key: "cue_gotoandplay",
+            input: function(channel, control, value, status, _g) {
+                console.warn("faderStart");
+                // according the manual:
+                // Playback starts from the cue point
+                // When no cue point is set, playback starts from the beginning of the track.
+                components.Button.prototype.input.call(this, channel, control, value, status, _g);
+            },
+        });
+
+        this.faderStopButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x52],
             // according the manual:
-            // Playback starts from the cue point
-            // When no cue point is set, playback starts from the beginning of the track.
-            components.Button.prototype.input.call(this, channel, control, value, status, _g);
-        },
-    });
-
-    this.faderStopButton = new components.Button({
-        midi: [0x8F + midiChannel, 0x52],
-        // according the manual:
-        // the track instantly jumps back to the cue point and playback pauses
-        key: "cue_gotoandstop",
-    });
-
-    this.pflButton = new components.Button({
-        midi: [0x8F + midiChannel, 0x54],
-        key: "pfl",
-        type: components.Button.prototype.types.toggle,
-    });
-
-    this.loadTrack = new components.Button({
-        midi: [0x8F + midiChannel, 0x68],
-        inKey: "LoadSelectedTrack",
-    });
-
-    this.volume = new components.Pot({
-        inKey: "volume",
-    });
-
-    this.rate = new components.Pot({
-        inKey: "rate",
-        invert: 1,
-    });
-
-    this.eqKnob = [];
-    for (let i = 0; i < 3; i++) {
-        this.eqKnob[i] = new components.Pot({
-            group: `[EqualizerRack1_${this.currentDeck}_Effect1]`,
-            inKey: `parameter${i+1}`,
+            // the track instantly jumps back to the cue point and playback pauses
+            key: "cue_gotoandstop",
         });
-    };
 
-    if (engine.getSetting("useSuperAsGain")) {
-        this.super1 = new components.Pot({
-            group: theDeck.currentDeck,
-            inKey: "pregain",
+        this.pflButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x54],
+            key: "pfl",
+            type: components.Button.prototype.types.toggle,
         });
-    } else {
-        this.super1 = new components.Pot({
-            group: `[QuickEffectRack1_${this.currentDeck}]`,
-            inKey: "super1",
+
+        this.loadTrack = new components.Button({
+            midi: [0x8F + midiChannel, 0x68],
+            inKey: "LoadSelectedTrack",
+        });
+
+        this.volume = new components.Pot({
+            inKey: "volume",
+        });
+
+        this.rate = new components.Pot({
+            inKey: "rate",
+            invert: 1,
+        });
+
+        this.eqKnob = [];
+        for (let i = 0; i < 3; i++) {
+            this.eqKnob[i] = new components.Pot({
+                group: `[EqualizerRack1_${this.currentDeck}_Effect1]`,
+                inKey: `parameter${i + 1}`,
+            });
+        };
+
+        if (engine.getSetting("useSuperAsGain")) {
+            this.super1 = new components.Pot({
+                group: theDeck.currentDeck,
+                inKey: "pregain",
+            });
+        } else {
+            this.super1 = new components.Pot({
+                group: `[QuickEffectRack1_${this.currentDeck}]`,
+                inKey: "super1",
+            });
+        }
+
+        this.reconnectComponents(function(c) {
+            if (c.group === undefined) {
+                c.group = this.currentDeck;
+            };
         });
     }
-
-    this.reconnectComponents(function(c) {
-        if (c.group === undefined) {
-            c.group = this.currentDeck;
-        };
-    });
 };
-DDJ200.Deck.prototype = new components.Deck(2);
