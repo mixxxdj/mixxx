@@ -1,0 +1,85 @@
+<Template>
+  <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
+
+
+
+<!--
+Eve: All singletons are defined in the regular fx_rack.xml so they don't get inserted more than once
+-->
+  <!-- Create Singletons for samplers 1-4 because they're needed when
+    showing 4 or 8 samplers... -->
+  <!--Template src="skins:LateNight/samplers/singletons.xml"/-->
+  <!-- ...the create a singleton for samplers_8decks.xml because it's used
+    when showing 8 or 16 samplers. -->
+  <!-- <SingletonDefinition>
+    <ObjectName>Samplers_1-8</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/samplers/samplers_8decks.xml">
+        <SetVariable name="Count">1-8</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Samplers_9-16</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/samplers/samplers_row.xml">
+        <SetVariable name="Count">9-16</SetVariable>
+        <SetVariable name="Sampler1">9</SetVariable>
+        <SetVariable name="Sampler2">10</SetVariable>
+        <SetVariable name="Sampler3">11</SetVariable>
+        <SetVariable name="Sampler4">12</SetVariable>
+        <SetVariable name="Sampler5">13</SetVariable>
+        <SetVariable name="Sampler6">14</SetVariable>
+        <SetVariable name="Sampler7">15</SetVariable>
+        <SetVariable name="Sampler8">16</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition> -->
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[LateNight],sampler_rows" persist="true">
+        <Children>
+
+          <!--4 Samplers -->
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skins:LateNight/samplers/samplers_4decks_4KDual.xml">
+            <SetVariable name="Count">1-4</SetVariable>
+          </Template>
+
+          <!--8 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer trigger="[LateNight],show_8samplers">
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <!--16 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_16samplers" on_hide_select="1">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+              <SingletonContainer>
+                <ObjectName>Samplers_9-16</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
