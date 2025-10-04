@@ -483,8 +483,6 @@ DDJ200.Deck = class extends components.Deck {
             },
             shiftedInput: function(_channel, _control, value, _status, _g) {
                 if (value) {
-                    midi.sendShortMsg(0x9F, (script.deckFromGroup(theDeck.currentDeck) - 1) % 2, 0x7F);
-
                     if (engine.getValue("[Skin]", "show_4decks")) {
                         theDeck.toggle();
                         theDeck.padUnit.updateDeck(theDeck.currentDeck);
