@@ -11,6 +11,7 @@ class QAction;
 class QCheckBox;
 class QContextMenuEvent;
 class QWidget;
+class WTrackTableViewHeader;
 
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU
@@ -19,7 +20,7 @@ public:
     HeaderViewState() {}
 
     // Populate the object based on the provided live view.
-    explicit HeaderViewState(const QHeaderView& headers);
+    explicit HeaderViewState(const WTrackTableViewHeader& headers);
 
     // Populate from an existing protobuf, mostly for testing.
     explicit HeaderViewState(const mixxx::library::HeaderViewState& pb)
@@ -32,7 +33,7 @@ public:
     QString saveState() const;
     // Apply the state to the provided view.  The data in the object may be
     // changed if the header format has changed.
-    void restoreState(QHeaderView* pHeaders);
+    void restoreState(WTrackTableViewHeader* pHeaders);
 
     // returns false if no headers are listed to be shown.
     bool healthy() const {
@@ -66,6 +67,8 @@ class WTrackTableViewHeader : public QHeaderView {
     // Returns false if the header state is not stored in the database (on first time usage)
     bool hasPersistedHeaderState();
 
+    int getWidthOfHiddenColumn(int column) const;
+
     // Sets the font and ensures the height is adjusted immediately.
     // From other units this has to be called via WTrackTableViewHeader, not horizontalHeader()
     // because it does not (and can not) override QWidget::setFont()
@@ -95,4 +98,5 @@ class WTrackTableViewHeader : public QHeaderView {
     QMap<int, QCheckBox*> m_columnCheckBoxes;
 
     int m_preferredHeight;
+    QMap<int, int> m_hiddenColumnSizes;
 };
