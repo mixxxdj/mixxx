@@ -91,7 +91,9 @@ WLibrary,
 #Deck4[highlight_input_allow="1"] {
   border-width: 1px 1px 5px 1px;
   border-style: solid;
+  border-color: #0a0a0a;
 }
+
 #Deck1[highlight_input_allow="1"][highlight_deck="1"],
 #DeckCompact1[highlight_input_allow="1"][highlight_deck="1"],
 #DeckMini1[highlight_input_allow="1"][highlight_deck="1"],
@@ -105,6 +107,7 @@ WLibrary,
 #DeckCompact4[highlight_input_allow="1"][highlight_deck="1"],
 #DeckMini4[highlight_input_allow="1"][highlight_deck="1"] {
     border-color: #cf9200;
+    border-radius: 5px;
 }
 
 WTrackProperty:hover,
@@ -472,7 +475,7 @@ WLibrary {
 #WaveformBox2[highlight_input_allow="1"],
 #WaveformBox3[highlight_input_allow="1"],
 #WaveformBox4[highlight_input_allow="1"] {
-  border-width: 1px 1px 1px 5px;
+  border-width: 1px 5px 1px 5px;
   border-style: solid;
 }
 #WaveformBox1[highlight_input_allow="1"][highlight_deck="1"],
@@ -480,6 +483,7 @@ WLibrary {
 #WaveformBox3[highlight_input_allow="1"][highlight_deck="1"],
 #WaveformBox4[highlight_input_allow="1"][highlight_deck="1"] {
     border-color: #cf9200;
+    border-radius: 5px;
 }
 
 /************** Decks *********************************************************/
@@ -739,9 +743,11 @@ WLibrary {
   #MixerChannel_4Decks[highlight_input_allow="1"] {
     border-width: 5px 1px 1px 1px;
     border-style: solid;
+    border-color: #1e1e1e;
   }
   #MixerChannel_4Decks[highlight_input_allow="1"][highlight_deck="1"] {
     border-color: #cf9200;
+    border-radius: 5px;
   }
 
   #VolumeGain2Decks {

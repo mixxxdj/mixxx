@@ -61,14 +61,14 @@
 /* borders of highlighted containers */
 #Deck1[highlight_input_allow="1"],
 #Deck3[highlight_input_allow="1"] {
-  border-width: 1px 5px 1px 1px;
+  border-width: 1px 1px 1px 5px;
   border-style: solid;
   margin: 0 1px;
   padding: 2px;
 }
 #Deck2[highlight_input_allow="1"],
 #Deck4[highlight_input_allow="1"] {
-  border-width: 1px 1px 1px 5px;
+  border-width: 1px 5px 1px 1px;
   border-style: solid;
   margin: 0 1px;
   padding: 2px;
@@ -79,9 +79,9 @@
 #Deck3[highlight_input_allow="1"][highlight_deck="1"],
 #DeckCompact3[highlight_input_allow="1"][highlight_deck="1"],
 #DeckMini3[highlight_input_allow="1"][highlight_deck="1"] {
-    border-color: #82220d;
-    background-color: #0c0c0c;
-    background-color: #1a1a1a;
+    border-color: #960000;
+    background-color: #181818;
+    border-radius: 5px;
 }
 
 #Deck2[highlight_input_allow="1"][highlight_deck="1"],
@@ -90,9 +90,9 @@
 #Deck4[highlight_input_allow="1"][highlight_deck="1"],
 #DeckCompact4[highlight_input_allow="1"][highlight_deck="1"],
 #DeckMini4[highlight_input_allow="1"][highlight_deck="1"] {
-    border-color: #82220d;
-    background-color: #0c0c0c;
-    background-color: #1a1a1a;
+    border-color: #960000;
+    background-color: #181818;
+    border-radius: 5px;
 }
 /* dim 1st-level containers */
 #ToolBar,
@@ -556,7 +556,8 @@ WTrackProperty[selected="true"],
 #WaveformBox2[highlight_input_allow="1"][highlight_deck="1"],
 #WaveformBox3[highlight_input_allow="1"][highlight_deck="1"],
 #WaveformBox4[highlight_input_allow="1"][highlight_deck="1"] {
-    border-color: #82220d;
+    border-color: #960000;
+    border-radius: 10px;
 }
 
 /************** Decks *********************************************************/
@@ -684,9 +685,9 @@ WTrackProperty[selected="true"],
   padding: 2px;
 }
 #MixerChannel_4Decks[highlight_input_allow="1"][highlight_deck="1"] {
-    border-color: #82220d;
-    background-color: #0c0c0c;
-    background-color: #1a1a1a;
+    border-color: #960000;
+    background-color: #181818;
+    border-radius: 5px;
 }
 #MixerChannel_4Decks[highlight_input_allow="1"][highlight_deck="0"] {
     border-color: #1e1e20;
@@ -785,8 +786,11 @@ WBeatSpinBox::down-button,
   border:  1px solid #b2421c;
 }
 
-#MixerDecks {
+#MixerDecks[highlight_input_allow="0"] {
   padding: 2px 5px 2px 5px;
+  }
+#MixerDecks[highlight_input_allow="1"] {
+  padding: 1px 5px 2px 5px;
   }
   #MixerChannel_2Decks_Left {
     margin: 0px 2px;
