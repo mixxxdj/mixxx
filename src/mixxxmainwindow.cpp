@@ -33,6 +33,8 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
+// EVE -> clean up TrackFileCache cache
+#include "engine/cachingreader/cachingreader.h"
 #include "library/library.h"
 #include "library/library_decl.h"
 #include "library/library_prefs.h"
@@ -458,6 +460,9 @@ void MixxxMainWindow::initialize() {
 MixxxMainWindow::~MixxxMainWindow() {
     Timer t("~MixxxMainWindow");
     t.start();
+
+    // Clean up TrackFileCache files only if they were actually used and TrackFileCache is enabled
+    cleanUpTrackFileCacheCache(m_pCoreServices->getSettings());
 
     // Save the current window state (position, maximized, etc)
     // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
@@ -1594,4 +1599,35 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
         m_pLaunchImage->progress(progress, serviceName);
     }
     qApp->processEvents();
+}
+
+void MixxxMainWindow::cleanUpTrackFileCacheCache(UserSettingsPointer pConfig) {
+    if (!pConfig) {
+        return;
+    }
+
+    bool trackFileCacheEnabled = pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Enabled"), false);
+
+    if (!trackFileCacheEnabled) {
+        qDebug() << "TrackFileCache cleanup skipped - disabled in config";
+        return;
+    }
+
+    QString trackFileCachePath;
+#ifdef Q_OS_WIN
+    trackFileCachePath = pConfig->getValueString(
+            ConfigKey("[TrackFileCache]", "WindowsPath"));
+#else
+    trackFileCachePath = pConfig->getValueString(
+            ConfigKey("[TrackFileCache]", "UnixPath"));
+#endif
+
+    if (trackFileCachePath.isEmpty()) {
+        qDebug() << "TrackFileCache cleanup skipped - no path configured";
+        return;
+    }
+
+    qDebug() << "Cleaning up TrackFileCache files from:" << trackFileCachePath;
+    CachingReaderWorker::cleanupAllTrackFileCacheFiles(trackFileCachePath);
 }

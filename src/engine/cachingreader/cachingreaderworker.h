@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QDateTime>
+#include <QHash>
 #include <QMutex>
 #include <QString>
+#include <QTemporaryFile>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -12,6 +15,8 @@
 
 template<class DataType>
 class FIFO;
+
+struct TrackFileCacheTrackEntry;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -115,6 +120,29 @@ class CachingReaderWorker : public EngineWorker {
     void run() override;
 
     void quitWait();
+    static void cleanupSessionTrackFileCacheFiles();
+    static void clearAllTrackFileCacheEntries();
+
+    struct TrackFileCacheTrackEntry {
+        QString group;    // the deck/sampler group using this track
+        QString filePath; // the TrackFileCache file path
+
+        // Optional: Add constructor for convenience
+        TrackFileCacheTrackEntry() = default;
+        TrackFileCacheTrackEntry(const QString& group, const QString& filePath)
+                : group(group),
+                  filePath(filePath) {
+        }
+    };
+    void setTrackFileCacheConfig(
+            bool enabled,
+            const QString& trackFileCacheDiskPath,
+            int maxTrackFileCacheSizeMB,
+            bool decksEnabled,
+            bool samplersEnabled,
+            bool previewEnabled);
+    // called in mixxxmain to clean up cache
+    static void cleanupAllTrackFileCacheFiles(const QString& trackFileCacheDiskPath);
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
@@ -166,6 +194,38 @@ class CachingReaderWorker : public EngineWorker {
 #else
     void loadTrack(const TrackPointer& pTrack);
 #endif
+    // TrackFileCache vars
+    bool m_trackFileCacheEnabled;
+    QString m_trackFileCacheDiskPath;
+    int m_maxTrackFileCacheSizeMB;
+    bool m_trackFileCacheDecks;
+    bool m_trackFileCacheSamplers;
+    bool m_trackFileCachePreview;
+
+    enum class GroupType {
+        Deck,
+        Sampler,
+        PreviewDeck,
+        Unknown
+    };
+
+    GroupType getGroupType() const {
+        if (m_group.contains("Channel", Qt::CaseInsensitive)) {
+            return GroupType::Deck;
+        } else if (m_group.contains("Sampler", Qt::CaseInsensitive)) {
+            return GroupType::Sampler;
+        } else if (m_group.contains("Preview", Qt::CaseInsensitive)) {
+            return GroupType::PreviewDeck;
+        }
+        return GroupType::Unknown;
+    }
+
+    void openAudioSource(const TrackPointer& trackToOpen
+#ifdef __STEM__
+            ,
+            mixxx::StemChannelSelection stemMask
+#endif
+    );
 
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
@@ -186,4 +246,16 @@ class CachingReaderWorker : public EngineWorker {
     mixxx::audio::ChannelCount m_maxSupportedChannel;
 
     QAtomicInt m_stop;
+
+    QTemporaryFile* m_tmpTrackFileCacheFile = nullptr;
+    QString m_currentTrackURL;
+    QSet<QString> m_trackFileCacheFilesInUse;
+
+    static QHash<QString, TrackFileCacheTrackEntry> s_trackFileCacheTracks;
+    static QMutex s_trackFileCacheTracksMutex;
+    static QString gSessionPrefix;
+
+    static bool isTrackFileCacheFileUsedByOtherGroups(
+            const QString& filePath, const QString& currentGroup);
+    static void cleanupTrackFileCacheFileIfUnused(const QString& filePath);
 };
