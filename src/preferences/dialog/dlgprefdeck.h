@@ -95,7 +95,17 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
 
+  private slots:
+    void slotTrackFileCacheEnabledChanged(int state);
+    void slotBrowseTrackFileCacheLocation();
+    void slotUpdateTrackFileCacheLocation(const QString& path);
+
   private:
+    void populateTrackFileCacheSizeComboBox();
+    void validateTrackFileCacheLocation();
+    void loadTrackFileCacheSettings();
+    void saveTrackFileCacheSettings();
+
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item
     // that has the corresponding userData. If the userdata is not in the list,

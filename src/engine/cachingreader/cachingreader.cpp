@@ -120,6 +120,52 @@ CachingReader::~CachingReader() {
     qDeleteAll(m_chunks);
 }
 
+QString CachingReader::getTrackFileCachePathFromConfig(UserSettingsPointer pConfig) {
+    QString path;
+
+#ifdef Q_OS_WIN
+    path = pConfig->getValueString(ConfigKey("[TrackFileCache]", "WindowsPath"));
+    // Fallback to old format if new path is empty
+    if (path.isEmpty()) {
+        QString driveLetter = pConfig->getValueString(
+                ConfigKey("[TrackFileCache]", "WindowsDrive"));
+        driveLetter = driveLetter.replace(QRegularExpression("[^a-zA-Z]"), "").toUpper();
+        if (driveLetter.isEmpty()) {
+            driveLetter = "R";
+        }
+        QString dirName = pConfig->getValueString(ConfigKey("[TrackFileCache]", "DirectoryName"));
+        if (dirName.isEmpty()) {
+            dirName = "MixxxTmp";
+        }
+        path = driveLetter + ":/" + dirName + "/";
+    }
+#else
+    path = pConfig->getValueString(ConfigKey("[TrackFileCache]", "UnixPath"));
+    // Fallback to old format if new path is empty
+    if (path.isEmpty()) {
+        QString basePath = pConfig->getValueString(ConfigKey("[TrackFileCache]", "LinuxDrive"));
+        if (basePath.isEmpty()) {
+            basePath = "/dev/shm";
+        }
+        QString dirName = pConfig->getValueString(ConfigKey("[TrackFileCache]", "DirectoryName"));
+        if (dirName.isEmpty()) {
+            dirName = "MixxxTmp";
+        }
+        while (basePath.endsWith('/')) {
+            basePath.chop(1);
+        }
+        path = basePath + "/" + dirName + "/";
+    }
+#endif
+
+    // Ensure path ends with slash
+    if (!path.endsWith('/')) {
+        path += '/';
+    }
+
+    return path;
+}
+
 void CachingReader::initializeTrackFileCacheConfig(UserSettingsPointer pConfig) {
     QMutexLocker locker(&s_configMutex);
 
@@ -192,44 +238,40 @@ void CachingReader::createTrackFileCacheConfigVars(UserSettingsPointer pConfig) 
     }
 
     ConfigKey enabledKey("[TrackFileCache]", "Enabled");
-    if (!m_pConfig->exists(enabledKey)) {
-        m_pConfig->setValue(enabledKey, false);
+    if (!pConfig->exists(enabledKey)) {
+        pConfig->setValue(enabledKey, false);
     }
 
     ConfigKey maxSizeKey("[TrackFileCache]", "MaxSizeMB");
-    if (!m_pConfig->exists(maxSizeKey)) {
-        m_pConfig->setValue(maxSizeKey, 512);
-    }
-
-    ConfigKey dirNameKey("[TrackFileCache]", "DirectoryName");
-    if (!m_pConfig->exists(dirNameKey)) {
-        m_pConfig->setValue(dirNameKey, QString("MixxxTmp"));
+    if (!pConfig->exists(maxSizeKey)) {
+        pConfig->setValue(maxSizeKey, 512);
     }
 
     ConfigKey decksKey("[TrackFileCache]", "Decks");
-    if (!m_pConfig->exists(decksKey)) {
-        m_pConfig->setValue(decksKey, true);
+    if (!pConfig->exists(decksKey)) {
+        pConfig->setValue(decksKey, true);
     }
 
     ConfigKey samplersKey("[TrackFileCache]", "Samplers");
-    if (!m_pConfig->exists(samplersKey)) {
-        m_pConfig->setValue(samplersKey, true);
+    if (!pConfig->exists(samplersKey)) {
+        pConfig->setValue(samplersKey, true);
     }
 
     ConfigKey previewKey("[TrackFileCache]", "PreviewDeck");
-    if (!m_pConfig->exists(previewKey)) {
-        m_pConfig->setValue(previewKey, false);
+    if (!pConfig->exists(previewKey)) {
+        pConfig->setValue(previewKey, false);
     }
 
+    // Add new path config vars with empty defaults (will use fallback logic)
 #ifdef Q_OS_WIN
-    ConfigKey driveKey("[TrackFileCache]", "WindowsDrive");
-    if (!m_pConfig->exists(driveKey)) {
-        m_pConfig->setValue(driveKey, QString("R"));
+    ConfigKey windowsPathKey("[TrackFileCache]", "WindowsPath");
+    if (!pConfig->exists(windowsPathKey)) {
+        pConfig->setValue(windowsPathKey, QString(""));
     }
 #else
-    ConfigKey linuxDriveKey("[TrackFileCache]", "LinuxDrive");
-    if (!m_pConfig->exists(linuxDriveKey)) {
-        m_pConfig->setValue(linuxDriveKey, QString("/dev/shm"));
+    ConfigKey unixPathKey("[TrackFileCache]", "UnixPath");
+    if (!pConfig->exists(unixPathKey)) {
+        pConfig->setValue(unixPathKey, QString(""));
     }
 #endif
 }

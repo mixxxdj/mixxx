@@ -453,17 +453,9 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         }
     }
 
-    QString artistSafe = sanitizeFileNamePart(pTrack->getArtist());
-    QString titleSafe = sanitizeFileNamePart(pTrack->getTitle());
-
-    QString combined = artistSafe + "-" + titleSafe;
-    if (combined.length() > 50) {
-        combined = combined.left(50);
-    }
-
+    // only session prefix and track ID, Artist & Title aren't needed
     QString trackIdSafe = sanitizeFileNamePart(pTrack->getId().toString());
-    QString trackFileCacheFileName =
-            tmpPath + gSessionPrefix + trackIdSafe + "_" + combined + ".tmp";
+    QString trackFileCacheFileName = tmpPath + gSessionPrefix + trackIdSafe + ".tmp";
     bool useTrackFileCacheCopy = false;
 
     QFile trackFileCacheFile(trackFileCacheFileName);
@@ -550,6 +542,201 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     openAudioSource(trackToOpen, stemMask);
 }
 
+// With Artist & Name in tempfiles
+// #ifdef __STEM__
+// void CachingReaderWorker::loadTrack(
+//        const TrackPointer& pTrack, mixxx::StemChannelSelection stemMask) {
+// #else
+// void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
+// #endif
+//    // Notify UI / engine that track loading started
+//    emit trackLoading();
+//
+//    // Close any previous audio source and clean up previous RAM usage
+//    closeAudioSource();
+//
+//    // Remove previous RAM track usage for this group
+//    removeTrackFileCacheTrackUsage(m_group);
+//
+//    if (!pTrack->getFileInfo().checkFileExists()) {
+//        kLogger.warning() << m_group << "File not found" << pTrack->getFileInfo();
+//        const auto update = ReaderStatusUpdate::trackUnloaded();
+//        m_pReaderStatusFIFO->writeBlocking(&update, 1);
+//        emit trackLoadFailed(pTrack,
+//                tr("The file '%1' could not be found.")
+//                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
+//        return;
+//    }
+//
+//    // Check if TrackFileCache play is enabled globally
+//    if (!m_trackFileCacheEnabled) {
+//        if (sDebugCachingReaderWorker) {
+//            kLogger.debug() << "[TrackFileCache] -> Player: " << m_group
+//                            << " TrackFileCache disabled in preferences, playing "
+//                               "file from original location";
+//        }
+//        // Skip TrackFileCache and load from original location
+//        TrackPointer trackToOpen = pTrack;
+//        trackToOpen->setURL(pTrack->getURL());
+//        updateTrackFileCacheTrackUsage(m_group, "");
+//        openAudioSource(trackToOpen, stemMask);
+//        return;
+//    }
+//
+//    // Check Deck/Sampler/PreviewDeck preferences
+//    bool componentEnabled = true;
+//    QString componentType;
+//
+//    if (m_group.contains("Channel", Qt::CaseInsensitive)) {
+//        componentEnabled = m_trackFileCacheDecks;
+//        componentType = "Deck";
+//    } else if (m_group.contains("Sampler", Qt::CaseInsensitive)) {
+//        componentEnabled = m_trackFileCacheSamplers;
+//        componentType = "Sampler";
+//    } else if (m_group.contains("Preview", Qt::CaseInsensitive)) {
+//        componentEnabled = m_trackFileCachePreview;
+//        componentType = "PreviewDeck";
+//    }
+//
+//    if (!componentEnabled) {
+//        if (sDebugCachingReaderWorker) {
+//            kLogger.debug() << "[TrackFileCache] -> Player: " << m_group
+//                            << " TrackFileCache disabled for " << componentType
+//                            << ", playing file from original location";
+//        }
+//        // Skip TrackFileCache and load from original location
+//        TrackPointer trackToOpen = pTrack;
+//        trackToOpen->setURL(pTrack->getURL());
+//        updateTrackFileCacheTrackUsage(m_group, "");
+//        openAudioSource(trackToOpen, stemMask);
+//        return;
+//    }
+//
+//    // -> 1: Setup TrackFileCache storage ///
+//    QString tmpPath = m_trackFileCacheDiskPath;
+//    QDir tmpDir(tmpPath);
+//
+//    // Create directory if it doesn't exist
+//    if (!tmpDir.exists()) {
+//        if (!tmpDir.mkpath(tmpPath)) {
+//            kLogger.warning() << "[TrackFileCache] -> Failed to create directory:" << tmpPath;
+//            // Fall back to original file
+//            TrackPointer trackToOpen = pTrack;
+//            trackToOpen->setURL(pTrack->getURL());
+//            updateTrackFileCacheTrackUsage(m_group, "");
+//            openAudioSource(trackToOpen, stemMask);
+//            return;
+//        }
+//        if (sDebugCachingReaderWorker) {
+//            kLogger.debug() << "[TrackFileCache] -> Created directory:" << tmpPath;
+//        }
+//    }
+//
+//    QStringList oldFiles = tmpDir.entryList(QStringList() << "MixxxTemp_*", QDir::Files);
+//    // keep current session files, delete files from other (earlier) session
+//    for (const QString& f : std::as_const(oldFiles)) {
+//        if (!f.startsWith(gSessionPrefix)) {
+//            QFile::remove(tmpDir.filePath(f));
+//        }
+//    }
+//
+//    QString artistSafe = sanitizeFileNamePart(pTrack->getArtist());
+//    QString titleSafe = sanitizeFileNamePart(pTrack->getTitle());
+//
+//    QString combined = artistSafe + "-" + titleSafe;
+//    if (combined.length() > 50) {
+//        combined = combined.left(50);
+//    }
+//
+//    QString trackIdSafe = sanitizeFileNamePart(pTrack->getId().toString());
+//    QString trackFileCacheFileName =
+//            tmpPath + gSessionPrefix + trackIdSafe + "_" + combined + ".tmp";
+//    bool useTrackFileCacheCopy = false;
+//
+//    QFile trackFileCacheFile(trackFileCacheFileName);
+//    if (trackFileCacheFile.exists()) {
+//        if (sDebugCachingReaderWorker) {
+//            kLogger.debug()
+//                    << "[TrackFileCache] -> Player: " << m_group
+//                    << " Reusing existing TrackFileCache file for track:"
+//                    << trackFileCacheFileName;
+//        }
+//        useTrackFileCacheCopy = true;
+//    } else {
+//        qint64 trackSize = QFileInfo(pTrack->getFileInfo().location()).size();
+//        qint64 maxTrackFileCacheBytes =
+//                static_cast<qint64>(m_maxTrackFileCacheSizeMB) * 1024 * 1024;
+//
+//        // Calculate the size of actual Mixxx session files in TrackFileCache directory
+//        qint64 mixxxSessionSize = 0;
+//        QDir tmpDir(tmpPath);
+//        if (tmpDir.exists()) {
+//            QStringList sessionFiles = tmpDir.entryList(
+//                    QStringList() << gSessionPrefix + "*", QDir::Files);
+//            for (const QString& filename : std::as_const(sessionFiles)) {
+//                QFileInfo fileInfo(tmpDir.filePath(filename));
+//                mixxxSessionSize += fileInfo.size();
+//            }
+//        }
+//        if (sDebugCachingReaderWorker) {
+//            kLogger.debug() << "[TrackFileCache] -> Mixxx session size:"
+//                            << mixxxSessionSize / (1024 * 1024)
+//                            << "MB, Track:" << trackSize / (1024 * 1024)
+//                            << "MB, Max allowed:" << m_maxTrackFileCacheSizeMB << "MB";
+//        }
+//        // Check if adding this track would exceed the Mixxx-specific limit
+//        if ((mixxxSessionSize + trackSize) > maxTrackFileCacheBytes) {
+//            kLogger.warning() << "[TrackFileCache] -> Player: " << m_group
+//                              << " TrackFileCache copy would exceed Mixxx size limit. Track:"
+//                              << trackSize / (1024 * 1024) << "MB, Mixxx usage:"
+//                              << mixxxSessionSize / (1024 * 1024) << "MB, Max:"
+//                              << m_maxTrackFileCacheSizeMB << "MB";
+//            useTrackFileCacheCopy = false;
+//        } else {
+//            useTrackFileCacheCopy = true;
+//            if (!trackFileCacheFile.open(QIODevice::WriteOnly)) {
+//                kLogger.warning()
+//                        << "[TrackFileCache] -> Player: " << m_group
+//                        << " Cannot open TrackFileCache file for writing:"
+//                        << trackFileCacheFileName;
+//                useTrackFileCacheCopy = false;
+//            } else {
+//                QFile originalFile(pTrack->getFileInfo().location());
+//                if (!originalFile.open(QIODevice::ReadOnly)) {
+//                    kLogger.warning()
+//                            << "[TrackFileCache] -> Player: " << m_group
+//                            << " Cannot read original track:" << pTrack->getLocation();
+//                    useTrackFileCacheCopy = false;
+//                } else {
+//                    trackFileCacheFile.write(originalFile.readAll());
+//                    trackFileCacheFile.flush();
+//                    trackFileCacheFile.close();
+//                    originalFile.close();
+//                    if (sDebugCachingReaderWorker) {
+//                        kLogger.debug()
+//                                << "[TrackFileCache] -> Player: " << m_group
+//                                << " Track copied to TrackFileCache directory:"
+//                                << trackFileCacheFileName;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    TrackPointer trackToOpen = pTrack;
+//    if (useTrackFileCacheCopy) {
+//        trackToOpen->setURL(QUrl::fromLocalFile(trackFileCacheFileName).toString());
+//        m_trackFileCacheFilesInUse.insert(trackFileCacheFileName);
+//        updateTrackFileCacheTrackUsage(m_group, trackFileCacheFileName);
+//    } else {
+//        trackToOpen->setURL(pTrack->getURL());
+//        updateTrackFileCacheTrackUsage(m_group, "");
+//    }
+//
+//    // -> 2: Open AudioSource ///
+//    openAudioSource(trackToOpen, stemMask);
+//}
+
 // Helper function to open audio source (extracted for clarity)
 void CachingReaderWorker::openAudioSource(const TrackPointer& trackToOpen,
 #ifdef __STEM__
@@ -612,6 +799,16 @@ void CachingReaderWorker::openAudioSource(const TrackPointer& trackToOpen,
             m_pAudioSource->getSignalInfo().getSampleRate(),
             m_pAudioSource->getSignalInfo().getChannelCount(),
             mixxx::audio::FramePos(m_pAudioSource->frameLength()));
+}
+
+void CachingReaderWorker::clearAllTrackFileCacheEntries() {
+    QMutexLocker locker(&s_trackFileCacheTracksMutex);
+
+    int clearedCount = s_trackFileCacheTracks.size();
+    s_trackFileCacheTracks.clear();
+
+    kLogger.debug() << "[TrackFileCache] -> Cleared" << clearedCount
+                    << "tracking entries due to location change";
 }
 
 void CachingReaderWorker::cleanupAllTrackFileCacheFiles(const QString& trackFileCacheDiskPath) {

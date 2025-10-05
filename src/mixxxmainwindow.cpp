@@ -1601,12 +1601,11 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
     qApp->processEvents();
 }
 
-// void MixxxMainWindow::cleanUpRamPlayCache() {
 void MixxxMainWindow::cleanUpTrackFileCacheCache(UserSettingsPointer pConfig) {
     if (!pConfig) {
         return;
     }
-    // Clean up TrackFileCache files only if they were actually used and TrackFileCache is enabled
+
     bool trackFileCacheEnabled = pConfig->getValue<bool>(
             ConfigKey("[TrackFileCache]", "Enabled"), false);
 
@@ -1615,35 +1614,20 @@ void MixxxMainWindow::cleanUpTrackFileCacheCache(UserSettingsPointer pConfig) {
         return;
     }
 
-    QString dirName = pConfig->getValueString(
-            ConfigKey("[TrackFileCache]", "DirectoryName"));
-    if (dirName.isEmpty()) {
-        dirName = "MixxxTmp"; // Default if empty
-    }
-
     QString trackFileCachePath;
 #ifdef Q_OS_WIN
-    QString driveLetter = pConfig->getValueString(
-            ConfigKey("[TrackFileCache]", "WindowsDrive"));
-    driveLetter = driveLetter.replace(QRegularExpression("[^a-zA-Z]"), "").toUpper();
-    if (driveLetter.isEmpty()) {
-        driveLetter = "R"; // Default if empty
-    }
-    trackFileCachePath = driveLetter + ":/" + dirName + "/";
+    trackFileCachePath = pConfig->getValueString(
+            ConfigKey("[TrackFileCache]", "WindowsPath"));
 #else
-    QString basePath = pConfig->getValueString(
-            ConfigKey("[TrackFileCache]", "LinuxDrive"));
-    if (basePath.isEmpty()) {
-        basePath = "/dev/shm"; // Default if empty
-    }
-    // Remove trailing slashes
-    while (basePath.endsWith('/')) {
-        basePath.chop(1);
-    }
-    trackFileCachePath = basePath + "/" + dirName + "/";
+    trackFileCachePath = pConfig->getValueString(
+            ConfigKey("[TrackFileCache]", "UnixPath"));
 #endif
 
-    qDebug() << "Cleaning up TrackFileCache files from:" << trackFileCachePath;
+    if (trackFileCachePath.isEmpty()) {
+        qDebug() << "TrackFileCache cleanup skipped - no path configured";
+        return;
+    }
 
+    qDebug() << "Cleaning up TrackFileCache files from:" << trackFileCachePath;
     CachingReaderWorker::cleanupAllTrackFileCacheFiles(trackFileCachePath);
 }

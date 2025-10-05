@@ -154,6 +154,7 @@ class CachingReader : public QObject {
                   initialized(false) {
         }
     };
+    QString getTrackFileCachePathFromConfig(UserSettingsPointer pConfig);
 
     static TrackFileCacheConfig s_trackFileCacheConfig;
     static QMutex s_configMutex;

@@ -121,6 +121,7 @@ class CachingReaderWorker : public EngineWorker {
 
     void quitWait();
     static void cleanupSessionTrackFileCacheFiles();
+    static void clearAllTrackFileCacheEntries();
 
     struct TrackFileCacheTrackEntry {
         QString group;    // the deck/sampler group using this track
