@@ -399,6 +399,10 @@ DDJ200.init = function() {
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
 
+    // reset start volume of channels 3 and 4 (can't be read from 2-deck controller)
+    engine.setValue("[Channel3]", "volume", 0);
+    engine.setValue("[Channel4]", "volume", 0);
+
     // start with focus on library for selecting tracks (delay seems required)
     engine.beginTimer(500, function() {
         engine.setValue("[Library]", "MoveFocus", 1);
