@@ -282,7 +282,7 @@ DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContai
         this.setPads(this.padInstancesBuffer.current());
     }
 
-    updateDeckHelper(padInstance, newGroup) {
+    setCurrentDeckHelper(padInstance, newGroup) {
         padInstance.forEachComponent(function(component) {
             if (padInstance === this.choosenPadInstance) {
                 component.disconnect();
@@ -300,12 +300,12 @@ DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContai
         });
     }
 
-    updateDeck(currentDeck) {
+    setCurrentDeck(newGroup) {
         this.padInstancesBuffer.indexable[0].forEach(padInstance => {
-            this.updateDeckHelper(padInstance, currentDeck);
+            this.setCurrentDeckHelper(padInstance, newGroup);
         });
         this.padInstancesBuffer.indexable[1].forEach(padInstance => {
-            this.updateDeckHelper(padInstance, currentDeck);
+            this.setCurrentDeckHelper(padInstance, newGroup);
         });
     }
 
@@ -340,9 +340,7 @@ DDJ200.init = function() {
                 engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
                 if (!engine.getValue("[Skin]", "show_4decks")) {
                     DDJ200.decks.left.setCurrentDeck("[Channel1]");
-                    DDJ200.decks.left.padUnit.updateDeck("[Channel1]");
                     DDJ200.decks.right.setCurrentDeck("[Channel2]");
-                    DDJ200.decks.right.padUnit.updateDeck("[Channel2]");
                     DDJ200.decks.forEachComponentContainer(deck => {
                         if (deck.syncButton.blinkConnection) {
                             deck.syncButton.blinkConnection.disconnect();
@@ -485,7 +483,6 @@ DDJ200.Deck = class extends components.Deck {
                 if (value) {
                     if (engine.getValue("[Skin]", "show_4decks")) {
                         theDeck.toggle();
-                        theDeck.padUnit.updateDeck(theDeck.currentDeck);
                         if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
                             this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
                                 theDeck.syncButton.send(theDeck.syncButton.on * value);
@@ -579,5 +576,10 @@ DDJ200.Deck = class extends components.Deck {
                 c.group = this.currentDeck;
             };
         });
+    }
+
+    setCurrentDeck(newGroup) {
+        this.padUnit.setCurrentDeck(newGroup);
+        super.setCurrentDeck(newGroup);
     }
 };
