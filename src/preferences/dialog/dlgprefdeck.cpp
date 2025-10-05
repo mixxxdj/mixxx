@@ -1000,7 +1000,8 @@ void DlgPrefDeck::loadTrackFileCacheSettings() {
     checkBoxTrackFileCachePreviewDeck->setChecked(trackFileCachePreviewDeckEnabled);
 
     // Enable/disable controls based on main checkbox
-    slotTrackFileCacheEnabledChanged(trackFileCacheEnabled ? Qt::Checked : Qt::Unchecked);
+    // slotTrackFileCacheEnabledChanged(trackFileCacheEnabled ? Qt::Checked : Qt::Unchecked);
+    slotTrackFileCacheEnabledChanged(trackFileCacheEnabled);
 }
 
 // void DlgPrefDeck::slotTrackFileCacheEnabledChanged(int state) {
