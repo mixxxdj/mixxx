@@ -78,8 +78,8 @@ void WaveformRendererHSV::draw(
     const double gain = (lastVisualIndex - firstVisualIndex) / length;
     const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
-    float allGain(1.0);
-    getGains(&allGain, nullptr, nullptr, nullptr);
+    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
@@ -142,14 +142,19 @@ void WaveformRendererHSV::draw(
                 i += 2) {
             const WaveformData& waveformData = *(data + i);
             const WaveformData& waveformDataNext = *(data + i + 1);
-            maxLow[0] = math_max(maxLow[0], (int)waveformData.filtered.low);
-            maxLow[1] = math_max(maxLow[1], (int)waveformDataNext.filtered.low);
-            maxMid[0] = math_max(maxMid[0], (int)waveformData.filtered.mid);
-            maxMid[1] = math_max(maxMid[1], (int)waveformDataNext.filtered.mid);
-            maxHigh[0] = math_max(maxHigh[0], (int)waveformData.filtered.high);
-            maxHigh[1] = math_max(maxHigh[1], (int)waveformDataNext.filtered.high);
-            maxAll[0] = math_max(maxAll[0], (int)waveformData.filtered.all);
-            maxAll[1] = math_max(maxAll[1], (int)waveformDataNext.filtered.all);
+            maxLow[0] = math_max(maxLow[0], static_cast<int>(waveformData.filtered.low * lowGain));
+            maxLow[1] = math_max(maxLow[1],
+                    static_cast<int>(waveformDataNext.filtered.low * lowGain));
+            maxMid[0] = math_max(maxMid[0], static_cast<int>(waveformData.filtered.mid * midGain));
+            maxMid[1] = math_max(maxMid[1],
+                    static_cast<int>(waveformDataNext.filtered.mid * midGain));
+            maxHigh[0] = math_max(maxHigh[0],
+                    static_cast<int>(waveformData.filtered.high * highGain));
+            maxHigh[1] = math_max(maxHigh[1],
+                    static_cast<int>(
+                            waveformDataNext.filtered.high * highGain));
+            maxAll[0] = math_max(maxAll[0], static_cast<int>(waveformData.filtered.all));
+            maxAll[1] = math_max(maxAll[1], static_cast<int>(waveformDataNext.filtered.all));
         }
 
         if (maxAll[0] && maxAll[1]) {
