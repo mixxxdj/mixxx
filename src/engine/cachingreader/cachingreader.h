@@ -136,16 +136,16 @@ class CachingReader : public QObject {
 
   private:
     const UserSettingsPointer m_pConfig;
-    struct RamPlayConfig {
+    struct TrackFileCacheConfig {
         bool enabled;
-        QString ramDiskPath;
+        QString trackFileCacheDiskPath;
         int maxSizeMB;
         bool decksEnabled;
         bool samplersEnabled;
         bool previewEnabled;
         bool initialized;
 
-        RamPlayConfig()
+        TrackFileCacheConfig()
                 : enabled(true),
                   maxSizeMB(512),
                   decksEnabled(true),
@@ -155,10 +155,10 @@ class CachingReader : public QObject {
         }
     };
 
-    static RamPlayConfig s_ramPlayConfig;
+    static TrackFileCacheConfig s_trackFileCacheConfig;
     static QMutex s_configMutex;
-    void initializeRamPlayConfig(UserSettingsPointer pConfig);
-    void createRamPlayConfigVars(UserSettingsPointer pConfig);
+    void initializeTrackFileCacheConfig(UserSettingsPointer pConfig);
+    void createTrackFileCacheConfigVars(UserSettingsPointer pConfig);
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.

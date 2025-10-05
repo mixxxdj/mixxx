@@ -33,7 +33,7 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
-// EVE -> clean up RAM-Play cache
+// EVE -> clean up TrackFileCache cache
 #include "engine/cachingreader/cachingreader.h"
 #include "library/library.h"
 #include "library/library_decl.h"
@@ -461,9 +461,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     Timer t("~MixxxMainWindow");
     t.start();
 
-    // Clean up RAM-Play files only if they were actually used and RAM-Play is enabled
-    // cleanUpRamPlayCache();
-    cleanUpRamPlayCache(m_pCoreServices->getSettings());
+    // Clean up TrackFileCache files only if they were actually used and TrackFileCache is enabled
+    cleanUpTrackFileCacheCache(m_pCoreServices->getSettings());
 
     // Save the current window state (position, maximized, etc)
     // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
@@ -1603,37 +1602,37 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
 }
 
 // void MixxxMainWindow::cleanUpRamPlayCache() {
-void MixxxMainWindow::cleanUpRamPlayCache(UserSettingsPointer pConfig) {
+void MixxxMainWindow::cleanUpTrackFileCacheCache(UserSettingsPointer pConfig) {
     if (!pConfig) {
         return;
     }
-    // Clean up RAM-Play files only if they were actually used and RAM-Play is enabled
-    bool ramPlayEnabled = pConfig->getValue<bool>(
-            ConfigKey("[RAM-Play]", "Enabled"), false);
+    // Clean up TrackFileCache files only if they were actually used and TrackFileCache is enabled
+    bool trackFileCacheEnabled = pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Enabled"), false);
 
-    if (!ramPlayEnabled) {
-        qDebug() << "RAM-Play cleanup skipped - disabled in config";
+    if (!trackFileCacheEnabled) {
+        qDebug() << "TrackFileCache cleanup skipped - disabled in config";
         return;
     }
 
     QString dirName = pConfig->getValueString(
-            ConfigKey("[RAM-Play]", "DirectoryName"));
+            ConfigKey("[TrackFileCache]", "DirectoryName"));
     if (dirName.isEmpty()) {
         dirName = "MixxxTmp"; // Default if empty
     }
 
-    QString ramPlayPath;
+    QString trackFileCachePath;
 #ifdef Q_OS_WIN
     QString driveLetter = pConfig->getValueString(
-            ConfigKey("[RAM-Play]", "WindowsDrive"));
+            ConfigKey("[TrackFileCache]", "WindowsDrive"));
     driveLetter = driveLetter.replace(QRegularExpression("[^a-zA-Z]"), "").toUpper();
     if (driveLetter.isEmpty()) {
         driveLetter = "R"; // Default if empty
     }
-    ramPlayPath = driveLetter + ":/" + dirName + "/";
+    trackFileCachePath = driveLetter + ":/" + dirName + "/";
 #else
     QString basePath = pConfig->getValueString(
-            ConfigKey("[RAM-Play]", "LinuxDrive"));
+            ConfigKey("[TrackFileCache]", "LinuxDrive"));
     if (basePath.isEmpty()) {
         basePath = "/dev/shm"; // Default if empty
     }
@@ -1641,10 +1640,10 @@ void MixxxMainWindow::cleanUpRamPlayCache(UserSettingsPointer pConfig) {
     while (basePath.endsWith('/')) {
         basePath.chop(1);
     }
-    ramPlayPath = basePath + "/" + dirName + "/";
+    trackFileCachePath = basePath + "/" + dirName + "/";
 #endif
 
-    qDebug() << "Cleaning up RAM-PLAY files from:" << ramPlayPath;
+    qDebug() << "Cleaning up TrackFileCache files from:" << trackFileCachePath;
 
-    CachingReaderWorker::cleanupAllRamFiles(ramPlayPath);
+    CachingReaderWorker::cleanupAllTrackFileCacheFiles(trackFileCachePath);
 }

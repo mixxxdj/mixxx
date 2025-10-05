@@ -16,7 +16,7 @@
 template<class DataType>
 class FIFO;
 
-struct RamTrackEntry;
+struct TrackFileCacheTrackEntry;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -120,28 +120,28 @@ class CachingReaderWorker : public EngineWorker {
     void run() override;
 
     void quitWait();
-    static void cleanupSessionRamFiles();
+    static void cleanupSessionTrackFileCacheFiles();
 
-    struct RamTrackEntry {
+    struct TrackFileCacheTrackEntry {
         QString group;    // the deck/sampler group using this track
-        QString filePath; // the RAM file path
+        QString filePath; // the TrackFileCache file path
 
         // Optional: Add constructor for convenience
-        RamTrackEntry() = default;
-        RamTrackEntry(const QString& group, const QString& filePath)
+        TrackFileCacheTrackEntry() = default;
+        TrackFileCacheTrackEntry(const QString& group, const QString& filePath)
                 : group(group),
                   filePath(filePath) {
         }
     };
-    void setRamPlayConfig(
+    void setTrackFileCacheConfig(
             bool enabled,
-            const QString& ramDiskPath,
-            int maxRamSizeMB,
+            const QString& trackFileCacheDiskPath,
+            int maxTrackFileCacheSizeMB,
             bool decksEnabled,
             bool samplersEnabled,
             bool previewEnabled);
     // called in mixxxmain to clean up cache
-    static void cleanupAllRamFiles(const QString& ramDiskPath);
+    static void cleanupAllTrackFileCacheFiles(const QString& trackFileCacheDiskPath);
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
@@ -193,13 +193,13 @@ class CachingReaderWorker : public EngineWorker {
 #else
     void loadTrack(const TrackPointer& pTrack);
 #endif
-    // RAM-Play vars
-    bool m_ramPlayEnabled;
-    QString m_ramDiskPath;
-    int m_maxRamSizeMB;
-    bool m_ramPlayDecks;
-    bool m_ramPlaySamplers;
-    bool m_ramPlayPreview;
+    // TrackFileCache vars
+    bool m_trackFileCacheEnabled;
+    QString m_trackFileCacheDiskPath;
+    int m_maxTrackFileCacheSizeMB;
+    bool m_trackFileCacheDecks;
+    bool m_trackFileCacheSamplers;
+    bool m_trackFileCachePreview;
 
     enum class GroupType {
         Deck,
@@ -246,14 +246,15 @@ class CachingReaderWorker : public EngineWorker {
 
     QAtomicInt m_stop;
 
-    QTemporaryFile* m_tmpRamFile = nullptr;
+    QTemporaryFile* m_tmpTrackFileCacheFile = nullptr;
     QString m_currentTrackURL;
-    QSet<QString> m_ramFilesInUse;
+    QSet<QString> m_trackFileCacheFilesInUse;
 
-    static QHash<QString, RamTrackEntry> s_ramTracks;
-    static QMutex s_ramTracksMutex;
+    static QHash<QString, TrackFileCacheTrackEntry> s_trackFileCacheTracks;
+    static QMutex s_trackFileCacheTracksMutex;
     static QString gSessionPrefix;
 
-    static bool isRamFileUsedByOtherGroups(const QString& filePath, const QString& currentGroup);
-    static void cleanupRamFileIfUnused(const QString& filePath);
+    static bool isTrackFileCacheFileUsedByOtherGroups(
+            const QString& filePath, const QString& currentGroup);
+    static void cleanupTrackFileCacheFileIfUnused(const QString& filePath);
 };

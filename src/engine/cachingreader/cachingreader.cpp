@@ -37,7 +37,7 @@ constexpr SINT kDefaultHintFrames = 1024;
 constexpr SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
-CachingReader::RamPlayConfig CachingReader::s_ramPlayConfig;
+CachingReader::TrackFileCacheConfig CachingReader::s_trackFileCacheConfig;
 QMutex CachingReader::s_configMutex;
 
 CachingReader::CachingReader(const QString& group,
@@ -68,17 +68,17 @@ CachingReader::CachingReader(const QString& group,
                   &m_readerStatusUpdateFIFO,
                   maxSupportedChannel) {
     // Initialize RAM play config (only once)
-    initializeRamPlayConfig(m_pConfig);
+    initializeTrackFileCacheConfig(m_pConfig);
 
     // Pass config values to worker
     QMutexLocker locker(&s_configMutex);
-    m_worker.setRamPlayConfig(
-            s_ramPlayConfig.enabled,
-            s_ramPlayConfig.ramDiskPath,
-            s_ramPlayConfig.maxSizeMB,
-            s_ramPlayConfig.decksEnabled,
-            s_ramPlayConfig.samplersEnabled,
-            s_ramPlayConfig.previewEnabled);
+    m_worker.setTrackFileCacheConfig(
+            s_trackFileCacheConfig.enabled,
+            s_trackFileCacheConfig.trackFileCacheDiskPath,
+            s_trackFileCacheConfig.maxSizeMB,
+            s_trackFileCacheConfig.decksEnabled,
+            s_trackFileCacheConfig.samplersEnabled,
+            s_trackFileCacheConfig.previewEnabled);
 
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
@@ -120,110 +120,114 @@ CachingReader::~CachingReader() {
     qDeleteAll(m_chunks);
 }
 
-void CachingReader::initializeRamPlayConfig(UserSettingsPointer pConfig) {
+void CachingReader::initializeTrackFileCacheConfig(UserSettingsPointer pConfig) {
     QMutexLocker locker(&s_configMutex);
 
-    if (s_ramPlayConfig.initialized) {
+    if (s_trackFileCacheConfig.initialized) {
         return; // Already initialized
     }
 
     if (!pConfig) {
         // Set defaults
 #ifdef Q_OS_WIN
-        s_ramPlayConfig.ramDiskPath = "R:/MixxxTmp/";
+        s_trackFileCacheConfig.trackFileCacheDiskPath = "R:/MixxxTmp/";
 #else
-        s_ramPlayConfig.ramDiskPath = "/dev/shm/MixxxTmp/";
+        s_trackFileCacheConfig.trackFileCacheDiskPath = "/dev/shm/MixxxTmp/";
 #endif
-        s_ramPlayConfig.initialized = true;
+        s_trackFileCacheConfig.initialized = true;
         return;
     }
 
     // Check if config vars exist else create
-    createRamPlayConfigVars(pConfig);
+    createTrackFileCacheConfigVars(pConfig);
 
-    s_ramPlayConfig.enabled = pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Enabled"));
-    s_ramPlayConfig.maxSizeMB = pConfig->getValue<int>(ConfigKey("[RAM-Play]", "MaxSizeMB"));
-    s_ramPlayConfig.decksEnabled = pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Decks"));
-    s_ramPlayConfig.samplersEnabled = pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "Samplers"));
-    s_ramPlayConfig.previewEnabled =
-            pConfig->getValue<bool>(ConfigKey("[RAM-Play]", "PreviewDeck"));
+    s_trackFileCacheConfig.enabled =
+            pConfig->getValue<bool>(ConfigKey("[TrackFileCache]", "Enabled"));
+    s_trackFileCacheConfig.maxSizeMB =
+            pConfig->getValue<int>(ConfigKey("[TrackFileCache]", "MaxSizeMB"));
+    s_trackFileCacheConfig.decksEnabled =
+            pConfig->getValue<bool>(ConfigKey("[TrackFileCache]", "Decks"));
+    s_trackFileCacheConfig.samplersEnabled =
+            pConfig->getValue<bool>(ConfigKey("[TrackFileCache]", "Samplers"));
+    s_trackFileCacheConfig.previewEnabled =
+            pConfig->getValue<bool>(ConfigKey("[TrackFileCache]", "PreviewDeck"));
 
-    QString dirName = pConfig->getValueString(ConfigKey("[RAM-Play]", "DirectoryName"));
+    QString dirName = pConfig->getValueString(ConfigKey("[TrackFileCache]", "DirectoryName"));
     if (dirName.isEmpty()) {
         dirName = "MixxxTmp";
     }
 
 #ifdef Q_OS_WIN
-    QString driveLetter = pConfig->getValueString(ConfigKey("[RAM-Play]", "WindowsDrive"));
+    QString driveLetter = pConfig->getValueString(ConfigKey("[TrackFileCache]", "WindowsDrive"));
     driveLetter = driveLetter.replace(QRegularExpression("[^a-zA-Z]"), "").toUpper();
     if (driveLetter.isEmpty()) {
         driveLetter = "R";
     }
-    s_ramPlayConfig.ramDiskPath = driveLetter + ":/" + dirName + "/";
+    s_trackFileCacheConfig.trackFileCacheDiskPath = driveLetter + ":/" + dirName + "/";
 #else
-    QString basePath = pConfig->getValueString(ConfigKey("[RAM-Play]", "LinuxDrive"));
+    QString basePath = pConfig->getValueString(ConfigKey("[TrackFileCache]", "LinuxDrive"));
     if (basePath.isEmpty()) {
         basePath = "/dev/shm";
     }
     while (basePath.endsWith('/')) {
         basePath.chop(1);
     }
-    s_ramPlayConfig.ramDiskPath = basePath + "/" + dirName + "/";
+    s_trackFileCacheConfig.trackFileCacheDiskPath = basePath + "/" + dirName + "/";
 #endif
 
-    s_ramPlayConfig.initialized = true;
+    s_trackFileCacheConfig.initialized = true;
 
-    kLogger.debug() << "[RAM-PLAY] Config initialized: "
-                    << "RAM-Play Enabled : " << s_ramPlayConfig.enabled
-                    << "- Path:" << s_ramPlayConfig.ramDiskPath
-                    << "- MaxSize:" << s_ramPlayConfig.maxSizeMB << "MB "
-                    << "- Decks:" << s_ramPlayConfig.decksEnabled
-                    << "- Samplers:" << s_ramPlayConfig.samplersEnabled
-                    << "- PreviewDeck:" << s_ramPlayConfig.previewEnabled;
+    kLogger.debug() << "[TrackFileCache] Config initialized: "
+                    << "TrackFileCache Enabled : " << s_trackFileCacheConfig.enabled
+                    << "- Path:" << s_trackFileCacheConfig.trackFileCacheDiskPath
+                    << "- MaxSize:" << s_trackFileCacheConfig.maxSizeMB << "MB "
+                    << "- Decks:" << s_trackFileCacheConfig.decksEnabled
+                    << "- Samplers:" << s_trackFileCacheConfig.samplersEnabled
+                    << "- PreviewDeck:" << s_trackFileCacheConfig.previewEnabled;
 }
 
-void CachingReader::createRamPlayConfigVars(UserSettingsPointer pConfig) {
+void CachingReader::createTrackFileCacheConfigVars(UserSettingsPointer pConfig) {
     if (!pConfig) {
         return;
     }
 
-    ConfigKey enabledKey("[RAM-Play]", "Enabled");
+    ConfigKey enabledKey("[TrackFileCache]", "Enabled");
     if (!m_pConfig->exists(enabledKey)) {
         m_pConfig->setValue(enabledKey, false);
     }
 
-    ConfigKey maxSizeKey("[RAM-Play]", "MaxSizeMB");
+    ConfigKey maxSizeKey("[TrackFileCache]", "MaxSizeMB");
     if (!m_pConfig->exists(maxSizeKey)) {
         m_pConfig->setValue(maxSizeKey, 512);
     }
 
-    ConfigKey dirNameKey("[RAM-Play]", "DirectoryName");
+    ConfigKey dirNameKey("[TrackFileCache]", "DirectoryName");
     if (!m_pConfig->exists(dirNameKey)) {
         m_pConfig->setValue(dirNameKey, QString("MixxxTmp"));
     }
 
-    ConfigKey decksKey("[RAM-Play]", "Decks");
+    ConfigKey decksKey("[TrackFileCache]", "Decks");
     if (!m_pConfig->exists(decksKey)) {
         m_pConfig->setValue(decksKey, true);
     }
 
-    ConfigKey samplersKey("[RAM-Play]", "Samplers");
+    ConfigKey samplersKey("[TrackFileCache]", "Samplers");
     if (!m_pConfig->exists(samplersKey)) {
         m_pConfig->setValue(samplersKey, true);
     }
 
-    ConfigKey previewKey("[RAM-Play]", "PreviewDeck");
+    ConfigKey previewKey("[TrackFileCache]", "PreviewDeck");
     if (!m_pConfig->exists(previewKey)) {
         m_pConfig->setValue(previewKey, false);
     }
 
 #ifdef Q_OS_WIN
-    ConfigKey driveKey("[RAM-Play]", "WindowsDrive");
+    ConfigKey driveKey("[TrackFileCache]", "WindowsDrive");
     if (!m_pConfig->exists(driveKey)) {
         m_pConfig->setValue(driveKey, QString("R"));
     }
 #else
-    ConfigKey linuxDriveKey("[RAM-Play]", "LinuxDrive");
+    ConfigKey linuxDriveKey("[TrackFileCache]", "LinuxDrive");
     if (!m_pConfig->exists(linuxDriveKey)) {
         m_pConfig->setValue(linuxDriveKey, QString("/dev/shm"));
     }
