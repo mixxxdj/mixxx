@@ -455,6 +455,21 @@ WWidgetGroup {
   margin-right: -17px; */
 }
 
+#WaveformContainer1[highlight_input_allow="1"][highlight_deck="0"],
+#WaveformContainer2[highlight_input_allow="1"][highlight_deck="0"],
+#WaveformContainer3[highlight_input_allow="1"][highlight_deck="0"],
+#WaveformContainer4[highlight_input_allow="1"][highlight_deck="0"] {
+    border: 1px solid #333;
+}
+#WaveformContainer1[highlight_input_allow="1"][highlight_deck="1"],
+#WaveformContainer2[highlight_input_allow="1"][highlight_deck="1"],
+#WaveformContainer3[highlight_input_allow="1"][highlight_deck="1"],
+#WaveformContainer4[highlight_input_allow="1"][highlight_deck="1"] {
+    border: 1px solid #ff8800;
+}
+
+
+
 #BeatgridButtons,
 #BeatgridButtons WWidgetGroup {
 /* Those buttons are pushed outside the screen by 17px (see above),
@@ -637,6 +652,20 @@ WWidgetGroup {
   margin: 0px 0px 5px 4px;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
+}
+#DeckContainerMini[highlight_input_allow="1"][highlight_deck="0"] {
+    border: 1px solid #333;
+    margin-bottom: -1px;
+}
+#DeckContainerMini[highlight_input_allow="1"][highlight_deck="1"] {
+    border: 1px solid #ff8800;
+    margin-bottom: -1px;
+}
+#DeckContainer[highlight_input_allow="1"][highlight_deck="0"] {
+    border: 1px solid #333;
+}
+#DeckContainer[highlight_input_allow="1"][highlight_deck="1"] {
+    border: 1px solid #ff8800;
 }
 
 WLabel#TrackBy,
