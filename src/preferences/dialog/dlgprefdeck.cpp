@@ -420,7 +420,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     // TrackFileCache
     connect(checkBoxTrackFileCacheEnabled,
-            &QCheckBox::checkStateChanged,
+            &QCheckBox::stateChanged,
             this,
             &DlgPrefDeck::slotTrackFileCacheEnabledChanged);
     connect(pushButtonBrowseTrackFileCacheLocation,
