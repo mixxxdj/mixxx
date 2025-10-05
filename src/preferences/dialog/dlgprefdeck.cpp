@@ -420,17 +420,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     // TrackFileCache
     connect(checkBoxTrackFileCacheEnabled,
-            &QCheckBox::stateChanged,
+            &QCheckBox::checkStateChanged,
             this,
             &DlgPrefDeck::slotTrackFileCacheEnabledChanged);
     connect(pushButtonBrowseTrackFileCacheLocation,
             &QPushButton::clicked,
             this,
             &DlgPrefDeck::slotBrowseTrackFileCacheLocation);
-    connect(lineEditTrackFileCacheLocation,
-            &QLineEdit::textChanged,
-            this,
-            &DlgPrefDeck::slotUpdateTrackFileCacheLocation);
     populateTrackFileCacheSizeComboBox();
     loadTrackFileCacheSettings();
 }
@@ -1036,18 +1032,5 @@ void DlgPrefDeck::slotBrowseTrackFileCacheLocation() {
 
     if (!dir.isEmpty()) {
         lineEditTrackFileCacheLocation->setText(dir + "/MixxxTmp/");
-    }
-}
-
-void DlgPrefDeck::slotUpdateTrackFileCacheLocation(const QString& path) {
-    // Validate path and update UI if needed
-    validateTrackFileCacheLocation();
-}
-
-void DlgPrefDeck::validateTrackFileCacheLocation() {
-    QString path = lineEditTrackFileCacheLocation->text();
-    // Basic validation - you can add more sophisticated checks
-    if (!path.isEmpty() && !path.endsWith("/")) {
-        lineEditTrackFileCacheLocation->setText(path + "/");
     }
 }

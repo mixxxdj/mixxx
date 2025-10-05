@@ -98,11 +98,9 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
   private slots:
     void slotTrackFileCacheEnabledChanged(int state);
     void slotBrowseTrackFileCacheLocation();
-    void slotUpdateTrackFileCacheLocation(const QString& path);
 
   private:
     void populateTrackFileCacheSizeComboBox();
-    void validateTrackFileCacheLocation();
     void loadTrackFileCacheSettings();
     void saveTrackFileCacheSettings();
 
