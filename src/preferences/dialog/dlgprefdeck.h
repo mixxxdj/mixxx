@@ -96,7 +96,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotUpdatePitchAutoReset(bool);
 
   private slots:
-    void slotTrackFileCacheEnabledChanged(int state);
+    // void slotTrackFileCacheEnabledChanged(int state);
+    void slotTrackFileCacheEnabledChanged(bool enabled);
     void slotBrowseTrackFileCacheLocation();
 
   private:

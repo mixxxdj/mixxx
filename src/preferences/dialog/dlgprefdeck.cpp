@@ -420,7 +420,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     // TrackFileCache
     connect(checkBoxTrackFileCacheEnabled,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
             &DlgPrefDeck::slotTrackFileCacheEnabledChanged);
     connect(pushButtonBrowseTrackFileCacheLocation,
@@ -1003,8 +1003,9 @@ void DlgPrefDeck::loadTrackFileCacheSettings() {
     slotTrackFileCacheEnabledChanged(trackFileCacheEnabled ? Qt::Checked : Qt::Unchecked);
 }
 
-void DlgPrefDeck::slotTrackFileCacheEnabledChanged(int state) {
-    bool enabled = (state == Qt::Checked);
+// void DlgPrefDeck::slotTrackFileCacheEnabledChanged(int state) {
+void DlgPrefDeck::slotTrackFileCacheEnabledChanged(bool enabled) {
+    // bool enabled = (state == Qt::Checked);
 
     lineEditTrackFileCacheLocation->setEnabled(enabled);
     pushButtonBrowseTrackFileCacheLocation->setEnabled(enabled);
