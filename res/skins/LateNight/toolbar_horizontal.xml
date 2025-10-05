@@ -1,4 +1,3 @@
-<!-- Comment to get commit & CI-->
 <Template>
   <WidgetGroup>
     <ObjectName>ToolBar</ObjectName>
@@ -8,7 +7,7 @@
       <!--The library is always big in Horizontal layout, so the toggle is removed-->
       <!--and the control/button is linked to the horizontal/vertical button-->
       <Template src="skins:LateNight/controls/button_2state.xml">
-        <SetVariable name="TooltipId">maximize_library</SetVariable>
+        <SetVariable name="TooltipId">toggle_horizontal_layout</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
         <SetVariable name="Size">80f,20f</SetVariable>
         <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
@@ -84,11 +83,7 @@
         <SetVariable name="ConfigKey">[Skin],show_horizontal_layout</SetVariable>
       </Template>
 
-      <!-- ADJUSTED SPACER TO COMPENSATE FOR ADDED BUTTON -->
-      <!--WidgetGroup><Size>15f,min</Size></WidgetGroup-->
-      <WidgetGroup>
-        <Size>me,min</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
       <StatusLight>
         <TooltipId>autodj_status</TooltipId>
@@ -118,9 +113,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Size>7f,1min</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>LatencyBatteryContainer</ObjectName>
@@ -161,8 +154,7 @@
                   <ConfigKey>[App],audio_latency_overload</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
-              </WidgetGroup>
-              <!-- LatencyMeterBox -->
+              </WidgetGroup><!-- LatencyMeterBox -->
               <Label>
                 <ObjectName>LatencyLabel</ObjectName>
                 <TooltipId>audio_latency_usage</TooltipId>
@@ -171,11 +163,9 @@
                 <Text>CPU Load</Text>
               </Label>
             </Children>
-          </WidgetGroup>
-          <!-- LatencyMeterBox -->
+          </WidgetGroup><!-- LatencyMeterBox -->
         </Children>
-      </WidgetGroup>
-      <!-- LatencyBatteryContainer -->
+      </WidgetGroup><!-- LatencyBatteryContainer -->
 
       <WidgetGroup>
         <Size>7f,1min</Size>
@@ -195,15 +185,11 @@
             <PixmapsDischarging scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
           </Battery>
         </Children>
-      </WidgetGroup>
-      <!-- BatteryBox -->
+      </WidgetGroup><!-- BatteryBox -->
 
-      <WidgetGroup>
-        <Size>9f,min</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>9f,min</Size></WidgetGroup>
 
-      <WidgetGroup>
-        <!-- Recording button & recording duration label -->
+      <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
         <Size>72f,20f</Size>
@@ -218,8 +204,7 @@
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
           </Template>
 
-          <WidgetGroup>
-            <!-- Rec dot + RecDuration -->
+          <WidgetGroup><!-- Rec dot + RecDuration -->
             <Layout>horizontal</Layout>
             <Size>68f,20f</Size>
             <Children>
@@ -243,8 +228,7 @@
                 </Connection>
               </RecordingDuration>
             </Children>
-          </WidgetGroup>
-          <!-- /Rec dot + RecDuration -->
+          </WidgetGroup><!-- /Rec dot + RecDuration -->
 
           <!-- Rec feedback color -->
           <Template src="skins:LateNight/controls/button_3state_display.xml">
@@ -254,8 +238,7 @@
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup>
-      <!-- /Recording button & recording duration label -->
+      </WidgetGroup><!-- /Recording button & recording duration label -->
 
       <Template src="skins:LateNight/controls/button_4state_display.xml">
         <SetVariable name="ObjectName">BroadcastButton</SetVariable>

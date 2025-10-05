@@ -29,7 +29,7 @@
 <!DOCTYPE skin>
 <skin>
   <manifest>
-    <title>LateNight</title>
+    <title>LateNight (64 Samplers)</title>
     <author>owilliams, ronso0</author>
     <version>2.4.0.01</version>
     <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 16 samplers, with the possibility to put the library at the side.</description>
@@ -38,7 +38,7 @@
     <attributes>
     <!-- Set skin defaults -->
       <attribute config_key="[App],num_decks">4</attribute>
-      <attribute config_key="[App],num_samplers">16</attribute>
+      <attribute config_key="[App],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
 
@@ -191,11 +191,6 @@
       <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
       <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
       <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
-      <!-- When dragging a hotcue button in order to swap hotcues, the entire
-           widget rect is used for the dnd cursor but the margin is not considered.
-           '1' cuts off the colored overlap. -->
-      <SetVariable name="DndRectMarginHotcueBtn">1</SetVariable>
-
       <SetVariable name="AxesColor">#999</SetVariable>
       <SetVariable name="BeatColor">#999</SetVariable>
       <SetVariable name="PlayPosColor">#00c6ff</SetVariable>
@@ -204,7 +199,6 @@
       <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
       <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
-      <SetVariable name="SlipBorderOutlineColor">#f08c00</SetVariable>
       <SetVariable name="PassthroughLabelColor">#b24c12</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
@@ -268,7 +262,6 @@
 
     <Scheme>
       <Name>Classic</Name>
-      <!-- Classic theme. Bulky containers, hatched backgrounds, no knob arcs -->
       <LaunchImageStyle>
         LaunchImage {
           background-color: #1e1e1e;
@@ -339,7 +332,6 @@
       <SetVariable name="IntroOutroColor">#0000ff</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
-      <SetVariable name="SlipBorderOutlineColor">#1af000</SetVariable>
       <SetVariable name="PassthroughLabelColor">#d09300</SetVariable>
       <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
       <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
