@@ -12,6 +12,14 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <MinimumSize>-1,150</MinimumSize>
+    <Connection>
+      <ConfigKey>[Skin],highlight_deck<Variable name="i"/></ConfigKey>
+      <BindProperty>highlight_deck</BindProperty>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+      <BindProperty>highlight_input_allow</BindProperty>
+    </Connection>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckRows</ObjectName>

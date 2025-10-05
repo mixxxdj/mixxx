@@ -79,6 +79,14 @@
   <WidgetGroup>
     <ObjectName>MixerStrip_4Decks</ObjectName>
     <Layout>vertical</Layout>
+    <Connection>
+      <ConfigKey>[Skin],highlight_deck<Variable name="i"/></ConfigKey>
+      <BindProperty>highlight_deck</BindProperty>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+      <BindProperty>highlight_input_allow</BindProperty>
+    </Connection>
     <Children>
 
       <Template src="skin:mixer_spacer_topbottom.xml" />
